@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "Neon Catcher: Expedition",
+  "short_name": "NeonCatcher",
+  "description": "Expedición arcade por diez sectores galácticos con núcleos limitados, obstáculos espaciales y sistemas de nave.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "background_color": "#050610",
+  "theme_color": "#080a19",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
