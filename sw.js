@@ -1,13 +1,13 @@
-const CACHE = "neon-catcher-v6-8-base-maestra";
+const CACHE = "neon-catcher-v7-visual-upgrade";
 const CORE = [
   "./",
   "index.html",
-  "styles.css?v=6.8.0",
-  "native-admob.js?v=6.8.0",
-  "ads-config.js?v=6.8.0",
-  "ad-bridge.js?v=6.8.0",
-  "core-runtime.js?v=6.8.0",
-  "game.js?v=6.8.0",
+  "styles.css?v=7.0.0",
+  "native-admob.js?v=7.0.0",
+  "ads-config.js?v=7.0.0",
+  "ad-bridge.js?v=7.0.0",
+  "core-runtime.js?v=7.0.0",
+  "game.js?v=7.0.0",
   "manifest.webmanifest",
   "privacy.html",
   "terms.html",

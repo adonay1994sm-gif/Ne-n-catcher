@@ -6,7 +6,7 @@
   const ctx = canvas.getContext("2d", { alpha: false });
   let W = 720;
   let H = 1280;
-  const BUILD_VERSION = "6.8.0";
+  const BUILD_VERSION = "7.0.0";
   const SHIP_VISUAL_SCALE = 0.8;
   const SHIP_VISUAL = Object.freeze({
     scale: SHIP_VISUAL_SCALE,
@@ -227,6 +227,13 @@
   let storyTimer = 0;
   let levelOneShockwave = 0;
   let levelOneShockwaveTriggered = false;
+  let visualSpeed = 1;
+  let cameraKickX = 0;
+  let cameraKickY = 0;
+  let displayedScore = 0;
+  let hudScoreTarget = 0;
+  let lastHudCollected = 0;
+  let lastHudHull = 100;
 
   let items = [];
   let gates = [];
@@ -344,13 +351,30 @@
     ctx.restore();
     return true;
   }
-  const stars = Array.from({ length: 100 }, () => ({
+  const stars = Array.from({ length: 118 }, () => ({
     x: Math.random() * W,
     y: Math.random() * H,
-    r: 0.45 + Math.random() * 2,
+    r: 0.35 + Math.random() * 1.55,
     a: 0.18 + Math.random() * 0.7,
     s: 8 + Math.random() * 20,
-    layer: 0.5 + Math.random() * 1.4
+    layer: 0.35 + Math.random() * 1.25,
+    tint: Math.random() > 0.82 ? "#8eeeff" : "#e8f3ff"
+  }));
+  const spaceDust = Array.from({ length: 46 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 0.7 + Math.random() * 2.2,
+    a: 0.035 + Math.random() * 0.12,
+    s: 20 + Math.random() * 42,
+    drift: (Math.random() - 0.5) * 8
+  }));
+  const foregroundParticles = Array.from({ length: 12 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 2.5 + Math.random() * 5.5,
+    a: 0.025 + Math.random() * 0.08,
+    s: 78 + Math.random() * 115,
+    drift: (Math.random() - 0.5) * 22
   }));
 
   let audioCtx = null;
@@ -543,7 +567,9 @@
   }
 
   function hud() {
-    ui.score.textContent = score;
+    hudScoreTarget = score;
+    if (state !== "playing") displayedScore = score;
+    ui.score.textContent = Math.round(displayedScore);
     ui.goal.textContent = `${collected}/${level().goal}`;
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
     ui.hudLevel.textContent = currentLevel + 1;
@@ -553,6 +579,28 @@
       : hull > 33
         ? "linear-gradient(90deg,#ffe166,#ff9f55)"
         : "linear-gradient(90deg,#ff5b7c,#ff2e55)";
+
+    if (collected > lastHudCollected) animateHud(ui.goal, "hud-pop");
+    if (hull < lastHudHull) {
+      animateHud(ui.hull, "hud-damage");
+      animateHud(ui.hullBar?.parentElement, "hud-damage");
+    }
+    lastHudCollected = collected;
+    lastHudHull = hull;
+  }
+
+  function animateHud(element, className) {
+    if (!element) return;
+    element.classList.remove(className);
+    void element.offsetWidth;
+    element.classList.add(className);
+  }
+
+  function updateHudVisual(dt) {
+    const difference = hudScoreTarget - displayedScore;
+    if (Math.abs(difference) < 0.5) displayedScore = hudScoreTarget;
+    else displayedScore += difference * Math.min(1, dt * 11);
+    ui.score.textContent = Math.round(displayedScore);
   }
 
   function updatePowerHud() {
@@ -671,9 +719,12 @@
     }
     if (elapsed >= 31 && !levelOneShockwaveTriggered) {
       levelOneShockwaveTriggered = true;
-      levelOneShockwave = 2.4;
+      levelOneShockwave = 0.62;
       stormPulse = Math.max(stormPulse, 0.42);
-      shake = Math.max(shake, 5);
+      shake = Math.max(shake, 12);
+      cameraKickY = 8;
+      pulseRing(player.x, player.y + SHIP_VISUAL.centerYOffset, "#a5faff", 245, 0.56, "pulse");
+      burst(player.x, player.y + SHIP_VISUAL.centerYOffset, 38, "cyan");
       tone(78, 0.8, "sawtooth", 0.055);
       showStoryTransmission("IA N-7", "Onda expansiva. Mantén el rumbo.", 3.2);
     }
@@ -684,6 +735,8 @@
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     setState("playing");
     score = 0;
+    displayedScore = 0;
+    hudScoreTarget = 0;
     hull = 100;
     combo = 1;
     maxCombo = 1;
@@ -709,6 +762,10 @@
     storyTimer = 0;
     levelOneShockwave = 0;
     levelOneShockwaveTriggered = false;
+    cameraKickX = 0;
+    cameraKickY = 0;
+    lastHudCollected = 0;
+    lastHudHull = 100;
     hideStoryTransmission();
     items = [];
     gates = [];
@@ -1174,8 +1231,37 @@
     }
   }
 
-  function pulseRing(x, y, color, max = 85, duration = 0.48) {
-    rings.push({ x, y, color, max, duration, life: duration });
+  function directionalBurst(x, y, targetX, targetY, count, kind = "cyan") {
+    const amount = settings.effects ? count : Math.ceil(count * 0.5);
+    const baseAngle = Math.atan2(targetY - y, targetX - x);
+    for (let index = 0; index < amount; index++) {
+      const angle = baseAngle + (Math.random() - 0.5) * 0.62;
+      const speed = 150 + Math.random() * 280;
+      parts.push(particlePool.acquire({
+        x: x + (Math.random() - 0.5) * 12,
+        y: y + (Math.random() - 0.5) * 12,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 0.34 + Math.random() * 0.34,
+        size: 2 + Math.random() * 5,
+        kind
+      }));
+    }
+  }
+
+  function engineTrail() {
+    if (!settings.effects || state !== "playing" || Math.random() > 0.48) return;
+    const hardTurn = Math.abs(player.target + player.drift - player.x) > 65;
+    const x = player.x + (hardTurn ? (player.target > player.x ? -1 : 1) * 28 : (Math.random() - 0.5) * 30) * SHIP_VISUAL.scale;
+    const y = player.y + 61 * SHIP_VISUAL.scale;
+    parts.push(particlePool.acquire({
+      x, y, vx: (Math.random() - 0.5) * 28, vy: 125 + Math.random() * 120,
+      life: 0.22 + Math.random() * 0.24, size: 2 + Math.random() * 4, kind: "cyan"
+    }));
+  }
+
+  function pulseRing(x, y, color, max = 85, duration = 0.48, style = "single") {
+    rings.push({ x, y, color, max, duration, life: duration, style });
   }
 
   function addExplosion(x, y, scale = 1, duration = 0.52) {
@@ -1282,8 +1368,10 @@
       combo = Math.min(12, combo + 1);
       maxCombo = Math.max(maxCombo, combo);
       comboTimer = 2.35;
-      burst(item.x, item.y, 12, "cyan");
-      pulseRing(item.x, item.y, "#55f6ff", 70, 0.38);
+      directionalBurst(item.x, item.y, player.x, player.y - 18, 20, "cyan");
+      burst(item.x, item.y, 9, "cyan");
+      pulseRing(item.x, item.y, "#55f6ff", 76, 0.38, "capture");
+      stormPulse = Math.max(stormPulse, 0.08);
       tone(500 + combo * 28, 0.06, "triangle", 0.055);
       if (collected >= level().goal) completeLevel();
     } else if (isThreat(item)) {
@@ -1343,6 +1431,8 @@
 
   function firePhaser() {
     phaserCooldown = 0.34;
+    cameraKickY = Math.max(cameraKickY, 3.5);
+    shake = Math.max(shake, 2.2);
     const candidates = items
       .filter(isThreat)
       .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 95)
@@ -1545,6 +1635,7 @@
   function update(dt) {
     const lv = level();
     const starBoost = state === "playing" ? lv.speed * (warpTimer > 0 ? 5.5 : 1) : 1;
+    visualSpeed += (starBoost - visualSpeed) * Math.min(1, dt * 4.5);
     for (const star of stars) {
       star.y += star.s * star.layer * dt * starBoost;
       if (star.y > H + 8) {
@@ -1552,6 +1643,21 @@
         star.x = Math.random() * W;
       }
     }
+    for (const dust of spaceDust) {
+      dust.y += dust.s * dt * starBoost;
+      dust.x += dust.drift * dt;
+      if (dust.y > H + 12) { dust.y = -12; dust.x = Math.random() * W; }
+      if (dust.x < -20) dust.x = W + 20;
+      if (dust.x > W + 20) dust.x = -20;
+    }
+    for (const mote of foregroundParticles) {
+      mote.y += mote.s * dt * Math.max(0.8, starBoost);
+      mote.x += mote.drift * dt;
+      if (mote.y > H + 28) { mote.y = -28; mote.x = Math.random() * W; }
+    }
+    updateHudVisual(dt);
+    cameraKickX *= Math.pow(0.001, dt);
+    cameraKickY *= Math.pow(0.001, dt);
 
     if (state === "destroying") {
       elapsed += dt;
@@ -1590,6 +1696,7 @@
     const follow = 9 + (settings.sensitivity / 100) * 8;
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
+    engineTrail();
 
     if (warpTimer > 0) {
       warpTimer = Math.max(0, warpTimer - dt);
@@ -1889,32 +1996,43 @@
     ctx.fillStyle = nebula;
     ctx.fillRect(0, 0, W, H);
 
+    // Capa lejana: puntos diminutos, lentos y con un parpadeo apenas visible.
     for (const star of stars) {
-      ctx.globalAlpha = star.a * (0.62 + 0.38 * Math.sin(t * 0.001 + star.x));
-      ctx.fillStyle = "#dce8ff";
+      const streak = visualSpeed > 2.4 ? Math.min(18, (visualSpeed - 2.2) * star.layer * 3.8) : 0;
+      ctx.globalAlpha = star.a * (0.70 + 0.30 * Math.sin(t * 0.001 + star.x));
+      ctx.fillStyle = star.tint;
       ctx.beginPath();
-      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+      if (streak > 1) ctx.roundRect(star.x - star.r * 0.5, star.y - streak, Math.max(0.7, star.r), streak + star.r, star.r);
+      else ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
 
     drawSectorEnvironment(t, lv);
 
+    // Capa media: polvo y restos minúsculos con una deriva independiente.
     ctx.save();
-    ctx.globalAlpha = 0.13;
-    ctx.strokeStyle = lv.accent;
-    const horizon = H * 0.72;
-    for (let index = -7; index <= 7; index++) {
+    ctx.globalCompositeOperation = "screen";
+    for (const dust of spaceDust) {
+      ctx.globalAlpha = dust.a;
+      ctx.fillStyle = Math.floor(dust.x + dust.y) % 3 ? lv.accent : "#b5c8dd";
       ctx.beginPath();
-      ctx.moveTo(W / 2, horizon);
-      ctx.lineTo(W / 2 + index * 120, H);
-      ctx.stroke();
+      ctx.arc(dust.x, dust.y, dust.r, 0, Math.PI * 2);
+      ctx.fill();
     }
-    for (let y = horizon; y < H; y += 52) {
+    ctx.restore();
+
+    // Primer plano: partículas escasas, rápidas y suavizadas por glow.
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = lv.accent;
+    for (const mote of foregroundParticles) {
+      ctx.globalAlpha = mote.a * (state === "playing" ? 1 : 0.45);
+      ctx.fillStyle = "#dffcff";
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
+      ctx.ellipse(mote.x, mote.y, mote.r * 0.55, mote.r * (1.2 + Math.min(2.2, visualSpeed * 0.3)), 0, 0, Math.PI * 2);
+      ctx.fill();
     }
     ctx.restore();
 
@@ -1925,18 +2043,33 @@
     ctx.fillRect(0, 0, W, H);
 
     if (currentLevel === 0 && levelOneShockwave > 0) {
-      const progress = 1 - levelOneShockwave / 2.4;
-      const radius = 80 + progress * Math.max(W, H) * 0.92;
+      const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);
+      const radius = 55 + progress * Math.max(W, H) * 0.72;
       ctx.save();
       ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha = Math.sin(progress * Math.PI) * 0.72;
+      ctx.globalAlpha = Math.sin(progress * Math.PI) * 0.84;
       ctx.strokeStyle = "rgba(165,250,255,.95)";
-      ctx.lineWidth = 18 * (1 - progress) + 3;
-      ctx.shadowBlur = 26;
+      ctx.lineWidth = 22 * (1 - progress) + 3;
+      ctx.shadowBlur = 34;
       ctx.shadowColor = "#68eaff";
       ctx.beginPath();
       ctx.arc(W * 0.50, H * 0.28, radius, 0, Math.PI * 2);
       ctx.stroke();
+      ctx.globalAlpha *= 0.62;
+      ctx.lineWidth = 8 * (1 - progress) + 1;
+      ctx.beginPath();
+      ctx.arc(W * 0.50, H * 0.28, radius * 0.78, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha *= 0.55;
+      for (let index = 0; index < 18; index++) {
+        const angle = index * Math.PI * 2 / 18 + progress * 0.2;
+        const inner = radius * 0.72;
+        const outer = radius * (0.86 + (index % 3) * 0.05);
+        ctx.beginPath();
+        ctx.moveTo(W * 0.5 + Math.cos(angle) * inner, H * 0.28 + Math.sin(angle) * inner);
+        ctx.lineTo(W * 0.5 + Math.cos(angle) * outer, H * 0.28 + Math.sin(angle) * outer);
+        ctx.stroke();
+      }
       ctx.restore();
     }
 
@@ -1974,26 +2107,71 @@
     const distance = Math.hypot(dx, dy);
     const angle = Math.atan2(dy, dx);
     const frame = frameFrom("tractor", Math.floor(elapsed * 13));
+    const intensity = clamp(1 - distance / 430, 0.25, 1);
+    const targetWidth = Math.max(20, tractorTarget.r * 1.25);
 
     ctx.save();
-    ctx.translate((startX + tractorTarget.x) / 2, (startY + tractorTarget.y) / 2);
+    ctx.translate(startX, startY);
+    ctx.rotate(angle);
     ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = 18;
+    ctx.shadowBlur = 18 + intensity * 18;
     ctx.shadowColor = "#45eaff";
+
+    const volume = ctx.createLinearGradient(0, 0, distance, 0);
+    volume.addColorStop(0, `rgba(210,255,255,${0.18 + intensity * 0.18})`);
+    volume.addColorStop(0.48, `rgba(57,225,255,${0.08 + intensity * 0.12})`);
+    volume.addColorStop(1, `rgba(102,137,255,${0.22 + intensity * 0.16})`);
+    ctx.fillStyle = volume;
+    ctx.beginPath();
+    ctx.moveTo(0, -7);
+    ctx.lineTo(distance, -targetWidth);
+    ctx.lineTo(distance, targetWidth);
+    ctx.lineTo(0, 7);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, -9); ctx.lineTo(distance, -targetWidth); ctx.lineTo(distance, targetWidth); ctx.lineTo(0, 9); ctx.closePath();
+    ctx.clip();
+    for (let index = 0; index < 13; index++) {
+      const travel = (elapsed * (0.82 + intensity * 0.55) + index / 13) % 1;
+      const x = distance * (1 - travel);
+      const spread = 6 + (x / Math.max(1, distance)) * targetWidth * 0.72;
+      const y = Math.sin(index * 2.43 + elapsed * 7.5) * spread;
+      ctx.globalAlpha = 0.22 + intensity * 0.55;
+      ctx.fillStyle = index % 3 ? "#7df5ff" : "#ffffff";
+      ctx.beginPath(); ctx.arc(x, y, 1.4 + intensity * 1.7, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = `rgba(210,255,255,${0.22 + intensity * 0.42})`;
+    ctx.lineWidth = 1.2 + intensity;
+    for (let arc = 0; arc < 2; arc++) {
+      ctx.beginPath();
+      for (let segment = 0; segment <= 8; segment++) {
+        const x = distance * segment / 8;
+        const y = Math.sin(elapsed * 18 + segment * 2.2 + arc * 3.1) * (4 + x / Math.max(1, distance) * targetWidth * 0.34);
+        if (segment) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+
     if (frame) {
-      ctx.rotate(angle);
-      ctx.globalAlpha = 0.88;
-      ctx.drawImage(frame, -distance / 2, -43, distance, 86);
+      ctx.globalAlpha = 0.18 + intensity * 0.16;
+      ctx.drawImage(frame, 0, -targetWidth, distance, targetWidth * 2);
     } else {
       ctx.strokeStyle = "#55eaff";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 2.5;
       ctx.setLineDash([10, 8]);
       ctx.lineDashOffset = -elapsed * 60;
       ctx.beginPath();
-      ctx.moveTo(-distance / 2, 0);
-      ctx.lineTo(distance / 2, 0);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(distance, 0);
       ctx.stroke();
     }
+    ctx.globalAlpha = 0.58 + intensity * 0.35;
+    ctx.fillStyle = "#eaffff";
+    ctx.beginPath(); ctx.arc(0, 0, 5 + intensity * 4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
   function playerFrameState(t) {
@@ -2045,6 +2223,28 @@
       drawImageCentered(shieldFrame, SHIP_VISUAL.shieldSize, SHIP_VISUAL.shieldSize, elapsed * 0.08, 0.42);
       ctx.restore();
     }
+
+    const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
+    const enginePulse = 0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20;
+    ctx.save();
+    ctx.translate(0, 53 * SHIP_VISUAL.scale + bob);
+    ctx.globalCompositeOperation = "screen";
+    ctx.shadowBlur = 24;
+    ctx.shadowColor = "#56efff";
+    for (const engineX of [-27, 27]) {
+      const plume = ctx.createLinearGradient(engineX, 0, engineX, 48 * SHIP_VISUAL.scale * enginePulse);
+      plume.addColorStop(0, "rgba(255,255,255,.96)");
+      plume.addColorStop(0.25, "rgba(92,242,255,.82)");
+      plume.addColorStop(1, "rgba(42,116,255,0)");
+      ctx.fillStyle = plume;
+      ctx.beginPath();
+      ctx.moveTo((engineX - 6) * SHIP_VISUAL.scale, 0);
+      ctx.lineTo(engineX * SHIP_VISUAL.scale, 48 * SHIP_VISUAL.scale * enginePulse);
+      ctx.lineTo((engineX + 6) * SHIP_VISUAL.scale, 0);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
 
     const frame = frameFrom("ship", frameIndex);
     ctx.save();
@@ -2111,18 +2311,51 @@
     ctx.save();
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
+    const distanceToShip = Math.hypot(player.x - item.x, player.y - item.y);
+    const proximity = state === "playing" ? clamp(1 - distanceToShip / 330, 0, 1) : 0;
     const pulseSequence = [0,1,2,3,4,5,4,3,2,1];
     const frame = frameFrom("core", pulseSequence[Math.floor((elapsed * 9 + item.phase) % pulseSequence.length)]);
-    const pulse = 1 + Math.sin(item.p) * 0.035;
+    const breath = 0.5 + 0.5 * Math.sin(elapsed * 3.4 + item.phase);
+    const pulse = 1 + breath * 0.055 + proximity * 0.08;
     ctx.scale(pulse, pulse);
     ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = 22;
+    ctx.shadowBlur = 24 + proximity * 24;
     ctx.shadowColor = "#33f4ff";
+
+    const halo = ctx.createRadialGradient(0, 0, item.r * 0.15, 0, 0, item.r * (2.35 + proximity * 0.45));
+    halo.addColorStop(0, `rgba(255,255,255,${0.62 + proximity * 0.25})`);
+    halo.addColorStop(0.18, `rgba(98,246,255,${0.42 + proximity * 0.24})`);
+    halo.addColorStop(0.54, "rgba(38,190,255,.16)");
+    halo.addColorStop(1, "rgba(20,86,255,0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(0, 0, item.r * (2.35 + proximity * 0.45), 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = `rgba(126,247,255,${0.30 + breath * 0.25 + proximity * 0.25})`;
+    ctx.lineWidth = 1.5 + proximity * 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, item.r * 1.35, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha *= 0.72;
+    ctx.beginPath(); ctx.arc(0, 0, item.r * 1.72, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha /= 0.72;
+
     if (!drawImageCentered(frame, item.r * 2.85, item.r * 2.85, item.rot * 0.10)) {
       const gradient = ctx.createRadialGradient(-7, -8, 2, 0, 0, item.r);
       gradient.addColorStop(0, "#fff"); gradient.addColorStop(0.2, "#caffff");
       gradient.addColorStop(0.48, "#63efff"); gradient.addColorStop(1, "#1554d8");
       ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(0, 0, item.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "rgba(255,255,255,.96)";
+    ctx.shadowBlur = 18 + proximity * 16;
+    ctx.beginPath(); ctx.arc(0, 0, Math.max(3, item.r * 0.22), 0, Math.PI * 2); ctx.fill();
+
+    if (proximity > 0.05 && settings.effects) {
+      for (let index = 0; index < 5; index++) {
+        const travel = (elapsed * (0.65 + index * 0.06) + item.phase + index * 0.19) % 1;
+        const radius = item.r * (2.7 - travel * 2.1);
+        const angle = item.phase + index * 2.17 + elapsed * (1.2 + proximity);
+        ctx.globalAlpha = proximity * (0.28 + travel * 0.55);
+        ctx.fillStyle = index % 2 ? "#bfffff" : "#4ceaff";
+        ctx.beginPath(); ctx.arc(Math.cos(angle) * radius, Math.sin(angle) * radius, 1.2 + proximity * 1.6, 0, Math.PI * 2); ctx.fill();
+      }
     }
     ctx.restore();
   }
@@ -2310,12 +2543,24 @@
     ctx.globalCompositeOperation = "screen";
     for (const ring of rings) {
       const progress = 1 - ring.life / ring.duration;
-      ctx.globalAlpha = 1 - progress;
+      const fade = Math.pow(1 - progress, 1.35);
+      ctx.globalAlpha = fade;
       ctx.strokeStyle = ring.color;
-      ctx.lineWidth = 4 * (1 - progress) + 1;
+      ctx.shadowBlur = ring.style === "pulse" ? 30 : 16;
+      ctx.shadowColor = ring.color;
+      ctx.lineWidth = (ring.style === "pulse" ? 16 : 6) * (1 - progress) + 1;
       ctx.beginPath();
       ctx.arc(ring.x, ring.y, 12 + ring.max * progress, 0, Math.PI * 2);
       ctx.stroke();
+      if (ring.style === "pulse" || ring.style === "capture") {
+        const delay = ring.style === "pulse" ? 0.14 : 0.08;
+        const secondProgress = clamp((progress - delay) / (1 - delay), 0, 1);
+        ctx.globalAlpha = fade * (ring.style === "pulse" ? 0.66 : 0.42);
+        ctx.lineWidth = (ring.style === "pulse" ? 8 : 3) * (1 - secondProgress) + 1;
+        ctx.beginPath();
+        ctx.arc(ring.x, ring.y, 8 + ring.max * secondProgress * 0.84, 0, Math.PI * 2);
+        ctx.stroke();
+      }
     }
     ctx.restore();
   }
@@ -2325,16 +2570,43 @@
     ctx.globalCompositeOperation = "screen";
     for (const shot of shots) {
       const progress = 1 - shot.life / shot.duration;
-      const x = shot.x1 + (shot.x2 - shot.x1) * progress;
-      const y = shot.y1 + (shot.y2 - shot.y1) * progress;
-      const angle = Math.atan2(shot.y2 - shot.y1, shot.x2 - shot.x1);
-      const frame = frameFrom("phaser", Math.floor(elapsed * 16 + progress * 5));
+      const dx = shot.x2 - shot.x1;
+      const dy = shot.y2 - shot.y1;
+      const distance = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx);
+      const flashPhase = clamp(progress / 0.18, 0, 1);
+      const fade = progress < 0.78 ? 1 : 1 - (progress - 0.78) / 0.22;
       ctx.save();
-      ctx.translate(x, y);
-      ctx.shadowBlur = 22;
+      ctx.translate(shot.x1, shot.y1);
+      ctx.rotate(angle);
+      ctx.globalAlpha = clamp(flashPhase * fade, 0, 1);
+      ctx.shadowBlur = 28;
       ctx.shadowColor = "#54dfff";
-      if (!drawImageCentered(frame, 76, 38, angle)) {
-        ctx.rotate(angle); ctx.fillStyle = "#7dffdd"; ctx.fillRect(-24, -3, 48, 6);
+      ctx.strokeStyle = "rgba(42,197,255,.36)";
+      ctx.lineWidth = 16;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(distance, 0); ctx.stroke();
+      ctx.strokeStyle = "#4eeaff";
+      ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(distance, 0); ctx.stroke();
+      ctx.strokeStyle = "rgba(255,255,255,.98)";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(distance, 0); ctx.stroke();
+
+      const muzzle = ctx.createRadialGradient(0, 0, 0, 0, 0, 24 * (1 - progress * 0.45));
+      muzzle.addColorStop(0, "rgba(255,255,255,.98)");
+      muzzle.addColorStop(0.3, "rgba(84,235,255,.8)");
+      muzzle.addColorStop(1, "rgba(40,120,255,0)");
+      ctx.fillStyle = muzzle;
+      ctx.beginPath(); ctx.arc(0, 0, 24, 0, Math.PI * 2); ctx.fill();
+
+      if (shot.hit && progress > 0.45) {
+        ctx.globalAlpha *= clamp((progress - 0.45) * 3.5, 0, 1);
+        const impact = ctx.createRadialGradient(distance, 0, 0, distance, 0, shot.destroyed ? 34 : 22);
+        impact.addColorStop(0, "rgba(255,255,255,1)");
+        impact.addColorStop(0.28, "rgba(102,255,220,.86)");
+        impact.addColorStop(1, "rgba(50,160,255,0)");
+        ctx.fillStyle = impact;
+        ctx.beginPath(); ctx.arc(distance, 0, shot.destroyed ? 34 : 22, 0, Math.PI * 2); ctx.fill();
       }
       ctx.restore();
     }
@@ -2393,6 +2665,7 @@
   }
   function render(t) {
     ctx.save();
+    ctx.translate(cameraKickX, -cameraKickY);
     if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
     background(t);
     drawWarp();
