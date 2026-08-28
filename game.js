@@ -6,7 +6,9 @@
   const ctx = canvas.getContext("2d", { alpha: false });
   let W = 720;
   let H = 1280;
-  const BUILD_VERSION = "7.1.0";
+  const BUILD_VERSION = "7.2.0";
+  const INITIAL_AMMO = 3;
+  const MAX_AMMO = 3;
   const SHIP_VISUAL_SCALE = 0.8;
   const SHIP_VISUAL = Object.freeze({
     scale: SHIP_VISUAL_SCALE,
@@ -27,6 +29,8 @@
     hull: $("hull"),
     hullBar: $("hullBar"),
     hudLevel: $("hudLevel"),
+    fire: $("fire"),
+    ammo: $("ammo"),
     best: $("best"),
     unlockedText: $("unlockedText"),
     totalStars: $("totalStars"),
@@ -96,71 +100,81 @@
     {
       name: "La Onda de Choque", goal: 36, speed: 0.92, spawn: 0.69, meteor: 0.105, power: 0.072,
       accent: "#57f4ff", top: "#173460", mid: "#07172f", hazard: "shockwave", scene: "cronos",
+      world: "CRONOS / GAIA NOVA", enemyCue: "Restos temporales",
       zone: "Perímetro exterior del Centro Cronos", desc: "Cruza la zona de impacto",
       mission: "Alcanza el perímetro, recupera 36 fragmentos temporales y localiza la señal de emergencia del Centro Cronos.",
       threatLabel: "Roca y restos orbitales", threatPool: ["meteor", "meteor", "debris"], gate: 0
     },
     {
-      name: "Grieta Azul", goal: 45, speed: 0.94, spawn: 0.72, meteor: 0.095, power: 0.068,
+      name: "Perímetro Atlas", goal: 45, speed: 0.94, spawn: 0.72, meteor: 0.095, power: 0.068,
       accent: "#4da2ff", top: "#14245c", mid: "#0a1035", hazard: "fast", scene: "rift",
-      zone: "Fractura de plasma azul", desc: "El campo acelera",
-      mission: "Cruza la grieta antes de que la corriente arrastre los núcleos fuera de alcance.",
-      threatLabel: "Rocas y restos", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
+      world: "GAIA NOVA", enemyCue: "Red defensiva CH",
+      zone: "Anillo defensivo de Gaia Nova", desc: "La red Atlas despierta",
+      mission: "Recupera energía mientras evitas las patrullas CH y confirma quién reprogramó las defensas orbitales.",
+      threatLabel: "Drones y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
     },
     {
-      name: "Carril Meteoro", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
+      name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
       accent: "#ffb35c", top: "#3b2437", mid: "#17101f", hazard: "wave", scene: "belt",
-      zone: "Cinturón de extracción abandonado", desc: "Trayectorias ondulantes",
-      mission: "Navega entre roca y chatarra minera sin perder el suministro limitado del carril.",
-      threatLabel: "Meteoros y chatarra", threatPool: ["meteor", "meteor", "debris", "debris"], gate: 0
+      world: "VULKAR", enemyCue: "Lava Core / Plasma Mine",
+      zone: "Caldera orbital de Vulkar", desc: "CRONIUM sobrecalentado",
+      mission: "Sigue los fragmentos incandescentes entre núcleos de lava y minas de plasma antes de que se desintegren.",
+      threatLabel: "Lava Core y chatarra", threatPool: ["meteor", "meteor", "debris", "debris"], gate: 0
     },
     {
-      name: "Tormenta Iónica", goal: 75, speed: 1.09, spawn: 0.62, meteor: 0.135, power: 0.064,
-      accent: "#ad72ff", top: "#342364", mid: "#15102d", hazard: "storm", scene: "ion",
-      zone: "Nube de descarga iónica", desc: "Oleadas densas",
-      mission: "Mantén estable la nave mientras las descargas ocultan satélites fuera de servicio.",
-      threatLabel: "Satélites y roca", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 0
+      name: "Rastro de la Serpiente", goal: 75, speed: 1.09, spawn: 0.62, meteor: 0.135, power: 0.064,
+      accent: "#ff734d", top: "#342364", mid: "#15102d", hazard: "dart", scene: "ion",
+      world: "VULKAR", enemyCue: "Magma Serpent",
+      zone: "Túneles magmáticos de Vulkar", desc: "La serpiente abre una ruta",
+      mission: "Persigue el rastro de Magma Serpent y atraviesa sus cometas vivos sin quedar encerrado en la caldera.",
+      threatLabel: "Cometas y Plasma Mine", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 0
     },
     {
-      name: "Zona Carmesí", goal: 90, speed: 1.16, spawn: 0.58, meteor: 0.155, power: 0.062,
-      accent: "#ff536f", top: "#552034", mid: "#210b18", hazard: "dart", scene: "crimson",
-      zone: "Corona de la estrella Carmesí", desc: "Cometas de alta velocidad",
-      mission: "Atraviesa la corona estelar y anticipa los cometas antes de que alcancen el casco.",
-      threatLabel: "Cometas y satélites", threatPool: ["meteor", "meteor", "satellite", "debris"], gate: 0
+      name: "Blanco Absoluto", goal: 90, speed: 1.16, spawn: 0.58, meteor: 0.155, power: 0.062,
+      accent: "#7ddfff", top: "#552034", mid: "#210b18", hazard: "storm", scene: "crimson",
+      world: "CRYON", enemyCue: "Frost Crystal / Ice Drone",
+      zone: "Planicie nocturna de Cryon", desc: "Visibilidad mínima",
+      mission: "Recupera los registros congelados del Centro Cronos entre cristales vivos y drones blindados.",
+      threatLabel: "Frost Crystal e Ice Drone", threatPool: ["meteor", "meteor", "satellite", "debris"], gate: 0
     },
     {
-      name: "Pozo Gravitatorio", goal: 105, speed: 1.22, spawn: 0.54, meteor: 0.175, power: 0.060,
+      name: "Fractura Leviatán", goal: 105, speed: 1.22, spawn: 0.54, meteor: 0.175, power: 0.060,
       accent: "#47ffd1", top: "#16463f", mid: "#09241f", hazard: "gravity", scene: "gravity",
-      zone: "Órbita de una singularidad menor", desc: "Deriva y formaciones orbitales",
-      mission: "Compensa la deriva y cruza las primeras formaciones de restos por el pasillo iluminado.",
-      threatLabel: "Restos agrupados", threatPool: ["meteor", "debris", "debris", "satellite"], gate: 15
+      world: "CRYON", enemyCue: "Cryo Mine / señal Leviathan",
+      zone: "Grieta glacial Leviatán", desc: "Una señal llega del futuro",
+      mission: "Cruza el campo de Cryo Mines y rastrea la silueta que protege una transmisión imposible.",
+      threatLabel: "Cryo Mine y hielo orbital", threatPool: ["meteor", "debris", "debris", "satellite"], gate: 15
     },
     {
-      name: "Sector Fantasma", goal: 120, speed: 1.28, spawn: 0.51, meteor: 0.195, power: 0.058,
+      name: "Ecos Imposibles", goal: 120, speed: 1.28, spawn: 0.51, meteor: 0.195, power: 0.058,
       accent: "#c48aff", top: "#3a2856", mid: "#160d25", hazard: "phantom", scene: "ghost",
-      zone: "Cementerio de naves", desc: "Amenazas de baja visibilidad",
-      mission: "Rastrea objetos casi invisibles y atraviesa los restos de antiguas estaciones.",
-      threatLabel: "Restos fantasma", threatPool: ["meteor", "debris", "satellite", "satellite"], gate: 14
+      world: "AETHER", enemyCue: "Time Echo / Rift Orb",
+      zone: "Cementerio temporal de Aether", desc: "La realidad se duplica",
+      mission: "Distingue los ecos de las amenazas reales y reúne pruebas de las duplicaciones humanas.",
+      threatLabel: "Time Echo y Rift Orb", threatPool: ["meteor", "debris", "satellite", "satellite"], gate: 14
     },
     {
-      name: "Sobrecarga", goal: 135, speed: 1.35, spawn: 0.47, meteor: 0.215, power: 0.056,
+      name: "Umbral Fantasma", goal: 135, speed: 1.35, spawn: 0.47, meteor: 0.215, power: 0.056,
       accent: "#fff06b", top: "#514916", mid: "#211d08", hazard: "overdrive", scene: "overdrive",
-      zone: "Autopista solar inestable", desc: "Velocidad extrema",
-      mission: "Aprovecha la corriente solar sin perder el control entre formaciones y restos acelerados.",
-      threatLabel: "Campo hiperveloz", threatPool: ["meteor", "debris", "satellite", "debris"], gate: 12
+      world: "AETHER", enemyCue: "Chrono Phantom",
+      zone: "Umbral espectral de Aether", desc: "Nada permanece visible",
+      mission: "Sobrevive a los saltos del Chrono Phantom y localiza el protocolo oculto CRONOS PRIME.",
+      threatLabel: "Chrono Phantom y fisuras", threatPool: ["meteor", "debris", "satellite", "debris"], gate: 12
     },
     {
-      name: "Núcleo Oscuro", goal: 150, speed: 1.42, spawn: 0.44, meteor: 0.235, power: 0.054,
+      name: "Cementerio Gravitatorio", goal: 150, speed: 1.42, spawn: 0.44, meteor: 0.235, power: 0.054,
       accent: "#fb66ff", top: "#40183f", mid: "#190918", hazard: "chaos", scene: "dark",
-      zone: "Órbita del núcleo eclipsado", desc: "Órbitas imprevisibles",
-      mission: "Recupera los núcleos antes de que las órbitas caóticas cierren las rutas seguras.",
-      threatLabel: "Órbitas caóticas", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 11
+      world: "TITAN OMEGA", enemyCue: "Gravity Mine / Scrap Collector",
+      zone: "Cementerio industrial de Titan Omega", desc: "La gravedad tritura el corredor",
+      mission: "Recupera las piezas del retorno mientras las minas gravitatorias atraen toda la chatarra hacia ti.",
+      threatLabel: "Gravity Mine y Scrap Collector", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 11
     },
     {
-      name: "Colapso Neon", goal: 165, speed: 1.50, spawn: 0.40, meteor: 0.255, power: 0.052,
+      name: "Colapso Cronos", goal: 165, speed: 1.50, spawn: 0.40, meteor: 0.255, power: 0.052,
       accent: "#63fff1", top: "#45184b", mid: "#12071e", hazard: "final", scene: "collapse",
-      zone: "Umbral del portal Neon", desc: "Prueba completa de navegación",
-      mission: "Combina todos los sistemas de la nave para estabilizar el portal y cerrar la expedición.",
+      world: "RETORNO A CRONOS", enemyCue: "Todas las firmas detectadas",
+      zone: "Reactor CRONIUM en colapso", desc: "Todas las líneas temporales convergen",
+      mission: "Combina todos los sistemas para estabilizar el reactor y descubre por qué el incidente no fue accidental.",
       threatLabel: "Colapso total", threatPool: ["meteor", "debris", "satellite", "meteor"], gate: 9
     }
   ];
@@ -231,6 +245,8 @@
   let hudScoreTarget = 0;
   let lastHudCollected = 0;
   let lastHudHull = 100;
+  let ammo = INITIAL_AMMO;
+  let manualShotCooldown = 0;
 
   let items = [];
   let gates = [];
@@ -327,7 +343,7 @@
     meteorMedium: loadSprite("assets/meteor_medium.webp", true),
     meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
     meteorLarge: loadSprite("assets/meteor_large.webp"),
-    comet: loadSprite("assets/comet_fire.webp"),
+    comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
@@ -629,6 +645,18 @@
     }
     lastHudCollected = collected;
     lastHudHull = hull;
+    updateAmmoHud();
+  }
+
+  function updateAmmoHud() {
+    if (!ui.fire || !ui.ammo) return;
+    ui.ammo.textContent = `${ammo}/${MAX_AMMO}`;
+    const unavailable = state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0;
+    ui.fire.disabled = unavailable;
+    ui.fire.classList.toggle("empty", ammo <= 0);
+    ui.fire.setAttribute("aria-label", ammo > 0
+      ? `Disparar. Munición ${ammo} de ${MAX_AMMO}`
+      : "Sin munición");
   }
 
   function animateHud(element, className) {
@@ -679,7 +707,7 @@
       button.innerHTML = `
         <small>SECTOR ${index + 1}</small>
         <strong>${lv.name}</strong>
-        <span>${lv.goal} núcleos · ${lv.threatLabel}</span>
+        <span>${lv.world} · ${lv.goal} núcleos</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
         ${button.disabled ? '<div class="lock">🔒</div>' : ""}
       `;
@@ -694,7 +722,7 @@
     const lv = LEVELS[pendingLevel];
     ui.briefingSector.textContent = `SECTOR ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
-    ui.briefingZone.textContent = lv.zone;
+    ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
     ui.briefingGoal.textContent = `${lv.goal} núcleos`;
     ui.briefingThreat.textContent = lv.threatLabel;
     ui.briefingSupply.textContent = `${lv.goal + Math.ceil(lv.goal * 0.25)} disponibles`;
@@ -786,6 +814,8 @@
     maxCombo = 1;
     comboTimer = 0;
     collected = 0;
+    ammo = INITIAL_AMMO;
+    manualShotCooldown = 0;
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
@@ -834,6 +864,7 @@
     overlay();
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
+    ui.fire.classList.remove("hidden");
     hud();
     showBanner();
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
@@ -862,6 +893,7 @@
     setState("menu");
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
+    ui.fire.classList.add("hidden");
     ui.banner.classList.remove("show");
     hideWarning();
     hideStoryTransmission();
@@ -895,6 +927,7 @@
     hideWarning();
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
+    ui.fire.classList.add("hidden");
     ui.banner.classList.remove("show");
 
     const missed = energySpawned - collected;
@@ -950,6 +983,7 @@
     hideWarning();
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
+    ui.fire.classList.add("hidden");
     ui.banner.classList.remove("show");
     const oldBest = bestScore();
     const scoreSaved = saveScore();
@@ -1009,10 +1043,13 @@
 
     // Breve protección para evitar morir de nuevo en el mismo instante.
     powers.shield = Math.max(powers.shield, 4);
+    ammo = Math.max(ammo, 1);
+    manualShotCooldown = 0;
 
     overlay();
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
+    ui.fire.classList.remove("hidden");
     hud();
     updatePowerHud();
     showBanner();
@@ -1530,7 +1567,8 @@
       shots.push({
         x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: target.x, y2: target.y,
         life: 0.20, duration: 0.20, hit: true, destroyed, impactX: target.x, impactY: target.y,
-        impactScale: target.type === "satellite" ? 1.25 : target.r > 39 ? 1.15 : 0.85
+        impactScale: target.type === "satellite" ? 1.25 : target.r > 39 ? 1.15 : 0.85,
+        kind: "phaser"
       });
       score += destroyed ? (target.type === "satellite" ? 12 : 8) : 2;
       if (destroyed) {
@@ -1540,8 +1578,61 @@
       tone(destroyed ? 980 : 760, 0.07, "sawtooth", 0.045);
     } else {
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-      shots.push({ x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: player.x, y2: 90, life: 0.18, duration: 0.18, hit: false });
+      shots.push({ x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: player.x, y2: 90, life: 0.18, duration: 0.18, hit: false, kind: "phaser" });
     }
+  }
+
+  function fireManualShot() {
+    if (state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0) return false;
+
+    ammo -= 1;
+    manualShotCooldown = 0.28;
+    cameraKickY = Math.max(cameraKickY, 5);
+    shake = Math.max(shake, 3.2);
+
+    const candidates = items
+      .filter(isThreat)
+      .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 145)
+      .sort((a, b) => {
+        const aAim = Math.abs(a.x - player.x) * 1.4 + (player.y - a.y) * 0.08;
+        const bAim = Math.abs(b.x - player.x) * 1.4 + (player.y - b.y) * 0.08;
+        return aAim - bAim;
+      });
+    const target = candidates[0];
+    const muzzleY = player.y - SHIP_VISUAL.phaserMuzzleOffset;
+
+    if (target) {
+      target.hp = Math.max(0, (target.hp || 1) - 1);
+      const destroyed = target.hp <= 0;
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+      shots.push({
+        x1: player.x, y1: muzzleY, x2: target.x, y2: target.y,
+        life: 0.24, duration: 0.24, hit: true, destroyed,
+        impactX: target.x, impactY: target.y,
+        impactScale: target.type === "satellite" ? 1.2 : target.r > 39 ? 1.1 : 0.82,
+        kind: "pulse"
+      });
+      score += destroyed ? (target.type === "satellite" ? 15 : 10) : 3;
+      if (destroyed) {
+        const targetIndex = items.indexOf(target);
+        if (targetIndex >= 0) items.splice(targetIndex, 1);
+      }
+      tone(destroyed ? 1040 : 820, 0.09, "square", 0.055);
+    } else {
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+      shots.push({
+        x1: player.x, y1: muzzleY, x2: player.x, y2: 86,
+        life: 0.22, duration: 0.22, hit: false, kind: "pulse"
+      });
+      tone(780, 0.07, "square", 0.045);
+    }
+
+    vibrate(18);
+    updateAmmoHud();
+    window.AnalyticsManager?.track("ability_used", {
+      ability: "pulse_shot", level: currentLevel + 1, ammoRemaining: ammo
+    });
+    return true;
   }
 
   function checkSupplyFailure() {
@@ -1775,6 +1866,11 @@
     }
 
     elapsed += dt;
+    if (manualShotCooldown > 0) {
+      const previousCooldown = manualShotCooldown;
+      manualShotCooldown = Math.max(0, manualShotCooldown - dt);
+      if (previousCooldown > 0 && manualShotCooldown === 0) updateAmmoHud();
+    }
     updateLevelStory(dt);
     if (levelOneShockwave > 0) levelOneShockwave = Math.max(0, levelOneShockwave - dt);
     impactReactionTimer = Math.max(0, impactReactionTimer - dt);
@@ -1788,6 +1884,7 @@
 
     if (warpTimer > 0) {
       warpTimer = Math.max(0, warpTimer - dt);
+      if (warpTimer === 0) updateAmmoHud();
       updateEffects(dt);
       return;
     }
@@ -2480,11 +2577,21 @@
 
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
       const size = item.r * 4.2;
+      const frame = Math.floor(elapsed * 11 + item.phase) % 8;
+      const sourceWidth = SPRITES.comet.naturalWidth / 4;
+      const sourceHeight = SPRITES.comet.naturalHeight / 2;
+      const sourceX = (frame % 4) * sourceWidth;
+      const sourceY = Math.floor(frame / 4) * sourceHeight;
       ctx.rotate(item.rot + Math.PI / 2);
       ctx.shadowBlur = 24;
       ctx.shadowColor = "#ff754f";
-      // El núcleo rocoso queda en el origen; la cola se extiende hacia atrás.
-      ctx.drawImage(SPRITES.comet, -size * 0.66, -size * 0.50, size, size);
+      // Ocho fotogramas reales: la cola, el humo y las fisuras cambian sin
+      // modificar la silueta de colisión del núcleo rocoso.
+      ctx.drawImage(
+        SPRITES.comet,
+        sourceX, sourceY, sourceWidth, sourceHeight,
+        -size * 0.66, -size * 0.50, size, size
+      );
       ctx.restore();
       return;
     }
@@ -2689,16 +2796,19 @@
       const angle = Math.atan2(dy, dx);
       const flashPhase = clamp(progress / 0.18, 0, 1);
       const fade = progress < 0.78 ? 1 : 1 - (progress - 0.78) / 0.22;
+      const pulse = shot.kind === "pulse";
+      const glowColor = pulse ? "#95f7ff" : "#78ff9c";
+      const beamColor = pulse ? "#63eaff" : "#6dff9a";
       ctx.save();
       ctx.translate(shot.x1, shot.y1);
       ctx.rotate(angle);
       ctx.globalAlpha = clamp(flashPhase * fade, 0, 1);
       ctx.shadowBlur = 28;
-      ctx.shadowColor = "#54dfff";
-      ctx.strokeStyle = "rgba(42,197,255,.36)";
+      ctx.shadowColor = glowColor;
+      ctx.strokeStyle = pulse ? "rgba(61,204,255,.40)" : "rgba(84,255,145,.34)";
       ctx.lineWidth = 16;
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(distance, 0); ctx.stroke();
-      ctx.strokeStyle = "#4eeaff";
+      ctx.strokeStyle = beamColor;
       ctx.lineWidth = 7;
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(distance, 0); ctx.stroke();
       ctx.strokeStyle = "rgba(255,255,255,.98)";
@@ -2707,7 +2817,7 @@
 
       const muzzle = ctx.createRadialGradient(0, 0, 0, 0, 0, 24 * (1 - progress * 0.45));
       muzzle.addColorStop(0, "rgba(255,255,255,.98)");
-      muzzle.addColorStop(0.3, "rgba(84,235,255,.8)");
+      muzzle.addColorStop(0.3, pulse ? "rgba(84,235,255,.88)" : "rgba(105,255,153,.82)");
       muzzle.addColorStop(1, "rgba(40,120,255,0)");
       ctx.fillStyle = muzzle;
       ctx.beginPath(); ctx.arc(0, 0, 24, 0, Math.PI * 2); ctx.fill();
@@ -2839,7 +2949,11 @@
   addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") player.target -= 85;
     if (event.key === "ArrowRight") player.target += 85;
-    if (event.key === " " || event.key === "Escape") state === "paused" ? resumeGame() : pauseGame();
+    if (event.key === " " && state === "playing") {
+      event.preventDefault();
+      fireManualShot();
+    }
+    if (event.key === "Escape") state === "paused" ? resumeGame() : pauseGame();
   });
 
   $("play").onclick = () => {
@@ -2857,6 +2971,7 @@
   $("quickSettings").onclick = () => openSettings("menu");
   $("settingsBack").onclick = closeSettings;
   $("pause").onclick = pauseGame;
+  ui.fire.onclick = fireManualShot;
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
   $("restart").onclick = () => startLevel(currentLevel);

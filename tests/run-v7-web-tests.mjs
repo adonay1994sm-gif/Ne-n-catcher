@@ -28,11 +28,11 @@ await test("JavaScript principal, runtime y service worker tienen sintaxis váli
   new vm.Script(serviceWorkerSource, { filename: "sw.js" });
 });
 
-await test("V7.1.0 pre-release está alineada en pantalla, juego y caché", async () => {
-  assert.match(indexHtml, /V7\.1\.0/);
-  assert.match(indexHtml, /Compilación V7\.1\.0 · Pre-Release/);
-  assert.match(gameSource, /BUILD_VERSION = "7\.1\.0"/);
-  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-1-0/);
+await test("V7.2.0 pre-release está alineada en pantalla, juego y caché", async () => {
+  assert.match(indexHtml, /V7\.2\.0/);
+  assert.match(indexHtml, /Compilación V7\.2\.0 · Pre-Release/);
+  assert.match(gameSource, /BUILD_VERSION = "7\.2\.0"/);
+  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-2-0/);
   assert.doesNotMatch(indexHtml, /[?&]v=6\.8\.0/);
 });
 
@@ -108,7 +108,7 @@ async function loadHarness() {
   const hooks = `
   window.__NEON_V7_TEST__ = {
     snapshot: () => ({
-      state, hull, score, collected, currentLevel, energyBudget, powerBudget,
+      state, hull, score, collected, currentLevel, energyBudget, powerBudget, ammo, manualShotCooldown, warpTimer,
       displayedScore, hudScoreTarget, visualSpeed, shake, levelOneShockwave,
       player: { ...player }, powers: { ...powers },
       counts: { items: items.length, shots: shots.length, rings: rings.length, parts: parts.length }
@@ -116,7 +116,8 @@ async function loadHarness() {
     levels: LEVELS.map((entry) => ({ ...entry })),
     keys: { ...KEYS },
     collisionOutline: SHIP_COLLISION_OUTLINE.map((point) => [...point]),
-    startLevel, damageShip, update, render, firePhaser, pulseRing,
+    startLevel, damageShip, update, render, firePhaser, fireManualShot, pulseRing,
+    setManualFireReady: () => { warpTimer = 0; manualShotCooldown = 0; },
     setPower: (name, value) => { powers[name] = value; },
     seedThreat: () => items.push({ type: "meteor", x: player.x, baseX: player.x, y: player.y - 260, r: 32, s: 0, rot: 0, rs: 0, p: 0, phase: 0, amp: 0, alpha: 1, hp: 1, damage: 25, spriteKey: "meteorMedium" })
   };
@@ -152,6 +153,18 @@ await test("arranque de nivel conserva presupuestos y estados limpios", async ()
   assert.equal(snapshot.energyBudget, 45);
   assert.equal(snapshot.powerBudget, 2);
   assert.equal(snapshot.displayedScore, 0);
+  assert.equal(snapshot.ammo, 3);
+});
+
+await test("control táctil consume tres disparos y bloquea el cuarto", async () => {
+  api.startLevel(0);
+  for (let shot = 0; shot < 3; shot++) {
+    api.setManualFireReady();
+    assert.equal(api.fireManualShot(), true);
+  }
+  api.setManualFireReady();
+  assert.equal(api.snapshot().ammo, 0);
+  assert.equal(api.fireManualShot(), false);
 });
 
 await test("daño activa respuesta de cámara/HUD sin alterar la lógica de casco", async () => {

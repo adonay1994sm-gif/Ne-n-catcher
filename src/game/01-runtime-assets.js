@@ -54,6 +54,8 @@
   let hudScoreTarget = 0;
   let lastHudCollected = 0;
   let lastHudHull = 100;
+  let ammo = INITIAL_AMMO;
+  let manualShotCooldown = 0;
 
   let items = [];
   let gates = [];
@@ -150,7 +152,7 @@
     meteorMedium: loadSprite("assets/meteor_medium.webp", true),
     meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
     meteorLarge: loadSprite("assets/meteor_large.webp"),
-    comet: loadSprite("assets/comet_fire.webp"),
+    comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),

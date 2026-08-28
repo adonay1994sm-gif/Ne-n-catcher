@@ -6,7 +6,9 @@
   const ctx = canvas.getContext("2d", { alpha: false });
   let W = 720;
   let H = 1280;
-  const BUILD_VERSION = "7.1.0";
+  const BUILD_VERSION = "7.2.0";
+  const INITIAL_AMMO = 3;
+  const MAX_AMMO = 3;
   const SHIP_VISUAL_SCALE = 0.8;
   const SHIP_VISUAL = Object.freeze({
     scale: SHIP_VISUAL_SCALE,
@@ -27,6 +29,8 @@
     hull: $("hull"),
     hullBar: $("hullBar"),
     hudLevel: $("hudLevel"),
+    fire: $("fire"),
+    ammo: $("ammo"),
     best: $("best"),
     unlockedText: $("unlockedText"),
     totalStars: $("totalStars"),
@@ -96,71 +100,81 @@
     {
       name: "La Onda de Choque", goal: 36, speed: 0.92, spawn: 0.69, meteor: 0.105, power: 0.072,
       accent: "#57f4ff", top: "#173460", mid: "#07172f", hazard: "shockwave", scene: "cronos",
+      world: "CRONOS / GAIA NOVA", enemyCue: "Restos temporales",
       zone: "Perímetro exterior del Centro Cronos", desc: "Cruza la zona de impacto",
       mission: "Alcanza el perímetro, recupera 36 fragmentos temporales y localiza la señal de emergencia del Centro Cronos.",
       threatLabel: "Roca y restos orbitales", threatPool: ["meteor", "meteor", "debris"], gate: 0
     },
     {
-      name: "Grieta Azul", goal: 45, speed: 0.94, spawn: 0.72, meteor: 0.095, power: 0.068,
+      name: "Perímetro Atlas", goal: 45, speed: 0.94, spawn: 0.72, meteor: 0.095, power: 0.068,
       accent: "#4da2ff", top: "#14245c", mid: "#0a1035", hazard: "fast", scene: "rift",
-      zone: "Fractura de plasma azul", desc: "El campo acelera",
-      mission: "Cruza la grieta antes de que la corriente arrastre los núcleos fuera de alcance.",
-      threatLabel: "Rocas y restos", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
+      world: "GAIA NOVA", enemyCue: "Red defensiva CH",
+      zone: "Anillo defensivo de Gaia Nova", desc: "La red Atlas despierta",
+      mission: "Recupera energía mientras evitas las patrullas CH y confirma quién reprogramó las defensas orbitales.",
+      threatLabel: "Drones y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
     },
     {
-      name: "Carril Meteoro", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
+      name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
       accent: "#ffb35c", top: "#3b2437", mid: "#17101f", hazard: "wave", scene: "belt",
-      zone: "Cinturón de extracción abandonado", desc: "Trayectorias ondulantes",
-      mission: "Navega entre roca y chatarra minera sin perder el suministro limitado del carril.",
-      threatLabel: "Meteoros y chatarra", threatPool: ["meteor", "meteor", "debris", "debris"], gate: 0
+      world: "VULKAR", enemyCue: "Lava Core / Plasma Mine",
+      zone: "Caldera orbital de Vulkar", desc: "CRONIUM sobrecalentado",
+      mission: "Sigue los fragmentos incandescentes entre núcleos de lava y minas de plasma antes de que se desintegren.",
+      threatLabel: "Lava Core y chatarra", threatPool: ["meteor", "meteor", "debris", "debris"], gate: 0
     },
     {
-      name: "Tormenta Iónica", goal: 75, speed: 1.09, spawn: 0.62, meteor: 0.135, power: 0.064,
-      accent: "#ad72ff", top: "#342364", mid: "#15102d", hazard: "storm", scene: "ion",
-      zone: "Nube de descarga iónica", desc: "Oleadas densas",
-      mission: "Mantén estable la nave mientras las descargas ocultan satélites fuera de servicio.",
-      threatLabel: "Satélites y roca", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 0
+      name: "Rastro de la Serpiente", goal: 75, speed: 1.09, spawn: 0.62, meteor: 0.135, power: 0.064,
+      accent: "#ff734d", top: "#342364", mid: "#15102d", hazard: "dart", scene: "ion",
+      world: "VULKAR", enemyCue: "Magma Serpent",
+      zone: "Túneles magmáticos de Vulkar", desc: "La serpiente abre una ruta",
+      mission: "Persigue el rastro de Magma Serpent y atraviesa sus cometas vivos sin quedar encerrado en la caldera.",
+      threatLabel: "Cometas y Plasma Mine", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 0
     },
     {
-      name: "Zona Carmesí", goal: 90, speed: 1.16, spawn: 0.58, meteor: 0.155, power: 0.062,
-      accent: "#ff536f", top: "#552034", mid: "#210b18", hazard: "dart", scene: "crimson",
-      zone: "Corona de la estrella Carmesí", desc: "Cometas de alta velocidad",
-      mission: "Atraviesa la corona estelar y anticipa los cometas antes de que alcancen el casco.",
-      threatLabel: "Cometas y satélites", threatPool: ["meteor", "meteor", "satellite", "debris"], gate: 0
+      name: "Blanco Absoluto", goal: 90, speed: 1.16, spawn: 0.58, meteor: 0.155, power: 0.062,
+      accent: "#7ddfff", top: "#552034", mid: "#210b18", hazard: "storm", scene: "crimson",
+      world: "CRYON", enemyCue: "Frost Crystal / Ice Drone",
+      zone: "Planicie nocturna de Cryon", desc: "Visibilidad mínima",
+      mission: "Recupera los registros congelados del Centro Cronos entre cristales vivos y drones blindados.",
+      threatLabel: "Frost Crystal e Ice Drone", threatPool: ["meteor", "meteor", "satellite", "debris"], gate: 0
     },
     {
-      name: "Pozo Gravitatorio", goal: 105, speed: 1.22, spawn: 0.54, meteor: 0.175, power: 0.060,
+      name: "Fractura Leviatán", goal: 105, speed: 1.22, spawn: 0.54, meteor: 0.175, power: 0.060,
       accent: "#47ffd1", top: "#16463f", mid: "#09241f", hazard: "gravity", scene: "gravity",
-      zone: "Órbita de una singularidad menor", desc: "Deriva y formaciones orbitales",
-      mission: "Compensa la deriva y cruza las primeras formaciones de restos por el pasillo iluminado.",
-      threatLabel: "Restos agrupados", threatPool: ["meteor", "debris", "debris", "satellite"], gate: 15
+      world: "CRYON", enemyCue: "Cryo Mine / señal Leviathan",
+      zone: "Grieta glacial Leviatán", desc: "Una señal llega del futuro",
+      mission: "Cruza el campo de Cryo Mines y rastrea la silueta que protege una transmisión imposible.",
+      threatLabel: "Cryo Mine y hielo orbital", threatPool: ["meteor", "debris", "debris", "satellite"], gate: 15
     },
     {
-      name: "Sector Fantasma", goal: 120, speed: 1.28, spawn: 0.51, meteor: 0.195, power: 0.058,
+      name: "Ecos Imposibles", goal: 120, speed: 1.28, spawn: 0.51, meteor: 0.195, power: 0.058,
       accent: "#c48aff", top: "#3a2856", mid: "#160d25", hazard: "phantom", scene: "ghost",
-      zone: "Cementerio de naves", desc: "Amenazas de baja visibilidad",
-      mission: "Rastrea objetos casi invisibles y atraviesa los restos de antiguas estaciones.",
-      threatLabel: "Restos fantasma", threatPool: ["meteor", "debris", "satellite", "satellite"], gate: 14
+      world: "AETHER", enemyCue: "Time Echo / Rift Orb",
+      zone: "Cementerio temporal de Aether", desc: "La realidad se duplica",
+      mission: "Distingue los ecos de las amenazas reales y reúne pruebas de las duplicaciones humanas.",
+      threatLabel: "Time Echo y Rift Orb", threatPool: ["meteor", "debris", "satellite", "satellite"], gate: 14
     },
     {
-      name: "Sobrecarga", goal: 135, speed: 1.35, spawn: 0.47, meteor: 0.215, power: 0.056,
+      name: "Umbral Fantasma", goal: 135, speed: 1.35, spawn: 0.47, meteor: 0.215, power: 0.056,
       accent: "#fff06b", top: "#514916", mid: "#211d08", hazard: "overdrive", scene: "overdrive",
-      zone: "Autopista solar inestable", desc: "Velocidad extrema",
-      mission: "Aprovecha la corriente solar sin perder el control entre formaciones y restos acelerados.",
-      threatLabel: "Campo hiperveloz", threatPool: ["meteor", "debris", "satellite", "debris"], gate: 12
+      world: "AETHER", enemyCue: "Chrono Phantom",
+      zone: "Umbral espectral de Aether", desc: "Nada permanece visible",
+      mission: "Sobrevive a los saltos del Chrono Phantom y localiza el protocolo oculto CRONOS PRIME.",
+      threatLabel: "Chrono Phantom y fisuras", threatPool: ["meteor", "debris", "satellite", "debris"], gate: 12
     },
     {
-      name: "Núcleo Oscuro", goal: 150, speed: 1.42, spawn: 0.44, meteor: 0.235, power: 0.054,
+      name: "Cementerio Gravitatorio", goal: 150, speed: 1.42, spawn: 0.44, meteor: 0.235, power: 0.054,
       accent: "#fb66ff", top: "#40183f", mid: "#190918", hazard: "chaos", scene: "dark",
-      zone: "Órbita del núcleo eclipsado", desc: "Órbitas imprevisibles",
-      mission: "Recupera los núcleos antes de que las órbitas caóticas cierren las rutas seguras.",
-      threatLabel: "Órbitas caóticas", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 11
+      world: "TITAN OMEGA", enemyCue: "Gravity Mine / Scrap Collector",
+      zone: "Cementerio industrial de Titan Omega", desc: "La gravedad tritura el corredor",
+      mission: "Recupera las piezas del retorno mientras las minas gravitatorias atraen toda la chatarra hacia ti.",
+      threatLabel: "Gravity Mine y Scrap Collector", threatPool: ["meteor", "meteor", "debris", "satellite"], gate: 11
     },
     {
-      name: "Colapso Neon", goal: 165, speed: 1.50, spawn: 0.40, meteor: 0.255, power: 0.052,
+      name: "Colapso Cronos", goal: 165, speed: 1.50, spawn: 0.40, meteor: 0.255, power: 0.052,
       accent: "#63fff1", top: "#45184b", mid: "#12071e", hazard: "final", scene: "collapse",
-      zone: "Umbral del portal Neon", desc: "Prueba completa de navegación",
-      mission: "Combina todos los sistemas de la nave para estabilizar el portal y cerrar la expedición.",
+      world: "RETORNO A CRONOS", enemyCue: "Todas las firmas detectadas",
+      zone: "Reactor CRONIUM en colapso", desc: "Todas las líneas temporales convergen",
+      mission: "Combina todos los sistemas para estabilizar el reactor y descubre por qué el incidente no fue accidental.",
       threatLabel: "Colapso total", threatPool: ["meteor", "debris", "satellite", "meteor"], gate: 9
     }
   ];

@@ -509,7 +509,8 @@
       shots.push({
         x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: target.x, y2: target.y,
         life: 0.20, duration: 0.20, hit: true, destroyed, impactX: target.x, impactY: target.y,
-        impactScale: target.type === "satellite" ? 1.25 : target.r > 39 ? 1.15 : 0.85
+        impactScale: target.type === "satellite" ? 1.25 : target.r > 39 ? 1.15 : 0.85,
+        kind: "phaser"
       });
       score += destroyed ? (target.type === "satellite" ? 12 : 8) : 2;
       if (destroyed) {
@@ -519,8 +520,61 @@
       tone(destroyed ? 980 : 760, 0.07, "sawtooth", 0.045);
     } else {
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-      shots.push({ x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: player.x, y2: 90, life: 0.18, duration: 0.18, hit: false });
+      shots.push({ x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: player.x, y2: 90, life: 0.18, duration: 0.18, hit: false, kind: "phaser" });
     }
+  }
+
+  function fireManualShot() {
+    if (state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0) return false;
+
+    ammo -= 1;
+    manualShotCooldown = 0.28;
+    cameraKickY = Math.max(cameraKickY, 5);
+    shake = Math.max(shake, 3.2);
+
+    const candidates = items
+      .filter(isThreat)
+      .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 145)
+      .sort((a, b) => {
+        const aAim = Math.abs(a.x - player.x) * 1.4 + (player.y - a.y) * 0.08;
+        const bAim = Math.abs(b.x - player.x) * 1.4 + (player.y - b.y) * 0.08;
+        return aAim - bAim;
+      });
+    const target = candidates[0];
+    const muzzleY = player.y - SHIP_VISUAL.phaserMuzzleOffset;
+
+    if (target) {
+      target.hp = Math.max(0, (target.hp || 1) - 1);
+      const destroyed = target.hp <= 0;
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+      shots.push({
+        x1: player.x, y1: muzzleY, x2: target.x, y2: target.y,
+        life: 0.24, duration: 0.24, hit: true, destroyed,
+        impactX: target.x, impactY: target.y,
+        impactScale: target.type === "satellite" ? 1.2 : target.r > 39 ? 1.1 : 0.82,
+        kind: "pulse"
+      });
+      score += destroyed ? (target.type === "satellite" ? 15 : 10) : 3;
+      if (destroyed) {
+        const targetIndex = items.indexOf(target);
+        if (targetIndex >= 0) items.splice(targetIndex, 1);
+      }
+      tone(destroyed ? 1040 : 820, 0.09, "square", 0.055);
+    } else {
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+      shots.push({
+        x1: player.x, y1: muzzleY, x2: player.x, y2: 86,
+        life: 0.22, duration: 0.22, hit: false, kind: "pulse"
+      });
+      tone(780, 0.07, "square", 0.045);
+    }
+
+    vibrate(18);
+    updateAmmoHud();
+    window.AnalyticsManager?.track("ability_used", {
+      ability: "pulse_shot", level: currentLevel + 1, ammoRemaining: ammo
+    });
+    return true;
   }
 
   function checkSupplyFailure() {

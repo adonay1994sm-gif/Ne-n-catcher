@@ -40,6 +40,18 @@
     }
     lastHudCollected = collected;
     lastHudHull = hull;
+    updateAmmoHud();
+  }
+
+  function updateAmmoHud() {
+    if (!ui.fire || !ui.ammo) return;
+    ui.ammo.textContent = `${ammo}/${MAX_AMMO}`;
+    const unavailable = state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0;
+    ui.fire.disabled = unavailable;
+    ui.fire.classList.toggle("empty", ammo <= 0);
+    ui.fire.setAttribute("aria-label", ammo > 0
+      ? `Disparar. Munición ${ammo} de ${MAX_AMMO}`
+      : "Sin munición");
   }
 
   function animateHud(element, className) {
@@ -90,7 +102,7 @@
       button.innerHTML = `
         <small>SECTOR ${index + 1}</small>
         <strong>${lv.name}</strong>
-        <span>${lv.goal} núcleos · ${lv.threatLabel}</span>
+        <span>${lv.world} · ${lv.goal} núcleos</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
         ${button.disabled ? '<div class="lock">🔒</div>' : ""}
       `;
@@ -105,7 +117,7 @@
     const lv = LEVELS[pendingLevel];
     ui.briefingSector.textContent = `SECTOR ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
-    ui.briefingZone.textContent = lv.zone;
+    ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
     ui.briefingGoal.textContent = `${lv.goal} núcleos`;
     ui.briefingThreat.textContent = lv.threatLabel;
     ui.briefingSupply.textContent = `${lv.goal + Math.ceil(lv.goal * 0.25)} disponibles`;
@@ -197,6 +209,8 @@
     maxCombo = 1;
     comboTimer = 0;
     collected = 0;
+    ammo = INITIAL_AMMO;
+    manualShotCooldown = 0;
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
@@ -245,6 +259,7 @@
     overlay();
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
+    ui.fire.classList.remove("hidden");
     hud();
     showBanner();
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
@@ -273,6 +288,7 @@
     setState("menu");
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
+    ui.fire.classList.add("hidden");
     ui.banner.classList.remove("show");
     hideWarning();
     hideStoryTransmission();
@@ -306,6 +322,7 @@
     hideWarning();
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
+    ui.fire.classList.add("hidden");
     ui.banner.classList.remove("show");
 
     const missed = energySpawned - collected;
@@ -361,6 +378,7 @@
     hideWarning();
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
+    ui.fire.classList.add("hidden");
     ui.banner.classList.remove("show");
     const oldBest = bestScore();
     const scoreSaved = saveScore();
@@ -420,10 +438,13 @@
 
     // Breve protección para evitar morir de nuevo en el mismo instante.
     powers.shield = Math.max(powers.shield, 4);
+    ammo = Math.max(ammo, 1);
+    manualShotCooldown = 0;
 
     overlay();
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
+    ui.fire.classList.remove("hidden");
     hud();
     updatePowerHud();
     showBanner();

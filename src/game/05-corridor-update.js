@@ -214,6 +214,11 @@
     }
 
     elapsed += dt;
+    if (manualShotCooldown > 0) {
+      const previousCooldown = manualShotCooldown;
+      manualShotCooldown = Math.max(0, manualShotCooldown - dt);
+      if (previousCooldown > 0 && manualShotCooldown === 0) updateAmmoHud();
+    }
     updateLevelStory(dt);
     if (levelOneShockwave > 0) levelOneShockwave = Math.max(0, levelOneShockwave - dt);
     impactReactionTimer = Math.max(0, impactReactionTimer - dt);
@@ -227,6 +232,7 @@
 
     if (warpTimer > 0) {
       warpTimer = Math.max(0, warpTimer - dt);
+      if (warpTimer === 0) updateAmmoHud();
       updateEffects(dt);
       return;
     }

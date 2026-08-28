@@ -197,11 +197,21 @@
 
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
       const size = item.r * 4.2;
+      const frame = Math.floor(elapsed * 11 + item.phase) % 8;
+      const sourceWidth = SPRITES.comet.naturalWidth / 4;
+      const sourceHeight = SPRITES.comet.naturalHeight / 2;
+      const sourceX = (frame % 4) * sourceWidth;
+      const sourceY = Math.floor(frame / 4) * sourceHeight;
       ctx.rotate(item.rot + Math.PI / 2);
       ctx.shadowBlur = 24;
       ctx.shadowColor = "#ff754f";
-      // El núcleo rocoso queda en el origen; la cola se extiende hacia atrás.
-      ctx.drawImage(SPRITES.comet, -size * 0.66, -size * 0.50, size, size);
+      // Ocho fotogramas reales: la cola, el humo y las fisuras cambian sin
+      // modificar la silueta de colisión del núcleo rocoso.
+      ctx.drawImage(
+        SPRITES.comet,
+        sourceX, sourceY, sourceWidth, sourceHeight,
+        -size * 0.66, -size * 0.50, size, size
+      );
       ctx.restore();
       return;
     }
@@ -406,16 +416,19 @@
       const angle = Math.atan2(dy, dx);
       const flashPhase = clamp(progress / 0.18, 0, 1);
       const fade = progress < 0.78 ? 1 : 1 - (progress - 0.78) / 0.22;
+      const pulse = shot.kind === "pulse";
+      const glowColor = pulse ? "#95f7ff" : "#78ff9c";
+      const beamColor = pulse ? "#63eaff" : "#6dff9a";
       ctx.save();
       ctx.translate(shot.x1, shot.y1);
       ctx.rotate(angle);
       ctx.globalAlpha = clamp(flashPhase * fade, 0, 1);
       ctx.shadowBlur = 28;
-      ctx.shadowColor = "#54dfff";
-      ctx.strokeStyle = "rgba(42,197,255,.36)";
+      ctx.shadowColor = glowColor;
+      ctx.strokeStyle = pulse ? "rgba(61,204,255,.40)" : "rgba(84,255,145,.34)";
       ctx.lineWidth = 16;
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(distance, 0); ctx.stroke();
-      ctx.strokeStyle = "#4eeaff";
+      ctx.strokeStyle = beamColor;
       ctx.lineWidth = 7;
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(distance, 0); ctx.stroke();
       ctx.strokeStyle = "rgba(255,255,255,.98)";
@@ -424,7 +437,7 @@
 
       const muzzle = ctx.createRadialGradient(0, 0, 0, 0, 0, 24 * (1 - progress * 0.45));
       muzzle.addColorStop(0, "rgba(255,255,255,.98)");
-      muzzle.addColorStop(0.3, "rgba(84,235,255,.8)");
+      muzzle.addColorStop(0.3, pulse ? "rgba(84,235,255,.88)" : "rgba(105,255,153,.82)");
       muzzle.addColorStop(1, "rgba(40,120,255,0)");
       ctx.fillStyle = muzzle;
       ctx.beginPath(); ctx.arc(0, 0, 24, 0, Math.PI * 2); ctx.fill();

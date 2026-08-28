@@ -61,7 +61,11 @@
   addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") player.target -= 85;
     if (event.key === "ArrowRight") player.target += 85;
-    if (event.key === " " || event.key === "Escape") state === "paused" ? resumeGame() : pauseGame();
+    if (event.key === " " && state === "playing") {
+      event.preventDefault();
+      fireManualShot();
+    }
+    if (event.key === "Escape") state === "paused" ? resumeGame() : pauseGame();
   });
 
   $("play").onclick = () => {
@@ -79,6 +83,7 @@
   $("quickSettings").onclick = () => openSettings("menu");
   $("settingsBack").onclick = closeSettings;
   $("pause").onclick = pauseGame;
+  ui.fire.onclick = fireManualShot;
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
   $("restart").onclick = () => startLevel(currentLevel);

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#050712">
+  <meta name="description" content="Neon Catcher: expedición arcade por sectores galácticos, restos orbitales y sistemas de nave.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="styles.css?v=7.2.0">
+  <title>Neon Catcher · La Onda de Choque</title>
+</head>
+<body>
+<main class="shell">
+  <section class="game" aria-label="Neon Catcher">
+    <canvas id="canvas" width="720" height="1280" aria-label="Zona de juego"></canvas>
+
+    <div id="hud" class="hud hidden">
+      <div><small>SECTOR</small><b id="hudLevel">1</b></div>
+      <div><small>PUNTOS</small><b id="score">0</b></div>
+      <div><small>NÚCLEOS</small><b id="goal">0/36</b></div>
+      <div class="hull-cell"><small>CASCO</small><b id="hull">100%</b><i><span id="hullBar"></span></i></div>
+      <button id="pause" class="icon" type="button" aria-label="Pausar">Ⅱ</button>
+    </div>
+
+    <div id="powerHud" class="power-hud hidden" aria-live="polite">
+      <div id="powerShield" class="power-chip"><span>◉</span><b>ESCUDO</b><em>0</em></div>
+      <div id="powerTractor" class="power-chip"><span>⌁</span><b>TRACTOR</b><em>0</em></div>
+      <div id="powerSlow" class="power-chip"><span>◷</span><b>ESTABILIZADOR</b><em>0</em></div>
+      <div id="powerDouble" class="power-chip"><span>×2</span><b>SOBRECARGA</b><em>0</em></div>
+      <div id="powerPhaser" class="power-chip"><span>ϟ</span><b>PHASER</b><em>0</em></div>
+    </div>
+
+    <button id="fire" class="fire-control hidden" type="button" aria-label="Disparar. Munición 3 de 3">
+      <span class="fire-reticle" aria-hidden="true">✦</span>
+      <span><b>DISPARAR</b><small id="ammo">3/3</small></span>
+    </button>
+
+    <div id="levelBanner" class="level-banner">
+      <small id="bannerSector">SECTOR 1</small>
+      <strong id="bannerName">LA ONDA DE CHOQUE</strong>
+      <span id="bannerGoal">Recupera 36 fragmentos temporales</span>
+    </div>
+
+    <div id="storyTransmission" class="story-transmission" aria-live="polite">
+      <span class="story-signal">N7</span>
+      <div><small id="storySpeaker">IA N-7</small><b id="storyText">Centro Cronos, responda.</b></div>
+    </div>
+
+    <div id="hazardWarning" class="hazard-warning" aria-live="assertive">
+      <span class="warning-symbol">!</span>
+      <div><small>FORMACIÓN DE RESTOS</small><b id="warningText">Pasillo seguro en 2.0 s</b></div>
+    </div>
+
+    <div id="menu" class="overlay show">
+      <div class="menu-topline">
+        <div><small>CAPÍTULO I · EL INCIDENTE CRONOS</small><strong>NEON CATCHER</strong><span class="build-version">V7.2.0</span></div>
+        <button id="quickSettings" class="icon" type="button" aria-label="Abrir configuración">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l2-1.5-2-3.4-2.4 1a8.4 8.4 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.6A8.4 8.4 0 0 0 7 6.6l-2.4-1-2 3.4 2 1.5a7.8 7.8 0 0 0 0 3l-2 1.5 2 3.4 2.4-1a8.4 8.4 0 0 0 2.6 1.5l.4 2.6h4l.4-2.6a8.4 8.4 0 0 0 2.6-1.5l2.4 1 2-3.4-2-1.5Z"/></svg>
+        </button>
+      </div>
+
+      <div class="panel menu-panel">
+        <div class="brand-mark" aria-label="Logotipo Neon Catcher">
+          <span class="brand-orbit orbit-one"></span>
+          <span class="brand-orbit orbit-two"></span>
+          <span class="brand-core">N</span>
+        </div>
+        <h2>Una nave.<br>Diez sectores por conquistar.</h2>
+        <p>Recupera fragmentos de CRONIUM tras la caída del Centro Cronos y descubre qué alteró la historia humana.</p>
+
+        <div class="menu-stats">
+          <div class="stat-card" data-icon="◆"><span>RÉCORD</span><b id="best">0</b></div>
+          <div class="stat-card" data-icon="◫"><span>DESBLOQUEADO</span><b id="unlockedText">1/10</b></div>
+          <div class="stat-card" data-icon="★"><span>ESTRELLAS</span><b id="totalStars">0/30</b></div>
+        </div>
+
+        <div class="campaign-progress" aria-label="Progreso de campaña">
+          <div class="campaign-progress-head"><span>PROGRESO ACTUAL</span><b id="campaignPercent">0%</b></div>
+          <div class="campaign-track"><i id="campaignFill"></i></div>
+          <div id="campaignNodes" class="campaign-nodes" aria-hidden="true"></div>
+        </div>
+
+        <button id="play" class="primary hero-cta" type="button"><span id="playLabel">CONTINUAR CAMPAÑA</span><small id="playSector">SECTOR 1 · LA ONDA DE CHOQUE</small></button>
+        <div class="menu-actions">
+          <button id="levels" class="secondary" type="button"><span class="button-glyph">▦</span>NIVELES</button>
+          <button id="settings" class="secondary" type="button"><span class="button-glyph">⚙</span>AJUSTES</button>
+          <button id="how" class="secondary" type="button"><span class="button-glyph">?</span>AYUDA</button>
+        </div>
+      </div>
+
+      <div class="menu-scene" aria-hidden="true">
+        <img class="menu-ship-image" src="assets/ship_frame_01.webp" alt="">
+      </div>
+
+      <div class="menu-legal"><a href="privacy.html">Privacidad</a><a href="terms.html">Términos</a><button id="install" class="link hidden" type="button">Instalar</button></div>
+    </div>
+
+
+    <div id="briefing" class="overlay">
+      <div id="briefingPanel" class="panel briefing-panel">
+        <small id="briefingSector">SECTOR 1</small>
+        <div id="briefingVisual" class="briefing-visual" data-scene="cronos" aria-hidden="true">
+          <span class="briefing-planet"></span>
+          <span class="briefing-ring"></span>
+          <span class="briefing-route"></span>
+          <img class="briefing-ship" src="assets/ship_frame_01.webp" alt="">
+        </div>
+        <h2 id="briefingName">La Onda de Choque</h2>
+        <p id="briefingZone" class="briefing-zone">Perímetro exterior del Centro Cronos</p>
+        <div class="briefing-grid">
+          <div><span>OBJETIVO</span><b id="briefingGoal">36 núcleos</b></div>
+          <div><span>AMENAZA</span><b id="briefingThreat">Roca y restos</b></div>
+          <div><span>SUMINISTROS</span><b id="briefingSupply">Limitados</b></div>
+        </div>
+        <p id="briefingMission" class="briefing-mission">Localiza la señal de emergencia y recupera los fragmentos temporales del corredor.</p>
+        <button id="launch" class="primary launch-button" type="button">INICIAR EXPEDICIÓN</button>
+        <button id="briefingBack" class="secondary" type="button">VOLVER</button>
+      </div>
+    </div>
+
+    <div id="levelSelect" class="overlay">
+      <div class="panel level-panel">
+        <small>CAMPAÑA</small>
+        <h2>Selecciona un sector</h2>
+        <div id="levelGrid" class="level-grid"></div>
+        <button id="levelBack" class="secondary" type="button">VOLVER</button>
+      </div>
+    </div>
+
+    <div id="settingsPanel" class="overlay">
+      <div class="panel settings-panel">
+        <small>SISTEMAS DE NAVE</small>
+        <h2>Configuración</h2>
+        <div class="setting-row">
+          <label for="musicVolume"><span>Música ambiental</span><b id="musicValue">35%</b></label>
+          <input id="musicVolume" type="range" min="0" max="100" step="1" value="35">
+        </div>
+        <div class="setting-row">
+          <label for="fxVolume"><span>Efectos de sonido</span><b id="fxValue">70%</b></label>
+          <input id="fxVolume" type="range" min="0" max="100" step="1" value="70">
+        </div>
+        <div class="setting-row">
+          <label for="sensitivity"><span>Sensibilidad de la nave</span><b id="sensitivityValue">100%</b></label>
+          <input id="sensitivity" type="range" min="60" max="150" step="5" value="100">
+        </div>
+        <label class="toggle-row"><span><b>Vibración</b><small>Impactos, recogidas y avisos</small></span><input id="vibration" type="checkbox" checked><i></i></label>
+        <label class="quality-row" for="effectsQuality">
+          <span><b>Calidad visual</b><small>Solo cambia efectos; nunca dificultad ni colisiones</small></span>
+          <select id="effectsQuality" aria-label="Calidad visual">
+            <option value="low">BAJO</option>
+            <option value="normal" selected>NORMAL</option>
+            <option value="high">ALTO</option>
+          </select>
+        </label>
+        <p class="settings-build">Compilación V7.2.0 · Pre-Release</p>
+        <button id="settingsBack" class="primary" type="button">GUARDAR Y VOLVER</button>
+      </div>
+    </div>
+
+    <div id="instructions" class="overlay">
+      <div class="panel scroll-panel">
+        <h2>Cómo se juega</h2>
+        <div class="rules">
+          <p><i class="energy"></i><span><b>Núcleo:</b> alimenta la nave y completa el objetivo. Cada nivel tiene una cantidad limitada.</span></p>
+          <p><i class="meteor"></i><span><b>Amenazas:</b> meteoritos, restos metálicos y satélites dañan distintos porcentajes del casco.</span></p>
+          <p><i class="debris-corridor"></i><span><b>Formación de basura espacial:</b> cruza por el pasillo cian. Las amenazas no pueden aparecer dentro mientras esté protegido.</span></p>
+        </div>
+        <h3>Sistemas que pueden caer</h3>
+        <div class="ability-list">
+          <p><i class="ability shield-a">◉</i><span><b>Escudo:</b> absorbe impactos durante unos segundos.</span></p>
+          <p><i class="ability tractor-a">⌁</i><span><b>Rayo tractor:</b> conecta un cable y atrae un solo objeto cada vez.</span></p>
+          <p><i class="ability slow-a">◷</i><span><b>Estabilizador:</b> reduce temporalmente la velocidad del campo.</span></p>
+          <p><i class="ability double-a">×2</i><span><b>Sobrecarga:</b> duplica la energía procesada.</span></p>
+          <p><i class="ability repair-a">+</i><span><b>Drone de reparación:</b> restaura parte del casco. Puede no aparecer.</span></p>
+          <p><i class="ability phaser-a">ϟ</i><span><b>Phaser:</b> daña o destruye meteoritos, restos y satélites situados en la trayectoria frontal.</span></p>
+        </div>
+        <button id="back" class="primary" type="button">ENTENDIDO</button>
+      </div>
+    </div>
+
+    <div id="paused" class="overlay">
+      <div class="panel pause-panel">
+        <small>EXPEDICIÓN EN PAUSA</small>
+        <h2>Sistemas detenidos</h2>
+        <button id="resume" class="primary" type="button">CONTINUAR</button>
+        <button id="pauseSettings" class="secondary" type="button">CONFIGURACIÓN</button>
+        <button id="restart" class="secondary" type="button">REINICIAR SECTOR</button>
+        <button id="quit" class="secondary danger" type="button">SALIR AL MENÚ</button>
+      </div>
+    </div>
+
+    <div id="complete" class="overlay">
+      <div class="panel">
+        <small id="completeLabel">SECTOR SUPERADO</small>
+        <h2 id="completeTitle">La Onda de Choque completada</h2>
+        <div id="starsAwarded" class="stars-awarded" aria-label="Estrellas conseguidas">★★★</div>
+        <div class="summary-grid">
+          <div><span>PUNTOS</span><b id="levelScore">0</b></div>
+          <div><span>CASCO</span><b id="levelHull">100%</b></div>
+          <div><span>COMBO MÁX.</span><b id="maxCombo">x1</b></div>
+        </div>
+        <p id="unlockMessage" class="unlock-message">Nuevo sector desbloqueado</p>
+        <button id="nextLevel" class="primary" type="button">SIGUIENTE NIVEL</button>
+        <button id="replayLevel" class="secondary" type="button">REPETIR</button>
+        <button id="completeHome" class="secondary" type="button">MENÚ</button>
+      </div>
+    </div>
+
+    <div id="over" class="overlay">
+      <div class="panel">
+        <small>EXPEDICIÓN INTERRUMPIDA</small>
+        <h2 id="result">El casco ha cedido</h2>
+        <div class="final"><span>PUNTUACIÓN</span><b id="finalScore">0</b></div>
+        <p id="supplyStatus" class="supply-status"></p>
+        <p id="newBest" class="new-best hidden">NUEVO RÉCORD</p>
+        <button id="reward" class="reward" type="button">▶ VER ANUNCIO Y REPARAR</button>
+        <button id="retry" class="primary" type="button">REINTENTAR SECTOR</button>
+        <button id="home" class="secondary" type="button">MENÚ</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <aside id="adWrap" class="ad hidden"><small>PUBLICIDAD</small><div id="webAdSlot"></div></aside>
+  </section>
+</main>
+<script src="native-admob.js?v=7.2.0"></script>
+<script src="ads-config.js?v=7.2.0"></script>
+<script src="ad-bridge.js?v=7.2.0"></script>
+<script src="analytics-manager.js?v=7.2.0"></script>
+<script src="core-runtime.js?v=7.2.0"></script>
+<script src="game.js?v=7.2.0"></script>
+</body>
+</html>

@@ -25,21 +25,22 @@ const packageJson = JSON.parse(await text("package.json"));
 const lockJson = JSON.parse(await text("package-lock.json"));
 const manifest = JSON.parse(await text("manifest.webmanifest"));
 const assetManifest = JSON.parse(await text("ASSET_MANIFEST.json"));
+const assetProduction = JSON.parse(await text("ASSET_PRODUCTION_150.json"));
 const indexHtml = await text("index.html");
 const gameSource = await text("game.js");
 const coreSource = await text("core-runtime.js");
 const serviceWorkerSource = await text("sw.js");
 const nativeSource = await text("src/native-admob-entry.js");
 
-await test("versión 7.1.0 pre-release alineada en metadatos y pantalla", async () => {
-  assert.equal(packageJson.version, "7.1.0");
-  assert.equal(lockJson.version, "7.1.0");
-  assert.match(indexHtml, /V7\.1\.0/);
+await test("versión 7.2.0 pre-release alineada en metadatos y pantalla", async () => {
+  assert.equal(packageJson.version, "7.2.0");
+  assert.equal(lockJson.version, "7.2.0");
+  assert.match(indexHtml, /V7\.2\.0/);
   assert.match(indexHtml, /FORMACIÓN DE RESTOS/);
   assert.match(indexHtml, /Formación de basura espacial/);
   assert.doesNotMatch(indexHtml, /Barrera orbital:/);
-  assert.match(gameSource, /BUILD_VERSION = "7\.1\.0"/);
-  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-1-0/);
+  assert.match(gameSource, /BUILD_VERSION = "7\.2\.0"/);
+  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-2-0/);
   assert.match(await text("netlify.toml"), /publish = "www"/);
 });
 
@@ -61,7 +62,7 @@ await test("JavaScript y JSON con sintaxis válida", async () => {
   new vm.Script(await text("analytics-manager.js"), { filename: "analytics-manager.js" });
   new vm.Script(await text("ads-config.js"), { filename: "ads-config.js" });
   assert.equal(manifest.orientation, "portrait");
-  assert.equal(assetManifest.buildVersion, "7.1.0");
+  assert.equal(assetManifest.buildVersion, "7.2.0");
 });
 
 await test("game.js coincide con los 9 módulos ordenados", async () => {
@@ -112,6 +113,15 @@ await test("manifiesto cubre exactamente los 58 assets", async () => {
   for (const path of declared) assert.equal(await exists(path), true, path);
 });
 
+await test("plan de producción contiene exactamente 150 assets únicos y trazables", async () => {
+  assert.equal(assetProduction.assets.length, 150);
+  assert.equal(new Set(assetProduction.assets.map((item) => item.id)).size, 150);
+  assert.equal(Object.values(assetProduction.distribution).reduce((total, count) => total + count, 0), 150);
+  assert.equal(await exists("ASSET_PRODUCTION_MAP.md"), true);
+  assert.equal(await exists("art-source/comet_animation_master_v1.png"), true);
+  assert.equal(await exists("assets/comet_animation_sheet_v1.webp"), true);
+});
+
 await test("todos los assets de juego están documentados y precargados", async () => {
   const referenced = new Set(
     [...gameSource.matchAll(/["'`](assets\/[^"'`]+)["'`]/g)]
@@ -149,7 +159,7 @@ await test("service worker incluye código, legales y cada asset", async () => {
     ...assetManifest.standalone.map((item) => item.path)
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-1-0");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -185,8 +195,8 @@ await test("proyecto iOS real conserva bundle, versión y orientación vertical"
   assert.match(capacitorConfig, /appId: "com\.adonay\.neoncatcher"/);
   assert.match(capacitorConfig, /webDir: "www"/);
   assert.match(project, /PRODUCT_BUNDLE_IDENTIFIER = com\.adonay\.neoncatcher;/);
-  assert.equal((project.match(/MARKETING_VERSION = 7\.1\.0;/g) || []).length, 2);
-  assert.equal((project.match(/CURRENT_PROJECT_VERSION = 3;/g) || []).length, 2);
+  assert.equal((project.match(/MARKETING_VERSION = 7\.2\.0;/g) || []).length, 2);
+  assert.equal((project.match(/CURRENT_PROJECT_VERSION = 4;/g) || []).length, 2);
   assert.match(capacitorConfig, /loggingBehavior: "none"/);
   assert.match(project, /IPHONEOS_DEPLOYMENT_TARGET = 15\.0;/);
   assert.match(info, /ca-app-pub-3940256099942544~1458002511/);
@@ -264,7 +274,7 @@ async function loadGameHarness() {
   const hooks = `
   window.__NEON_TEST__ = {
     snapshot: () => ({
-      state, hull, currentLevel, score, collected, continued, supplyFailed,
+      state, hull, currentLevel, score, collected, continued, supplyFailed, ammo, manualShotCooldown, warpTimer,
       destructionTimer, destructionStage, playerVisible, damageSmokeSide, damageSmokeLocked,
       impactReactionTimer, impactReactionSide, energyBudget, powerBudget, gateCountdown,
       elapsed, storyStep, storyTimer, levelOneShockwaveTriggered,
@@ -278,7 +288,7 @@ async function loadGameHarness() {
     collisionOutline: SHIP_COLLISION_OUTLINE.map((point) => [...point]),
     corridorConfig: { shipHalfWidth: SHIP_COLLISION_HALF_WIDTH, requiredClearance: CORRIDOR_REQUIRED_CLEARANCE },
     keys: { ...KEYS },
-    startLevel, pauseGame, resumeGame, finishGame, resumeReward, damageShip, update,
+    startLevel, pauseGame, resumeGame, finishGame, resumeReward, damageShip, update, fireManualShot,
     checkSupplyFailure, burst, clearTransientEffects,
     createDebrisFormation, gateCorridorBounds, threatOverlapsGateCorridor, clearProtectedCorridors,
     playerFrameState, migrateLegacyStorage, bestScore, getUnlocked, getStars, getLevelBest, loadSettings,
@@ -287,6 +297,7 @@ async function loadGameHarness() {
       collected = 0;
       items = [];
     },
+    setManualFireReady: () => { warpTimer = 0; manualShotCooldown = 0; },
     setStoryState: ({ elapsedValue, step, shockwaveTriggered }) => {
       elapsed = elapsedValue;
       storyStep = step;
@@ -350,6 +361,19 @@ await test("claves, campaña y balance crítico permanecen iguales", async () =>
   assert.deepEqual(Array.from(api.levels, (level) => level.goal), [36, 45, 60, 75, 90, 105, 120, 135, 150, 165]);
   assert.deepEqual(Array.from(api.levels, (level) => level.speed), [0.92, 0.94, 1.02, 1.09, 1.16, 1.22, 1.28, 1.35, 1.42, 1.5]);
   assert.deepEqual(Array.from(api.levels, (level) => level.spawn), [0.69, 0.72, 0.67, 0.62, 0.58, 0.54, 0.51, 0.47, 0.44, 0.4]);
+});
+
+await test("cada partida entrega exactamente tres disparos manuales", async () => {
+  api.startLevel(0);
+  assert.equal(api.snapshot().ammo, 3);
+  for (let shot = 0; shot < 3; shot++) {
+    api.setManualFireReady();
+    assert.equal(api.fireManualShot(), true);
+  }
+  api.setManualFireReady();
+  assert.equal(api.snapshot().ammo, 0);
+  assert.equal(api.fireManualShot(), false);
+  assert.equal(api.snapshot().counts.shots, 3);
 });
 
 await test("guardados corruptos se normalizan sin romper el menú ni el control", async () => {

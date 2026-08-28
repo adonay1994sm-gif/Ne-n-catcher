@@ -32,9 +32,9 @@ await test("geometría del jugador separada del runtime", async()=>{
   assert.match(source,/createPlayerModel/);
   assert.match(source,/PLAYER_GEOMETRY\.collisionHalfWidth/);
 });
-await test("versión técnica 7.1 pre-release alineada", async()=>{
+await test("versión técnica 7.2 pre-release alineada", async()=>{
   const pkg=JSON.parse(await text("package.json"));
-  assert.equal(pkg.version,"7.1.0");
-  assert.match(await text("game.js"),/BUILD_VERSION = "7\.1\.0"/);
+  assert.equal(pkg.version,"7.2.0");
+  assert.match(await text("game.js"),/BUILD_VERSION = "7\.2\.0"/);
 });
-console.log(`\nArquitectura V7.1 verificada: ${passed} pruebas superadas.`);
+console.log(`\nArquitectura V7.2 verificada: ${passed} pruebas superadas.`);

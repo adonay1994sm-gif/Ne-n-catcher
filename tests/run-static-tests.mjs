@@ -28,15 +28,15 @@ const gameSource = await text("game.js");
 const serviceWorkerSource = await text("sw.js");
 const nativeSource = await text("src/native-admob-entry.js");
 
-await test("versión 7.1.0 pre-release alineada en metadatos y pantalla", async () => {
-  assert.equal(packageJson.version, "7.1.0");
-  assert.equal(lockJson.version, "7.1.0");
-  assert.match(indexHtml, /V7\.1\.0/);
+await test("versión 7.2.0 pre-release alineada en metadatos y pantalla", async () => {
+  assert.equal(packageJson.version, "7.2.0");
+  assert.equal(lockJson.version, "7.2.0");
+  assert.match(indexHtml, /V7\.2\.0/);
   assert.match(indexHtml, /FORMACIÓN DE RESTOS/);
   assert.match(indexHtml, /Formación de basura espacial/);
   assert.doesNotMatch(indexHtml, /Barrera orbital:/);
-  assert.match(gameSource, /BUILD_VERSION = "7\.1\.0"/);
-  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-1-0/);
+  assert.match(gameSource, /BUILD_VERSION = "7\.2\.0"/);
+  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-2-0/);
   assert.match(await text("netlify.toml"), /publish = "www"/);
 });
 
@@ -58,7 +58,7 @@ await test("JavaScript y JSON con sintaxis válida", async () => {
   new vm.Script(await text("analytics-manager.js"), { filename: "analytics-manager.js" });
   new vm.Script(await text("ads-config.js"), { filename: "ads-config.js" });
   assert.equal(manifest.orientation, "portrait");
-  assert.equal(assetManifest.buildVersion, "7.1.0");
+  assert.equal(assetManifest.buildVersion, "7.2.0");
 });
 
 await test("game.js coincide con los 9 módulos ordenados", async () => {
@@ -146,7 +146,7 @@ await test("service worker incluye código, legales y cada asset", async () => {
     ...assetManifest.standalone.map((item) => item.path)
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-1-0");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -182,8 +182,8 @@ await test("proyecto iOS real conserva bundle, versión y orientación vertical"
   assert.match(capacitorConfig, /appId: "com\.adonay\.neoncatcher"/);
   assert.match(capacitorConfig, /webDir: "www"/);
   assert.match(project, /PRODUCT_BUNDLE_IDENTIFIER = com\.adonay\.neoncatcher;/);
-  assert.equal((project.match(/MARKETING_VERSION = 7\.1\.0;/g) || []).length, 2);
-  assert.equal((project.match(/CURRENT_PROJECT_VERSION = 3;/g) || []).length, 2);
+  assert.equal((project.match(/MARKETING_VERSION = 7\.2\.0;/g) || []).length, 2);
+  assert.equal((project.match(/CURRENT_PROJECT_VERSION = 4;/g) || []).length, 2);
   assert.match(capacitorConfig, /loggingBehavior: "none"/);
   assert.match(project, /IPHONEOS_DEPLOYMENT_TARGET = 15\.0;/);
   assert.match(info, /ca-app-pub-3940256099942544~1458002511/);

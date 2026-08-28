@@ -1,9 +1,9 @@
 {
   "name": "neon-catcher",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "private": true,
   "type": "module",
-  "description": "Neon Catcher V7.1 Pre-Release: vertical slice Cronos, fuente modular, PWA y proyecto iOS verificable.",
+  "description": "Neon Catcher V7.2 Pre-Release: campaña de diez niveles, munición inicial, cometa animado, PWA y proyecto iOS verificable.",
   "engines": {
     "node": ">=22.13.0"
   },
