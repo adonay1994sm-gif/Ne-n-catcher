@@ -1,0 +1,195 @@
+{
+  "manifestVersion": 2,
+  "buildVersion": "7.1.0",
+  "assetCount": 58,
+  "runtimeBytes": 1113894,
+  "audit": {
+    "reviewed": 58,
+    "READY": 58,
+    "NEEDS_OPTIMIZATION": 0,
+    "NEEDS_CLEANUP": 0,
+    "PLACEHOLDER": 0,
+    "UNUSED": 0,
+    "DUPLICATE": 0,
+    "MISSING": 0,
+    "method": "dimensions, channels, file size, runtime references and contact-sheet visual review"
+  },
+  "coordinateSystem": {
+    "canvas": "720x1280 logical pixels, responsive without stretching",
+    "origin": "top-left",
+    "shipAnchor": "player.x/player.y",
+    "shipVisualOffset": { "x": 0, "y": -19.2 },
+    "shipVisualSize": { "width": 198.4, "height": 198.4 },
+    "shipCollision": "SHIP_COLLISION_OUTLINE in game.js; independent from sprite bounds"
+  },
+  "groups": [
+    {
+      "id": "ship",
+      "format": "webp-alpha",
+      "dimensions": "320x320",
+      "pivot": { "x": 0.5, "y": 0.5 },
+      "loop": true,
+      "sourceFrameCount": 6,
+      "paths": [
+        "assets/ship_frame_00.webp",
+        "assets/ship_frame_01.webp",
+        "assets/ship_frame_02.webp",
+        "assets/ship_frame_03.webp",
+        "assets/ship_frame_04.webp",
+        "assets/ship_frame_05.webp"
+      ],
+      "logicalStates": [
+        { "order": 1, "name": "idle_dim", "source": 0, "mirrorX": false },
+        { "order": 2, "name": "idle_bright", "source": 1, "mirrorX": false },
+        { "order": 3, "name": "idle_pulse", "source": 2, "mirrorX": false },
+        { "order": 4, "name": "idle_return", "source": 1, "mirrorX": false },
+        { "order": 5, "name": "bank_left", "source": 3, "mirrorX": false },
+        { "order": 6, "name": "bank_right", "source": 3, "mirrorX": true },
+        { "order": 7, "name": "boost", "source": 4, "mirrorX": "movement side" },
+        { "order": 8, "name": "damage_reaction", "source": 5, "mirrorX": "impact side", "maxDurationMs": 320 }
+      ],
+      "notes": "Los seis archivos fuente implementan ocho estados lógicos mediante una vuelta a idle y espejo horizontal. El frame 05 solo aparece durante el impacto y nunca queda fijado en estado crítico, destrucción o reaparición."
+    },
+    {
+      "id": "core",
+      "format": "webp-alpha",
+      "dimensions": "192x192",
+      "pivot": { "x": 0.5, "y": 0.5 },
+      "loop": true,
+      "frameDurationMs": 111,
+      "paths": [
+        "assets/core_frame_00.webp",
+        "assets/core_frame_01.webp",
+        "assets/core_frame_02.webp",
+        "assets/core_frame_03.webp",
+        "assets/core_frame_04.webp",
+        "assets/core_frame_05.webp"
+      ]
+    },
+    {
+      "id": "phaser",
+      "format": "webp-alpha",
+      "dimensions": "192x96",
+      "pivot": { "x": 0.5, "y": 0.5 },
+      "loop": true,
+      "frameDurationMs": 63,
+      "paths": [
+        "assets/phaser_frame_00.webp",
+        "assets/phaser_frame_01.webp",
+        "assets/phaser_frame_02.webp",
+        "assets/phaser_frame_03.webp",
+        "assets/phaser_frame_04.webp",
+        "assets/phaser_frame_05.webp"
+      ]
+    },
+    {
+      "id": "tractor",
+      "format": "webp-alpha",
+      "dimensions": "512x96",
+      "pivot": { "x": 0.5, "y": 0.5 },
+      "loop": true,
+      "frameDurationMs": 77,
+      "paths": [
+        "assets/tractor_frame_00.webp",
+        "assets/tractor_frame_01.webp",
+        "assets/tractor_frame_02.webp",
+        "assets/tractor_frame_03.webp",
+        "assets/tractor_frame_04.webp",
+        "assets/tractor_frame_05.webp"
+      ]
+    },
+    {
+      "id": "impact",
+      "format": "webp-alpha",
+      "dimensions": "128x128",
+      "pivot": { "x": 0.5, "y": 0.5 },
+      "loop": false,
+      "selection": "random variant per impact; 240 ms lifetime",
+      "paths": [
+        "assets/impact_frame_00.webp",
+        "assets/impact_frame_01.webp",
+        "assets/impact_frame_02.webp",
+        "assets/impact_frame_03.webp"
+      ]
+    },
+    {
+      "id": "smoke",
+      "format": "webp-alpha",
+      "dimensions": "192x160",
+      "pivot": { "x": 0.5, "y": 0.5 },
+      "loop": true,
+      "frameDurationMs": 222,
+      "sequence": [0, 1, 2, 1],
+      "paths": [
+        "assets/smoke_frame_00.webp",
+        "assets/smoke_frame_01.webp",
+        "assets/smoke_frame_02.webp"
+      ],
+      "notes": "El lado queda bloqueado en el primer daño grave; escala y opacidad dependen del casco."
+    },
+    {
+      "id": "explosion",
+      "format": "webp-alpha",
+      "dimensions": "256x192",
+      "pivot": { "x": 0.5, "y": 0.5 },
+      "loop": false,
+      "defaultDurationMs": 520,
+      "paths": [
+        "assets/explosion_frame_00.webp",
+        "assets/explosion_frame_01.webp",
+        "assets/explosion_frame_02.webp",
+        "assets/explosion_frame_03.webp",
+        "assets/explosion_frame_04.webp",
+        "assets/explosion_frame_05.webp",
+        "assets/explosion_frame_06.webp",
+        "assets/explosion_frame_07.webp"
+      ]
+    }
+  ],
+  "standalone": [
+    { "id": "icon-192", "path": "assets/icon-192.png", "dimensions": "192x192", "format": "png-opaque", "use": "PWA icon" },
+    { "id": "icon-512", "path": "assets/icon-512.png", "dimensions": "512x512", "format": "png-opaque", "use": "PWA icon and iOS source" },
+    { "id": "meteor-small", "path": "assets/meteor_small.webp", "dimensions": "160x160", "format": "webp-alpha", "use": "small meteor" },
+    { "id": "meteor-small-alt", "path": "assets/meteor_small_alt.webp", "dimensions": "160x160", "format": "webp-alpha", "use": "small meteor variant" },
+    { "id": "meteor-medium", "path": "assets/meteor_medium.webp", "dimensions": "208x208", "format": "webp-alpha", "use": "medium meteor" },
+    { "id": "meteor-medium-alt", "path": "assets/meteor_medium_alt.webp", "dimensions": "208x208", "format": "webp-alpha", "use": "medium meteor variant" },
+    { "id": "meteor-large", "path": "assets/meteor_large.webp", "dimensions": "272x272", "format": "webp-alpha", "use": "large meteor; multi-hit phaser target" },
+    { "id": "comet", "path": "assets/comet_fire.webp", "dimensions": "320x320", "format": "webp-alpha", "use": "fast comet" },
+    { "id": "debris-metal", "path": "assets/debris_metal.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "orbital debris and protected-corridor formation piece" },
+    { "id": "debris-panel", "path": "assets/debris_panel.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "solar panel; specific collision circles and formation piece" },
+    { "id": "debris-hot-0", "path": "assets/debris_hot_00.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "heated debris and formation variant" },
+    { "id": "debris-hot-1", "path": "assets/debris_hot_01.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "heated debris and formation variant" },
+    { "id": "satellite", "path": "assets/satellite_old.webp", "dimensions": "272x272", "format": "webp-alpha", "use": "satellite; specific collision circles" },
+    { "id": "repair-drone", "path": "assets/repair_drone.webp", "dimensions": "176x176", "format": "webp-alpha", "use": "rare repair pickup" },
+    { "id": "shield-effect", "path": "assets/shield_effect.webp", "dimensions": "256x256", "format": "webp-alpha", "use": "active shield pulse" },
+    { "id": "shield-idle", "path": "assets/shield_idle.webp", "dimensions": "256x256", "format": "webp-alpha", "use": "shield pickup and active alternate" },
+    { "id": "explosion-small", "path": "assets/explosion_small.webp", "dimensions": "192x192", "format": "webp-alpha", "use": "explosion fallback" },
+    {
+      "id": "cronium-fragment-v1",
+      "path": "assets/cronium_fragment_v1.webp",
+      "master": "art-source/cronium_fragment_master_v2.png",
+      "dimensions": "256x256",
+      "format": "webp-alpha",
+      "use": "animated CRONIUM collectible layered over the existing core energy pulse",
+      "level": "1-10",
+      "animation": "procedural breathing, rotation, proximity halo and orbiting particles",
+      "status": "READY",
+      "origin": "generated with built-in image generation, manually alpha-cleaned and runtime-optimized",
+      "version": "7.1.0",
+      "size": 9570
+    },
+    {
+      "id": "cronos-level1-background",
+      "path": "assets/cronos_level1_background.webp",
+      "dimensions": "720x1280",
+      "format": "webp-opaque",
+      "use": "Level 1 far environment: destroyed Chronos Research Center and CRONIUM reactor",
+      "level": 1,
+      "animation": "procedural parallax, glow and temporal shockwave overlays",
+      "status": "READY",
+      "origin": "Neon Catcher V7 visual branch",
+      "version": "7.1.0",
+      "size": 143486
+    }
+  ]
+}

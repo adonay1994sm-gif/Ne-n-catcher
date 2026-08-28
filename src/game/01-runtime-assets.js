@@ -1,0 +1,213 @@
+  const storage = NeonCore.createStorageService();
+
+  function migrateLegacyStorage() {
+    const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));
+    const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));
+    if (legacyBest <= currentBest) return false;
+    return storage.set(KEYS.best, legacyBest);
+  }
+
+  migrateLegacyStorage();
+  let settings = loadSettings();
+
+  const stateMachine = NeonCore.createGameState(NeonCore.GAME_STATES.MENU);
+  let state = stateMachine.value;
+  function setState(next, metadata = {}) {
+    state = stateMachine.transition(next, metadata);
+    return state;
+  }
+  let settingsReturn = "menu";
+  let briefingReturn = "menu";
+  let pendingLevel = 0;
+  let last = performance.now();
+  let elapsed = 0;
+  let spawnTimer = 0;
+  let warpTimer = 0;
+  let score = 0;
+  let hull = 100;
+  let combo = 1;
+  let maxCombo = 1;
+  let comboTimer = 0;
+  let collected = 0;
+  let currentLevel = Math.max(0, Math.min(9, getUnlocked() - 1));
+  let continued = false;
+  let shake = 0;
+  let flash = 0;
+  let stormPulse = 0;
+  let bannerTimer = 0;
+  let deferred = null;
+  let destructionTimer = 0;
+  let destructionStage = 0;
+  let playerVisible = true;
+  let damageSmokeSide = 1;
+  let damageSmokeLocked = false;
+  let impactReactionTimer = 0;
+  let impactReactionSide = 1;
+  let storyStep = 0;
+  let storyTimer = 0;
+  let levelOneShockwave = 0;
+  let levelOneShockwaveTriggered = false;
+  let visualSpeed = 1;
+  let cameraKickX = 0;
+  let cameraKickY = 0;
+  let displayedScore = 0;
+  let hudScoreTarget = 0;
+  let lastHudCollected = 0;
+  let lastHudHull = 100;
+
+  let items = [];
+  let gates = [];
+  let parts = [];
+  const EFFECT_LIMITS = Object.freeze({
+    particles: 320,
+    shots: 24,
+    rings: 32,
+    explosions: 20,
+    impacts: 24
+  });
+  const particlePool = NeonCore.createObjectPool(
+    () => ({ x: 0, y: 0, vx: 0, vy: 0, life: 0, size: 0, kind: "cyan" }),
+    (part) => { part.life = 0; part.vx = 0; part.vy = 0; },
+    EFFECT_LIMITS.particles
+  );
+  let shots = [];
+  let rings = [];
+  let explosions = [];
+  let impactEffects = [];
+
+  let energySpawned = 0;
+  let energyBudget = 0;
+  let powerSpawned = 0;
+  let powerBudget = 0;
+  let repairAllowance = 0;
+  let repairSpawned = 0;
+  let supplyFailed = false;
+  let supplyFailureScheduled = false;
+  let supplyFailureTimer = 0;
+  let runToken = 0;
+  let phaserCooldown = 0;
+  let tractorTarget = null;
+  let gateCountdown = Infinity;
+
+  const powers = { shield: 0, tractor: 0, slow: 0, double: 0, phaser: 0 };
+  const player = NeonCore.createPlayerModel(W, H);
+
+  // Silueta de colisión aproximada al sprite de la nave.
+  // Está ligeramente metida hacia dentro para que los roces mínimos no sean injustos,
+  // pero incluye morro, fuselaje, alas y motores.
+  const SHIP_COLLISION_OUTLINE = [
+    [0, -148],
+    [18, -137], [28, -112], [34, -91], [44, -74],
+    [55, -56], [77, -38], [103, -12], [109, 20],
+    [103, 46], [82, 51], [66, 42], [56, 72],
+    [41, 94], [28, 73], [0, 92],
+    [-28, 73], [-41, 94], [-56, 72], [-66, 42],
+    [-82, 51], [-103, 46], [-109, 20], [-103, -12],
+    [-77, -38], [-55, -56], [-44, -74], [-34, -91],
+    [-28, -112], [-18, -137]
+  ];
+
+  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth;
+  const CORRIDOR_REQUIRED_CLEARANCE = 14;
+  const CORRIDOR_TOP = -170;
+  const CORRIDOR_BOTTOM_PADDING = 94;
+  const FORMATION_SPRITE_KEYS = ["debrisMetal", "debrisPanel", "debrisHot0", "debrisHot1", "meteorSmall", "meteorMedium"];
+
+  // Assets visuales V6.4. Cada imagen tiene respaldo vectorial para que el juego siga
+  // funcionando aunque un archivo tarde en cargar.
+  function loadSprite(path, eager = true) {
+    const image = new Image();
+    image.decoding = "async";
+    image._assetPath = path;
+    if (eager) image.src = path;
+    return image;
+  }
+
+  function ensureSprite(image) {
+    if (image && !image.src && image._assetPath) image.src = image._assetPath;
+    return image;
+  }
+
+  function spriteReady(image) {
+    ensureSprite(image);
+    return Boolean(image && image.complete && image.naturalWidth > 0);
+  }
+
+  const SPRITE_GROUPS = {
+    ship: [0,1,2,3,4,5].map((index) => loadSprite(`assets/ship_frame_${String(index).padStart(2,"0")}.webp`, true)),
+    core: [0,1,2,3,4,5].map((index) => loadSprite(`assets/core_frame_${String(index).padStart(2,"0")}.webp`, true)),
+    phaser: [0,1,2,3,4,5].map((index) => loadSprite(`assets/phaser_frame_${String(index).padStart(2,"0")}.webp`)),
+    tractor: [0,1,2,3,4,5].map((index) => loadSprite(`assets/tractor_frame_${String(index).padStart(2,"0")}.webp`)),
+    impact: [0,1,2,3].map((index) => loadSprite(`assets/impact_frame_${String(index).padStart(2,"0")}.webp`)),
+    smoke: [0,1,2].map((index) => loadSprite(`assets/smoke_frame_${String(index).padStart(2,"0")}.webp`)),
+    explosion: [0,1,2,3,4,5,6,7].map((index) => loadSprite(`assets/explosion_frame_${String(index).padStart(2,"0")}.webp`))
+  };
+
+  const SPRITES = {
+    shipFallback: SPRITE_GROUPS.ship[0],
+    meteorSmall: loadSprite("assets/meteor_small.webp", true),
+    meteorSmallAlt: loadSprite("assets/meteor_small_alt.webp"),
+    meteorMedium: loadSprite("assets/meteor_medium.webp", true),
+    meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
+    meteorLarge: loadSprite("assets/meteor_large.webp"),
+    comet: loadSprite("assets/comet_fire.webp"),
+    debrisMetal: loadSprite("assets/debris_metal.webp"),
+    debrisPanel: loadSprite("assets/debris_panel.webp"),
+    debrisHot0: loadSprite("assets/debris_hot_00.webp"),
+    debrisHot1: loadSprite("assets/debris_hot_01.webp"),
+    satellite: loadSprite("assets/satellite_old.webp"),
+    repairDrone: loadSprite("assets/repair_drone.webp"),
+    shieldEffect: loadSprite("assets/shield_effect.webp"),
+    shieldIdle: loadSprite("assets/shield_idle.webp"),
+    explosionSmall: loadSprite("assets/explosion_small.webp"),
+    croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
+    cronosBackground: loadSprite("assets/cronos_level1_background.webp", true)
+  };
+
+  function frameFrom(group, index) {
+    const frames = SPRITE_GROUPS[group] || [];
+    if (!frames.length) return null;
+    const frame = frames[((index % frames.length) + frames.length) % frames.length];
+    return spriteReady(frame) ? frame : null;
+  }
+
+  function drawImageCentered(image, width, height, rotation = 0, alpha = 1, flipX = false) {
+    if (!spriteReady(image)) return false;
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    ctx.rotate(rotation);
+    ctx.scale(flipX ? -1 : 1, 1);
+    ctx.drawImage(image, -width / 2, -height / 2, width, height);
+    ctx.restore();
+    return true;
+  }
+  const stars = Array.from({ length: 118 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 0.35 + Math.random() * 1.55,
+    a: 0.18 + Math.random() * 0.7,
+    s: 8 + Math.random() * 20,
+    layer: 0.35 + Math.random() * 1.25,
+    tint: Math.random() > 0.82 ? "#8eeeff" : "#e8f3ff"
+  }));
+  const spaceDust = Array.from({ length: 46 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 0.7 + Math.random() * 2.2,
+    a: 0.035 + Math.random() * 0.12,
+    s: 20 + Math.random() * 42,
+    drift: (Math.random() - 0.5) * 8
+  }));
+  const foregroundParticles = Array.from({ length: 12 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: 2.5 + Math.random() * 5.5,
+    a: 0.025 + Math.random() * 0.08,
+    s: 78 + Math.random() * 115,
+    drift: (Math.random() - 0.5) * 22
+  }));
+
+  let audioCtx = null;
+  let musicGain = null;
+  let musicNodes = [];
+  let resumeAudioAfterAd = false;

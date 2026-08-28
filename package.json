@@ -1,0 +1,40 @@
+{
+  "name": "neon-catcher",
+  "version": "7.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Neon Catcher V7.1 Pre-Release: vertical slice Cronos, fuente modular, PWA y proyecto iOS verificable.",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "build:native-bridge": "node scripts/build-native-bridge.mjs",
+    "build:game": "node scripts/build-game.mjs",
+    "build:web": "node scripts/build-web.mjs",
+    "build": "npm run build:core && npm run build:native-bridge && npm run build:web",
+    "test": "node tests/run-tests.mjs",
+    "test:static": "node tests/run-static-tests.mjs",
+    "serve": "serve .",
+    "serve:prod": "serve www",
+    "cap:add:ios": "npm run build && npx cap add ios",
+    "cap:sync": "npm run build && npx cap sync",
+    "build:core": "node scripts/build-core.mjs",
+    "verify": "npm run build && npm run test:static && npm run test:architecture",
+    "test:architecture": "node tests/run-architecture-tests.mjs"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "8.0.0",
+    "@capacitor/android": "8.5.0",
+    "@capacitor/core": "8.5.0",
+    "@capacitor/ios": "8.5.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.0",
+    "esbuild": "0.28.1",
+    "jsdom": "29.1.1",
+    "serve": "14.2.6"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
+  }
+}

@@ -1,0 +1,28 @@
+NEON CATCHER V6.5 — REFACTOR MODULAR VERIFICADO
+Fecha: 2026-08-04
+
+Base original:
+Neon_Catcher_v6_5_Corredor_Garantizado_Verificado.zip
+
+Resultado:
+- 9 módulos en src/game/
+- game.js generado automáticamente
+- game.js idéntico byte a byte a la base V6.5
+- SHA-256 game.js: 0e333b239bde242e253023ccb024f326e64f2f346c174e167df00d7d993dfb4e
+- Sin cambios en jugabilidad, hitbox, balance, assets, HTML, CSS, PWA o anuncios
+
+Verificación:
+- 13 pruebas estáticas aprobadas
+- 10.000 formaciones aprobadas
+- 50.000 amenazas simuladas; cero invasiones residuales
+- Flujo menú > briefing > partida > pausa > reanudación aprobado en Chromium móvil
+- 56 assets reales cargados; cero errores JavaScript/Canvas
+
+Comandos:
+npm run build:game
+npm run build:web
+npm run test:static
+npm test
+
+Límite externo:
+No se compiló IPA ni se probó en iPhone físico/TestFlight.

@@ -6,7 +6,7 @@
   const ctx = canvas.getContext("2d", { alpha: false });
   let W = 720;
   let H = 1280;
-  const BUILD_VERSION = "7.0.0";
+  const BUILD_VERSION = "7.1.0";
   const SHIP_VISUAL_SCALE = 0.8;
   const SHIP_VISUAL = Object.freeze({
     scale: SHIP_VISUAL_SCALE,
@@ -174,16 +174,14 @@
     settings: "neon-settings-v5"
   };
   const LEGACY_KEYS = { best: "neon-best-v1" };
-  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, effects: true };
+  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, effectsQuality: "normal", effects: true };
+  const storage = NeonCore.createStorageService();
+
   function migrateLegacyStorage() {
-    try {
-      const legacyBest = Math.max(0, Number(localStorage.getItem(LEGACY_KEYS.best)) || 0);
-      const currentBest = Math.max(0, Number(localStorage.getItem(KEYS.best)) || 0);
-      if (legacyBest > currentBest) localStorage.setItem(KEYS.best, String(legacyBest));
-      return legacyBest > currentBest;
-    } catch {
-      return false;
-    }
+    const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));
+    const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));
+    if (legacyBest <= currentBest) return false;
+    return storage.set(KEYS.best, legacyBest);
   }
 
   migrateLegacyStorage();
@@ -195,7 +193,6 @@
     state = stateMachine.transition(next, metadata);
     return state;
   }
-  const storage = NeonCore.createStorageService();
   let settingsReturn = "menu";
   let briefingReturn = "menu";
   let pendingLevel = 0;
@@ -238,10 +235,17 @@
   let items = [];
   let gates = [];
   let parts = [];
+  const EFFECT_LIMITS = Object.freeze({
+    particles: 320,
+    shots: 24,
+    rings: 32,
+    explosions: 20,
+    impacts: 24
+  });
   const particlePool = NeonCore.createObjectPool(
     () => ({ x: 0, y: 0, vx: 0, vy: 0, life: 0, size: 0, kind: "cyan" }),
     (part) => { part.life = 0; part.vx = 0; part.vy = 0; },
-    320
+    EFFECT_LIMITS.particles
   );
   let shots = [];
   let rings = [];
@@ -256,6 +260,8 @@
   let repairSpawned = 0;
   let supplyFailed = false;
   let supplyFailureScheduled = false;
+  let supplyFailureTimer = 0;
+  let runToken = 0;
   let phaserCooldown = 0;
   let tractorTarget = null;
   let gateCountdown = Infinity;
@@ -331,6 +337,7 @@
     shieldEffect: loadSprite("assets/shield_effect.webp"),
     shieldIdle: loadSprite("assets/shield_idle.webp"),
     explosionSmall: loadSprite("assets/explosion_small.webp"),
+    croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
     cronosBackground: loadSprite("assets/cronos_level1_background.webp", true)
   };
 
@@ -382,39 +389,59 @@
   let musicNodes = [];
   let resumeAudioAfterAd = false;
   function loadSettings() {
-    try {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(KEYS.settings) || "{}") };
-    } catch {
-      return { ...DEFAULT_SETTINGS };
-    }
+    const saved = storage.getJSON(KEYS.settings, {});
+    const source = saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+    const finite = (value, fallback, minimum, maximum) => {
+      const number = Number(value);
+      return Number.isFinite(number) ? Math.max(minimum, Math.min(maximum, number)) : fallback;
+    };
+    const savedQuality = ["low", "normal", "high"].includes(source.effectsQuality)
+      ? source.effectsQuality
+      : source.effects === false ? "low" : DEFAULT_SETTINGS.effectsQuality;
+    return {
+      music: Math.round(finite(source.music, DEFAULT_SETTINGS.music, 0, 100)),
+      fx: Math.round(finite(source.fx, DEFAULT_SETTINGS.fx, 0, 100)),
+      sensitivity: Math.round(finite(source.sensitivity, DEFAULT_SETTINGS.sensitivity, 60, 150) / 5) * 5,
+      vibration: typeof source.vibration === "boolean" ? source.vibration : DEFAULT_SETTINGS.vibration,
+      effectsQuality: savedQuality,
+      effects: savedQuality !== "low"
+    };
   }
 
   function saveSettings() {
-    localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+    return storage.setJSON(KEYS.settings, settings);
   }
 
   function getUnlocked() {
-    return Math.max(1, Math.min(10, +(localStorage.getItem(KEYS.unlocked) || 1)));
+    return Math.trunc(Math.max(1, Math.min(10, storage.getNumber(KEYS.unlocked, 1))));
   }
 
   function getStars() {
-    try {
-      return JSON.parse(localStorage.getItem(KEYS.stars) || "{}") || {};
-    } catch {
-      return {};
+    const saved = storage.getJSON(KEYS.stars, {});
+    const source = saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+    const normalized = {};
+    for (let levelIndex = 1; levelIndex <= LEVELS.length; levelIndex++) {
+      const value = Number(source[levelIndex]);
+      if (Number.isFinite(value) && value > 0) normalized[levelIndex] = Math.trunc(Math.min(3, value));
     }
+    return normalized;
   }
 
   function getLevelBest() {
-    try {
-      return JSON.parse(localStorage.getItem(KEYS.levelBest) || "{}") || {};
-    } catch {
-      return {};
+    const saved = storage.getJSON(KEYS.levelBest, {});
+    const source = saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+    const normalized = {};
+    for (let levelIndex = 1; levelIndex <= LEVELS.length; levelIndex++) {
+      const value = Number(source[levelIndex]);
+      if (Number.isFinite(value) && value > 0) {
+        normalized[levelIndex] = Math.trunc(Math.min(Number.MAX_SAFE_INTEGER, value));
+      }
     }
+    return normalized;
   }
 
   function bestScore() {
-    return +(localStorage.getItem(KEYS.best) || 0);
+    return Math.trunc(Math.max(0, storage.getNumber(KEYS.best, 0)));
   }
 
   function totalStars() {
@@ -481,7 +508,12 @@
 
   function startMusic() {
     const ac = ensureAudio();
-    if (!ac || musicNodes.length) return;
+    if (!ac) return;
+    if (ac.state === "suspended") ac.resume().catch(() => {});
+    if (musicNodes.length) {
+      updateAudioVolumes();
+      return;
+    }
     [55, 82.41, 110].forEach((frequency, index) => {
       const oscillator = ac.createOscillator();
       const gain = ac.createGain();
@@ -492,6 +524,17 @@
       oscillator.start();
       musicNodes.push(oscillator, gain);
     });
+    updateAudioVolumes();
+  }
+
+  async function suspendAudio() {
+    if (audioCtx?.state === "running") await audioCtx.suspend().catch(() => {});
+  }
+
+  async function resumeAudio() {
+    if (audioCtx?.state === "suspended" && settings.music > 0) {
+      await audioCtx.resume().catch(() => {});
+    }
     updateAudioVolumes();
   }
 
@@ -526,7 +569,7 @@
     ui.fxVolume.value = settings.fx;
     ui.sensitivity.value = settings.sensitivity;
     ui.vibration.checked = settings.vibration;
-    ui.effectsQuality.checked = settings.effects;
+    ui.effectsQuality.value = settings.effectsQuality;
     ui.musicValue.textContent = `${settings.music}%`;
     ui.fxValue.textContent = `${settings.fx}%`;
     ui.sensitivityValue.textContent = `${settings.sensitivity}%`;
@@ -544,7 +587,6 @@
     updateAudioVolumes();
     overlay(settingsReturn === "paused" ? ui.paused : ui.menu);
   }
-
   function updateMenu() {
     const unlocked = getUnlocked();
     const starsMap = getStars();
@@ -731,6 +773,8 @@
   }
 
   function startLevel(index = currentLevel) {
+    runToken += 1;
+    cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     setState("playing");
@@ -747,7 +791,6 @@
     spawnTimer = 0.35;
     warpTimer = 1.25;
     supplyFailed = false;
-    supplyFailureScheduled = false;
     shake = 0;
     flash = 0;
     stormPulse = 0;
@@ -769,11 +812,7 @@
     hideStoryTransmission();
     items = [];
     gates = [];
-    parts = [];
-    shots = [];
-    rings = [];
-    explosions = [];
-    impactEffects = [];
+    clearTransientEffects();
     player.x = player.target = W / 2;
     player.drift = 0;
     resetPowers();
@@ -798,6 +837,8 @@
     hud();
     showBanner();
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
+    window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
+    window.AnalyticsManager?.track("level_start", { level: currentLevel + 1, continued: false });
   }
 
   function pauseGame() {
@@ -812,9 +853,12 @@
     setState("playing");
     overlay();
     last = performance.now();
+    resumeAudio();
   }
 
   function goHome() {
+    runToken += 1;
+    cancelSupplyFailureTimer();
     setState("menu");
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
@@ -826,22 +870,27 @@
   }
 
   function registerRun() {
-    const games = +(localStorage.getItem(KEYS.games) || 0) + 1;
-    localStorage.setItem(KEYS.games, String(games));
-    if (games % 3 === 0) window.AdBridge?.showInterstitial?.().catch(() => {});
+    const games = Math.trunc(Math.max(0, storage.getNumber(KEYS.games, 0))) + 1;
+    storage.set(KEYS.games, games);
+    const interval = Math.trunc(Math.max(0, Number(window.MONETIZATION_CONFIG?.native?.interstitialEveryRuns) || 0));
+    if (interval > 0 && games % interval === 0) window.AdBridge?.showInterstitial?.().catch(() => {});
   }
 
   function saveScore() {
-    if (score > bestScore()) localStorage.setItem(KEYS.best, String(score));
+    let saved = true;
+    if (score > bestScore()) saved = storage.set(KEYS.best, score) && saved;
     const bests = getLevelBest();
     if (score > (+bests[currentLevel + 1] || 0)) {
       bests[currentLevel + 1] = score;
-      localStorage.setItem(KEYS.levelBest, JSON.stringify(bests));
+      saved = storage.setJSON(KEYS.levelBest, bests) && saved;
     }
+    return saved;
   }
 
   function completeLevel() {
     if (state !== "playing") return;
+    runToken += 1;
+    cancelSupplyFailureTimer();
     setState("complete");
     hideWarning();
     ui.hud.classList.add("hidden");
@@ -853,16 +902,16 @@
     const starsMap = getStars();
     const oldStars = +(starsMap[currentLevel + 1] || 0);
     starsMap[currentLevel + 1] = Math.max(oldStars, earned);
-    localStorage.setItem(KEYS.stars, JSON.stringify(starsMap));
+    let progressSaved = storage.setJSON(KEYS.stars, starsMap);
 
     const oldUnlocked = getUnlocked();
     let newlyUnlocked = false;
     if (currentLevel + 1 === oldUnlocked && oldUnlocked < 10) {
-      localStorage.setItem(KEYS.unlocked, String(oldUnlocked + 1));
+      progressSaved = storage.set(KEYS.unlocked, oldUnlocked + 1) && progressSaved;
       newlyUnlocked = true;
     }
 
-    saveScore();
+    progressSaved = saveScore() && progressSaved;
     registerRun();
     ui.completeLabel.textContent = currentLevel === 9 ? "CAMPAÑA ACTUAL COMPLETADA" : "SECTOR SUPERADO";
     ui.completeTitle.textContent = currentLevel === 9
@@ -885,10 +934,17 @@
     setTimeout(() => tone(980, 0.18, "sine", 0.07), 120);
     vibrate([30, 40, 70]);
     updateMenu();
+    if (!progressSaved) toast("No se pudo guardar el progreso en este dispositivo");
+    window.AnalyticsManager?.track("level_complete", {
+      level: currentLevel + 1, score, hull: Math.ceil(hull), stars: earned, maxCombo
+    });
+    window.AnalyticsManager?.track("progression", { unlocked: getUnlocked(), totalStars: totalStars() });
   }
 
   function finishGame(reason = "hull") {
     if (state === "gameover" || state === "complete") return;
+    runToken += 1;
+    cancelSupplyFailureTimer();
     setState("gameover");
     supplyFailed = reason === "supply";
     hideWarning();
@@ -896,7 +952,7 @@
     ui.powerHud.classList.add("hidden");
     ui.banner.classList.remove("show");
     const oldBest = bestScore();
-    saveScore();
+    const scoreSaved = saveScore();
     ui.result.textContent = supplyFailed ? "No quedan núcleos suficientes" : "El casco ha cedido";
     ui.supplyStatus.textContent = supplyFailed
       ? `Recuperaste ${collected} de ${level().goal}. El suministro del sector era limitado.`
@@ -908,10 +964,15 @@
     registerRun();
     tone(110, 0.30, "sawtooth", 0.06);
     updateMenu();
+    if (!scoreSaved) toast("No se pudo guardar el récord en este dispositivo");
+    window.AnalyticsManager?.track("death", { level: currentLevel + 1, score, elapsed: Math.round(elapsed) });
+    window.AnalyticsManager?.track("death_reason", { level: currentLevel + 1, reason });
   }
 
   function resumeReward() {
     if (continued || state !== "gameover" || supplyFailed) return false;
+    runToken += 1;
+    cancelSupplyFailureTimer();
     // Restaura por completo el estado visual y lógico tras la destrucción.
     // La pantalla de derrota se abre después de la animación final, por lo que
     // hay que cancelar cualquier resto de ese estado antes de volver a jugar.
@@ -935,20 +996,14 @@
     damageSmokeLocked = true;
     impactReactionTimer = 0;
     impactReactionSide = 1;
-    storyStep = 0;
     storyTimer = 0;
     levelOneShockwave = 0;
-    levelOneShockwaveTriggered = false;
     hideStoryTransmission();
 
     // Elimina amenazas próximas y todos los residuos visuales de destrucción.
     items = items.filter((item) => !isThreat(item) || item.y < H * 0.38);
     gates = [];
-    shots = [];
-    parts = [];
-    rings = [];
-    explosions = [];
-    impactEffects = [];
+    clearTransientEffects();
     tractorTarget = null;
     gateCountdown = level().gate ? 7 : Infinity;
 
@@ -961,6 +1016,7 @@
     hud();
     updatePowerHud();
     showBanner();
+    window.AnalyticsManager?.track("continue_used", { level: currentLevel + 1, elapsed: Math.round(elapsed) });
     return true;
   }
   function availablePowers() {
@@ -1214,12 +1270,34 @@
     return false;
   }
 
+  function addParticle(seed) {
+    if (parts.length >= EFFECT_LIMITS.particles) return false;
+    parts.push(particlePool.acquire(seed));
+    return true;
+  }
+
+  function clearTransientEffects() {
+    for (const part of parts) particlePool.release(part);
+    parts.length = 0;
+    shots.length = 0;
+    rings.length = 0;
+    explosions.length = 0;
+    impactEffects.length = 0;
+  }
+
+  function cancelSupplyFailureTimer() {
+    if (supplyFailureTimer) clearTimeout(supplyFailureTimer);
+    supplyFailureTimer = 0;
+    supplyFailureScheduled = false;
+  }
+
   function burst(x, y, count, kind) {
-    const amount = settings.effects ? count : Math.ceil(count * 0.45);
+    const factor = settings.effectsQuality === "high" ? 1 : settings.effectsQuality === "normal" ? 0.72 : 0.42;
+    const amount = Math.ceil(count * factor);
     for (let index = 0; index < amount; index++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 65 + Math.random() * 245;
-      parts.push(particlePool.acquire({
+      addParticle({
         x,
         y,
         vx: Math.cos(angle) * speed,
@@ -1227,17 +1305,18 @@
         life: 0.45 + Math.random() * 0.55,
         size: 3 + Math.random() * 8,
         kind
-      }));
+      });
     }
   }
 
   function directionalBurst(x, y, targetX, targetY, count, kind = "cyan") {
-    const amount = settings.effects ? count : Math.ceil(count * 0.5);
+    const factor = settings.effectsQuality === "high" ? 1 : settings.effectsQuality === "normal" ? 0.76 : 0.46;
+    const amount = Math.ceil(count * factor);
     const baseAngle = Math.atan2(targetY - y, targetX - x);
     for (let index = 0; index < amount; index++) {
       const angle = baseAngle + (Math.random() - 0.5) * 0.62;
       const speed = 150 + Math.random() * 280;
-      parts.push(particlePool.acquire({
+      addParticle({
         x: x + (Math.random() - 0.5) * 12,
         y: y + (Math.random() - 0.5) * 12,
         vx: Math.cos(angle) * speed,
@@ -1245,7 +1324,7 @@
         life: 0.34 + Math.random() * 0.34,
         size: 2 + Math.random() * 5,
         kind
-      }));
+      });
     }
   }
 
@@ -1254,21 +1333,24 @@
     const hardTurn = Math.abs(player.target + player.drift - player.x) > 65;
     const x = player.x + (hardTurn ? (player.target > player.x ? -1 : 1) * 28 : (Math.random() - 0.5) * 30) * SHIP_VISUAL.scale;
     const y = player.y + 61 * SHIP_VISUAL.scale;
-    parts.push(particlePool.acquire({
+    addParticle({
       x, y, vx: (Math.random() - 0.5) * 28, vy: 125 + Math.random() * 120,
       life: 0.22 + Math.random() * 0.24, size: 2 + Math.random() * 4, kind: "cyan"
-    }));
+    });
   }
 
   function pulseRing(x, y, color, max = 85, duration = 0.48, style = "single") {
+    if (rings.length >= EFFECT_LIMITS.rings) rings.shift();
     rings.push({ x, y, color, max, duration, life: duration, style });
   }
 
   function addExplosion(x, y, scale = 1, duration = 0.52) {
+    if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
     explosions.push({ x, y, scale, life: duration, duration, rotation: Math.random() * Math.PI * 2 });
   }
 
   function addImpactEffect(x, y, scale = 1, angle = 0) {
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
     impactEffects.push({ x, y, scale, angle, life: 0.24, duration: 0.24, variant: (Math.random() * SPRITE_GROUPS.impact.length) | 0 });
   }
 
@@ -1283,6 +1365,7 @@
       tone(690, 0.18, "sine", 0.08);
       vibrate(30);
       hud();
+      window.AnalyticsManager?.track("ability_used", { level: currentLevel + 1, ability: "repair" });
       return;
     }
 
@@ -1302,6 +1385,7 @@
     tone(type === "phaser" ? 920 : 780, 0.15, "triangle", 0.075);
     vibrate(22);
     updatePowerHud();
+    window.AnalyticsManager?.track("ability_used", { level: currentLevel + 1, ability: type });
   }
 
   function damageShip(amount, x = player.x, y = player.y) {
@@ -1350,7 +1434,7 @@
       hideWarning();
       items = [];
       gates = [];
-      shots = [];
+      shots.length = 0;
       addExplosion(player.x, player.y + SHIP_VISUAL.centerYOffset, 1.65, 0.92);
       addImpactEffect(player.x - 34 * SHIP_VISUAL.scale, player.y - 8 * SHIP_VISUAL.scale, 1.15, -0.5);
       addImpactEffect(player.x + 36 * SHIP_VISUAL.scale, player.y + 4 * SHIP_VISUAL.scale, 1.15, 0.5);
@@ -1442,6 +1526,7 @@
     if (target) {
       target.hp = Math.max(0, (target.hp || 1) - 1);
       const destroyed = target.hp <= 0;
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({
         x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: target.x, y2: target.y,
         life: 0.20, duration: 0.20, hit: true, destroyed, impactX: target.x, impactY: target.y,
@@ -1454,6 +1539,7 @@
       }
       tone(destroyed ? 980 : 760, 0.07, "sawtooth", 0.045);
     } else {
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({ x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: player.x, y2: 90, life: 0.18, duration: 0.18, hit: false });
     }
   }
@@ -1463,9 +1549,11 @@
     const energyRemaining = items.some((item) => item.type === "energy");
     if (!energyRemaining) {
       supplyFailureScheduled = true;
-      setTimeout(() => {
+      const scheduledRun = runToken;
+      supplyFailureTimer = setTimeout(() => {
+        supplyFailureTimer = 0;
         supplyFailureScheduled = false;
-        if (state === "playing" && collected < level().goal && !items.some((item) => item.type === "energy")) {
+        if (scheduledRun === runToken && state === "playing" && collected < level().goal && !items.some((item) => item.type === "energy")) {
           finishGame("supply");
         }
       }, 420);
@@ -2081,20 +2169,39 @@
 
   function drawWarp() {
     if (warpTimer <= 0) return;
-    const progress = warpTimer / 1.25;
+    const progress = clamp(1 - warpTimer / 1.25, 0, 1);
+    const intensity = Math.sin(progress * Math.PI);
+    const centerX = W * 0.5;
+    const centerY = H * 0.42;
+    const count = settings.effectsQuality === "high" ? 30 : settings.effectsQuality === "normal" ? 23 : 14;
     ctx.save();
     ctx.globalCompositeOperation = "screen";
-    ctx.globalAlpha = Math.sin(progress * Math.PI) * 0.55;
     ctx.strokeStyle = level().accent;
-    ctx.lineWidth = 2;
-    for (let index = 0; index < 44; index++) {
-      const x = (index * 97 + 31) % W;
-      const y = (index * 173 + elapsed * 1600) % H;
+    ctx.shadowColor = level().accent;
+    ctx.shadowBlur = 8;
+    ctx.lineCap = "round";
+    for (let index = 0; index < count; index++) {
+      const angle = index * 2.3999632297 + (index % 3) * 0.19;
+      const seed = ((index * 37) % count) / count;
+      const travel = (seed + progress * (0.72 + (index % 5) * 0.035)) % 1;
+      const radius = 42 + Math.pow(travel, 1.65) * Math.max(W, H) * 0.72;
+      const directionX = Math.cos(angle);
+      const directionY = Math.sin(angle);
+      const x = centerX + directionX * radius;
+      const y = centerY + directionY * radius;
+      const length = 5 + travel * travel * 38;
+      ctx.globalAlpha = intensity * (0.12 + travel * 0.42);
+      ctx.lineWidth = 0.8 + travel * 1.4;
       ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x, y + 70 + (index % 5) * 24);
+      ctx.moveTo(x - directionX * length, y - directionY * length);
+      ctx.lineTo(x + directionX * length * 0.18, y + directionY * length * 0.18);
       ctx.stroke();
     }
+    ctx.globalAlpha = intensity * 0.34;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 24 + progress * 74, 0, Math.PI * 2);
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -2337,7 +2444,13 @@
     ctx.beginPath(); ctx.arc(0, 0, item.r * 1.72, 0, Math.PI * 2); ctx.stroke();
     ctx.globalAlpha /= 0.72;
 
-    if (!drawImageCentered(frame, item.r * 2.85, item.r * 2.85, item.rot * 0.10)) {
+    const crystalReady = spriteReady(SPRITES.croniumFragment);
+    if (frame && crystalReady) {
+      drawImageCentered(frame, item.r * 2.85, item.r * 2.85, -item.rot * 0.08, 0.34 + breath * 0.18);
+    }
+    if (crystalReady) {
+      drawImageCentered(SPRITES.croniumFragment, item.r * 2.62, item.r * 2.62, item.rot * 0.06, 0.94);
+    } else if (!drawImageCentered(frame, item.r * 2.85, item.r * 2.85, item.rot * 0.10)) {
       const gradient = ctx.createRadialGradient(-7, -8, 2, 0, 0, item.r);
       gradient.addColorStop(0, "#fff"); gradient.addColorStop(0.2, "#caffff");
       gradient.addColorStop(0.48, "#63efff"); gradient.addColorStop(1, "#1554d8");
@@ -2774,7 +2887,8 @@
     if (settings.vibration) vibrate(20);
   };
   ui.effectsQuality.onchange = (event) => {
-    settings.effects = event.target.checked;
+    settings.effectsQuality = ["low", "normal", "high"].includes(event.target.value) ? event.target.value : "normal";
+    settings.effects = settings.effectsQuality !== "low";
   };
 
   ui.reward.onclick = async () => {
@@ -2782,6 +2896,7 @@
     ui.reward.textContent = "CARGANDO ANUNCIO…";
     try {
       const ok = await window.AdBridge?.showRewarded?.();
+      window.AnalyticsManager?.track("rewarded_ad", { level: currentLevel + 1, completed: Boolean(ok) });
       if (ok) resumeReward();
       else toast("Anuncio no disponible");
     } catch {
@@ -2806,20 +2921,25 @@
     ui.install.classList.add("hidden");
   };
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden && state === "playing") pauseGame();
+  document.addEventListener("visibilitychange", async () => {
+    if (!document.hidden) {
+      last = performance.now();
+      return;
+    }
+    if (state === "playing") pauseGame();
+    await suspendAudio();
   });
 
   addEventListener("neon-ad-opening", async () => {
     last = performance.now();
     resumeAudioAfterAd = Boolean(audioCtx && audioCtx.state === "running");
-    if (resumeAudioAfterAd) await audioCtx.suspend().catch(() => {});
+    if (resumeAudioAfterAd) await suspendAudio();
   });
 
   addEventListener("neon-ad-closed", async () => {
     last = performance.now();
     if (resumeAudioAfterAd && audioCtx && settings.music > 0) {
-      await audioCtx.resume().catch(() => {});
+      await resumeAudio();
     }
     resumeAudioAfterAd = false;
   });
@@ -2830,6 +2950,15 @@
 
   resizeCanvas();
   syncSettingsUI();
+  window.AnalyticsManager?.track("app_open", { build: BUILD_VERSION });
+  addEventListener("pagehide", () => {
+    window.AnalyticsManager?.track("session_duration", {
+      seconds: Math.round(window.AnalyticsManager.sessionDurationSeconds())
+    });
+    if (["playing", "paused", "destroying"].includes(state)) {
+      window.AnalyticsManager?.track("abandon", { level: currentLevel + 1, state });
+    }
+  }, { once: true });
   console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
   updateMenu();
   hud();

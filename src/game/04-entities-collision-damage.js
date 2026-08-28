@@ -1,0 +1,540 @@
+  function availablePowers() {
+    const available = ["shield"];
+    if (currentLevel >= 1) available.push("tractor");
+    if (currentLevel >= 2) available.push("slow");
+    if (currentLevel >= 3) available.push("double");
+    if (currentLevel >= 4) available.push("phaser");
+    return available;
+  }
+
+  function choosePower() {
+    if (repairAllowance > repairSpawned && hull <= 66 && Math.random() < 0.18) {
+      repairSpawned++;
+      return "repair";
+    }
+    const available = availablePowers();
+    return available[(Math.random() * available.length) | 0];
+  }
+
+  function meteorShape() {
+    const count = 8 + ((Math.random() * 3) | 0);
+    return Array.from({ length: count }, () => 0.72 + Math.random() * 0.34);
+  }
+
+  function makeCraters(radius) {
+    return Array.from({ length: 2 + ((Math.random() * 3) | 0) }, () => ({
+      x: (Math.random() - 0.5) * radius * 0.85,
+      y: (Math.random() - 0.5) * radius * 0.7,
+      r: radius * (0.10 + Math.random() * 0.14)
+    }));
+  }
+
+  function chooseThreatType(lv) {
+    return lv.threatPool[(Math.random() * lv.threatPool.length) | 0];
+  }
+
+  function chooseThreatSprite(type, radius, special) {
+    if (special === "comet") return "comet";
+    if (type === "meteor") {
+      if (radius < 36) return Math.random() < 0.55 ? "meteorSmall" : "meteorSmallAlt";
+      if (radius < 40) return Math.random() < 0.58 ? "meteorMedium" : "meteorMediumAlt";
+      return "meteorLarge";
+    }
+    if (type === "satellite") return "satellite";
+    const basic = ["debrisMetal", "debrisPanel"];
+    const hot = ["debrisHot0", "debrisHot1"];
+    const pool = currentLevel >= 4 ? basic.concat(hot) : basic;
+    return pool[(Math.random() * pool.length) | 0];
+  }
+
+  function threatHitPoints(type, spriteKey, special) {
+    if (special === "comet") return 2;
+    if (type === "satellite") return 3;
+    if (type === "debris") {
+      if (spriteKey === "debrisPanel") return 1;
+      if (spriteKey && spriteKey.includes("Hot")) return 3;
+      return 2;
+    }
+    if (spriteKey === "meteorLarge") return 3;
+    if (spriteKey && spriteKey.includes("Medium")) return 2;
+    return 1;
+  }
+
+  function createThreat(type, lv) {
+    const x = 55 + Math.random() * (W - 110);
+    let radius = 36;
+    let speed = (245 + Math.random() * 110) * lv.speed;
+    let damage = 34;
+    let special = "";
+
+    if (type === "debris") {
+      radius = 27 + Math.random() * 8;
+      speed *= 1.08;
+      damage = 24;
+    } else if (type === "satellite") {
+      radius = 39 + Math.random() * 7;
+      speed *= 0.92;
+      damage = 31;
+    } else {
+      radius = 33 + Math.random() * 9;
+    }
+
+    if (lv.hazard === "dart" && type === "meteor" && Math.random() < 0.34) {
+      speed *= 1.72;
+      special = "comet";
+      damage = 42;
+    }
+    if (lv.hazard === "overdrive") speed *= 1.10;
+    if (lv.hazard === "final" && type === "meteor" && Math.random() < 0.35) {
+      speed *= 1.45;
+      special = "comet";
+      damage = 42;
+    }
+
+    const spriteKey = chooseThreatSprite(type, radius, special);
+    const hitPoints = threatHitPoints(type, spriteKey, special);
+
+    return {
+      type,
+      x,
+      baseX: x,
+      y: -85,
+      r: radius,
+      s: speed,
+      damage,
+      rot: special === "comet" ? 0 : Math.random() * Math.PI * 2,
+      rs: special === "comet" ? (Math.random() - 0.5) * 0.5 : (Math.random() - 0.5) * (type === "debris" ? 6 : 3.6),
+      p: Math.random() * Math.PI * 2,
+      phase: Math.random() * Math.PI * 2,
+      amp: 35 + Math.random() * 55,
+      special,
+      alpha: 1,
+      spriteKey,
+      hp: hitPoints,
+      maxHp: hitPoints,
+      shape: type === "meteor" ? meteorShape() : null,
+      craters: type === "meteor" ? makeCraters(radius) : null,
+      variant: type === "debris" ? (Math.random() < 0.5 ? "panel" : "strut") : ""
+    };
+  }
+
+  function addItem() {
+    const lv = level();
+    const roll = Math.random();
+    const canEnergy = energySpawned < energyBudget;
+    const canPower = powerSpawned < powerBudget;
+    let type;
+
+    if (roll < lv.meteor) {
+      type = chooseThreatType(lv);
+    } else if (canPower && roll < lv.meteor + lv.power) {
+      type = choosePower();
+      powerSpawned++;
+    } else if (canEnergy) {
+      type = "energy";
+      energySpawned++;
+    } else {
+      type = chooseThreatType(lv);
+    }
+
+    if (["meteor", "debris", "satellite"].includes(type)) {
+      const threat = createThreat(type, lv);
+      // Una formación activa reserva su abertura desde la parte superior de la
+      // pantalla hasta la nave. Las amenazas que nacen dentro no llegan a
+      // insertarse y, por tanto, nunca pueden taponar la única ruta válida.
+      if (!threatOverlapsProtectedCorridor(threat)) items.push(threat);
+      return;
+    }
+
+    const isPower = type !== "energy";
+    // Los núcleos se reducen un 15 % para que la nave conserve protagonismo visual.
+    const radius = isPower ? 30 : 22;
+    const x = 55 + Math.random() * (W - 110);
+    items.push({
+      type,
+      x,
+      baseX: x,
+      y: -70,
+      r: radius,
+      s: (245 + Math.random() * 110) * lv.speed,
+      rot: Math.random() * Math.PI * 2,
+      rs: (Math.random() - 0.5) * 3.6,
+      p: Math.random() * Math.PI * 2,
+      phase: Math.random() * Math.PI * 2,
+      amp: 35 + Math.random() * 55,
+      special: "",
+      alpha: 1
+    });
+  }
+
+  function pointInsidePolygon(x, y, polygon) {
+    let inside = false;
+    for (let current = 0, previous = polygon.length - 1; current < polygon.length; previous = current++) {
+      const [xCurrent, yCurrent] = polygon[current];
+      const [xPrevious, yPrevious] = polygon[previous];
+      const crosses = (yCurrent > y) !== (yPrevious > y) &&
+        x < (xPrevious - xCurrent) * (y - yCurrent) / ((yPrevious - yCurrent) || 0.000001) + xCurrent;
+      if (crosses) inside = !inside;
+    }
+    return inside;
+  }
+
+  function squaredDistanceToSegment(px, py, ax, ay, bx, by) {
+    const segmentX = bx - ax;
+    const segmentY = by - ay;
+    const lengthSquared = segmentX * segmentX + segmentY * segmentY;
+    if (lengthSquared === 0) {
+      const dx = px - ax;
+      const dy = py - ay;
+      return dx * dx + dy * dy;
+    }
+    const projection = clamp(((px - ax) * segmentX + (py - ay) * segmentY) / lengthSquared, 0, 1);
+    const closestX = ax + projection * segmentX;
+    const closestY = ay + projection * segmentY;
+    const dx = px - closestX;
+    const dy = py - closestY;
+    return dx * dx + dy * dy;
+  }
+
+  function collisionCircles(item) {
+    if (item.type === "energy") return [{ x: 0, y: 0, r: item.r * 1.10 }];
+    if (!isThreat(item)) {
+      const factor = item.type === "repair" ? 1.05 : (item.type === "tractor" || item.type === "phaser") ? 0.92 : 1.0;
+      return [{ x: 0, y: 0, r: item.r * factor }];
+    }
+    if (item.special === "comet") return [{ x: 0, y: 0, r: item.r * 0.94 }];
+    if (item.type === "satellite") {
+      return [
+        { x: -item.r * 0.92, y: 0, r: item.r * 0.58 },
+        { x: 0, y: 0, r: item.r * 0.70 },
+        { x: item.r * 0.92, y: 0, r: item.r * 0.58 }
+      ];
+    }
+    if (item.type === "debris" && item.spriteKey === "debrisPanel") {
+      return [
+        { x: -item.r * 0.68, y: 0, r: item.r * 0.62 },
+        { x: 0, y: 0, r: item.r * 0.66 },
+        { x: item.r * 0.68, y: 0, r: item.r * 0.62 }
+      ];
+    }
+    if (item.type === "debris") return [{ x: 0, y: 0, r: item.r * 1.08 }];
+    if (item.spriteKey === "meteorLarge") return [{ x: 0, y: 0, r: item.r * 1.22 }];
+    if (item.spriteKey && item.spriteKey.includes("Medium")) return [{ x: 0, y: 0, r: item.r * 1.12 }];
+    return [{ x: 0, y: 0, r: item.r * 1.04 }];
+  }
+
+  function circleHitsShip(localX, localY, radius) {
+    if (localX + radius < -112 || localX - radius > 112 ||
+        localY + radius < -151 || localY - radius > 98) return false;
+    if (pointInsidePolygon(localX, localY, SHIP_COLLISION_OUTLINE)) return true;
+    const radiusSquared = radius * radius;
+    for (let index = 0; index < SHIP_COLLISION_OUTLINE.length; index++) {
+      const [ax, ay] = SHIP_COLLISION_OUTLINE[index];
+      const [bx, by] = SHIP_COLLISION_OUTLINE[(index + 1) % SHIP_COLLISION_OUTLINE.length];
+      if (squaredDistanceToSegment(localX, localY, ax, ay, bx, by) <= radiusSquared) return true;
+    }
+    return false;
+  }
+
+  function hit(item) {
+    const cos = Math.cos(item.rot || 0);
+    const sin = Math.sin(item.rot || 0);
+    for (const circle of collisionCircles(item)) {
+      const offsetX = circle.x * cos - circle.y * sin;
+      const offsetY = circle.x * sin + circle.y * cos;
+      const localX = item.x + offsetX - player.x;
+      const localY = item.y + offsetY - player.y;
+      if (circleHitsShip(localX, localY, circle.r)) return true;
+    }
+    return false;
+  }
+
+  function addParticle(seed) {
+    if (parts.length >= EFFECT_LIMITS.particles) return false;
+    parts.push(particlePool.acquire(seed));
+    return true;
+  }
+
+  function clearTransientEffects() {
+    for (const part of parts) particlePool.release(part);
+    parts.length = 0;
+    shots.length = 0;
+    rings.length = 0;
+    explosions.length = 0;
+    impactEffects.length = 0;
+  }
+
+  function cancelSupplyFailureTimer() {
+    if (supplyFailureTimer) clearTimeout(supplyFailureTimer);
+    supplyFailureTimer = 0;
+    supplyFailureScheduled = false;
+  }
+
+  function burst(x, y, count, kind) {
+    const factor = settings.effectsQuality === "high" ? 1 : settings.effectsQuality === "normal" ? 0.72 : 0.42;
+    const amount = Math.ceil(count * factor);
+    for (let index = 0; index < amount; index++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 65 + Math.random() * 245;
+      addParticle({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 0.45 + Math.random() * 0.55,
+        size: 3 + Math.random() * 8,
+        kind
+      });
+    }
+  }
+
+  function directionalBurst(x, y, targetX, targetY, count, kind = "cyan") {
+    const factor = settings.effectsQuality === "high" ? 1 : settings.effectsQuality === "normal" ? 0.76 : 0.46;
+    const amount = Math.ceil(count * factor);
+    const baseAngle = Math.atan2(targetY - y, targetX - x);
+    for (let index = 0; index < amount; index++) {
+      const angle = baseAngle + (Math.random() - 0.5) * 0.62;
+      const speed = 150 + Math.random() * 280;
+      addParticle({
+        x: x + (Math.random() - 0.5) * 12,
+        y: y + (Math.random() - 0.5) * 12,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 0.34 + Math.random() * 0.34,
+        size: 2 + Math.random() * 5,
+        kind
+      });
+    }
+  }
+
+  function engineTrail() {
+    if (!settings.effects || state !== "playing" || Math.random() > 0.48) return;
+    const hardTurn = Math.abs(player.target + player.drift - player.x) > 65;
+    const x = player.x + (hardTurn ? (player.target > player.x ? -1 : 1) * 28 : (Math.random() - 0.5) * 30) * SHIP_VISUAL.scale;
+    const y = player.y + 61 * SHIP_VISUAL.scale;
+    addParticle({
+      x, y, vx: (Math.random() - 0.5) * 28, vy: 125 + Math.random() * 120,
+      life: 0.22 + Math.random() * 0.24, size: 2 + Math.random() * 4, kind: "cyan"
+    });
+  }
+
+  function pulseRing(x, y, color, max = 85, duration = 0.48, style = "single") {
+    if (rings.length >= EFFECT_LIMITS.rings) rings.shift();
+    rings.push({ x, y, color, max, duration, life: duration, style });
+  }
+
+  function addExplosion(x, y, scale = 1, duration = 0.52) {
+    if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
+    explosions.push({ x, y, scale, life: duration, duration, rotation: Math.random() * Math.PI * 2 });
+  }
+
+  function addImpactEffect(x, y, scale = 1, angle = 0) {
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x, y, scale, angle, life: 0.24, duration: 0.24, variant: (Math.random() * SPRITE_GROUPS.impact.length) | 0 });
+  }
+
+  function activatePower(type, item) {
+    const durations = { shield: 7, tractor: 8, slow: 6, double: 7, phaser: 7 };
+    if (type === "repair") {
+      const restored = Math.min(34, 100 - hull);
+      hull += restored;
+      burst(item.x, item.y, 24, "green");
+      pulseRing(item.x, item.y, "#78ff9c", 105, 0.62);
+      toast(`Drone de reparación: +${Math.round(restored)}%`);
+      tone(690, 0.18, "sine", 0.08);
+      vibrate(30);
+      hud();
+      window.AnalyticsManager?.track("ability_used", { level: currentLevel + 1, ability: "repair" });
+      return;
+    }
+
+    powers[type] = Math.max(powers[type], durations[type]);
+    const effectKind = type === "double" ? "gold" : type === "phaser" ? "green" : "violet";
+    const effectColor = type === "double" ? "#ffe66c" : type === "phaser" ? "#78ff9c" : "#c58aff";
+    burst(item.x, item.y, 20, effectKind);
+    pulseRing(item.x, item.y, effectColor, 105, 0.58);
+    const names = {
+      shield: "Escudo operativo",
+      tractor: "Rayo tractor conectado",
+      slow: "Estabilizador activo",
+      double: "Sobrecarga de núcleos",
+      phaser: "Phaser automático activo"
+    };
+    toast(names[type]);
+    tone(type === "phaser" ? 920 : 780, 0.15, "triangle", 0.075);
+    vibrate(22);
+    updatePowerHud();
+    window.AnalyticsManager?.track("ability_used", { level: currentLevel + 1, ability: type });
+  }
+
+  function damageShip(amount, x = player.x, y = player.y) {
+    if (state === "destroying" || state === "gameover") return;
+    const impactAngle = Math.atan2(y - player.y, x - player.x);
+    const damageResult = NeonCore.resolveDamage({ hull, amount, shieldActive: powers.shield > 0 });
+    if (damageResult.absorbed) {
+      score += 10;
+      burst(x, y, 18, "cyan");
+      pulseRing(x, y, "#62fff1", 90, 0.42);
+      addImpactEffect(x, y, 0.85, impactAngle);
+      tone(230, 0.08, "square", 0.045);
+      return;
+    }
+
+    hull = damageResult.hull;
+    impactReactionTimer = 0.32;
+    impactReactionSide = x >= player.x ? 1 : -1;
+    if (!damageSmokeLocked && hull < 67) {
+      damageSmokeSide = x >= player.x ? 1 : -1;
+      damageSmokeLocked = true;
+    }
+    combo = 1;
+    comboTimer = 0;
+    shake = 16;
+    flash = 0.26;
+    burst(x, y, 28, "red");
+    pulseRing(x, y, "#ff496f", 110, 0.48);
+    addImpactEffect(x, y, 1.05, impactAngle);
+    tone(95, 0.22, "sawtooth", 0.08);
+    vibrate([45, 35, 60]);
+    hud();
+
+    if (damageResult.destroyed) {
+      // Estado intermedio: detiene la partida, centra visualmente la nave y deja
+      // terminar la destrucción antes de abrir la pantalla de derrota.
+      setState("destroying");
+      destructionTimer = 1.18;
+      destructionStage = 0;
+      playerVisible = true;
+      player.target = player.x;
+      player.drift = 0;
+      tractorTarget = null;
+      for (const key in powers) powers[key] = 0;
+      ui.powerHud.classList.add("hidden");
+      hideWarning();
+      items = [];
+      gates = [];
+      shots.length = 0;
+      addExplosion(player.x, player.y + SHIP_VISUAL.centerYOffset, 1.65, 0.92);
+      addImpactEffect(player.x - 34 * SHIP_VISUAL.scale, player.y - 8 * SHIP_VISUAL.scale, 1.15, -0.5);
+      addImpactEffect(player.x + 36 * SHIP_VISUAL.scale, player.y + 4 * SHIP_VISUAL.scale, 1.15, 0.5);
+      burst(player.x, player.y - 20 * SHIP_VISUAL.scale, 42, "red");
+      tone(70, 0.48, "sawtooth", 0.095);
+      vibrate([70, 35, 90, 40, 120]);
+    }
+  }
+
+  function collectItem(item) {
+    if (item.type === "energy") {
+      const multiplier = powers.double > 0 ? 2 : 1;
+      score += 10 * combo * multiplier;
+      collected++;
+      combo = Math.min(12, combo + 1);
+      maxCombo = Math.max(maxCombo, combo);
+      comboTimer = 2.35;
+      directionalBurst(item.x, item.y, player.x, player.y - 18, 20, "cyan");
+      burst(item.x, item.y, 9, "cyan");
+      pulseRing(item.x, item.y, "#55f6ff", 76, 0.38, "capture");
+      stormPulse = Math.max(stormPulse, 0.08);
+      tone(500 + combo * 28, 0.06, "triangle", 0.055);
+      if (collected >= level().goal) completeLevel();
+    } else if (isThreat(item)) {
+      damageShip(item.damage, item.x, item.y);
+    } else {
+      activatePower(item.type, item);
+    }
+    hud();
+  }
+
+  function updateEffects(dt) {
+    for (let index = parts.length - 1; index >= 0; index--) {
+      const part = parts[index];
+      part.life -= dt;
+      part.x += part.vx * dt;
+      part.y += part.vy * dt;
+      part.vx *= Math.pow(0.04, dt);
+      part.vy = part.vy * Math.pow(0.12, dt) + 160 * dt;
+      if (part.life <= 0) {
+        parts.splice(index, 1);
+        particlePool.release(part);
+      }
+    }
+    for (let index = shots.length - 1; index >= 0; index--) {
+      const shot = shots[index];
+      shot.life -= dt;
+      if (shot.life <= 0) {
+        if (shot.hit) {
+          burst(shot.impactX, shot.impactY, shot.destroyed ? 18 : 8, "green");
+          pulseRing(shot.impactX, shot.impactY, "#78ff9c", shot.destroyed ? 70 : 42, 0.28);
+          if (shot.destroyed) addExplosion(shot.impactX, shot.impactY, shot.impactScale || 1);
+          addImpactEffect(shot.impactX, shot.impactY, shot.destroyed ? 0.8 : 0.55);
+        }
+        shots.splice(index, 1);
+      }
+    }
+    for (let index = rings.length - 1; index >= 0; index--) {
+      rings[index].life -= dt;
+      if (rings[index].life <= 0) rings.splice(index, 1);
+    }
+    for (let index = explosions.length - 1; index >= 0; index--) {
+      explosions[index].life -= dt;
+      if (explosions[index].life <= 0) explosions.splice(index, 1);
+    }
+    for (let index = impactEffects.length - 1; index >= 0; index--) {
+      impactEffects[index].life -= dt;
+      if (impactEffects[index].life <= 0) impactEffects.splice(index, 1);
+    }
+  }
+
+  function selectTractorTarget() {
+    const candidates = items
+      .filter((item) => !isThreat(item) && item.y < player.y && Math.hypot(item.x - player.x, item.y - player.y) < 360)
+      .sort((a, b) => Math.hypot(a.x - player.x, a.y - player.y) - Math.hypot(b.x - player.x, b.y - player.y));
+    tractorTarget = candidates[0] || null;
+  }
+
+  function firePhaser() {
+    phaserCooldown = 0.34;
+    cameraKickY = Math.max(cameraKickY, 3.5);
+    shake = Math.max(shake, 2.2);
+    const candidates = items
+      .filter(isThreat)
+      .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 95)
+      .sort((a, b) => b.y - a.y);
+    const target = candidates[0];
+
+    if (target) {
+      target.hp = Math.max(0, (target.hp || 1) - 1);
+      const destroyed = target.hp <= 0;
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+      shots.push({
+        x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: target.x, y2: target.y,
+        life: 0.20, duration: 0.20, hit: true, destroyed, impactX: target.x, impactY: target.y,
+        impactScale: target.type === "satellite" ? 1.25 : target.r > 39 ? 1.15 : 0.85
+      });
+      score += destroyed ? (target.type === "satellite" ? 12 : 8) : 2;
+      if (destroyed) {
+        const targetIndex = items.indexOf(target);
+        if (targetIndex >= 0) items.splice(targetIndex, 1);
+      }
+      tone(destroyed ? 980 : 760, 0.07, "sawtooth", 0.045);
+    } else {
+      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+      shots.push({ x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: player.x, y2: 90, life: 0.18, duration: 0.18, hit: false });
+    }
+  }
+
+  function checkSupplyFailure() {
+    if (supplyFailureScheduled || energySpawned < energyBudget || collected >= level().goal) return;
+    const energyRemaining = items.some((item) => item.type === "energy");
+    if (!energyRemaining) {
+      supplyFailureScheduled = true;
+      const scheduledRun = runToken;
+      supplyFailureTimer = setTimeout(() => {
+        supplyFailureTimer = 0;
+        supplyFailureScheduled = false;
+        if (scheduledRun === runToken && state === "playing" && collected < level().goal && !items.some((item) => item.type === "energy")) {
+          finishGame("supply");
+        }
+      }, 420);
+    }
+  }
