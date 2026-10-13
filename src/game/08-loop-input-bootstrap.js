@@ -31,12 +31,25 @@
     ctx.restore();
   }
 
+  // Synchronous, idempotent legacy RAF stop; default campaign stays active.
+  let legacyRunning = true;
+  let legacyFrameId = null;
+  function stopLegacyLoop() {
+    legacyRunning = false;
+    const pending = legacyFrameId;
+    legacyFrameId = null;
+    if (pending !== null) cancelAnimationFrame(pending);
+    return null; // Already cancelled; adapter must not cancel it twice.
+  }
   function frame(now) {
+    if (!legacyRunning) return;
+    legacyFrameId = null;
     const dt = Math.min(0.034, (now - last) / 1000);
     last = now;
     update(dt);
+    if (!legacyRunning) return;
     render(now);
-    requestAnimationFrame(frame);
+    if (legacyRunning) legacyFrameId = requestAnimationFrame(frame);
   }
 
   function pointerX(event) {
@@ -191,5 +204,5 @@
   hud();
   resetPowers();
   overlay(ui.menu);
-  requestAnimationFrame(frame);
+  legacyFrameId = requestAnimationFrame(frame);
 })();
