@@ -33,6 +33,10 @@ for (const file of webOnlyFiles) {
   await cp(join(root, file), join(output, file));
 }
 await cp(join(root, "assets"), join(output, "assets"), { recursive: true });
+// Isolated ES-module engine preview: web-only, never bundled into the native release.
+await cp(join(root, "engine-preview.html"), join(output, "engine-preview.html"));
+await cp(join(root, "engine"), join(output, "engine"), { recursive: true });
+await cp(join(root, "render", "neon-render-engine.mjs"), join(output, "render", "neon-render-engine.mjs"), { recursive: true });
 
 await rm(iosPublic, { recursive: true, force: true });
 await mkdir(iosPublic, { recursive: true });
