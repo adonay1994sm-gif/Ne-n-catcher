@@ -11,13 +11,12 @@ import {fileURLToPath} from 'node:url';
 
 const ROOT=join(dirname(fileURLToPath(import.meta.url)),'..');
 export const PRESERVED=Object.freeze({
-  'assets/.gitkeep': 'f660a7996deacfbc7560e4240054a8ad82eb02fe25a95064257e07084bcacb85',
   'assets/comet_fire.webp': 'bae313a48a12cff61b5aec04ec7a3ec70a5fef997d633598171ad554c27eefd2'
 });
 const hash=buffer=>createHash('sha256').update(buffer).digest('hex');
 const sorted=values=>[...values].sort();
 
-export function checkInventory({declared,disk,preserved=Object.keys(PRESERVED),assetCount,expectedBytes,actualBytes}){
+export function checkInventory({declared,disk,preserved=['assets/.gitkeep',...Object.keys(PRESERVED)],assetCount,expectedBytes,actualBytes}){
   const duplicates=declared.filter((name,index)=>declared.indexOf(name)!==index);
   const preservedDuplicates=preserved.filter((name,index)=>preserved.indexOf(name)!==index);
   const overlap=declared.filter(name=>preserved.includes(name));
@@ -50,7 +49,8 @@ export async function audit(root=ROOT){
     if(!disk.includes(path))continue;
     if(hash(await readFile(join(root,path)))!==expected)hashMismatches.push(path);
   }
-  if(hashMismatches.length){result.ok=false;result.errors.push('PRESERVED_HASH_MISMATCH');}
+  if(disk.includes('assets/.gitkeep') && (await readFile(join(root,'assets/.gitkeep'),'utf8')) !== 'keep\n') hashMismatches.push('assets/.gitkeep');
+  if(hashMismatches.length){result.ok=false;result.errors.push('PRESERVED_CONTENT_MISMATCH');}
   return {...result,hashMismatches,expectedBytes:manifest.runtimeBytes,actualBytes};
 }
 
