@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {EngineCore} from '../src/engine/EngineCore.js';
 import {Renderer} from '../src/engine/Renderer.js';
 import {ParticleSystem} from '../src/engine/ParticleSystem.js';
-import {createCampaignAdapter} from '../src/engine/CampaignAdapter.js';
+import {createCampaignAdapter,createBridgedCampaignAdapter,CAMPAIGN_STATES,USE_ENGINE_V1} from '../src/engine/CampaignAdapter.js';
 
 function fixture(){
  const frames=new Map(),cancelled=[],calls=[];let next=0;
@@ -60,4 +60,38 @@ test('29 experimental start failure restarts legacy exactly once',()=>{
  const originalError=console.error;console.error=()=>{};
  try{assert.throws(()=>a.start(),/RAF unavailable/);}finally{console.error=originalError;}
  assert.equal(stops,1);assert.equal(restarts,1);assert.equal(a.running,false);
+});
+
+test('30 flag defaults off and bridge is not touched',()=>{
+ assert.equal(USE_ENGINE_V1,false);
+ const f=fixture();const a=createBridgedCampaignAdapter({host:{},renderer:f.renderer,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{}});
+ assert.equal(a.start(),false);assert.equal(a.lifecycle,CAMPAIGN_STATES.LEGACY_ACTIVE);
+});
+test('31 handoff and normal restoration maintain exactly one RAF',()=>{
+ const f=fixture();let legacyId=f.raf(()=>{}),stops=0,restarts=0;
+ const host={NeonLegacyLoopBridge:{
+  stopLegacyLoop(){stops++;f.cancel(legacyId);legacyId=null;return true;},
+  restartLegacyLoop(){restarts++;legacyId=f.raf(()=>{});return true;}
+ }};
+ const a=createBridgedCampaignAdapter({host,useEngineV1:true,renderer:f.renderer,requestFrame:f.raf,cancelFrame:f.cancel,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{}});
+ assert.equal(f.frames.size,1);
+ assert.equal(a.start(),true);assert.equal(a.lifecycle,CAMPAIGN_STATES.ENGINE_ACTIVE);assert.equal(f.frames.size,1);
+ assert.equal(a.stop({restoreLegacy:true}),true);assert.equal(a.lifecycle,CAMPAIGN_STATES.LEGACY_ACTIVE);
+ assert.equal(f.frames.size,1);assert.equal(stops,1);assert.equal(restarts,1);
+});
+test('32 frame error falls back with a single legacy RAF',()=>{
+ const f=fixture();let legacyId=f.raf(()=>{}),restarts=0;
+ const a=createBridgedCampaignAdapter({host:{NeonLegacyLoopBridge:{
+  stopLegacyLoop(){f.cancel(legacyId);legacyId=null;return true;},
+  restartLegacyLoop(){restarts++;legacyId=f.raf(()=>{});return true;}
+ }},useEngineV1:true,renderer:f.renderer,requestFrame:f.raf,cancelFrame:f.cancel,updateLevel:()=>{throw Error('frame fault')},drawBackground:()=>{},drawEntities:()=>{}});
+ a.start();assert.equal(f.frames.size,1);
+ const log=console.error;console.error=()=>{};
+ try{f.tick([...f.frames.keys()][0],100);}finally{console.error=log;}
+ assert.equal(a.lifecycle,CAMPAIGN_STATES.LEGACY_ACTIVE);assert.equal(a.running,false);
+ assert.equal(f.frames.size,1);assert.equal(restarts,1);
+});
+test('33 normal stop without restoration does not misreport legacy as active',()=>{
+ const f=fixture();const a=createCampaignAdapter({renderer:f.renderer,requestFrame:f.raf,cancelFrame:f.cancel,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},stopLegacyLoop:()=>true,restartLegacyLoop:()=>true,useEngineV1:true});
+ a.start();a.stop();assert.equal(a.lifecycle,CAMPAIGN_STATES.HANDOFF);assert.equal(f.frames.size,0);
 });
