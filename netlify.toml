@@ -9,7 +9,7 @@
 # NEON_PREVIEW_DEPLOY=1 must be set explicitly for this branch in Netlify.
 [context.continuity-assets-audit-20261013]
   ignore = "node ./scripts/netlify-preview-gate.mjs --ignore"
-  command = "node ./scripts/netlify-preview-gate.mjs --require-enabled && npm run build:preview"
+  command = "node ./scripts/netlify-preview-gate.mjs --require-enabled && npm run build:preview && npm run test:static && npm run test:preview"
   publish = "preview-dist"
 
 [[headers]]
