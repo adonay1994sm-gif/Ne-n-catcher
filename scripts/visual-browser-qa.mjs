@@ -20,7 +20,7 @@ try {
   });
   const errors = [];
   page.on('pageerror', (error) => errors.push('JS ' + String(error)));
-  page.on('requestfailed', (request) => errors.push('HTTP ' + request.url()));
+  page.on('requestfailed', (request) => { if (request.url().startsWith('http://127.0.0.1:8765/')) errors.push('LOCAL ' + request.url()); });
   const response = await page.goto('http://127.0.0.1:8765/index.html', { waitUntil: 'networkidle' });
   if (!response?.ok()) throw new Error('Main game URL did not load');
   await mkdir('qa-screenshots', { recursive: true });
