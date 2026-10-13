@@ -126,3 +126,31 @@ test('36 recovery callback returning false does not claim legacy active',()=>{
  a.start();assert.throws(()=>a.stop({restoreLegacy:true}),/did not confirm/);
  assert.equal(a.lifecycle,CAMPAIGN_STATES.RECOVERY_FAILED);
 });
+
+test('37 noninteger DPR uses exact physical backing scale',()=>{
+ const f=fixture();f.renderer.dprProvider=()=>2.625;f.renderer.resize();
+ assert.equal(f.canvas.width,1890);assert.equal(f.canvas.height,3360);
+ f.renderer.beginFrame();f.renderer.endFrame();
+ assert.ok(f.calls.some(c=>c[0]==='transform'&&c[1]===2.625&&c[4]===2.625));
+});
+test('38 touch edges map to logical canvas without overshoot',()=>{
+ const f=fixture();
+ assert.deepEqual(f.renderer.point(10,20),{x:0,y:0});
+ assert.deepEqual(f.renderer.point(370,660),{x:720,y:1280});
+ assert.deepEqual(f.renderer.point(-10,700),{x:0,y:1280});
+ assert.equal(f.renderer.point(-10,700,{clampToCanvas:false}),null);
+});
+test('39 zero sized canvas does not produce invalid input',()=>{
+ const f=fixture();f.canvas.getBoundingClientRect=()=>({left:0,top:0,width:0,height:0});
+ assert.equal(f.renderer.point(20,30),null);
+});
+test('40 visibility pauses RAF and resumes only visibility-owned pause',()=>{
+ const f=fixture();const handlers=new Map();const doc={hidden:false,addEventListener:(name,cb)=>handlers.set(name,cb),removeEventListener:name=>handlers.delete(name)};
+ f.engine.start();const unbind=f.engine.bindVisibility(doc);
+ assert.equal(f.frames.size,1);doc.hidden=true;handlers.get('visibilitychange')();
+ assert.equal(f.frames.size,0);assert.equal(f.engine.paused,true);
+ doc.hidden=false;handlers.get('visibilitychange')();assert.equal(f.frames.size,1);
+ f.engine.pause();doc.hidden=true;handlers.get('visibilitychange')();
+ doc.hidden=false;handlers.get('visibilitychange')();assert.equal(f.engine.paused,true);
+ unbind();assert.equal(handlers.size,0);
+});
