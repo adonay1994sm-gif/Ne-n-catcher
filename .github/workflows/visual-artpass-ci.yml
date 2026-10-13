@@ -1,0 +1,38 @@
+name: NEON CATCHER Art Pass A QA
+
+on:
+  push:
+    branches: [visual-artpass-a-2026-10-13]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          cache: npm
+      - name: Clean install
+        run: npm ci
+      - name: Build game and web bundle
+        run: npm run build
+      - name: Original functional regression tests
+        run: npm test
+      - name: Static and asset-integrity tests
+        run: npm run test:static
+      - name: Architecture regression tests
+        run: npm run test:architecture
+      - name: Engine and visual artpass unit tests
+        run: node --test tests/*.test.mjs
+      - name: Verify built visual preview files exist
+        run: |
+          test -s www/index.html
+          test -s www/game.js
+          test -s www/assets/cronos_level1_background.webp
+          test -s www/assets/shield_effect.webp
