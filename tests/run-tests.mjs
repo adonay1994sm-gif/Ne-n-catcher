@@ -266,7 +266,7 @@ async function loadGameHarness() {
   window.localStorage.setItem("neon-unlocked-v2", "10");
   window.eval(coreSource);
 
-  const marker = "  requestAnimationFrame(frame);\n})();";
+  const marker = "  legacyFrameId = requestAnimationFrame(frame);\n})();";
   assert.ok(gameSource.includes(marker), "no se encontró el punto de instrumentación");
   const hooks = `
   window.__NEON_TEST__ = {
@@ -311,7 +311,7 @@ async function loadGameHarness() {
       gates.push({}); shots.push({}); parts.push({}); rings.push({}); explosions.push({}); impactEffects.push({});
     }
   };
-  requestAnimationFrame(frame);
+  legacyFrameId = requestAnimationFrame(frame);
 })();`;
   window.eval(gameSource.replace(marker, hooks));
   return { dom, window, api: window.__NEON_TEST__ };

@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-13",
+  "tool": "image_gen.imagegen",
+  "reference": "assets/icon-512.png",
+  "source_dimensions": [
+    1254,
+    1254
+  ],
+  "note": "Generated branding masters; splash upscaled for native catalog. No physical iOS certification.",
+  "export": "node scripts/export-native-art.mjs",
+  "imagemagick": "Version: ImageMagick 7.1.1-43 Q16 x86_64 22550 https://imagemagick.org",
+  "assets": [
+    {
+      "path": "art-source/native/app-icon-master.png",
+      "bytes": 1217659,
+      "sha256": "777ea11665fa0e854946b18750401cbdf368b2b6687561873b864964f33bfbe0"
+    },
+    {
+      "path": "art-source/native/launch-screen-master.png",
+      "bytes": 1429675,
+      "sha256": "08f95bb1267cffa0b0d734ee86aa15636d40792141cfc26b46d21058384560e0"
+    },
+    {
+      "path": "ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png",
+      "bytes": 482293,
+      "sha256": "913804a83b85cd20d558837c62ac498cd535f65cad855f156a47a1efc35b8df4"
+    },
+    {
+      "path": "ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png",
+      "bytes": 2008876,
+      "sha256": "b88c694a6ba6e9e593cfabacc495b3e796f61dd81ca7fa8d60cef485ef923a2b"
+    },
+    {
+      "path": "ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png",
+      "bytes": 2008876,
+      "sha256": "b88c694a6ba6e9e593cfabacc495b3e796f61dd81ca7fa8d60cef485ef923a2b"
+    },
+    {
+      "path": "ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png",
+      "bytes": 2008876,
+      "sha256": "b88c694a6ba6e9e593cfabacc495b3e796f61dd81ca7fa8d60cef485ef923a2b"
+    }
+  ]
+}

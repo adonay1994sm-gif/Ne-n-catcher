@@ -1,0 +1,19 @@
+
+> neon-catcher@7.2.0 test:engine
+> node --test tests/engine-lifecycle.test.mjs
+
+✖ tests/engine-lifecycle.test.mjs (371.618852ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 393.240347
+
+✖ failing tests:
+
+test at tests/engine-lifecycle.test.mjs:1:1
+✖ tests/engine-lifecycle.test.mjs (371.618852ms)
+  'test failed'

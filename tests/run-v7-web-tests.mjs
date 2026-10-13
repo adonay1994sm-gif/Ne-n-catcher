@@ -103,7 +103,7 @@ async function loadHarness() {
   };
   window.localStorage.setItem("neon-unlocked-v2", "10");
   window.eval(coreSource);
-  const marker = "  requestAnimationFrame(frame);\n})();";
+  const marker = "  legacyFrameId = requestAnimationFrame(frame);\n})();";
   assert.ok(gameSource.includes(marker), "punto de instrumentación ausente");
   const hooks = `
   window.__NEON_V7_TEST__ = {
@@ -121,7 +121,7 @@ async function loadHarness() {
     setPower: (name, value) => { powers[name] = value; },
     seedThreat: () => items.push({ type: "meteor", x: player.x, baseX: player.x, y: player.y - 260, r: 32, s: 0, rot: 0, rs: 0, p: 0, phase: 0, amp: 0, alpha: 1, hp: 1, damage: 25, spriteKey: "meteorMedium" })
   };
-  requestAnimationFrame(frame);
+  legacyFrameId = requestAnimationFrame(frame);
 })();`;
   window.eval(gameSource.replace(marker, hooks));
   return { dom, window, api: window.__NEON_V7_TEST__ };

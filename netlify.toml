@@ -5,6 +5,11 @@
 [build.environment]
   NODE_VERSION = "22.13.0"
 
+# Source publication is authorized; public deployment of this branch is not.
+[context.continuity-assets-audit-20261013]
+  ignore = "exit 0"
+  command = "node scripts/block-development-deploy.mjs"
+
 [[headers]]
   for = "/*"
   [headers.values]

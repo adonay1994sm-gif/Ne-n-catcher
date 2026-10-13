@@ -1,17 +1,33 @@
-/** Animation inventory: existing sprite references versus missing content. No fabricated frames. */
-export const ANIMATION_MAP=Object.freeze({
- player:Object.freeze({
-  idle:Object.freeze({frames:['ship_frame_01.webp','ship_frame_02.webp','ship_frame_03.webp','ship_frame_04.webp'],status:'verify-assets'}),
-  bankLeft:Object.freeze({frames:['ship_frame_05.webp'],status:'verify-orientation'}),
-  bankRight:Object.freeze({frames:['ship_frame_06.webp'],status:'verify-orientation'}),
-  thruster:Object.freeze({frames:['ship_frame_07.webp'],status:'verify-assets'})
- }),
- enemies:Object.freeze({
-  spawn:Object.freeze({frames:[],status:'assets-required'}),
-  fire:Object.freeze({frames:[],status:'assets-required'}),
-  explosion:Object.freeze({frames:[],status:'assets-required'})
- }),
- energyCore:Object.freeze({pulse:Object.freeze({frames:[],status:'audit-existing-core-sequence'})})
+/** Asset-backed sequences. Missing enemy poses remain explicitly unproduced. */
+const sequence = (prefix, indices) => indices.map(index =>
+  `assets/${prefix}_frame_${String(index).padStart(2, '0')}.webp`);
+const define = (frames, options = {}) => Object.freeze({
+  frames: Object.freeze(frames), frameMs: 115, loop: true, flipX: false,
+  status: 'verified-assets', ...options
+});
+const ship = (...indices) => sequence('ship', indices);
+
+export const ANIMATION_MAP = Object.freeze({
+  player: Object.freeze({
+    idle: define(ship(0, 1, 2, 1)),
+    bankLeft: define(ship(3), {loop: false}),
+    bankRight: define(ship(3), {loop: false, flipX: true}),
+    thruster: define(ship(4), {loop: false}),
+    fire: define(sequence('phaser', [0, 1, 2, 3, 4, 5]), {frameMs: 63, loop: false, layer: 'weapon'}),
+    impact: define(ship(5), {frameMs: 320, loop: false, interruptible: false}),
+    lightDamage: define(sequence('smoke', [0, 1, 2, 1]), {frameMs: 222, layer: 'smoke', opacity: 0.25}),
+    criticalDamage: define(ship(2), {layer: 'ship', loop: false}),
+    destruction: define(sequence('explosion', [0, 1, 2, 3, 4, 5, 6, 7]), {frameMs: 65, loop: false, interruptible: false, layer: 'explosion'}),
+    respawn: define(['assets/shield_idle.webp', 'assets/shield_effect.webp'], {frameMs: 140, layer: 'shield'})
+  }),
+  enemies: Object.freeze({
+    spawn: define([], {status: 'assets-required'}),
+    fire: define([], {status: 'assets-required'}),
+    explosion: define(sequence('explosion', [0, 1, 2, 3, 4, 5, 6, 7]), {frameMs: 65, loop: false, layer: 'explosion'})
+  }),
+  energyCore: Object.freeze({
+    pulse: define(sequence('core', [0, 1, 2, 3, 4, 5]), {frameMs: 111})
+  })
 });
 export const VFX_PRESETS=Object.freeze({
  impact:Object.freeze({count:16,speed:185,life:0.28,color:'#ffb766'}),

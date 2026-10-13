@@ -1,0 +1,33 @@
+
+> neon-catcher@7.2.0 test
+> node tests/run-tests.mjs
+
+PASS 01 · versión 7.2.0 pre-release alineada en metadatos y pantalla
+PASS 02 · dependencias exactas y reproducibles
+PASS 03 · JavaScript y JSON con sintaxis válida
+PASS 04 · game.js coincide con los 9 módulos ordenados
+PASS 05 · sin latest, TODO ni identificadores publicitarios ficticios
+PASS 06 · manifiesto y archivos conservados coinciden exactamente con el disco
+PASS 07 · plan de producción contiene exactamente 150 assets únicos y trazables
+PASS 08 · todos los assets de juego están documentados y precargados
+PASS 09 · service worker incluye código, legales y cada asset
+PASS 10 · todas las referencias locales de HTML existen
+PASS 11 · www es un paquete limpio y coincide con los archivos públicos
+PASS 12 · proyecto iOS real conserva bundle, versión y orientación vertical
+node:internal/fs/promises:697
+  return new FileHandle(await PromisePrototypeThen(
+                        ^
+
+Error: ENOENT: no such file or directory, open '/workspace/Ne-n-catcher/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png'
+    at async open (node:internal/fs/promises:697:25)
+    at async readFile (node:internal/fs/promises:1348:14)
+    at async file:///workspace/Ne-n-catcher/tests/run-tests.mjs:209:16
+    at async test (file:///workspace/Ne-n-catcher/tests/run-tests.mjs:14:3)
+    at async file:///workspace/Ne-n-catcher/tests/run-tests.mjs:207:1 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/workspace/Ne-n-catcher/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png'
+}
+
+Node.js v24.19.0

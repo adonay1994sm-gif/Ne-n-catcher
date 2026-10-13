@@ -99,12 +99,12 @@ export function createCampaignAdapter({
     throw err;
    }
   },
-  stop({restoreLegacy=false}={}){
+  stop({restoreLegacy:shouldRestoreLegacy=false}={}){
    if(!started&&!core?.running)return false;
    core.stop();
    started=false;
    try{onStop();}finally{
-    if(restoreLegacy){
+    if(shouldRestoreLegacy){
      lifecycle=CAMPAIGN_STATES.FALLBACK;
      restoreLegacy();
     }else lifecycle=CAMPAIGN_STATES.INACTIVE;

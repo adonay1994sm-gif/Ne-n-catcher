@@ -1,0 +1,250 @@
+TAP version 13
+# Subtest: 01 default particle capacity
+ok 1 - 01 default particle capacity
+  ---
+  duration_ms: 1.427735
+  type: 'test'
+  ...
+# Subtest: 02 pool allocated once
+ok 2 - 02 pool allocated once
+  ---
+  duration_ms: 1.430456
+  type: 'test'
+  ...
+# Subtest: 03 emit increases count
+ok 3 - 03 emit increases count
+  ---
+  duration_ms: 0.338812
+  type: 'test'
+  ...
+# Subtest: 04 pool saturation rejects
+ok 4 - 04 pool saturation rejects
+  ---
+  duration_ms: 0.128066
+  type: 'test'
+  ...
+# Subtest: 05 pool reuse
+ok 5 - 05 pool reuse
+  ---
+  duration_ms: 0.309772
+  type: 'test'
+  ...
+# Subtest: 06 invalid emit rejected
+ok 6 - 06 invalid emit rejected
+  ---
+  duration_ms: 0.304454
+  type: 'test'
+  ...
+# Subtest: 07 burst bounded
+ok 7 - 07 burst bounded
+  ---
+  duration_ms: 0.316139
+  type: 'test'
+  ...
+# Subtest: 08 clear resets
+ok 8 - 08 clear resets
+  ---
+  duration_ms: 0.543622
+  type: 'test'
+  ...
+# Subtest: 09 draw balanced
+ok 9 - 09 draw balanced
+  ---
+  duration_ms: 0.664184
+  type: 'test'
+  ...
+# Subtest: 10 invalid capacity rejected
+ok 10 - 10 invalid capacity rejected
+  ---
+  duration_ms: 0.604534
+  type: 'test'
+  ...
+# Subtest: 11 retina backing dimensions
+ok 11 - 11 retina backing dimensions
+  ---
+  duration_ms: 0.885233
+  type: 'test'
+  ...
+# Subtest: 12 logical dimensions preserved
+ok 12 - 12 logical dimensions preserved
+  ---
+  duration_ms: 0.151813
+  type: 'test'
+  ...
+# Subtest: 13 pointer mapping
+ok 13 - 13 pointer mapping
+  ---
+  duration_ms: 0.237694
+  type: 'test'
+  ...
+# Subtest: 14 zero-size resize ignored
+ok 14 - 14 zero-size resize ignored
+  ---
+  duration_ms: 0.120543
+  type: 'test'
+  ...
+# Subtest: 15 beginFrame sets DPR transform
+ok 15 - 15 beginFrame sets DPR transform
+  ---
+  duration_ms: 0.212763
+  type: 'test'
+  ...
+# Subtest: 16 shake expires
+ok 16 - 16 shake expires
+  ---
+  duration_ms: 0.151528
+  type: 'test'
+  ...
+# Subtest: 17 start schedules exactly one frame
+ok 17 - 17 start schedules exactly one frame
+  ---
+  duration_ms: 0.402813
+  type: 'test'
+  ...
+# Subtest: 18 repeated start idempotent
+ok 18 - 18 repeated start idempotent
+  ---
+  duration_ms: 0.239612
+  type: 'test'
+  ...
+# Subtest: 19 stop cancels RAF
+ok 19 - 19 stop cancels RAF
+  ---
+  duration_ms: 0.215714
+  type: 'test'
+  ...
+# Subtest: 20 stopped stale callback ignored
+ok 20 - 20 stopped stale callback ignored
+  ---
+  duration_ms: 0.197421
+  type: 'test'
+  ...
+# Subtest: 21 pause cancels RAF
+ok 21 - 21 pause cancels RAF
+  ---
+  duration_ms: 0.173046
+  type: 'test'
+  ...
+# Subtest: 22 resume schedules once
+ok 22 - 22 resume schedules once
+  ---
+  duration_ms: 0.140998
+  type: 'test'
+  ...
+# Subtest: 23 paused stale callback ignored
+ok 23 - 23 paused stale callback ignored
+  ---
+  duration_ms: 0.100598
+  type: 'test'
+  ...
+# Subtest: 24 resume resets delta
+ok 24 - 24 resume resets delta
+  ---
+  duration_ms: 0.262965
+  type: 'test'
+  ...
+# Subtest: 25 update failure stops engine
+ok 25 - 25 update failure stops engine
+  ---
+  duration_ms: 0.171378
+  type: 'test'
+  ...
+# Subtest: 26 adapter rejects missing handoff
+ok 26 - 26 adapter rejects missing handoff
+  ---
+  duration_ms: 0.231226
+  type: 'test'
+  ...
+# Subtest: 27 adapter synchronous handoff and cleanup
+ok 27 - 27 adapter synchronous handoff and cleanup
+  ---
+  duration_ms: 1.188243
+  type: 'test'
+  ...
+# Subtest: 28 disabled adapter does not stop legacy or allocate core
+ok 28 - 28 disabled adapter does not stop legacy or allocate core
+  ---
+  duration_ms: 0.15579
+  type: 'test'
+  ...
+# Subtest: 29 experimental start failure restarts legacy exactly once
+ok 29 - 29 experimental start failure restarts legacy exactly once
+  ---
+  duration_ms: 0.305244
+  type: 'test'
+  ...
+# Subtest: 30 flag defaults off and bridge is not touched
+ok 30 - 30 flag defaults off and bridge is not touched
+  ---
+  duration_ms: 0.239701
+  type: 'test'
+  ...
+# Subtest: 31 handoff and normal restoration maintain exactly one RAF
+ok 31 - 31 handoff and normal restoration maintain exactly one RAF
+  ---
+  duration_ms: 0.402765
+  type: 'test'
+  ...
+# Subtest: 32 frame error falls back with a single legacy RAF
+ok 32 - 32 frame error falls back with a single legacy RAF
+  ---
+  duration_ms: 0.383136
+  type: 'test'
+  ...
+# Subtest: 33 normal stop without restoration does not misreport legacy as active
+ok 33 - 33 normal stop without restoration does not misreport legacy as active
+  ---
+  duration_ms: 0.400575
+  type: 'test'
+  ...
+# Subtest: 34 RAF scheduling failure after first frame triggers fallback once
+ok 34 - 34 RAF scheduling failure after first frame triggers fallback once
+  ---
+  duration_ms: 0.374865
+  type: 'test'
+  ...
+# Subtest: 35 failed recovery keeps explicit error state
+ok 35 - 35 failed recovery keeps explicit error state
+  ---
+  duration_ms: 0.422743
+  type: 'test'
+  ...
+# Subtest: 36 recovery callback returning false does not claim legacy active
+ok 36 - 36 recovery callback returning false does not claim legacy active
+  ---
+  duration_ms: 0.3358
+  type: 'test'
+  ...
+# Subtest: 37 noninteger DPR uses exact physical backing scale
+ok 37 - 37 noninteger DPR uses exact physical backing scale
+  ---
+  duration_ms: 0.179364
+  type: 'test'
+  ...
+# Subtest: 38 touch edges map to logical canvas without overshoot
+ok 38 - 38 touch edges map to logical canvas without overshoot
+  ---
+  duration_ms: 0.366379
+  type: 'test'
+  ...
+# Subtest: 39 zero sized canvas does not produce invalid input
+ok 39 - 39 zero sized canvas does not produce invalid input
+  ---
+  duration_ms: 0.171265
+  type: 'test'
+  ...
+# Subtest: 40 visibility pauses RAF and resumes only visibility-owned pause
+ok 40 - 40 visibility pauses RAF and resumes only visibility-owned pause
+  ---
+  duration_ms: 0.245703
+  type: 'test'
+  ...
+1..40
+# tests 40
+# suites 0
+# pass 40
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 55.619912
