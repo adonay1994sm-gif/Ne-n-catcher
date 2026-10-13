@@ -35,11 +35,12 @@
   let legacyRunning = true;
   let legacyFrameId = null;
   function stopLegacyLoop() {
+    if (!legacyRunning) return true;
     legacyRunning = false;
     const pending = legacyFrameId;
     legacyFrameId = null;
     if (pending !== null) cancelAnimationFrame(pending);
-    return null; // Already cancelled; adapter must not cancel it twice.
+    return true; // RAF already cancelled; adapter must not cancel twice.
   }
   function frame(now) {
     if (!legacyRunning) return;
