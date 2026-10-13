@@ -93,5 +93,36 @@ test('32 frame error falls back with a single legacy RAF',()=>{
 });
 test('33 normal stop without restoration does not misreport legacy as active',()=>{
  const f=fixture();const a=createCampaignAdapter({renderer:f.renderer,requestFrame:f.raf,cancelFrame:f.cancel,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},stopLegacyLoop:()=>true,restartLegacyLoop:()=>true,useEngineV1:true});
- a.start();a.stop();assert.equal(a.lifecycle,CAMPAIGN_STATES.HANDOFF);assert.equal(f.frames.size,0);
+ a.start();a.stop();assert.equal(a.lifecycle,CAMPAIGN_STATES.INACTIVE);assert.equal(f.frames.size,0);
+});
+
+test('34 RAF scheduling failure after first frame triggers fallback once',()=>{
+ const f=fixture();let legacyId=f.raf(()=>{}),restarts=0,engineRequests=0;
+ const requestFrame=cb=>{if(++engineRequests===2)throw Error('second RAF failed');return f.raf(cb);};
+ const a=createBridgedCampaignAdapter({host:{NeonLegacyLoopBridge:{
+  stopLegacyLoop(){f.cancel(legacyId);legacyId=null;return true;},
+  restartLegacyLoop(){restarts++;legacyId=f.raf(()=>{});return true;}
+ }},useEngineV1:true,renderer:f.renderer,requestFrame,cancelFrame:f.cancel,
+ updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{}});
+ a.start();assert.equal(a.lifecycle,CAMPAIGN_STATES.ENGINE_ACTIVE);
+ const original=console.error;console.error=()=>{};
+ try{f.tick([...f.frames.keys()][0],100);}finally{console.error=original;}
+ assert.equal(a.lifecycle,CAMPAIGN_STATES.LEGACY_ACTIVE);
+ assert.equal(a.running,false);assert.equal(restarts,1);assert.equal(f.frames.size,1);
+});
+test('35 failed recovery keeps explicit error state',()=>{
+ const f=fixture();const a=createCampaignAdapter({renderer:f.renderer,requestFrame:f.raf,cancelFrame:f.cancel,
+ updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},
+ stopLegacyLoop:()=>true,restartLegacyLoop:()=>{throw Error('restart failed')},useEngineV1:true});
+ a.start();assert.throws(()=>a.stop({restoreLegacy:true}),/restart failed/);
+ assert.equal(a.lifecycle,CAMPAIGN_STATES.RECOVERY_FAILED);
+ assert.match(a.recoveryError.message,/restart failed/);
+ assert.equal(a.start(),false);assert.equal(f.frames.size,0);
+});
+test('36 recovery callback returning false does not claim legacy active',()=>{
+ const f=fixture();const a=createCampaignAdapter({renderer:f.renderer,requestFrame:f.raf,cancelFrame:f.cancel,
+ updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},
+ stopLegacyLoop:()=>true,restartLegacyLoop:()=>false,useEngineV1:true});
+ a.start();assert.throws(()=>a.stop({restoreLegacy:true}),/did not confirm/);
+ assert.equal(a.lifecycle,CAMPAIGN_STATES.RECOVERY_FAILED);
 });
