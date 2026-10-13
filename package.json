@@ -20,7 +20,8 @@
     "cap:sync": "npm run build && npx cap sync",
     "build:core": "node scripts/build-core.mjs",
     "verify": "npm run build && npm run test:static && npm run test:architecture",
-    "test:architecture": "node tests/run-architecture-tests.mjs"
+    "test:architecture": "node tests/run-architecture-tests.mjs",
+    "test:engine": "node --test tests/engine-lifecycle.test.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "8.0.0",
