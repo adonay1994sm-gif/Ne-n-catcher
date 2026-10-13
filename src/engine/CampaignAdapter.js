@@ -29,9 +29,19 @@ export function createCampaignAdapter({
  let core=null;
  let started=false;
  let lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
+ function recover(error){
+  if(lifecycle===CAMPAIGN_STATES.LEGACY_ACTIVE||lifecycle===CAMPAIGN_STATES.FALLBACK)return false;
+  lifecycle=CAMPAIGN_STATES.FALLBACK;
+  try{core?.stop();}catch(e){console.error('Engine V1 cleanup failed:',e);}
+  started=false;
+  try{onStop();}catch(e){console.error('Engine V1 onStop failed:',e);}
+  console.error('Engine V1 failure. Rolling back to legacy loop:',error);
+  try{restartLegacyLoop();lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;return true;}
+  catch(e){console.error('Legacy loop restart failed:',e);throw new AggregateError([error,e],'Engine V1 and legacy rollback failed');}
+ }
  function ensureCore(){
   if(!core)core=new EngineCore({
-   canvas,renderer,particles,requestFrame,cancelFrame,
+   canvas,renderer,particles,requestFrame,cancelFrame,onError:(error)=>recover(error),
    update:(dt,engine)=>updateLevel(dt,engine),
    drawScene:(ctx,view,engine)=>{
     drawBackground(ctx,view,engine);
@@ -63,25 +73,28 @@ export function createCampaignAdapter({
     return true;
    }catch(err){
     lifecycle=CAMPAIGN_STATES.FALLBACK;
-    // Roll back even if EngineCore construction or onStart fails.
-    try{core?.stop();}catch(cleanupError){console.error('Engine V1 cleanup failed:',cleanupError);}
-    started=false;
-    try{onStop();}catch(cleanupError){console.error('Engine V1 onStop failed:',cleanupError);}
-    console.error("Engine V1 failure. Rolling back to legacy loop:", err);
-    try{if(stopped===true)restartLegacyLoop();}catch(rollbackError){
-     console.error('Legacy loop restart failed:',rollbackError);
-     throw new AggregateError([err,rollbackError],'Engine V1 and legacy rollback failed');
+    if(stopped===true){
+     // recover handles cleanup and restoration after successful legacy stop.
+     lifecycle=CAMPAIGN_STATES.HANDOFF;
+     recover(err);
+    }else{
+     try{core?.stop();}catch(cleanupError){console.error('Engine V1 cleanup failed:',cleanupError);}
+     lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
     }
-    lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
     throw err;
    }
   },
-  stop(){
+  stop({restoreLegacy=false}={}){
    if(!started&&!core?.running)return false;
    core.stop();
    started=false;
-   onStop();
-   lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
+   try{onStop();}finally{
+    if(restoreLegacy){
+     lifecycle=CAMPAIGN_STATES.FALLBACK;
+     restartLegacyLoop();
+     lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
+    }else lifecycle=CAMPAIGN_STATES.HANDOFF;
+   }
    return true;
   }
  };
