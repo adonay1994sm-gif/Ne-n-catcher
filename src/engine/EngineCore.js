@@ -2,12 +2,12 @@ import {Renderer} from './Renderer.js';
 import {ParticleSystem} from './ParticleSystem.js';
 /** Isolated engine preview; stale RAF callbacks cannot resurrect a stopped generation. */
 export class EngineCore {
- constructor({canvas,renderer=null,particles=new ParticleSystem(),update=()=>{},drawScene=()=>{},requestFrame=cb=>requestAnimationFrame(cb),cancelFrame=id=>cancelAnimationFrame(id),maxDelta=.05}={}){
+ constructor({canvas,renderer=null,particles=new ParticleSystem(),update=()=>{},drawScene=()=>{},requestFrame=cb=>requestAnimationFrame(cb),cancelFrame=id=>cancelAnimationFrame(id),maxDelta=.05,onError=null}={}){
   this.renderer=renderer||new Renderer(canvas);this.particles=particles;this.updateGame=update;this.drawScene=drawScene;
   this.requestFrame=requestFrame;this.cancelFrame=cancelFrame;this.maxDelta=maxDelta;
-  this.running=false;this.paused=false;this.frameId=null;this.last=null;this.generation=0;
+  this.onError=onError;this.running=false;this.paused=false;this.frameId=null;this.last=null;this.generation=0;
  }
- schedule(token){if(!this.running||this.paused||token!==this.generation)return;this.frameId=this.requestFrame(now=>this.frame(now,token));}
+ schedule(token){if(!this.running||this.paused||token!==this.generation)return;this.frameId=this.requestFrame(now=>{try{this.frame(now,token);}catch(error){this.stop();if(typeof this.onError==='function'){try{this.onError(error);}catch(recoveryError){console.error('Engine V1 recovery callback failed:',recoveryError);}return;}throw error;}});}
  frame(now,token){if(token!==this.generation||!this.running||this.paused)return;this.frameId=null;
   const dt=this.last===null?0:Math.min(this.maxDelta,Math.max(0,(now-this.last)/1000));this.last=now;
   try{this.renderer.update(dt);this.updateGame(dt,this);if(token!==this.generation||!this.running||this.paused)return;
