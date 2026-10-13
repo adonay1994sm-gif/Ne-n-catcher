@@ -111,3 +111,19 @@ Después de **cada bloque** reemplazar/actualizar este archivo con:
 7. Siguiente bloque autónomo y criterios de aceptación.
 
 Mantener el historial técnico detallado en `docs/continuity-100/` y no borrar las evidencias anteriores.
+
+---
+
+## Actualización KOO — selector Clásico/N-7 y prueba Netlify (14/10/2026)
+
+**Alcance:** solo infraestructura de preview; el motor y la campaña legacy no se han modificado. No se realizó despliegue desde ChatGPT.
+
+**Archivos nuevos:** `preview/launcher.html`, `scripts/build-preview.mjs`, `scripts/netlify-preview-gate.mjs`, `tests/preview-build.test.mjs` y `docs/NETLIFY_PRUEBA_N7.md`. **Archivos ajustados:** `package.json`, `netlify.toml`, `.gitignore`.
+
+**Flujo implementado:** `npm run build:preview` construye primero desde las fuentes originales y después produce `preview-dist/index.html` (selector) y `preview-dist/juego/` (compilación web completa). El directorio generado no se versiona; el modo N-7 sigue entrando mediante `?campaign=n7` y el clásico sin parámetro. Los guardados continúan separados. El sitio web ordinario sigue publicándose desde `www` fuera de esta rama.
+
+**Protección Netlify:** esta rama continúa sin desplegarse salvo que el propietario configure explícitamente `NEON_PREVIEW_DEPLOY=1` y habilite la rama en Netlify. La build de prueba usa `preview-dist`; las vistas previas de la PR #3 no se modifican.
+
+**Pruebas ejecutadas localmente sobre el empaquetado recuperado:** `node --test tests/preview-build.test.mjs` **4/4 aprobadas**, `node tests/run-static-tests.mjs` **13/13 aprobadas**, sintaxis JS y TOML válidos, ZIP manual de 90 entradas íntegro. **Limitación:** aquí no se pudo repetir `npm ci && npm run build:preview` contra el HEAD remoto, ni certificar la experiencia Chromium/Safari/iPhone; Netlify debe construir con dependencias completas y el usuario realizará las pruebas del dispositivo. No declarar el Bloque 02 certificado por esta actuación.
+
+**Siguiente acción:** el propietario habilita la preview de esta rama en Netlify según `docs/NETLIFY_PRUEBA_N7.md`, comparte la URL real obtenida y aporta incidencias/capturas. Priorizar corregir defectos de navegador antes de comenzar nuevas fases visuales.
