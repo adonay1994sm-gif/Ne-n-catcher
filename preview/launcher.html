@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080a1c"><title>NEON CATCHER — Edición de prueba</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff;background:radial-gradient(circle at 70% 15%,#193565 0%,transparent 37%),radial-gradient(circle at 15% 80%,#342052 0%,transparent 45%),#070b1b;display:grid;place-items:center;padding:max(env(safe-area-inset-top),28px) 18px max(env(safe-area-inset-bottom),28px)}
+main{width:100%;max-width:540px}.eyebrow{font-size:11px;letter-spacing:.19em;color:#73f8f5;font-weight:750}.hero{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-top:10px}.hero img{max-width:42%;filter:drop-shadow(0 0 18px #4ee8f965)}h1{font-size:clamp(34px,9vw,54px);line-height:.99;letter-spacing:-.05em;margin:8px 0 16px}p{color:#b7c5e0;line-height:1.5}strong{color:#fff}.card{display:block;border:1px solid #465d83;border-radius:19px;padding:21px 20px;text-decoration:none;color:#f4f7ff;background:#ffffff0e;margin:12px 0;transition:background .15s}.card:active{background:#ffffff1e}.card b{display:block;font-size:19px;margin:2px 0 8px}.card span{color:#bbc8df;font-size:13px;line-height:1.4;display:block}.card.primary{background:linear-gradient(115deg,#074858,#183a79);border-color:#4aeae3}.tag{font-size:10px;letter-spacing:.08em;color:#9bf5fb;font-weight:700}.notice{font-size:12px;border-top:1px solid #304260;padding-top:15px;color:#91a5c4;margin-top:21px}.footer{font-size:11px;color:#92a2c1}
+</style></head>
+<body><main>
+<div class="eyebrow">VERSIÓN DE PRUEBA · N-7</div>
+<div class="hero"><div><h1>NEON<br>CATCHER</h1><p>Escoge un modo para probarlo en tu móvil.</p></div><img src="juego/assets/ship_frame_01.webp" alt="Nave de Neon Catcher"></div>
+<a class="card primary" id="n7link" href="juego/index.html?campaign=n7"><span class="tag">NOVEDAD · EN DESARROLLO</span><b>Probar N-7: 100 rutas →</b><span>Campaña procedural con cinco sectores, oleadas y cuatro patrones enemigos. Los jefes, arte nuevo e historia completa aún no están terminados.</span></a>
+<label style="display:flex;gap:10px;align-items:center;padding:0 8px 10px;font-size:13px;color:#cde0fc"><input id="unlock" type="checkbox" style="accent-color:#69efff;width:18px;height:18px">Desbloquear las 100 rutas solo para pruebas</label>
+<a class="card" href="juego/index.html"><span class="tag">MODO ORIGINAL</span><b>Probar campaña clásica: 10 niveles →</b><span>Campaña original con controles, núcleo, obstáculos, poderes, puntuación y guardado independiente del modo N-7.</span></a>
+<p class="notice"><strong>Cómo jugar:</strong> toca NIVELES y elige una ruta; pulsa INICIAR EXPEDICIÓN. Desliza el dedo para dirigir la nave. Usa DISPARAR y pausa. Esta es una compilación experimental, no la versión final ni una prueba certificada en iPhone.</p>
+<p class="footer">No incluye nuevos anuncios, compras ni pagos reales. Los datos de prueba pueden cambiar con nuevas actualizaciones.</p>
+</main>
+<script>document.getElementById('n7link').addEventListener('click',function(){if(document.getElementById('unlock').checked){try{localStorage.setItem('neon-n7-unlocked-v1','100')}catch(e){}}});</script></body></html>
