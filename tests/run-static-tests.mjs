@@ -97,16 +97,13 @@ await test("sin latest, TODO ni identificadores publicitarios ficticios", async 
   assert.match(inspected, /ca-app-pub-3940256099942544\/1712485313/);
 });
 
-await test("manifiesto cubre exactamente los 58 assets", async () => {
-  const diskAssets = (await readdir(join(root, "assets"))).sort().map((name) => `assets/${name}`);
-  const declared = [
-    ...assetManifest.groups.flatMap((group) => group.paths),
-    ...assetManifest.standalone.map((item) => item.path)
-  ].sort();
-  assert.equal(diskAssets.length, 58);
-  assert.equal(assetManifest.assetCount, 58);
-  assert.deepEqual(declared, diskAssets);
-  for (const path of declared) assert.equal(await exists(path), true, path);
+await test("manifiesto y archivos conservados coinciden exactamente con el disco", async () => {
+  const { audit } = await import("../scripts/audit-asset-inventory.mjs");
+  const result = await audit(root);
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.runtimeCount, 58);
+  assert.equal(result.preservedCount, 2);
+  assert.equal(result.actualBytes, assetManifest.runtimeBytes);
 });
 
 await test("todos los assets de juego están documentados y precargados", async () => {
