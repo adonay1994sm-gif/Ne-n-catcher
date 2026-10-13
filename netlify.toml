@@ -5,10 +5,12 @@
 [build.environment]
   NODE_VERSION = "22.13.0"
 
-# Source publication is authorized; public deployment of this branch is not.
+# Dedicated preview: deployment stays blocked until the site owner opts in.
+# NEON_PREVIEW_DEPLOY=1 must be set explicitly for this branch in Netlify.
 [context.continuity-assets-audit-20261013]
-  ignore = "exit 0"
-  command = "node scripts/block-development-deploy.mjs"
+  ignore = "node scripts/netlify-preview-gate.mjs --ignore"
+  command = "node scripts/netlify-preview-gate.mjs --require-enabled && npm run build:preview"
+  publish = "preview-dist"
 
 [[headers]]
   for = "/*"
