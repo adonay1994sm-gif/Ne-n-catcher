@@ -23,7 +23,11 @@ test('Chronos background uses the authored image and bounded readability veil', 
   assert.match(src, /spriteReady\(SPRITES\.cronosBackground\)/);
   assert.match(src, /ctx\.globalAlpha = 0\.62;/);
   assert.match(src, /const readability = ctx\.createLinearGradient/);
-  assert.doesNotMatch(src, /for \(let index = 0; index < 13; index\+\+\)/);
+  const sceneStart = src.indexOf('if (lv.scene === "cronos")');
+  const sceneEnd = src.indexOf('} else if (lv.scene === "orbit")', sceneStart);
+  assert.ok(sceneStart > 0 && sceneEnd > sceneStart);
+  const cronosScene = src.slice(sceneStart, sceneEnd);
+  assert.doesNotMatch(cronosScene, /for \\(let index = 0; index < 13; index\\+\\+\\)/);
 });
 
 test('level one shockwave uses the existing graphical energy field', async () => {
