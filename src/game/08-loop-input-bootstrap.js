@@ -42,6 +42,14 @@
     if (pending !== null) cancelAnimationFrame(pending);
     return true; // RAF already cancelled; adapter must not cancel twice.
   }
+  // Explicit rollback hook for experimental Engine V1 handoff only.
+  function restartLegacyLoop() {
+    if (legacyRunning) return false;
+    legacyRunning = true;
+    last = performance.now();
+    legacyFrameId = requestAnimationFrame(frame);
+    return true;
+  }
   function frame(now) {
     if (!legacyRunning) return;
     legacyFrameId = null;
