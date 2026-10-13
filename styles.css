@@ -91,3 +91,27 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
     min-height: 64px;
   }
 }
+
+/* Landscape preview fix: the Netlify drawer overlays the bottom of the
+   viewport. Position the interactive fire button ABOVE that overlay.
+   Padding on .game alone cannot protect absolutely positioned children. */
+@media (orientation: landscape) {
+  .game {
+    --landscape-preview-clearance: max(76px, env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--landscape-preview-clearance);
+  }
+  .fire-control {
+    right: max(20px, env(safe-area-inset-right, 0px));
+    bottom: calc(var(--landscape-preview-clearance) + 12px);
+    padding: 7px 12px;
+    min-height: 52px;
+    min-width: 110px;
+    gap: 7px;
+    border-radius: 16px;
+  }
+  .fire-reticle { width: 30px; height: 30px; }
+  .hud { top: max(6px, env(safe-area-inset-top, 0px)); gap: 4px; }
+  .hud > div { padding: 5px 3px; border-radius: 12px; }
+  .hud b { font-size: 12px; }
+  .hud small { font-size: 7px; }
+}
