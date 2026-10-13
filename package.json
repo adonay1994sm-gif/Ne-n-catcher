@@ -21,7 +21,8 @@
     "build:core": "node scripts/build-core.mjs",
     "verify": "npm run build && npm run test:static && npm run test:architecture",
     "test:architecture": "node tests/run-architecture-tests.mjs",
-    "test:engine": "node --test tests/engine-lifecycle.test.mjs"
+    "test:engine": "node --test tests/engine-lifecycle.test.mjs",
+    "test:content": "node --test tests/content-expansion.test.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "8.0.0",
