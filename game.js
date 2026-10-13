@@ -2155,6 +2155,27 @@
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
 
+    // NEON VISUAL PASS: broad animated nebula ribbons replace the flat empty void.
+    // Deterministic phase by sector, bounded gradients, no additional image downloads.
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    const sectorHue = [195, 220, 28, 265, 355, 280, 175, 30, 250, 325][currentLevel] ?? 195;
+    const visualTier = settings.effectsQuality === "low" ? 1 : 3;
+    for (let ribbon = 0; ribbon < visualTier; ribbon++) {
+      const phase = t * (0.00006 + ribbon * 0.000018) + currentLevel * 1.41 + ribbon * 2.3;
+      const cx = W * (0.52 + Math.sin(phase) * 0.31);
+      const cy = H * (0.22 + ribbon * 0.19 + Math.cos(phase * 0.8) * 0.075);
+      const radius = W * (0.49 + ribbon * 0.11);
+      const cloud = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      const hue = (sectorHue + ribbon * 34) % 360;
+      cloud.addColorStop(0, `hsla(${hue},95%,57%,0.18)`);
+      cloud.addColorStop(0.35, `hsla(${hue},90%,43%,0.075)`);
+      cloud.addColorStop(1, `hsla(${hue},80%,30%,0)`);
+      ctx.fillStyle = cloud;
+      ctx.fillRect(0, 0, W, H);
+    }
+    ctx.restore();
+
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
