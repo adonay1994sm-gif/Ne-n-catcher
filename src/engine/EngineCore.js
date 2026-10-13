@@ -16,6 +16,19 @@ export class EngineCore {
   this.schedule(token);
  }
  start(){if(this.running)return false;this.running=true;this.paused=false;this.last=null;const token=++this.generation;try{this.schedule(token);}catch(error){this.stop();throw error;}return true;}
+ bindVisibility(doc=globalThis.document){
+  if(!doc?.addEventListener||!doc?.removeEventListener)throw new TypeError('Document visibility API required');
+  this.unbindVisibility?.();
+  let pausedByVisibility=false;
+  const change=()=>{
+   if(doc.hidden){if(this.running&&!this.paused){pausedByVisibility=this.pause();}}
+   else if(pausedByVisibility){pausedByVisibility=false;this.resume();}
+  };
+  doc.addEventListener('visibilitychange',change);
+  this.unbindVisibility=()=>{doc.removeEventListener('visibilitychange',change);pausedByVisibility=false;this.unbindVisibility=null;};
+  change();
+  return this.unbindVisibility;
+ }
  pause(){if(!this.running||this.paused)return false;this.paused=true;this.generation++;if(this.frameId!==null)this.cancelFrame(this.frameId);this.frameId=null;this.last=null;return true;}
  resume(){if(!this.running||!this.paused)return false;this.paused=false;this.last=null;const token=++this.generation;try{this.schedule(token);}catch(error){this.stop();throw error;}return true;}
  stop(){const wasActive=this.running;this.running=false;this.paused=false;this.generation++;if(this.frameId!==null)this.cancelFrame(this.frameId);this.frameId=null;this.last=null;return wasActive;}
