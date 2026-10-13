@@ -2155,6 +2155,27 @@
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, W, H);
 
+    // NEON VISUAL PASS: broad animated nebula ribbons replace the flat empty void.
+    // Deterministic phase by sector, bounded gradients, no additional image downloads.
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    const sectorHue = [195, 220, 28, 265, 355, 280, 175, 30, 250, 325][currentLevel] ?? 195;
+    const visualTier = settings.effectsQuality === "low" ? 1 : 3;
+    for (let ribbon = 0; ribbon < visualTier; ribbon++) {
+      const phase = t * (0.00006 + ribbon * 0.000018) + currentLevel * 1.41 + ribbon * 2.3;
+      const cx = W * (0.52 + Math.sin(phase) * 0.31);
+      const cy = H * (0.22 + ribbon * 0.19 + Math.cos(phase * 0.8) * 0.075);
+      const radius = W * (0.49 + ribbon * 0.11);
+      const cloud = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      const hue = (sectorHue + ribbon * 34) % 360;
+      cloud.addColorStop(0, `hsla(${hue},95%,57%,0.18)`);
+      cloud.addColorStop(0.35, `hsla(${hue},90%,43%,0.075)`);
+      cloud.addColorStop(1, `hsla(${hue},80%,30%,0)`);
+      ctx.fillStyle = cloud;
+      ctx.fillRect(0, 0, W, H);
+    }
+    ctx.restore();
+
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -2919,12 +2940,41 @@
     ctx.restore();
   }
 
+  // Synchronous, idempotent legacy RAF stop; default campaign stays active.
+  let legacyRunning = true;
+  let legacyFrameId = null;
+  function stopLegacyLoop() {
+    if (!legacyRunning) return true;
+    legacyRunning = false;
+    const pending = legacyFrameId;
+    legacyFrameId = null;
+    if (pending !== null) cancelAnimationFrame(pending);
+    return true; // RAF already cancelled; adapter must not cancel twice.
+  }
+  // Explicit rollback hook for experimental Engine V1 handoff only.
+  function restartLegacyLoop() {
+    if (legacyRunning) return false;
+    legacyRunning = true;
+    last = performance.now();
+    legacyFrameId = requestAnimationFrame(frame);
+    return true;
+  }
+  // Read-only bridge reference; lifecycle changes require explicit method calls.
+  // src/game is concatenated into a classic IIFE, so ES module exports are unavailable.
+  Object.defineProperty(window, 'NeonLegacyLoopBridge', {
+    value: Object.freeze({stopLegacyLoop, restartLegacyLoop}),
+    writable: false,
+    configurable: false
+  });
   function frame(now) {
+    if (!legacyRunning) return;
+    legacyFrameId = null;
     const dt = Math.min(0.034, (now - last) / 1000);
     last = now;
     update(dt);
+    if (!legacyRunning) return;
     render(now);
-    requestAnimationFrame(frame);
+    if (legacyRunning) legacyFrameId = requestAnimationFrame(frame);
   }
 
   function pointerX(event) {
@@ -3079,5 +3129,5 @@
   hud();
   resetPowers();
   overlay(ui.menu);
-  requestAnimationFrame(frame);
+  legacyFrameId = requestAnimationFrame(frame);
 })();
