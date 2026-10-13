@@ -50,6 +50,13 @@
     legacyFrameId = requestAnimationFrame(frame);
     return true;
   }
+  // Read-only bridge reference; lifecycle changes require explicit method calls.
+  // src/game is concatenated into a classic IIFE, so ES module exports are unavailable.
+  Object.defineProperty(window, 'NeonLegacyLoopBridge', {
+    value: Object.freeze({stopLegacyLoop, restartLegacyLoop}),
+    writable: false,
+    configurable: false
+  });
   function frame(now) {
     if (!legacyRunning) return;
     legacyFrameId = null;
