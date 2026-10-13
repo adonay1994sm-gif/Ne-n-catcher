@@ -8,8 +8,8 @@
 # Dedicated preview: deployment stays blocked until the site owner opts in.
 # NEON_PREVIEW_DEPLOY=1 must be set explicitly for this branch in Netlify.
 [context.continuity-assets-audit-20261013]
-  ignore = "node scripts/netlify-preview-gate.mjs --ignore"
-  command = "node scripts/netlify-preview-gate.mjs --require-enabled && npm run build:preview"
+  ignore = "node ./scripts/netlify-preview-gate.mjs --ignore"
+  command = "node ./scripts/netlify-preview-gate.mjs --require-enabled && npm run build:preview"
   publish = "preview-dist"
 
 [[headers]]
