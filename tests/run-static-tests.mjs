@@ -157,7 +157,7 @@ await test("todas las referencias locales de HTML existen", async () => {
 
 await test("www es un paquete limpio y coincide con los archivos públicos", async () => {
   const publicFiles = [
-    "index.html", "styles.css", "core-runtime.js", "core-runtime.js.map", "game.js", "ads-config.js",
+    "index.html", "styles.css", "core-runtime.js", "core-runtime.js.map", "content-runtime.js", "content-runtime.js.map", "game.js", "ads-config.js",
     "ad-bridge.js", "analytics-manager.js", "native-admob.js", "manifest.webmanifest", "privacy.html", "terms.html", "sw.js"
   ];
   for (const path of publicFiles) {
@@ -197,7 +197,7 @@ await test("recursos iOS y web sincronizado son coherentes", async () => {
   const splash = await readFile(join(root, "ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png"));
   assert.deepEqual(pngSize(icon), { width: 1024, height: 1024 });
   assert.deepEqual(pngSize(splash), { width: 2732, height: 2732 });
-  for (const path of ["index.html", "game.js", "native-admob.js", "assets/ship_frame_05.webp", "assets/smoke_frame_02.webp"]) {
+  for (const path of ["index.html", "game.js", "content-runtime.js", "content-runtime.js.map", "native-admob.js", "assets/ship_frame_05.webp", "assets/smoke_frame_02.webp"]) {
     const [web, ios] = await Promise.all([
       readFile(join(root, "www", path)),
       readFile(join(root, "ios/App/App/public", path))

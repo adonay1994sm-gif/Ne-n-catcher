@@ -12,6 +12,8 @@ const publicFiles = [
   "styles.css",
   "core-runtime.js",
   "core-runtime.js.map",
+  "content-runtime.js",
+  "content-runtime.js.map",
   "game.js",
   "ads-config.js",
   "ad-bridge.js",

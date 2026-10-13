@@ -1,0 +1,25 @@
+{
+  "branch": "continuity-assets-audit-20261013",
+  "localHeadBeforeRecovery": "e104f0c9af10d47cfb497af9962d849fb9c0b7b2",
+  "remoteHeadRecovered": "bf33e2bedd8d8a8312d1692d9f849666f3919999",
+  "remoteChanges": [
+    "docs/CODEX_STATUS.md",
+    "docs/CODEX_NEXT_ORDERS.md"
+  ],
+  "method": "fast-forward; local changes preserved; no archive file required restoration",
+  "packageSha256": "d934e9d5d9e424c015966e5afdbd5c3b0e1e7950f62ddebf07aa1bfab4768b00",
+  "packageComparison": {
+    "identical": 246,
+    "missing": 0,
+    "different": 0
+  },
+  "protectedRemotes": {
+    "main": "00a44b4b4cd5d50b5cfac2aa5e760dd92d71e862",
+    "production-100-development": "ca5f974f508b18b50d2faeafcdc5a5a00c1331fb"
+  },
+  "regressionBeforeFix": {
+    "command": "NODE_OPTIONS=--test-isolation=none node --test --test-name-pattern='resume tolerates' tests/content-legacy-integration.test.mjs",
+    "exitCode": 1,
+    "log": "raf-before-fix.txt"
+  }
+}

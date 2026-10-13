@@ -1,0 +1,35 @@
+
+> neon-catcher@7.2.0 test:content
+> node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs
+
+✔ every declared animation frame exists in the runtime inventory (18.43534ms)
+✔ banking mirrors the authored pose; impact cannot enter the idle loop (2.112085ms)
+✔ all iOS catalog image entries exist with the required PNG dimensions (8.303563ms)
+✔ 100 levels and five nonoverlapping sectors (1.067391ms)
+✔ deterministic waves for every level across independent calls (57.865224ms)
+✔ difficulty density and speed increase monotonically (0.523942ms)
+✔ bosses at every tenth level with two distinct phases (1.564114ms)
+✔ N-7 contextual triggers and animation metadata (0.706265ms)
+✔ invalid levels and wave counts rejected (1.181364ms)
+✔ content is packaged before the campaign and adds no RAF owner or Engine V1 import (11.306837ms)
+[Neon Catcher] build 7.2.0
+✔ 100 routes run through the real legacy update and collision pipeline (98227.069187ms)
+[Neon Catcher] build 7.2.0
+✔ N-7 progression unlocks its own next route without overwriting original saves (822.175575ms)
+[Neon Catcher] build 7.2.0
+✔ pause freezes encounters; resume and restart do not duplicate scheduled waves (137.228298ms)
+✔ 100 authored routes have distinct names and explicit objectives and rhythms (0.347724ms)
+✔ wave generation never reads nondeterministic entropy (33.455844ms)
+✔ reproduction accepts explicit uint32 seed and rejects unknown generator version (1.473708ms)
+✔ level 37 retains its versioned reproduction fixture (1.130936ms)
+✔ 100 levels reserve a continuous corridor wider than the real ship (12.942044ms)
+✔ swept enemy movement and shooter projectiles preserve the refuge in every level (69.353275ms)
+✔ director emits each entity once, replays after reset and bounds suspended deltas (3.94348ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100440.389948

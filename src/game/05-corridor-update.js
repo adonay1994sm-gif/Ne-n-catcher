@@ -237,13 +237,26 @@
       return;
     }
 
-    spawnTimer -= dt;
-    if (spawnTimer <= 0) {
-      addItem();
-      let interval = lv.spawn * (0.86 + Math.random() * 0.30);
-      if (lv.hazard === "storm" && Math.sin(elapsed * 0.75) > 0.68) interval *= 0.58;
-      if (lv.hazard === "final" && Math.sin(elapsed * 0.95) > 0.60) interval *= 0.62;
-      spawnTimer = Math.max(0.23, interval);
+    if (encounterDirector) {
+      encounterDirector.advance(dt, (item) => {
+        items.push(item);
+        if (item.type === "energy") energySpawned++;
+      });
+      if (encounterDirector.wave !== encounterWave) {
+        encounterWave = encounterDirector.wave;
+        ammo = MAX_AMMO;
+        updateAmmoHud();
+        updateEncounterHud();
+      }
+    } else {
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        addItem();
+        let interval = lv.spawn * (0.86 + Math.random() * 0.30);
+        if (lv.hazard === "storm" && Math.sin(elapsed * 0.75) > 0.68) interval *= 0.58;
+        if (lv.hazard === "final" && Math.sin(elapsed * 0.95) > 0.60) interval *= 0.62;
+        spawnTimer = Math.max(0.23, interval);
+      }
     }
 
     if (comboTimer > 0) {
@@ -277,6 +290,7 @@
       item.y += item.s * dt * scale;
       item.rot += item.rs * dt;
       item.p += dt * 4;
+      if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item)) {
@@ -324,6 +338,7 @@
     }
 
     checkSupplyFailure();
+    if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
         player.x + (Math.random() - 0.5) * 70 * SHIP_VISUAL.scale,

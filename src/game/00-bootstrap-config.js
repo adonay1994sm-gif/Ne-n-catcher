@@ -7,6 +7,8 @@
   let W = 720;
   let H = 1280;
   const BUILD_VERSION = "7.2.0";
+  // Local development route; preserves the original campaign and its save keys.
+  const N7_CAMPAIGN = new URLSearchParams(location.search).get("campaign") === "n7";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
   const SHIP_VISUAL_SCALE = 0.8;
@@ -24,6 +26,7 @@
   const ui = {
     hud: $("hud"),
     powerHud: $("powerHud"),
+    encounterProgress: $("encounterProgress"),
     score: $("score"),
     goal: $("goal"),
     hull: $("hull"),
@@ -96,7 +99,7 @@
     sensitivityValue: $("sensitivityValue")
   };
 
-  const LEVELS = [
+  const ORIGINAL_LEVELS = [
     {
       name: "La Onda de Choque", goal: 36, speed: 0.92, spawn: 0.69, meteor: 0.105, power: 0.072,
       accent: "#57f4ff", top: "#173460", mid: "#07172f", hazard: "shockwave", scene: "cronos",
@@ -179,6 +182,7 @@
     }
   ];
 
+  const LEVELS = N7_CAMPAIGN ? NeonCampaign.LEVELS : ORIGINAL_LEVELS;
   const KEYS = {
     best: "neon-best-v2",
     unlocked: "neon-unlocked-v2",
@@ -187,5 +191,8 @@
     games: "neon-games-v2",
     settings: "neon-settings-v5"
   };
+  if (N7_CAMPAIGN) {
+    for (const key of ["best", "unlocked", "stars", "levelBest", "games"]) KEYS[key] = `neon-n7-${key}-v1`;
+  }
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, effectsQuality: "normal", effects: true };

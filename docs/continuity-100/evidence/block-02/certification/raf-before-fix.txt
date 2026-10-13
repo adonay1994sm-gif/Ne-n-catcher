@@ -1,0 +1,39 @@
+[Neon Catcher] build 7.2.0
+✖ resume tolerates a queued RAF timestamp older than the resume handler (486.69226ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1403.325889
+
+✖ failing tests:
+
+test at tests/content-legacy-integration.test.mjs:121:1
+✖ resume tolerates a queued RAF timestamp older than the resume handler (486.69226ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "Finite nonnegative delta required"
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/content-legacy-integration.test.mjs:138:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: RangeError: Finite nonnegative delta required
+        at EncounterDirector.advance (eval at harness (file:///workspace/Ne-n-catcher/tests/content-legacy-integration.test.mjs:42:29), <anonymous>:248:49)
+        at update (eval at harness (file:///workspace/Ne-n-catcher/tests/content-legacy-integration.test.mjs:45:10), <anonymous>:1916:25)
+        at frame (eval at harness (file:///workspace/Ne-n-catcher/tests/content-legacy-integration.test.mjs:45:10), <anonymous>:3026:5)
+        at runPendingFrame (file:///workspace/Ne-n-catcher/tests/content-legacy-integration.test.mjs:136:7)
+        at file:///workspace/Ne-n-catcher/tests/content-legacy-integration.test.mjs:138:31
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/content-legacy-integration.test.mjs:138:12)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }

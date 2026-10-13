@@ -4,15 +4,15 @@
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     const percent = Math.round((completed / LEVELS.length) * 100);
     const finished = completed === LEVELS.length;
-    const target = finished ? 9 : Math.max(0, unlocked - 1);
+    const target = finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
 
     ui.best.textContent = bestScore();
-    ui.unlockedText.textContent = `${unlocked}/10`;
-    ui.totalStars.textContent = `${totalStars()}/30`;
+    ui.unlockedText.textContent = `${unlocked}/${LEVELS.length}`;
+    ui.totalStars.textContent = `${totalStars()}/${LEVELS.length * 3}`;
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR CAMPAÑA";
-    ui.playSector.textContent = `SECTOR ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -26,6 +26,7 @@
     ui.goal.textContent = `${collected}/${level().goal}`;
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
     ui.hudLevel.textContent = currentLevel + 1;
+    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : "SECTOR";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
       ? "linear-gradient(90deg,#63ffc4,#64e9ff)"
@@ -84,6 +85,13 @@
     }
   }
 
+  function updateEncounterHud() {
+    ui.encounterProgress.classList.toggle("active", Boolean(encounterDirector));
+    if (encounterDirector) {
+      ui.encounterProgress.querySelector("em").textContent = `${encounterWave}/${encounterDirector.plan.waves.length}`;
+    }
+  }
+
   function buildLevelGrid() {
     const unlocked = getUnlocked();
     const starsMap = getStars();
@@ -100,7 +108,7 @@
       const earned = +(starsMap[index + 1] || 0);
       const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
       button.innerHTML = `
-        <small>SECTOR ${index + 1}</small>
+        <small>${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${index + 1}</small>
         <strong>${lv.name}</strong>
         <span>${lv.world} · ${lv.goal} núcleos</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
@@ -115,7 +123,7 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `SECTOR ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
     ui.briefingGoal.textContent = `${lv.goal} núcleos`;
@@ -134,7 +142,7 @@
   }
 
   function showBanner() {
-    ui.bannerSector.textContent = `SECTOR ${currentLevel + 1}`;
+    ui.bannerSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${currentLevel + 1}`;
     ui.bannerName.textContent = level().name.toUpperCase();
     ui.bannerGoal.textContent = `Recupera ${level().goal} núcleos · ${level().desc}`;
     ui.banner.classList.add("show");
@@ -172,6 +180,13 @@
   }
 
   function updateLevelStory(dt) {
+    if (N7_CAMPAIGN) {
+      if (storyTimer > 0) {
+        storyTimer = Math.max(0, storyTimer - dt);
+        if (storyTimer === 0) hideStoryTransmission();
+      }
+      return;
+    }
     if (currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     if (storyTimer > 0) {
       storyTimer = Math.max(0, storyTimer - dt);
@@ -200,6 +215,8 @@
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
+    encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
+    encounterWave = 0;
     setState("playing");
     score = 0;
     displayedScore = 0;
@@ -261,7 +278,12 @@
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
     hud();
+    updateEncounterHud();
     showBanner();
+    if (N7_CAMPAIGN) {
+      const opening = NeonCampaign.n7Dialogue("sectorStart", {level: currentLevel + 1});
+      if (opening) showStoryTransmission("N-7", opening);
+    }
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
     window.AnalyticsManager?.track("level_start", { level: currentLevel + 1, continued: false });
@@ -316,6 +338,7 @@
 
   function completeLevel() {
     if (state !== "playing") return;
+    if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
@@ -334,16 +357,16 @@
 
     const oldUnlocked = getUnlocked();
     let newlyUnlocked = false;
-    if (currentLevel + 1 === oldUnlocked && oldUnlocked < 10) {
+    if (currentLevel + 1 === oldUnlocked && oldUnlocked < LEVELS.length) {
       progressSaved = storage.set(KEYS.unlocked, oldUnlocked + 1) && progressSaved;
       newlyUnlocked = true;
     }
 
     progressSaved = saveScore() && progressSaved;
     registerRun();
-    ui.completeLabel.textContent = currentLevel === 9 ? "CAMPAÑA ACTUAL COMPLETADA" : "SECTOR SUPERADO";
-    ui.completeTitle.textContent = currentLevel === 9
-      ? "Has estabilizado el Colapso Neon"
+    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
+    ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
+      ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
       : `${level().name} completado`;
     ui.starsAwarded.innerHTML = [1, 2, 3]
       .map((value) => `<span class="${value <= earned ? "" : "off"}">★</span>`)
@@ -351,12 +374,12 @@
     ui.levelScore.textContent = score;
     ui.levelHull.textContent = `${Math.ceil(hull)}%`;
     ui.maxCombo.textContent = `x${maxCombo}`;
-    ui.unlockMessage.textContent = currentLevel === 9
-      ? "La siguiente expansión podrá añadir más sectores"
+    ui.unlockMessage.textContent = currentLevel === LEVELS.length - 1
+      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "La siguiente expansión podrá añadir más sectores")
       : newlyUnlocked
-        ? `Sector ${currentLevel + 2} desbloqueado`
+        ? `${N7_CAMPAIGN ? "Ruta" : "Sector"} ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
-    ui.nextLevel.classList.toggle("hidden", currentLevel === 9);
+    ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
     overlay(ui.complete);
     tone(760, 0.12, "triangle", 0.08);
     setTimeout(() => tone(980, 0.18, "sine", 0.07), 120);

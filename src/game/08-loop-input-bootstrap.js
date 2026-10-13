@@ -60,7 +60,9 @@
   function frame(now) {
     if (!legacyRunning) return;
     legacyFrameId = null;
-    const dt = Math.min(0.034, (now - last) / 1000);
+    // An input handler can reset last after this rendering opportunity began.
+    // A queued RAF timestamp must never rewind the simulation or stop its loop.
+    const dt = Math.max(0, Math.min(0.034, (now - last) / 1000));
     last = now;
     update(dt);
     if (!legacyRunning) return;
@@ -100,7 +102,7 @@
   $("play").onclick = () => {
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
-    prepareLevel(completed === LEVELS.length ? 9 : getUnlocked() - 1, "menu");
+    prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
   };
   $("levels").onclick = () => { buildLevelGrid(); overlay(ui.levelSelect); };
   $("levelBack").onclick = () => overlay(ui.menu);
@@ -121,7 +123,7 @@
   $("completeHome").onclick = goHome;
   $("retry").onclick = () => startLevel(currentLevel);
   $("replayLevel").onclick = () => startLevel(currentLevel);
-  ui.nextLevel.onclick = () => prepareLevel(Math.min(9, currentLevel + 1), "complete");
+  ui.nextLevel.onclick = () => prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
 
   ui.musicVolume.oninput = (event) => {
     settings.music = +event.target.value;

@@ -23,7 +23,7 @@
   }
 
   function getUnlocked() {
-    return Math.trunc(Math.max(1, Math.min(10, storage.getNumber(KEYS.unlocked, 1))));
+    return Math.trunc(Math.max(1, Math.min(LEVELS.length, storage.getNumber(KEYS.unlocked, 1))));
   }
 
   function getStars() {

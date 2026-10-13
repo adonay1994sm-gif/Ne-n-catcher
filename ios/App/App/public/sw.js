@@ -8,6 +8,7 @@ const CORE = [
   "ad-bridge.js?v=7.2.0",
   "analytics-manager.js?v=7.2.0",
   "core-runtime.js?v=7.2.0",
+  "content-runtime.js?v=7.2.0",
   "game.js?v=7.2.0",
   "manifest.webmanifest",
   "privacy.html",

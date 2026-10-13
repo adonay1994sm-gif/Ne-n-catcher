@@ -1,6 +1,7 @@
   const storage = NeonCore.createStorageService();
 
   function migrateLegacyStorage() {
+    if (N7_CAMPAIGN) return false;
     const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));
     const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));
     if (legacyBest <= currentBest) return false;
@@ -29,7 +30,9 @@
   let maxCombo = 1;
   let comboTimer = 0;
   let collected = 0;
-  let currentLevel = Math.max(0, Math.min(9, getUnlocked() - 1));
+  let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
+  let encounterDirector = null;
+  let encounterWave = 0;
   let continued = false;
   let shake = 0;
   let flash = 0;

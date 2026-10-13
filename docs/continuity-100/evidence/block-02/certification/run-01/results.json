@@ -1,0 +1,136 @@
+{
+  "startedAt": "2026-10-13T18:04:28.572Z",
+  "node": "v24.19.0",
+  "branch": "continuity-assets-audit-20261013",
+  "head": "bf33e2bedd8d8a8312d1692d9f849666f3919999",
+  "workingTree": "M game.js\n M index.html\n M ios/App/App/public/game.js\n M ios/App/App/public/index.html\n M ios/App/App/public/sw.js\n M package.json\n M scripts/build-web.mjs\n M src/game/00-bootstrap-config.js\n M src/game/01-runtime-assets.js\n M src/game/02-storage-audio.js\n M src/game/03-ui-game-flow.js\n M src/game/05-corridor-update.js\n M src/game/07-player-item-rendering.js\n M src/game/08-loop-input-bootstrap.js\n M src/game/progression/generator.js\n M sw.js\n M tests/run-static-tests.mjs\n M tests/run-tests.mjs\n M www/game.js\n M www/index.html\n M www/sw.js\n?? content-runtime.js\n?? content-runtime.js.map\n?? docs/continuity-100/TRASPASO_2026-10-13.md\n?? docs/continuity-100/evidence/block-02/\n?? scripts/build-content.mjs\n?? scripts/certify-local.mjs\n?? scripts/content-browser-smoke.cjs\n?? src/game/progression/encounter-director.js\n?? src/game/progression/legacy-content-entry.js\n?? src/game/progression/level-designs.js\n?? tests/content-legacy-integration.test.mjs\n?? tests/procedural-runtime.test.mjs",
+  "results": [
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 2109,
+      "log": "build.txt"
+    },
+    {
+      "name": "engine",
+      "command": "npm run test:engine",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 412,
+      "log": "engine.txt"
+    },
+    {
+      "name": "architecture",
+      "command": "npm run test:architecture",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 362,
+      "log": "architecture.txt"
+    },
+    {
+      "name": "content-integration-assets",
+      "command": "npm run test:content",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 81240,
+      "log": "content-integration-assets.txt"
+    },
+    {
+      "name": "static",
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 576,
+      "log": "static.txt"
+    },
+    {
+      "name": "regression",
+      "command": "npm test",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 3451,
+      "log": "regression.txt"
+    },
+    {
+      "name": "web",
+      "command": "node tests/run-v7-web-tests.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 1567,
+      "log": "web.txt"
+    },
+    {
+      "name": "experimental-render-adapter",
+      "command": "node --test tests/campaign-adapter.test.mjs tests/neon-render-engine.test.mjs tests/sprite-animator.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 112,
+      "log": "experimental-render-adapter.txt"
+    },
+    {
+      "name": "inventory",
+      "command": "node scripts/audit-asset-inventory.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 87,
+      "log": "inventory.txt"
+    }
+  ],
+  "artifacts": {
+    "game.js": [
+      {
+        "directory": ".",
+        "sha256": "0adb91819b0ef340fd9fe6d820d110a526ce1f09fd69d55a8ba5f6511e3f4e35"
+      },
+      {
+        "directory": "www",
+        "sha256": "0adb91819b0ef340fd9fe6d820d110a526ce1f09fd69d55a8ba5f6511e3f4e35"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "0adb91819b0ef340fd9fe6d820d110a526ce1f09fd69d55a8ba5f6511e3f4e35"
+      }
+    ],
+    "core-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "8498180dff45a15e9b312a2c7d08e53c932b7d0c3f2620237e2bf7190410997f"
+      },
+      {
+        "directory": "www",
+        "sha256": "8498180dff45a15e9b312a2c7d08e53c932b7d0c3f2620237e2bf7190410997f"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "8498180dff45a15e9b312a2c7d08e53c932b7d0c3f2620237e2bf7190410997f"
+      }
+    ],
+    "content-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "db0f48a1e189e5b1925b94e3163bd3472a4dca5077011a24f914bc32f157e5b7"
+      },
+      {
+        "directory": "www",
+        "sha256": "db0f48a1e189e5b1925b94e3163bd3472a4dca5077011a24f914bc32f157e5b7"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "db0f48a1e189e5b1925b94e3163bd3472a4dca5077011a24f914bc32f157e5b7"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-13T18:05:58.538Z",
+  "ok": true
+}

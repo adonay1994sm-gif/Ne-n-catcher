@@ -195,6 +195,20 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
+    if (item.n7Projectile) {
+      ctx.fillStyle = "#ff7bce";
+      ctx.shadowColor = "#ff4bbb";
+      ctx.shadowBlur = 12;
+      ctx.fillRect(-4, -12, 8, 24);
+      ctx.restore();
+      return;
+    }
+    if (item.n7?.telegraph > 0) {
+      ctx.strokeStyle = `rgba(255,130,100,${item.n7.telegraph})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, 28); ctx.lineTo(0, 160); ctx.stroke();
+    }
+
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
       const size = item.r * 4.2;
       const frame = Math.floor(elapsed * 11 + item.phase) % 8;

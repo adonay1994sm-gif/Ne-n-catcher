@@ -7,6 +7,8 @@
   let W = 720;
   let H = 1280;
   const BUILD_VERSION = "7.2.0";
+  // Local development route; preserves the original campaign and its save keys.
+  const N7_CAMPAIGN = new URLSearchParams(location.search).get("campaign") === "n7";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
   const SHIP_VISUAL_SCALE = 0.8;
@@ -24,6 +26,7 @@
   const ui = {
     hud: $("hud"),
     powerHud: $("powerHud"),
+    encounterProgress: $("encounterProgress"),
     score: $("score"),
     goal: $("goal"),
     hull: $("hull"),
@@ -96,7 +99,7 @@
     sensitivityValue: $("sensitivityValue")
   };
 
-  const LEVELS = [
+  const ORIGINAL_LEVELS = [
     {
       name: "La Onda de Choque", goal: 36, speed: 0.92, spawn: 0.69, meteor: 0.105, power: 0.072,
       accent: "#57f4ff", top: "#173460", mid: "#07172f", hazard: "shockwave", scene: "cronos",
@@ -179,6 +182,7 @@
     }
   ];
 
+  const LEVELS = N7_CAMPAIGN ? NeonCampaign.LEVELS : ORIGINAL_LEVELS;
   const KEYS = {
     best: "neon-best-v2",
     unlocked: "neon-unlocked-v2",
@@ -187,11 +191,15 @@
     games: "neon-games-v2",
     settings: "neon-settings-v5"
   };
+  if (N7_CAMPAIGN) {
+    for (const key of ["best", "unlocked", "stars", "levelBest", "games"]) KEYS[key] = `neon-n7-${key}-v1`;
+  }
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, effectsQuality: "normal", effects: true };
   const storage = NeonCore.createStorageService();
 
   function migrateLegacyStorage() {
+    if (N7_CAMPAIGN) return false;
     const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));
     const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));
     if (legacyBest <= currentBest) return false;
@@ -220,7 +228,9 @@
   let maxCombo = 1;
   let comboTimer = 0;
   let collected = 0;
-  let currentLevel = Math.max(0, Math.min(9, getUnlocked() - 1));
+  let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
+  let encounterDirector = null;
+  let encounterWave = 0;
   let continued = false;
   let shake = 0;
   let flash = 0;
@@ -429,7 +439,7 @@
   }
 
   function getUnlocked() {
-    return Math.trunc(Math.max(1, Math.min(10, storage.getNumber(KEYS.unlocked, 1))));
+    return Math.trunc(Math.max(1, Math.min(LEVELS.length, storage.getNumber(KEYS.unlocked, 1))));
   }
 
   function getStars() {
@@ -609,15 +619,15 @@
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     const percent = Math.round((completed / LEVELS.length) * 100);
     const finished = completed === LEVELS.length;
-    const target = finished ? 9 : Math.max(0, unlocked - 1);
+    const target = finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
 
     ui.best.textContent = bestScore();
-    ui.unlockedText.textContent = `${unlocked}/10`;
-    ui.totalStars.textContent = `${totalStars()}/30`;
+    ui.unlockedText.textContent = `${unlocked}/${LEVELS.length}`;
+    ui.totalStars.textContent = `${totalStars()}/${LEVELS.length * 3}`;
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR CAMPAÑA";
-    ui.playSector.textContent = `SECTOR ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -631,6 +641,7 @@
     ui.goal.textContent = `${collected}/${level().goal}`;
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
     ui.hudLevel.textContent = currentLevel + 1;
+    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : "SECTOR";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
       ? "linear-gradient(90deg,#63ffc4,#64e9ff)"
@@ -689,6 +700,13 @@
     }
   }
 
+  function updateEncounterHud() {
+    ui.encounterProgress.classList.toggle("active", Boolean(encounterDirector));
+    if (encounterDirector) {
+      ui.encounterProgress.querySelector("em").textContent = `${encounterWave}/${encounterDirector.plan.waves.length}`;
+    }
+  }
+
   function buildLevelGrid() {
     const unlocked = getUnlocked();
     const starsMap = getStars();
@@ -705,7 +723,7 @@
       const earned = +(starsMap[index + 1] || 0);
       const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
       button.innerHTML = `
-        <small>SECTOR ${index + 1}</small>
+        <small>${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${index + 1}</small>
         <strong>${lv.name}</strong>
         <span>${lv.world} · ${lv.goal} núcleos</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
@@ -720,7 +738,7 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `SECTOR ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
     ui.briefingGoal.textContent = `${lv.goal} núcleos`;
@@ -739,7 +757,7 @@
   }
 
   function showBanner() {
-    ui.bannerSector.textContent = `SECTOR ${currentLevel + 1}`;
+    ui.bannerSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${currentLevel + 1}`;
     ui.bannerName.textContent = level().name.toUpperCase();
     ui.bannerGoal.textContent = `Recupera ${level().goal} núcleos · ${level().desc}`;
     ui.banner.classList.add("show");
@@ -777,6 +795,13 @@
   }
 
   function updateLevelStory(dt) {
+    if (N7_CAMPAIGN) {
+      if (storyTimer > 0) {
+        storyTimer = Math.max(0, storyTimer - dt);
+        if (storyTimer === 0) hideStoryTransmission();
+      }
+      return;
+    }
     if (currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     if (storyTimer > 0) {
       storyTimer = Math.max(0, storyTimer - dt);
@@ -805,6 +830,8 @@
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
+    encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
+    encounterWave = 0;
     setState("playing");
     score = 0;
     displayedScore = 0;
@@ -866,7 +893,12 @@
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
     hud();
+    updateEncounterHud();
     showBanner();
+    if (N7_CAMPAIGN) {
+      const opening = NeonCampaign.n7Dialogue("sectorStart", {level: currentLevel + 1});
+      if (opening) showStoryTransmission("N-7", opening);
+    }
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
     window.AnalyticsManager?.track("level_start", { level: currentLevel + 1, continued: false });
@@ -921,6 +953,7 @@
 
   function completeLevel() {
     if (state !== "playing") return;
+    if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
@@ -939,16 +972,16 @@
 
     const oldUnlocked = getUnlocked();
     let newlyUnlocked = false;
-    if (currentLevel + 1 === oldUnlocked && oldUnlocked < 10) {
+    if (currentLevel + 1 === oldUnlocked && oldUnlocked < LEVELS.length) {
       progressSaved = storage.set(KEYS.unlocked, oldUnlocked + 1) && progressSaved;
       newlyUnlocked = true;
     }
 
     progressSaved = saveScore() && progressSaved;
     registerRun();
-    ui.completeLabel.textContent = currentLevel === 9 ? "CAMPAÑA ACTUAL COMPLETADA" : "SECTOR SUPERADO";
-    ui.completeTitle.textContent = currentLevel === 9
-      ? "Has estabilizado el Colapso Neon"
+    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
+    ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
+      ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
       : `${level().name} completado`;
     ui.starsAwarded.innerHTML = [1, 2, 3]
       .map((value) => `<span class="${value <= earned ? "" : "off"}">★</span>`)
@@ -956,12 +989,12 @@
     ui.levelScore.textContent = score;
     ui.levelHull.textContent = `${Math.ceil(hull)}%`;
     ui.maxCombo.textContent = `x${maxCombo}`;
-    ui.unlockMessage.textContent = currentLevel === 9
-      ? "La siguiente expansión podrá añadir más sectores"
+    ui.unlockMessage.textContent = currentLevel === LEVELS.length - 1
+      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "La siguiente expansión podrá añadir más sectores")
       : newlyUnlocked
-        ? `Sector ${currentLevel + 2} desbloqueado`
+        ? `${N7_CAMPAIGN ? "Ruta" : "Sector"} ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
-    ui.nextLevel.classList.toggle("hidden", currentLevel === 9);
+    ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
     overlay(ui.complete);
     tone(760, 0.12, "triangle", 0.08);
     setTimeout(() => tone(980, 0.18, "sine", 0.07), 120);
@@ -1889,13 +1922,26 @@
       return;
     }
 
-    spawnTimer -= dt;
-    if (spawnTimer <= 0) {
-      addItem();
-      let interval = lv.spawn * (0.86 + Math.random() * 0.30);
-      if (lv.hazard === "storm" && Math.sin(elapsed * 0.75) > 0.68) interval *= 0.58;
-      if (lv.hazard === "final" && Math.sin(elapsed * 0.95) > 0.60) interval *= 0.62;
-      spawnTimer = Math.max(0.23, interval);
+    if (encounterDirector) {
+      encounterDirector.advance(dt, (item) => {
+        items.push(item);
+        if (item.type === "energy") energySpawned++;
+      });
+      if (encounterDirector.wave !== encounterWave) {
+        encounterWave = encounterDirector.wave;
+        ammo = MAX_AMMO;
+        updateAmmoHud();
+        updateEncounterHud();
+      }
+    } else {
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        addItem();
+        let interval = lv.spawn * (0.86 + Math.random() * 0.30);
+        if (lv.hazard === "storm" && Math.sin(elapsed * 0.75) > 0.68) interval *= 0.58;
+        if (lv.hazard === "final" && Math.sin(elapsed * 0.95) > 0.60) interval *= 0.62;
+        spawnTimer = Math.max(0.23, interval);
+      }
     }
 
     if (comboTimer > 0) {
@@ -1929,6 +1975,7 @@
       item.y += item.s * dt * scale;
       item.rot += item.rs * dt;
       item.p += dt * 4;
+      if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item)) {
@@ -1976,6 +2023,7 @@
     }
 
     checkSupplyFailure();
+    if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
         player.x + (Math.random() - 0.5) * 70 * SHIP_VISUAL.scale,
@@ -2596,6 +2644,20 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
+    if (item.n7Projectile) {
+      ctx.fillStyle = "#ff7bce";
+      ctx.shadowColor = "#ff4bbb";
+      ctx.shadowBlur = 12;
+      ctx.fillRect(-4, -12, 8, 24);
+      ctx.restore();
+      return;
+    }
+    if (item.n7?.telegraph > 0) {
+      ctx.strokeStyle = `rgba(255,130,100,${item.n7.telegraph})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, 28); ctx.lineTo(0, 160); ctx.stroke();
+    }
+
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
       const size = item.r * 4.2;
       const frame = Math.floor(elapsed * 11 + item.phase) % 8;
@@ -2969,7 +3031,9 @@
   function frame(now) {
     if (!legacyRunning) return;
     legacyFrameId = null;
-    const dt = Math.min(0.034, (now - last) / 1000);
+    // An input handler can reset last after this rendering opportunity began.
+    // A queued RAF timestamp must never rewind the simulation or stop its loop.
+    const dt = Math.max(0, Math.min(0.034, (now - last) / 1000));
     last = now;
     update(dt);
     if (!legacyRunning) return;
@@ -3009,7 +3073,7 @@
   $("play").onclick = () => {
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
-    prepareLevel(completed === LEVELS.length ? 9 : getUnlocked() - 1, "menu");
+    prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
   };
   $("levels").onclick = () => { buildLevelGrid(); overlay(ui.levelSelect); };
   $("levelBack").onclick = () => overlay(ui.menu);
@@ -3030,7 +3094,7 @@
   $("completeHome").onclick = goHome;
   $("retry").onclick = () => startLevel(currentLevel);
   $("replayLevel").onclick = () => startLevel(currentLevel);
-  ui.nextLevel.onclick = () => prepareLevel(Math.min(9, currentLevel + 1), "complete");
+  ui.nextLevel.onclick = () => prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
 
   ui.musicVolume.oninput = (event) => {
     settings.music = +event.target.value;
