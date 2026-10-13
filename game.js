@@ -2940,12 +2940,41 @@
     ctx.restore();
   }
 
+  // Synchronous, idempotent legacy RAF stop; default campaign stays active.
+  let legacyRunning = true;
+  let legacyFrameId = null;
+  function stopLegacyLoop() {
+    if (!legacyRunning) return true;
+    legacyRunning = false;
+    const pending = legacyFrameId;
+    legacyFrameId = null;
+    if (pending !== null) cancelAnimationFrame(pending);
+    return true; // RAF already cancelled; adapter must not cancel twice.
+  }
+  // Explicit rollback hook for experimental Engine V1 handoff only.
+  function restartLegacyLoop() {
+    if (legacyRunning) return false;
+    legacyRunning = true;
+    last = performance.now();
+    legacyFrameId = requestAnimationFrame(frame);
+    return true;
+  }
+  // Read-only bridge reference; lifecycle changes require explicit method calls.
+  // src/game is concatenated into a classic IIFE, so ES module exports are unavailable.
+  Object.defineProperty(window, 'NeonLegacyLoopBridge', {
+    value: Object.freeze({stopLegacyLoop, restartLegacyLoop}),
+    writable: false,
+    configurable: false
+  });
   function frame(now) {
+    if (!legacyRunning) return;
+    legacyFrameId = null;
     const dt = Math.min(0.034, (now - last) / 1000);
     last = now;
     update(dt);
+    if (!legacyRunning) return;
     render(now);
-    requestAnimationFrame(frame);
+    if (legacyRunning) legacyFrameId = requestAnimationFrame(frame);
   }
 
   function pointerX(event) {
@@ -3100,5 +3129,5 @@
   hud();
   resetPowers();
   overlay(ui.menu);
-  requestAnimationFrame(frame);
+  legacyFrameId = requestAnimationFrame(frame);
 })();
