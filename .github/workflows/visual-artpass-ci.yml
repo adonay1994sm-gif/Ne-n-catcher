@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -18,6 +18,23 @@ jobs:
         with:
           node-version: '22.13.0'
           cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore missing native iOS art from approved in-repo artwork
+        run: |
+          python -m pip install --disable-pip-version-check Pillow==11.3.0
+          python scripts/generate-ios-art.py
+      - name: Commit generated iOS assets on this isolated branch
+        run: |
+          git add ios/App/App/Assets.xcassets/AppIcon.appiconset/*.png
+          git add ios/App/App/Assets.xcassets/Splash.imageset/*.png
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "art(ios): restore native images from canonical NEON assets"
+            git push origin HEAD:visual-artpass-a-2026-10-13
+          fi
       - name: Clean install
         run: npm ci
       - name: Build game and web bundle
