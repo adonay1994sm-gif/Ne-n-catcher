@@ -11,7 +11,7 @@ Resultado: `preview-dist/index.html` (selector de modos) y `preview-dist/juego/`
 ## Usar tu sitio de Netlify con el repositorio conectado
 
 1. Abre el sitio `neoncatcheroriginal` en Netlify y confirma que apunta al repositorio correcto.
-2. En **Site configuration / Build & deploy / Branch deploys**, habilita los despliegues de la rama **`continuity-assets-audit-20261013`**.
+2. En **Project configuration → Developer settings → Continuous deployment → Branches and deploy contexts**, habilita los despliegues de la rama **`continuity-assets-audit-20261013`**.
 3. En **Environment variables**, crea la variable `NEON_PREVIEW_DEPLOY` con el valor **`1`**, preferiblemente limitada al contexto/branch de pruebas si Netlify lo permite.
 4. Desencadena el despliegue **de esa rama**, no de `main` ni de la PR #3. Configuración de la rama: `npm run build:preview`, carpeta publicada `preview-dist`.
 5. Abre la **URL de branch deploy que muestre Netlify**. La página inicial ofrece `N-7: 100 rutas` y `Campaña clásica: 10 niveles`.
