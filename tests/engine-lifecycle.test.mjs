@@ -42,4 +42,22 @@ test('23 paused stale callback ignored',()=>{const f=fixture();f.engine.start();
 test('24 resume resets delta',()=>{const f=fixture();const d=[];f.engine.updateGame=dt=>d.push(dt);f.engine.start();f.tick([...f.frames.keys()][0],100);f.engine.pause();f.engine.resume();f.tick([...f.frames.keys()][0],100000);assert.equal(d.at(-1),0);});
 test('25 update failure stops engine',()=>{const f=fixture();f.engine.updateGame=()=>{throw Error('boom')};f.engine.start();assert.throws(()=>f.tick([...f.frames.keys()][0],1),/boom/);assert.equal(f.engine.running,false);});
 test('26 adapter rejects missing handoff',()=>assert.throws(()=>createCampaignAdapter({}),TypeError));
-test('27 adapter synchronous handoff and cleanup',()=>{const f=fixture();let stops=0,started=0,ended=0;const a=createCampaignAdapter({renderer:f.renderer,particles:f.engine.particles,requestFrame:f.raf,cancelFrame:f.cancel,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},stopLegacyLoop:()=>{stops++;return true;},useEngineV1:true,onStart:()=>started++,onStop:()=>ended++});assert.equal(a.start(),true);assert.equal(a.start(),false);assert.equal(stops,1);assert.equal(a.stop(),true);assert.equal(ended,1);assert.equal(started,1);assert.equal(f.frames.size,0);});
+test('27 adapter synchronous handoff and cleanup',()=>{const f=fixture();let stops=0,started=0,ended=0;const a=createCampaignAdapter({renderer:f.renderer,particles:f.engine.particles,requestFrame:f.raf,cancelFrame:f.cancel,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},stopLegacyLoop:()=>{stops++;return true;},restartLegacyLoop:()=>true,useEngineV1:true,onStart:()=>started++,onStop:()=>ended++});assert.equal(a.start(),true);assert.equal(a.start(),false);assert.equal(stops,1);assert.equal(a.stop(),true);assert.equal(ended,1);assert.equal(started,1);assert.equal(f.frames.size,0);});
+
+test('28 disabled adapter does not stop legacy or allocate core',()=>{
+ const f=fixture();let stops=0;
+ const a=createCampaignAdapter({renderer:f.renderer,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},stopLegacyLoop:()=>{stops++;return true;}});
+ assert.equal(a.enabled,false);assert.equal(a.start(),false);assert.equal(stops,0);assert.equal(a.core,null);
+});
+test('29 experimental start failure restarts legacy exactly once',()=>{
+ const f=fixture();let stops=0,restarts=0;
+ const a=createCampaignAdapter({
+  renderer:f.renderer,requestFrame:()=>{throw new Error('RAF unavailable');},
+  cancelFrame:f.cancel,updateLevel:()=>{},drawBackground:()=>{},drawEntities:()=>{},
+  stopLegacyLoop:()=>{stops++;return true;},restartLegacyLoop:()=>{restarts++;return true;},
+  useEngineV1:true
+ });
+ const originalError=console.error;console.error=()=>{};
+ try{assert.throws(()=>a.start(),/RAF unavailable/);}finally{console.error=originalError;}
+ assert.equal(stops,1);assert.equal(restarts,1);assert.equal(a.running,false);
+});
