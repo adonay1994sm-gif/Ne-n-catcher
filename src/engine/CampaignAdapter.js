@@ -2,7 +2,7 @@ import {EngineCore} from './EngineCore.js';
 
 /** Explicitly disabled by default. This module is not imported by the legacy campaign. */
 export const USE_ENGINE_V1 = false;
-export const CAMPAIGN_STATES = Object.freeze({LEGACY_ACTIVE:'LEGACY_ACTIVE',HANDOFF:'HANDOFF',ENGINE_ACTIVE:'ENGINE_ACTIVE',FALLBACK:'FALLBACK'});
+export const CAMPAIGN_STATES = Object.freeze({LEGACY_ACTIVE:'LEGACY_ACTIVE',HANDOFF:'HANDOFF',ENGINE_ACTIVE:'ENGINE_ACTIVE',FALLBACK:'FALLBACK',INACTIVE:'INACTIVE',RECOVERY_FAILED:'RECOVERY_FAILED'});
 
 /** Resolve the legacy IIFE bridge only on explicit opt-in. */
 export function getNeonLegacyLoopBridge(host=globalThis){
@@ -29,6 +29,20 @@ export function createCampaignAdapter({
  let core=null;
  let started=false;
  let lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
+ let recoveryError=null;
+ function restoreLegacy(){
+  try{
+   const result=restartLegacyLoop();
+   if(result!==true)throw new Error('restartLegacyLoop did not confirm successful restoration');
+   recoveryError=null;
+   lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
+   return true;
+  }catch(error){
+   recoveryError=error;
+   lifecycle=CAMPAIGN_STATES.RECOVERY_FAILED;
+   throw error;
+  }
+ }
  function recover(error){
   if(lifecycle===CAMPAIGN_STATES.LEGACY_ACTIVE||lifecycle===CAMPAIGN_STATES.FALLBACK)return false;
   lifecycle=CAMPAIGN_STATES.FALLBACK;
@@ -36,7 +50,7 @@ export function createCampaignAdapter({
   started=false;
   try{onStop();}catch(e){console.error('Engine V1 onStop failed:',e);}
   console.error('Engine V1 failure. Rolling back to legacy loop:',error);
-  try{restartLegacyLoop();lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;return true;}
+  try{return restoreLegacy();}
   catch(e){console.error('Legacy loop restart failed:',e);throw new AggregateError([error,e],'Engine V1 and legacy rollback failed');}
  }
  function ensureCore(){
@@ -54,11 +68,12 @@ export function createCampaignAdapter({
  return {
   get core(){return core;},
   get lifecycle(){return lifecycle;},
+  get recoveryError(){return recoveryError;},
   get enabled(){return useEngineV1;},
   get running(){return core?.running??false;},
   start(){
    if(!useEngineV1)return false;
-   if(started||core?.running)return false;
+   if(started||core?.running||lifecycle===CAMPAIGN_STATES.RECOVERY_FAILED||lifecycle===CAMPAIGN_STATES.INACTIVE)return false;
    // Synchronous stop owns cancellation; do not cancel the same legacy RAF twice.
    lifecycle=CAMPAIGN_STATES.HANDOFF;
    let stopped=false;
@@ -91,9 +106,8 @@ export function createCampaignAdapter({
    try{onStop();}finally{
     if(restoreLegacy){
      lifecycle=CAMPAIGN_STATES.FALLBACK;
-     restartLegacyLoop();
-     lifecycle=CAMPAIGN_STATES.LEGACY_ACTIVE;
-    }else lifecycle=CAMPAIGN_STATES.HANDOFF;
+     restoreLegacy();
+    }else lifecycle=CAMPAIGN_STATES.INACTIVE;
    }
    return true;
   }
