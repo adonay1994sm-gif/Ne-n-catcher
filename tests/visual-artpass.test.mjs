@@ -27,7 +27,7 @@ test('Chronos background uses the authored image and bounded readability veil', 
   const sceneEnd = src.indexOf('} else if (lv.scene === "orbit")', sceneStart);
   assert.ok(sceneStart > 0 && sceneEnd > sceneStart);
   const cronosScene = src.slice(sceneStart, sceneEnd);
-  assert.doesNotMatch(cronosScene, /for \\(let index = 0; index < 13; index\\+\\+\\)/);
+  assert.equal(cronosScene.includes('for (let index = 0; index < 13; index++)'), false);
 });
 
 test('level one shockwave uses the existing graphical energy field', async () => {
