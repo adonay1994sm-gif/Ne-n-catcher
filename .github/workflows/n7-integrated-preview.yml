@@ -1,0 +1,67 @@
+name: NEON CATCHER N-7 Integrated Preview QA
+
+on:
+  push:
+    branches:
+      - continuity-assets-audit-20261013
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neon-n7-artpass-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Verify and package Netlify Drop preview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout authorized continuity branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-fund
+
+      - name: Build isolated test site
+        run: npm run build:preview
+
+      - name: Verify original and procedural architecture
+        run: |
+          npm run test:engine
+          npm run test:architecture
+          npm run test:content
+          npm run test:static
+          npm test
+          node tests/run-v7-web-tests.mjs
+
+      - name: Verify visual integration and preview isolation
+        run: |
+          node --test tests/visual-artpass.test.mjs
+          NODE_OPTIONS=--test-isolation=none npm run test:preview
+
+      - name: Verify preview entry and published artifact location
+        run: |
+          test -s preview-dist/index.html
+          test -s preview-dist/juego/index.html
+          test -s preview-dist/juego/game.js
+          test -s preview-dist/juego/content-runtime.js
+          test -s preview-dist/juego/assets/cronos_level1_background.webp
+          test -s preview-dist/juego/assets/shield_effect.webp
+          test -s preview-dist/juego/build-info.json
+
+      - name: Package verified preview for manual Netlify Drop
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEON-CATCHER-N7-ARTPASS-NETLIFY-DROP
+          path: preview-dist/
+          if-no-files-found: error
+          retention-days: 14
