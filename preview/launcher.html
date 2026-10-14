@@ -9,9 +9,21 @@ main{width:100%;max-width:540px}.eyebrow{font-size:11px;letter-spacing:.19em;col
 <div class="eyebrow">VERSIÓN DE PRUEBA · N-7</div>
 <div class="hero"><div><h1>NEON<br>CATCHER</h1><p>Escoge un modo para probarlo en tu móvil.</p></div><img src="juego/assets/ship_frame_01.webp" alt="Nave de Neon Catcher"></div>
 <a class="card primary" id="n7link" href="juego/index.html?campaign=n7"><span class="tag">NOVEDAD · EN DESARROLLO</span><b>Probar N-7: 100 rutas →</b><span>Campaña procedural con cinco sectores, oleadas y cuatro patrones enemigos. Los jefes, arte nuevo e historia completa aún no están terminados.</span></a>
-<label style="display:flex;gap:10px;align-items:center;padding:0 8px 10px;font-size:13px;color:#cde0fc"><input id="unlock" type="checkbox" style="accent-color:#69efff;width:18px;height:18px">Desbloquear las 100 rutas solo para pruebas</label>
+<label style="display:flex;gap:10px;align-items:center;padding:0 8px 10px;font-size:13px;color:#cde0fc"><input id="unlock" type="checkbox" style="accent-color:#69efff;width:18px;height:18px">Desbloquear las 100 rutas en el guardado de prueba</label>
+<p id="storageStatus" role="status" style="font-size:12px;margin:0 8px 12px">El desbloqueo se conserva en esta edición. No modifica tus partidas normales.</p>
 <a class="card" href="juego/index.html"><span class="tag">MODO ORIGINAL</span><b>Probar campaña clásica: 10 niveles →</b><span>Campaña original con controles, núcleo, obstáculos, poderes, puntuación y guardado independiente del modo N-7.</span></a>
 <p class="notice"><strong>Cómo jugar:</strong> toca NIVELES y elige una ruta; pulsa INICIAR EXPEDICIÓN. Desliza el dedo para dirigir la nave. Usa DISPARAR y pausa. Esta es una compilación experimental, no la versión final ni una prueba certificada en iPhone.</p>
-<p class="footer">No incluye nuevos anuncios, compras ni pagos reales. Los datos de prueba pueden cambiar con nuevas actualizaciones.</p>
+<p class="footer">Sin anuncios, compras ni pagos reales. La reparación es una simulación gratuita. Los datos de esta edición son independientes de tus partidas normales.</p>
+<p class="footer">Compilación <code style="overflow-wrap:anywhere">__NEON_PREVIEW_COMMIT__</code>__NEON_PREVIEW_DIRTY__ · <a href="build-info.json" style="color:#9bf5fb">Ver procedencia</a></p>
 </main>
-<script>document.getElementById('n7link').addEventListener('click',function(){if(document.getElementById('unlock').checked){try{localStorage.setItem('neon-n7-unlocked-v1','100')}catch(e){}}});</script></body></html>
+<script>
+document.getElementById('n7link').addEventListener('click', function(event) {
+  if (!document.getElementById('unlock').checked) return;
+  try {
+    localStorage.setItem('neon-preview-v1:neon-n7-unlocked-v1', '100');
+  } catch (error) {
+    event.preventDefault();
+    document.getElementById('storageStatus').textContent = 'El navegador bloquea el guardado. Desmarca el desbloqueo para jugar desde la primera ruta.';
+  }
+});
+</script></body></html>

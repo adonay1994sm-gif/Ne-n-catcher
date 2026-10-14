@@ -1,0 +1,42 @@
+[
+  {
+    "label": "pr3",
+    "requestedUrl": "https://deploy-preview-3--neoncatcheroriginal.netlify.app/",
+    "startedAt": "2026-10-13T22:55:16Z",
+    "status": 200,
+    "finalUrl": "https://deploy-preview-3--neoncatcheroriginal.netlify.app/",
+    "headers": {
+      "cache-control": "public,max-age=0,must-revalidate",
+      "content-type": "text/html; charset=UTF-8",
+      "etag": "\"d9a331368caac41003d00904cb8dc1c3-ssl\"",
+      "server": "envoy",
+      "x-nf-request-id": "01M4VQMBCG5HPTPS3VW7Z80BZG"
+    },
+    "bytes": 13271,
+    "sha256": "061ad8902a8a6b67ed2cd10af310c682b8dac9251d93ffe0e75a31c35f586d86"
+  },
+  {
+    "label": "branch-candidate",
+    "requestedUrl": "https://continuity-assets-audit-20261013--neoncatcheroriginal.netlify.app/",
+    "startedAt": "2026-10-13T22:55:16Z",
+    "status": 404,
+    "error": "HTTP Error 404: Not Found",
+    "bytes": 206
+  },
+  {
+    "label": "site-api",
+    "requestedUrl": "https://api.netlify.com/api/v1/sites/neoncatcheroriginal.netlify.app",
+    "startedAt": "2026-10-13T22:55:17Z",
+    "status": 401,
+    "error": "HTTP Error 401: Unauthorized",
+    "bytes": 38
+  },
+  {
+    "label": "github-deployments",
+    "requestedUrl": "https://api.github.com/repos/adonay1994sm-gif/Ne-n-catcher/deployments?per_page=20",
+    "startedAt": "2026-10-13T22:55:18Z",
+    "status": 403,
+    "error": "HTTP Error 403: Forbidden",
+    "bytes": 159
+  }
+]

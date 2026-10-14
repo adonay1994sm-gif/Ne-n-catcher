@@ -1,5 +1,46 @@
 # NEON CATCHER — Estado compartido Codex / KOO
 
+## Cierre de sesión Codex — 14/10/2026
+
+**Avances conservados; preview aislada implementada y probada estáticamente. Chromium del paquete web ordinario: 6/6 aprobados. Chromium de preview-dist y despliegue Netlify: pendientes.**
+
+Base recuperada de KOO: `8bf9513e7dd8e18e542856356812e280b9ff480a`. Rama exclusiva: `continuity-assets-audit-20261013`. El Bloque 02 WIP `50814e88f19f6790b6417bb49a2ea79d240b37a0` está preservado en el historial remoto. El commit de esta intervención lleva el asunto `fix(preview): isolate trial package and preserve Chromium QA evidence`; consultar su SHA en Git. No se cambió código funcional de la campaña durante esta intervención.
+
+### Terminado realmente
+
+- Incorporados todos los cambios publicados por KOO mediante avance rápido, sin sobrescribir archivos.
+- Selector experimental con ambas campañas y SHA visible; desbloqueo exclusivo del guardado de prueba.
+- Preview con prefijo propio de almacenamiento, service worker/caché por scope y revisión, anuncios reales desactivados, manifiesto de procedencia `build-info.json` con hashes.
+- Gate de Netlify restringido a la rama autorizada y contexto local/branch-deploy, además de `NEON_PREVIEW_DEPLOY=1`.
+- Script Chromium rehecho con condiciones observables, registros parciales, errores, hashes y seis casos reales. No introduce un RAF de prueba que falsee la concurrencia.
+- Informe y resultados: `docs/continuity-100/CIERRE_PREVIEW_20261014.md`.
+
+### Pruebas ejecutadas
+
+- `npm ci --cache /workspace/.cache/neon-npm --no-audit --no-fund`: **exit 0, 214 paquetes**. El primer intento falló por caché no escribible en `/home/agent/.npm`; su log se conserva.
+- `node scripts/build-preview.mjs`: **exit 0**, 91 archivos del paquete documentados en build-info. Dos intentos iniciales del sandbox restringido fallaron con `spawnSync git EPERM`; la repetición con permisos adicionales terminó correctamente.
+- `NODE_OPTIONS=--test-isolation=none npm run test:preview`: **11/11, exit 0**. Logs en `docs/continuity-100/evidence/netlify-20261014/`.
+- Chromium 154.0.8037.57, `--root www`: **6/6, exit 0**, duración 206068 ms. Ambos modos en 390×844, 320×568 y 844×390; pausa/reanudación/reinicio/menú y controles, cero excepciones, máximo un RAF pendiente. Resultados/capturas en `docs/continuity-100/evidence/block-02/browser-www-20261014-01/`.
+- Sintaxis y `git diff --check`: aprobados. Los 40 engine, 6 arquitectura, 23 contenido, 13 static, 33 general, 13 web y 14 adicionales siguen siendo los resultados publicados en `certification/run-01`; **no se repitió esa batería completa en esta intervención de preview**. No hubo cambios funcionales de campaña que pretendan quedar certificados con cifras nuevas.
+- La última llamada a `npm run build:preview` quedó interrumpida antes de producir evidencia adicional; no se cuenta como otra aprobación.
+
+### Netlify: limitación comprobada
+
+La URL histórica de PR #3 responde HTTP 200 y pertenece a esa PR; no se modificó. La dirección candidata de branch deploy devolvió **404**. La API Netlify devolvió **401**, no hay token ni site ID configurados y no hay herramienta Netlify instalada/conectada. **No se creó ni verificó un despliegue nuevo; no hay URL N-7 publicada que pueda entregarse.** No fue posible inspeccionar repositorio/rama/variables/commit dentro de la cuenta Netlify. Las comprobaciones HTTP están guardadas en `evidence/netlify-20261014/http-probes.json`.
+
+### Pendiente exacto
+
+1. Ejecutar Chromium contra `preview-dist`, incluida navegación real del selector y guardados aislados. El pase 6/6 corresponde a `www`, no a esta variante.
+2. Verificar el ciclo real del SW online/offline y cabeceras servidas: el smoke bloquea service workers; las pruebas actuales de SW son unitarias.
+3. El manifiesto PWA heredado abre el modo clásico al instalarlo; ajustar su entrada al selector o documentar la limitación. Cabeceras TOML globales pueden prevalecer sobre `_headers`; no declarar cabeceras remotas verificadas.
+4. Comprobar `build-info.commit/sourceTree` contra el checkout al reconstruir un paquete para distribuir; las pruebas actuales validan formato y hashes, no todos los valores de Git actuales.
+5. Con acceso autenticado a Netlify, habilitar únicamente la rama de prueba y `NEON_PREVIEW_DEPLOY=1`, o subir contenido de `preview-dist` a un sitio de prueba mediante Drop. Verificar URL y SHA reales; no usar PR #3 ni producción.
+6. Continuar jugabilidad/assets/jefes/narrativa/audio después del cierre técnico. No se generaron assets ni funciones nuevas de combate durante esta intervención. iPhone físico sigue pendiente.
+
+`USE_ENGINE_V1 = false`; main y PR #3 sin cambios, sin force push, sin despliegue de producción.
+
+---
+
 ## Actualización Codex — conservación urgente WIP, 13/10/2026
 
 **BLOQUE 02: CONSERVADO COMO WIP. NO CERTIFICADO EN CHROMIUM NI IPHONE.**

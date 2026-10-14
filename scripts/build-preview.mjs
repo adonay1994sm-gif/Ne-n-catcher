@@ -1,25 +1,134 @@
-/** Build an opt-in Netlify browser test package without replacing production www. */
-import {cp, mkdir, readFile, rm, stat} from 'node:fs/promises';
-import {dirname, join} from 'node:path';
+/** Build an isolated browser test package; never rewrite www or the native copy. */
+import {cp, mkdir, readFile, readdir, rm, stat, writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {dirname, join, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const source = join(root, 'www');
-const output = join(root, 'preview-dist');
-const landing = join(root, 'preview', 'launcher.html');
+export const PREVIEW_BRANCH = 'continuity-assets-audit-20261013';
+export const STORAGE_PREFIX = 'neon-preview-v1:';
+const sha256 = value => createHash('sha256').update(value).digest('hex');
+const git = (...args) => execFileSync('git', args, {cwd: root, encoding: 'utf8'}).trim();
 
-for (const file of ['index.html','game.js','content-runtime.js','core-runtime.js','sw.js','assets/ship_frame_01.webp']) {
-  const info = await stat(join(source,file));
-  if (!info.isFile() || info.size === 0) throw new Error(`Preview source is missing or empty: ${file}`);
+function replaceOnce(source, before, after) {
+  if (source.split(before).length !== 2) throw new Error(`Preview transform requires exactly one marker: ${before}`);
+  return source.replace(before, after);
 }
-const page = await readFile(landing,'utf8');
-if (!page.includes('juego/index.html?campaign=n7') || !page.includes('juego/index.html')) {
-  throw new Error('Preview launcher must retain both N-7 and classic links');
+
+export function previewGame(source) {
+  return replaceOnce(source, 'const storage = NeonCore.createStorageService();',
+    'const storage = NeonCore.createStorageService(window.NeonPreview.storage);')
+    .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARACIÓN DE PRUEBA · SIN ANUNCIO');
 }
-await rm(output, {recursive:true, force:true});
-await mkdir(join(output, 'juego'), {recursive:true});
-await cp(source, join(output, 'juego'), {recursive:true});
-await cp(landing, join(output, 'index.html'));
-// Netlify reads _headers only at publish root, not in the copied /juego folder.
-await cp(join(source,'_headers'), join(output,'_headers'));
-console.log('[Neon Catcher] preview-dist listo: selector en / y juego íntegro en /juego/; no despliegue realizado');
+
+export function previewWorker(source, revision) {
+  if (!/^[a-f0-9]{64}$/.test(revision)) throw new TypeError('A SHA-256 preview revision is required');
+  let worker = source.replace(/^const CACHE = .*;$/m,
+    `const CACHE_PREFIX = "neon-preview-v1:" + self.registration.scope + "::";\nconst CACHE = CACHE_PREFIX + "${revision}";`);
+  if (worker === source) throw new Error('Missing service worker cache declaration');
+  worker = replaceOnce(worker, 'keys.filter((key) => key !== CACHE)',
+    'keys.filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE)');
+  worker = replaceOnce(worker, 'url.origin !== self.location.origin',
+    'url.origin !== self.location.origin || !url.href.startsWith(self.registration.scope)');
+  worker = worker.replaceAll('await caches.match(request)', 'await (await caches.open(CACHE)).match(request)');
+  return replaceOnce(worker, 'caches.match("index.html")',
+    '(await caches.open(CACHE)).match(new URL("index.html", self.registration.scope).href)');
+}
+
+export function previewConfig(commit, dirty) {
+  if (!/^[a-f0-9]{40}$/.test(commit)) throw new TypeError('Exact commit SHA required');
+  return `/* Preview-only storage; the ordinary game and settings are untouched. */
+window.NeonPreview = Object.freeze({
+  commit: ${JSON.stringify(commit)}, dirty: ${Boolean(dirty)}, storagePrefix: ${JSON.stringify(STORAGE_PREFIX)},
+  storage: Object.freeze({
+    getItem(key) { return localStorage.getItem(${JSON.stringify(STORAGE_PREFIX)} + key); },
+    setItem(key, value) { localStorage.setItem(${JSON.stringify(STORAGE_PREFIX)} + key, value); },
+    removeItem(key) { localStorage.removeItem(${JSON.stringify(STORAGE_PREFIX)} + key); }
+  })
+});\n`;
+}
+
+export function previewPage(source) {
+  let html = replaceOnce(source, '<script src="native-admob.js?v=7.2.0"></script>',
+    '<script src="preview-config.js"></script>\n<script src="native-admob.js?v=7.2.0"></script>');
+  html = replaceOnce(html, '<div class="menu-legal">',
+    '<div class="menu-legal"><a href="../index.html">PRUEBA EXPERIMENTAL · CAMBIAR MODO</a>');
+  return html.replace(/<title>[^<]*<\/title>/, '<title>NEON CATCHER — Prueba experimental</title>')
+    .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARACIÓN DE PRUEBA · SIN ANUNCIO');
+}
+
+async function filesBelow(directory, base = directory) {
+  const result = [];
+  for (const entry of await readdir(directory, {withFileTypes: true})) {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) result.push(...await filesBelow(path, base));
+    else if (entry.isFile()) result.push(relative(base, path).split('\\').join('/'));
+    else throw new Error(`Unsupported preview entry: ${path}`);
+  }
+  return result.sort();
+}
+
+export async function buildPreview() {
+  const source = join(root, 'www');
+  const output = join(root, 'preview-dist');
+  const commit = git('rev-parse', 'HEAD');
+  const sourceTree = git('rev-parse', 'HEAD^{tree}');
+  const branch = process.env.BRANCH || git('branch', '--show-current');
+  if (branch !== PREVIEW_BRANCH) throw new Error(`Preview branch not allowed: ${branch}`);
+  if (process.env.COMMIT_REF && process.env.COMMIT_REF !== commit) throw new Error('Netlify COMMIT_REF does not match checkout HEAD');
+  const dirty = Boolean(git('status', '--porcelain', '--untracked-files=normal'));
+  const trackedDiffSha256 = sha256(execFileSync('git', ['diff', '--binary', 'HEAD'], {cwd: root, maxBuffer: 32 * 1024 * 1024}));
+  for (const file of ['index.html', 'game.js', 'content-runtime.js', 'core-runtime.js', 'sw.js', 'assets/ship_frame_01.webp']) {
+    const info = await stat(join(source, file));
+    if (!info.isFile() || info.size === 0) throw new Error(`Preview source is missing or empty: ${file}`);
+  }
+  const landing = await readFile(join(root, 'preview/launcher.html'), 'utf8');
+  if (!landing.includes('href="juego/index.html?campaign=n7"') || !landing.includes('href="juego/index.html"')) {
+    throw new Error('Preview launcher must retain both game modes');
+  }
+  const sourceFiles = {};
+  for (const file of await filesBelow(source)) sourceFiles[`www/${file}`] = sha256(await readFile(join(source, file)));
+  for (const file of ['scripts/build-preview.mjs', 'scripts/netlify-preview-gate.mjs', 'preview/launcher.html']) {
+    sourceFiles[file] = sha256(await readFile(join(root, file)));
+  }
+  const revision = sha256(JSON.stringify({commit, sourceFiles}));
+  await rm(output, {recursive: true, force: true});
+  await mkdir(join(output, 'juego'), {recursive: true});
+  await cp(source, join(output, 'juego'), {recursive: true});
+  await writeFile(join(output, 'index.html'), landing
+    .replaceAll('__NEON_PREVIEW_COMMIT__', commit)
+    .replaceAll('__NEON_PREVIEW_DIRTY__', dirty ? ' · incluye cambios locales' : ''));
+  await writeFile(join(output, 'juego/index.html'), previewPage(await readFile(join(source, 'index.html'), 'utf8')));
+  await writeFile(join(output, 'juego/game.js'), previewGame(await readFile(join(source, 'game.js'), 'utf8')));
+  let worker = previewWorker(await readFile(join(source, 'sw.js'), 'utf8'), revision);
+  worker = replaceOnce(worker, 'const CORE = [', 'const CORE = [\n  "preview-config.js",');
+  await writeFile(join(output, 'juego/sw.js'), worker);
+  await writeFile(join(output, 'juego/preview-config.js'), previewConfig(commit, dirty));
+  await writeFile(join(output, 'juego/ads-config.js'), `window.MONETIZATION_CONFIG = Object.freeze({web: Object.freeze({enabled: false, testRewardedSimulator: true, simulatorDelayMs: 250}), native: Object.freeze({enabled: false, testing: true, interstitialEveryRuns: 0})});\n`);
+  await writeFile(join(output, 'juego/native-admob.js'), 'window.NeonNativeAds = Object.freeze({isAvailable: () => false});\n');
+  const adBridge = await readFile(join(source, 'ad-bridge.js'), 'utf8');
+  await writeFile(join(output, 'juego/ad-bridge.js'), adBridge.replace('Anuncio de prueba: verificando recompensa…', 'Reparación de prueba: verificando recompensa…'));
+  // Headers apply at the publish root and at /juego; block external SDKs/endpoints.
+  await writeFile(join(output, '_headers'), `/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  Cache-Control: no-cache, no-store, must-revalidate
+`);
+  const files = {};
+  for (const file of await filesBelow(output)) {
+    const bytes = await readFile(join(output, file));
+    files[file] = {bytes: bytes.length, sha256: sha256(bytes)};
+  }
+  await writeFile(join(output, 'build-info.json'), JSON.stringify({
+    schemaVersion: 1, kind: 'experimental-preview', commit, sourceTree, branch, dirty,
+    revision, trackedDiffSha256, sourceFiles, storagePrefix: STORAGE_PREFIX,
+    serviceWorkerScope: './juego/', engineV1: false, realAds: false, realPayments: false,
+    files
+  }, null, 2) + '\n');
+  console.log(`[Neon Catcher] preview-dist listo; SHA ${commit}${dirty ? ' + cambios locales' : ''}; ${Object.keys(files).length} archivos verificados; sin despliegue`);
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await buildPreview();

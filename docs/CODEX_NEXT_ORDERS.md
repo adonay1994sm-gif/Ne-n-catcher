@@ -1,3 +1,5 @@
+> **Actualización de continuidad 14/10/2026:** antes de seguir con arte o combate, leer el cierre actual en CODEX_STATUS.md. El smoke de `www` pasó 6/6; falta `preview-dist`, SW real y despliegue autenticado. El propietario pidió terminar y conservar esta sesión. No volver a presentar como locales los commits WIP que ya están en GitHub. Comandos exactos en `continuity-100/CIERRE_PREVIEW_20261014.md`.
+
 # ORDEN DE DIRECCIÓN — CONTINUIDAD AUTÓNOMA DE CODEX
 **Fecha:** 2026-10-13  
 **Repositorio:** `adonay1994sm-gif/Ne-n-catcher`  

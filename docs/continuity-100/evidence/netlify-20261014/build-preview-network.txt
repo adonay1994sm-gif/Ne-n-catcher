@@ -1,0 +1,1 @@
+[Neon Catcher] preview-dist listo; SHA 8bf9513e7dd8e18e542856356812e280b9ff480a + cambios locales; 91 archivos verificados; sin despliegue
