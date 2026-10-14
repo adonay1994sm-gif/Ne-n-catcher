@@ -46,7 +46,7 @@ jobs:
       - name: Verify visual integration and preview isolation
         run: |
           node --test tests/visual-artpass.test.mjs
-          NODE_OPTIONS=--test-isolation=none npm run test:preview
+          npm run test:preview
 
       - name: Verify preview entry and published artifact location
         run: |
