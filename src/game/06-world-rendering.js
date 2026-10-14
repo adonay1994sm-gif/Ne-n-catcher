@@ -30,30 +30,18 @@
     ctx.globalCompositeOperation = "screen";
 
     if (lv.scene === "cronos") {
+      // The authored Chronos painting is the scene. Avoid artificial bars
+      // and geometry that obscure the station, especially on small screens.
       const sx = W * 0.50;
       const sy = H * 0.28;
-      const pulse = 1 + Math.sin(t * 0.0025) * 0.035;
-      const blast = ctx.createRadialGradient(sx, sy, 0, sx, sy, 205 * pulse);
-      blast.addColorStop(0, "rgba(255,255,255,.86)");
-      blast.addColorStop(0.12, "rgba(139,250,255,.62)");
-      blast.addColorStop(0.42, "rgba(62,155,255,.20)");
-      blast.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = blast;
-      ctx.fillRect(0, 0, W, H * 0.62);
-
-      ctx.globalAlpha = 0.34;
-      for (let index = 0; index < 13; index++) {
-        const angle = index * 2.31;
-        const radius = 92 + (index % 5) * 31;
-        const x = sx + Math.cos(angle) * radius;
-        const y = sy + Math.sin(angle) * radius * 0.62;
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle + t * 0.00008 * (index % 2 ? 1 : -1));
-        ctx.fillStyle = index % 3 ? "#91a5c4" : "#66eaff";
-        ctx.fillRect(-6, -2, 12 + (index % 4) * 5, 4 + (index % 3) * 2);
-        ctx.restore();
-      }
+      const pulse = 1 + Math.sin(t * 0.0025) * 0.025;
+      const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, 178 * pulse);
+      glow.addColorStop(0, "rgba(214,250,255,.48)");
+      glow.addColorStop(0.18, "rgba(78,199,255,.22)");
+      glow.addColorStop(0.55, "rgba(50,105,210,.065)");
+      glow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H * 0.55);
     } else if (lv.scene === "orbit") {
       drawPlanet(W * 0.78, H * 0.19, 105, ["#e9ffff", "#4eb9ff", "#15245f"], true);
     } else if (lv.scene === "rift") {
@@ -194,7 +182,7 @@
       const width = image.naturalWidth * scale;
       const height = image.naturalHeight * scale;
       ctx.save();
-      ctx.globalAlpha = 0.46;
+      ctx.globalAlpha = 0.62;
       ctx.drawImage(image, (W - width) / 2, (H - height) / 2 - H * 0.08, width, height);
       const readability = ctx.createLinearGradient(0, 0, 0, H);
       readability.addColorStop(0, "rgba(3,9,24,.06)");
@@ -263,31 +251,26 @@
     if (currentLevel === 0 && levelOneShockwave > 0) {
       const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);
       const radius = 55 + progress * Math.max(W, H) * 0.72;
+      const sx = W * 0.50;
+      const sy = H * 0.28;
+      const strength = Math.sin(progress * Math.PI);
       ctx.save();
       ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha = Math.sin(progress * Math.PI) * 0.84;
-      ctx.strokeStyle = "rgba(165,250,255,.95)";
-      ctx.lineWidth = 22 * (1 - progress) + 3;
-      ctx.shadowBlur = 34;
-      ctx.shadowColor = "#68eaff";
-      ctx.beginPath();
-      ctx.arc(W * 0.50, H * 0.28, radius, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.globalAlpha *= 0.62;
-      ctx.lineWidth = 8 * (1 - progress) + 1;
-      ctx.beginPath();
-      ctx.arc(W * 0.50, H * 0.28, radius * 0.78, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.globalAlpha *= 0.55;
-      for (let index = 0; index < 18; index++) {
-        const angle = index * Math.PI * 2 / 18 + progress * 0.2;
-        const inner = radius * 0.72;
-        const outer = radius * (0.86 + (index % 3) * 0.05);
-        ctx.beginPath();
-        ctx.moveTo(W * 0.5 + Math.cos(angle) * inner, H * 0.28 + Math.sin(angle) * inner);
-        ctx.lineTo(W * 0.5 + Math.cos(angle) * outer, H * 0.28 + Math.sin(angle) * outer);
-        ctx.stroke();
+      // Layer one: use the existing authored shield texture as an energy
+      // refraction halo. At reduced opacity it cannot conceal hazards.
+      if (spriteReady(SPRITES.shieldEffect)) {
+        ctx.globalAlpha = strength * 0.19;
+        ctx.drawImage(SPRITES.shieldEffect, sx - radius, sy - radius, 2 * radius, 2 * radius);
       }
+      // Layer two: a single soft rim, not concentric target circles or spokes.
+      ctx.globalAlpha = strength * 0.55;
+      ctx.strokeStyle = "rgba(151,246,255,.78)";
+      ctx.lineWidth = 12 * (1 - progress) + 2;
+      ctx.shadowBlur = 17;
+      ctx.shadowColor = "#57d8ff";
+      ctx.beginPath();
+      ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+      ctx.stroke();
       ctx.restore();
     }
 
