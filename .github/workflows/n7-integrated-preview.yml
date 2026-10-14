@@ -56,7 +56,7 @@ jobs:
           test -s preview-dist/juego/content-runtime.js
           test -s preview-dist/juego/assets/cronos_level1_background.webp
           test -s preview-dist/juego/assets/shield_effect.webp
-          test -s preview-dist/juego/build-info.json
+          test -s preview-dist/build-info.json
 
       - name: Package verified preview for manual Netlify Drop
         uses: actions/upload-artifact@v4
