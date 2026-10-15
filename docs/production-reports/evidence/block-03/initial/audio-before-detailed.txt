@@ -1,0 +1,32 @@
+✖ effects-only audio resumes after the shared context is suspended (4.640479ms)
+✔ music-only audio resumes, while fully muted audio stays suspended (2.480576ms)
+✔ missing audio support and rejected autoplay do not break game resumption (1.104385ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39.303468
+
+✖ failing tests:
+
+test at ../../tmp/neon-audio-regression/before.test.mjs:22:1
+✖ effects-only audio resumes after the shared context is suspended (4.640479ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'suspended'
+  - 'running'
+  
+      at TestContext.<anonymous> (file:///tmp/neon-audio-regression/before.test.mjs:27:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'suspended',
+    expected: 'running',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

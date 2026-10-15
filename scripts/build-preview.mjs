@@ -36,6 +36,59 @@ export function previewWorker(source, revision) {
     '(await caches.open(CACHE)).match(new URL("index.html", self.registration.scope).href)');
 }
 
+/** The launcher owns only its own shell; the game keeps its more specific worker. */
+export function previewLauncherWorker(revision) {
+  if (!/^[a-f0-9]{64}$/.test(revision)) throw new TypeError('A SHA-256 preview revision is required');
+  return `const CACHE_PREFIX = "neon-preview-launcher-v1:" + self.registration.scope + "::";
+const CACHE = CACHE_PREFIX + ${JSON.stringify(revision)};
+const CORE = ["./", "index.html", "manifest.webmanifest", "build-info.json",
+  "juego/assets/ship_frame_01.webp", "juego/assets/icon-192.png", "juego/assets/icon-512.png"]
+  .map(path => new URL(path, self.registration.scope).href);
+const ALLOWED = new Set(CORE);
+self.addEventListener("install", event => {
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
+});
+self.addEventListener("activate", event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE).map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
+});
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  url.search = "";
+  url.hash = "";
+  if (!ALLOWED.has(url.href)) return;
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    try {
+      const response = await fetch(event.request, {cache: "no-store"});
+      if (response.status === 200) await cache.put(url.href, response.clone());
+      return response;
+    } catch (error) {
+      const cached = await cache.match(url.href);
+      if (cached) return cached;
+      throw error;
+    }
+  })());
+});
+`;
+}
+
+export function previewManifest(source, nested = false) {
+  const original = JSON.parse(source);
+  const base = nested ? '../' : './';
+  return JSON.stringify({...original,
+    id: base + '?edition=neon-preview-v1',
+    name: 'NEON CATCHER — Prueba experimental', short_name: 'Neon Prueba',
+    description: 'Edición experimental con selector de campaña clásica y rutas N-7. Guardado de prueba independiente.',
+    start_url: base + 'index.html', scope: base,
+    icons: original.icons.map(icon => ({...icon, src: nested ? icon.src : 'juego/' + icon.src}))
+  }, null, 2) + '\n';
+}
+
 export function previewConfig(commit, dirty) {
   if (!/^[a-f0-9]{40}$/.test(commit)) throw new TypeError('Exact commit SHA required');
   return `/* Preview-only storage; the ordinary game and settings are untouched. */
@@ -46,7 +99,15 @@ window.NeonPreview = Object.freeze({
     setItem(key, value) { localStorage.setItem(${JSON.stringify(STORAGE_PREFIX)} + key, value); },
     removeItem(key) { localStorage.removeItem(${JSON.stringify(STORAGE_PREFIX)} + key); }
   })
-});\n`;
+});
+// Direct links into the game must also prepare the offline mode selector.
+if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+  const workerURL = new URL("../launcher-sw.js", document.currentScript.src);
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register(workerURL.href, {scope: new URL("./", workerURL).href}).catch(() => {});
+  });
+}
+`;
 }
 
 export function previewPage(source) {
@@ -54,6 +115,8 @@ export function previewPage(source) {
     '<script src="preview-config.js"></script>\n<script src="native-admob.js?v=7.2.0"></script>');
   html = replaceOnce(html, '<div class="menu-legal">',
     '<div class="menu-legal"><a href="../index.html">PRUEBA EXPERIMENTAL · CAMBIAR MODO</a>');
+  html = replaceOnce(html, 'rel="manifest" href="manifest.webmanifest"',
+    'rel="manifest" href="../manifest.webmanifest"');
   return html.replace(/<title>[^<]*<\/title>/, '<title>NEON CATCHER — Prueba experimental</title>')
     .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARACIÓN DE PRUEBA · SIN ANUNCIO');
 }
@@ -89,10 +152,10 @@ export async function buildPreview() {
   }
   const sourceFiles = {};
   for (const file of await filesBelow(source)) sourceFiles[`www/${file}`] = sha256(await readFile(join(source, file)));
-  for (const file of ['scripts/build-preview.mjs', 'scripts/netlify-preview-gate.mjs', 'preview/launcher.html']) {
+  for (const file of ['scripts/build-preview.mjs', 'scripts/netlify-preview-gate.mjs', 'preview/launcher.html', 'netlify.toml', '_headers']) {
     sourceFiles[file] = sha256(await readFile(join(root, file)));
   }
-  const revision = sha256(JSON.stringify({commit, sourceFiles}));
+  const revision = sha256(JSON.stringify({commit, sourceTree, dirty, trackedDiffSha256, sourceFiles}));
   await rm(output, {recursive: true, force: true});
   await mkdir(join(output, 'juego'), {recursive: true});
   await cp(source, join(output, 'juego'), {recursive: true});
@@ -101,6 +164,10 @@ export async function buildPreview() {
     .replaceAll('__NEON_PREVIEW_DIRTY__', dirty ? ' · incluye cambios locales' : ''));
   await writeFile(join(output, 'juego/index.html'), previewPage(await readFile(join(source, 'index.html'), 'utf8')));
   await writeFile(join(output, 'juego/game.js'), previewGame(await readFile(join(source, 'game.js'), 'utf8')));
+  const manifest = await readFile(join(source, 'manifest.webmanifest'), 'utf8');
+  await writeFile(join(output, 'manifest.webmanifest'), previewManifest(manifest));
+  await writeFile(join(output, 'juego/manifest.webmanifest'), previewManifest(manifest, true));
+  await writeFile(join(output, 'launcher-sw.js'), previewLauncherWorker(revision));
   let worker = previewWorker(await readFile(join(source, 'sw.js'), 'utf8'), revision);
   worker = replaceOnce(worker, 'const CORE = [', 'const CORE = [\n  "preview-config.js",');
   await writeFile(join(output, 'juego/sw.js'), worker);
@@ -125,7 +192,8 @@ export async function buildPreview() {
   await writeFile(join(output, 'build-info.json'), JSON.stringify({
     schemaVersion: 1, kind: 'experimental-preview', commit, sourceTree, branch, dirty,
     revision, trackedDiffSha256, sourceFiles, storagePrefix: STORAGE_PREFIX,
-    serviceWorkerScope: './juego/', engineV1: false, realAds: false, realPayments: false,
+    serviceWorkerScope: './juego/', launcherServiceWorkerScope: './',
+    engineV1: false, realAds: false, realPayments: false,
     files
   }, null, 2) + '\n');
   console.log(`[Neon Catcher] preview-dist listo; SHA ${commit}${dirty ? ' + cambios locales' : ''}; ${Object.keys(files).length} archivos verificados; sin despliegue`);

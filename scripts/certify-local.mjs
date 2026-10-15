@@ -29,6 +29,8 @@ const commands = [
   ['web', 'node', ['tests/run-v7-web-tests.mjs']],
   ['experimental-render-adapter', 'node', ['--test', 'tests/campaign-adapter.test.mjs',
     'tests/neon-render-engine.test.mjs', 'tests/sprite-animator.test.mjs']],
+  ['audio-lifecycle', 'node', ['--test', 'tests/audio-lifecycle.test.mjs']],
+  ['visual-artpass', 'node', ['--test', 'tests/visual-artpass.test.mjs']],
   ['inventory', 'node', ['scripts/audit-asset-inventory.mjs']]
 ];
 for (const [name, command, args] of commands) {
@@ -36,7 +38,9 @@ for (const [name, command, args] of commands) {
   const log = `${name}.txt`, fd = openSync(resolve(output, log), 'w');
   const child = spawnSync(command, args, {
     cwd: root, stdio: ['ignore', fd, fd], timeout: 300000,
-    env: {...process.env, NODE_OPTIONS: [process.env.NODE_OPTIONS, '--test-isolation=none'].filter(Boolean).join(' ')}
+    // Node 22 forbids --test-isolation in NODE_OPTIONS. Keep the ordinary test
+    // runner defaults, matching CI, instead of injecting version-specific flags.
+    env: {...process.env}
   });
   closeSync(fd);
   const result = {

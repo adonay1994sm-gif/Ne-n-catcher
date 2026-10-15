@@ -46,6 +46,7 @@ jobs:
       - name: Verify visual integration and preview isolation
         run: |
           node --test tests/visual-artpass.test.mjs
+          node --test tests/audio-lifecycle.test.mjs
           npm run test:preview
 
       - name: Verify preview entry and published artifact location

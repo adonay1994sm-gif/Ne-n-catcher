@@ -1,0 +1,45 @@
+
+> neon-catcher@7.2.0 test:content
+> node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs
+
+✔ every declared animation frame exists in the runtime inventory (35.244203ms)
+✔ banking mirrors the authored pose; impact cannot enter the idle loop (1.637609ms)
+✔ all iOS catalog image entries exist with the required PNG dimensions (22.363382ms)
+✔ 100 levels and five nonoverlapping sectors (1.011583ms)
+✔ deterministic waves for every level across independent calls (34.298328ms)
+✔ difficulty density and speed increase monotonically (0.440781ms)
+✔ bosses at every tenth level with two distinct phases (1.053869ms)
+✔ N-7 contextual triggers and animation metadata (0.238199ms)
+✔ invalid levels and wave counts rejected (0.741506ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ content is packaged before the campaign and adds no RAF owner or Engine V1 import (5.740201ms)
+✔ 100 routes run through the real legacy update and collision pipeline (55477.437632ms)
+✔ N-7 progression unlocks its own next route without overwriting original saves (693.69582ms)
+✔ pause freezes encounters; resume and restart do not duplicate scheduled waves (114.663548ms)
+✔ resume tolerates a queued RAF timestamp older than the resume handler (82.757536ms)
+✔ N-7 labels routes and shows wave progress independently of debris warnings (82.517947ms)
+✔ 100 authored routes have distinct names and explicit objectives and rhythms (1.516986ms)
+✔ wave generation never reads nondeterministic entropy (36.371598ms)
+✔ reproduction accepts explicit uint32 seed and rejects unknown generator version (1.524833ms)
+✔ level 37 retains its versioned reproduction fixture (1.391466ms)
+✔ 100 levels reserve a continuous corridor wider than the real ship (13.979849ms)
+✔ swept enemy movement and shooter projectiles preserve the refuge in every level (80.11591ms)
+✔ director emits each entity once, replays after reset and bounds suspended deltas (3.077469ms)
+✔ 3200 level/seed combinations serialize reproducibly and preserve traversable corridors (854.578677ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 59249.90373
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

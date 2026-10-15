@@ -1,0 +1,75 @@
+# NEON CATCHER — Progreso verificable de producción
+
+Fecha del registro: **2026-10-15**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+
+Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
+
+Estados: **PENDING**, **IN_PROGRESS**, **BLOCKED**, **IN_REVIEW**, **DONE**. DONE exige todos los criterios, SHA de implementación, pruebas ejecutadas y evidencia; la presencia de un archivo o dato no basta. Dependencias indican orden de producción, no certificación automática. SHA y pruebas vacíos significan que no existe cierre verificado en este registro.
+
+## Método y alcance
+
+**DONE / total de tareas del área. Igual peso por tarea; una tarea puede pertenecer a varias áreas. No es un porcentaje de producto terminado.** Cada porcentaje se refiere exclusivamente a criterios de esta checklist, no al porcentaje comercial, artístico o técnico del juego terminado. El denominador incluye trabajo futuro y queda visible; las áreas se solapan y no deben sumarse. Reorganizar el alcance cambia el denominador y debe documentarse.
+
+El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa ausencia de implementación: significa que ninguna tarea completa de este mandato ha sido cerrada todavía con todos sus criterios y evidencia en este registro. El código previo se detalla en el historial.
+
+## Indicadores por área
+
+| Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
+| --- | --- | --- | --- | --- | --- |
+| Motor | 0/9 (0.0%) | 8 | 1 | 0 | 0 |
+| Jugabilidad | 0/40 (0.0%) | 40 | 0 | 0 | 0 |
+| Campaña clásica | 0/6 (0.0%) | 5 | 1 | 0 | 0 |
+| Campaña N-7 | 0/38 (0.0%) | 38 | 0 | 0 | 0 |
+| Enemigos | 0/72 (0.0%) | 72 | 0 | 0 | 0 |
+| Jefes | 0/12 (0.0%) | 12 | 0 | 0 | 0 |
+| Assets | 0/163 (0.0%) | 148 | 2 | 1 | 12 |
+| Animaciones | 0/137 (0.0%) | 127 | 0 | 0 | 10 |
+| Narrativa | 0/16 (0.0%) | 16 | 0 | 0 | 0 |
+| Audio | 0/14 (0.0%) | 13 | 0 | 1 | 0 |
+| Interfaz | 0/13 (0.0%) | 11 | 2 | 0 | 0 |
+| Rendimiento | 0/12 (0.0%) | 12 | 0 | 0 | 0 |
+| QA | 0/45 (0.0%) | 28 | 12 | 5 | 0 |
+| Preparación iOS | 0/19 (0.0%) | 13 | 0 | 6 | 0 |
+
+## Indicadores por bloque
+
+| Bloque | Criterios cerrados / total | Estados |
+| --- | --- | --- |
+| 03 · Prueba integrada y cierre técnico | 0/20 (0.0%) | PENDING: 8 · IN_PROGRESS: 11 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
+| 04 · Jugabilidad procedural | 0/17 (0.0%) | PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
+| 05 · Producción visual y 150 assets | 0/163 (0.0%) | PENDING: 150 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0 |
+| 06 · Diez jefes | 0/10 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
+| 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
+| 08 · Audio y experiencia sensorial | 0/13 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
+| 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 15 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
+| 10 · Preparación para lanzamiento | 0/14 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0 |
+
+## Assets: catálogo frente a entrega
+
+Catálogo: **IN_REVIEW: 9; PLANNED: 138; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+
+## Evidencias históricas separadas
+
+- **Motor, arquitectura, contenido, regresión, assets y build del Bloque02**, commit **50814e88f19f6790b6417bb49a2ea79d240b37a0**: [docs/continuity-100/evidence/block-02/certification/run-01/results.json](continuity-100/evidence/block-02/certification/run-01/results.json). Resultados anteriores; no certifican modificaciones posteriores ni iPhone.
+- **Chromium www, seis casos cortos**, commit **5c5f062cd1109b95a189f002d955c0b9ec81d45e**: [docs/continuity-100/evidence/block-02/browser-www-20261014-01/results.json](continuity-100/evidence/block-02/browser-www-20261014-01/results.json). No es Chromium sobre preview-dist; SW bloqueado; no es combate completo.
+- **Preview estática**, commit **5c5f062cd1109b95a189f002d955c0b9ec81d45e**: [docs/continuity-100/evidence/netlify-20261014/test-preview-01.txt](continuity-100/evidence/netlify-20261014/test-preview-01.txt). 11 pruebas anteriores; no certifican despliegue.
+- **Workflow integrado informado por Dirección**, commit **f5b486ccfcdc56319417c33d7fa9282708ed6d64**: [enlace](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/38531391709). Conservar enlace; estado remoto debe verificarse antes de usarlo para cerrar tareas.
+
+## Bloqueos actuales del registro
+
+- **B03-18 — Verificar despliegue aislado, URL y SHA remotos:** Sin acceso autenticado a Netlify en el entorno heredado; comprobar disponibilidad de nuevo.
+- **B08-12 — Verificar Safari/iOS y restricciones de reproducción:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
+- **B09-15 — Certificar Safari/iPhone físico y WKWebView:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
+- **B10-05 — Configurar firmado autorizado:** Requiere credenciales o autorización específica del propietario.
+- **B10-09 — Verificar icono y splash en aplicación nativa:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
+- **B10-11 — Preparar TestFlight; distribución requiere autorización:** Requiere credenciales o autorización específica del propietario.
+- **B10-12 — Ejecutar pruebas físicas de candidato de lanzamiento:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
+
+## Orden de continuidad
+
+1. Cerrar preview-dist, navegación, combate, guardados, caché y procedencia.
+2. Conservar paquete comprobado; resolver acceso externo Netlify sin detener tareas independientes.
+3. Versionar y mejorar generación/equilibrio; producir e integrar CH-01 en un lote pequeño verificable.
+4. Completar jefes, historia, audio, rendimiento y pruebas físicas según dependencias.
+
+Consultar [PRODUCTION_MASTER_CHECKLIST.md](PRODUCTION_MASTER_CHECKLIST.md) para cada ID, criterio y evidencia. Este resumen se genera del mismo registro; no debe editarse manualmente.

@@ -1,13 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile, readdir, stat} from 'node:fs/promises';
-import {spawnSync} from 'node:child_process';
+import {execFileSync, spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import vm from 'node:vm';
 import {JSDOM} from 'jsdom';
-import {PREVIEW_BRANCH, STORAGE_PREFIX, previewGame, previewWorker, previewConfig, previewPage} from '../scripts/build-preview.mjs';
+import {PREVIEW_BRANCH, STORAGE_PREFIX, previewGame, previewWorker, previewLauncherWorker,
+  previewManifest, previewConfig, previewPage} from '../scripts/build-preview.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'preview-dist');
@@ -67,6 +68,76 @@ test('unit: launcher unlock affects only preview N-7 and reports blocked storage
     assert.equal(click(), false);
     assert.match(window.document.getElementById('storageStatus').textContent, /bloquea el guardado/);
   } finally {dom.window.close();}
+});
+
+test('unit: preview installation opens the selector with one identity from either entry point', async () => {
+  const source = await text('manifest.webmanifest');
+  const base = 'https://preview.test/prueba/';
+  const identity = base + '?edition=neon-preview-v1';
+  for (const nested of [false, true]) {
+    const manifestURL = base + (nested ? 'juego/' : '') + 'manifest.webmanifest';
+    const manifest = JSON.parse(previewManifest(source, nested));
+    assert.equal(new URL(manifest.id, manifestURL).href, identity);
+    assert.equal(new URL(manifest.start_url, manifestURL).href, base + 'index.html');
+    assert.equal(new URL(manifest.scope, manifestURL).href, base);
+    assert.match(manifest.name, /Prueba experimental/);
+    for (const icon of manifest.icons) {
+      assert.ok(new URL(icon.src, manifestURL).href.startsWith(base + 'juego/assets/'));
+    }
+  }
+  assert.equal(source, await text('manifest.webmanifest'), 'Ordinary installation identity must remain untouched');
+});
+
+function launcherWorkerHarness(revision) {
+  const scope = 'https://preview.test/prueba/';
+  const prefix = `neon-preview-launcher-v1:${scope}::`;
+  const deleted = [], matches = [], additions = [], handlers = {};
+  const names = [`${prefix}old`, `${prefix}${revision}`, `neon-preview-launcher-v1:${scope}child/::old`,
+    `neon-preview-v1:${scope}juego/::old`, 'neon-catcher-pre-release-7-2-0', 'unrelated-app'];
+  const sandbox = {
+    URL,
+    self: {registration: {scope}, addEventListener: (name, callback) => {handlers[name] = callback;},
+      skipWaiting() {}, clients: {claim() {}}},
+    caches: {keys: async () => names, delete: async name => {deleted.push(name);},
+      match() {throw new Error('Origin-wide cache lookup forbidden');},
+      open: async name => ({
+        match: async request => {matches.push({name, request}); return `cached:${request}`;},
+        addAll: async paths => {additions.push(...paths);}
+      })},
+    fetch: async () => {throw new Error('offline');}
+  };
+  vm.runInNewContext(previewLauncherWorker(revision), sandbox);
+  return {handlers, deleted, matches, additions, prefix, scope};
+}
+
+test('unit: launcher worker caches its shell and preserves game and unrelated caches', async () => {
+  const worker = launcherWorkerHarness('c'.repeat(64));
+  let installation, activation;
+  worker.handlers.install({waitUntil: promise => {installation = promise;}});
+  await installation;
+  assert.ok(worker.additions.includes(worker.scope + 'index.html'));
+  assert.ok(worker.additions.includes(worker.scope + 'manifest.webmanifest'));
+  assert.ok(worker.additions.includes(worker.scope + 'build-info.json'));
+  assert.ok(!worker.additions.includes(worker.scope + 'juego/index.html'));
+  worker.handlers.activate({waitUntil: promise => {activation = promise;}});
+  await activation;
+  assert.deepEqual(worker.deleted, [`${worker.prefix}old`]);
+});
+
+test('unit: launcher worker serves the selector offline without intercepting game or foreign pages', async () => {
+  const worker = launcherWorkerHarness('d'.repeat(64));
+  for (const path of ['', 'index.html?source=installed', 'manifest.webmanifest']) {
+    let response;
+    worker.handlers.fetch({request: {method: 'GET', mode: 'navigate', url: worker.scope + path},
+      respondWith: value => {response = value;}});
+    assert.equal(await response, 'cached:' + worker.scope + path.split('?')[0]);
+  }
+  for (const url of [worker.scope + 'juego/index.html?campaign=n7', worker.scope + 'juego/game.js',
+    worker.scope + 'other.html', 'https://preview.test/index.html', 'https://elsewhere.test/']) {
+    worker.handlers.fetch({request: {method: 'GET', mode: 'navigate', url},
+      respondWith() {assert.fail(`Launcher intercepted a foreign resource: ${url}`);}});
+  }
+  assert.ok(worker.matches.every(match => match.name.startsWith(worker.prefix)));
 });
 
 function workerHarness(source, revision) {
@@ -129,6 +200,11 @@ test('built launcher presents both modes and all paths resolve within the previe
   assert.match(html, /juego\/assets\/ship_frame_01\.webp/);
   assert.match(html, /neon-preview-v1:neon-n7-unlocked-v1/);
   assert.doesNotMatch(html, /__NEON_PREVIEW_/);
+  assert.match(html, /rel="manifest" href="manifest.webmanifest"/);
+  assert.match(html, /register\('launcher-sw\.js'/);
+  for (const name of ['manifest.webmanifest', 'launcher-sw.js', 'build-info.json']) {
+    assert.ok((await stat(join(dist, name))).size > 0, name);
+  }
   for (const name of ['index.html', 'game.js', 'core-runtime.js', 'content-runtime.js', 'preview-config.js', 'sw.js', 'assets/ship_frame_01.webp']) {
     assert.ok((await stat(join(dist, 'juego', name))).size > 0, name);
   }
@@ -137,6 +213,17 @@ test('built launcher presents both modes and all paths resolve within the previe
     if (/^https?:/.test(path)) assert.fail(`External preview dependency: ${path}`);
     else assert.ok((await stat(join(dist, 'juego', path))).isFile(), path);
   }
+});
+
+test('built preview manifest consistently launches the offline selector', async () => {
+  const source = await text('manifest.webmanifest');
+  assert.equal(await readFile(join(dist, 'manifest.webmanifest'), 'utf8'), previewManifest(source));
+  assert.equal(await readFile(join(dist, 'juego/manifest.webmanifest'), 'utf8'), previewManifest(source, true));
+  assert.match(await readFile(join(dist, 'juego/index.html'), 'utf8'), /rel="manifest" href="\.\.\/manifest\.webmanifest"/);
+  const info = JSON.parse(await readFile(join(dist, 'build-info.json'), 'utf8'));
+  assert.equal(info.launcherServiceWorkerScope, './');
+  assert.equal(info.serviceWorkerScope, './juego/');
+  assert.equal(await readFile(join(dist, 'launcher-sw.js'), 'utf8'), previewLauncherWorker(info.revision));
 });
 
 test('preview preserves core, content and every original asset byte for byte', async () => {
@@ -166,12 +253,20 @@ test('preview cannot initialize native ads or make real payments', async () => {
   assert.match(headers, /payment=\(\)/);
   assert.match(headers, /connect-src 'self'/);
   assert.match(headers, /Cache-Control: no-cache, no-store/);
+  assert.doesNotMatch(await text('netlify.toml'), /\[\[headers\]\]/,
+    'TOML headers would override the isolated preview policy');
+  const ordinaryHeaders = await text('_headers');
+  assert.match(ordinaryHeaders, /Referrer-Policy: strict-origin-when-cross-origin/);
+  assert.equal(await text('www/_headers'), ordinaryHeaders, 'Ordinary policy must still be copied unchanged');
 });
 
 test('build provenance records exact commit, source tree and every emitted byte', async () => {
   const info = JSON.parse(await readFile(join(dist, 'build-info.json'), 'utf8'));
   assert.match(info.commit, /^[a-f0-9]{40}$/);
   assert.match(info.sourceTree, /^[a-f0-9]{40}$/);
+  const checkout = (...args) => execFileSync('git', args, {cwd: root, encoding: 'utf8'}).trim();
+  assert.equal(info.commit, checkout('rev-parse', 'HEAD'), 'Stale preview: rebuild after changing HEAD');
+  assert.equal(info.sourceTree, checkout('rev-parse', 'HEAD^{tree}'), 'Preview source tree differs from checkout');
   assert.match(info.trackedDiffSha256, /^[a-f0-9]{64}$/);
   assert.equal(typeof info.dirty, 'boolean');
   assert.equal(info.branch, PREVIEW_BRANCH);
@@ -179,6 +274,8 @@ test('build provenance records exact commit, source tree and every emitted byte'
   assert.equal(info.engineV1, false);
   assert.equal(info.realAds, false);
   assert.equal(info.realPayments, false);
+  assert.equal(info.revision, sha256(JSON.stringify({commit: info.commit, sourceTree: info.sourceTree,
+    dirty: info.dirty, trackedDiffSha256: info.trackedDiffSha256, sourceFiles: info.sourceFiles})));
   for (const [path, expected] of Object.entries(info.files)) {
     const actual = await readFile(join(dist, path));
     assert.equal(actual.length, expected.bytes, path);

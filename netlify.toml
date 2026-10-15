@@ -12,39 +12,6 @@
   command = "node ./scripts/netlify-preview-gate.mjs --require-enabled && npm run build:preview && npm run test:static && npm run test:preview"
   publish = "preview-dist"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-[[headers]]
-  for = "/index.html"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "no-cache, must-revalidate"
-
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "no-cache, must-revalidate"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "no-cache, must-revalidate"
-
-[[headers]]
-  for = "/sw.js"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=86400"
+# Each publish directory supplies its own _headers. The ordinary build copies
+# the existing root _headers unchanged; preview-dist supplies its isolated policy.
+# Do not duplicate headers here: TOML values would override the preview policy.

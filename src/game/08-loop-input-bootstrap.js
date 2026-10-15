@@ -196,7 +196,7 @@
 
   addEventListener("neon-ad-closed", async () => {
     last = performance.now();
-    if (resumeAudioAfterAd && audioCtx && settings.music > 0) {
+    if (resumeAudioAfterAd && audioCtx) {
       await resumeAudio();
     }
     resumeAudioAfterAd = false;

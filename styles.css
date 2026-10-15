@@ -81,3 +81,92 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
+
+/* Overlays must fit their containing viewport; long menus scroll internally. */
+.overlay {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  padding-left: max(22px, env(safe-area-inset-left));
+  padding-right: max(22px, env(safe-area-inset-right));
+}
+.overlay > .panel {
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Keep the portrait playfield and touch mapping; use the side space for UI. */
+@media (orientation: landscape) {
+  body { display: block; padding: 0; }
+  .shell, .game {
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    max-height: 100dvh;
+  }
+  .game { aspect-ratio: auto; border: 0; border-radius: 0; }
+  #canvas {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: min(100%, 56.25dvh);
+    height: 100%;
+    transform: translateX(-50%);
+  }
+  .hud {
+    left: 50%;
+    right: auto;
+    width: min(520px, calc(100% - max(12px, env(safe-area-inset-left)) - max(12px, env(safe-area-inset-right))));
+    transform: translateX(-50%);
+    grid-template-columns: minmax(0, .65fr) minmax(0, .9fr) minmax(0, 1.05fr) minmax(0, 1.18fr) 46px;
+  }
+  .power-hud { top: calc(max(10px, env(safe-area-inset-top)) + 50px); }
+  .overlay {
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .overlay > .panel { padding: 16px 20px; }
+  .pause-panel h2 { font-size: 24px; }
+  .pause-panel button { min-height: 44px; }
+  .briefing-panel { transform: none; }
+  #menu {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+  .menu-topline {
+    position: static;
+    width: min(100%, 640px);
+  }
+  .menu-panel {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: min(100%, 640px);
+    max-width: 640px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 18px;
+    align-content: start;
+  }
+  .menu-panel > .brand-mark { grid-column: 1; grid-row: 1; margin-bottom: 0; }
+  .menu-panel > h2 { grid-column: 1; grid-row: 2; font-size: 22px; }
+  .menu-panel > p { grid-column: 1; grid-row: 3 / 5; margin: 8px 0; }
+  .menu-panel > .menu-stats { grid-column: 2; grid-row: 1; margin: 0; align-self: center; }
+  .menu-panel > .campaign-progress { grid-column: 2; grid-row: 2; margin: 8px 0; align-self: center; }
+  .menu-panel > .hero-cta { grid-column: 2; grid-row: 3; align-self: start; }
+  .menu-panel > .menu-actions { grid-column: 2; grid-row: 4; align-self: start; }
+  .menu-legal {
+    position: static;
+    width: 100%;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .menu-scene { display: none; }
+}

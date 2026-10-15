@@ -1,0 +1,574 @@
+# NEON CATCHER — Checklist maestra de producción
+
+Fecha del registro: **2026-10-15**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+
+Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
+
+Estados: **PENDING**, **IN_PROGRESS**, **BLOCKED**, **IN_REVIEW**, **DONE**. DONE exige todos los criterios, SHA de implementación, pruebas ejecutadas y evidencia; la presencia de un archivo o dato no basta. Dependencias indican orden de producción, no certificación automática. SHA y pruebas vacíos significan que no existe cierre verificado en este registro.
+
+Este registro cubre los Bloques 03–10 del mandato. Los avances históricos permanecen en [CODEX_STATUS.md](CODEX_STATUS.md) y [continuity-100/](continuity-100/); no se convierten automáticamente en cierres de los criterios más amplios de esta etapa.
+
+## Organigrama y responsabilidades
+
+### A. Dirección técnica
+
+- Arquitectura: B03-04.
+- Integración: B03-02, B03-03.
+- Versionado: B03-01, B03-16, B03-20.
+- Control de regresiones: B03-04.
+
+### B. Motor y rendimiento
+
+- Canvas 2D: B09-07.
+- Bucle del juego: B03-07, B09-05.
+- Físicas y colisiones: B09-09.
+- Partículas: B09-03.
+- Cámara: B09-16.
+- Controles táctiles: B03-09, B09-08.
+- Optimización iPhone: B09-01, B09-02, B09-15.
+
+### C. Jugabilidad
+
+- Nave del jugador: B05-08, B09-11.
+- Combate: B04-12.
+- Daño y destrucción: B05-05, B05-06.
+- Enemigos: B04-09, B05-03.
+- Inteligencia artificial: B04-09, B06-10.
+- Poderes: B04-13.
+- Recompensas: B04-13, B05-06.
+
+### D. Diseño de niveles
+
+- Campaña clásica: B03-06, B03-11.
+- Campaña N-7: B04-14, B04-15.
+- Generación procedural: B04-02, B04-03, B04-06.
+- Progresión: B04-17.
+- Equilibrio: B04-08, B04-13, B04-16.
+- Jefes y minijefes: B06-10, B06-20, B06-30, B06-40, B06-50, B06-60, B06-70, B06-80, B06-90, B06-100.
+
+### E. Producción artística
+
+- Dirección visual: B05-02.
+- Fondos y planetas: B05-12.
+- Naves y enemigos: B05-03, B05-07.
+- Spritesheets: B05-11.
+- Animaciones: B05-08, B05-09, B05-10.
+- VFX: B05-12.
+- Interfaz: B05-13.
+
+### F. Historia y audio
+
+- Universo narrativo: B07-01, B07-03.
+- Diálogos: B07-10.
+- Cinemáticas: B07-11.
+- Música: B08-01, B08-02, B08-03.
+- Efectos sonoros: B08-04, B08-05, B08-06, B08-07, B08-08, B08-09.
+
+### G. Calidad
+
+- Tests unitarios: B03-04.
+- Integración: B03-05, B03-06.
+- Regresiones: B03-04.
+- Chromium: B03-05.
+- Safari: B08-12, B09-15.
+- Rendimiento: B09-14.
+- Certificación iOS: B09-15, B10-12.
+
+### H. Distribución
+
+- GitHub: B03-01, B03-20.
+- GitHub Actions: B03-04.
+- Netlify: B03-17, B03-18.
+- PWA: B03-12, B03-19.
+- Capacitor: B10-02.
+- TestFlight: B10-11.
+- Preparación App Store: B10-14.
+
+## Resumen de estados
+
+PENDING: 236 · IN_PROGRESS: 12 · BLOCKED: 7 · IN_REVIEW: 12 · DONE: 0. Total: 267 tareas.
+
+## Bloque 03 — Prueba integrada y cierre técnico
+
+PENDING: 8 · IN_PROGRESS: 11 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B03-01 | Verificar HEAD remoto, rama y cambios existentes | CRITICAL | IN_PROGRESS | — | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-02 | Verificar Art Pass A integrado sin duplicarlo | CRITICAL | IN_PROGRESS | B03-01 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-03 | Instalar dependencias bloqueadas y construir desde fuentes | CRITICAL | IN_PROGRESS | B03-01 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-04 | Ejecutar todas las suites de regresión | CRITICAL | IN_PROGRESS | B03-03 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-05 | Ejecutar Chromium real sobre preview-dist | CRITICAL | IN_PROGRESS | B03-03 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-06 | Iniciar ambas campañas desde el selector | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-07 | Verificar pausa y reanudación | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-08 | Verificar reinicio y vuelta al menú | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-09 | Verificar movimiento táctil | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-10 | Verificar disparos, enemigos y proyectiles durante encuentros | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-11 | Verificar progresión, persistencia y aislamiento de guardados | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-12 | Verificar caché y service worker en navegador real | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-13 | Corregir y verificar orientación vertical y horizontal | CRITICAL | IN_PROGRESS | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-14 | Corregir errores de carga y excepciones | CRITICAL | IN_PROGRESS | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-15 | Registrar consumo de recursos de la sesión de prueba | CRITICAL | PENDING | B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-16 | Comprobar SHA y hashes de build-info.json | CRITICAL | IN_PROGRESS | B03-03 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-17 | Preparar paquete experimental probado para Netlify | CRITICAL | IN_PROGRESS | B03-04<br>B03-05<br>B03-12<br>B03-16 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-18 | Verificar despliegue aislado, URL y SHA remotos | CRITICAL | BLOCKED | B03-17 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | Sin acceso autenticado a Netlify en el entorno heredado; comprobar disponibilidad de nuevo. |
+| B03-19 | Verificar entrada PWA y cabeceras del paquete | CRITICAL | IN_PROGRESS | B03-03 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| B03-20 | Conservar informe, evidencias, commits y estado remoto | CRITICAL | IN_PROGRESS | B03-04<br>B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+
+### Criterios verificables
+
+- **B03-01:** HEAD conservado y comparación remota registrada..
+- **B03-02:** Tests visual-artpass y comparación de fuentes superados..
+- **B03-03:** npm ci y npm run build terminan con código 0; bundles sincronizados..
+- **B03-04:** Motor, arquitectura, contenido, static, general, web, visual, preview e inventario con registros y códigos..
+- **B03-05:** Resultados y capturas del paquete experimental, no solo de www..
+- **B03-06:** Navegación real a ambos modos; 10/100 rutas y retorno al selector..
+- **B03-07:** Reloj congelado al pausar y avance al reanudar, sin delta negativo ni RAF duplicado..
+- **B03-08:** Estado y semilla reiniciados sin listeners o RAF adicionales..
+- **B03-09:** Eventos táctiles reales de Chromium emulado mueven la nave; Safari físico se registra aparte..
+- **B03-10:** Movimiento, disparos y colisiones observables durante un encuentro representativo completo..
+- **B03-11:** Victoria guarda y desbloquea; recarga conserva cada campaña sin contaminar producción..
+- **B03-12:** Activación, recarga, offline y actualización funcionan con SW permitido; cachés ajenas se conservan..
+- **B03-13:** 390x844, 320x568 y 844x390 muestran HUD, controles y pausa sin recortes..
+- **B03-14:** Consola sin excepciones y recursos solicitados con respuestas válidas..
+- **B03-15:** Duración, imágenes, entidades y límites medidos; no extrapolar a 60 FPS físicos..
+- **B03-16:** Proveniencia coincide con checkout y todos los archivos publicados; dirty se declara..
+- **B03-17:** ZIP autocontenido identificado por SHA y hash, con evidencia de pruebas..
+- **B03-18:** URL real sirve selector, ambos modos y build-info del paquete; producción/PR3 intactas..
+- **B03-19:** Instalación experimental abre selector; políticas y alcance no alteran el juego de producción..
+- **B03-20:** Informe A–M y SHA publicado verificables; limitaciones físicas explícitas..
+
+## Bloque 04 — Jugabilidad procedural
+
+PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B04-01 | Auditar generador, corredores y versiones | VERY_HIGH | PENDING | B03-04 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-02 | Diseñar compatibilidad de semillas y migración | VERY_HIGH | PENDING | B04-01 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-03 | Revisar corredores seguros y transición entre ellos | VERY_HIGH | PENDING | B04-02 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-04 | Eliminar la estrategia dominante de inmovilidad | VERY_HIGH | PENDING | B04-03 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-05 | Garantizar rutas transitables durante los 100 niveles | VERY_HIGH | PENDING | B04-03 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-06 | Introducir variaciones diseñadas de encuentros | VERY_HIGH | PENDING | B04-02 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-07 | Aplicar la dificultad a la cadencia real | VERY_HIGH | PENDING | B04-02 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-08 | Equilibrar velocidades y tiempos de reacción | VERY_HIGH | PENDING | B04-07 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-09 | Mejorar patrones y coordinación de enemigos | VERY_HIGH | PENDING | B04-06 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-10 | Integrar advertencias visuales de ataques | VERY_HIGH | PENDING | B04-09 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-11 | Revisar proyectiles y colisiones de combate | VERY_HIGH | PENDING | B04-09 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-12 | Mejorar combate, daño y ventanas de respuesta | VERY_HIGH | PENDING | B04-11 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-13 | Equilibrar daño, suministros, poderes y recompensas | VERY_HIGH | PENDING | B04-12 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-14 | Integrar objetivos diferenciados por nivel | VERY_HIGH | PENDING | B04-06 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-15 | Simular las 100 rutas y múltiples semillas | VERY_HIGH | PENDING | B04-05<br>B04-07<br>B04-12<br>B04-14 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-16 | Validar niveles de referencia jugando | VERY_HIGH | PENDING | B04-15 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| B04-17 | Cerrar curvas de progreso y reintentos consistentes | VERY_HIGH | PENDING | B04-16 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+
+### Criterios verificables
+
+- **B04-01:** Defectos y parámetros efectivos registrados sobre la versión vigente..
+- **B04-02:** Planes históricos reproducibles por versión; guardados preservados..
+- **B04-03:** Corredores compatibles con ancho de nave, tiempo de reacción y desplazamiento..
+- **B04-04:** Simulación y juego de referencia requieren desplazamiento sin daño inevitable..
+- **B04-05:** Comprobación geométrica y temporal de corredores frente a obstáculos y ataques..
+- **B04-06:** Ritmos y composiciones por sector cambian más que color o números..
+- **B04-07:** spawnInterval o su sustituto versionado gobierna tiempos ejecutados..
+- **B04-08:** Rangos de velocidad probados con nave real y señales previas suficientes..
+- **B04-09:** Lineal, zigzag, perseguidor y tirador diferenciados y ejecutados..
+- **B04-10:** Ataques peligrosos precedidos de señales legibles con duración verificable..
+- **B04-11:** Proyectiles consistentes con señales, pausa, colisiones y espacio transitable..
+- **B04-12:** Ciclo disparar/impactar/destruir integrado y probado sin daño inevitable..
+- **B04-13:** Recursos y daño medidos por etapa; recompensa no trivializa el desafío..
+- **B04-14:** Objetivos jugables distintos y verificables, no solo nombres de rutas..
+- **B04-15:** Semilla, versión, fallos y coberturas guardados; la simulación no sustituye al jugador..
+- **B04-16:** Muestra de cada sector, cambios de patrón y niveles de jefe con registro visual..
+- **B04-17:** Curvas, desbloqueos y reintentos verificados sin alterar campaña clásica..
+
+## Bloque 05 — Producción visual y 150 assets
+
+PENDING: 150 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B05-01 | Inventariar archivos reales y correspondencia con catálogo150 | VERY_HIGH | IN_PROGRESS | B03-01 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-02 | Definir pipeline de arte, escala, pivote y procedencia | VERY_HIGH | PENDING | B05-01 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-03 | Integrar CH-01 con estados y carga de sprites reales | VERY_HIGH | PENDING | B03-05<br>A044<br>A045<br>A046 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-04 | Implementar ataque reconocible de CH-01 | VERY_HIGH | PENDING | B05-03 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-05 | Implementar impacto y daño de CH-01 | VERY_HIGH | PENDING | B05-03 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-06 | Implementar destrucción y recompensa de CH-01 | VERY_HIGH | PENDING | B05-05 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-07 | Verificar visualmente CH-01 durante combate completo | VERY_HIGH | PENDING | B05-04<br>B05-06 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-08 | Implementar estados y duración por fotograma | VERY_HIGH | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-09 | Proteger animaciones no interrumpibles y eventos | VERY_HIGH | PENDING | B05-08 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-10 | Implementar animaciones diferenciadas por enemigo y jefe | VERY_HIGH | PENDING | B05-09 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-11 | Optimizar carga, transparencia y memoria de sprites | VERY_HIGH | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-12 | Verificar fondos, profundidad, planetas y VFX por región | VERY_HIGH | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| B05-13 | Verificar HUD, menús, transiciones y elementos narrativos | VERY_HIGH | PENDING | B05-02<br>B03-13 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+
+### Criterios verificables
+
+- **B05-01:** 150 identificadores cotejados; READY de catálogo no se equipara automáticamente a DONE..
+- **B05-02:** Maestro, exportación, optimización, licencia y metadatos repetibles por recurso..
+- **B05-03:** Entrada, movimiento, ataque, daño y destrucción conectados al juego real..
+- **B05-04:** Animación de ataque dispara evento sincronizado y proyectil con señal previa..
+- **B05-05:** Impacto visible reduce vida y conserva correcta transición de estado..
+- **B05-06:** Destrucción no interrumpida, liberación de entidad y recompensa una sola vez..
+- **B05-07:** Capturas y prueba real de atacar, recibir daño y destruirse con assets definitivos..
+- **B05-08:** Animador respeta duración, poses y bucles con transiciones probadas..
+- **B05-09:** Muerte, impacto y eventos visuales/sonoros no se duplican ni cortan incorrectamente..
+- **B05-10:** Secuencias reales diferenciadas de geometría o pose según actor/fase..
+- **B05-11:** Carga por necesidad, dimensiones y bytes medidos; sin cargar todo el catálogo..
+- **B05-12:** Escenarios diferenciados por arquitectura/objetos, no solo paleta; efectos legibles..
+- **B05-13:** Lote G visible en juego con escalas, texto y contraste comprobados..
+
+### Entregas individuales de assets
+
+Catálogo real: **IN_REVIEW: 9; PLANNED: 138; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
+
+Todos los assets deben superar estos doce criterios: Identificador y nombre; Archivo maestro existente; Archivo optimizado existente; Fotogramas necesarios reales; Dimensiones verificadas; Escala documentada; Pivote documentado; Transparencia comprobada; Duración/FPS documentados; Integración real en el juego; Prueba visual registrada; Procedencia y derechos registrados.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| A001 | Nave · idle (shared-player-ship-idle) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A002 | Nave · bank izquierda/derecha (shared-player-ship-bank) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A003 | Nave · aceleración/boost (shared-player-ship-boost) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A004 | Nave · impacto y daño (shared-player-ship-damage) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A005 | Nave · destrucción (shared-player-ship-destroy) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A006 | Proyectil de pulso (shared-player-pulse-bolt) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IMPLEMENTED_CODE del catálogo pendiente de los doce criterios de entrega. |
+| A007 | Fogonazo de disparo (shared-player-muzzle-flash) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A008 | Impacto de disparo (shared-player-pulse-impact) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A009 | Celda de munición (shared-ammo-cell-pickup) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A010 | Icono HUD de munición (shared-ammo-hud-icon) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IMPLEMENTED_CODE del catálogo pendiente de los doce criterios de entrega. |
+| A011 | Escudo (shared-shield) | P1 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A012 | Haz tractor (shared-tractor) | P1 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A013 | Phaser automático (shared-phaser) | P1 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A014 | Dron de reparación (shared-repair-drone) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A015 | CRONIUM estable (shared-cronium-stable) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A016 | CRONIUM energético (shared-cronium-energy) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A017 | CRONIUM inestable (shared-cronium-unstable) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A018 | CRONIUM crítico (shared-cronium-critical) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A019 | CRONIUM fragmentado (shared-cronium-fragmented) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A020 | Explosión común (shared-common-explosion) | P1 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A021 | Humo común (shared-common-smoke) | P1 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A022 | Chispas comunes (shared-common-sparks) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A023 | Fragmentos comunes (shared-common-debris) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A024 | Cometa vivo · llama, humo y magma (shared-comet-living) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado READY del catálogo pendiente de los doce criterios de entrega. |
+| A025 | Onda de choque temporal (shared-temporal-shockwave) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A026 | Centro Cronos destruido lejano (chronos-station-destroyed-far) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A027 | Reactor CRONIUM (chronos-reactor-core) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A028 | Halo del reactor (chronos-reactor-halo) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A029 | Módulo científico roto (chronos-science-module) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A030 | Cápsula de evacuación (chronos-escape-capsule) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A031 | Restos de estación grandes (chronos-debris-large) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A032 | Restos rápidos foreground (chronos-debris-foreground) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A033 | Polvo temporal (chronos-dust-layer) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A034 | Nebulosa postimpacto (chronos-nebula-layer) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A035 | Distorsión temporal (chronos-distortion-overlay) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A036 | Baliza de emergencia (chronos-emergency-beacon) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A037 | Key art La Onda de Choque (chronos-level1-keyart) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A038 | Gaia Nova (gaia-planet) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A039 | Nubes de Gaia (gaia-clouds) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A040 | Atmósfera de Gaia (gaia-atmosphere) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A041 | Órbita lejana (gaia-orbit-far) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A042 | Restos científicos (gaia-science-debris) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A043 | Foreground orbital (gaia-foreground) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A044 | CH-01 Scout Drone · movimiento (gaia-ch01-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A045 | CH-01 · ataque (gaia-ch01-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A046 | CH-01 · destrucción (gaia-ch01-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A047 | CH-02 Interceptor · movimiento (gaia-ch02-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A048 | CH-02 · ataque (gaia-ch02-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A049 | CH-02 · destrucción (gaia-ch02-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A050 | CH-03 Defense Satellite · movimiento (gaia-ch03-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A051 | CH-03 · ataque (gaia-ch03-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A052 | CH-03 · destrucción (gaia-ch03-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A053 | Guardian Atlas · movimiento (gaia-guardian-atlas-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A054 | Guardian Atlas · ataque (gaia-guardian-atlas-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A055 | Guardian Atlas · destrucción (gaia-guardian-atlas-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A056 | Campo de energía Gaia (gaia-energy-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A057 | Proyectiles Gaia (gaia-projectile-pack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A058 | Vulkar (vulkar-planet) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A059 | Nubes volcánicas (vulkar-clouds) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A060 | Pluma solar (vulkar-solar-plume) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A061 | Campo de roca (vulkar-rock-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A062 | Ceniza espacial (vulkar-ash-layer) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A063 | Foreground Vulkar (vulkar-foreground) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A064 | Lava Core · movimiento (vulkar-lava-core-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A065 | Lava Core · ataque (vulkar-lava-core-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A066 | Lava Core · destrucción (vulkar-lava-core-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A067 | Magma Serpent · movimiento (vulkar-magma-serpent-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A068 | Magma Serpent · ataque (vulkar-magma-serpent-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A069 | Magma Serpent · destrucción (vulkar-magma-serpent-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A070 | Plasma Mine · movimiento (vulkar-plasma-mine-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A071 | Plasma Mine · ataque (vulkar-plasma-mine-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A072 | Plasma Mine · destrucción (vulkar-plasma-mine-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A073 | Titan Vulkar · movimiento (vulkar-titan-vulkar-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A074 | Titan Vulkar · ataque (vulkar-titan-vulkar-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A075 | Titan Vulkar · destrucción (vulkar-titan-vulkar-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A076 | Onda térmica (vulkar-heat-wave) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A077 | Proyectiles Vulkar (vulkar-projectile-pack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A078 | Cryon (cryon-planet) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A079 | Nubes heladas (cryon-clouds) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A080 | Aurora Cryon (cryon-aurora) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A081 | Campo de hielo (cryon-ice-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A082 | Escarcha espacial (cryon-frost-layer) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A083 | Foreground Cryon (cryon-foreground) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A084 | Frost Crystal · movimiento (cryon-frost-crystal-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A085 | Frost Crystal · ataque (cryon-frost-crystal-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A086 | Frost Crystal · destrucción (cryon-frost-crystal-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A087 | Ice Drone · movimiento (cryon-ice-drone-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A088 | Ice Drone · ataque (cryon-ice-drone-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A089 | Ice Drone · destrucción (cryon-ice-drone-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A090 | Cryo Mine · movimiento (cryon-cryo-mine-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A091 | Cryo Mine · ataque (cryon-cryo-mine-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A092 | Cryo Mine · destrucción (cryon-cryo-mine-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A093 | Leviathan Cryon · movimiento (cryon-leviathan-cryon-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A094 | Leviathan Cryon · ataque (cryon-leviathan-cryon-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A095 | Leviathan Cryon · destrucción (cryon-leviathan-cryon-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A096 | Campo de congelación (cryon-freeze-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A097 | Proyectiles Cryon (cryon-projectile-pack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A098 | Aether (aether-planet) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A099 | Grietas temporales (aether-rift-layer) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A100 | Nebulosa Aether (aether-nebula) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A101 | Campo de ecos (aether-echo-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A102 | Polvo temporal (aether-time-dust) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A103 | Foreground Aether (aether-foreground) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A104 | Time Echo · movimiento (aether-time-echo-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A105 | Time Echo · ataque (aether-time-echo-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A106 | Time Echo · destrucción (aether-time-echo-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A107 | Rift Orb · movimiento (aether-rift-orb-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A108 | Rift Orb · ataque (aether-rift-orb-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A109 | Rift Orb · destrucción (aether-rift-orb-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A110 | Chrono Phantom · movimiento (aether-chrono-phantom-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A111 | Chrono Phantom · ataque (aether-chrono-phantom-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A112 | Chrono Phantom · destrucción (aether-chrono-phantom-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A113 | Chronos Warden · movimiento (aether-chronos-warden-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A114 | Chronos Warden · ataque (aether-chronos-warden-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A115 | Chronos Warden · destrucción (aether-chronos-warden-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A116 | Campo de fase (aether-phase-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A117 | Proyectiles Aether (aether-projectile-pack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A118 | Titan Omega (titan-omega-planet) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A119 | Tormentas naranjas (titan-omega-storm-layer) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A120 | Anillos de Titan Omega (titan-omega-rings) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A121 | Campo de chatarra (titan-omega-scrap-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A122 | Polvo gravitatorio (titan-omega-gravity-dust) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A123 | Foreground Titan Omega (titan-omega-foreground) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A124 | Gravity Mine · movimiento (titan-omega-gravity-mine-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A125 | Gravity Mine · ataque (titan-omega-gravity-mine-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A126 | Gravity Mine · destrucción (titan-omega-gravity-mine-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A127 | Scrap Collector · movimiento (titan-omega-scrap-collector-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A128 | Scrap Collector · ataque (titan-omega-scrap-collector-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A129 | Scrap Collector · destrucción (titan-omega-scrap-collector-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A130 | Orbital Turret · movimiento (titan-omega-orbital-turret-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A131 | Orbital Turret · ataque (titan-omega-orbital-turret-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A132 | Orbital Turret · destrucción (titan-omega-orbital-turret-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A133 | Omega Harvester · movimiento (titan-omega-omega-harvester-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A134 | Omega Harvester · ataque (titan-omega-omega-harvester-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A135 | Omega Harvester · destrucción (titan-omega-omega-harvester-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A136 | Campo gravitatorio (titan-omega-gravity-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A137 | Proyectiles Titan Omega (titan-omega-projectile-pack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A138 | Ballena Cósmica · movimiento (rare-cosmic-whale-move) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A139 | Ballena Cósmica · aura (rare-cosmic-whale-aura) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A140 | Medusa del Vacío · movimiento (rare-void-jellyfish-move) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A141 | Medusa del Vacío · pulso (rare-void-jellyfish-pulse) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A142 | Gusano Espaciotemporal · movimiento (rare-spacetime-worm-move) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A143 | Gusano Espaciotemporal · grieta (rare-spacetime-worm-rift) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A144 | Cronos Prime · fase 1 (cronos-prime-phase-01) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A145 | Cronos Prime · fase 2 (cronos-prime-phase-02) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A146 | Cronos Prime · fase 3 (cronos-prime-phase-03) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A147 | Cronos Prime · fase 4 (cronos-prime-phase-04) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A148 | Cronos Prime · fase 5 (cronos-prime-phase-05) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A149 | Cronos Prime · transiciones (cronos-prime-transition) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A150 | Cronos Prime · destrucción (cronos-prime-destroy) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+
+Actualizar un recurso en **assetTasks.overrides[asset.id]** con estado, archivos reales, commit, pruebas, evidencia y errores. Ningún estado READY del catálogo concede DONE en este registro.
+
+## Bloque 06 — Diez jefes
+
+PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B06-10 | Encuentro completo de jefe N-7 nivel 10 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-20 | Encuentro completo de jefe N-7 nivel 20 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-30 | Encuentro completo de jefe N-7 nivel 30 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-40 | Encuentro completo de jefe N-7 nivel 40 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-50 | Encuentro completo de jefe N-7 nivel 50 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-60 | Encuentro completo de jefe N-7 nivel 60 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-70 | Encuentro completo de jefe N-7 nivel 70 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-80 | Encuentro completo de jefe N-7 nivel 80 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-90 | Encuentro completo de jefe N-7 nivel 90 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| B06-100 | Encuentro completo de jefe N-7 nivel 100 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+
+### Criterios verificables
+
+- **B06-10:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-20:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-30:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-40:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-50:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-60:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-70:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-80:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-90:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **B06-100:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+
+## Bloque 07 — Narrativa completa
+
+PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B07-01 | Documentar relación Chronos/CRONIUM y campaña N-7 | HIGH | PENDING | — | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-02 | Definir identidad de N-7 y personajes | HIGH | PENDING | B07-01 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-03 | Definir conflicto principal y revelaciones | HIGH | PENDING | B07-02 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-04 | Escribir e integrar introducción | HIGH | PENDING | B07-03 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-05 | Crear arco Despertar / Suburbios Neón | HIGH | PENDING | B07-03 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-06 | Crear arco La red fragmentada / Núcleo Urbano | HIGH | PENDING | B07-05 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-07 | Crear arco Memorias ocultas / Sector Industrial | HIGH | PENDING | B07-06 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-08 | Crear arco La verdad de la Matriz / Matriz Cibernética | HIGH | PENDING | B07-07 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-09 | Crear arco El Abismo y resolución | HIGH | PENDING | B07-08 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-10 | Integrar diálogos contextuales y eventos de historia | HIGH | PENDING | B07-04 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-11 | Crear encuentros especiales y cinemáticas breves | HIGH | PENDING | B07-10 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-12 | Escribir desenlace y epílogo | HIGH | PENDING | B07-09 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-13 | Implementar final jugable y final de campaña | HIGH | PENDING | B07-12<br>B06-100 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+| B07-14 | Verificar coherencia y cobertura narrativa | HIGH | PENDING | B07-10<br>B07-13 | [src/game/narrative/n7-dialogues.js](../src/game/narrative/n7-dialogues.js)<br>[src/game/progression/sectors.js](../src/game/progression/sectors.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | — | — |
+
+### Criterios verificables
+
+- **B07-01:** Ambos universos conservan identidad y su relación se explica sin sustitución..
+- **B07-02:** Personajes, voz, motivaciones y origen documentados coherentemente..
+- **B07-03:** Conflicto y revelaciones conectan cinco actos sin contradicciones..
+- **B07-04:** Primer contacto reproducible conectado al inicio del juego..
+- **B07-05:** Niveles1–20 tienen hitos integrados y continuidad..
+- **B07-06:** Niveles21–40 desarrollan la amenaza mediante eventos reales..
+- **B07-07:** Niveles41–60 recuperan memorias con causalidad y consecuencias..
+- **B07-08:** Niveles61–80 revelan la relación de N-7 con la infraestructura..
+- **B07-09:** Niveles81–100 resuelven el conflicto y el destino de N-7..
+- **B07-10:** Inicio, enemigo especial, jefe, daño crítico, racha, derrota, victoria, descubrimiento y finales activan diálogo adecuado..
+- **B07-11:** Eventos jugables no bloquean controles innecesariamente y respetan pausa..
+- **B07-12:** Consecuencias coherentes con decisiones y actos anteriores..
+- **B07-13:** Victoria final dispara cierre, recompensa y guardado una sola vez..
+- **B07-14:** Pruebas de eventos y revisión completa del relato con evidencias..
+
+## Bloque 08 — Audio y experiencia sensorial
+
+PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B08-01 | Producir e integrar música de menú | HIGH | PENDING | — | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-02 | Producir e integrar música de cinco sectores | HIGH | PENDING | B08-01 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-03 | Producir e integrar música de jefes | HIGH | PENDING | B08-02 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-04 | Producir e integrar efectos de disparo | HIGH | PENDING | — | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-05 | Producir e integrar impactos y explosiones | HIGH | PENDING | B08-04 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-06 | Producir e integrar alertas | HIGH | PENDING | — | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-07 | Producir e integrar escudos y capturas | HIGH | PENDING | — | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-08 | Producir e integrar victoria y derrota | HIGH | PENDING | — | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-09 | Producir señales y eventos sonoros de N-7 | HIGH | PENDING | B07-10 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-10 | Verificar volumen y silencio persistentes | HIGH | PENDING | — | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-11 | Corregir y probar reanudación de audio móvil | HIGH | PENDING | B08-10 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| B08-12 | Verificar Safari/iOS y restricciones de reproducción | HIGH | BLOCKED | B08-11 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | No hay evidencia de dispositivo iPhone/simulador apropiado disponible. |
+| B08-13 | Optimizar formatos, memoria, licencias y transiciones | HIGH | PENDING | B08-01<br>B08-02<br>B08-03 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+
+### Criterios verificables
+
+- **B08-01:** Música original/licenciada, bucle sin saltos y carga medida..
+- **B08-02:** Cinco identidades musicales con transiciones comprobadas..
+- **B08-03:** Música y fases sincronizadas sin superposición no deseada..
+- **B08-04:** Disparo real emite efecto una vez y respeta volumen..
+- **B08-05:** Eventos de colisión/destrucción sincronizados y limitados..
+- **B08-06:** Alertas legibles de peligro y daño crítico sin saturación..
+- **B08-07:** Captura y protección disparan efectos adecuados..
+- **B08-08:** Transiciones de resultado emiten sonido sin duplicados..
+- **B08-09:** Señales coherentes con diálogos y prioridad de combate..
+- **B08-10:** Música/efectos independientes y persistentes, incluidos cero y silencio total..
+- **B08-11:** AudioContext reanuda con música0/efectos>0 y tras visibilidad; desbloqueo por gesto..
+- **B08-12:** Evidencia en Safari/iPhone o simulador identificado, sin autoplay no autorizado..
+- **B08-13:** Archivos y procedencia documentados, carga por necesidad y memoria medida..
+
+## Bloque 09 — Rendimiento y estabilidad
+
+PENDING: 15 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B09-01 | Medir FPS y distribución del tiempo de fotograma | CRITICAL | PENDING | B03-05 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-02 | Medir memoria y picos de recursos | CRITICAL | PENDING | B03-15 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-03 | Optimizar partículas y asignaciones | CRITICAL | PENDING | B09-01<br>B09-02 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-04 | Optimizar spritesheets y draw calls | CRITICAL | PENDING | B05-11<br>B09-01 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-05 | Verificar ausencia de timers, listeners y RAF duplicados | CRITICAL | PENDING | B03-07<br>B03-08 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-06 | Verificar pausa al cambiar de aplicación | CRITICAL | PENDING | B03-07 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-07 | Verificar tamaño de Canvas, Retina y DPR | CRITICAL | PENDING | B03-13 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-08 | Verificar controles táctiles y safe areas | CRITICAL | PENDING | B03-09<br>B03-13 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-09 | Revisar hitboxes, colisiones y respuesta al daño | CRITICAL | PENDING | B04-12 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-10 | Probar guardados corruptos y recuperación | CRITICAL | PENDING | B03-11 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-11 | Probar destrucción, reaparición y transiciones | CRITICAL | PENDING | B05-09 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-12 | Comprobar fugas de memoria | CRITICAL | PENDING | B09-02<br>B09-05 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-13 | Revisar tiempos de carga y streaming de recursos | CRITICAL | PENDING | B05-11<br>B08-13 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-14 | Ejecutar pruebas prolongadas y estrés | CRITICAL | PENDING | B09-03<br>B09-04<br>B09-12 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+| B09-15 | Certificar Safari/iPhone físico y WKWebView | CRITICAL | BLOCKED | B09-14 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | No hay evidencia de dispositivo iPhone/simulador apropiado disponible. |
+| B09-16 | Revisar cámara, shake, lectura y accesibilidad | CRITICAL | PENDING | B09-01 | [src/engine/Renderer.js](../src/engine/Renderer.js)<br>[src/engine/ParticleSystem.js](../src/engine/ParticleSystem.js)<br>[src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[src/core/storage-service.js](../src/core/storage-service.js)<br>[scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs) | — | — | — | — |
+
+### Criterios verificables
+
+- **B09-01:** Mediana/p95/p99, duración y dispositivo; no declarar60FPS sin trazas..
+- **B09-02:** Memoria antes/durante/después con método y límites identificados..
+- **B09-03:** Pool320 respetado; asignaciones/GC comparados sin regresiones visuales..
+- **B09-04:** Reducción medida con calidad conservada..
+- **B09-05:** Ciclos repetidos de inicio/pausa/reinicio no aumentan contadores..
+- **B09-06:** Visibilidad pausa y reanuda sin salto de tiempo; prueba física separada..
+- **B09-07:** Coordenadas y escala correctas tras orientación, resize y diferentesDPR..
+- **B09-08:** Isla dinámica y barra gestual no ocultan controles en dispositivos identificados..
+- **B09-09:** Geometría coincide con sprites, velocidades y límites; casos de borde cubiertos..
+- **B09-10:** Valores inválidos, storage bloqueado y migración preservan progreso válido..
+- **B09-11:** Invulnerabilidad y control se recuperan sin entidades o eventos duplicados..
+- **B09-12:** Sesiones repetidas sin crecimiento sostenido no explicado..
+- **B09-13:** Carga inicial y cambios de sector medidos; no precargar todo150assets..
+- **B09-14:** Duración y carga reales documentadas; errores, FPS y memoria guardados..
+- **B09-15:** Modelo,iOS,build,acciones,resultados físicos y regresiones registrados..
+- **B09-16:** Efectos limitados, legibilidad y controles comprobados sin mareo evitable..
+
+## Bloque 10 — Preparación para lanzamiento
+
+PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0.
+
+| ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B10-01 | Realizar auditoría final de contenido y calidad | HIGH | PENDING | B04-16<br>B05-07<br>B06-100<br>B07-14<br>B08-12<br>B09-15 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-02 | Preparar y sincronizar Capacitor | HIGH | PENDING | B10-01 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-03 | Revisar configuración iOS y compilar | HIGH | PENDING | B10-02 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-04 | Revisar permisos nativos | HIGH | PENDING | B10-03 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-05 | Configurar firmado autorizado | HIGH | BLOCKED | B10-03 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | Requiere credenciales o autorización específica del propietario. |
+| B10-06 | Integrar publicidad definitiva y probar modo de prueba | HIGH | PENDING | B10-01 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-07 | Completar consentimiento y privacidad | HIGH | PENDING | B10-06 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-08 | Preparar pantallas comerciales | HIGH | PENDING | B10-01 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-09 | Verificar icono y splash en aplicación nativa | HIGH | BLOCKED | B10-03 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | No hay evidencia de dispositivo iPhone/simulador apropiado disponible. |
+| B10-10 | Producir capturas App Store desde juego final | HIGH | PENDING | B10-01<br>B10-03 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-11 | Preparar TestFlight; distribución requiere autorización | HIGH | BLOCKED | B10-05<br>B10-07 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | Requiere credenciales o autorización específica del propietario. |
+| B10-12 | Ejecutar pruebas físicas de candidato de lanzamiento | HIGH | BLOCKED | B10-03<br>B10-07 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | No hay evidencia de dispositivo iPhone/simulador apropiado disponible. |
+| B10-13 | Preparar clasificación y metadatos | HIGH | PENDING | B10-01<br>B10-07 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| B10-14 | Completar checklist App Store sin publicar | HIGH | PENDING | B10-10<br>B10-12<br>B10-13 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+
+### Criterios verificables
+
+- **B10-01:** Cien niveles y contenido completo con defectos críticos cerrados; resto de jefes verificados..
+- **B10-02:** Recursos locales y puente nativo construidos; no activa EngineV1..
+- **B10-03:** Build Xcode reproducible y bundle identifier correcto..
+- **B10-04:** Permisos mínimos, descripciones coherentes y comportamiento probado..
+- **B10-05:** Identidad y perfiles del propietario; sin altas o gastos no autorizados..
+- **B10-06:** Anuncios y recompensas probados sin monetización real en preview..
+- **B10-07:** Flujos, declaraciones y almacenamiento coherentes con SDKs efectivos..
+- **B10-08:** Contenido comercial final revisado sin publicar..
+- **B10-09:** Arte existente visible en dispositivo/simulador sin distorsión..
+- **B10-10:** Capturas fieles, tamaños válidos y sin contenido de debug..
+- **B10-11:** Preparación completada y autorización específica antes de subir/distribuir..
+- **B10-12:** Matriz de dispositivos y versión candidata con incidencias resueltas..
+- **B10-13:** Metadatos y clasificación reflejan contenido y monetización reales..
+- **B10-14:** Requisitos listos; envío/publicación permanecen pendientes de autorización..
+
+## Cómo cerrar una tarea
+
+1. Comprobar todos sus criterios en el juego y guardar resultados con códigos de salida, alcance y entorno.
+2. Editar estado, archivos, SHA de implementación (no necesariamente el commit de documentación), pruebas y evidencia. Con un error abierto mantener IN_REVIEW o BLOCKED.
+3. Actualizar fecha, regenerar ambos Markdown y ejecutar --check.
+4. Actualizar CODEX_STATUS, CODEX_NEXT_ORDERS y el informe del bloque sin borrar registros anteriores.
+5. Publicar únicamente en la rama autorizada y comprobar SHA remoto.
+
+No modificar main/PR3, activar EngineV1, duplicar RAF, publicar producción ni distribuir App Store/TestFlight sin autorización específica.

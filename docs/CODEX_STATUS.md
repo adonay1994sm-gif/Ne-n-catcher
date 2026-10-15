@@ -1,3 +1,17 @@
+## Producción en curso — 2026-10-15 UTC
+
+Base sincronizada por fast-forward: `f5b486ccfcdc56319417c33d7fa9282708ed6d64`. Rama exclusiva `continuity-assets-audit-20261013`.
+
+Bloque 03 implementado en revisión: pausa con SVG, interfaz horizontal contenida, reanudación de efectos con música silenciada, selector PWA offline separado y comprobación del SHA real en la preview. Art Pass A conservado.
+
+Pruebas nuevas: 11 fases de `scripts/certify-local.mjs` con exit 0 en `production-reports/evidence/block-03/certification-01/`; preview 15/15 exit 0. Regresión audio reproducida antes (2/3, exit 1) y corregida después (3/3, exit 0). Chromium del paquete modificado todavía pendiente en este punto. No declarar Bloque 03 certificado con estas pruebas solamente.
+
+Control medible: `PRODUCTION_MASTER_CHECKLIST.md`, `PRODUCTION_PROGRESS.md` y fuente `production-tasks.json`. Netlify sin credenciales configuradas ni nuevo despliegue. Engine V1 false; main y PR #3 sin cambios. El arte CH-01 está en producción separada y no se considera integrado.
+
+Este avance se conserva con el commit `fix(preview): prepare integrated offline trial and mobile lifecycle QA`. Continuar con Chromium sobre preview-dist y SW reales; después actualizar este estado con las evidencias completas.
+
+---
+
 # NEON CATCHER — Estado compartido Codex / KOO
 
 ## Cierre de sesión Codex — 14/10/2026

@@ -1,0 +1,3654 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-15",
+  "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
+  "branch": "continuity-assets-audit-20261013",
+  "states": [
+    "PENDING",
+    "IN_PROGRESS",
+    "BLOCKED",
+    "IN_REVIEW",
+    "DONE"
+  ],
+  "measure": "DONE / total de tareas del área. Igual peso por tarea; una tarea puede pertenecer a varias áreas. No es un porcentaje de producto terminado.",
+  "areas": [
+    "Motor",
+    "Jugabilidad",
+    "Campaña clásica",
+    "Campaña N-7",
+    "Enemigos",
+    "Jefes",
+    "Assets",
+    "Animaciones",
+    "Narrativa",
+    "Audio",
+    "Interfaz",
+    "Rendimiento",
+    "QA",
+    "Preparación iOS"
+  ],
+  "historicalEvidence": [
+    {
+      "scope": "Motor, arquitectura, contenido, regresión, assets y build del Bloque02",
+      "commit": "50814e88f19f6790b6417bb49a2ea79d240b37a0",
+      "evidence": "docs/continuity-100/evidence/block-02/certification/run-01/results.json",
+      "note": "Resultados anteriores; no certifican modificaciones posteriores ni iPhone."
+    },
+    {
+      "scope": "Chromium www, seis casos cortos",
+      "commit": "5c5f062cd1109b95a189f002d955c0b9ec81d45e",
+      "evidence": "docs/continuity-100/evidence/block-02/browser-www-20261014-01/results.json",
+      "note": "No es Chromium sobre preview-dist; SW bloqueado; no es combate completo."
+    },
+    {
+      "scope": "Preview estática",
+      "commit": "5c5f062cd1109b95a189f002d955c0b9ec81d45e",
+      "evidence": "docs/continuity-100/evidence/netlify-20261014/test-preview-01.txt",
+      "note": "11 pruebas anteriores; no certifican despliegue."
+    },
+    {
+      "scope": "Workflow integrado informado por Dirección",
+      "commit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
+      "evidence": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/38531391709",
+      "note": "Conservar enlace; estado remoto debe verificarse antes de usarlo para cerrar tareas."
+    }
+  ],
+  "organization": [
+    {
+      "division": "A. Dirección técnica",
+      "responsibilities": {
+        "Arquitectura": [
+          "B03-04"
+        ],
+        "Integración": [
+          "B03-02",
+          "B03-03"
+        ],
+        "Versionado": [
+          "B03-01",
+          "B03-16",
+          "B03-20"
+        ],
+        "Control de regresiones": [
+          "B03-04"
+        ]
+      }
+    },
+    {
+      "division": "B. Motor y rendimiento",
+      "responsibilities": {
+        "Canvas 2D": [
+          "B09-07"
+        ],
+        "Bucle del juego": [
+          "B03-07",
+          "B09-05"
+        ],
+        "Físicas y colisiones": [
+          "B09-09"
+        ],
+        "Partículas": [
+          "B09-03"
+        ],
+        "Cámara": [
+          "B09-16"
+        ],
+        "Controles táctiles": [
+          "B03-09",
+          "B09-08"
+        ],
+        "Optimización iPhone": [
+          "B09-01",
+          "B09-02",
+          "B09-15"
+        ]
+      }
+    },
+    {
+      "division": "C. Jugabilidad",
+      "responsibilities": {
+        "Nave del jugador": [
+          "B05-08",
+          "B09-11"
+        ],
+        "Combate": [
+          "B04-12"
+        ],
+        "Daño y destrucción": [
+          "B05-05",
+          "B05-06"
+        ],
+        "Enemigos": [
+          "B04-09",
+          "B05-03"
+        ],
+        "Inteligencia artificial": [
+          "B04-09",
+          "B06-10"
+        ],
+        "Poderes": [
+          "B04-13"
+        ],
+        "Recompensas": [
+          "B04-13",
+          "B05-06"
+        ]
+      }
+    },
+    {
+      "division": "D. Diseño de niveles",
+      "responsibilities": {
+        "Campaña clásica": [
+          "B03-06",
+          "B03-11"
+        ],
+        "Campaña N-7": [
+          "B04-14",
+          "B04-15"
+        ],
+        "Generación procedural": [
+          "B04-02",
+          "B04-03",
+          "B04-06"
+        ],
+        "Progresión": [
+          "B04-17"
+        ],
+        "Equilibrio": [
+          "B04-08",
+          "B04-13",
+          "B04-16"
+        ],
+        "Jefes y minijefes": [
+          "B06-10",
+          "B06-20",
+          "B06-30",
+          "B06-40",
+          "B06-50",
+          "B06-60",
+          "B06-70",
+          "B06-80",
+          "B06-90",
+          "B06-100"
+        ]
+      }
+    },
+    {
+      "division": "E. Producción artística",
+      "responsibilities": {
+        "Dirección visual": [
+          "B05-02"
+        ],
+        "Fondos y planetas": [
+          "B05-12"
+        ],
+        "Naves y enemigos": [
+          "B05-03",
+          "B05-07"
+        ],
+        "Spritesheets": [
+          "B05-11"
+        ],
+        "Animaciones": [
+          "B05-08",
+          "B05-09",
+          "B05-10"
+        ],
+        "VFX": [
+          "B05-12"
+        ],
+        "Interfaz": [
+          "B05-13"
+        ]
+      }
+    },
+    {
+      "division": "F. Historia y audio",
+      "responsibilities": {
+        "Universo narrativo": [
+          "B07-01",
+          "B07-03"
+        ],
+        "Diálogos": [
+          "B07-10"
+        ],
+        "Cinemáticas": [
+          "B07-11"
+        ],
+        "Música": [
+          "B08-01",
+          "B08-02",
+          "B08-03"
+        ],
+        "Efectos sonoros": [
+          "B08-04",
+          "B08-05",
+          "B08-06",
+          "B08-07",
+          "B08-08",
+          "B08-09"
+        ]
+      }
+    },
+    {
+      "division": "G. Calidad",
+      "responsibilities": {
+        "Tests unitarios": [
+          "B03-04"
+        ],
+        "Integración": [
+          "B03-05",
+          "B03-06"
+        ],
+        "Regresiones": [
+          "B03-04"
+        ],
+        "Chromium": [
+          "B03-05"
+        ],
+        "Safari": [
+          "B08-12",
+          "B09-15"
+        ],
+        "Rendimiento": [
+          "B09-14"
+        ],
+        "Certificación iOS": [
+          "B09-15",
+          "B10-12"
+        ]
+      }
+    },
+    {
+      "division": "H. Distribución",
+      "responsibilities": {
+        "GitHub": [
+          "B03-01",
+          "B03-20"
+        ],
+        "GitHub Actions": [
+          "B03-04"
+        ],
+        "Netlify": [
+          "B03-17",
+          "B03-18"
+        ],
+        "PWA": [
+          "B03-12",
+          "B03-19"
+        ],
+        "Capacitor": [
+          "B10-02"
+        ],
+        "TestFlight": [
+          "B10-11"
+        ],
+        "Preparación App Store": [
+          "B10-14"
+        ]
+      }
+    }
+  ],
+  "assetGate": [
+    "Identificador y nombre",
+    "Archivo maestro existente",
+    "Archivo optimizado existente",
+    "Fotogramas necesarios reales",
+    "Dimensiones verificadas",
+    "Escala documentada",
+    "Pivote documentado",
+    "Transparencia comprobada",
+    "Duración/FPS documentados",
+    "Integración real en el juego",
+    "Prueba visual registrada",
+    "Procedencia y derechos registrados"
+  ],
+  "assetTasks": {
+    "catalog": "ASSET_PRODUCTION_150.json",
+    "expectedCount": 150,
+    "defaultState": "PENDING",
+    "overrides": {},
+    "note": "Se genera una tarea A001–A150 por sequence. Catálogo READY/IN_REVIEW/IMPLEMENTED_CODE pasa a IN_REVIEW por defecto; nunca a DONE. Un cambio se registra en overrides por asset.id, con commit, tests y evidence."
+  },
+  "tasks": [
+    {
+      "id": "B03-01",
+      "block": "03",
+      "name": "Verificar HEAD remoto, rama y cambios existentes",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "HEAD conservado y comparación remota registrada."
+      ]
+    },
+    {
+      "id": "B03-02",
+      "block": "03",
+      "name": "Verificar Art Pass A integrado sin duplicarlo",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Campaña clásica",
+        "Assets",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-01"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Tests visual-artpass y comparación de fuentes superados."
+      ]
+    },
+    {
+      "id": "B03-03",
+      "block": "03",
+      "name": "Instalar dependencias bloqueadas y construir desde fuentes",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-01"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "npm ci y npm run build terminan con código 0; bundles sincronizados."
+      ]
+    },
+    {
+      "id": "B03-04",
+      "block": "03",
+      "name": "Ejecutar todas las suites de regresión",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Motor",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-03"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Motor, arquitectura, contenido, static, general, web, visual, preview e inventario con registros y códigos."
+      ]
+    },
+    {
+      "id": "B03-05",
+      "block": "03",
+      "name": "Ejecutar Chromium real sobre preview-dist",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-03"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Resultados y capturas del paquete experimental, no solo de www."
+      ]
+    },
+    {
+      "id": "B03-06",
+      "block": "03",
+      "name": "Iniciar ambas campañas desde el selector",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Campaña clásica",
+        "Campaña N-7",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Navegación real a ambos modos; 10/100 rutas y retorno al selector."
+      ]
+    },
+    {
+      "id": "B03-07",
+      "block": "03",
+      "name": "Verificar pausa y reanudación",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Reloj congelado al pausar y avance al reanudar, sin delta negativo ni RAF duplicado."
+      ]
+    },
+    {
+      "id": "B03-08",
+      "block": "03",
+      "name": "Verificar reinicio y vuelta al menú",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Estado y semilla reiniciados sin listeners o RAF adicionales."
+      ]
+    },
+    {
+      "id": "B03-09",
+      "block": "03",
+      "name": "Verificar movimiento táctil",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Eventos táctiles reales de Chromium emulado mueven la nave; Safari físico se registra aparte."
+      ]
+    },
+    {
+      "id": "B03-10",
+      "block": "03",
+      "name": "Verificar disparos, enemigos y proyectiles durante encuentros",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Enemigos",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Movimiento, disparos y colisiones observables durante un encuentro representativo completo."
+      ]
+    },
+    {
+      "id": "B03-11",
+      "block": "03",
+      "name": "Verificar progresión, persistencia y aislamiento de guardados",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Campaña clásica",
+        "Campaña N-7",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Victoria guarda y desbloquea; recarga conserva cada campaña sin contaminar producción."
+      ]
+    },
+    {
+      "id": "B03-12",
+      "block": "03",
+      "name": "Verificar caché y service worker en navegador real",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Activación, recarga, offline y actualización funcionan con SW permitido; cachés ajenas se conservan."
+      ]
+    },
+    {
+      "id": "B03-13",
+      "block": "03",
+      "name": "Corregir y verificar orientación vertical y horizontal",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "390x844, 320x568 y 844x390 muestran HUD, controles y pausa sin recortes."
+      ]
+    },
+    {
+      "id": "B03-14",
+      "block": "03",
+      "name": "Corregir errores de carga y excepciones",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Consola sin excepciones y recursos solicitados con respuestas válidas."
+      ]
+    },
+    {
+      "id": "B03-15",
+      "block": "03",
+      "name": "Registrar consumo de recursos de la sesión de prueba",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Rendimiento",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Duración, imágenes, entidades y límites medidos; no extrapolar a 60 FPS físicos."
+      ]
+    },
+    {
+      "id": "B03-16",
+      "block": "03",
+      "name": "Comprobar SHA y hashes de build-info.json",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-03"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Proveniencia coincide con checkout y todos los archivos publicados; dirty se declara."
+      ]
+    },
+    {
+      "id": "B03-17",
+      "block": "03",
+      "name": "Preparar paquete experimental probado para Netlify",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-04",
+        "B03-05",
+        "B03-12",
+        "B03-16"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "ZIP autocontenido identificado por SHA y hash, con evidencia de pruebas."
+      ]
+    },
+    {
+      "id": "B03-18",
+      "block": "03",
+      "name": "Verificar despliegue aislado, URL y SHA remotos",
+      "priority": "CRITICAL",
+      "status": "BLOCKED",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-17"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Sin acceso autenticado a Netlify en el entorno heredado; comprobar disponibilidad de nuevo."
+      ],
+      "acceptance": [
+        "URL real sirve selector, ambos modos y build-info del paquete; producción/PR3 intactas."
+      ]
+    },
+    {
+      "id": "B03-19",
+      "block": "03",
+      "name": "Verificar entrada PWA y cabeceras del paquete",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-03"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Instalación experimental abre selector; políticas y alcance no alteran el juego de producción."
+      ]
+    },
+    {
+      "id": "B03-20",
+      "block": "03",
+      "name": "Conservar informe, evidencias, commits y estado remoto",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "B03-04",
+        "B03-05"
+      ],
+      "files": [
+        "scripts/content-browser-smoke.cjs",
+        "scripts/build-preview.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Informe A–M y SHA publicado verificables; limitaciones físicas explícitas."
+      ]
+    },
+    {
+      "id": "B04-01",
+      "block": "04",
+      "name": "Auditar generador, corredores y versiones",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B03-04"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Defectos y parámetros efectivos registrados sobre la versión vigente."
+      ]
+    },
+    {
+      "id": "B04-02",
+      "block": "04",
+      "name": "Diseñar compatibilidad de semillas y migración",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-01"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Planes históricos reproducibles por versión; guardados preservados."
+      ]
+    },
+    {
+      "id": "B04-03",
+      "block": "04",
+      "name": "Revisar corredores seguros y transición entre ellos",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-02"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Corredores compatibles con ancho de nave, tiempo de reacción y desplazamiento."
+      ]
+    },
+    {
+      "id": "B04-04",
+      "block": "04",
+      "name": "Eliminar la estrategia dominante de inmovilidad",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-03"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Simulación y juego de referencia requieren desplazamiento sin daño inevitable."
+      ]
+    },
+    {
+      "id": "B04-05",
+      "block": "04",
+      "name": "Garantizar rutas transitables durante los 100 niveles",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7",
+        "QA"
+      ],
+      "dependencies": [
+        "B04-03"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Comprobación geométrica y temporal de corredores frente a obstáculos y ataques."
+      ]
+    },
+    {
+      "id": "B04-06",
+      "block": "04",
+      "name": "Introducir variaciones diseñadas de encuentros",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7",
+        "Enemigos"
+      ],
+      "dependencies": [
+        "B04-02"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Ritmos y composiciones por sector cambian más que color o números."
+      ]
+    },
+    {
+      "id": "B04-07",
+      "block": "04",
+      "name": "Aplicar la dificultad a la cadencia real",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-02"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "spawnInterval o su sustituto versionado gobierna tiempos ejecutados."
+      ]
+    },
+    {
+      "id": "B04-08",
+      "block": "04",
+      "name": "Equilibrar velocidades y tiempos de reacción",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-07"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Rangos de velocidad probados con nave real y señales previas suficientes."
+      ]
+    },
+    {
+      "id": "B04-09",
+      "block": "04",
+      "name": "Mejorar patrones y coordinación de enemigos",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Enemigos"
+      ],
+      "dependencies": [
+        "B04-06"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Lineal, zigzag, perseguidor y tirador diferenciados y ejecutados."
+      ]
+    },
+    {
+      "id": "B04-10",
+      "block": "04",
+      "name": "Integrar advertencias visuales de ataques",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Enemigos",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-09"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Ataques peligrosos precedidos de señales legibles con duración verificable."
+      ]
+    },
+    {
+      "id": "B04-11",
+      "block": "04",
+      "name": "Revisar proyectiles y colisiones de combate",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Enemigos"
+      ],
+      "dependencies": [
+        "B04-09"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Proyectiles consistentes con señales, pausa, colisiones y espacio transitable."
+      ]
+    },
+    {
+      "id": "B04-12",
+      "block": "04",
+      "name": "Mejorar combate, daño y ventanas de respuesta",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Enemigos"
+      ],
+      "dependencies": [
+        "B04-11"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Ciclo disparar/impactar/destruir integrado y probado sin daño inevitable."
+      ]
+    },
+    {
+      "id": "B04-13",
+      "block": "04",
+      "name": "Equilibrar daño, suministros, poderes y recompensas",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-12"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Recursos y daño medidos por etapa; recompensa no trivializa el desafío."
+      ]
+    },
+    {
+      "id": "B04-14",
+      "block": "04",
+      "name": "Integrar objetivos diferenciados por nivel",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-06"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Objetivos jugables distintos y verificables, no solo nombres de rutas."
+      ]
+    },
+    {
+      "id": "B04-15",
+      "block": "04",
+      "name": "Simular las 100 rutas y múltiples semillas",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Campaña N-7",
+        "QA"
+      ],
+      "dependencies": [
+        "B04-05",
+        "B04-07",
+        "B04-12",
+        "B04-14"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Semilla, versión, fallos y coberturas guardados; la simulación no sustituye al jugador."
+      ]
+    },
+    {
+      "id": "B04-16",
+      "block": "04",
+      "name": "Validar niveles de referencia jugando",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7",
+        "QA"
+      ],
+      "dependencies": [
+        "B04-15"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Muestra de cada sector, cambios de patrón y niveles de jefe con registro visual."
+      ]
+    },
+    {
+      "id": "B04-17",
+      "block": "04",
+      "name": "Cerrar curvas de progreso y reintentos consistentes",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B04-16"
+      ],
+      "files": [
+        "src/game/progression/generator.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/progression/level-designs.js",
+        "tests/procedural-runtime.test.mjs",
+        "tests/content-legacy-integration.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Curvas, desbloqueos y reintentos verificados sin alterar campaña clásica."
+      ]
+    },
+    {
+      "id": "B05-01",
+      "block": "05",
+      "name": "Inventariar archivos reales y correspondencia con catálogo150",
+      "priority": "VERY_HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Assets",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-01"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "150 identificadores cotejados; READY de catálogo no se equipara automáticamente a DONE."
+      ]
+    },
+    {
+      "id": "B05-02",
+      "block": "05",
+      "name": "Definir pipeline de arte, escala, pivote y procedencia",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B05-01"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Maestro, exportación, optimización, licencia y metadatos repetibles por recurso."
+      ]
+    },
+    {
+      "id": "B05-03",
+      "block": "05",
+      "name": "Integrar CH-01 con estados y carga de sprites reales",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Enemigos",
+        "Assets",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B03-05",
+        "A044",
+        "A045",
+        "A046"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Entrada, movimiento, ataque, daño y destrucción conectados al juego real."
+      ]
+    },
+    {
+      "id": "B05-04",
+      "block": "05",
+      "name": "Implementar ataque reconocible de CH-01",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Enemigos",
+        "Jugabilidad",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B05-03"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Animación de ataque dispara evento sincronizado y proyectil con señal previa."
+      ]
+    },
+    {
+      "id": "B05-05",
+      "block": "05",
+      "name": "Implementar impacto y daño de CH-01",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Enemigos",
+        "Jugabilidad",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B05-03"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Impacto visible reduce vida y conserva correcta transición de estado."
+      ]
+    },
+    {
+      "id": "B05-06",
+      "block": "05",
+      "name": "Implementar destrucción y recompensa de CH-01",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Enemigos",
+        "Jugabilidad",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B05-05"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Destrucción no interrumpida, liberación de entidad y recompensa una sola vez."
+      ]
+    },
+    {
+      "id": "B05-07",
+      "block": "05",
+      "name": "Verificar visualmente CH-01 durante combate completo",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Enemigos",
+        "Assets",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "B05-04",
+        "B05-06"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Capturas y prueba real de atacar, recibir daño y destruirse con assets definitivos."
+      ]
+    },
+    {
+      "id": "B05-08",
+      "block": "05",
+      "name": "Implementar estados y duración por fotograma",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B05-02"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Animador respeta duración, poses y bucles con transiciones probadas."
+      ]
+    },
+    {
+      "id": "B05-09",
+      "block": "05",
+      "name": "Proteger animaciones no interrumpibles y eventos",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B05-08"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Muerte, impacto y eventos visuales/sonoros no se duplican ni cortan incorrectamente."
+      ]
+    },
+    {
+      "id": "B05-10",
+      "block": "05",
+      "name": "Implementar animaciones diferenciadas por enemigo y jefe",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Animaciones",
+        "Enemigos",
+        "Jefes"
+      ],
+      "dependencies": [
+        "B05-09"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Secuencias reales diferenciadas de geometría o pose según actor/fase."
+      ]
+    },
+    {
+      "id": "B05-11",
+      "block": "05",
+      "name": "Optimizar carga, transparencia y memoria de sprites",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Rendimiento"
+      ],
+      "dependencies": [
+        "B05-02"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Carga por necesidad, dimensiones y bytes medidos; sin cargar todo el catálogo."
+      ]
+    },
+    {
+      "id": "B05-12",
+      "block": "05",
+      "name": "Verificar fondos, profundidad, planetas y VFX por región",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Campaña clásica",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B05-02"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Escenarios diferenciados por arquitectura/objetos, no solo paleta; efectos legibles."
+      ]
+    },
+    {
+      "id": "B05-13",
+      "block": "05",
+      "name": "Verificar HUD, menús, transiciones y elementos narrativos",
+      "priority": "VERY_HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Interfaz"
+      ],
+      "dependencies": [
+        "B05-02",
+        "B03-13"
+      ],
+      "files": [
+        "ASSET_PRODUCTION_150.json",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_MAP.md",
+        "src/game/animation/animation-map.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Lote G visible en juego con escalas, texto y contraste comprobados."
+      ]
+    },
+    {
+      "id": "B07-01",
+      "block": "07",
+      "name": "Documentar relación Chronos/CRONIUM y campaña N-7",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña clásica",
+        "Campaña N-7"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Ambos universos conservan identidad y su relación se explica sin sustitución."
+      ]
+    },
+    {
+      "id": "B07-02",
+      "block": "07",
+      "name": "Definir identidad de N-7 y personajes",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa"
+      ],
+      "dependencies": [
+        "B07-01"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Personajes, voz, motivaciones y origen documentados coherentemente."
+      ]
+    },
+    {
+      "id": "B07-03",
+      "block": "07",
+      "name": "Definir conflicto principal y revelaciones",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa"
+      ],
+      "dependencies": [
+        "B07-02"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Conflicto y revelaciones conectan cinco actos sin contradicciones."
+      ]
+    },
+    {
+      "id": "B07-04",
+      "block": "07",
+      "name": "Escribir e integrar introducción",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-03"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Primer contacto reproducible conectado al inicio del juego."
+      ]
+    },
+    {
+      "id": "B07-05",
+      "block": "07",
+      "name": "Crear arco Despertar / Suburbios Neón",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-03"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Niveles1–20 tienen hitos integrados y continuidad."
+      ]
+    },
+    {
+      "id": "B07-06",
+      "block": "07",
+      "name": "Crear arco La red fragmentada / Núcleo Urbano",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-05"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Niveles21–40 desarrollan la amenaza mediante eventos reales."
+      ]
+    },
+    {
+      "id": "B07-07",
+      "block": "07",
+      "name": "Crear arco Memorias ocultas / Sector Industrial",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-06"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Niveles41–60 recuperan memorias con causalidad y consecuencias."
+      ]
+    },
+    {
+      "id": "B07-08",
+      "block": "07",
+      "name": "Crear arco La verdad de la Matriz / Matriz Cibernética",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-07"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Niveles61–80 revelan la relación de N-7 con la infraestructura."
+      ]
+    },
+    {
+      "id": "B07-09",
+      "block": "07",
+      "name": "Crear arco El Abismo y resolución",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-08"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Niveles81–100 resuelven el conflicto y el destino de N-7."
+      ]
+    },
+    {
+      "id": "B07-10",
+      "block": "07",
+      "name": "Integrar diálogos contextuales y eventos de historia",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-04"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Inicio, enemigo especial, jefe, daño crítico, racha, derrota, victoria, descubrimiento y finales activan diálogo adecuado."
+      ]
+    },
+    {
+      "id": "B07-11",
+      "block": "07",
+      "name": "Crear encuentros especiales y cinemáticas breves",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-10"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Eventos jugables no bloquean controles innecesariamente y respetan pausa."
+      ]
+    },
+    {
+      "id": "B07-12",
+      "block": "07",
+      "name": "Escribir desenlace y epílogo",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa"
+      ],
+      "dependencies": [
+        "B07-09"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Consecuencias coherentes con decisiones y actos anteriores."
+      ]
+    },
+    {
+      "id": "B07-13",
+      "block": "07",
+      "name": "Implementar final jugable y final de campaña",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B07-12",
+        "B06-100"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Victoria final dispara cierre, recompensa y guardado una sola vez."
+      ]
+    },
+    {
+      "id": "B07-14",
+      "block": "07",
+      "name": "Verificar coherencia y cobertura narrativa",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "QA"
+      ],
+      "dependencies": [
+        "B07-10",
+        "B07-13"
+      ],
+      "files": [
+        "src/game/narrative/n7-dialogues.js",
+        "src/game/progression/sectors.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Pruebas de eventos y revisión completa del relato con evidencias."
+      ]
+    },
+    {
+      "id": "B08-01",
+      "block": "08",
+      "name": "Producir e integrar música de menú",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Música original/licenciada, bucle sin saltos y carga medida."
+      ]
+    },
+    {
+      "id": "B08-02",
+      "block": "08",
+      "name": "Producir e integrar música de cinco sectores",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Campaña N-7"
+      ],
+      "dependencies": [
+        "B08-01"
+      ],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Cinco identidades musicales con transiciones comprobadas."
+      ]
+    },
+    {
+      "id": "B08-03",
+      "block": "08",
+      "name": "Producir e integrar música de jefes",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Jefes"
+      ],
+      "dependencies": [
+        "B08-02"
+      ],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Música y fases sincronizadas sin superposición no deseada."
+      ]
+    },
+    {
+      "id": "B08-04",
+      "block": "08",
+      "name": "Producir e integrar efectos de disparo",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Jugabilidad"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Disparo real emite efecto una vez y respeta volumen."
+      ]
+    },
+    {
+      "id": "B08-05",
+      "block": "08",
+      "name": "Producir e integrar impactos y explosiones",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Jugabilidad"
+      ],
+      "dependencies": [
+        "B08-04"
+      ],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Eventos de colisión/destrucción sincronizados y limitados."
+      ]
+    },
+    {
+      "id": "B08-06",
+      "block": "08",
+      "name": "Producir e integrar alertas",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Interfaz"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Alertas legibles de peligro y daño crítico sin saturación."
+      ]
+    },
+    {
+      "id": "B08-07",
+      "block": "08",
+      "name": "Producir e integrar escudos y capturas",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Jugabilidad"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Captura y protección disparan efectos adecuados."
+      ]
+    },
+    {
+      "id": "B08-08",
+      "block": "08",
+      "name": "Producir e integrar victoria y derrota",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Jugabilidad"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Transiciones de resultado emiten sonido sin duplicados."
+      ]
+    },
+    {
+      "id": "B08-09",
+      "block": "08",
+      "name": "Producir señales y eventos sonoros de N-7",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Narrativa"
+      ],
+      "dependencies": [
+        "B07-10"
+      ],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Señales coherentes con diálogos y prioridad de combate."
+      ]
+    },
+    {
+      "id": "B08-10",
+      "block": "08",
+      "name": "Verificar volumen y silencio persistentes",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Interfaz"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Música/efectos independientes y persistentes, incluidos cero y silencio total."
+      ]
+    },
+    {
+      "id": "B08-11",
+      "block": "08",
+      "name": "Corregir y probar reanudación de audio móvil",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "QA"
+      ],
+      "dependencies": [
+        "B08-10"
+      ],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "AudioContext reanuda con música0/efectos>0 y tras visibilidad; desbloqueo por gesto."
+      ]
+    },
+    {
+      "id": "B08-12",
+      "block": "08",
+      "name": "Verificar Safari/iOS y restricciones de reproducción",
+      "priority": "HIGH",
+      "status": "BLOCKED",
+      "areas": [
+        "Audio",
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B08-11"
+      ],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "No hay evidencia de dispositivo iPhone/simulador apropiado disponible."
+      ],
+      "acceptance": [
+        "Evidencia en Safari/iPhone o simulador identificado, sin autoplay no autorizado."
+      ]
+    },
+    {
+      "id": "B08-13",
+      "block": "08",
+      "name": "Optimizar formatos, memoria, licencias y transiciones",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Audio",
+        "Rendimiento"
+      ],
+      "dependencies": [
+        "B08-01",
+        "B08-02",
+        "B08-03"
+      ],
+      "files": [
+        "src/game/02-storage-audio.js",
+        "src/game/04-entities-collision-damage.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Archivos y procedencia documentados, carga por necesidad y memoria medida."
+      ]
+    },
+    {
+      "id": "B09-01",
+      "block": "09",
+      "name": "Medir FPS y distribución del tiempo de fotograma",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Rendimiento",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-05"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Mediana/p95/p99, duración y dispositivo; no declarar60FPS sin trazas."
+      ]
+    },
+    {
+      "id": "B09-02",
+      "block": "09",
+      "name": "Medir memoria y picos de recursos",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Rendimiento",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-15"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Memoria antes/durante/después con método y límites identificados."
+      ]
+    },
+    {
+      "id": "B09-03",
+      "block": "09",
+      "name": "Optimizar partículas y asignaciones",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Rendimiento"
+      ],
+      "dependencies": [
+        "B09-01",
+        "B09-02"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Pool320 respetado; asignaciones/GC comparados sin regresiones visuales."
+      ]
+    },
+    {
+      "id": "B09-04",
+      "block": "09",
+      "name": "Optimizar spritesheets y draw calls",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Rendimiento"
+      ],
+      "dependencies": [
+        "B05-11",
+        "B09-01"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Reducción medida con calidad conservada."
+      ]
+    },
+    {
+      "id": "B09-05",
+      "block": "09",
+      "name": "Verificar ausencia de timers, listeners y RAF duplicados",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Rendimiento",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-07",
+        "B03-08"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Ciclos repetidos de inicio/pausa/reinicio no aumentan contadores."
+      ]
+    },
+    {
+      "id": "B09-06",
+      "block": "09",
+      "name": "Verificar pausa al cambiar de aplicación",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-07"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Visibilidad pausa y reanuda sin salto de tiempo; prueba física separada."
+      ]
+    },
+    {
+      "id": "B09-07",
+      "block": "09",
+      "name": "Verificar tamaño de Canvas, Retina y DPR",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Interfaz",
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-13"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Coordenadas y escala correctas tras orientación, resize y diferentesDPR."
+      ]
+    },
+    {
+      "id": "B09-08",
+      "block": "09",
+      "name": "Verificar controles táctiles y safe areas",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Interfaz",
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-09",
+        "B03-13"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Isla dinámica y barra gestual no ocultan controles en dispositivos identificados."
+      ]
+    },
+    {
+      "id": "B09-09",
+      "block": "09",
+      "name": "Revisar hitboxes, colisiones y respuesta al daño",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "B04-12"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Geometría coincide con sprites, velocidades y límites; casos de borde cubiertos."
+      ]
+    },
+    {
+      "id": "B09-10",
+      "block": "09",
+      "name": "Probar guardados corruptos y recuperación",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Campaña clásica",
+        "Campaña N-7",
+        "QA"
+      ],
+      "dependencies": [
+        "B03-11"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Valores inválidos, storage bloqueado y migración preservan progreso válido."
+      ]
+    },
+    {
+      "id": "B09-11",
+      "block": "09",
+      "name": "Probar destrucción, reaparición y transiciones",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "B05-09"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Invulnerabilidad y control se recuperan sin entidades o eventos duplicados."
+      ]
+    },
+    {
+      "id": "B09-12",
+      "block": "09",
+      "name": "Comprobar fugas de memoria",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Rendimiento",
+        "QA"
+      ],
+      "dependencies": [
+        "B09-02",
+        "B09-05"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Sesiones repetidas sin crecimiento sostenido no explicado."
+      ]
+    },
+    {
+      "id": "B09-13",
+      "block": "09",
+      "name": "Revisar tiempos de carga y streaming de recursos",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Audio",
+        "Rendimiento"
+      ],
+      "dependencies": [
+        "B05-11",
+        "B08-13"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Carga inicial y cambios de sector medidos; no precargar todo150assets."
+      ]
+    },
+    {
+      "id": "B09-14",
+      "block": "09",
+      "name": "Ejecutar pruebas prolongadas y estrés",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Rendimiento",
+        "QA"
+      ],
+      "dependencies": [
+        "B09-03",
+        "B09-04",
+        "B09-12"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Duración y carga reales documentadas; errores, FPS y memoria guardados."
+      ]
+    },
+    {
+      "id": "B09-15",
+      "block": "09",
+      "name": "Certificar Safari/iPhone físico y WKWebView",
+      "priority": "CRITICAL",
+      "status": "BLOCKED",
+      "areas": [
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B09-14"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "No hay evidencia de dispositivo iPhone/simulador apropiado disponible."
+      ],
+      "acceptance": [
+        "Modelo,iOS,build,acciones,resultados físicos y regresiones registrados."
+      ]
+    },
+    {
+      "id": "B09-16",
+      "block": "09",
+      "name": "Revisar cámara, shake, lectura y accesibilidad",
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "areas": [
+        "Motor",
+        "Interfaz",
+        "Rendimiento"
+      ],
+      "dependencies": [
+        "B09-01"
+      ],
+      "files": [
+        "src/engine/Renderer.js",
+        "src/engine/ParticleSystem.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "src/core/storage-service.js",
+        "scripts/content-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Efectos limitados, legibilidad y controles comprobados sin mareo evitable."
+      ]
+    },
+    {
+      "id": "B10-01",
+      "block": "10",
+      "name": "Realizar auditoría final de contenido y calidad",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "QA",
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B04-16",
+        "B05-07",
+        "B06-100",
+        "B07-14",
+        "B08-12",
+        "B09-15"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Cien niveles y contenido completo con defectos críticos cerrados; resto de jefes verificados."
+      ]
+    },
+    {
+      "id": "B10-02",
+      "block": "10",
+      "name": "Preparar y sincronizar Capacitor",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B10-01"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Recursos locales y puente nativo construidos; no activa EngineV1."
+      ]
+    },
+    {
+      "id": "B10-03",
+      "block": "10",
+      "name": "Revisar configuración iOS y compilar",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B10-02"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Build Xcode reproducible y bundle identifier correcto."
+      ]
+    },
+    {
+      "id": "B10-04",
+      "block": "10",
+      "name": "Revisar permisos nativos",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B10-03"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Permisos mínimos, descripciones coherentes y comportamiento probado."
+      ]
+    },
+    {
+      "id": "B10-05",
+      "block": "10",
+      "name": "Configurar firmado autorizado",
+      "priority": "HIGH",
+      "status": "BLOCKED",
+      "areas": [
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B10-03"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Requiere credenciales o autorización específica del propietario."
+      ],
+      "acceptance": [
+        "Identidad y perfiles del propietario; sin altas o gastos no autorizados."
+      ]
+    },
+    {
+      "id": "B10-06",
+      "block": "10",
+      "name": "Integrar publicidad definitiva y probar modo de prueba",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Preparación iOS",
+        "Jugabilidad"
+      ],
+      "dependencies": [
+        "B10-01"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Anuncios y recompensas probados sin monetización real en preview."
+      ]
+    },
+    {
+      "id": "B10-07",
+      "block": "10",
+      "name": "Completar consentimiento y privacidad",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Preparación iOS",
+        "Interfaz"
+      ],
+      "dependencies": [
+        "B10-06"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Flujos, declaraciones y almacenamiento coherentes con SDKs efectivos."
+      ]
+    },
+    {
+      "id": "B10-08",
+      "block": "10",
+      "name": "Preparar pantallas comerciales",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Interfaz",
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B10-01"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Contenido comercial final revisado sin publicar."
+      ]
+    },
+    {
+      "id": "B10-09",
+      "block": "10",
+      "name": "Verificar icono y splash en aplicación nativa",
+      "priority": "HIGH",
+      "status": "BLOCKED",
+      "areas": [
+        "Assets",
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B10-03"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "No hay evidencia de dispositivo iPhone/simulador apropiado disponible."
+      ],
+      "acceptance": [
+        "Arte existente visible en dispositivo/simulador sin distorsión."
+      ]
+    },
+    {
+      "id": "B10-10",
+      "block": "10",
+      "name": "Producir capturas App Store desde juego final",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Assets",
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B10-01",
+        "B10-03"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Capturas fieles, tamaños válidos y sin contenido de debug."
+      ]
+    },
+    {
+      "id": "B10-11",
+      "block": "10",
+      "name": "Preparar TestFlight; distribución requiere autorización",
+      "priority": "HIGH",
+      "status": "BLOCKED",
+      "areas": [
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B10-05",
+        "B10-07"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Requiere credenciales o autorización específica del propietario."
+      ],
+      "acceptance": [
+        "Preparación completada y autorización específica antes de subir/distribuir."
+      ]
+    },
+    {
+      "id": "B10-12",
+      "block": "10",
+      "name": "Ejecutar pruebas físicas de candidato de lanzamiento",
+      "priority": "HIGH",
+      "status": "BLOCKED",
+      "areas": [
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B10-03",
+        "B10-07"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "No hay evidencia de dispositivo iPhone/simulador apropiado disponible."
+      ],
+      "acceptance": [
+        "Matriz de dispositivos y versión candidata con incidencias resueltas."
+      ]
+    },
+    {
+      "id": "B10-13",
+      "block": "10",
+      "name": "Preparar clasificación y metadatos",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Narrativa",
+        "Preparación iOS"
+      ],
+      "dependencies": [
+        "B10-01",
+        "B10-07"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Metadatos y clasificación reflejan contenido y monetización reales."
+      ]
+    },
+    {
+      "id": "B10-14",
+      "block": "10",
+      "name": "Completar checklist App Store sin publicar",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Preparación iOS",
+        "QA"
+      ],
+      "dependencies": [
+        "B10-10",
+        "B10-12",
+        "B10-13"
+      ],
+      "files": [
+        "capacitor.config.ts",
+        "ios/App/App",
+        "src/native-admob-entry.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [],
+      "acceptance": [
+        "Requisitos listos; envío/publicación permanecen pendientes de autorización."
+      ]
+    },
+    {
+      "id": "B06-10",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 10",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-20",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 20",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-30",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 30",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-40",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 40",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-50",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 50",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-60",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 60",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-70",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 70",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-80",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 80",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-90",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 90",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    },
+    {
+      "id": "B06-100",
+      "block": "06",
+      "name": "Encuentro completo de jefe N-7 nivel 100",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña N-7",
+        "Animaciones"
+      ],
+      "dependencies": [
+        "B04-12",
+        "B05-09"
+      ],
+      "files": [
+        "src/game/progression/level-designs.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las definiciones actuales de jefe no equivalen a un combate implementado."
+      ],
+      "acceptance": [
+        "Diseño individual y mecánica diferenciada",
+        "Modelo visual integrado",
+        "Animaciones de entrada, ataque, daño y destrucción",
+        "Inteligencia artificial ejecutable",
+        "Patrón de entrada cinematográfico breve",
+        "Ataques distintivos",
+        "Varias fases con transiciones reales cuando corresponda",
+        "Señales previas legibles",
+        "Ventanas de vulnerabilidad",
+        "Daño y destrucción completos",
+        "Recompensa y progresión",
+        "Integración narrativa",
+        "Balance y posibilidad de respuesta",
+        "Pruebas de lógica y combate completo en navegador"
+      ]
+    }
+  ]
+}

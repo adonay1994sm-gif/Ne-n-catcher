@@ -142,7 +142,7 @@
   }
 
   async function resumeAudio() {
-    if (audioCtx?.state === "suspended" && settings.music > 0) {
+    if (audioCtx?.state === "suspended" && (settings.music > 0 || settings.fx > 0)) {
       await audioCtx.resume().catch(() => {});
     }
     updateAudioVolumes();

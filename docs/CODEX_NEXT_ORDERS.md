@@ -1,3 +1,5 @@
+> Estado vigente de producción: leer `PRODUCTION_MASTER_CHECKLIST.md` y la cabecera actual de `CODEX_STATUS.md`. Completar Chromium sobre preview-dist y SW reales antes de cerrar Bloque 03. Las restricciones históricas de despliegue que aparecen debajo quedan subordinadas al permiso actual para una preview aislada autenticada; producción y PR #3 siguen protegidas. No reimportar Art Pass A: ya está integrado en f5b486c.
+
 > **Actualización de continuidad 14/10/2026:** antes de seguir con arte o combate, leer el cierre actual en CODEX_STATUS.md. El smoke de `www` pasó 6/6; falta `preview-dist`, SW real y despliegue autenticado. El propietario pidió terminar y conservar esta sesión. No volver a presentar como locales los commits WIP que ya están en GitHub. Comandos exactos en `continuity-100/CIERRE_PREVIEW_20261014.md`.
 
 # ORDEN DE DIRECCIÓN — CONTINUIDAD AUTÓNOMA DE CODEX
