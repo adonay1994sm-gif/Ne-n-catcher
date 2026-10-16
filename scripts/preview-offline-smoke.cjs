@@ -68,7 +68,7 @@ async function main(){
     context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true,serviceWorkers:'allow'});
     page=await context.newPage();page.setDefaultTimeout(timeout);page.setDefaultNavigationTimeout(timeout);
     page.on('pageerror',error=>report.pageErrors.push(errorText(error)));
-    page.on('console',message=>{if(message.type()==='error')report.consoleErrors.push({offline,text:message.text()});});
+    page.on('console',message=>{if(message.type()==='error')report.consoleErrors.push({offline,text:message.text(),location:message.location()});});
     page.on('response',response=>{if(response.status()>=400)report.httpFailures.push({offline,url:response.url(),status:response.status()});});
     await step('seed foreign caches and normal saves before installing preview workers',async()=>{
       await page.goto(new URL('build-info.json',baseURL).href,{waitUntil:'load'});
@@ -150,7 +150,8 @@ async function main(){
   }catch(error){report.status='failed';report.exitCode=1;report.error=errorText(error);console.error(report.error);
     if(page){report.failureState=await state().catch(error=>({error:errorText(error)}));
       await page.screenshot({path:path.join(output,'failure.png'),timeout:10000}).catch(()=>{});}}
-  finally{report.durationMs=Date.now()-started;report.finishedAt=new Date().toISOString();await save();
+  finally{report.durationMs=Date.now()-started;report.finishedAt=new Date().toISOString();
+    report.serverRequests=server?.requests;await save();
     await context?.close();await browser?.close();await server?.close();process.exitCode=report.exitCode;
     console.log(JSON.stringify({status:report.status,exitCode:report.exitCode,steps:report.steps.length,output,durationMs:report.durationMs}));}
 }

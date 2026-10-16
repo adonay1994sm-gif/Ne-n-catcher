@@ -16,31 +16,31 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
-| Motor | 0/9 (0.0%) | 8 | 1 | 0 | 0 |
-| Jugabilidad | 0/40 (0.0%) | 40 | 0 | 0 | 0 |
-| Campaña clásica | 0/6 (0.0%) | 5 | 1 | 0 | 0 |
-| Campaña N-7 | 0/38 (0.0%) | 38 | 0 | 0 | 0 |
-| Enemigos | 0/72 (0.0%) | 69 | 0 | 0 | 3 |
+| Motor | 2/9 (22.2%) | 7 | 0 | 0 | 0 |
+| Jugabilidad | 4/40 (10.0%) | 36 | 0 | 0 | 0 |
+| Campaña clásica | 3/6 (50.0%) | 3 | 0 | 0 | 0 |
+| Campaña N-7 | 2/38 (5.3%) | 36 | 0 | 0 | 0 |
+| Enemigos | 1/72 (1.4%) | 68 | 0 | 0 | 3 |
 | Jefes | 0/12 (0.0%) | 12 | 0 | 0 | 0 |
-| Assets | 0/163 (0.0%) | 145 | 2 | 1 | 15 |
+| Assets | 1/163 (0.6%) | 145 | 1 | 1 | 15 |
 | Animaciones | 0/137 (0.0%) | 124 | 0 | 0 | 13 |
 | Narrativa | 0/16 (0.0%) | 16 | 0 | 0 | 0 |
-| Audio | 0/14 (0.0%) | 13 | 0 | 1 | 0 |
-| Interfaz | 0/13 (0.0%) | 11 | 2 | 0 | 0 |
-| Rendimiento | 0/12 (0.0%) | 12 | 0 | 0 | 0 |
-| QA | 0/45 (0.0%) | 28 | 12 | 5 | 0 |
+| Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
+| Interfaz | 4/13 (30.8%) | 8 | 0 | 0 | 1 |
+| Rendimiento | 1/12 (8.3%) | 11 | 0 | 0 | 0 |
+| QA | 14/45 (31.1%) | 19 | 3 | 5 | 4 |
 | Preparación iOS | 0/19 (0.0%) | 13 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 0/20 (0.0%) | PENDING: 8 · IN_PROGRESS: 11 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
+| 03 · Prueba integrada y cierre técnico | 14/20 (70.0%) | PENDING: 0 · IN_PROGRESS: 2 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 14 |
 | 04 · Jugabilidad procedural | 0/17 (0.0%) | PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 05 · Producción visual y 150 assets | 0/163 (0.0%) | PENDING: 147 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 15 · DONE: 0 |
 | 06 · Diez jefes | 0/10 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
-| 08 · Audio y experiencia sensorial | 0/13 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
+| 08 · Audio y experiencia sensorial | 0/13 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
 | 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 15 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
 | 10 · Preparación para lanzamiento | 0/14 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0 |
 
@@ -53,7 +53,8 @@ Catálogo: **IN_REVIEW: 12; PLANNED: 135; IMPLEMENTED_CODE: 2; READY: 1**; 150 i
 - **Motor, arquitectura, contenido, regresión, assets y build del Bloque02**, commit **50814e88f19f6790b6417bb49a2ea79d240b37a0**: [docs/continuity-100/evidence/block-02/certification/run-01/results.json](continuity-100/evidence/block-02/certification/run-01/results.json). Resultados anteriores; no certifican modificaciones posteriores ni iPhone.
 - **Chromium www, seis casos cortos**, commit **5c5f062cd1109b95a189f002d955c0b9ec81d45e**: [docs/continuity-100/evidence/block-02/browser-www-20261014-01/results.json](continuity-100/evidence/block-02/browser-www-20261014-01/results.json). No es Chromium sobre preview-dist; SW bloqueado; no es combate completo.
 - **Preview estática**, commit **5c5f062cd1109b95a189f002d955c0b9ec81d45e**: [docs/continuity-100/evidence/netlify-20261014/test-preview-01.txt](continuity-100/evidence/netlify-20261014/test-preview-01.txt). 11 pruebas anteriores; no certifican despliegue.
-- **Workflow integrado informado por Dirección**, commit **f5b486ccfcdc56319417c33d7fa9282708ed6d64**: [enlace](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/38531391709). Conservar enlace; estado remoto debe verificarse antes de usarlo para cerrar tareas.
+- **Workflow integrado informado por Dirección**, commit **f5b486ccfcdc56319417c33d7fa9282708ed6d64**: [enlace](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/38531391709). Estado remoto comprobado por integración mediante conector GitHub; conservar referencia y distinguirlo de Chromium/Safari.
+- **Bloque03:regresión local sobre base f5b486c y cambios publicados en e1a7aa8**, commit **e1a7aa8498b1c5f9f5558425a61b748f4ab1f869**: [docs/production-reports/evidence/block-03/certification-01/results.json](production-reports/evidence/block-03/certification-01/results.json). 11fases exit0. Preview15/15 registrado aparte. Chromium global permanece en curso al actualizar esta checklist.
 
 ## Bloqueos actuales del registro
 

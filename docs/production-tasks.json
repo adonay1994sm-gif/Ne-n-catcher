@@ -50,7 +50,13 @@
       "scope": "Workflow integrado informado por Dirección",
       "commit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
       "evidence": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/38531391709",
-      "note": "Conservar enlace; estado remoto debe verificarse antes de usarlo para cerrar tareas."
+      "note": "Estado remoto comprobado por integración mediante conector GitHub; conservar referencia y distinguirlo de Chromium/Safari."
+    },
+    {
+      "scope": "Bloque03:regresión local sobre base f5b486c y cambios publicados en e1a7aa8",
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "evidence": "docs/production-reports/evidence/block-03/certification-01/results.json",
+      "note": "11fases exit0. Preview15/15 registrado aparte. Chromium global permanece en curso al actualizar esta checklist."
     }
   ],
   "organization": [
@@ -368,19 +374,21 @@
       "block": "03",
       "name": "Verificar HEAD remoto, rama y cambios existentes",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
       "dependencies": [],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "docs/production-tasks.json"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "git ls-remote --heads origin continuity-assets-audit-20261013: 9c86abdd3cecc0e58bf92bb7e974abc9832cf3a0, contiene e1a7aa8 y f5b486c"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/remote-head-before-report.txt"
+      ],
       "openErrors": [],
       "acceptance": [
         "HEAD conservado y comparación remota registrada."
@@ -391,7 +399,7 @@
       "block": "03",
       "name": "Verificar Art Pass A integrado sin duplicarlo",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "Campaña clásica",
         "Assets",
@@ -401,13 +409,18 @@
         "B03-01"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "src/game/06-world-rendering.js",
+        "tests/visual-artpass.test.mjs",
+        "game.js"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "node --test tests/visual-artpass.test.mjs:4/4,exit0 dentro de certification-01"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/certification-01/results.json",
+        "docs/production-reports/evidence/block-03/certification-01/visual-artpass.txt"
+      ],
       "openErrors": [],
       "acceptance": [
         "Tests visual-artpass y comparación de fuentes superados."
@@ -418,7 +431,7 @@
       "block": "03",
       "name": "Instalar dependencias bloqueadas y construir desde fuentes",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -426,13 +439,23 @@
         "B03-01"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
+        "package-lock.json",
+        "scripts/build-web.mjs",
         "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "game.js",
+        "www/game.js",
+        "ios/App/App/public/game.js"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "npm ci:214paquetes,exit0",
+        "npm run build:exit0; hashes de game/core/content iguales en raíz,www,iOS"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/initial/npm-ci.txt",
+        "docs/production-reports/evidence/block-03/certification-01/results.json",
+        "docs/production-reports/evidence/block-03/initial/preview-build-02.txt"
+      ],
       "openErrors": [],
       "acceptance": [
         "npm ci y npm run build terminan con código 0; bundles sincronizados."
@@ -443,7 +466,7 @@
       "block": "03",
       "name": "Ejecutar todas las suites de regresión",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "Motor",
         "QA"
@@ -452,13 +475,20 @@
         "B03-03"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
+        "scripts/certify-local.mjs",
+        "tests/audio-lifecycle.test.mjs",
+        "tests/visual-artpass.test.mjs",
         "tests/preview-build.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/block-03/certification-01:11fases,11exit0; basef5b486c con modificaciones posteriormente publicadas en e1a7aa8",
+        "npm run test:preview:15/15,exit0; registro initial/preview-tests-02"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/certification-01/results.json",
+        "docs/production-reports/evidence/block-03/initial/preview-tests-02.txt"
+      ],
       "openErrors": [],
       "acceptance": [
         "Motor, arquitectura, contenido, static, general, web, visual, preview e inventario con registros y códigos."
@@ -469,7 +499,7 @@
       "block": "03",
       "name": "Ejecutar Chromium real sobre preview-dist",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -478,12 +508,15 @@
       ],
       "files": [
         "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "scripts/browser-qa-helpers.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "node scripts/content-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/block-03/browser-preview-01 --combat: 7/7, exit0, Chromium154"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Resultados y capturas del paquete experimental, no solo de www."
@@ -494,7 +527,7 @@
       "block": "03",
       "name": "Iniciar ambas campañas desde el selector",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Campaña clásica",
         "Campaña N-7",
@@ -505,13 +538,17 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "preview/launcher.html",
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Seis casos Chromium pasados: selector real→clásica/N7,10/100botones,menú y regreso al selector; offline-02 confirma ambos modos desde selector"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json",
+        "docs/production-reports/evidence/block-03/offline-02/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Navegación real a ambos modos; 10/100 rutas y retorno al selector."
@@ -522,7 +559,7 @@
       "block": "03",
       "name": "Verificar pausa y reanudación",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Motor",
         "Jugabilidad",
@@ -532,13 +569,16 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "src/game/08-loop-input-bootstrap.js",
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Seis casos passed: pausa congela simulación y reanudación avanza reloj/director,con un RAF pendiente máximo; no deltas negativos"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Reloj congelado al pausar y avance al reanudar, sin delta negativo ni RAF duplicado."
@@ -549,7 +589,7 @@
       "block": "03",
       "name": "Verificar reinicio y vuelta al menú",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Jugabilidad",
         "Interfaz",
@@ -559,13 +599,16 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "src/game/03-ui-game-flow.js",
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Seis casos passed: reinicio restaura estado/semilla,reanuda avance y permite volver al menú; salud RAF comprobada"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Estado y semilla reiniciados sin listeners o RAF adicionales."
@@ -576,7 +619,7 @@
       "block": "03",
       "name": "Verificar movimiento táctil",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Jugabilidad",
         "Interfaz",
@@ -586,13 +629,16 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "src/game/08-loop-input-bootstrap.js",
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Seis casos passed con page.touchscreen.tap:playerX360→306.73; controles visibles y consumo de munición; emulación Chromium, no iPhone"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Eventos táctiles reales de Chromium emulado mueven la nave; Safari físico se registra aparte."
@@ -603,7 +649,7 @@
       "block": "03",
       "name": "Verificar disparos, enemigos y proyectiles durante encuentros",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Jugabilidad",
         "Enemigos",
@@ -613,13 +659,16 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "src/game/progression/encounter-director.js",
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "browser-preview-01 7/7 exit0: ruta37 real, enemigos, proyectiles >100px de desplazamiento visibles durante varios frames; controles disparan"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Movimiento, disparos y colisiones observables durante un encuentro representativo completo."
@@ -630,7 +679,7 @@
       "block": "03",
       "name": "Verificar progresión, persistencia y aislamiento de guardados",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Campaña clásica",
         "Campaña N-7",
@@ -640,13 +689,18 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
+        "src/game/02-storage-audio.js",
         "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "browser-preview-01 7/7 exit0: victoria natural ruta37, 30/24 núcleos, casco100, desbloqueo38, recarga y cambio a clásico sin mezcla"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json",
+        "docs/production-reports/evidence/block-03/offline-02/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Victoria guarda y desbloquea; recarga conserva cada campaña sin contaminar producción."
@@ -657,7 +711,7 @@
       "block": "03",
       "name": "Verificar caché y service worker en navegador real",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "IN_REVIEW",
       "areas": [
         "QA"
       ],
@@ -665,14 +719,20 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
         "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "scripts/preview-offline-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "node scripts/preview-offline-smoke.cjs:offline-01 y offline-02 passed,exit0,4pasos reales por ejecución; activación,limpieza de cachés antiguas,aislamiento y navegación offline de ambos modos"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/offline-01/results.json",
+        "docs/production-reports/evidence/block-03/offline-02/results.json"
+      ],
+      "openErrors": [
+        "La actualización de un worker activo entre dos revisiones reales sigue sin probar; se sembraron cachés antiguas sintéticas antes de instalar la revisión actual."
+      ],
       "acceptance": [
         "Activación, recarga, offline y actualización funcionan con SW permitido; cachés ajenas se conservan."
       ]
@@ -682,7 +742,7 @@
       "block": "03",
       "name": "Corregir y verificar orientación vertical y horizontal",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "Interfaz",
         "QA"
@@ -691,13 +751,19 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "styles.css",
+        "index.html",
+        "src/game/08-loop-input-bootstrap.js",
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Seis casos passed:checks geométricos de viewport,HUD,panel pausa,botones y ratioCanvas en390x844,320x568,844x390; captura horizontal revisada"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json",
+        "docs/production-reports/evidence/block-03/browser-preview-01/844x390-n7-paused.png"
+      ],
       "openErrors": [],
       "acceptance": [
         "390x844, 320x568 y 844x390 muestran HUD, controles y pausa sin recortes."
@@ -708,7 +774,7 @@
       "block": "03",
       "name": "Corregir errores de carga y excepciones",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "QA"
       ],
@@ -717,13 +783,20 @@
       ],
       "files": [
         "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "scripts/preview-offline-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Seis casos smoke passed sin excepciones ni recursos fallidos; offline-02 sin pageErrors ni assets fallidos"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json",
+        "docs/production-reports/evidence/block-03/offline-02/results.json"
+      ],
+      "openErrors": [
+        "offline-02 registra404de/favicon.ico en sondeo inicial de build-info; no es asset jugable crítico pero impide declarar cero errores de recursos globales.",
+        "Sondeo fuera de caché offline falla deliberadamente con ERR_INTERNET_DISCONNECTED; conservar diagnóstico separado."
+      ],
       "acceptance": [
         "Consola sin excepciones y recursos solicitados con respuestas válidas."
       ]
@@ -733,7 +806,7 @@
       "block": "03",
       "name": "Registrar consumo de recursos de la sesión de prueba",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Rendimiento",
         "QA"
@@ -742,13 +815,15 @@
         "B03-05"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
-        "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Seis casos completos registran duración(19.9–39.8s),56imágenes por caso,entidades y RAF; no es benchmark de FPS/memoria"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Duración, imágenes, entidades y límites medidos; no extrapolar a 60 FPS físicos."
@@ -759,7 +834,7 @@
       "block": "03",
       "name": "Comprobar SHA y hashes de build-info.json",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -767,13 +842,18 @@
         "B03-03"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
         "scripts/build-preview.mjs",
         "tests/preview-build.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Preview15/15 incluye SHA exacto,sourceTree y hashes de cada byte publicado",
+        "offline-02 registra commit e1a7aa8,sourceTree6d6c6c9a582e2df8e56cc79b07d6d66c89e9f51f,dirty:true y revisión344308db; no identificarlo como compilación limpia9c86abd"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/initial/preview-tests-02.txt",
+        "docs/production-reports/evidence/block-03/offline-02/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Proveniencia coincide con checkout y todos los archivos publicados; dirty se declara."
@@ -795,14 +875,21 @@
         "B03-16"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
         "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        ".github/workflows/n7-integrated-preview.yml"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Compilación experimental disponible; resultados parciales de Chromium y offline guardados"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/certification-01/results.json",
+        "docs/production-reports/evidence/block-03/browser-preview-01/results.json",
+        "docs/production-reports/evidence/block-03/offline-02/results.json"
+      ],
+      "openErrors": [
+        "Falta cierre global de Chromium y archivo ZIP final con hash y procedencia de la versión distribuida."
+      ],
       "acceptance": [
         "ZIP autocontenido identificado por SHA y hash, con evidencia de pruebas."
       ]
@@ -839,7 +926,7 @@
       "block": "03",
       "name": "Verificar entrada PWA y cabeceras del paquete",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "Interfaz",
         "QA"
@@ -848,14 +935,22 @@
         "B03-03"
       ],
       "files": [
-        "scripts/content-browser-smoke.cjs",
         "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "netlify.toml",
+        "preview/launcher.html",
+        "scripts/preview-offline-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "Preview15/15 comprueba identidad/entrada de manifiesto; offline-02 resuelve start_url al selector y sirve cabeceras locales esperadas"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/initial/preview-tests-02.txt",
+        "docs/production-reports/evidence/block-03/offline-02/results.json"
+      ],
+      "openErrors": [
+        "El test abre start_url pero no instala una PWA; instalación real y cabeceras del despliegue Netlify siguen sin verificar."
+      ],
       "acceptance": [
         "Instalación experimental abre selector; políticas y alcance no alteran el juego de producción."
       ]
@@ -2335,7 +2430,7 @@
       "block": "08",
       "name": "Corregir y probar reanudación de audio móvil",
       "priority": "HIGH",
-      "status": "PENDING",
+      "status": "IN_REVIEW",
       "areas": [
         "Audio",
         "QA"
@@ -2345,12 +2440,20 @@
       ],
       "files": [
         "src/game/02-storage-audio.js",
-        "src/game/04-entities-collision-damage.js"
+        "tests/audio-lifecycle.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "tests": [
+        "node --test tests/audio-lifecycle.test.mjs:3/3,exit0; efectos solos,música sola,silencio total,AudioContext ausente y rechazo autoplay"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/certification-01/audio-lifecycle.txt",
+        "docs/production-reports/evidence/block-03/initial/audio-before-detailed.txt",
+        "docs/production-reports/evidence/block-03/initial/audio-after-detailed.txt"
+      ],
+      "openErrors": [
+        "Corrección y lógica probadas; desbloqueo por gesto y reanudación tras visibilidad con AudioContext real móvil todavía pendientes."
+      ],
       "acceptance": [
         "AudioContext reanuda con música0/efectos>0 y tras visibilidad; desbloqueo por gesto."
       ]
