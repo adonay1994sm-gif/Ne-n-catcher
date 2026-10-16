@@ -1,4 +1,12 @@
-## Producción en curso — 2026-10-15 UTC
+## Producción en curso — 2026-10-16 UTC
+
+Bloque 03: Chromium real sobre `preview-dist` aprobado **7/7, exit 0** en 390×844, 320×568 y 844×390, dos campañas. La séptima sesión terminó la ruta N-7 37 con enemigos, proyectiles móviles y guardado persistente tras recarga. Dos ejecuciones con service workers reales aprobaron **4/4 cada una, exit 0**: selector y ambas campañas offline. Evidencia JSON y capturas en `docs/production-reports/evidence/block-03/browser-preview-01/` y `offline-01/`, `offline-02/`. La prueba física de iPhone y el despliegue Netlify siguen pendientes. No hay URL N-7 verificada.
+
+Commits publicados de esta producción: `e1a7aa8498b1c5f9f5558425a61b748f4ab1f869` (preview/audio/QA), `9c86abdd3cecc0e58bf92bb7e974abc9832cf3a0` (atlas CH-01), `dbb0fa470ca397c9054ac69f58dc7219ba7b48b4` (evidencias Chromium/offline y animador CH-01). El animador tiene 9/9 pruebas aprobadas, pero todavía no está unido a la campaña. El atlas tampoco se considera un asset integrado. Fuente de tareas: `production-tasks.json`; 14 DONE de 267, sin inferir porcentaje del juego terminado. Consultar `production-reports/BLOQUE_03_2026-10-16.md` para límites y siguientes pasos.
+
+---
+
+## Producción anterior — 2026-10-15 UTC
 
 Base sincronizada por fast-forward: `f5b486ccfcdc56319417c33d7fa9282708ed6d64`. Rama exclusiva `continuity-assets-audit-20261013`.
 
