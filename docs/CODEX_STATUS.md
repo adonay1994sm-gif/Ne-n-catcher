@@ -1,8 +1,8 @@
 ## Integración CH-01 y preview comprobada — 2026-10-16 UTC
 
-La rama autorizada publicó `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4`: el atlas CH-01 de 24 fotogramas ya sustituye al meteorito de los tiradores N-7, con disparo ligado al fotograma, daño y destrucción. El inventario runtime pasa de 58 a 59 archivos sin inconsistencias. La certificación posterior pasó 11/11 fases; Chromium sobre la preview limpia de ese SHA aprobó 2/2 casos, incluida la ruta 37 completa, y offline aprobó 4/4. ZIP experimental y SHA-256 en `production-reports/evidence/block-03/preview-package-9d28569.json`. Falta captura real de impacto/destrucción, Gaia clásica, Netlify autenticado y Safari/iPhone físico. Informe técnico vigente: `PRODUCTION_LATEST_REPORT.md`.
+La rama autorizada publicó `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4`: el atlas CH-01 de 24 fotogramas ya sustituye al meteorito de los tiradores N-7, con disparo ligado al fotograma, daño y destrucción. El inventario runtime pasa de 58 a 59 archivos sin inconsistencias. La certificación posterior pasó 11/11 fases; Chromium sobre la preview limpia de ese SHA aprobó 2/2 casos, incluida la ruta 37 completa, y offline aprobó 4/4. ZIP experimental y SHA-256 en `production-reports/evidence/block-03/preview-package-9d28569.json`. Chromium controlado capturó ataque, impacto y destrucción del Canvas real (4/4); falta combatirlo naturalmente, Gaia clásica, Netlify autenticado y Safari/iPhone físico. Informe técnico vigente: `PRODUCTION_LATEST_REPORT.md`.
 
-Checklist actual: 19 DONE, 22 IN_REVIEW, 217 PENDING, 2 IN_PROGRESS y 7 BLOCKED de 267 tareas. No equivale a porcentaje del videojuego terminado. No existe URL N-7 desplegada; el ZIP es sólo una construcción local. `USE_ENGINE_V1 = false`.
+Checklist actual: 21 DONE, 20 IN_REVIEW, 217 PENDING, 2 IN_PROGRESS y 7 BLOCKED de 267 tareas. No equivale a porcentaje del videojuego terminado. No existe URL N-7 desplegada; el ZIP es sólo una construcción local. `USE_ENGINE_V1 = false`.
 
 ---
 

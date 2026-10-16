@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T14:25:15.672Z",
+  "updatedAt": "2026-10-16T14:30:54.306Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -321,21 +321,24 @@
           "art-source/enemies/ch01/ch01-atlas-v1.webp",
           "art-source/enemies/ch01/ch01-atlas-v1.json",
           "assets/ch01_atlas_v1.webp",
-          "src/game/animation/ch01-animator.js"
+          "src/game/animation/ch01-animator.js",
+          "scripts/ch01-browser-smoke.cjs"
         ],
         "tests": [
           "python3 art-source/enemies/ch01/verify-ch01.py: exit 0",
           "Animator: 9/9, exit 0",
           "Legacy Canvas combat integration: pass",
-          "Chromium N-7 combat: 2/2, exit 0"
+          "Chromium N-7 combat: 2/2, exit 0",
+          "Controlled Chromium Canvas CH-01 states: 4/4, exit 0"
         ],
         "evidence": [
           "art-source/enemies/ch01/ch01-validation.json",
           "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
-          "docs/production-reports/evidence/block-05/certification-03/results.json"
+          "docs/production-reports/evidence/block-05/certification-03/results.json",
+          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
         ],
         "openErrors": [
-          "Integración en Gaia clásica pendiente; captura Chromium de hurt/destroy pendiente."
+          "Asset integrated in N-7 only; Gaia classic pending and iPhone visual QA pending."
         ]
       },
       "gaia-ch01-attack": {
@@ -345,21 +348,24 @@
           "art-source/enemies/ch01/ch01-atlas-v1.webp",
           "art-source/enemies/ch01/ch01-atlas-v1.json",
           "assets/ch01_atlas_v1.webp",
-          "src/game/animation/ch01-animator.js"
+          "src/game/animation/ch01-animator.js",
+          "scripts/ch01-browser-smoke.cjs"
         ],
         "tests": [
           "python3 art-source/enemies/ch01/verify-ch01.py: exit 0",
           "Animator: 9/9, exit 0",
           "Legacy Canvas combat integration: pass",
-          "Chromium N-7 combat: 2/2, exit 0"
+          "Chromium N-7 combat: 2/2, exit 0",
+          "Controlled Chromium Canvas CH-01 states: 4/4, exit 0"
         ],
         "evidence": [
           "art-source/enemies/ch01/ch01-validation.json",
           "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
-          "docs/production-reports/evidence/block-05/certification-03/results.json"
+          "docs/production-reports/evidence/block-05/certification-03/results.json",
+          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
         ],
         "openErrors": [
-          "Integración en Gaia clásica pendiente; captura Chromium de hurt/destroy pendiente."
+          "Asset integrated in N-7 only; Gaia classic pending and iPhone visual QA pending."
         ]
       },
       "gaia-ch01-destroy": {
@@ -369,21 +375,24 @@
           "art-source/enemies/ch01/ch01-atlas-v1.webp",
           "art-source/enemies/ch01/ch01-atlas-v1.json",
           "assets/ch01_atlas_v1.webp",
-          "src/game/animation/ch01-animator.js"
+          "src/game/animation/ch01-animator.js",
+          "scripts/ch01-browser-smoke.cjs"
         ],
         "tests": [
           "python3 art-source/enemies/ch01/verify-ch01.py: exit 0",
           "Animator: 9/9, exit 0",
           "Legacy Canvas combat integration: pass",
-          "Chromium N-7 combat: 2/2, exit 0"
+          "Chromium N-7 combat: 2/2, exit 0",
+          "Controlled Chromium Canvas CH-01 states: 4/4, exit 0"
         ],
         "evidence": [
           "art-source/enemies/ch01/ch01-validation.json",
           "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
-          "docs/production-reports/evidence/block-05/certification-03/results.json"
+          "docs/production-reports/evidence/block-05/certification-03/results.json",
+          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
         ],
         "openErrors": [
-          "Integración en Gaia clásica pendiente; captura Chromium de hurt/destroy pendiente."
+          "Asset integrated in N-7 only; Gaia classic pending and iPhone visual QA pending."
         ]
       }
     },
@@ -1622,7 +1631,7 @@
       "block": "05",
       "name": "Implementar impacto y daño de CH-01",
       "priority": "VERY_HIGH",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "areas": [
         "Enemigos",
         "Jugabilidad",
@@ -1637,19 +1646,20 @@
         "ASSET_PRODUCTION_MAP.md",
         "src/game/animation/animation-map.js",
         "src/game/04-entities-collision-damage.js",
-        "tests/content-legacy-integration.test.mjs"
+        "tests/content-legacy-integration.test.mjs",
+        "scripts/ch01-browser-smoke.cjs"
       ],
       "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
       "tests": [
-        "legacy Canvas synthetic damage/hurt: pass"
+        "legacy Canvas synthetic damage/hurt: pass",
+        "Controlled Chromium Canvas CH-01 attack/hurt/destroy: 4/4, exit 0"
       ],
       "evidence": [
         "docs/production-reports/evidence/block-05/certification-03/results.json",
-        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json"
+        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
+        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
       ],
-      "openErrors": [
-        "Pose de impacto no capturada todavía en Chromium durante un golpe real."
-      ],
+      "openErrors": [],
       "acceptance": [
         "Impacto visible reduce vida y conserva correcta transición de estado."
       ]
@@ -1659,7 +1669,7 @@
       "block": "05",
       "name": "Implementar destrucción y recompensa de CH-01",
       "priority": "VERY_HIGH",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "areas": [
         "Enemigos",
         "Jugabilidad",
@@ -1675,18 +1685,19 @@
         "src/game/animation/animation-map.js",
         "src/game/04-entities-collision-damage.js",
         "src/game/07-player-item-rendering.js",
-        "tests/content-legacy-integration.test.mjs"
+        "tests/content-legacy-integration.test.mjs",
+        "scripts/ch01-browser-smoke.cjs"
       ],
       "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
       "tests": [
-        "legacy Canvas synthetic destruction/reward once: pass"
+        "legacy Canvas synthetic destruction/reward once: pass",
+        "Controlled Chromium Canvas CH-01 attack/hurt/destroy: 4/4, exit 0"
       ],
       "evidence": [
-        "docs/production-reports/evidence/block-05/certification-03/results.json"
+        "docs/production-reports/evidence/block-05/certification-03/results.json",
+        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
       ],
-      "openErrors": [
-        "Destrucción no capturada todavía en Chromium durante un combate real."
-      ],
+      "openErrors": [],
       "acceptance": [
         "Destrucción no interrumpida, liberación de entidad y recompensa una sola vez."
       ]
@@ -1713,18 +1724,24 @@
         "ASSET_PRODUCTION_MAP.md",
         "src/game/animation/animation-map.js",
         "assets/ch01_atlas_v1.webp",
-        "src/game/07-player-item-rendering.js"
+        "src/game/07-player-item-rendering.js",
+        "scripts/ch01-browser-smoke.cjs"
       ],
       "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
       "tests": [
-        "Chromium sprite decoded 1024x1536 and combat screenshot: pass"
+        "Chromium sprite decoded 1024x1536 and combat screenshot: pass",
+        "Controlled Chromium Canvas 4/4 with attack/hurt/destroy screenshots, exit 0"
       ],
       "evidence": [
         "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
-        "docs/production-reports/evidence/block-05/browser-ch01-01/390x844-dpr1-n7-combat-progress-combat.png"
+        "docs/production-reports/evidence/block-05/browser-ch01-01/390x844-dpr1-n7-combat-progress-combat.png",
+        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json",
+        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/ch01-attack.png",
+        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/ch01-hurt.png",
+        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/ch01-destroy.png"
       ],
       "openErrors": [
-        "Capturas reales de hurt/destroy pendientes; Safari iPhone pendiente."
+        "Natural player-controlled hit/destroy in a full route and Safari/iPhone visual QA remain pending."
       ],
       "acceptance": [
         "Capturas y prueba real de atacar, recibir daño y destruirse con assets definitivos."
