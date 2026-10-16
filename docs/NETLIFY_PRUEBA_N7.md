@@ -1,5 +1,9 @@
 # NEON CATCHER — Cómo probar Clásico + N-7 desde Netlify (rama aislada)
 
+## Preview temporal comprobada el 16/10/2026
+
+Se subió el paquete `5a2f916` mediante Netlify Drop a `https://idyllic-custard-c8c391.netlify.app/`. La contraseña se comunicó directamente al propietario y no se almacena en el repositorio público. Esta URL **expira aproximadamente a las 15:45 UTC del 16/10/2026** si no se reclama. El informe técnico y el ZIP listo para volver a subir se encuentran en [NETLIFY_DROP_2026-10-16.md](production-reports/NETLIFY_DROP_2026-10-16.md). Para pruebas duraderas, usar una cuenta y un sitio experimental propio; esta publicación no activó el branch deploy ni la web de producción.
+
 Rama permitida: `continuity-assets-audit-20261013`. El modo clásico no se cambia, el modo N-7 es optativo y `USE_ENGINE_V1` se mantiene en `false`.
 
 ## Generación local, sin desplegar

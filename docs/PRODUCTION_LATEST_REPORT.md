@@ -1,5 +1,7 @@
 # INFORME DE PRODUCCIÓN — NEON CATCHER
 
+**Actualización posterior, 2026-10-16:** se publicó una preview **temporal** en Netlify Drop, URL `https://idyllic-custard-c8c391.netlify.app/`, build `5a2f91647f582ad117b18df58da3d1a77b6c08e0`; contraseña enviada directamente al propietario. Chromium remoto 390×844 aprobó 2/2 casos y el sitio sirve ambas campañas. El sitio no reclamado expira aproximadamente a las 15:45 UTC del 16/10/2026. El informe exacto, límites y evidencia están en [NETLIFY_DROP_2026-10-16.md](production-reports/NETLIFY_DROP_2026-10-16.md). El informe de CH-01 que sigue es el cierre anterior; sus frases «no desplegado» son históricas.
+
 Fecha: 2026-10-16 UTC
 Rama: `continuity-assets-audit-20261013`
 SHA inicial del lote: `7fe5a6d539ea7ead41a59bd4306f8f4bcc3f6c20`

@@ -30,6 +30,10 @@ Este avance se conserva con el commit `fix(preview): prepare integrated offline 
 
 # NEON CATCHER — Estado compartido Codex / KOO
 
+## Actualización de preview remota — 16/10/2026
+
+Se publicó una prueba **temporal** independiente mediante Netlify Drop: `https://idyllic-custard-c8c391.netlify.app/` (contraseña comunicada directamente al propietario). El sitio no reclamado caduca aproximadamente a las **15:45 UTC del 16/10/2026**. Sirve `build-info.json` del commit `5a2f91647f582ad117b18df58da3d1a77b6c08e0`, selector y ambas campañas. Chromium remoto móvil 390×844: **2/2, exit 0**, controles, disparo, pausa/reanudación, reinicio y menú; 0 errores JS/HTTP. La primera ejecución (exit 1) reveló una expectativa obsoleta del test para imágenes diferidas, corregida y repetida. Arte CH-01 y scripts cotejados byte a byte. No hay despliegue permanente ni prueba de iPhone físico. Informe y ZIP reutilizable: [NETLIFY_DROP_2026-10-16.md](production-reports/NETLIFY_DROP_2026-10-16.md). El estado a continuación conserva el cierre histórico de 14/10 y no describe la preview remota actual.
+
 ## Cierre de sesión Codex — 14/10/2026
 
 **Avances conservados; preview aislada implementada y probada estáticamente. Chromium del paquete web ordinario: 6/6 aprobados. Chromium de preview-dist y despliegue Netlify: pendientes.**

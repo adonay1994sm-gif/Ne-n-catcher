@@ -110,6 +110,13 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
   const began = Date.now();
   const context = await browser.newContext({viewport: {width: profile.width, height: profile.height},
     deviceScaleFactor: profile.dpr, isMobile: true, hasTouch: true, serviceWorkers: 'block'});
+  if (externalURL && process.env.NEON_BROWSER_PASSWORD) {
+    const auth = await context.request.post(baseURL, {
+      form: {password: process.env.NEON_BROWSER_PASSWORD}, maxRedirects: 0, timeout
+    });
+    assert.equal(auth.status(), 302, 'Remote preview password was rejected');
+    result.passwordProtectedPreview = true;
+  }
   const page = await context.newPage();
   page.setDefaultTimeout(timeout); page.setDefaultNavigationTimeout(timeout);
   page.on('pageerror', error => result.errors.push(errorText(error)));
@@ -252,8 +259,11 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
         const g = __GAME_QA__();
         return g.state === 'playing' && g.warpTimer === 0 && (isN7 ? g.directorTime > .05 : g.elapsed > 1.3);
       }, mode === 'n7');
-      await wait(page, () => __GAME_ASSETS_QA__().every(image => image.complete && image.width > 0 && image.height > 0));
-      result.images = await page.evaluate(() => __GAME_ASSETS_QA__());
+      // Deferred sprites deliberately have no URL until their first use (for
+      // example CH-01 is absent from the classic campaign).
+      await wait(page, () => __GAME_ASSETS_QA__().filter(image => image.url)
+        .every(image => image.complete && image.width > 0 && image.height > 0));
+      result.images = await page.evaluate(() => __GAME_ASSETS_QA__().filter(image => image.url));
     });
     await step('touch movement and fire with visible controls', async () => {
       result.layout = {playing:await layout(page)};
@@ -397,7 +407,8 @@ async function main() {
     if (!externalURL) server = await startStaticServer(root);
     const baseURL = externalURL || server.url; report.baseURL = baseURL;
     browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
-      headless: true, timeout, args: ['--no-sandbox', '--disable-dev-shm-usage']});
+      headless: true, timeout, args: ['--no-sandbox', '--disable-dev-shm-usage'],
+      ...(process.env.NEON_BROWSER_PROXY ? {proxy: {server: process.env.NEON_BROWSER_PROXY}} : {})});
     report.browser = browser.version();
     for (const profile of profiles) for (const mode of modes) await runCase(browser, profile, mode, baseURL);
     if (args.combat) await runCase(browser,{name:'390x844-dpr1',width:390,height:844,dpr:1},'n7',baseURL,true);

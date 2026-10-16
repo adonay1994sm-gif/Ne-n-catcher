@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T14:36:07.573Z",
+  "updatedAt": "2026-10-16T14:51:00.000Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -931,7 +931,7 @@
       "block": "03",
       "name": "Verificar despliegue aislado, URL y SHA remotos",
       "priority": "CRITICAL",
-      "status": "BLOCKED",
+      "status": "IN_REVIEW",
       "areas": [
         "QA"
       ],
@@ -941,13 +941,20 @@
       "files": [
         "scripts/content-browser-smoke.cjs",
         "scripts/build-preview.mjs",
-        "tests/preview-build.test.mjs"
+        "docs/production-reports/evidence/netlify-drop-20261016/neon-catcher-preview-5a2f916.zip"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "5a2f91647f582ad117b18df58da3d1a77b6c08e0",
+      "tests": [
+        "Netlify Drop HTTP: 200 selector, build-info, dos entradas y atlas; 4/6 recursos byte a byte, HTML reescrito por Netlify",
+        "Chromium remoto 390x844: 2/2, exit 0; controles, pausa, reanudación, reinicio y menú"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/netlify-drop-20261016/deployment.json",
+        "docs/production-reports/evidence/netlify-drop-20261016/http-content.json",
+        "docs/production-reports/evidence/netlify-drop-20261016/browser-remote-02/results.json"
+      ],
       "openErrors": [
-        "Sin acceso autenticado a Netlify en el entorno heredado; comprobar disponibilidad de nuevo."
+        "La URL Netlify Drop no reclamada expira aproximadamente una hora después de 2026-10-16 14:45 UTC; falta sitio de prueba duradero en la cuenta del propietario."
       ],
       "acceptance": [
         "URL real sirve selector, ambos modos y build-info del paquete; producción/PR3 intactas."
