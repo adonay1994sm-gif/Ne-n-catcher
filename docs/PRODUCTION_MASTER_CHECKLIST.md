@@ -1,6 +1,6 @@
 # NEON CATCHER — Checklist maestra de producción
 
-Fecha del registro: **2026-10-15**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-16**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -86,7 +86,7 @@ Este registro cubre los Bloques 03–10 del mandato. Los avances históricos per
 
 ## Resumen de estados
 
-PENDING: 236 · IN_PROGRESS: 12 · BLOCKED: 7 · IN_REVIEW: 12 · DONE: 0. Total: 267 tareas.
+PENDING: 233 · IN_PROGRESS: 12 · BLOCKED: 7 · IN_REVIEW: 15 · DONE: 0. Total: 267 tareas.
 
 ## Bloque 03 — Prueba integrada y cierre técnico
 
@@ -184,7 +184,7 @@ PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 
 ## Bloque 05 — Producción visual y 150 assets
 
-PENDING: 150 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0.
+PENDING: 147 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 15 · DONE: 0.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -220,7 +220,7 @@ PENDING: 150 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0.
 
 ### Entregas individuales de assets
 
-Catálogo real: **IN_REVIEW: 9; PLANNED: 138; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
+Catálogo real: **IN_REVIEW: 12; PLANNED: 135; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
 
 Todos los assets deben superar estos doce criterios: Identificador y nombre; Archivo maestro existente; Archivo optimizado existente; Fotogramas necesarios reales; Dimensiones verificadas; Escala documentada; Pivote documentado; Transparencia comprobada; Duración/FPS documentados; Integración real en el juego; Prueba visual registrada; Procedencia y derechos registrados.
 
@@ -269,9 +269,9 @@ Todos los assets deben superar estos doce criterios: Identificador y nombre; Arc
 | A041 | Órbita lejana (gaia-orbit-far) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A042 | Restos científicos (gaia-science-debris) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A043 | Foreground orbital (gaia-foreground) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A044 | CH-01 Scout Drone · movimiento (gaia-ch01-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A045 | CH-01 · ataque (gaia-ch01-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A046 | CH-01 · destrucción (gaia-ch01-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A044 | CH-01 Scout Drone · movimiento (gaia-ch01-move) | P1 | IN_REVIEW | B05-02 | [art-source/enemies/ch01/ch01-master-v2.png](../art-source/enemies/ch01/ch01-master-v2.png)<br>[art-source/enemies/ch01/ch01-atlas-v1.webp](../art-source/enemies/ch01/ch01-atlas-v1.webp)<br>[art-source/enemies/ch01/ch01-atlas-v1.json](../art-source/enemies/ch01/ch01-atlas-v1.json) | — | python3 art-source/enemies/ch01/verify-ch01.py | [art-source/enemies/ch01/ch01-validation.json](../art-source/enemies/ch01/ch01-validation.json) | Pendiente integración y verificación visual dentro del combate. |
+| A045 | CH-01 · ataque (gaia-ch01-attack) | P2 | IN_REVIEW | B05-02 | [art-source/enemies/ch01/ch01-master-v2.png](../art-source/enemies/ch01/ch01-master-v2.png)<br>[art-source/enemies/ch01/ch01-atlas-v1.webp](../art-source/enemies/ch01/ch01-atlas-v1.webp)<br>[art-source/enemies/ch01/ch01-atlas-v1.json](../art-source/enemies/ch01/ch01-atlas-v1.json) | — | python3 art-source/enemies/ch01/verify-ch01.py | [art-source/enemies/ch01/ch01-validation.json](../art-source/enemies/ch01/ch01-validation.json) | Pendiente integración y verificación visual dentro del combate. |
+| A046 | CH-01 · destrucción (gaia-ch01-destroy) | P2 | IN_REVIEW | B05-02 | [art-source/enemies/ch01/ch01-master-v2.png](../art-source/enemies/ch01/ch01-master-v2.png)<br>[art-source/enemies/ch01/ch01-atlas-v1.webp](../art-source/enemies/ch01/ch01-atlas-v1.webp)<br>[art-source/enemies/ch01/ch01-atlas-v1.json](../art-source/enemies/ch01/ch01-atlas-v1.json) | — | python3 art-source/enemies/ch01/verify-ch01.py | [art-source/enemies/ch01/ch01-validation.json](../art-source/enemies/ch01/ch01-validation.json) | Pendiente integración y verificación visual dentro del combate. |
 | A047 | CH-02 Interceptor · movimiento (gaia-ch02-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A048 | CH-02 · ataque (gaia-ch02-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A049 | CH-02 · destrucción (gaia-ch02-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |

@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 1,
+  "id": "gaia.ch01.scout",
+  "revision": "ch01-art-v1",
+  "productionStatus": "IN_REVIEW",
+  "image": "ch01-atlas-v1.webp",
+  "proposedRuntimeImage": "assets/enemies/ch01-atlas-v1.webp",
+  "master": "ch01-master-v2.png",
+  "sourceHistorical": "ch01-master-v1.png",
+  "dimensions": {
+    "width": 1024,
+    "height": 1536
+  },
+  "layout": {
+    "columns": 4,
+    "rows": 6,
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frameCount": 24
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "forward": {
+    "x": 0,
+    "y": 1
+  },
+  "recommendedDrawSizeLogical": 128,
+  "transparent": true,
+  "decodedRgbaBytes": 6291456,
+  "frames": [
+    {
+      "index": 0,
+      "stateRow": "spawn",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 1,
+      "stateRow": "spawn",
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 2,
+      "stateRow": "spawn",
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 3,
+      "stateRow": "spawn",
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 4,
+      "stateRow": "idle",
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 5,
+      "stateRow": "idle",
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 6,
+      "stateRow": "idle",
+      "rect": {
+        "x": 512,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 7,
+      "stateRow": "idle",
+      "rect": {
+        "x": 768,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 8,
+      "stateRow": "flight",
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 9,
+      "stateRow": "flight",
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 10,
+      "stateRow": "flight",
+      "rect": {
+        "x": 512,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 11,
+      "stateRow": "flight",
+      "rect": {
+        "x": 768,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 12,
+      "stateRow": "attack",
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 13,
+      "stateRow": "attack",
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 14,
+      "stateRow": "attack",
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 15,
+      "stateRow": "attack",
+      "rect": {
+        "x": 768,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 16,
+      "stateRow": "hurt",
+      "rect": {
+        "x": 0,
+        "y": 1024,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 17,
+      "stateRow": "hurt",
+      "rect": {
+        "x": 256,
+        "y": 1024,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 18,
+      "stateRow": "hurt",
+      "rect": {
+        "x": 512,
+        "y": 1024,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 19,
+      "stateRow": "hurt",
+      "rect": {
+        "x": 768,
+        "y": 1024,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 20,
+      "stateRow": "destroy",
+      "rect": {
+        "x": 0,
+        "y": 1280,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 21,
+      "stateRow": "destroy",
+      "rect": {
+        "x": 256,
+        "y": 1280,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 22,
+      "stateRow": "destroy",
+      "rect": {
+        "x": 512,
+        "y": 1280,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "index": 23,
+      "stateRow": "destroy",
+      "rect": {
+        "x": 768,
+        "y": 1280,
+        "width": 256,
+        "height": 256
+      }
+    }
+  ],
+  "animations": {
+    "spawn": {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "durationMs": [
+        100,
+        100,
+        100,
+        130
+      ],
+      "loop": false,
+      "locked": true,
+      "next": "idle"
+    },
+    "idle": {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "durationMs": [
+        125,
+        125,
+        125,
+        125
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "flight": {
+      "frames": [
+        9,
+        11
+      ],
+      "durationMs": [
+        100,
+        100
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "bankLeft": {
+      "frames": [
+        8
+      ],
+      "durationMs": [
+        100
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "bankRight": {
+      "frames": [
+        10
+      ],
+      "durationMs": [
+        100
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "attack": {
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "durationMs": [
+        160,
+        80,
+        90,
+        170
+      ],
+      "loop": false,
+      "locked": true,
+      "next": "idle",
+      "events": [
+        {
+          "frameOffset": 0,
+          "name": "charge"
+        },
+        {
+          "frameOffset": 1,
+          "name": "fire"
+        }
+      ]
+    },
+    "hurt": {
+      "frames": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "durationMs": [
+        55,
+        55,
+        65,
+        75
+      ],
+      "loop": false,
+      "locked": true,
+      "next": "idle"
+    },
+    "damaged": {
+      "frames": [
+        18,
+        19
+      ],
+      "durationMs": [
+        160,
+        160
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "destroy": {
+      "frames": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "durationMs": [
+        80,
+        100,
+        130,
+        180
+      ],
+      "loop": false,
+      "locked": true,
+      "terminal": true,
+      "events": [
+        {
+          "frameOffset": 1,
+          "name": "coreBurst"
+        }
+      ],
+      "completionEvent": "removeVisual"
+    }
+  },
+  "transitionRules": {
+    "priority": [
+      "destroy",
+      "hurt",
+      "attack",
+      "spawn",
+      "bankLeft",
+      "bankRight",
+      "flight",
+      "idle"
+    ],
+    "destroyCannotBeInterrupted": true,
+    "gameplayCollisionIndependentOfArt": true,
+    "banking": "Choose left/right pose from actual lateral velocity; do not cycle left/right while flying straight.",
+    "fire": "Runtime must emit each animation event once; the atlas does not spawn gameplay projectiles.",
+    "destroy": "Gameplay hitbox must be removed when death starts; retain only the visual until animation completion."
+  },
+  "palette": {
+    "titanium": "#E8EDF0",
+    "graphite": "#15202D",
+    "cyan": "#5CF5FF",
+    "warning": "#E84036"
+  },
+  "catalogEntries": [
+    "gaia-ch01-move",
+    "gaia-ch01-attack",
+    "gaia-ch01-destroy"
+  ],
+  "provenance": {
+    "method": "OpenAI image_gen generation plus image_gen correction; lossless-alpha WebP export with ImageMagick",
+    "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg",
+    "generatorOutputOriginal": "exec-72a4f9e1-be52-44d1-aef3-7db3b77916ad.png",
+    "generatorOutputCorrection": "exec-4925397f-381b-4ed8-bdd5-88d7456f959a.png",
+    "generatedAtUtcDate": "2026-10-14",
+    "preparedAtUtcDate": "2026-10-15",
+    "rights": "Generated for this project from an existing project design reference. No third-party stock downloaded. Rights to the inherited dossier reference were not independently audited; no legal clearance is claimed."
+  },
+  "checksums": {
+    "ch01-master-v1.png": "e5169673719ac12ddb442a1b0c8e28560ca7aa97b195decb82ce5ed25f4d32ff",
+    "ch01-master-v2.png": "d0c9305f072cf37b6d4af5bd7e4d8252d23c83c65a6b734d2586e59fbb04bd63",
+    "ch01-atlas-v1.webp": "ec2d3c48e3715450b4aefd6757dd0b49236437f699ac719c07e03c45360be430"
+  },
+  "verificationLimits": [
+    "Asset-only inspection and pixel analysis do not certify game integration.",
+    "Combat animation transitions and fire timing still require real gameplay verification.",
+    "No iPhone performance or memory measurement has been performed for this atlas."
+  ]
+}

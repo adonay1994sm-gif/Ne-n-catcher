@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-15**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-16**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -20,10 +20,10 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Jugabilidad | 0/40 (0.0%) | 40 | 0 | 0 | 0 |
 | Campaña clásica | 0/6 (0.0%) | 5 | 1 | 0 | 0 |
 | Campaña N-7 | 0/38 (0.0%) | 38 | 0 | 0 | 0 |
-| Enemigos | 0/72 (0.0%) | 72 | 0 | 0 | 0 |
+| Enemigos | 0/72 (0.0%) | 69 | 0 | 0 | 3 |
 | Jefes | 0/12 (0.0%) | 12 | 0 | 0 | 0 |
-| Assets | 0/163 (0.0%) | 148 | 2 | 1 | 12 |
-| Animaciones | 0/137 (0.0%) | 127 | 0 | 0 | 10 |
+| Assets | 0/163 (0.0%) | 145 | 2 | 1 | 15 |
+| Animaciones | 0/137 (0.0%) | 124 | 0 | 0 | 13 |
 | Narrativa | 0/16 (0.0%) | 16 | 0 | 0 | 0 |
 | Audio | 0/14 (0.0%) | 13 | 0 | 1 | 0 |
 | Interfaz | 0/13 (0.0%) | 11 | 2 | 0 | 0 |
@@ -37,7 +37,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | --- | --- | --- |
 | 03 · Prueba integrada y cierre técnico | 0/20 (0.0%) | PENDING: 8 · IN_PROGRESS: 11 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
 | 04 · Jugabilidad procedural | 0/17 (0.0%) | PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 0/163 (0.0%) | PENDING: 150 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0 |
+| 05 · Producción visual y 150 assets | 0/163 (0.0%) | PENDING: 147 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 15 · DONE: 0 |
 | 06 · Diez jefes | 0/10 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/13 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
@@ -46,7 +46,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 9; PLANNED: 138; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 12; PLANNED: 135; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-15",
+  "updatedAt": "2026-10-16",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -307,7 +307,59 @@
     "catalog": "ASSET_PRODUCTION_150.json",
     "expectedCount": 150,
     "defaultState": "PENDING",
-    "overrides": {},
+    "overrides": {
+      "gaia-ch01-move": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/enemies/ch01/ch01-master-v2.png",
+          "art-source/enemies/ch01/ch01-atlas-v1.webp",
+          "art-source/enemies/ch01/ch01-atlas-v1.json"
+        ],
+        "tests": [
+          "python3 art-source/enemies/ch01/verify-ch01.py"
+        ],
+        "evidence": [
+          "art-source/enemies/ch01/ch01-validation.json"
+        ],
+        "openErrors": [
+          "Pendiente integración y verificación visual dentro del combate."
+        ]
+      },
+      "gaia-ch01-attack": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/enemies/ch01/ch01-master-v2.png",
+          "art-source/enemies/ch01/ch01-atlas-v1.webp",
+          "art-source/enemies/ch01/ch01-atlas-v1.json"
+        ],
+        "tests": [
+          "python3 art-source/enemies/ch01/verify-ch01.py"
+        ],
+        "evidence": [
+          "art-source/enemies/ch01/ch01-validation.json"
+        ],
+        "openErrors": [
+          "Pendiente integración y verificación visual dentro del combate."
+        ]
+      },
+      "gaia-ch01-destroy": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/enemies/ch01/ch01-master-v2.png",
+          "art-source/enemies/ch01/ch01-atlas-v1.webp",
+          "art-source/enemies/ch01/ch01-atlas-v1.json"
+        ],
+        "tests": [
+          "python3 art-source/enemies/ch01/verify-ch01.py"
+        ],
+        "evidence": [
+          "art-source/enemies/ch01/ch01-validation.json"
+        ],
+        "openErrors": [
+          "Pendiente integración y verificación visual dentro del combate."
+        ]
+      }
+    },
     "note": "Se genera una tarea A001–A150 por sequence. Catálogo READY/IN_REVIEW/IMPLEMENTED_CODE pasa a IN_REVIEW por defecto; nunca a DONE. Un cambio se registra en overrides por asset.id, con commit, tests y evidence."
   },
   "tasks": [

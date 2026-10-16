@@ -723,8 +723,14 @@
       "pivot": "0.5,0.5",
       "level": "1-2",
       "priority": "P1",
-      "status": "PLANNED",
-      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg"
+      "status": "IN_REVIEW",
+      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg",
+      "master": "art-source/enemies/ch01/ch01-master-v2.png",
+      "runtimeCandidate": "art-source/enemies/ch01/ch01-atlas-v1.webp",
+      "animationMetadata": "art-source/enemies/ch01/ch01-atlas-v1.json",
+      "integrated": false,
+      "review": "Arte real de 24 poses producido; pendiente de integración y QA de combate.",
+      "provenance": "docs/art/CH01_PROVENANCE.md"
     },
     {
       "sequence": 45,
@@ -739,8 +745,14 @@
       "pivot": "0.5,0.5",
       "level": "1-2",
       "priority": "P2",
-      "status": "PLANNED",
-      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg"
+      "status": "IN_REVIEW",
+      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg",
+      "master": "art-source/enemies/ch01/ch01-master-v2.png",
+      "runtimeCandidate": "art-source/enemies/ch01/ch01-atlas-v1.webp",
+      "animationMetadata": "art-source/enemies/ch01/ch01-atlas-v1.json",
+      "integrated": false,
+      "review": "Arte real de 24 poses producido; pendiente de integración y QA de combate.",
+      "provenance": "docs/art/CH01_PROVENANCE.md"
     },
     {
       "sequence": 46,
@@ -755,8 +767,14 @@
       "pivot": "0.5,0.5",
       "level": "1-2",
       "priority": "P2",
-      "status": "PLANNED",
-      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg"
+      "status": "IN_REVIEW",
+      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg",
+      "master": "art-source/enemies/ch01/ch01-master-v2.png",
+      "runtimeCandidate": "art-source/enemies/ch01/ch01-atlas-v1.webp",
+      "animationMetadata": "art-source/enemies/ch01/ch01-atlas-v1.json",
+      "integrated": false,
+      "review": "Arte real de 24 poses producido; pendiente de integración y QA de combate.",
+      "provenance": "docs/art/CH01_PROVENANCE.md"
     },
     {
       "sequence": 47,
