@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-16T14:30:54.306Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-16T14:36:07.573Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -28,14 +28,14 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
 | Interfaz | 4/13 (30.8%) | 8 | 0 | 0 | 1 |
 | Rendimiento | 1/12 (8.3%) | 11 | 0 | 0 | 0 |
-| QA | 16/45 (35.6%) | 18 | 2 | 5 | 4 |
+| QA | 17/45 (37.8%) | 18 | 2 | 5 | 3 |
 | Preparación iOS | 0/19 (0.0%) | 13 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 16/20 (80.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 2 · DONE: 16 |
+| 03 · Prueba integrada y cierre técnico | 17/20 (85.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 17 |
 | 04 · Jugabilidad procedural | 0/17 (0.0%) | PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 05 · Producción visual y 150 assets | 5/163 (3.1%) | PENDING: 140 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 17 · DONE: 5 |
 | 06 · Diez jefes | 0/10 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |

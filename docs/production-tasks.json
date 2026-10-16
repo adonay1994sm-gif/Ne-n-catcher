@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T14:30:54.306Z",
+  "updatedAt": "2026-10-16T14:36:07.573Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -741,7 +741,7 @@
       "block": "03",
       "name": "Verificar caché y service worker en navegador real",
       "priority": "CRITICAL",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -750,19 +750,19 @@
       ],
       "files": [
         "scripts/build-preview.mjs",
-        "scripts/preview-offline-smoke.cjs"
+        "scripts/preview-offline-smoke.cjs",
+        "scripts/preview-sw-upgrade-smoke.cjs"
       ],
       "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
       "tests": [
-        "node scripts/preview-offline-smoke.cjs:offline-01 y offline-02 passed,exit0,4pasos reales por ejecución; activación,limpieza de cachés antiguas,aislamiento y navegación offline de ambos modos"
+        "Real offline browser: 4/4, exit 0",
+        "Real Chromium SW synthetic revision upgrade: 3/3, exit 0"
       ],
       "evidence": [
-        "docs/production-reports/evidence/block-03/offline-01/results.json",
-        "docs/production-reports/evidence/block-03/offline-02/results.json"
+        "docs/production-reports/evidence/block-05/offline-ch01-01/results.json",
+        "docs/production-reports/evidence/block-03/sw-upgrade-03/results.json"
       ],
-      "openErrors": [
-        "La actualización de un worker activo entre dos revisiones reales sigue sin probar; se sembraron cachés antiguas sintéticas antes de instalar la revisión actual."
-      ],
+      "openErrors": [],
       "acceptance": [
         "Activación, recarga, offline y actualización funcionan con SW permitido; cachés ajenas se conservan."
       ]

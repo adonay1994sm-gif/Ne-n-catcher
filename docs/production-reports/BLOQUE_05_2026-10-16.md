@@ -5,8 +5,8 @@ Rama: `continuity-assets-audit-20261013`
 SHA inicial del lote: `7fe5a6d539ea7ead41a59bd4306f8f4bcc3f6c20`
 SHA del código integrado y publicado: `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4`
 Bloques trabajados: cierre local del 03 y lote CH-01 del 05.
-Tareas verificadas: 21/267 de la checklist; es cobertura de tareas, no porcentaje del juego.
-Tareas pendientes: 217 PENDING, 2 IN_PROGRESS, 7 BLOCKED y 20 IN_REVIEW.
+Tareas verificadas: 22/267 de la checklist; es cobertura de tareas, no porcentaje del juego.
+Tareas pendientes: 217 PENDING, 2 IN_PROGRESS, 7 BLOCKED y 19 IN_REVIEW.
 Pruebas aprobadas: 11/11 fases locales, 15/15 preview, 2/2 casos Chromium de ruta, 4/4 pasos offline y 4/4 pasos visuales controlados de CH-01.
 Pruebas fallidas: la primera certificación dio static/regresión fallidos por expectativa de nombre de caché obsoleta; la repetición final pasó. Un primer intento de la nueva prueba de integración falló por un error de la instrumentación y se corrigió.
 Assets integrados: atlas original CH-01, `assets/ch01_atlas_v1.webp`, 1024×1536, 24 fotogramas, 484 814 bytes.
@@ -62,7 +62,7 @@ El entorno no tiene `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID` ni herramienta Netli
 
 ## G. Estado y próximo bloque
 
-Checklist al redactar: 267 tareas, 21 DONE, 20 IN_REVIEW, 217 PENDING, 2 IN_PROGRESS, 7 BLOCKED. `B05-03/04/05/06/08` están verificados; `B05-07/09` quedan en revisión por combate natural, audio propio y Gaia clásica. `B03-17` incluye ZIP probado; `B03-18` (URL Netlify) bloqueado por acceso externo. `B03-12/19` requieren actualización de SW e instalación PWA real. Campaña clásica de 10 niveles y N-7 de 100 rutas siguen, pero no equivalen a 100 niveles terminados con jefes, historia y sonido.
+Checklist al redactar: 267 tareas, 22 DONE, 19 IN_REVIEW, 217 PENDING, 2 IN_PROGRESS, 7 BLOCKED. `B05-03/04/05/06/08` están verificados; `B05-07/09` quedan en revisión por combate natural, audio propio y Gaia clásica. `B03-17` incluye ZIP probado; `B03-18` (URL Netlify) bloqueado por acceso externo. `B03-12` ya pasó actualización controlada de SW; `B03-19` requiere instalación PWA real. Campaña clásica de 10 niveles y N-7 de 100 rutas siguen, pero no equivalen a 100 niveles terminados con jefes, historia y sonido.
 
 Próximo ciclo: crear un smoke de Chromium para daño y destrucción CH-01 con evidencia visual; corregir si el atlas o tiempo de pose falla; validar la actualización de caché v1→v2; sólo después marcar las fichas gráficas listas. Después versionar una mejora procedural sin alterar `n7-waves-v2` y preparar el primer jefe. Netlify remoto requiere acceso a un sitio de prueba; Safari/iPhone físico y memoria/FPS siguen pendientes.
 
@@ -96,3 +96,10 @@ Carga decodificada del atlas ~6 MiB; se debe medir memoria en un iPhone. `n7-wav
 El nuevo `scripts/ch01-browser-smoke.cjs` sirve `preview-dist` sin modificarlo, detiene el RAF legacy mediante su puente existente, aísla un tirador realmente generado en la ruta 37 y adelanta fotogramas de forma controlada. La ejecución `evidence/block-05/ch01-visual-browser-04/results.json` pasó **4/4, exit 0**: vuelo, ataque con proyectil, herida tras el primer disparo y destrucción tras el segundo con recompensa única. Capturas reales de Canvas: `ch01-attack.png`, `ch01-hurt.png` y `ch01-destroy.png` en ese mismo directorio; se inspeccionaron visualmente. La prueba no altera el bundle distribuido ni crea un segundo RAF.
 
 Los intentos previos se conservan: `ch01-visual-browser-01` falló antes de iniciar por ruta de Chromium no especificada; `-02` llegó al navegador pero no desbloqueó la ruta 37; `-03` aprobó con el enemigo en un extremo de pantalla; `-04` aprobó con un encuadre centrado para inspección. El escenario coloca temporalmente al enemigo y a la nave en el centro después de generarlo; por ello es una prueba visual controlada, **no** una partida natural ni una certificación de equilibrio. Los assets CH-01 continúan `IN_REVIEW` por Gaia clásica e iPhone.
+
+
+## O. Actualización de service workers — 2026-10-16 UTC
+
+`scripts/preview-sw-upgrade-smoke.cjs` copia la preview limpia `9d28569` a un directorio temporal, instala ambos service workers en Chromium y sustituye **solo en esa copia** su revisión por otra huella SHA-256. `evidence/block-03/sw-upgrade-03/results.json` pasó **3/3, exit 0**: ambos workers nuevos llegaron a `activated`, las cachés antiguas propias desaparecieron, una caché ajena sobrevivió y selector/juego abrieron sin red. No se modificó el ZIP original ni el código del juego. Esta prueba es una actualización controlada en Chromium, no instalación de PWA en iPhone.
+
+Se conservan las ejecuciones fallidas `sw-upgrade-01` y `sw-upgrade-02`: la aserción consultaba las cachés cuando los workers todavía estaban en `activating` y veía simultáneamente revisión antigua y nueva. La corrección del **script de QA** espera activación, recarga y estado estable; no hubo fallo funcional demostrado del service worker ni cambio de producto. `B03-12` pasa a DONE; `B03-19` sigue IN_REVIEW hasta instalación PWA real.
