@@ -72,7 +72,7 @@ Se actualizó el contrato de caché en ambas suites al añadir el nuevo recurso.
 
 ## I. Commit y estado remoto
 
-El commit funcional `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4` se subió mediante push normal a `continuity-assets-audit-20261013`. El ZIP, la prueba ampliada y este informe se publicaron en `b6af9b8c06345066624cc7168442de2f9ca496d3`; la prueba visual controlada se publicará en un commit posterior. Consultar `git log -2 --format='%H %s'` y `git ls-remote --heads origin continuity-assets-audit-20261013` para el SHA exacto de ese cierre; un documento versionado no puede incluir su propio SHA sin crear otro commit.
+El commit funcional `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4` se subió mediante push normal a `continuity-assets-audit-20261013`. El ZIP, la prueba ampliada y este informe se publicaron en `b6af9b8c06345066624cc7168442de2f9ca496d3`; la prueba visual controlada se publicó en `c8b31e490980e248e918b86eee4343f04c0446fe`. Consultar `git log -2 --format='%H %s'` y `git ls-remote --heads origin continuity-assets-audit-20261013` para el SHA exacto de ese cierre; un documento versionado no puede incluir su propio SHA sin crear otro commit.
 
 ## J. Netlify
 
@@ -102,4 +102,4 @@ Los intentos previos se conservan: `ch01-visual-browser-01` falló antes de inic
 
 `scripts/preview-sw-upgrade-smoke.cjs` copia la preview limpia `9d28569` a un directorio temporal, instala ambos service workers en Chromium y sustituye **solo en esa copia** su revisión por otra huella SHA-256. `evidence/block-03/sw-upgrade-03/results.json` pasó **3/3, exit 0**: ambos workers nuevos llegaron a `activated`, las cachés antiguas propias desaparecieron, una caché ajena sobrevivió y selector/juego abrieron sin red. No se modificó el ZIP original ni el código del juego. Esta prueba es una actualización controlada en Chromium, no instalación de PWA en iPhone.
 
-Se conservan las ejecuciones fallidas `sw-upgrade-01` y `sw-upgrade-02`: la aserción consultaba las cachés cuando los workers todavía estaban en `activating` y veía simultáneamente revisión antigua y nueva. La corrección del **script de QA** espera activación, recarga y estado estable; no hubo fallo funcional demostrado del service worker ni cambio de producto. `B03-12` pasa a DONE; `B03-19` sigue IN_REVIEW hasta instalación PWA real.
+Se conservan las ejecuciones fallidas `sw-upgrade-01` y `sw-upgrade-02`: la aserción consultaba las cachés cuando los workers todavía estaban en `activating` y veía simultáneamente revisión antigua y nueva. La corrección del **script de QA** espera activación, recarga y estado estable; no hubo fallo funcional demostrado del service worker ni cambio de producto. `B03-12` pasa a DONE; `B03-19` sigue IN_REVIEW hasta instalación PWA real. El script y la evidencia de esta actualización se publicaron en `d084713e18e18164021d63ed98b10235498c5ca5`.
