@@ -1,0 +1,16 @@
+{
+  "package": "docs/production-reports/evidence/block-03/neon-catcher-preview-9d28569.zip",
+  "sha256": "89786c8540c94558e0657c9644556f9db2eb5ed600be2dfa69cc164dcbcd21f2",
+  "bytes": 1825986,
+  "files": 95,
+  "sourceCommit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+  "sourceTree": "2fadb69a69f771942c2aa3fe1fd6c908ce36dee1",
+  "dirty": false,
+  "rootEntry": "index.html",
+  "gameEntries": [
+    "juego/index.html",
+    "juego/index.html?campaign=n7"
+  ],
+  "remoteDeployment": "not performed",
+  "browserEvidence": "docs/production-reports/evidence/block-05/browser-ch01-01/results.json (pending at archive creation)"
+}

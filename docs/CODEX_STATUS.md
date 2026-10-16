@@ -1,4 +1,12 @@
-## Producción en curso — 2026-10-16 UTC
+## Integración CH-01 y preview comprobada — 2026-10-16 UTC
+
+La rama autorizada publicó `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4`: el atlas CH-01 de 24 fotogramas ya sustituye al meteorito de los tiradores N-7, con disparo ligado al fotograma, daño y destrucción. El inventario runtime pasa de 58 a 59 archivos sin inconsistencias. La certificación posterior pasó 11/11 fases; Chromium sobre la preview limpia de ese SHA aprobó 2/2 casos, incluida la ruta 37 completa, y offline aprobó 4/4. ZIP experimental y SHA-256 en `production-reports/evidence/block-03/preview-package-9d28569.json`. Falta captura real de impacto/destrucción, Gaia clásica, Netlify autenticado y Safari/iPhone físico. Informe técnico vigente: `PRODUCTION_LATEST_REPORT.md`.
+
+Checklist actual: 19 DONE, 22 IN_REVIEW, 217 PENDING, 2 IN_PROGRESS y 7 BLOCKED de 267 tareas. No equivale a porcentaje del videojuego terminado. No existe URL N-7 desplegada; el ZIP es sólo una construcción local. `USE_ENGINE_V1 = false`.
+
+---
+
+## Producción anterior — 2026-10-16 UTC
 
 Bloque 03: Chromium real sobre `preview-dist` aprobado **7/7, exit 0** en 390×844, 320×568 y 844×390, dos campañas. La séptima sesión terminó la ruta N-7 37 con enemigos, proyectiles móviles y guardado persistente tras recarga. Dos ejecuciones con service workers reales aprobaron **4/4 cada una, exit 0**: selector y ambas campañas offline. Evidencia JSON y capturas en `docs/production-reports/evidence/block-03/browser-preview-01/` y `offline-01/`, `offline-02/`. La prueba física de iPhone y el despliegue Netlify siguen pendientes. No hay URL N-7 verificada.
 

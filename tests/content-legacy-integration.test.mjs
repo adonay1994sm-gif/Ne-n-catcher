@@ -26,6 +26,11 @@ function harness(unlocked = 1) {
     : key === 'createLinearGradient' || key === 'createRadialGradient' ? () => gradient
     : key === 'measureText' ? () => ({width: 20}) : () => {},
     set(target, key, value) { target[key] = value; return true; }});
+  const atlasDraws = [];
+  ctx.drawImage = (image, ...arguments_) => {
+    if (image?.path === 'assets/ch01_atlas_v1.webp') atlasDraws.push(arguments_);
+  };
+  window.__ATLAS_DRAWS__ = atlasDraws;
   window.HTMLCanvasElement.prototype.getContext = () => ctx;
   window.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({left: 0, top: 0, width: 390, height: 844});
   const pending = new Map(); let id = 0;
@@ -44,8 +49,12 @@ function harness(unlocked = 1) {
   assert.ok(game.includes(marker));
   window.eval(game.replace(marker, `
   window.__N7_TEST__ = {
-    startLevel, update, pauseGame, resumeGame, fireManualShot,
-    snapshot: () => ({state,hull,collected,ammo,currentLevel,elapsed,energySpawned,energyBudget,
+    startLevel, update, render, pauseGame, resumeGame, fireManualShot,
+    atlasDraws: () => window.__ATLAS_DRAWS__,
+    shooter: () => items.find(item => item.n7?.ch01Animator),
+    isolateShooter(item) { items = [item]; player.x = player.target = item.x; },
+    explosions: () => explosions,
+    snapshot: () => ({state,hull,collected,ammo,score,currentLevel,elapsed,energySpawned,energyBudget,
       directorTime:encounterDirector?.elapsed,cursor:encounterDirector?.cursor,
       finished:encounterDirector?.finished,levelCount:LEVELS.length,
       seed:encounterDirector?.plan.seed,version:encounterDirector?.plan.version,
@@ -156,5 +165,44 @@ test('N-7 labels routes and shows wave progress independently of debris warnings
     assert.ok(!h.window.document.getElementById('hazardWarning').classList.contains('show'));
     h.api.startLevel(36);
     assert.match(progress.querySelector('em').textContent, /^0\/[6-8]$/);
+  } finally { h.dom.window.close(); }
+});
+
+test('legacy shots damage and destroy CH-01 while rendering distinct atlas frames', () => {
+  const h = harness(100);
+  try {
+    h.api.startLevel(36);
+    let shooter;
+    for (let frame = 0; frame < 1600; frame++) {
+      shooter = h.api.shooter();
+      if (shooter?.y > 60) break;
+      h.api.update(1 / 60);
+    }
+    assert.ok(shooter?.n7.ch01Animator, 'Route 37 must spawn an animated shooter');
+    h.api.isolateShooter(shooter);
+    h.api.render(0);
+    assert.ok(h.api.atlasDraws().some(draw => draw[2] === 256 && draw[3] === 256),
+      'The real legacy renderer must draw a 256px authored frame');
+    assert.equal(h.api.fireManualShot(), true);
+    assert.equal(shooter.hp, 1);
+    assert.equal(shooter.n7.ch01Animator.getFrame().state, 'hurt');
+    const hurt = shooter.n7.ch01Animator.getFrame().rect;
+    h.api.render(.5);
+    assert.ok(h.api.atlasDraws().some(draw => draw[0] === hurt.x && draw[1] === hurt.y),
+      'The hit pose must be drawn from its own atlas row');
+    for (let frame = 0; frame < 20; frame++) h.api.update(1 / 60);
+    h.api.isolateShooter(shooter);
+    const beforeReward = h.api.snapshot().score;
+    assert.equal(h.api.fireManualShot(), true);
+    assert.equal(shooter.hp, 0);
+    assert.equal(shooter.n7.ch01Animator.getFrame().state, 'destroy');
+    assert.ok(h.api.explosions().some(explosion => explosion.ch01Animator === shooter.n7.ch01Animator));
+    assert.equal(h.api.snapshot().score - beforeReward, 10);
+    h.api.render(1);
+    const destroyed = shooter.n7.ch01Animator.getFrame().rect;
+    assert.ok(h.api.atlasDraws().some(draw => draw[0] === destroyed.x && draw[1] === destroyed.y),
+      'Destruction draws its atlas frame after removing the entity');
+    for (let frame = 0; frame < 40; frame++) h.api.update(1 / 60);
+    assert.equal(h.api.snapshot().score, beforeReward + 10, 'Reward is granted only once');
   } finally { h.dom.window.close(); }
 });

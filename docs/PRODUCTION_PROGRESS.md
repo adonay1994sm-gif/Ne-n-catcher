@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-16**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-16T14:25:15.672Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -17,27 +17,27 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/9 (22.2%) | 7 | 0 | 0 | 0 |
-| Jugabilidad | 4/40 (10.0%) | 36 | 0 | 0 | 0 |
+| Jugabilidad | 5/40 (12.5%) | 33 | 0 | 0 | 2 |
 | Campaña clásica | 3/6 (50.0%) | 3 | 0 | 0 | 0 |
 | Campaña N-7 | 2/38 (5.3%) | 36 | 0 | 0 | 0 |
-| Enemigos | 1/72 (1.4%) | 68 | 0 | 0 | 3 |
+| Enemigos | 3/72 (4.2%) | 63 | 0 | 0 | 6 |
 | Jefes | 0/12 (0.0%) | 12 | 0 | 0 | 0 |
-| Assets | 1/163 (0.6%) | 145 | 1 | 1 | 15 |
-| Animaciones | 0/137 (0.0%) | 124 | 0 | 0 | 13 |
+| Assets | 2/163 (1.2%) | 143 | 1 | 1 | 16 |
+| Animaciones | 3/137 (2.2%) | 117 | 0 | 0 | 17 |
 | Narrativa | 0/16 (0.0%) | 16 | 0 | 0 | 0 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
 | Interfaz | 4/13 (30.8%) | 8 | 0 | 0 | 1 |
 | Rendimiento | 1/12 (8.3%) | 11 | 0 | 0 | 0 |
-| QA | 14/45 (31.1%) | 19 | 3 | 5 | 4 |
+| QA | 16/45 (35.6%) | 18 | 2 | 5 | 4 |
 | Preparación iOS | 0/19 (0.0%) | 13 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 14/20 (70.0%) | PENDING: 0 · IN_PROGRESS: 2 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 14 |
+| 03 · Prueba integrada y cierre técnico | 16/20 (80.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 2 · DONE: 16 |
 | 04 · Jugabilidad procedural | 0/17 (0.0%) | PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 0/163 (0.0%) | PENDING: 147 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 15 · DONE: 0 |
+| 05 · Producción visual y 150 assets | 3/163 (1.8%) | PENDING: 140 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 19 · DONE: 3 |
 | 06 · Diez jefes | 0/10 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/13 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |

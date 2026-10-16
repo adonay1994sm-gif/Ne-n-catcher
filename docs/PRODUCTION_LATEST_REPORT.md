@@ -1,67 +1,91 @@
 # INFORME DE PRODUCCIÓN — NEON CATCHER
 
-Fecha: 2026-10-16 UTC  
-Rama: `continuity-assets-audit-20261013`  
-SHA inicial: `f5b486ccfcdc56319417c33d7fa9282708ed6d64`  
-SHA verificado al redactar: `dbb0fa470ca397c9054ac69f58dc7219ba7b48b4`  
-Bloques trabajados: 03 (preview integrada), 05 (primer lote de arte CH-01, en revisión).  
-Tareas verificadas: 14/267 en `production-tasks.json`; esta fracción mide la checklist, no el porcentaje de producto.  
-Tareas pendientes: 224 PENDING, 3 IN_PROGRESS, 7 BLOCKED, 19 IN_REVIEW.  
-Pruebas aprobadas: certificación local de 11 fases, preview 15/15, Chromium preview 7/7, offline 4/4 dos veces, animador 9/9.  
-Pruebas fallidas: audio 2/3 antes de corregir; 0 fallidas en las ejecuciones finales citadas.  
-Assets integrados: 0 nuevos; atlas CH-01 producido, optimizado y publicado, todavía sin conexión a la campaña.  
-Estado Netlify: sin nuevo deploy autenticado ni URL N-7 comprobada.  
-Estado general: Bloque 03 aprobado en navegador local, pendiente de paquete limpio/Netlify/iPhone; juego completo no certificado.  
-Próxima prioridad: integrar CH-01 con ataque, daño y destrucción, repetir QA y publicar; después preparar preview aislada.
+Fecha: 2026-10-16 UTC
+Rama: `continuity-assets-audit-20261013`
+SHA inicial del lote: `7fe5a6d539ea7ead41a59bd4306f8f4bcc3f6c20`
+SHA del código integrado y publicado: `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4`
+Bloques trabajados: cierre local del 03 y lote CH-01 del 05.
+Tareas verificadas: 19/267 de la checklist; es cobertura de tareas, no porcentaje del juego.
+Tareas pendientes: 217 PENDING, 2 IN_PROGRESS, 7 BLOCKED y 22 IN_REVIEW.
+Pruebas aprobadas: 11/11 fases locales, 15/15 preview, 2/2 casos Chromium y 4/4 pasos offline.
+Pruebas fallidas: la primera certificación dio static/regresión fallidos por expectativa de nombre de caché obsoleta; la repetición final pasó. Un primer intento de la nueva prueba de integración falló por un error de la instrumentación y se corrigió.
+Assets integrados: atlas original CH-01, `assets/ch01_atlas_v1.webp`, 1024×1536, 24 fotogramas, 484 814 bytes.
+Estado Netlify: paquete local ZIP listo; no se ha desplegado ni verificado URL remota.
+Estado general: CH-01 jugable como tirador N-7 en revisión visual; Gaia clásica, Safari/iPhone y el resto del juego siguen pendientes.
+Próxima prioridad: capturar impacto y destrucción en Chromium, integrar CH-01 en Gaia si el diseño lo requiere, y resolver la preview aislada autenticada.
 
 ## A. Diagnóstico previo
 
-Se recibió `f5b486c` por avance rápido de la rama autorizada, con Art Pass A ya incorporado. La preview necesitaba verificar selector, dos campañas, hashes, cachés separados y service workers reales. El efecto de sonido podía quedar mudo después de ocultar/reanudar la página si música estaba a cero. El botón de pausa y el modal en horizontal presentaban problemas de legibilidad. El catálogo declaraba CH-01 pendiente de arte definitivo.
+El atlas CH-01 y su animador estaban publicados, pero el juego real todavía utilizaba un meteorito grande para todos los tiradores N-7. El inventario de ejecución tenía 58 recursos. La ficha del catálogo CH-01 conservaba dimensiones del boceto antiguo (1536×384) y el SW precargaba únicamente los recursos anteriores. La preview del Bloque 03 ya había pasado Chromium 7/7 y offline 4/4 en la versión anterior; Netlify e iPhone físico continuaban sin prueba.
 
 ## B. Trabajo ejecutado e integraciones
 
-- `scripts/build-preview.mjs`, `preview/launcher.html`, `netlify.toml`, manifiesto y SW de preview: selector PWA instalable, scopes separados y procedencia mediante `build-info.json`. La entrada normal abre la campaña clásica; `?campaign=n7` abre N-7. No se activó Engine V1.
-- `src/game/02-audio-and-effects.js` y `src/game/08-loop-input-bootstrap.js`: reanudan efectos aunque música esté silenciada; bundles derivados se regeneraron. `styles.css` e `index.html`: pausa SVG y panel utilizable en horizontal.
-- `scripts/content-browser-smoke.cjs` y `scripts/preview-offline-smoke.cjs`: QA de navegador con estado del juego, RAF, recursos, solicitudes, guardados y capturas. El segundo ejecuta los service workers reales.
-- `art-source/enemies/ch01/`: master PNG, atlas WebP y metadatos de 24 fotogramas; `src/game/animation/ch01-animator.js` lee esos metadatos, resuelve estados, cancelación de ataque, evento de disparo y destrucción. Actualmente está aislado y **todavía no dibuja ni ataca en la campaña**.
-- `docs/production-tasks.json` genera `PRODUCTION_MASTER_CHECKLIST.md` y `PRODUCTION_PROGRESS.md` con campos, estados y evidencias; no usa porcentajes subjetivos.
+- `src/game/progression/encounter-director.js`: cada tirador N-7 instancia el animador CH-01. El ataque solicita la animación cuando llega la ventana telegráfica y crea el proyectil **solo** al evento `fire` de 160 ms. Un impacto antes de disparar cancela el ataque y programa otra advertencia. Se preservaron plan, semilla y versión `n7-waves-v2`; no se añadió RAF.
+- `src/game/01-runtime-assets.js` y `07-player-item-rendering.js`: atlas cargado de forma diferida, recorte del fotograma real según metadatos y fallback anterior durante la carga. La destrucción sigue dibujándose desde el atlas después de retirar la entidad del juego.
+- `src/game/04-entities-collision-damage.js`: los disparos manuales y Phaser activan las poses de impacto y destrucción. El sistema existente otorga la puntuación una sola vez. `tests/content-legacy-integration.test.mjs` lo comprueba sobre el bundle real con Canvas simulado.
+- `ASSET_MANIFEST.json`, `sw.js` y tests static/regresión: inventario 59 recursos, 1 693 904 bytes, cache revisionado y precarga offline de CH-01. `ASSET_PRODUCTION_150.json` especifica atlas real, 24 poses compartidas y ámbito de integración actual: **tiradores N-7, no Gaia clásica**. Las tres fichas siguen `IN_REVIEW` por la QA visual pendiente.
+- `content-runtime.js`, `game.js` y copias `www/` e iOS se regeneraron desde fuentes. Engine V1 sigue desactivado.
 
 ## C. Archivos y assets
 
-Commits: `e1a7aa8` (preview, audio, CSS, QA y ledger), `9c86abd` (fuentes/atlas/metadatos CH-01, validación, procedencia), `dbb0fa4` (evidencias, animador CH-01 y pruebas). Consultar `git show --stat` de cada SHA para lista exhaustiva de rutas. El WebP `art-source/enemies/ch01/ch01-atlas-v1.webp` tiene 1024×1536 px, 24 celdas 256×256, 484 814 bytes comprimidos, alfa RGBA, pivote central y seis filas de poses reales. Master `ch01-master-v2.png` y procedencia en `docs/art/CH01_PROVENANCE.md`. La decodificación ocuparía ~6 MiB; aún no se carga en el juego.
+Código funcional y arte publicado en `9d28569`. Rutas principales: `src/game/progression/encounter-director.js`, `src/game/animation/ch01-animator.js`, `src/game/01-runtime-assets.js`, `src/game/04-entities-collision-damage.js`, `src/game/07-player-item-rendering.js`, `assets/ch01_atlas_v1.webp`, `ASSET_MANIFEST.json`, `sw.js`, `tests/procedural-runtime.test.mjs` y bundles derivados. El master y procedencia están en `art-source/enemies/ch01/` y `docs/art/CH01_PROVENANCE.md`; alfa preservada. Dimensión decodificada: ~6 MiB RGBA. El catálogo de 150 assets no se declara completado por este único atlas.
+
+La preview experimental se reconstruyó desde `9d28569` con `dirty:false`; se archivó el contenido de `preview-dist/` como `docs/production-reports/evidence/block-03/neon-catcher-preview-9d28569.zip` (1 825 986 bytes; 95 archivos, `index.html` en raíz). SHA-256: `89786c8540c94558e0657c9644556f9db2eb5ed600be2dfa69cc164dcbcd21f2`. Procedencia y lista de entradas: `evidence/block-03/preview-package-9d28569.json`. El ZIP no es un deploy.
 
 ## D. Pruebas y evidencia
 
-| Comando / artefacto | Resultado | Evidencia |
+| Comando o escenario | Resultado real | Evidencia |
 | --- | --- | --- |
-| `npm ci --cache /workspace/.cache/neon-npm --no-audit --no-fund` | exit 0 | `evidence/block-03/initial/npm-ci.txt` |
-| `node scripts/certify-local.mjs docs/production-reports/evidence/block-03/certification-01` | 11/11 fases, exit 0: build, engine 40, arquitectura 6, contenido 23, static 13, general 33, web 13, render/adaptadores 14, audio 3, visual 4, inventario 0 inconsistencias | `evidence/block-03/certification-01/results.json` |
-| `npm run build:preview && npm run test:preview` | build exit 0; preview 15/15 | `evidence/block-03/preview-build-01.txt`, `preview-tests-01.txt` |
-| `node scripts/content-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/block-03/browser-preview-01 --combat` | Chromium 154, 7/7, exit 0, 435 758 ms | `evidence/block-03/browser-preview-01/results.json`, capturas PNG |
-| `node scripts/preview-offline-smoke.cjs` | Chromium 154, 4/4, exit 0, dos ejecuciones | `evidence/block-03/offline-01/`, `offline-02/` |
-| `node --test --test-isolation=none tests/ch01-animation.test.mjs` | 9/9, exit 0 | `evidence/block-03/ch01-animation.txt` |
-| `node scripts/update-production-progress.mjs --check`, `git diff --check` | exit 0 | salida de consola del commit `dbb0fa4` |
+| `node scripts/audit-asset-inventory.mjs` | exit 0, 59 recursos, 0 inconsistencias, 1 693 904 bytes | `evidence/block-05/certification-03/inventory.txt` |
+| `node --test --test-isolation=none tests/ch01-animation.test.mjs tests/procedural-runtime.test.mjs` | 17/17, exit 0; luego procedural 9/9 tras nueva prueba | consola de trabajo; `certification-03/content-integration-assets.txt` |
+| `node scripts/certify-local.mjs .../certification-01` | exit 1: static/regresión fallaron por nombre de caché esperado | `evidence/block-05/certification-01/results.json` |
+| `node scripts/certify-local.mjs .../certification-02` | exit 0, 11/11 fases | `evidence/block-05/certification-02/results.json` |
+| `node scripts/certify-local.mjs .../certification-03` | exit 0, 11/11 fases: build, engine 40, arquitectura 6, contenido 25, static 13, general 33, web 13, adicionales 14, audio 3, visual 4, inventario sin errores | `evidence/block-05/certification-03/results.json` |
+| `npm run build:preview && npm run test:preview` | exit 0; preview 15/15; SHA `9d28569`, dirty false | `preview-dist/build-info.json`, paquete ZIP |
+| `node scripts/content-browser-smoke.cjs --root preview-dist --output .../browser-ch01-01 --profile 390x844 --mode n7 --combat` | Chromium 154, 2/2, exit 0; ruta 37 completada y guardada, proyectiles y sprite CH-01 visible | `evidence/block-05/browser-ch01-01/results.json` y PNG |
+| `node scripts/preview-offline-smoke.cjs --root preview-dist --output .../offline-ch01-01` | Chromium con SW reales, 4/4, exit 0 | `evidence/block-05/offline-ch01-01/results.json` |
+| `node --test --test-isolation=none --test-name-pattern='legacy shots' tests/content-legacy-integration.test.mjs` | exit 0; hit, fotograma, destrucción y recompensa única | incluido también en contenido 25/25 de `certification-03` |
+| `npm run test:content` tras reconciliar el catálogo CH-01 | 25/25, exit 0 | `evidence/block-05/content-after-catalog.txt` |
+| `node scripts/update-production-progress.mjs --check` y `git diff --check` | exit 0 | consola de cierre |
 
-Los 7 casos cubren ambos modos a 390×844, 320×568 y 844×390, y una partida adicional N-7 de la ruta 37 hasta completar el objetivo. Esa partida observó enemigos, proyectil móvil, avance del director, ruta 38 desbloqueada y guardado N-7 persistente tras recarga, sin contaminar la clave clásica. Máximo un RAF pendiente. El tiempo RAF puede retroceder brevemente al reanudar, pero el delta efectivo quedó acotado en cero; no se produjo excepción. Captura horizontal revisada: controles del modal visibles.
+Los conteos de suites se solapan; no se suman como número total de pruebas únicas. En Chromium se observó el WebP cargado a 1024×1536, sprite CH-01 real, proyectil, avance del director, un solo RAF pendiente y guardado independiente. La prueba completa terminó la ruta 37 sin excepción. Las capturas de impacto y destrucción **todavía no existen**. La prueba de esas transiciones usa el bundle real con Canvas simulado y no sustituye una revisión visual en navegador.
 
-## E. Errores, correcciones y límites
+## E. Errores y correcciones
 
-El caso audio con música=0/efectos>0 falló 2/3 antes de corregir y pasó 3/3 después. El runner local antiguo inyectaba `NODE_OPTIONS=--test-isolation=none` incompatible con este Node; se quitó la inyección y se repitieron 11 fases. El primer offline detectó un fallo de prueba en las aserciones del contexto SW, corregido en el script y repetido completo. La segunda ejecución registra un 404 de `/favicon.ico` al abrir el JSON auxiliar y un `ERR_INTERNET_DISCONNECTED` de una URL deliberadamente fuera de caché; ambos están en resultados, no se ocultan. Falta verificar una actualización SW v1→v2 y la instalación PWA real.
-
-El `build-info.json` probado localmente identifica el commit `e1a7aa8` con `dirty:true`, porque el paquete se generó con archivos de arte/documentación no confirmados en aquel momento. Los hashes de archivos fuente corresponden a ese paquete. **No representa una construcción limpia de `dbb0fa4`**. Tras integrar CH-01 habrá que reconstruir y repetir QA de la variante distribuible.
-
-Chromium emulado no certifica Safari/iPhone físico, FPS sostenidos, memoria ni las 100 rutas jugadas. CH-01 existe como atlas y módulo aislado, no como enemigo integrado. Los diez jefes, narrativa completa, audio final y 150 assets siguen pendientes. `USE_ENGINE_V1 = false`.
+Cambiar el nombre de caché para invalidar versiones previas rompió dos aserciones ancladas al nombre anterior. Se corrigieron las expectativas en `tests/run-static-tests.mjs` y `tests/run-tests.mjs`; dos certificaciones posteriores aprobaron. La primera ejecución de la nueva prueba de integración falló por una variable de instrumentación inaccesible dentro de JSDOM (`atlasDraws`), corregida exportándola únicamente al `window` de prueba. La prueba focal y la fase de contenido completa aprobaron. No se modificó el juego para encubrir las pruebas.
 
 ## F. GitHub y Netlify
 
-Los tres commits de este informe se publicaron exclusivamente en `continuity-assets-audit-20261013`; `git ls-remote` confirmó `9c86abd` antes de `dbb0fa4`, y el push de este último terminó con exit 0. No se modificó `main`, PR #3 ni la web de producción. La URL antigua de deploy-preview-3 corresponde a PR #3 y no muestra N-7. No hay credenciales Netlify ni nuevo sitio de prueba comprobado; por eso no se comunica URL de juego.
+Rama autorizada: `continuity-assets-audit-20261013`. Código integrado y QA de certificación publicados en `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4`; historial anterior de esta sesión `e1a7aa8`, `9c86abd`, `dbb0fa4`, `7fe5a6d`. Los cambios posteriores de test, catálogo, ledger, ZIP e informe se conservarán en un commit de documentación/QA separado. No hubo force push, cambio de `main` ni PR #3.
 
-## G. Próximo bloque y riesgos
+El entorno no tiene `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID` ni herramienta Netlify conectada. Por tanto **no hay URL de deploy N-7**, ni SHA remoto Netlify comprobable. La antigua URL de PR #3 pertenece a otro contexto. El ZIP se puede entregar a un sitio de prueba aislado mediante Netlify Drop o usar la configuración de la rama; no se usó producción.
 
-1. Integrar el atlas CH-01 en `assets/`, inventario, SW y render N-7, y conectar eventos de ataque/daño/destrucción al bucle legacy sin crear otro RAF. Conservar `n7-waves-v2` y su hash de reproducción.
-2. Ejecutar content, static, general, build, inventario, preview y Chromium representativo con ataque, daño y destrucción. Revisar sprite real en captura.
-3. Hacer commit y push; reconstruir un paquete limpio vinculado al SHA final y probarlo.
-4. Para Netlify: con credenciales de un sitio de prueba aislado, habilitar sólo esta rama con `NEON_PREVIEW_DEPLOY=1`, verificar URL, SHA, selector, scripts, caché, dos campañas y guardados. Si no hay acceso, entregar paquete verificable sin inventar deploy.
-5. Después pasar a mejora procedural versionada, jefes, historia, audio y QA físico iPhone.
+## G. Estado y próximo bloque
 
-Riesgos abiertos: 6 MiB decodificados del atlas CH-01 en memoria, cadencia fija y corredor inmóvil en `n7-waves-v2`, PWA update no ensayado, Safari sin dispositivo y versión remota Netlify ausente.
+Checklist al redactar: 267 tareas, 19 DONE, 22 IN_REVIEW, 217 PENDING, 2 IN_PROGRESS, 7 BLOCKED. `B05-03/04/08` están verificados; `B05-05/06/07/09` quedan en revisión por capturas de hit/destroy, audio propio y Gaia clásica. `B03-17` incluye ZIP probado; `B03-18` (URL Netlify) bloqueado por acceso externo. `B03-12/19` requieren actualización de SW e instalación PWA real. Campaña clásica de 10 niveles y N-7 de 100 rutas siguen, pero no equivalen a 100 niveles terminados con jefes, historia y sonido.
+
+Próximo ciclo: crear un smoke de Chromium para daño y destrucción CH-01 con evidencia visual; corregir si el atlas o tiempo de pose falla; validar la actualización de caché v1→v2; sólo después marcar las fichas gráficas listas. Después versionar una mejora procedural sin alterar `n7-waves-v2` y preparar el primer jefe. Netlify remoto requiere acceso a un sitio de prueba; Safari/iPhone físico y memoria/FPS siguen pendientes.
+
+## H. Correcciones y regresiones
+
+Se actualizó el contrato de caché en ambas suites al añadir el nuevo recurso. Se corrigió el alcance de la variable usada solo por JSDOM. La última batería volvió a ejecutar build, motor, arquitectura, 25 pruebas de contenido, 13 static, 33 generales, 13 web y auditoría de assets con códigos de salida cero. La fixture reproducible de ruta 37 mantiene su hash `n7-waves-v2`; ni la campaña clásica ni sus claves de guardado se alteraron.
+
+## I. Commit y estado remoto
+
+El commit funcional `9d28569fe13ecb1d7e6cd53693dc10ae580db9e4` se subió mediante push normal a `continuity-assets-audit-20261013`. El ZIP, la prueba ampliada y este informe se añaden en el siguiente commit de QA/documentación. Consultar `git log -2 --format='%H %s'` y `git ls-remote --heads origin continuity-assets-audit-20261013` para el SHA exacto de ese cierre; un documento versionado no puede incluir su propio SHA sin crear otro commit.
+
+## J. Netlify
+
+No se desplegó. La comprobación de entorno encontró token y site ID ausentes, así como CLI Netlify no disponible. El paquete ZIP es autocontenido con selector en su raíz y verificación SHA-256; la URL de la PR #3 no sirve para esta rama. Para publicar una prueba habrá que usar un sitio aislado autenticado y verificar respuesta, commit y ambos enlaces.
+
+## K. Estado de tareas
+
+El ledger conserva 267 tareas con estados permitidos. Las tareas marcadas DONE tienen evidencia de integración y ejecución; las de impacto/destrucción visual permanecen IN_REVIEW, y la URL remota es BLOCKED. El progreso no se extrapola a los 100 niveles artísticos, diez jefes, narrativa o audio.
+
+## L. Siguiente actuación técnica
+
+Preparar un escenario reproducible de Chromium que permita disparar dos veces a CH-01 y capture los estados hurt/destroy, manteniendo la campaña intacta. Actualizar después la revisión de los tres assets CH-01. Verificar SW actualización real y entregar el ZIP a un sitio experimental Netlify cuando haya acceso.
+
+## M. Riesgos abiertos
+
+Carga decodificada del atlas ~6 MiB; se debe medir memoria en un iPhone. `n7-waves-v2` conserva un corredor fijo y cadencia casi fija que pueden trivializar rutas. No hay prueba física Safari, instalación PWA iOS ni URL remota. El nuevo CH-01 está en N-7; los enemigos de Gaia de la campaña clásica aún no lo usan. No se activó Engine V1 y no hay segundo RAF.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16",
+  "updatedAt": "2026-10-16T14:25:15.672Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -319,16 +319,23 @@
         "files": [
           "art-source/enemies/ch01/ch01-master-v2.png",
           "art-source/enemies/ch01/ch01-atlas-v1.webp",
-          "art-source/enemies/ch01/ch01-atlas-v1.json"
+          "art-source/enemies/ch01/ch01-atlas-v1.json",
+          "assets/ch01_atlas_v1.webp",
+          "src/game/animation/ch01-animator.js"
         ],
         "tests": [
-          "python3 art-source/enemies/ch01/verify-ch01.py"
+          "python3 art-source/enemies/ch01/verify-ch01.py: exit 0",
+          "Animator: 9/9, exit 0",
+          "Legacy Canvas combat integration: pass",
+          "Chromium N-7 combat: 2/2, exit 0"
         ],
         "evidence": [
-          "art-source/enemies/ch01/ch01-validation.json"
+          "art-source/enemies/ch01/ch01-validation.json",
+          "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
+          "docs/production-reports/evidence/block-05/certification-03/results.json"
         ],
         "openErrors": [
-          "Pendiente integración y verificación visual dentro del combate."
+          "Integración en Gaia clásica pendiente; captura Chromium de hurt/destroy pendiente."
         ]
       },
       "gaia-ch01-attack": {
@@ -336,16 +343,23 @@
         "files": [
           "art-source/enemies/ch01/ch01-master-v2.png",
           "art-source/enemies/ch01/ch01-atlas-v1.webp",
-          "art-source/enemies/ch01/ch01-atlas-v1.json"
+          "art-source/enemies/ch01/ch01-atlas-v1.json",
+          "assets/ch01_atlas_v1.webp",
+          "src/game/animation/ch01-animator.js"
         ],
         "tests": [
-          "python3 art-source/enemies/ch01/verify-ch01.py"
+          "python3 art-source/enemies/ch01/verify-ch01.py: exit 0",
+          "Animator: 9/9, exit 0",
+          "Legacy Canvas combat integration: pass",
+          "Chromium N-7 combat: 2/2, exit 0"
         ],
         "evidence": [
-          "art-source/enemies/ch01/ch01-validation.json"
+          "art-source/enemies/ch01/ch01-validation.json",
+          "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
+          "docs/production-reports/evidence/block-05/certification-03/results.json"
         ],
         "openErrors": [
-          "Pendiente integración y verificación visual dentro del combate."
+          "Integración en Gaia clásica pendiente; captura Chromium de hurt/destroy pendiente."
         ]
       },
       "gaia-ch01-destroy": {
@@ -353,16 +367,23 @@
         "files": [
           "art-source/enemies/ch01/ch01-master-v2.png",
           "art-source/enemies/ch01/ch01-atlas-v1.webp",
-          "art-source/enemies/ch01/ch01-atlas-v1.json"
+          "art-source/enemies/ch01/ch01-atlas-v1.json",
+          "assets/ch01_atlas_v1.webp",
+          "src/game/animation/ch01-animator.js"
         ],
         "tests": [
-          "python3 art-source/enemies/ch01/verify-ch01.py"
+          "python3 art-source/enemies/ch01/verify-ch01.py: exit 0",
+          "Animator: 9/9, exit 0",
+          "Legacy Canvas combat integration: pass",
+          "Chromium N-7 combat: 2/2, exit 0"
         ],
         "evidence": [
-          "art-source/enemies/ch01/ch01-validation.json"
+          "art-source/enemies/ch01/ch01-validation.json",
+          "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
+          "docs/production-reports/evidence/block-05/certification-03/results.json"
         ],
         "openErrors": [
-          "Pendiente integración y verificación visual dentro del combate."
+          "Integración en Gaia clásica pendiente; captura Chromium de hurt/destroy pendiente."
         ]
       }
     },
@@ -774,7 +795,7 @@
       "block": "03",
       "name": "Corregir errores de carga y excepciones",
       "priority": "CRITICAL",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -785,18 +806,16 @@
         "scripts/content-browser-smoke.cjs",
         "scripts/preview-offline-smoke.cjs"
       ],
-      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
       "tests": [
-        "Seis casos smoke passed sin excepciones ni recursos fallidos; offline-02 sin pageErrors ni assets fallidos"
+        "Chromium preview Bloque03: 7/7, exit 0",
+        "Chromium CH01: 2/2, exit 0"
       ],
       "evidence": [
         "docs/production-reports/evidence/block-03/browser-preview-01/results.json",
-        "docs/production-reports/evidence/block-03/offline-02/results.json"
+        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json"
       ],
-      "openErrors": [
-        "offline-02 registra404de/favicon.ico en sondeo inicial de build-info; no es asset jugable crítico pero impide declarar cero errores de recursos globales.",
-        "Sondeo fuera de caché offline falla deliberadamente con ERR_INTERNET_DISCONNECTED; conservar diagnóstico separado."
-      ],
+      "openErrors": [],
       "acceptance": [
         "Consola sin excepciones y recursos solicitados con respuestas válidas."
       ]
@@ -864,7 +883,7 @@
       "block": "03",
       "name": "Preparar paquete experimental probado para Netlify",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -876,20 +895,24 @@
       ],
       "files": [
         "scripts/build-preview.mjs",
-        ".github/workflows/n7-integrated-preview.yml"
+        ".github/workflows/n7-integrated-preview.yml",
+        "preview/launcher.html"
       ],
-      "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
       "tests": [
-        "Compilación experimental disponible; resultados parciales de Chromium y offline guardados"
+        "npm run build:preview: exit 0",
+        "npm run test:preview: 15/15, exit 0",
+        "Chromium ruta37: 2/2, exit 0",
+        "Offline real: 4/4, exit 0",
+        "ZIP integridad/hashes: OK"
       ],
       "evidence": [
-        "docs/production-reports/evidence/block-03/certification-01/results.json",
-        "docs/production-reports/evidence/block-03/browser-preview-01/results.json",
-        "docs/production-reports/evidence/block-03/offline-02/results.json"
+        "docs/production-reports/evidence/block-03/preview-package-9d28569.json",
+        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
+        "docs/production-reports/evidence/block-05/offline-ch01-01/results.json",
+        "docs/production-reports/evidence/block-05/certification-03/results.json"
       ],
-      "openErrors": [
-        "Falta cierre global de Chromium y archivo ZIP final con hash y procedencia de la versión distribuida."
-      ],
+      "openErrors": [],
       "acceptance": [
         "ZIP autocontenido identificado por SHA y hash, con evidencia de pruebas."
       ]
@@ -1522,7 +1545,7 @@
       "block": "05",
       "name": "Integrar CH-01 con estados y carga de sprites reales",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Enemigos",
         "Assets",
@@ -1538,11 +1561,21 @@
         "ASSET_PRODUCTION_150.json",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "src/game/animation/animation-map.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/07-player-item-rendering.js",
+        "assets/ch01_atlas_v1.webp"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+      "tests": [
+        "9/9 animator, exit 0",
+        "legacy integration: 7/7, exit 0",
+        "Chromium N-7: 2/2, exit 0"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-05/certification-03/results.json",
+        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Entrada, movimiento, ataque, daño y destrucción conectados al juego real."
@@ -1553,7 +1586,7 @@
       "block": "05",
       "name": "Implementar ataque reconocible de CH-01",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Enemigos",
         "Jugabilidad",
@@ -1566,11 +1599,19 @@
         "ASSET_PRODUCTION_150.json",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "src/game/animation/animation-map.js",
+        "src/game/progression/encounter-director.js",
+        "src/game/animation/ch01-animator.js"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+      "tests": [
+        "CH01 shot cancel/telegraph: pass",
+        "Chromium projectile movement: pass"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-05/certification-03/results.json",
+        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json"
+      ],
       "openErrors": [],
       "acceptance": [
         "Animación de ataque dispara evento sincronizado y proyectil con señal previa."
@@ -1581,7 +1622,7 @@
       "block": "05",
       "name": "Implementar impacto y daño de CH-01",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "IN_REVIEW",
       "areas": [
         "Enemigos",
         "Jugabilidad",
@@ -1594,12 +1635,21 @@
         "ASSET_PRODUCTION_150.json",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "src/game/animation/animation-map.js",
+        "src/game/04-entities-collision-damage.js",
+        "tests/content-legacy-integration.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+      "tests": [
+        "legacy Canvas synthetic damage/hurt: pass"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-05/certification-03/results.json",
+        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json"
+      ],
+      "openErrors": [
+        "Pose de impacto no capturada todavía en Chromium durante un golpe real."
+      ],
       "acceptance": [
         "Impacto visible reduce vida y conserva correcta transición de estado."
       ]
@@ -1609,7 +1659,7 @@
       "block": "05",
       "name": "Implementar destrucción y recompensa de CH-01",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "IN_REVIEW",
       "areas": [
         "Enemigos",
         "Jugabilidad",
@@ -1622,12 +1672,21 @@
         "ASSET_PRODUCTION_150.json",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "src/game/animation/animation-map.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/content-legacy-integration.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+      "tests": [
+        "legacy Canvas synthetic destruction/reward once: pass"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-05/certification-03/results.json"
+      ],
+      "openErrors": [
+        "Destrucción no capturada todavía en Chromium durante un combate real."
+      ],
       "acceptance": [
         "Destrucción no interrumpida, liberación de entidad y recompensa una sola vez."
       ]
@@ -1637,7 +1696,7 @@
       "block": "05",
       "name": "Verificar visualmente CH-01 durante combate completo",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "IN_REVIEW",
       "areas": [
         "Enemigos",
         "Assets",
@@ -1652,12 +1711,21 @@
         "ASSET_PRODUCTION_150.json",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "src/game/animation/animation-map.js",
+        "assets/ch01_atlas_v1.webp",
+        "src/game/07-player-item-rendering.js"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+      "tests": [
+        "Chromium sprite decoded 1024x1536 and combat screenshot: pass"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
+        "docs/production-reports/evidence/block-05/browser-ch01-01/390x844-dpr1-n7-combat-progress-combat.png"
+      ],
+      "openErrors": [
+        "Capturas reales de hurt/destroy pendientes; Safari iPhone pendiente."
+      ],
       "acceptance": [
         "Capturas y prueba real de atacar, recibir daño y destruirse con assets definitivos."
       ]
@@ -1667,7 +1735,7 @@
       "block": "05",
       "name": "Implementar estados y duración por fotograma",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "DONE",
       "areas": [
         "Animaciones"
       ],
@@ -1678,11 +1746,17 @@
         "ASSET_PRODUCTION_150.json",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "src/game/animation/animation-map.js",
+        "src/game/animation/ch01-animator.js",
+        "art-source/enemies/ch01/ch01-atlas-v1.json"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+      "tests": [
+        "node --test --test-isolation=none tests/ch01-animation.test.mjs: 9/9, exit 0"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/ch01-animation.txt"
+      ],
       "openErrors": [],
       "acceptance": [
         "Animador respeta duración, poses y bucles con transiciones probadas."
@@ -1693,7 +1767,7 @@
       "block": "05",
       "name": "Proteger animaciones no interrumpibles y eventos",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "IN_REVIEW",
       "areas": [
         "Animaciones"
       ],
@@ -1704,12 +1778,19 @@
         "ASSET_PRODUCTION_150.json",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "src/game/animation/animation-map.js",
+        "src/game/animation/ch01-animator.js"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
+      "tests": [
+        "attack cancellation, terminal destroy and idempotent events: 9/9, exit 0"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/block-03/ch01-animation.txt"
+      ],
+      "openErrors": [
+        "Sonido propio y captura de transiciones de muerte en navegador pendientes."
+      ],
       "acceptance": [
         "Muerte, impacto y eventos visuales/sonoros no se duplican ni cortan incorrectamente."
       ]
