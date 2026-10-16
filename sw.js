@@ -1,4 +1,4 @@
-const CACHE = "neon-catcher-pre-release-7-2-0";
+const CACHE = "neon-catcher-pre-release-7-2-0-ch01";
 const CORE = [
   "./",
   "index.html",
@@ -60,6 +60,7 @@ const CORE = [
   "assets/meteor_medium.webp",
   "assets/meteor_medium_alt.webp",
   "assets/meteor_large.webp",
+  "assets/ch01_atlas_v1.webp",
   "assets/comet_animation_sheet_v1.webp",
   "assets/debris_metal.webp",
   "assets/debris_panel.webp",

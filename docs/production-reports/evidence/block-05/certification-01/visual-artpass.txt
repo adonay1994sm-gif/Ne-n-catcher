@@ -1,0 +1,12 @@
+✔ art pass preserves the nine-source game bundle (7.234974ms)
+✔ Chronos background uses the authored image and bounded readability veil (1.661949ms)
+✔ level one shockwave uses the existing graphical energy field (0.997786ms)
+✔ visual pass does not change collision model or native bundle identifier (1.003795ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 63.330335

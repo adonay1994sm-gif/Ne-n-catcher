@@ -4,7 +4,7 @@
   "revision": "ch01-art-v1",
   "productionStatus": "IN_REVIEW",
   "image": "ch01-atlas-v1.webp",
-  "proposedRuntimeImage": "assets/enemies/ch01-atlas-v1.webp",
+  "proposedRuntimeImage": "assets/ch01_atlas_v1.webp",
   "master": "ch01-master-v2.png",
   "sourceHistorical": "ch01-master-v1.png",
   "dimensions": {

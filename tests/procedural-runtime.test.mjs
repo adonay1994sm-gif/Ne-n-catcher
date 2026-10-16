@@ -83,6 +83,27 @@ test('swept enemy movement and shooter projectiles preserve the refuge in every 
   assert.ok(projectiles > 0);
 });
 
+test('CH-01 shooter animation gates fire and a hit cancels the charged shot', () => {
+  const plan = generateLevel(37);
+  const spec = plan.waves.flatMap(wave => wave.enemies).find(enemy => enemy.type === 'shooter');
+  assert.ok(spec, 'route 37 needs a shooter fixture');
+  const item = makeLegacyEntity({kind: 'enemy', data: spec}, plan);
+  item.y = 240;
+  const fired = [];
+  const step = () => advanceEnemy(item, 1 / 60, {x: 360, y: 1150}, shot => fired.push(shot));
+  for (let i = 0; i < 83; i++) step();
+  assert.equal(item.n7.ch01Animator.getFrame().state, 'attack');
+  assert.equal(fired.length, 0);
+  item.hp = 1;
+  item.n7.ch01Animator.request('hurt');
+  for (let i = 0; i < 38; i++) step();
+  assert.equal(fired.length, 0, 'a canceled attack cannot emit a projectile');
+  assert.ok(item.n7.nextFire > item.n7.age);
+  for (let i = 0; i < 70; i++) step();
+  assert.equal(fired.length, 1, 'the next fully telegraphed attack fires once');
+  assert.equal(item.n7.ch01Animator.getFrame().damaged, true);
+});
+
 test('director emits each entity once, replays after reset and bounds suspended deltas', () => {
   const director = new EncounterDirector(37);
   const trace = [];

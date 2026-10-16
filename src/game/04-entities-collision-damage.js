@@ -476,6 +476,7 @@
       if (rings[index].life <= 0) rings.splice(index, 1);
     }
     for (let index = explosions.length - 1; index >= 0; index--) {
+      explosions[index].ch01Animator?.update(dt);
       explosions[index].life -= dt;
       if (explosions[index].life <= 0) explosions.splice(index, 1);
     }
@@ -492,6 +493,17 @@
     tractorTarget = candidates[0] || null;
   }
 
+  function animateN7EnemyHit(target, destroyed) {
+    const animator = target.n7?.ch01Animator;
+    if (!animator) return;
+    animator.request(destroyed ? "destroy" : "hurt");
+    if (destroyed) {
+      if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
+      explosions.push({x: target.x, y: target.y, ch01Animator: animator,
+        life: .49, duration: .49, scale: 1, rotation: 0});
+    }
+  }
+
   function firePhaser() {
     phaserCooldown = 0.34;
     cameraKickY = Math.max(cameraKickY, 3.5);
@@ -505,6 +517,7 @@
     if (target) {
       target.hp = Math.max(0, (target.hp || 1) - 1);
       const destroyed = target.hp <= 0;
+      animateN7EnemyHit(target, destroyed);
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({
         x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: target.x, y2: target.y,
@@ -546,6 +559,7 @@
     if (target) {
       target.hp = Math.max(0, (target.hp || 1) - 1);
       const destroyed = target.hp <= 0;
+      animateN7EnemyHit(target, destroyed);
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({
         x1: player.x, y1: muzzleY, x2: target.x, y2: target.y,

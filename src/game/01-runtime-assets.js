@@ -155,6 +155,7 @@
     meteorMedium: loadSprite("assets/meteor_medium.webp", true),
     meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
     meteorLarge: loadSprite("assets/meteor_large.webp"),
+    ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
     comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),

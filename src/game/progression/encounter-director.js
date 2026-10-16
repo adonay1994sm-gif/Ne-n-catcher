@@ -1,4 +1,5 @@
 import {generateLevel} from './generator.js';
+import {createCh01Animator} from '../animation/ch01-animator.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -46,7 +47,9 @@ export function makeLegacyEntity(event, plan) {
       pattern, bounds: spec.bounds, age: 0, nextFire: 1.5,
       telegraphSeconds: spec.telegraphSeconds, fireInterval: spec.fireInterval,
       projectileSpeed: 280 * spec.projectileMultiplier,
-      telegraph: 0, fired: 0, phase: spec.phase, corridor: plan.corridor
+      telegraph: 0, fired: 0, phase: spec.phase, corridor: plan.corridor,
+      ch01Animator: pattern === 'shooter' ? createCh01Animator() : null,
+      attackScheduled: false
     }
   };
 }
@@ -65,9 +68,24 @@ export function advanceEnemy(item, dt, player, spawnProjectile) {
     item.x += clamp(target - item.x, -100 * dt, 100 * dt);
   }
   item.x = clamp(item.x, bounds.min, bounds.max);
-  if (behavior.pattern !== 'shooter' || item.y < 0 || item.y > player.y - 260) return;
+  if (behavior.pattern !== 'shooter') return;
+  const animator = behavior.ch01Animator;
+  const inRange = item.y >= 0 && item.y <= player.y - 260;
+  if (animator && inRange && behavior.fired < 3 &&
+      behavior.age >= behavior.nextFire - .16 && !behavior.attackScheduled) {
+    behavior.attackScheduled = animator.request('attack');
+  }
+  const animationEvents = animator?.update(dt, {hp: item.hp, maxHp: item.maxHp, vy: item.s}) || [];
+  for (const event of animationEvents) {
+    if (event.name === 'attackCanceled' && !event.fired) {
+      behavior.attackScheduled = false;
+      behavior.nextFire = behavior.age + Math.max(.8, behavior.telegraphSeconds);
+    }
+  }
+  if (!inRange) { behavior.telegraph = 0; return; }
   behavior.telegraph = clamp(1 - (behavior.nextFire - behavior.age) / behavior.telegraphSeconds, 0, 1);
-  if (behavior.age + 1e-9 < behavior.nextFire || behavior.fired >= 3) return;
+  if (behavior.fired >= 3 || (animator && !animationEvents.some(event => event.name === 'fire')) ||
+      (!animator && behavior.age + 1e-9 < behavior.nextFire)) return;
   // Vertical, signalled fire: no aiming into the guaranteed refuge.
   spawnProjectile({
     id: `${item.id}:shot:${++behavior.fired}`, type: 'meteor', x: item.x, baseX: item.x,
@@ -77,5 +95,6 @@ export function advanceEnemy(item, dt, player, spawnProjectile) {
     n7Projectile: true
   });
   behavior.nextFire += behavior.fireInterval;
+  behavior.attackScheduled = false;
   behavior.telegraph = 0;
 }
