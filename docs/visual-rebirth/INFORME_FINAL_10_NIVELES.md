@@ -1,3 +1,5 @@
+> Continuidad17/10/2026: [Guardian Atlas](../production-reports/GUARDIAN_ATLAS_2026-10-17.md) y [paquete privado](../production-reports/PAQUETE_ATLAS_2026-10-17.md). Este informe se conserva como historial; no certifica las modificaciones posteriores. Cero de los diez niveles se declara visualmente completo por este incremento.
+
 Cierre posterior vigente: [naves modulares](../production-reports/NAVES_MODULARES_2026-10-17.md) y [paquete publicado](../production-reports/PAQUETE_NAVES_MODULARES_2026-10-17.md). Este informe anterior queda como historial; no implica aceptación de la integración ni niveles completos.
 
 ---

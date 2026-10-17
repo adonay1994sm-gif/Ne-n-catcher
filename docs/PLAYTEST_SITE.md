@@ -1,3 +1,13 @@
+## Publicación vigente — Guardian Atlas ·17/10/2026
+
+**https://neon-catcher-pruebas.chictide18.chatgpt.site** — Sites succeeded12:08:42UTC. Paquete limpio del juego11dfa7bf7d3e287dd979c8dfc1dbafd8c1388473. Marcar desbloqueo clásico de QA → Campaña clásica → NIVELES → Perímetro Atlas. Recuperar45CRONIUM para iniciar el encuentro. Arte en revisión; sesión natural completa todavía pendiente al publicar.
+
+Revisión41e1a8ebe6541b0e750357ea15f1d809cdafe3f2393e8366c08ea66dc80b7f56. JuegoSHA25625200ad0049a8bf269b825757efcf9cd37fb1b3a907e2ac58656fa28626887d2. FuenteSitesab1ea23893946f756ecaefc045bb8fc229914ccb. Version_idappgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_1bed27aa450881919787e4df8e18d3ab. Deployment_idappgdep_6ad365395a248191a966d7e730cb5bd7. Mismo project_id y audiencia owner-private conservados. No nueva prueba Netlify ni producción.
+
+[Acta, ZIP y hashes](production-reports/PAQUETE_ATLAS_2026-10-17.md) · [Informe funcional](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Identidades siguientes son históricas; no confundirlas con esta entrega.
+
+---
+
 ## Publicación vigente — hangar y campaña clásica · 17/10/2026
 
 URL confirmada: **https://neon-catcher-pruebas.chictide18.chatgpt.site**. El selector ofrece primero la campaña clásica y su nuevo HANGAR. Astér/Bastión, piezas combinables, selección persistente y nave anterior recuperable. Arte en revisión; jugabilidad completa pendiente.
