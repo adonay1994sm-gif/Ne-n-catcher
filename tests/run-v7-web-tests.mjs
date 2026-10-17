@@ -54,7 +54,7 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
   const paths = new Set(swContext.__SW_TEST__.CORE.map(withoutQuery));
   for (const path of [
     "index.html", "styles.css", "game.js", "core-runtime.js", "manifest.webmanifest",
-    "privacy.html", "terms.html", "analytics-manager.js", "assets/ship_frame_00.webp", "assets/core_frame_00.webp",
+    "privacy.html", "terms.html", "analytics-manager.js", "assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/core_frame_00.webp",
     "assets/cronium_fragment_v1.webp", "assets/cronos_level1_background.webp",
     "assets/chronos_shockwave_atlas_v1.webp", "assets/atlas_perimeter_background_v1.webp",
     "assets/vulkar_descent_background_v1.webp", "assets/vulkar_magma_tunnel_background_v1.webp",
@@ -62,6 +62,10 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
     "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp",
     "assets/titan_omega_graveyard_background_v1.webp", "assets/chronos_collapse_background_v1.webp"
   ]) assert.ok(paths.has(path), path);
+  for(const retired of ['assets/ship_frame_00.webp','assets/ship_frame_01.webp','assets/comet_animation_sheet_v1.webp']) {
+    assert.equal(paths.has(retired),false,`referencia retirada precargada: ${retired}`);
+    assert.equal(await exists(retired),true,'El respaldo retirado debe seguir recuperable');
+  }
 });
 
 await test("parallax V7 reemplaza la antigua rejilla", async () => {
@@ -74,7 +78,7 @@ await test("parallax V7 reemplaza la antigua rejilla", async () => {
 await test("núcleo, tractor, phaser, pulso, motores y HUD tienen respuesta multietapa", async () => {
   for (const marker of [
     "directionalBurst", "distanceToShip", "const targetWidth", "const volume = ctx.createLinearGradient",
-    "flashPhase", "muzzle.addColorStop", 'style === "pulse"', "enginePulse", "updateHudVisual"
+    "flashPhase", "muzzle.addColorStop", 'style === "pulse"', "pose.enginePulse", "updateHudVisual"
   ]) assert.ok(gameSource.includes(marker), marker);
   assert.match(styles, /@keyframes hudPop/);
   assert.match(styles, /@keyframes hudDamage/);
