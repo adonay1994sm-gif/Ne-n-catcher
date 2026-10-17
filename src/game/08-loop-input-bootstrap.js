@@ -7,7 +7,8 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.type === "energy") drawEnergy(item);
+      if (item.type === "journeyPart") drawJourneyPart(item);
+      else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
       else if (item.type === "debris") drawDebris(item);
       else if (item.type === "satellite") drawSatellite(item);
@@ -81,6 +82,18 @@
     event.preventDefault();
     const x = pointerX(event);
     const factor = settings.sensitivity / 100;
+    if (JOURNEY_DEMO) {
+      if (event.type.startsWith("touch") && window.PointerEvent) return;
+      if (event.type === "pointerdown" || event.type === "touchstart") {
+        journeyPointerLast = x;
+        if (event.pointerId !== undefined) canvas.setPointerCapture?.(event.pointerId);
+        return;
+      }
+      if (journeyPointerLast === null) return;
+      player.target = clamp(player.target + (x - journeyPointerLast) * factor, 70, W - 70);
+      journeyPointerLast = x;
+      return;
+    }
     player.target = clamp(player.x + (x - player.x) * factor, 70, W - 70);
   }
 
@@ -88,6 +101,7 @@
   canvas.addEventListener("pointermove", move, { passive: false });
   canvas.addEventListener("touchstart", move, { passive: false });
   canvas.addEventListener("touchmove", move, { passive: false });
+  for (const event of ["pointerup", "pointercancel", "touchend", "touchcancel"]) canvas.addEventListener(event, () => { journeyPointerLast = null; });
 
   addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") player.target -= 85;
@@ -100,6 +114,7 @@
   });
 
   $("play").onclick = () => {
+    if (JOURNEY_DEMO) { startJourney(); return; }
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -117,12 +132,12 @@
   ui.fire.onclick = fireManualShot;
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
-  $("restart").onclick = () => startLevel(currentLevel);
+  $("restart").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("quit").onclick = goHome;
   $("home").onclick = goHome;
   $("completeHome").onclick = goHome;
-  $("retry").onclick = () => startLevel(currentLevel);
-  $("replayLevel").onclick = () => startLevel(currentLevel);
+  $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
+  $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   ui.nextLevel.onclick = () => prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
 
   ui.musicVolume.oninput = (event) => {
@@ -218,6 +233,7 @@
     }
   }, { once: true });
   console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
+  setupJourneyUI();
   updateMenu();
   hud();
   resetPowers();

@@ -58,6 +58,9 @@ function createStorageService(storage) {
   };
   const resolveStorage = () => storage ?? globalThis.localStorage;
   return Object.freeze({
+    getRaw(key, fallback = null) {
+      return safe(() => resolveStorage().getItem(key) ?? fallback, fallback);
+    },
     getNumber(key, fallback = 0) {
       return safe(() => {
         const raw = resolveStorage().getItem(key);

@@ -432,7 +432,14 @@
   }
 
   function collectItem(item) {
-    if (item.type === "energy") {
+    if (item.type === "journeyPart") {
+      if (journey?.collectPart()) {
+        persistJourney();
+        pulseRing(item.x, item.y, "#ffd877", 95, .48);
+        toast("Aleta vectorial rescatada · taller C9 disponible");
+        tone(840, .14, "triangle", .065);
+      }
+    } else if (item.type === "energy") {
       const multiplier = powers.double > 0 ? 2 : 1;
       score += 10 * combo * multiplier;
       collected++;
@@ -506,6 +513,10 @@
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
+      if (target.journeyBorder && journey?.resolveBorder()) {
+        persistJourney();
+        showStoryTransmission("ACCESO ATLAS", "Bloqueo desactivado. Corredor a Gaia abierto.", 3.4);
+      }
       if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
       explosions.push({x: target.x, y: target.y, ch01Animator: animator,
         life: .49, duration: .49, scale: 1, rotation: 0});
@@ -546,9 +557,9 @@
   }
 
   function fireManualShot() {
-    if (state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0) return false;
+    if (state !== "playing" || (!JOURNEY_DEMO && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
-    ammo -= 1;
+    if (!JOURNEY_DEMO) ammo -= 1;
     manualShotCooldown = 0.28;
     cameraKickY = Math.max(cameraKickY, 5);
     shake = Math.max(shake, 3.2);
@@ -600,6 +611,7 @@
   }
 
   function checkSupplyFailure() {
+    if (JOURNEY_DEMO) return;
     if (supplyFailureScheduled || energySpawned < energyBudget || collected >= level().goal) return;
     const energyRemaining = items.some((item) => item.type === "energy");
     if (!energyRemaining) {

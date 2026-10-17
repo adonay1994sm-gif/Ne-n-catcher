@@ -71,7 +71,7 @@
   }
 
   function overlay(el) {
-    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over]
+    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete].filter(Boolean)
       .forEach((node) => node.classList.remove("show"));
     if (el) el.classList.add("show");
   }

@@ -1,6 +1,7 @@
 import {AUTHORED_LEVELS} from './level-designs.js';
 export {EncounterDirector, advanceEnemy} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
+export {createJourneyDemo, JOURNEY_DEMO_SAVE_KEY, JOURNEY_DEMO_VERSION} from './journey-demo.js';
 export {GENERATOR_VERSION} from './generator.js';
 export {n7Dialogue} from '../narrative/n7-dialogues.js';
 

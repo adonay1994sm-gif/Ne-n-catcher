@@ -49,7 +49,8 @@
     }
 
     const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
-    const enginePulse = 0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20;
+    const upgraded = JOURNEY_DEMO && journeyView?.engineBoost;
+    const enginePulse = (0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20) * (upgraded ? 1.28 : 1);
     ctx.save();
     ctx.translate(0, 53 * SHIP_VISUAL.scale + bob);
     ctx.globalCompositeOperation = "screen";
@@ -58,7 +59,7 @@
     for (const engineX of [-27, 27]) {
       const plume = ctx.createLinearGradient(engineX, 0, engineX, 48 * SHIP_VISUAL.scale * enginePulse);
       plume.addColorStop(0, "rgba(255,255,255,.96)");
-      plume.addColorStop(0.25, "rgba(92,242,255,.82)");
+      plume.addColorStop(0.25, upgraded ? "rgba(255,196,92,.92)" : "rgba(92,242,255,.82)");
       plume.addColorStop(1, "rgba(42,116,255,0)");
       ctx.fillStyle = plume;
       ctx.beginPath();
@@ -93,6 +94,16 @@
       }
     }
     ctx.restore();
+
+    if (upgraded) {
+      ctx.save(); ctx.translate(0, 30 * SHIP_VISUAL.scale);
+      for (const side of [-1, 1]) {
+        ctx.save(); ctx.translate(side * 55 * SHIP_VISUAL.scale, 0);
+        drawImageCentered(SPRITES.debrisPanel, 20, 34, side * .16);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
 
     if (hull < 67 && state !== "destroying") {
       // Los tres fotogramas comparten anclaje y estilo. El daño progresa mediante
@@ -545,5 +556,15 @@
     ctx.textAlign = "center";
     ctx.fillStyle = powers.double > 0 ? "#ffe66c" : "#fff";
     ctx.fillText(label, W / 2, y - 3);
+    ctx.restore();
+  }
+  function drawJourneyPart(item) {
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.shadowBlur = 24; ctx.shadowColor = "#ffd877";
+    const pulse = 1 + Math.sin(elapsed * 4) * .08;
+    drawImageCentered(SPRITES.debrisPanel, 66 * pulse, 82 * pulse, .12);
+    drawImageCentered(frameFrom("core", Math.floor(elapsed * 8)), 35, 35, 0, .75);
+    ctx.fillStyle = "#fff4c3"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("ALETA C9", 0, -57);
     ctx.restore();
   }

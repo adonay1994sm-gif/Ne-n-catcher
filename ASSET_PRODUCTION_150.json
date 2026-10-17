@@ -3,7 +3,7 @@
   "project": "NEON CATCHER",
   "build": "7.2.0",
   "totalAssets": 150,
-  "scope": "10 main levels now; sublevels and bosses are staged after the main-level vertical pipeline",
+  "scope": "Historical 150-asset inventory; reused by canonical 10 chapters x 10 stages under docs/PRODUCT_VISION.md",
   "statusLegend": {
     "READY": "integrated and runtime-ready",
     "IN_REVIEW": "existing asset under visual/runtime review",
@@ -513,14 +513,16 @@
       "world": "Chronos",
       "name": "Restos de estación grandes",
       "type": "layer",
-      "masterSize": "2048x2048",
-      "runtimeSize": "720x1280",
+      "masterSize": "1254x1254",
+      "runtimeSize": "640x640",
       "frames": 1,
       "pivot": "0.5,0.5",
       "level": 1,
       "priority": "P0",
-      "status": "PLANNED",
-      "reference": "Level 1 vertical slice"
+      "status": "IN_REVIEW",
+      "reference": "art-source/immersive-rebirth/levels/01/chronos-detached-module-master.png",
+      "runtimeCandidate": "assets/chronos_detached_module_v1.webp",
+      "integrationScope": "Isolated journey demo receding Chronos landmark; classic integration and artistic acceptance pending"
     },
     {
       "sequence": 32,

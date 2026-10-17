@@ -9,6 +9,7 @@
   const BUILD_VERSION = "7.2.0";
   // Local development route; preserves the original campaign and its save keys.
   const N7_CAMPAIGN = new URLSearchParams(location.search).get("campaign") === "n7";
+  const JOURNEY_DEMO = new URLSearchParams(location.search).get("campaign") === "journey";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
   const SHIP_VISUAL_SCALE = 0.8;
@@ -193,6 +194,9 @@
   };
   if (N7_CAMPAIGN) {
     for (const key of ["best", "unlocked", "stars", "levelBest", "games"]) KEYS[key] = `neon-n7-${key}-v1`;
+  }
+  if (JOURNEY_DEMO) {
+    for (const key of Object.keys(KEYS)) KEYS[key] = `neon-journey-demo-${key}-v1`;
   }
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, effectsQuality: "normal", effects: true };

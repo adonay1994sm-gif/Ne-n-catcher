@@ -225,7 +225,7 @@
     if (lv.hazard === "gravity") player.drift = Math.sin(elapsed * 0.8) * 22;
     else player.drift = 0;
 
-    const follow = 9 + (settings.sensitivity / 100) * 8;
+    const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
     engineTrail();
@@ -237,7 +237,17 @@
       return;
     }
 
-    if (encounterDirector) {
+    if (JOURNEY_DEMO && journey) {
+      journey.advance(dt, journeyEvent);
+      syncJourneyHud();
+      if (journeyView.phase !== "travel") { updateEffects(dt); return; }
+      journeyShieldCooldown = Math.max(0, journeyShieldCooldown - dt);
+      journeyTractorCooldown = Math.max(0, journeyTractorCooldown - dt);
+      journeyAutoTimer = Math.max(0, journeyAutoTimer - dt);
+      if (journeyAutoFire && journeyAutoTimer === 0 && items.some(item => isThreat(item) && item.y < player.y && Math.abs(item.x - player.x) < 145)) {
+        fireManualShot(); journeyAutoTimer = .62;
+      }
+    } else if (encounterDirector) {
       encounterDirector.advance(dt, (item) => {
         items.push(item);
         if (item.type === "energy") energySpawned++;
@@ -305,6 +315,11 @@
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
       if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
+      if (item.journeyEntry && item.classicScout.age < .9) {
+        const entry = item.classicScout.age / .9;
+        item.x = -80 + (item.journeyEntry.targetX + 80) * entry;
+      }
+      if (item.type === "journeyPart") item.y = Math.min(item.y, player.y - 65);
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item)) {

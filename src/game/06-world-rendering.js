@@ -146,6 +146,7 @@
   }
 
   function background(t) {
+    if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
     gradient.addColorStop(0, lv.top);
@@ -566,4 +567,44 @@
     ctx.fillStyle = "#eaffff";
     ctx.beginPath(); ctx.arc(0, 0, 5 + intensity * 4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
+  }
+  function drawJourneyBackground() {
+    const view = journeyView || {routeProgress: 0, segmentId: "departure", segmentProgress: 0};
+    const progress = view.routeProgress;
+    ctx.fillStyle = "#020917"; ctx.fillRect(0, 0, W, H);
+    const painting = (image, alpha, zoom) => {
+      if (!spriteReady(image) || alpha <= 0) return;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * zoom;
+      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
+      ctx.save(); ctx.globalAlpha = alpha;
+      ctx.drawImage(image, (W - width) / 2, (H - height) / 2, width, height); ctx.restore();
+    };
+    painting(SPRITES.cronosBackground, clamp(1 - progress * 2.6, 0, 1), 1.16 - progress * .3);
+    painting(SPRITES.atlasBackground, clamp((progress - .18) / .65, 0, .94), 1.02 + progress * .18);
+    ctx.save(); ctx.globalAlpha = .5;
+    for (const star of stars) {
+      ctx.fillStyle = star.tint;
+      ctx.fillRect(star.x, star.y, star.r, star.r * 2.5);
+    }
+    ctx.restore();
+    if (progress < .42 && spriteReady(SPRITES.chronosModule)) {
+      const distance = progress / .42;
+      const size = 320 - distance * 230;
+      ctx.save(); ctx.globalAlpha = (1 - distance) * .85;
+      ctx.translate(W * (.61 - distance * .39), H * (.32 - distance * .16));
+      ctx.rotate(-.2 + distance * .4);
+      ctx.drawImage(SPRITES.chronosModule, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+    if (view.segmentId === "departure" && view.segmentProgress >= .08 && view.segmentProgress < .12 && spriteReady(SPRITES.chronosShockwave)) {
+      const phase = (view.segmentProgress - .08) / .04;
+      const atlas = SPRITES.chronosShockwave, cell = atlas.naturalWidth / 2;
+      const frame = Math.min(3, Math.floor(phase * 4)), size = 250 + phase * 700;
+      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.sin(phase * Math.PI) * .8;
+      ctx.drawImage(atlas, frame % 2 * cell, Math.floor(frame / 2) * cell, cell, cell, W * .5 - size / 2, H * .32 - size / 2, size, size);
+      ctx.restore();
+    }
+    const veil = ctx.createLinearGradient(0, H * .3, 0, H);
+    veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");
+    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }

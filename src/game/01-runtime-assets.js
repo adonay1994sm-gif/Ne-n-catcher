@@ -1,7 +1,7 @@
   const storage = NeonCore.createStorageService();
 
   function migrateLegacyStorage() {
-    if (N7_CAMPAIGN) return false;
+    if (N7_CAMPAIGN || JOURNEY_DEMO) return false;
     const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));
     const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));
     if (legacyBest <= currentBest) return false;
@@ -34,6 +34,14 @@
   let collected = 0;
   let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
   let encounterDirector = null;
+  let journey = null;
+  let journeyView = null;
+  let journeyCanSave = true;
+  let journeyAutoFire = true;
+  let journeyAutoTimer = 0;
+  let journeyShieldCooldown = 0;
+  let journeyTractorCooldown = 0;
+  let journeyPointerLast = null;
   let encounterWave = 0;
   let continued = false;
   let shake = 0;
@@ -158,6 +166,7 @@
     meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
     meteorLarge: loadSprite("assets/meteor_large.webp"),
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
+    chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),

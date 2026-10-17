@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 69,
-  "runtimeBytes": 4936486,
+  "assetCount": 70,
+  "runtimeBytes": 5038154,
   "audit": {
-    "reviewed": 69,
+    "reviewed": 70,
     "READY": 58,
-    "IN_REVIEW": 11,
+    "IN_REVIEW": 12,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -526,6 +526,21 @@
       "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
       "version": "visual-rebirth-v1",
       "size": 359816
+    },
+    {
+      "id": "chronos-detached-module-v1",
+      "path": "assets/chronos_detached_module_v1.webp",
+      "master": "art-source/immersive-rebirth/levels/01/chronos-detached-module-master.png",
+      "dimensions": "640x640",
+      "format": "webp-alpha",
+      "use": "Independent receding Chronos landmark in the isolated Chronos-Gaia journey demo",
+      "level": "journey-demo",
+      "animation": "Route-progress driven depth, drift and rotation; not an enemy animation",
+      "pivot": "0.5,0.5",
+      "status": "IN_REVIEW",
+      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "chronos-gaia-demo-v1",
+      "size": 101668
     }
   ]
 }

@@ -9,6 +9,7 @@
   const BUILD_VERSION = "7.2.0";
   // Local development route; preserves the original campaign and its save keys.
   const N7_CAMPAIGN = new URLSearchParams(location.search).get("campaign") === "n7";
+  const JOURNEY_DEMO = new URLSearchParams(location.search).get("campaign") === "journey";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
   const SHIP_VISUAL_SCALE = 0.8;
@@ -194,12 +195,15 @@
   if (N7_CAMPAIGN) {
     for (const key of ["best", "unlocked", "stars", "levelBest", "games"]) KEYS[key] = `neon-n7-${key}-v1`;
   }
+  if (JOURNEY_DEMO) {
+    for (const key of Object.keys(KEYS)) KEYS[key] = `neon-journey-demo-${key}-v1`;
+  }
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, effectsQuality: "normal", effects: true };
   const storage = NeonCore.createStorageService();
 
   function migrateLegacyStorage() {
-    if (N7_CAMPAIGN) return false;
+    if (N7_CAMPAIGN || JOURNEY_DEMO) return false;
     const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));
     const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));
     if (legacyBest <= currentBest) return false;
@@ -232,6 +236,14 @@
   let collected = 0;
   let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
   let encounterDirector = null;
+  let journey = null;
+  let journeyView = null;
+  let journeyCanSave = true;
+  let journeyAutoFire = true;
+  let journeyAutoTimer = 0;
+  let journeyShieldCooldown = 0;
+  let journeyTractorCooldown = 0;
+  let journeyPointerLast = null;
   let encounterWave = 0;
   let continued = false;
   let shake = 0;
@@ -356,6 +368,7 @@
     meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
     meteorLarge: loadSprite("assets/meteor_large.webp"),
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
+    chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
@@ -500,7 +513,7 @@
   }
 
   function overlay(el) {
-    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over]
+    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete].filter(Boolean)
       .forEach((node) => node.classList.remove("show"));
     if (el) el.classList.add("show");
   }
@@ -626,7 +639,161 @@
     updateAudioVolumes();
     overlay(settingsReturn === "paused" ? ui.paused : ui.menu);
   }
+  function setupJourneyUI() {
+    if (!JOURNEY_DEMO) return;
+    document.body.classList.add("journey-mode");
+    const mount = document.createElement("div");
+    mount.innerHTML = `<div id="journeyRoute" class="journey-route hidden"><small>CRONOS → GAIA NOVA</small><b id="journeyDestination"></b><progress id="journeyDistance" max="1" value="0" aria-label="Recorrido hasta Gaia"></progress><span id="journeyObjective"></span></div>
+      <div id="journeySkills" class="journey-skills hidden"><button id="journeyShield" type="button">ESCUDO <small>LISTO</small></button><button id="journeyTractor" type="button">TRACTOR <small>LISTO</small></button></div>
+      <div id="journeyStation" class="overlay"><section class="panel journey-service"><small>BALIZA DE SERVICIO C9</small><img src="assets/repair_drone.webp" alt="Mira, robot del taller"><h2>Un momento de respiro.</h2><p>«Soy Mira. Ese módulo rescatado aún puede volar. Te lo monto y sello el casco.»</p><div class="journey-piece"><img src="assets/debris_panel.webp" alt="Aleta de propulsión recuperada"><div><b>Aleta vectorial C9</b><p>Respuesta lateral +20 % y propulsión ámbar visible. Instalación con la pieza recuperada; sin créditos.</p></div></div><button id="journeyInstall" class="primary" type="button">INSTALAR PIEZA Y REPARAR</button><button id="journeyContinue" class="secondary" type="button" disabled>CONTINUAR HACIA GAIA</button><button id="journeyStationHome" class="link" type="button">Guardar y volver</button></section></div>
+      <div id="journeyComplete" class="overlay"><section class="panel journey-service"><small>ACCESO ATLAS · TRAYECTO COMPLETO</small><h2>Gaia nos recibe.</h2><p>Has salido de Chronos, recuperado e instalado una pieza y abierto el paso. El siguiente viaje todavía está en producción.</p><p id="journeyReward"></p><button id="journeyAgain" class="primary" type="button">REPETIR TRAVESÍA</button><button id="journeyHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
+    canvas.parentElement.append(mount);
+    for (const id of ["journeyRoute", "journeyDestination", "journeyDistance", "journeyObjective", "journeySkills", "journeyShield", "journeyTractor", "journeyStation", "journeyInstall", "journeyContinue", "journeyComplete"]) ui[id] = $(id);
+    $("journeyInstall").onclick = () => {
+      if (!journey?.serviceInstall()) return;
+      hull = 100;
+      persistJourney();
+      showJourneyStation();
+      tone(780, .16, "triangle", .06);
+    };
+    $("journeyContinue").onclick = () => {
+      if (!journey?.resumeFromStation()) return;
+      persistJourney();
+      setState("playing"); overlay(); last = performance.now();
+      ui.fire.classList.remove("hidden"); ui.journeySkills.classList.remove("hidden");
+      ui.journeyRoute.classList.remove("hidden");
+      syncJourneyHud();
+      showStoryTransmission("MIRA · C9", "Aleta conectada. Prueba el empuje hacia Gaia.", 3.2);
+    };
+    $("journeyStationHome").onclick = goHome;
+    $("journeyHome").onclick = goHome;
+    $("journeyAgain").onclick = () => startJourney(true);
+    ui.journeyShield.onclick = () => useJourneyAbility("shield");
+    ui.journeyTractor.onclick = () => useJourneyAbility("tractor");
+    const choice = document.createElement("label");
+    choice.className = "journey-auto-choice";
+    choice.innerHTML = '<input id="journeyAuto" type="checkbox">Disparo básico automático · también puedes disparar manualmente';
+    $("play").after(choice);
+    journeyAutoFire = storage.getJSON("neon-journey-demo-autofire-v1", true) !== false;
+    $("journeyAuto").checked = journeyAutoFire;
+    $("journeyAuto").onchange = event => {
+      journeyAutoFire = event.target.checked;
+      storage.setJSON("neon-journey-demo-autofire-v1", journeyAutoFire);
+    };
+    ui.menu.querySelector("h2").textContent = "Un viaje entre mundos.";
+    ui.menu.querySelector(".menu-panel > p").textContent = "Evacúa Chronos, rescata una pieza y cruza hacia Gaia. Desliza sin soltar para pilotar; tu nave dispara al encontrar una amenaza.";
+  }
+
+  function persistJourney() {
+    if (journey && (!journeyCanSave || !storage.setJSON(NeonCampaign.JOURNEY_DEMO_SAVE_KEY, journey.checkpoint()))) toast("Guardado no disponible. Mantén esta partida abierta.");
+    journeyView = journey?.snapshot() || null;
+  }
+
+  function startJourney(fresh = false) {
+    let saved = null;
+    journeyCanSave = true;
+    if (!fresh) saved = storage.getRaw(NeonCampaign.JOURNEY_DEMO_SAVE_KEY);
+    journey = NeonCampaign.createJourneyDemo(saved);
+    if (saved !== null && journey.snapshot().recovery === "invalid-save") {
+      const backupKey = `${NeonCampaign.JOURNEY_DEMO_SAVE_KEY}:invalid-backups`;
+      const previous = storage.getJSON(backupKey, []);
+      const copies = Array.isArray(previous) ? previous : [previous];
+      journeyCanSave = copies.includes(saved) || storage.setJSON(backupKey, [...copies, saved]);
+    }
+    if (journey.snapshot().phase === "complete") journey = NeonCampaign.createJourneyDemo();
+    journeyView = journey.snapshot();
+    journeyAutoTimer = 0; journeyShieldCooldown = 0; journeyTractorCooldown = 0;
+    startLevel(0);
+    warpTimer = .45;
+    ui.bannerName.textContent = "CHRONOS → GAIA NOVA";
+    ui.bannerGoal.textContent = "Desliza para pilotar. Rescata el módulo señalado.";
+    ui.banner.classList.remove("show"); bannerTimer = 0;
+    ui.journeyRoute.classList.remove("hidden");
+    ui.journeySkills.classList.remove("hidden");
+    ui.powerHud.classList.add("hidden");
+    persistJourney(); syncJourneyHud();
+    if (journeyView.phase === "station") showJourneyStation();
+  }
+
+  function showJourneyStation() {
+    journeyView = journey.snapshot();
+    journey.setPaused(false); // service actions are allowed; the route itself is stopped.
+    if (state === "playing") setState("paused");
+    items = []; clearTransientEffects(); hideStoryTransmission();
+    ui.fire.classList.add("hidden"); ui.journeySkills.classList.add("hidden");
+    ui.journeyRoute.classList.add("hidden");
+    ui.banner.classList.remove("show");
+    ui.journeyInstall.disabled = journeyView.partInstalled;
+    ui.journeyInstall.textContent = journeyView.partInstalled ? "ALETA MONTADA · CASCO SELLADO" : "INSTALAR PIEZA Y REPARAR";
+    ui.journeyContinue.disabled = !journeyView.partInstalled;
+    overlay(ui.journeyStation); syncJourneyHud();
+  }
+
+  function useJourneyAbility(name) {
+    if (!JOURNEY_DEMO || !journey || state !== "playing") return;
+    const cooldown = name === "shield" ? journeyShieldCooldown : journeyTractorCooldown;
+    if (cooldown > 0) return;
+    powers[name] = 4;
+    if (name === "shield") journeyShieldCooldown = 11;
+    else journeyTractorCooldown = 8;
+    activatePower(name, {x: player.x, y: player.y});
+  }
+
+  function syncJourneyHud() {
+    if (!JOURNEY_DEMO || !journey) return;
+    journeyView = journey.snapshot();
+    ui.journeyDestination.textContent = journeyView.destination;
+    ui.journeyDistance.value = journeyView.routeProgress;
+    ui.journeyObjective.textContent = journeyView.phase === "station" ? "Instala la pieza recuperada" : journeyView.waitingFor === "part" ? "Recupera el módulo · usa TRACTOR si lo necesitas" : journeyView.borderActive && !journeyView.borderResolved ? "Desactiva al guardián CH-01 para abrir el paso" : journeyView.partCollected ? "Pieza a bordo · sigue el corredor" : "Rescata la aleta vectorial señalizada";
+    for (const [name, cooldown] of [["journeyShield", journeyShieldCooldown], ["journeyTractor", journeyTractorCooldown]]) {
+      ui[name].disabled = cooldown > 0 || state !== "playing";
+      const label = cooldown > 0 ? `${Math.ceil(cooldown)} s` : "LISTO";
+      if (ui[name].querySelector("small").textContent !== label) ui[name].querySelector("small").textContent = label;
+    }
+    ui.goal.textContent = `${Math.round(journeyView.routeProgress * 100)}%`;
+    ui.goal.previousElementSibling.textContent = "RECORRIDO";
+    ui.hudLevel.textContent = `1.${journeyView.segmentIndex + 1}`;
+    ui.hudLevel.previousElementSibling.textContent = "TRAMO";
+  }
+
+  function journeyEvent(event) {
+    if (event.type === "partAvailable") {
+      items.push({type: "journeyPart", x: W * .68, baseX: W * .68, y: H * .35, r: 27, s: 120, rot: 0, rs: .2, p: 0, phase: 0, alpha: 1});
+      showStoryTransmission("BALIZA C9", "Aleta vectorial intacta. Acércate o activa el tractor.", 3.8);
+    } else if (event.type === "enemy" || event.type === "border") {
+      const enemy = createThreat("scout", level());
+      enemy.x = enemy.baseX = event.type === "border" ? W * .5 : W * .28;
+      enemy.classicScout.baseX = enemy.x;
+      enemy.journeyEntry = {targetX: enemy.x};
+      enemy.y = H * .22;
+      enemy.s = event.type === "border" ? 0 : 95;
+      if (event.type === "border") {
+        enemy.journeyBorder = true; enemy.hp = enemy.maxHp = 3;
+        showStoryTransmission("ACCESO ATLAS", "Identificación alterada. Desactiva el bloqueo y cruza.", 3.6);
+      }
+      items.push(enemy);
+    } else if (event.type === "station") {
+      persistJourney(); showJourneyStation();
+    } else if (event.type === "segmentStart") {
+      items = []; persistJourney();
+    } else if (event.type === "complete") {
+      persistJourney();
+      setState("complete");
+      ui.hud.classList.add("hidden"); ui.fire.classList.add("hidden");
+      ui.journeySkills.classList.add("hidden");
+      ui.journeyRoute.classList.add("hidden");
+      $("journeyReward").textContent = `${journey.snapshot().credits} créditos registrados · recompensa única del trayecto`;
+      hideStoryTransmission(); overlay(ui.journeyComplete);
+    }
+  }
+
   function updateMenu() {
+    if (JOURNEY_DEMO) {
+      const saved = NeonCampaign.createJourneyDemo(storage.getJSON(NeonCampaign.JOURNEY_DEMO_SAVE_KEY, null)).snapshot();
+      ui.playLabel.textContent = saved.phase === "complete" ? "REPETIR VIAJE" : "CONTINUAR VIAJE";
+      ui.playSector.textContent = `${saved.origin} → ${saved.destination}`;
+      return;
+    }
     const unlocked = getUnlocked();
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
@@ -670,10 +837,17 @@
     lastHudCollected = collected;
     lastHudHull = hull;
     updateAmmoHud();
+    if (JOURNEY_DEMO) syncJourneyHud();
   }
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
+    if (JOURNEY_DEMO) {
+      ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
+      ui.fire.disabled = state !== "playing" || manualShotCooldown > 0 || warpTimer > 0;
+      ui.fire.setAttribute("aria-label", "Disparar pulso básico sin munición limitada");
+      return;
+    }
     ui.ammo.textContent = `${ammo}/${MAX_AMMO}`;
     const unavailable = state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0;
     ui.fire.disabled = unavailable;
@@ -812,7 +986,7 @@
       storyTimer = Math.max(0, storyTimer - dt);
       if (storyTimer === 0) hideStoryTransmission();
     }
-    if (N7_CAMPAIGN || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
+    if (N7_CAMPAIGN || JOURNEY_DEMO || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -914,6 +1088,7 @@
 
   function pauseGame() {
     if (state !== "playing") return;
+    journey?.setPaused(true);
     setState("paused");
     hideWarning();
     overlay(ui.paused);
@@ -921,6 +1096,8 @@
 
   function resumeGame() {
     if (state !== "paused") return;
+    if (JOURNEY_DEMO && journey?.snapshot().phase === "station") { showJourneyStation(); return; }
+    journey?.setPaused(false);
     setState("playing");
     overlay();
     last = performance.now();
@@ -937,11 +1114,17 @@
     ui.banner.classList.remove("show");
     hideWarning();
     hideStoryTransmission();
+    if (JOURNEY_DEMO) {
+      persistJourney();
+      ui.journeyRoute.classList.add("hidden");
+      ui.journeySkills.classList.add("hidden");
+    }
     overlay(ui.menu);
     updateMenu();
   }
 
   function registerRun() {
+    if (JOURNEY_DEMO) return;
     const games = Math.trunc(Math.max(0, storage.getNumber(KEYS.games, 0))) + 1;
     storage.set(KEYS.games, games);
     const interval = Math.trunc(Math.max(0, Number(window.MONETIZATION_CONFIG?.native?.interstitialEveryRuns) || 0));
@@ -960,6 +1143,7 @@
   }
 
   function completeLevel() {
+    if (JOURNEY_DEMO) return;
     if (state !== "playing") return;
     if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     runToken += 1;
@@ -1531,7 +1715,14 @@
   }
 
   function collectItem(item) {
-    if (item.type === "energy") {
+    if (item.type === "journeyPart") {
+      if (journey?.collectPart()) {
+        persistJourney();
+        pulseRing(item.x, item.y, "#ffd877", 95, .48);
+        toast("Aleta vectorial rescatada · taller C9 disponible");
+        tone(840, .14, "triangle", .065);
+      }
+    } else if (item.type === "energy") {
       const multiplier = powers.double > 0 ? 2 : 1;
       score += 10 * combo * multiplier;
       collected++;
@@ -1605,6 +1796,10 @@
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
+      if (target.journeyBorder && journey?.resolveBorder()) {
+        persistJourney();
+        showStoryTransmission("ACCESO ATLAS", "Bloqueo desactivado. Corredor a Gaia abierto.", 3.4);
+      }
       if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
       explosions.push({x: target.x, y: target.y, ch01Animator: animator,
         life: .49, duration: .49, scale: 1, rotation: 0});
@@ -1645,9 +1840,9 @@
   }
 
   function fireManualShot() {
-    if (state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0) return false;
+    if (state !== "playing" || (!JOURNEY_DEMO && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
-    ammo -= 1;
+    if (!JOURNEY_DEMO) ammo -= 1;
     manualShotCooldown = 0.28;
     cameraKickY = Math.max(cameraKickY, 5);
     shake = Math.max(shake, 3.2);
@@ -1699,6 +1894,7 @@
   }
 
   function checkSupplyFailure() {
+    if (JOURNEY_DEMO) return;
     if (supplyFailureScheduled || energySpawned < energyBudget || collected >= level().goal) return;
     const energyRemaining = items.some((item) => item.type === "energy");
     if (!energyRemaining) {
@@ -1940,7 +2136,7 @@
     if (lv.hazard === "gravity") player.drift = Math.sin(elapsed * 0.8) * 22;
     else player.drift = 0;
 
-    const follow = 9 + (settings.sensitivity / 100) * 8;
+    const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
     engineTrail();
@@ -1952,7 +2148,17 @@
       return;
     }
 
-    if (encounterDirector) {
+    if (JOURNEY_DEMO && journey) {
+      journey.advance(dt, journeyEvent);
+      syncJourneyHud();
+      if (journeyView.phase !== "travel") { updateEffects(dt); return; }
+      journeyShieldCooldown = Math.max(0, journeyShieldCooldown - dt);
+      journeyTractorCooldown = Math.max(0, journeyTractorCooldown - dt);
+      journeyAutoTimer = Math.max(0, journeyAutoTimer - dt);
+      if (journeyAutoFire && journeyAutoTimer === 0 && items.some(item => isThreat(item) && item.y < player.y && Math.abs(item.x - player.x) < 145)) {
+        fireManualShot(); journeyAutoTimer = .62;
+      }
+    } else if (encounterDirector) {
       encounterDirector.advance(dt, (item) => {
         items.push(item);
         if (item.type === "energy") energySpawned++;
@@ -2020,6 +2226,11 @@
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
       if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
+      if (item.journeyEntry && item.classicScout.age < .9) {
+        const entry = item.classicScout.age / .9;
+        item.x = -80 + (item.journeyEntry.targetX + 80) * entry;
+      }
+      if (item.type === "journeyPart") item.y = Math.min(item.y, player.y - 65);
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item)) {
@@ -2226,6 +2437,7 @@
   }
 
   function background(t) {
+    if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
     gradient.addColorStop(0, lv.top);
@@ -2647,6 +2859,46 @@
     ctx.beginPath(); ctx.arc(0, 0, 5 + intensity * 4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
+  function drawJourneyBackground() {
+    const view = journeyView || {routeProgress: 0, segmentId: "departure", segmentProgress: 0};
+    const progress = view.routeProgress;
+    ctx.fillStyle = "#020917"; ctx.fillRect(0, 0, W, H);
+    const painting = (image, alpha, zoom) => {
+      if (!spriteReady(image) || alpha <= 0) return;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * zoom;
+      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
+      ctx.save(); ctx.globalAlpha = alpha;
+      ctx.drawImage(image, (W - width) / 2, (H - height) / 2, width, height); ctx.restore();
+    };
+    painting(SPRITES.cronosBackground, clamp(1 - progress * 2.6, 0, 1), 1.16 - progress * .3);
+    painting(SPRITES.atlasBackground, clamp((progress - .18) / .65, 0, .94), 1.02 + progress * .18);
+    ctx.save(); ctx.globalAlpha = .5;
+    for (const star of stars) {
+      ctx.fillStyle = star.tint;
+      ctx.fillRect(star.x, star.y, star.r, star.r * 2.5);
+    }
+    ctx.restore();
+    if (progress < .42 && spriteReady(SPRITES.chronosModule)) {
+      const distance = progress / .42;
+      const size = 320 - distance * 230;
+      ctx.save(); ctx.globalAlpha = (1 - distance) * .85;
+      ctx.translate(W * (.61 - distance * .39), H * (.32 - distance * .16));
+      ctx.rotate(-.2 + distance * .4);
+      ctx.drawImage(SPRITES.chronosModule, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+    if (view.segmentId === "departure" && view.segmentProgress >= .08 && view.segmentProgress < .12 && spriteReady(SPRITES.chronosShockwave)) {
+      const phase = (view.segmentProgress - .08) / .04;
+      const atlas = SPRITES.chronosShockwave, cell = atlas.naturalWidth / 2;
+      const frame = Math.min(3, Math.floor(phase * 4)), size = 250 + phase * 700;
+      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.sin(phase * Math.PI) * .8;
+      ctx.drawImage(atlas, frame % 2 * cell, Math.floor(frame / 2) * cell, cell, cell, W * .5 - size / 2, H * .32 - size / 2, size, size);
+      ctx.restore();
+    }
+    const veil = ctx.createLinearGradient(0, H * .3, 0, H);
+    veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");
+    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
+  }
   function playerFrameState(t) {
     const desiredDelta = hull < 34 || state === "destroying" ? 0 : player.target + player.drift - player.x;
     const movingHard = Math.abs(desiredDelta) > 72;
@@ -2698,7 +2950,8 @@
     }
 
     const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
-    const enginePulse = 0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20;
+    const upgraded = JOURNEY_DEMO && journeyView?.engineBoost;
+    const enginePulse = (0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20) * (upgraded ? 1.28 : 1);
     ctx.save();
     ctx.translate(0, 53 * SHIP_VISUAL.scale + bob);
     ctx.globalCompositeOperation = "screen";
@@ -2707,7 +2960,7 @@
     for (const engineX of [-27, 27]) {
       const plume = ctx.createLinearGradient(engineX, 0, engineX, 48 * SHIP_VISUAL.scale * enginePulse);
       plume.addColorStop(0, "rgba(255,255,255,.96)");
-      plume.addColorStop(0.25, "rgba(92,242,255,.82)");
+      plume.addColorStop(0.25, upgraded ? "rgba(255,196,92,.92)" : "rgba(92,242,255,.82)");
       plume.addColorStop(1, "rgba(42,116,255,0)");
       ctx.fillStyle = plume;
       ctx.beginPath();
@@ -2742,6 +2995,16 @@
       }
     }
     ctx.restore();
+
+    if (upgraded) {
+      ctx.save(); ctx.translate(0, 30 * SHIP_VISUAL.scale);
+      for (const side of [-1, 1]) {
+        ctx.save(); ctx.translate(side * 55 * SHIP_VISUAL.scale, 0);
+        drawImageCentered(SPRITES.debrisPanel, 20, 34, side * .16);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
 
     if (hull < 67 && state !== "destroying") {
       // Los tres fotogramas comparten anclaje y estilo. El daño progresa mediante
@@ -3196,6 +3459,16 @@
     ctx.fillText(label, W / 2, y - 3);
     ctx.restore();
   }
+  function drawJourneyPart(item) {
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.shadowBlur = 24; ctx.shadowColor = "#ffd877";
+    const pulse = 1 + Math.sin(elapsed * 4) * .08;
+    drawImageCentered(SPRITES.debrisPanel, 66 * pulse, 82 * pulse, .12);
+    drawImageCentered(frameFrom("core", Math.floor(elapsed * 8)), 35, 35, 0, .75);
+    ctx.fillStyle = "#fff4c3"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("ALETA C9", 0, -57);
+    ctx.restore();
+  }
   function render(t) {
     ctx.save();
     ctx.translate(cameraKickX, -cameraKickY);
@@ -3205,7 +3478,8 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.type === "energy") drawEnergy(item);
+      if (item.type === "journeyPart") drawJourneyPart(item);
+      else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
       else if (item.type === "debris") drawDebris(item);
       else if (item.type === "satellite") drawSatellite(item);
@@ -3279,6 +3553,18 @@
     event.preventDefault();
     const x = pointerX(event);
     const factor = settings.sensitivity / 100;
+    if (JOURNEY_DEMO) {
+      if (event.type.startsWith("touch") && window.PointerEvent) return;
+      if (event.type === "pointerdown" || event.type === "touchstart") {
+        journeyPointerLast = x;
+        if (event.pointerId !== undefined) canvas.setPointerCapture?.(event.pointerId);
+        return;
+      }
+      if (journeyPointerLast === null) return;
+      player.target = clamp(player.target + (x - journeyPointerLast) * factor, 70, W - 70);
+      journeyPointerLast = x;
+      return;
+    }
     player.target = clamp(player.x + (x - player.x) * factor, 70, W - 70);
   }
 
@@ -3286,6 +3572,7 @@
   canvas.addEventListener("pointermove", move, { passive: false });
   canvas.addEventListener("touchstart", move, { passive: false });
   canvas.addEventListener("touchmove", move, { passive: false });
+  for (const event of ["pointerup", "pointercancel", "touchend", "touchcancel"]) canvas.addEventListener(event, () => { journeyPointerLast = null; });
 
   addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") player.target -= 85;
@@ -3298,6 +3585,7 @@
   });
 
   $("play").onclick = () => {
+    if (JOURNEY_DEMO) { startJourney(); return; }
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -3315,12 +3603,12 @@
   ui.fire.onclick = fireManualShot;
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
-  $("restart").onclick = () => startLevel(currentLevel);
+  $("restart").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("quit").onclick = goHome;
   $("home").onclick = goHome;
   $("completeHome").onclick = goHome;
-  $("retry").onclick = () => startLevel(currentLevel);
-  $("replayLevel").onclick = () => startLevel(currentLevel);
+  $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
+  $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   ui.nextLevel.onclick = () => prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
 
   ui.musicVolume.oninput = (event) => {
@@ -3416,6 +3704,7 @@
     }
   }, { once: true });
   console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
+  setupJourneyUI();
   updateMenu();
   hud();
   resetPowers();
