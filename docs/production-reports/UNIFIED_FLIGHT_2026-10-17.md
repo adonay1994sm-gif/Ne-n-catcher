@@ -9,7 +9,8 @@ Se preservaron las tres variantes, sus claves y todo el historial. El clásico r
 - **Fecha:** 17/10/2026 UTC.
 - **Rama:** continuity-assets-audit-20261013.
 - **SHA inicial:** 9c744da4957d776b80940fee2f323a3f4a3ad194.
-- **SHA funcional probado y del paquete publicado:** 375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc, árbol limpio al construir.
+- **SHA de la partida natural:** 375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc.
+- **SHA del paquete final publicado:** 2cea7af9dcec78d2e71305526bb33cc5f31752c6, árbol limpio al construir; mismo juego/arte y mejora de caché verificada.
 - **Cierre documental:** esta entrega y sus evidencias se añaden después del SHA funcional; el commit documental se registra en CODEX_STATUS.md y el historial Git del informe.
 - **Bloque:** P1-FLIGHT-01, integración clásica de la primera misión, armas y servicio.
 - **Niveles modificados:** nuevo recorrido en La Onda de Choque; nuevas armas/movilidad disponibles en el clásico; Atlas adapta su advertencia a la posición vertical real. Los otros nueve escenarios conservan su arte anterior.
@@ -86,7 +87,7 @@ Los anclajes de los cañones quedan bajo las capas de alas, motores y fuselaje; 
 | Visual artpass |12/12|0|
 | node scripts/audit-asset-inventory.mjs |76 runtime, cero inconsistencias|0|
 | npm run build:preview |Paquete limpio, SHA375d0e9|0|
-| npm run test:preview |17/17|0|
+| npm run test:preview |23/23 en paquete final, incluyendo6regresiones de caché|0|
 | unified-flight-layout-smoke, layout05 |12/12 en390×844,320×568,844×390;12 capturas|0|
 | unified-flight-browser-smoke, natural01 |5/5 grupos;14 capturas, primera misión completa, C9 y disparos en Gaia|0|
 
@@ -192,3 +193,19 @@ Se corrigió sw.js para obtener el objeto Cache antes de esperar la red y reutil
 - El fixture de activación con respuesta retenida no llegó a reproducir ese orden: Chromium pospone la activación. Se conserva el intento y su timeout como límite del fixture, no como defecto del juego.
 - Se detectó además que la versión instalada de waitForFunction aceptaba Promise como verdadero sin esperar false. Los dos scripts de SW ahora esperan page.evaluate desde Node con tiempos acotados. Las capturas/fixtures de juego usan predicados síncronos y no dependen de ese error. Se guardan los scripts exactos ejecutados antes de añadir límites diagnósticos finales.
 - Certificación03 repetida tras el endurecimiento:11/11 fases, contenido150/150 y el resto sin regresiones; preview ampliado23/23, incluido el nuevo contrato de generación. El juego, arte, controles y estilos conservan los mismos bytes que la partida natural aprobada.
+
+## ACTA FINAL DE PUBLICACIÓN — 17/10/2026 a 13:19:54 UTC
+
+El paquete vigente es **2cea7af9dcec78d2e71305526bb33cc5f31752c6**, construido limpio después del endurecimiento de caché. Sustituye en el mismo sitio privado al primer paquete 375d0e9; este último se conserva como evidencia histórica de la partida natural.
+
+- [ZIP final](evidence/unified-flight/package-2cea7af/neon-catcher-vuelo-unificado-2cea7af.zip):6944306B,112entradas,CRC y comparación byte a byte aprobados.
+- SHA-256 ZIP:752e4245c56ebbc21d7a804794998bbdb318cb565493209126b87da897d37762.
+- Revisión:1504618bcb9fe7d5a908e1f794098bdef8fdefc0078e2ca19862dc3ae8900068.
+- 83 archivos de jugabilidad, arte y presentación comparados con el paquete de la partida natural: idénticos, incluido juegoSHA6fcee2ee6478d97e9d54661847cf35c6ae28d633291fc91f08dd6e1c9da3f7fd. El worker también coincide con la prueba CacheStorage real al sustituir únicamente su revisión de 64 caracteres. [Metadatos](evidence/unified-flight/package-2cea7af/package.json).
+- Preview final23/23, código0. Certificación03: once fases aprobadas, incluido contenido150/150 y regresión33/33. No se repite una partida idéntica por cambiar solo caché/procedencia; los hashes y los casos específicos acotan esa validación.
+- Sitio: **https://neon-catcher-pruebas.chictide18.chatgpt.site**. Publicación nativa **succeeded**, versión 5, audiencia privada del propietario conservada. Fuente de distribución c393a6be60c28ee026f6aef119e20693bbedf822. [Respuesta nativa](evidence/unified-flight/package-2cea7af/site-deployment.json). No se jugó remotamente en Safari ni se desplegó Netlify.
+- Commit de endurecimiento45f890cdc21ab5f5b0ee6e39341e2f365d4ebd5d y cierre QA2cea7af9dcec78d2e71305526bb33cc5f31752c6, ambos publicados.
+
+La prueba de actualización queda técnicamente aprobada en Chromium con su alcance declarado: actualización normal3/3, manipulación controlada de CacheStorage4/4 y modelos6/6. Se retira el bloqueo provisional de diagnóstico, manteniendo fallos, timeouts y scripts exactos. No se afirma que una actualización normal de Chromium reprodujera el intercalado provocado. Si un worker antiguo ya ejecuta código previo, el parche no cambia retroactivamente ese proceso; la nueva revisión consulta únicamente su propia caché.
+
+Pendiente: aceptación estética/balance humano, rendimiento de salida en dispositivo, Safari/iPhone físico, defecto histórico de glifos del nivel10 no investigado en este lote, continuidad de las otras misiones, enemigos/jefes restantes, historia y audio final. **Cero niveles se declaran visualmente completos y cero certificaciones físicas nuevas.** Siguiente bloque: perfil de salida y continuidad de Gaia con el mismo bucle, sin activar MotorV1.

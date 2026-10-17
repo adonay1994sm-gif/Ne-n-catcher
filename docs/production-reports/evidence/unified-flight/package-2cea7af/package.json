@@ -1,0 +1,17 @@
+{
+  "createdAt": "2026-10-17T13:18:16.495772+00:00",
+  "commit": "2cea7af9dcec78d2e71305526bb33cc5f31752c6",
+  "dirty": false,
+  "revision": "1504618bcb9fe7d5a908e1f794098bdef8fdefc0078e2ca19862dc3ae8900068",
+  "archive": "neon-catcher-vuelo-unificado-2cea7af.zip",
+  "bytes": 6944306,
+  "sha256": "752e4245c56ebbc21d7a804794998bbdb318cb565493209126b87da897d37762",
+  "entries": 112,
+  "crc": "passed",
+  "fileByteComparison": "passed",
+  "gameSha256": "6fcee2ee6478d97e9d54661847cf35c6ae28d633291fc91f08dd6e1c9da3f7fd",
+  "unchangedGameplayAndArtFilesComparedToNatural375d0e9": 83,
+  "changedScope": "Service-worker generation handling and provenance, gameplay/art byte-identical to complete natural playthrough",
+  "workerLogicComparedToRealCacheStorageQA": "identical after replacing only the 64-character package revision",
+  "qaWorkerHash": "0d07aaa0bb4b83b3d1ff7f05927c2ed27fadb3e9bcca9a610a83df0225f9d261"
+}

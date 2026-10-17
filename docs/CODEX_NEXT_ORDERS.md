@@ -1,3 +1,15 @@
+## Próxima actuación vigente — después del paquete2cea7af, 17/10/2026
+
+1. Revisar el primer viaje publicado; recoger aceptación estética/balance del propietario sin confundirla con QA técnica. Sitio privado en CODEX_STATUS.md.
+2. Perfilar salida/ruptura y memoria en Safari/iPhone. Sin dispositivo, no marcar prueba física y continuar QA/recursos independientes.
+3. Extender el recorrido a Gaia: profundidad y llegada, patrullas, recuperación y guardián enlazados con objetivos propios. Producir un tercer armamento ilustrado con función diferente.
+4. Mantener las dos armas y sus anclajes, guardados separados, clásicos/N-7/Journey recuperables, deltasacotados y un solo RAF. No multiplicar cien etapas ni activar MotorV1.
+5. Caché cerrada: pruebas de generación6/6, actualización real3/3 y CacheStorage bajo eliminación controlada4/4. Usar los scripts actuales con polling asíncrono desde Node; leer el dictamen del informe antes de repetir hipótesis ya resueltas.
+
+[Informe completo](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Historial anterior conservado; los diagnósticos provisionales que siguen quedaron resueltos por el cierre anterior.
+
+---
+
 ## Próxima actuación — viaje unificado, 17/10/2026
 
 Vigente: [cierre de la entrega](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Juego probado/publicado375d0e9. No reconstruir desde una demo anterior ni borrar los guardados. Una entrada principal clásica; Journey/N-7 permanecen como archivo QA, con claves independientes.

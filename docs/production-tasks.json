@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T13:05:45.861773+00:00",
+  "updatedAt": "2026-10-17T13:21:18.136753+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -4785,25 +4785,30 @@
         "assets/chronos_flight_weapons_v1.webp",
         "assets/chronos_flight_space_v1.webp"
       ],
-      "commit": "375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc",
+      "commit": "2cea7af9dcec78d2e71305526bb33cc5f31752c6",
       "tests": [
         "node scripts/certify-local.mjs docs/production-reports/evidence/unified-flight/certification-02",
         "npm run test:preview",
         "node scripts/unified-flight-layout-smoke.cjs --root preview-dist --output docs/production-reports/evidence/unified-flight/browser-layout-05",
-        "node scripts/unified-flight-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/unified-flight/browser-natural-01 --timeout 900000"
+        "node scripts/unified-flight-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/unified-flight/browser-natural-01 --timeout 900000",
+        "npm run test:preview (23/23 after cache hardening)",
+        "node scripts/preview-sw-upgrade-smoke.cjs --root preview-dist --output docs/production-reports/evidence/unified-flight/sw-upgrade-fixed-03"
       ],
       "evidence": [
         "docs/production-reports/UNIFIED_FLIGHT_2026-10-17.md",
         "docs/production-reports/evidence/unified-flight/certification-02/results.json",
         "docs/production-reports/evidence/unified-flight/browser-layout-05/results.json",
         "docs/production-reports/evidence/unified-flight/browser-natural-01/results.json",
-        "docs/production-reports/evidence/unified-flight/package-375d0e9/site-deployment.json"
+        "docs/production-reports/evidence/unified-flight/package-375d0e9/site-deployment.json",
+        "docs/production-reports/evidence/unified-flight/certification-03/results.json",
+        "docs/production-reports/evidence/unified-flight/package-2cea7af/site-deployment.json",
+        "docs/production-reports/evidence/unified-flight/sw-upgrade-fixed-03/results.json",
+        "docs/production-reports/evidence/unified-flight/sw-cache-unlink-fixed-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística, balance humano y Safari/iPhone físico pendientes.",
         "Rendimiento de salida bajo en Chromium por software; requiere perfil y medición móvil.",
-        "Solo la primera misión presenta viaje geográfico; no cien etapas implementadas.",
-        "QA de actualización offline en diagnóstico independiente; no declarada aprobada."
+        "Solo la primera misión presenta viaje geográfico; no cien etapas implementadas."
       ],
       "acceptance": [
         "Una entrada principal sin tres campañas obligatorias; archivo histórico y guardados recuperables.",
@@ -4820,7 +4825,8 @@
       "canonicalRelationship": {
         "revises": "P1-01",
         "note": "El propietario pidió integrar los sistemas en el clásico. La demo Journey y N-7 quedan como variantes históricas; no se borran ni se importan sus progresos por coincidencia numérica."
-      }
+      },
+      "packageCommit": "2cea7af9dcec78d2e71305526bb33cc5f31752c6"
     }
   ],
   "canonicalPlan": {

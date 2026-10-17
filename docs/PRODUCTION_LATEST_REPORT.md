@@ -1,3 +1,15 @@
+## Cierre vigente — vuelo unificado, 17/10/2026
+
+**Prueba privada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Paquete final limpio **2cea7af9dcec78d2e71305526bb33cc5f31752c6**, publicación confirmada succeeded a13:19:54UTC, versión5. CONTINUAR VIAJE → NIVELES → La Onda de Choque para revisar la salida desde un guardado avanzado.
+
+La partida natural375d0e9 aprobó5/5; el paquete final conserva83archivos de juego/arte/presentación idénticos e incorpora caché endurecida. Certificación03 completa, contenido150/150, motor40/40, arquitectura6/6, static13/13 y regresión33/33. Preview23/23; Chromium layout12/12; N-7 smoke6/6; actualización offline3/3; CacheStorage con limpieza controlada4/4. El diagnóstico provisional de caché queda cerrado con esos límites.
+
+Arte/balance e iPhone físico siguen pendientes. La salida rinde bajo en Chromium por software; no se prometen60FPS móviles. Solo primera misión con nuevo viaje geográfico; no cien etapas ni diez niveles visualmente completos. EngineV1=false; main, PR3 y Netlify intactos.
+
+[Informe, galería y cierre](production-reports/UNIFIED_FLIGHT_2026-10-17.md) · [Paquete final y hashes](production-reports/evidence/unified-flight/package-2cea7af/package.json). El historial que sigue refleja versiones anteriores y no sustituye este cierre.
+
+---
+
 # DIAGNÓSTICO Y CIERRE MÁS RECIENTE — 17/10/2026
 
 [Informe del vuelo unificado Chronos→Gaia](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Referencia funcional375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc, paquete limpio y publicación privada confirmada. Incluye viaje multicapa, ataque/destrucción, movimiento relativoXY, tres cargas recargables y rescate→C9→emisor gemelo→Gaia. MotorV1 permanece desactivado.
