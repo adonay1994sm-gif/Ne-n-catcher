@@ -1,3 +1,11 @@
+## Actualización vigente — vuelo unificado, 17/10/2026
+
+https://neon-catcher-pruebas.chictide18.chatgpt.site . Sitio privado del propietario; puede requerir acceso a ChatGPT. Paquete limpio375d0e9, revisión76f62007bd212e9a373f3b753740a4232a4aa2b376aff95f1df2468e02a8005d. Publicación nativa succeeded a13:00:12UTC; mismo hash probado en partida natural5/5. CONTINUAR VIAJE → NIVELES → La Onda de Choque para repetir desde un guardado avanzado. [Detalles, paquete y límites](production-reports/UNIFIED_FLIGHT_2026-10-17.md).
+
+No se jugó remotamente en Safari/iPhone. Se investiga una prueba de actualización offline; no se declara certificada. Netlify no se modificó. Las versiones siguientes de este documento son históricas.
+
+---
+
 ## Publicación vigente — Guardian Atlas ·17/10/2026
 
 **https://neon-catcher-pruebas.chictide18.chatgpt.site** — Sites succeeded12:08:42UTC. Paquete limpio del juego11dfa7bf7d3e287dd979c8dfc1dbafd8c1388473. Marcar desbloqueo clásico de QA → Campaña clásica → NIVELES → Perímetro Atlas. Recuperar45CRONIUM para iniciar el encuentro. Arte en revisión; después de publicar se completó Chromium natural03:3/3 y regresión clásica/N-7:2/2, mismo hash. Safari físico pendiente.

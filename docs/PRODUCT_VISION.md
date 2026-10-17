@@ -1,3 +1,7 @@
+Actualización de implementación17/10/2026: [vuelo unificado en el clásico](production-reports/UNIFIED_FLIGHT_2026-10-17.md). La última petición del propietario concentra el acceso en una campaña principal e integra viaje/armas/servicio sobre la base clásica. Las variantes antiguas quedan recuperables en QA; el plan10×10 sigue siendo objetivo y no contenido terminado. Se preservan las restricciones del motor y los guardados.
+
+---
+
 ## Actualización vigente del propietario —17/10/2026
 
 Se solicitan jefes vivos mediante arte y animaciones reales siguiendo las referencias aportadas, y cien etapas progresivas con argumento. Primer incremento: Guardian Atlas dentro del rescate CRONIUM del clásico; no otra demo abreviada. El [diseño editorial](design/CAMPAIGN_100_STAGES.md) es una propuesta de producción, no cien niveles disponibles. [Informe de integración](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Se preservan campañas, guardados y límites técnicos; Motor V1 reservado/desactivado.

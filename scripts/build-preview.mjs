@@ -31,9 +31,10 @@ export function previewWorker(source, revision) {
     'keys.filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE)');
   worker = replaceOnce(worker, 'url.origin !== self.location.origin',
     'url.origin !== self.location.origin || !url.href.startsWith(self.registration.scope)');
-  worker = worker.replaceAll('await caches.match(request)', 'await (await caches.open(CACHE)).match(request)');
-  return replaceOnce(worker, 'caches.match("index.html")',
-    '(await caches.open(CACHE)).match(new URL("index.html", self.registration.scope).href)');
+  // The source worker already retains its generation's Cache handle. Keep that
+  // handle for offline fallback rather than reopening a deleted generation.
+  return replaceOnce(worker, 'cache.match("index.html")',
+    'cache.match(new URL("index.html", self.registration.scope).href)');
 }
 
 /** The launcher owns only its own shell; the game keeps its more specific worker. */

@@ -1,0 +1,19 @@
+{
+  "recordedAt": "2026-10-17T13:07:13.923Z",
+  "command": "node --test tests/service-worker-generation.test.mjs",
+  "exitCode": 1,
+  "passed": 3,
+  "failed": 3,
+  "sha": "375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc",
+  "status": "M docs/CODEX_NEXT_ORDERS.md\n M docs/CODEX_STATUS.md\n M docs/PLAYTEST_SITE.md\n M docs/PRODUCTION_LATEST_REPORT.md\n M docs/PRODUCTION_MASTER_CHECKLIST.md\n M docs/PRODUCTION_PROGRESS.md\n M docs/PRODUCT_VISION.md\n M docs/immersive-rebirth/IMMERSIVE_LATEST_REPORT.md\n M docs/production-reports/UNIFIED_FLIGHT_2026-10-17.md\n M docs/production-tasks.json\n M docs/visual-rebirth/GALERIA_10_NIVELES.md\n M docs/visual-rebirth/INFORME_FINAL_10_NIVELES.md\n M scripts/content-browser-smoke.cjs\n M scripts/preview-sw-upgrade-smoke.cjs\n?? docs/production-reports/evidence/unified-flight/browser-natural-01/\n?? docs/production-reports/evidence/unified-flight/catalog-preservation.json\n?? docs/production-reports/evidence/unified-flight/n7-regression-01/\n?? docs/production-reports/evidence/unified-flight/n7-regression-02/\n?? docs/production-reports/evidence/unified-flight/package-375d0e9/\n?? docs/production-reports/evidence/unified-flight/sw-generation-01/\n?? docs/production-reports/evidence/unified-flight/sw-inflight-01/\n?? docs/production-reports/evidence/unified-flight/sw-upgrade-01/\n?? docs/production-reports/evidence/unified-flight/sw-upgrade-02/\n?? scripts/service-worker-inflight-smoke.cjs\n?? tests/service-worker-generation.test.mjs",
+  "hashes": {
+    "sw.js": "72a5de37c2cfa23ce770f66c65af3c2a7d6628a5b27a77c161f4eb7d98ee3ec7",
+    "scripts/build-preview.mjs": "ec63769606c7d48194e2af0aafd7a3abe8e056a00e3f467afac847b5e312d1fa",
+    "tests/service-worker-generation.test.mjs": "cc0072a1ba3a4e15d2a665120a28f44e02699f9c60d339c4cbec38197e2bf0e0"
+  },
+  "limits": [
+    "Controlled VM lifecycle and fetch order; not a physical PWA test.",
+    "CacheStorage deletion unlinks a name; retained Cache handles do not re-register it.",
+    "The source snapshots accompany the failed test log."
+  ]
+}

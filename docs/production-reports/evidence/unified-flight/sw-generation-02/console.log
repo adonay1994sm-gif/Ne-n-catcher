@@ -1,0 +1,14 @@
+✔ a delayed old code response cannot recreate its cache after the newer worker activates (35.336139ms)
+✔ a delayed old uncached image cannot recreate a retired game generation (10.29265ms)
+✔ a failing old navigation uses its retained fallback without creating an empty old cache (10.042112ms)
+✔ the launcher retained handle remains writable after retirement without resurrecting its name (3.646614ms)
+✔ activation removes only its own scope generation and preserves launcher, sibling and foreign caches (6.032564ms)
+✔ the VM CacheStorage fixture distinguishes retained handles from a fresh open after delete (1.26454ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143.246295

@@ -1,3 +1,17 @@
+## Próxima actuación — viaje unificado, 17/10/2026
+
+Vigente: [cierre de la entrega](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Juego probado/publicado375d0e9. No reconstruir desde una demo anterior ni borrar los guardados. Una entrada principal clásica; Journey/N-7 permanecen como archivo QA, con claves independientes.
+
+1. Cerrar diagnóstico de actualización de service workers: sw-upgrade-01 vio caché antigua tras recargar; diferenciar activación todavía en curso de respuesta de un worker anterior. Conservar la aserción de limpieza, caché ajena y prueba offline. No está certificada esta actualización.
+2. Revisar experiencia/arte del primer recorrido ya publicado. Validación técnica local y natural no sustituyen aceptación del propietario ni balance humano.
+3. Medir salida/ruptura en Safari/iPhone y perfilar dibujo/memoria. Si no hay dispositivo, dejar la matriz física pendiente y continuar tareas independientes.
+4. Extender continuidad a Gaia y conectar patrullas→recuperación→Atlas; siguiente arma con función distinta y montaje ilustrado. No multiplicar100etapas sin cerrar el bucle y mantenerlo probado.
+5. Mantener EngineV1=false, un solo RAF y main/PR3/producción intactas. Cualquier paquete nuevo debe tener SHA limpio/hash y despliegue propio comprobado, sin confundir GitHub con sitio servido.
+
+Historial anterior conservado:
+
+---
+
 ## Continuación exacta — Guardian Atlas cerrado técnicamente, 17/10/2026
 
 1. Verificar rama/HEAD/remoto y leer [informe](production-reports/GUARDIAN_ATLAS_2026-10-17.md) y [paquete publicado](production-reports/PAQUETE_ATLAS_2026-10-17.md). Código del juego probado/publicado:11dfa7b; cierres posteriores son documentación. No reconstruir el diseño desde un SHA antiguo.

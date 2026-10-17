@@ -1,0 +1,29 @@
+
+> neon-catcher@7.2.0 test:preview
+> node --test tests/preview-build.test.mjs
+
+✔ unit: preview offers one main journey and preserves historical versions inside a closed QA archive (269.186332ms)
+✔ unit: isolated storage never reads, overwrites or removes normal campaign keys (1.655554ms)
+✔ unit: preview transforms require the actual game markers and preserve ordinary input (11.656675ms)
+✔ unit: launcher unlock affects only preview N-7 and reports blocked storage (23.373419ms)
+✔ unit: classic QA unlock preserves achievements, ordinary saves and N-7 (15.258339ms)
+✔ unit: preview installation opens the selector with one identity from either entry point (1.717705ms)
+✔ unit: launcher worker caches its shell and preserves game and unrelated caches (1.387179ms)
+✔ unit: launcher worker serves the selector offline without intercepting game or foreign pages (1.131563ms)
+✔ unit: preview worker preserves foreign caches and nested-scope caches (2.553083ms)
+✔ unit: offline navigation uses only the scoped cache and ignores foreign paths (1.703154ms)
+✔ unit: Netlify opt-in cannot authorize main or PR deploy contexts (424.304001ms)
+✔ built launcher has one principal journey, recoverable historical archives and resolving package paths (20.67345ms)
+✔ built preview manifest consistently launches the offline selector (2.599011ms)
+✔ preview preserves core, content and every original asset byte for byte (60.027301ms)
+✔ preview-only transforms do not change the default web root or native game (3.781639ms)
+✔ preview cannot initialize native ads or make real payments (2.293512ms)
+✔ build provenance records exact commit, source tree and every emitted byte (64.81575ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1417.345193

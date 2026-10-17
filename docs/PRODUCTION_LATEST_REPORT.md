@@ -1,3 +1,13 @@
+# DIAGNÓSTICO Y CIERRE MÁS RECIENTE — 17/10/2026
+
+[Informe del vuelo unificado Chronos→Gaia](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Referencia funcional375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc, paquete limpio y publicación privada confirmada. Incluye viaje multicapa, ataque/destrucción, movimiento relativoXY, tres cargas recargables y rescate→C9→emisor gemelo→Gaia. MotorV1 permanece desactivado.
+
+Contenido150/150; once fases locales aprobadas; preview17/17; Chromium layout12/12 y natural5/5,14capturas. La actualización de caché offline está en diagnóstico tras un fallo conservado, no se declara aprobada. Prueba física, arte/balance y el resto de etapas siguen pendientes. No se modificó Netlify, main ni PR3.
+
+El contenido siguiente es histórico; los informes anteriores conservan sus evidencias pero no certifican cambios posteriores.
+
+---
+
 ## Guardian Atlas — cierre técnico comprobado, 17/10/2026
 
 **Prueba privada actualizada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Desbloqueo clásico de QA → campaña clásica → NIVELES → Perímetro Atlas. Recuperar 45 fragmentos inicia al guardián. Ocho poses ilustradas, dos fases, avisos, pulsos que impactan, daño y desactivación con permiso de paso. Hangar y variantes anteriores conservados.

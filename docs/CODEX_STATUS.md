@@ -1,8 +1,14 @@
-## Vuelo unificado — integración WIP conservada, 17/10/2026
+## Vuelo unificado — publicado para pruebas, 17/10/2026
 
-Primera misión clásica con salida real de Chronos, arte multicapa, atacante, recuperación y aproximación a Gaia; movimiento relativo XY; tres cargas que se recargan; módulo gemelo recuperable e instalación en C9. Una entrada principal; variantes históricas conservadas en QA. No son cien etapas nuevas ni diez niveles rehechos.
+**Sitio privado actualizado:** https://neon-catcher-pruebas.chictide18.chatgpt.site . CONTINUAR VIAJE → NIVELES → La Onda de Choque si ya existe progreso. Ataque real a Chronos, estación alejándose, espacio profundo y Gaia; movimiento XY; tres cargas recargables, rescate e instalación del emisor gemelo en C9. Naves/guardados y variantes históricas conservadas, estas últimas dentro de un archivo QA cerrado.
 
-Conservación WIP `b956974` y corrección de arranque `57b468d`, ambos publicados. Certificación local02 completa: contenido150/150, motor40/40, arquitectura6/6, static13/13, regresión33/33; Chromium layout05,12/12 en tres tamaños. **Partida natural y publicación de esta revisión todavía pendientes**. Prueba privada actual sigue siendo la entrega Atlas anterior. [Diagnóstico y seguimiento](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Se conserva todo el trabajo y las evidencias fallidas. MotorV1 desactivado.
+**Código y paquete limpio publicado:** 375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc. Conservación WIP b956974 y corrección de arranque57b468d ya en GitHub. Sites confirmó succeeded el17/10 a13:00:12UTC. El sitio sirve el mismo hash de juego que pasó Chromium natural. Netlify y PR3 no se modificaron.
+
+Certificación local11/11 fases: contenido150/150, motor40/40, arquitectura6/6, static13/13, regresión33/33, web13/13, render14/14, audio3/3 y artpass12/12; inventario76, cero inconsistencias. Preview17/17; Chromium12/12 en tres tamaños y partida natural5/5 (90,0046s jugados,41 fragmentos, rescate→C9→Gaia,14capturas). N-7,6/6 pasos de regresión real. **Actualización offline de workers en diagnóstico:** la prueba vio una caché antigua y no se declara aprobada; evidencia conservada.
+
+**Arte y balance humano en revisión; Safari/iPhone físico pendientes.** La salida rinde bajo en el host Chromium por software; mediaRAF23,04/s, no se promete60FPS móviles. Solo la primera misión tiene nuevo viaje geográfico; no diez niveles visualmente completos ni cien etapas implementadas. EngineV1=false, un único RAF legacy.
+
+[Informe completo y capturas](production-reports/UNIFIED_FLIGHT_2026-10-17.md) · [ZIP y hashes](production-reports/evidence/unified-flight/package-375d0e9/package.json) · [Publicación real](production-reports/evidence/unified-flight/package-375d0e9/site-deployment.json).
 
 ---
 

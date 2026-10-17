@@ -236,6 +236,10 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
       result.previewLauncher = preview;
       if (preview) {
         if (mode === 'n7') {
+          const archive = page.locator('#qaArchive');
+          if (await archive.count() && await archive.getAttribute('open') === null) {
+            await archive.locator('summary').click();
+          }
           if (!fullRoute) await page.locator('#unlock').check();
           await page.locator('#n7link').click();
         }

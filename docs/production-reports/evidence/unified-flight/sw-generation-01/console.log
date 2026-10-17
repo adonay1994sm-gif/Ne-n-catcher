@@ -1,0 +1,67 @@
+✖ a delayed old code response cannot recreate its cache after the newer worker activates (41.75526ms)
+✖ a delayed old uncached image cannot recreate a retired game generation (13.458067ms)
+✖ a failing old navigation uses its retained fallback without creating an empty old cache (12.713451ms)
+✔ the launcher retained handle remains writable after retirement without resurrecting its name (3.542831ms)
+✔ activation removes only its own scope generation and preserves launcher, sibling and foreign caches (6.98878ms)
+✔ the VM CacheStorage fixture distinguishes retained handles from a fresh open after delete (0.97234ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 3
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 164.883581
+
+✖ failing tests:
+
+test at tests/service-worker-generation.test.mjs:118:1
+✖ a delayed old code response cannot recreate its cache after the newer worker activates (41.75526ms)
+  AssertionError [ERR_ASSERTION]: Late old networkFirst reopened a retired generation: [{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"delete","name":"neon-preview-v1:https://neon.test/juego/::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},{"operation":"open","name":"neon-preview-v1:https://neon.test/juego/::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","created":true,"handle":4},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","handle":4}]
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/service-worker-generation.test.mjs:122:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/service-worker-generation.test.mjs:128:1
+✖ a delayed old uncached image cannot recreate a retired game generation (13.458067ms)
+  AssertionError [ERR_ASSERTION]: Late old cacheFirst reopened a retired generation: [{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","handle":3},{"operation":"delete","name":"neon-preview-v1:https://neon.test/juego/::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},{"operation":"open","name":"neon-preview-v1:https://neon.test/juego/::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","created":true,"handle":4},{"operation":"put","name":"neon-preview-v1:https://neon.test/juego/::aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","handle":4}]
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/service-worker-generation.test.mjs:132:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/service-worker-generation.test.mjs:137:1
+✖ a failing old navigation uses its retained fallback without creating an empty old cache (12.713451ms)
+  AssertionError [ERR_ASSERTION]: Offline fallback must not reopen the retired generation after its name was deleted
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/service-worker-generation.test.mjs:141:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

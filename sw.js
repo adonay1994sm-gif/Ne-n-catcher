@@ -92,38 +92,39 @@ const CORE = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)));
-  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 async function networkFirst(request) {
+  // Retain this generation's handle before waiting for the network. If a newer
+  // worker deletes its name, this response must not reopen that retired cache.
+  const cache = await caches.open(CACHE);
   try {
     const response = await fetch(request, { cache: "no-store" });
     if (response?.status === 200) {
       const copy = response.clone();
-      const cache = await caches.open(CACHE);
       await cache.put(request, copy);
     }
     return response;
   } catch {
-    return (await caches.match(request)) || (request.mode === "navigate" ? caches.match("index.html") : undefined);
+    return (await cache.match(request)) || (request.mode === "navigate" ? cache.match("index.html") : undefined);
   }
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(request);
   if (cached) return cached;
   const response = await fetch(request);
   if (response?.status === 200) {
     const copy = response.clone();
-    const cache = await caches.open(CACHE);
     await cache.put(request, copy);
   }
   return response;

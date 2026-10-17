@@ -25,7 +25,7 @@
     "test:engine": "node --test tests/engine-lifecycle.test.mjs",
     "test:content": "node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs tests/classic-scout.test.mjs tests/journey-demo.test.mjs tests/journey-legacy-integration.test.mjs tests/modular-ship.test.mjs tests/ship-hangar.test.mjs tests/ship-render-fallback.test.mjs tests/guardian-atlas.test.mjs tests/guardian-atlas-animation.test.mjs tests/guardian-atlas-legacy.test.mjs tests/campaign-space-design.test.mjs tests/chronos-flight.test.mjs tests/classic-weapons.test.mjs tests/flight-controls.test.mjs tests/unified-flight-legacy.test.mjs",
     "build:preview": "npm run build && node scripts/build-preview.mjs",
-    "test:preview": "node --test tests/preview-build.test.mjs"
+    "test:preview": "node --test tests/preview-build.test.mjs tests/service-worker-generation.test.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "8.0.0",

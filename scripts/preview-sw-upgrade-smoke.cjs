@@ -36,9 +36,9 @@ async function main(){
     page.on('pageerror',error=>report.errors.push(errorText(error)));
     page.on('response',response=>{if(response.status()>=400)report.errors.push(`${response.status()} ${response.url()}`);});
     const root=server.url,game=new URL('juego/index.html?campaign=n7',root).href;
-    const state=()=>page.evaluate(async()=>({controller:navigator.serviceWorker.controller?.scriptURL,
+    const state=async()=>({...await page.evaluate(async()=>({controller:navigator.serviceWorker.controller?.scriptURL,
       registrations:(await navigator.serviceWorker.getRegistrations()).map(reg=>({scope:reg.scope,active:reg.active?.scriptURL,state:reg.active?.state})),
-      caches:await caches.keys()}));
+      caches:await caches.keys()})),workers:await Promise.all(context.serviceWorkers().map(async worker=>{try{return{url:worker.url(),...await worker.evaluate(()=>({cache:typeof CACHE==='string'?CACHE:null,scope:self.registration.scope}))};}catch(error){return{url:worker.url(),error:String(error)};}}))});
     await step('install launcher and game workers and keep foreign caches',async()=>{
       await page.goto(root,{waitUntil:'load'});
       await page.waitForFunction(()=>navigator.serviceWorker.controller?.scriptURL.endsWith('/launcher-sw.js'));
@@ -67,11 +67,18 @@ async function main(){
           keys.filter(name=>name.startsWith('neon-preview-')).every(name=>name.endsWith(revision));
       },newRevision,{timeout:30000});
       await page.reload({waitUntil:'load'});
+      report.afterReloadImmediate=await state();
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(500);
+      report.afterNetworkIdle=await state();
       await page.waitForFunction(async revision=>{
         const keys=await caches.keys();
+        const registrations=await navigator.serviceWorker.getRegistrations();
+        if(!registrations.every(registration=>registration.active?.state==='activated'))return false;
         return keys.filter(name=>name.startsWith('neon-preview-')).length===2&&
           keys.filter(name=>name.startsWith('neon-preview-')).every(name=>name.endsWith(revision));
       },newRevision,{timeout:30000});
+      await page.waitForTimeout(500);
       const after=await state();
       report.upgradeAfter=after;
       assert.ok(after.caches.includes('unrelated-app'));
@@ -84,7 +91,11 @@ async function main(){
       await page.goto(game,{waitUntil:'load'});
       assert.ok(await page.locator('#levels').count());
       await page.goto(root,{waitUntil:'load'});
-      assert.ok(await page.locator('#n7link').isVisible());
+      assert.ok(await page.locator('#classiclink').isVisible(), 'The principal journey remains available offline');
+      assert.equal(await page.locator('#classiclink').getAttribute('href'), 'juego/index.html');
+      assert.equal(await page.locator('#qaArchive').getAttribute('open'), null, 'Historical QA stays collapsed offline');
+      assert.equal(await page.locator('#n7link').count(), 1, 'The historical N-7 entry is preserved');
+      assert.equal(await page.locator('#n7link').isVisible(), false, 'Historical variants are not competing principal campaigns');
       const after=await state();
       assert.ok(after.controller.endsWith('/launcher-sw.js'));
       assert.deepEqual(report.errors,[]);

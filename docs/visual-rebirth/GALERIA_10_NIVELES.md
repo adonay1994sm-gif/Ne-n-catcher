@@ -1,3 +1,7 @@
+Actualización17/10/2026: la [galería de partida natural](../production-reports/UNIFIED_FLIGHT_2026-10-17.md#g-galería-real-del-ejecutable) añade ataque, Chronos roto/alejándose, tránsito, taller y disparo gemelo en Gaia. Son capturas reales del primer recorrido, no diez escenarios nuevos. La galería previa queda como historial.
+
+---
+
 > Galería histórica de la campaña clásica. Capturas del viaje nuevo y cierre vigente: [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md); visión rectora: [PRODUCT_VISION.md](../PRODUCT_VISION.md).
 
 # Galería verificable · campaña clásica

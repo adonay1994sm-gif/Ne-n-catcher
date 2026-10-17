@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T12:52:35.922390+00:00",
+  "updatedAt": "2026-10-17T13:05:45.861773+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -4785,21 +4785,25 @@
         "assets/chronos_flight_weapons_v1.webp",
         "assets/chronos_flight_space_v1.webp"
       ],
-      "commit": "b956974",
+      "commit": "375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc",
       "tests": [
-        "npm run build",
-        "npm test",
-        "node --test tests/unified-flight-legacy.test.mjs"
+        "node scripts/certify-local.mjs docs/production-reports/evidence/unified-flight/certification-02",
+        "npm run test:preview",
+        "node scripts/unified-flight-layout-smoke.cjs --root preview-dist --output docs/production-reports/evidence/unified-flight/browser-layout-05",
+        "node scripts/unified-flight-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/unified-flight/browser-natural-01 --timeout 900000"
       ],
       "evidence": [
         "docs/production-reports/UNIFIED_FLIGHT_2026-10-17.md",
-        "docs/production-reports/evidence/unified-flight/legacy-integration-03/metadata.json",
-        "docs/production-reports/evidence/unified-flight/regression-03.txt"
+        "docs/production-reports/evidence/unified-flight/certification-02/results.json",
+        "docs/production-reports/evidence/unified-flight/browser-layout-05/results.json",
+        "docs/production-reports/evidence/unified-flight/browser-natural-01/results.json",
+        "docs/production-reports/evidence/unified-flight/package-375d0e9/site-deployment.json"
       ],
       "openErrors": [
-        "QA natural y tres tamaños en curso; fallo de arranque Chromium corregido después del WIP, pendiente repetir.",
         "Aceptación artística, balance humano y Safari/iPhone físico pendientes.",
-        "Solo la primera misión presenta viaje geográfico; no cien etapas implementadas."
+        "Rendimiento de salida bajo en Chromium por software; requiere perfil y medición móvil.",
+        "Solo la primera misión presenta viaje geográfico; no cien etapas implementadas.",
+        "QA de actualización offline en diagnóstico independiente; no declarada aprobada."
       ],
       "acceptance": [
         "Una entrada principal sin tres campañas obligatorias; archivo histórico y guardados recuperables.",
@@ -4809,7 +4813,7 @@
         "Regresiones generales y revisión artística del propietario."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW",
+        "technical": "PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
