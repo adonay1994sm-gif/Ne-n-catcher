@@ -6561,7 +6561,7 @@
       "packageCommit": "f39082f04667d7dc18ceba17705095bacb30806e",
       "limitations": [
         "No garantiza concurrencia entre pestañas, ni recompensa externa, ni recuperación si la intención nunca pudo escribirse. Prueba física sigue separada.",
-        "Derrota: dos escrituras individuales; fallo en la segunda conserva global mejorado y devuelve false, sin atomicidad. Migración y derrota no sobrescriben lecturas denegadas ni raw inválido."
+        "Derrota: dos escrituras individuales; fallo en la segunda conserva global mejorado y devuelve false, sin atomicidad. Ambas rutas abortan lecturas denegadas. Migración conserva raw no numérico/no finito no vacío y normaliza negativos a cero por compatibilidad; derrota valida también negativos."
       ],
       "openErrors": []
     },

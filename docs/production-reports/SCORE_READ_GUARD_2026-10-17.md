@@ -16,7 +16,7 @@ Estado: corrección integrada, regresión y Actions completos, paquete limpio y 
 
 ## A. Experiencia y trabajo ejecutado
 
-1. `migrateLegacyStorage` lee histórico y actual una vez mediante `readRaw`. Si cualquiera es ilegible, no escribe. Si el actual es numéricamente inválido no vacío, conserva su raw; la migración legítima de un récord superior sigue funcionando. La ausencia/vacío real mantiene el cero compatible.
+1. `migrateLegacyStorage` lee histórico y actual una vez mediante `readRaw`. Si cualquiera es ilegible, no escribe. Si el actual es no numérico o no finito y no vacío, conserva su raw; la migración legítima de un récord superior sigue funcionando. La ausencia/vacío real mantiene el cero compatible.
 2. `saveScore`, utilizado por la derrota, lee y valida ambos registros antes de escribir. Lectura denegada, JSON inválido o puntuación inválida devuelven fallo y conservan datos. Mantiene máximos, otros niveles y claves independientes. No se borran registros para ocultar corrupción.
 3. Dos pruebas del bootstrap completo verifican el caso 9000/100 con y sin intención pendiente, recuperación posterior y finalización idempotente. Veintiséis pruebas nuevas verifican las funciones reales y el facade real, no una copia de su implementación.
 4. Pipeline regenera bundles web/iOS; preview incorpora la corrección, generación nueva de caché y procedencia exacta. Ningún parche exclusivo de bundle.
@@ -89,7 +89,7 @@ Captura auténtica del ejecutable en Chromium. [C9 y resto de capturas de este p
 
 `P2-SAVE-01` conserva DONE técnico y añade el cierre de ambas rutas previas/externas al journal. No se incrementa artificialmente el número de tareas terminadas. Registro único de 314 tareas: 26 DONE, 72 IN_REVIEW, 5 IN_PROGRESS, 203 PENDING, 8 BLOCKED. Estos estados históricos no son un porcentaje comercial. Presentación/audio siguen IN_REVIEW por aceptación del propietario; prueba humana sigue BLOCKED con protocolo preparado, cero personas probadas.
 
-La protección de derrota sigue siendo dos escrituras: si mejora el global y falla después el récord por nivel, devuelve fallo y conserva el global mejorado. No promete atomicidad, CAS entre pestañas, recuperación de una intención nunca persistida ni premios externos. El journal de finalización conserva su alcance separado. Datos inválidos se conservan para recuperación; no se reparan automáticamente ni se afirma que la UI pueda mostrar un récord ilegible.
+La protección de derrota sigue siendo dos escrituras: si mejora el global y falla después el récord por nivel, devuelve fallo y conserva el global mejorado. No promete atomicidad, CAS entre pestañas, recuperación de una intención nunca persistida ni premios externos. El journal de finalización conserva su alcance separado. La migración conserva raw no numérico/no finito no vacío; mantiene la compatibilidad histórica de negativos normalizados a cero y puede sustituirlos por un histórico positivo. El guardado de derrota rechaza valores negativos. No se afirma que la UI pueda mostrar un récord ilegible.
 
 Rendimiento: este refuerzo no añade texturas, audio, RAF ni temporizadores. El atlas C9 de la entrega previa estima 4 MiB RGBA; el inventario permanece en 83 recursos/8.272.028 B. Duraciones de scripts están registradas, pero no son tiempo de carga ni benchmark móvil. Sin medición nueva de FPS/memoria GPU/temperatura sostenida, Safari físico, iPhone físico, Xcode Archive ni sesiones humanas.
 
