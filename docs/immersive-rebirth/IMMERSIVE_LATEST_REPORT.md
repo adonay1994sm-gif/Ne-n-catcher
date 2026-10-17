@@ -1,3 +1,9 @@
+Cierre posterior vigente: [naves modulares](../production-reports/NAVES_MODULARES_2026-10-17.md) y [paquete publicado](../production-reports/PAQUETE_NAVES_MODULARES_2026-10-17.md). Este informe anterior queda como historial; no implica aceptación de la integración ni niveles completos.
+
+---
+
+Historial conservado:
+
 > **Histórico desde el mandato rector del 17/10/2026.** Referencia vigente de producto: [PRODUCT_VISION.md](../PRODUCT_VISION.md). Cierre más reciente: [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). Se conserva esta entrega como evidencia, sin imponer sus prioridades incompatibles a la campaña 10×10.
 
 # INFORME DE PRODUCCIÓN — IMMERSIVE REBIRTH

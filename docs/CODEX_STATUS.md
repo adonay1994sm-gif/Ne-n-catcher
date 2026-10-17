@@ -1,3 +1,15 @@
+## Última entrega comprobada — naves modulares, 17/10/2026
+
+Prueba privada actualizada y confirmada: **https://neon-catcher-pruebas.chictide18.chatgpt.site**. Entrar en **Campaña clásica → HANGAR**. Dos naves, ocho combinaciones visuales y nave original recuperable; piezas montadas, alas articuladas y propulsión animada. Nave fuera de botones/transmisión en390×844,320×568 y844×390.
+
+Código principal e2a31f2; corrección de carga1bb8a76; pruebas0c056bf; paquete limpio2cfb5d4. Build y11 fases locales aprobadas (contenido66/66,motor40/40,arquitectura6/6,regresión33/33), preview15/15, Chromium normal21/21 y fallo de carga3/3. Arte pendiente de aceptación; ninguna certificación física ni diez niveles cerrados.
+
+[Informe completo](production-reports/NAVES_MODULARES_2026-10-17.md) · [Paquete y publicación](production-reports/PAQUETE_NAVES_MODULARES_2026-10-17.md). Prioridad: corregir ritmo y combate del clásico en un nivel completo; la demo comprimida está conservada, recibió cambios solicitados y no guía una expansión masiva. Motor V1 desactivado. No se ha desplegado producción.
+
+---
+
+Historial conservado:
+
 ## Vigente — corrección de integración y vuelta al clásico, 17/10/2026
 
 El propietario pidió corregir la integración y rechazó la demo comprimida como referencia de calidad/ritmo. Nueva prioridad: recuperar la experiencia del primer juego, integrar arte y mejorar los diez niveles antes de expandir contenido. No se interpreta el silencio como aceptación artística.

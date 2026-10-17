@@ -1,3 +1,22 @@
+## Publicación vigente — hangar y campaña clásica · 17/10/2026
+
+URL confirmada: **https://neon-catcher-pruebas.chictide18.chatgpt.site**. El selector ofrece primero la campaña clásica y su nuevo HANGAR. Astér/Bastión, piezas combinables, selección persistente y nave anterior recuperable. Arte en revisión; jugabilidad completa pendiente.
+
+Paquete limpio del juego: 2cfb5d4e750d805e0d928a05e02e1b93197d9fa8; código1bb8a76 y pruebas0c056bf. SHA-256 de juego: cd64ffaa94bff331b94eb00539a03254df1bacde6e690957b4f3a3b50987ed74. Revisión:c77b06b48514dc2035c67b6011229cf69bd8390d479d0c43109e6a3dff072ec4.
+
+- project_id: appgprj_6ad34f65ce74819195e871d7dd99fe21 (conservar).
+- version_id vigente: appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_84691499a4508191a136ab43e3069f96.
+- deployment_id vigente: appgdep_6ad3576bcce48191942dbd7d86591eff, succeeded.
+- Commit de distribución: c66c5926ca095166f48bc127a59a4248c00b6616.
+- Audiencia owner-private conservada; puede requerir inicio de sesión en ChatGPT.
+- [Acta del paquete](production-reports/PAQUETE_NAVES_MODULARES_2026-10-17.md); fuente del sitio sigue en /workspace/sites/neon-catcher-pruebas, manifest .openai/hosting.json, static.directory=dist.
+
+Las identidades de versiones anteriores siguientes son históricas. Reutilizar este mismo proyecto y leer su acceso actual antes de una nueva actualización. No crear un sitio nuevo ni afirmar que el push a GitHub lo publica solo.
+
+---
+
+Historial conservado:
+
 # NEON CATCHER — sitio privado de pruebas
 
 URL publicada y confirmada por Sites el 17/10/2026:

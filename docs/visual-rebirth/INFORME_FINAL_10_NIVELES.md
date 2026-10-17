@@ -1,3 +1,9 @@
+Cierre posterior vigente: [naves modulares](../production-reports/NAVES_MODULARES_2026-10-17.md) y [paquete publicado](../production-reports/PAQUETE_NAVES_MODULARES_2026-10-17.md). Este informe anterior queda como historial; no implica aceptación de la integración ni niveles completos.
+
+---
+
+Historial conservado:
+
 > **Informe histórico de la base clásica.** La dirección vigente está en [PRODUCT_VISION.md](../PRODUCT_VISION.md) y el incremento más reciente en [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). Estos diez escenarios son materia prima y regresión; no equivalen a cien etapas terminadas del viaje canónico.
 
 # INFORME DE PRODUCCIÓN VISUAL — NEON CATCHER, campaña clásica

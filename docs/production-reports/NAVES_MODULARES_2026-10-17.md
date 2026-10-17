@@ -84,7 +84,7 @@ Son capturas del ejecutable, no conceptos ilustrados. La aceptación estética c
 
 ## GitHub, hosting y conservación
 
-Commits publicados: e2a31f285e1322303dc2811d8eb2ce592456eb16 (ensamblaje y hangar), 1bb8a76e7a48df23fd013005bed60d35b6978e03 (degradación de carga), 0c056bf431aa65994c9716297c4e59a6ad6ca0ce (pruebas persistentes). Último corte probado 0c056bf431aa65994c9716297c4e59a6ad6ca0ce. Commit funcional, rama autorizada. Main y PR #3 sin operaciones. USE_ENGINE_V1 sigue false; no se alteró el motor experimental ni se añadió otro propietario RAF. El sitio privado existente es https://neon-catcher-pruebas.chictide18.chatgpt.site; su versión anterior contiene la demo comprimida. La revisión modular solo podrá darse por alojada cuando el despliegue nativo confirme éxito; ver el acta de paquete/publicación posterior y PLAYTEST_SITE.md. Netlify producción y PR #3 no se despliegan.
+Commits publicados: e2a31f285e1322303dc2811d8eb2ce592456eb16 (ensamblaje y hangar), 1bb8a76e7a48df23fd013005bed60d35b6978e03 (degradación de carga), 0c056bf431aa65994c9716297c4e59a6ad6ca0ce (pruebas persistentes). Último corte probado 0c056bf431aa65994c9716297c4e59a6ad6ca0ce. Commit funcional, rama autorizada. Main y PR #3 sin operaciones. USE_ENGINE_V1 sigue false; no se alteró el motor experimental ni se añadió otro propietario RAF. El sitio privado existente es https://neon-catcher-pruebas.chictide18.chatgpt.site; la revisión modular ha sido desplegada y confirmada por Sites como succeeded. Paquete limpio 2cfb5d4e750d805e0d928a05e02e1b93197d9fa8 y hash de juego idéntico al Chromium final. Ver [acta de paquete/publicación](PAQUETE_NAVES_MODULARES_2026-10-17.md) y PLAYTEST_SITE.md. Netlify producción y PR #3 no se despliegan.
 
 ## Estado y siguiente incremento
 

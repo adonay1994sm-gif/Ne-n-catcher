@@ -1,3 +1,11 @@
+## Punto de reanudación comprobado — 17/10/2026
+
+Sitio privado actualizado: https://neon-catcher-pruebas.chictide18.chatgpt.site. Paquete limpio2cfb5d4 y juego con hash cd64ffaa… idéntico a Chromium21/21. Ver [entrega](production-reports/PAQUETE_NAVES_MODULARES_2026-10-17.md). El siguiente bloque es jugabilidad natural del nivel1clásico y respuesta visual a daño/armas; no volver a generar el hangar ni expandir el prototipo corto. Mantener restricciones y evidencias.
+
+---
+
+Historial conservado:
+
 ## Siguiente trabajo — integración del juego original, 17/10/2026
 
 1. Leer el [cierre modular](production-reports/NAVES_MODULARES_2026-10-17.md) y feedback vigente. Base funcional 0c056bf431aa65994c9716297c4e59a6ad6ca0ce; conservar avances posteriores. No convertir la demo de 64s en el producto final ni repetir su expansión.
