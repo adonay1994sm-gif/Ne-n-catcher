@@ -1,0 +1,856 @@
+{
+  "initial": "827c1b5f50d88cbca5f68924d6ffc71f0794074e",
+  "functional": "6cf67fc445e2cadd214ebbd266ba6d36713a0bdc",
+  "reportPublicationCommit": "bcbdebf76ba5470da80a6a87fc8ea9af173f9e3d",
+  "count": 212,
+  "files": [
+    {
+      "status": "M",
+      "path": "AGENTS.md"
+    },
+    {
+      "status": "M",
+      "path": "ASSET_MANIFEST.json"
+    },
+    {
+      "status": "M",
+      "path": "ASSET_PRODUCTION_150.json"
+    },
+    {
+      "status": "A",
+      "path": "art-source/immersive-rebirth/c9/PROVENANCE.md"
+    },
+    {
+      "status": "A",
+      "path": "art-source/immersive-rebirth/c9/c9-station-atlas-master.png"
+    },
+    {
+      "status": "A",
+      "path": "art-source/immersive-rebirth/c9/metadata.json"
+    },
+    {
+      "status": "A",
+      "path": "assets/c9_station_v1.webp"
+    },
+    {
+      "status": "M",
+      "path": "content-runtime.js"
+    },
+    {
+      "status": "M",
+      "path": "content-runtime.js.map"
+    },
+    {
+      "status": "M",
+      "path": "core-runtime.js"
+    },
+    {
+      "status": "M",
+      "path": "docs/CODEX_NEXT_ORDERS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/CODEX_STATUS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/PLAYTEST_SITE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/PRODUCTION_LATEST_REPORT.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/PRODUCTION_MASTER_CHECKLIST.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/PRODUCTION_PROGRESS.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/PRODUCT_VISION.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/immersive-rebirth/IMMERSIVE_LATEST_REPORT.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/playtests/CHRONOS_GAIA_PROTOCOL.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/playtests/session-template.csv"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/VOYAGE_POLISH_2026-10-17.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/all-changed-files.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/01-gaia-recovery.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/02-atlas-entry.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/03-atlas-warning.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/04-atlas-phase-two.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/05-atlas-disabled.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/06-gaia-victory.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/07-vulkar-briefing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/08-vulkar-after-atlas.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-02/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-attempt-01/01-gaia-recovery.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-attempt-01/02-atlas-entry.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-attempt-01/failure.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-pulse-attempt-01/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/01-gaia-recovery.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/02-atlas-entry.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/03-atlas-warning.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/04-atlas-phase-two.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/05-atlas-disabled.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/06-gaia-victory.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/07-vulkar-briefing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/08-vulkar-after-atlas.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/atlas-twin-01/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/build-preview-clean.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/build-preview-final.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/architecture.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/audio-lifecycle.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/build.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/content-integration-assets.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/engine.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/experimental-render-adapter.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/inventory.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/regression.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/static.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/visual-artpass.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-01/web.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/architecture.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/audio-lifecycle.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/build.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/content-integration-assets.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/engine.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/experimental-render-adapter.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/inventory.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/regression.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/static.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/visual-artpass.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-02/web.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/architecture.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/audio-lifecycle.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/build.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/content-integration-assets.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/engine.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/experimental-render-adapter.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/inventory.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/regression.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/static.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/visual-artpass.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/certificate-final/web.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/closure.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/final-package/build-info.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/final-package/neon-cronium-voyage-polish-6cf67fc.zip"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/final-package/package.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/final-package/runtime-equivalence.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/01-comfort-checkbox-system-default-and-persistence.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/02-c9-illustrated-service-before-install.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/03-c9-selectable-calibrated-weapons.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/04-c9-small-screen-controls-native-scroll.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/05-gaia-below-hud-390x844.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/06-gaia-below-hud-320x568.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/attempt-02/used-harness.cjs"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/01-c9-illustrated-service-before-install.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/02-c9-selectable-calibrated-weapons.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/03-c9-small-screen-controls-native-scroll.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/used-harness.cjs"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/contrast-final/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/contrast-final/used-harness.cjs"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/failure.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/focused/used-harness.cjs"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/functional-changed-files.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/github-final-functional-run.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/github-functional-log.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/github-functional-run.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/github-report-run.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/inventory-close.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/journal-runtime.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/n7-01/390x844-n7-paused.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/n7-01/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/01-stage-01-emergencia-chronos.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/02-reactor-attack.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/03-stage-02-wreckage-crossing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/04-stage-02-before-reload.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/05-stage-02-checkpoint-restored.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/06-stage-03-recoverable-module.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/07-recoverable-emitter.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/08-emitter-recovered.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/09-stage-04-origin-retreat.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/10-stage-05-comet-crossing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/11-comet-stage-5.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/12-stage-06-service-stop.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/13-c9-before-installation.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/14-c9-emitter-installed.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/15-stage-07-equipment-trial.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/16-stage-08-destination-reveal.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/17-stage-09-atlas-identification.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/18-comet-stage-9.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/19-stage-10-persistent-arrival.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/20-gaia-persistent-arrival.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/21-gaia-next-territory-twin-flight.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/qa-script-used.cjs"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/natural-01/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/preview-clean.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/preview-final.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/site-deployment.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/site-navigation/01-preserved-home-and-current-classic.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/site-navigation/02-current-classic-from-preserved-home.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/site-navigation/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/site-navigation/used-harness.cjs"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/site-preservation.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/static-close.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/01-previous-launcher.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/02-previous-menu-checkpoint-1-3.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/03-current-online-launcher.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/04-current-online-menu.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/05-current-offline-launcher.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/06-current-offline-menu.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/07-current-offline-checkpoint-briefing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/08-current-offline-continuation-playing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-clean/used-harness.cjs"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/01-previous-launcher.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/02-previous-menu-checkpoint-1-3.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/03-current-online-launcher.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/04-current-online-menu.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/05-current-offline-launcher.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/06-current-offline-menu.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/07-current-offline-checkpoint-briefing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/08-current-offline-continuation-playing.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/production-reports/evidence/voyage-polish/upgrade-dirty-diagnostic/used-harness.cjs"
+    },
+    {
+      "status": "M",
+      "path": "docs/production-tasks.json"
+    },
+    {
+      "status": "M",
+      "path": "docs/visual-rebirth/GALERIA_10_NIVELES.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/visual-rebirth/INFORME_FINAL_10_NIVELES.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/visual-rebirth/ORGANIGRAMA_10_NIVELES.md"
+    },
+    {
+      "status": "M",
+      "path": "game.js"
+    },
+    {
+      "status": "M",
+      "path": "index.html"
+    },
+    {
+      "status": "M",
+      "path": "ios/App/App/public/content-runtime.js"
+    },
+    {
+      "status": "M",
+      "path": "ios/App/App/public/content-runtime.js.map"
+    },
+    {
+      "status": "M",
+      "path": "ios/App/App/public/game.js"
+    },
+    {
+      "status": "M",
+      "path": "ios/App/App/public/index.html"
+    },
+    {
+      "status": "M",
+      "path": "ios/App/App/public/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "ios/App/App/public/sw.js"
+    },
+    {
+      "status": "M",
+      "path": "package.json"
+    },
+    {
+      "status": "M",
+      "path": "scripts/guardian-atlas-browser-smoke.cjs"
+    },
+    {
+      "status": "M",
+      "path": "scripts/rebrand-browser-smoke.cjs"
+    },
+    {
+      "status": "A",
+      "path": "scripts/voyage-polish-browser-smoke.cjs"
+    },
+    {
+      "status": "M",
+      "path": "src/core/storage-service.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/00-bootstrap-config.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/01-runtime-assets.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/02-storage-audio.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/03-ui-game-flow.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/06-world-rendering.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/07-player-item-rendering.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/08-loop-input-bootstrap.js"
+    },
+    {
+      "status": "A",
+      "path": "src/game/audio/voyage-score.js"
+    },
+    {
+      "status": "A",
+      "path": "src/game/progression/completion-journal.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/progression/legacy-content-entry.js"
+    },
+    {
+      "status": "M",
+      "path": "styles.css"
+    },
+    {
+      "status": "M",
+      "path": "sw.js"
+    },
+    {
+      "status": "M",
+      "path": "tests/chronos-voyage-rendering.test.mjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/completion-journal-legacy.test.mjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/completion-journal.test.mjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/product-brand.test.mjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/reduced-effects.test.mjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/run-static-tests.mjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/run-tests.mjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/two-finger-input.test.mjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/unified-flight-legacy.test.mjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/visual-artpass.test.mjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/voyage-score.test.mjs"
+    },
+    {
+      "status": "M",
+      "path": "www/content-runtime.js"
+    },
+    {
+      "status": "M",
+      "path": "www/content-runtime.js.map"
+    },
+    {
+      "status": "M",
+      "path": "www/game.js"
+    },
+    {
+      "status": "M",
+      "path": "www/index.html"
+    },
+    {
+      "status": "M",
+      "path": "www/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "www/sw.js"
+    }
+  ]
+}
