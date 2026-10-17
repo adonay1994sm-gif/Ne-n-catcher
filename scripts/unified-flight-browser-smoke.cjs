@@ -314,9 +314,9 @@ async function touch(type, x, y) {
     await wait(() => typeof __FLIGHT_QA__ === 'function' && __FLIGHT_QA__().state === 'menu');
     const reloaded = await inspect(); assert.equal(reloaded.unlocked, 2);
     assert.equal(reloaded.equipment.selected, 'twin'); assert.equal(reloaded.equipment.recoveredTwin, true);
-    for (const [key, value] of Object.entries(report.initialSaves).filter(([key]) => /n7|journey/i.test(key))) {
-      assert.equal(reloaded.saves[key], value, `Historical save changed: ${key}`);
-    }
+    const historical = saves => Object.fromEntries(Object.entries(saves).filter(([key]) => /n7|journey/i.test(key)));
+    assert.deepEqual(historical(reloaded.saves), historical(report.initialSaves),
+      'The new flight must not create or change historical N-7 / Journey saves');
     report.reloaded = reloaded;
   });
   report.status = 'passed'; report.exitCode = 0;

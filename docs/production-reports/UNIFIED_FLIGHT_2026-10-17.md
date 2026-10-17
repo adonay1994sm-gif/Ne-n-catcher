@@ -28,3 +28,7 @@ Solo la primera misión tiene nuevo viaje geográfico. Los otros nueve escenario
 Corregir fixtures sin reducir cobertura; ejecutar `test:content`, regresión, web y certificación en carpeta nueva. Probar el recorrido por controles reales hasta rescate→llegada→C9→instalación→Gaia. Revisar capturas de montaje, aviso de ataque, HUD y las tres resoluciones. Commit funcional, paquete limpio con SHA/hash, prueba privada y cierre documental.
 
 Actualización del hito de conservación: rebuild03 y regresión33/33 aprobados; integración nueva9/9, Atlas legacy8/8 y web13/13. Chromium y repetición integral todavía pendientes.
+
+## Cierre automatizado provisional
+
+Certificación02: once fases aprobadas, contenido150/150, motor40/40, arquitectura6/6, static13/13, regresión33/33, web13/13, render/adaptadores14/14, audio3/3, artpass12/12 e inventario sin inconsistencias. Chromium layout05:12/12 en390×844,320×568,844×390; sin errores y un único RAF. El navegador02 descubrió dos variables de cometas no declaradas que JSDOM no detectó; corregidas en57b468d. Se conservan todos los intentos fallidos y aprobados. Partida natural pendiente antes de publicar la revisión privada.

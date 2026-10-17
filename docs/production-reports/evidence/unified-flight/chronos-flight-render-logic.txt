@@ -1,0 +1,8 @@
+{"requestedSeconds":0,"actualSeconds":0,"phase":"emergency","drawImages":3,"stableOnRepeatedRender":true}
+{"requestedSeconds":7.6,"actualSeconds":7.61599999999997,"phase":"emergency","drawImages":4,"stableOnRepeatedRender":true}
+{"requestedSeconds":11,"actualSeconds":11.01600000000003,"phase":"recovery","drawImages":10,"stableOnRepeatedRender":true}
+{"requestedSeconds":35,"actualSeconds":34.98599999999953,"phase":"departure","drawImages":9,"stableOnRepeatedRender":true}
+{"requestedSeconds":58,"actualSeconds":58.0039999999988,"phase":"deep-space","drawImages":8,"stableOnRepeatedRender":true}
+{"requestedSeconds":78,"actualSeconds":77.99600000000109,"phase":"gaia-approach","drawImages":9,"stableOnRepeatedRender":true}
+{"requestedSeconds":90,"actualSeconds":89.99800000000322,"phase":"gaia-approach","drawImages":9,"stableOnRepeatedRender":true}
+PASS: finite sprite transforms and identical scenery for a paused snapshot across seven route phases. This is a controlled renderer fixture, not a browser or physical-device certification.

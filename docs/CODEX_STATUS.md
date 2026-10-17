@@ -2,7 +2,7 @@
 
 Primera misión clásica con salida real de Chronos, arte multicapa, atacante, recuperación y aproximación a Gaia; movimiento relativo XY; tres cargas que se recargan; módulo gemelo recuperable e instalación en C9. Una entrada principal; variantes históricas conservadas en QA. No son cien etapas nuevas ni diez niveles rehechos.
 
-Build e inventario correctos. Primeras regresiones pendientes de corregir/repetir; **esta revisión aún no está certificada ni desplegada**. Prueba privada actual sigue siendo la entrega Atlas anterior. [Diagnóstico y seguimiento](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Se conserva todo el trabajo y las evidencias fallidas. MotorV1 desactivado.
+Conservación WIP `b956974` y corrección de arranque `57b468d`, ambos publicados. Certificación local02 completa: contenido150/150, motor40/40, arquitectura6/6, static13/13, regresión33/33; Chromium layout05,12/12 en tres tamaños. **Partida natural y publicación de esta revisión todavía pendientes**. Prueba privada actual sigue siendo la entrega Atlas anterior. [Diagnóstico y seguimiento](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Se conserva todo el trabajo y las evidencias fallidas. MotorV1 desactivado.
 
 ---
 
