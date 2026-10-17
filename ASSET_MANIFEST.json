@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 64,
-  "runtimeBytes": 3368468,
+  "assetCount": 65,
+  "runtimeBytes": 3650764,
   "audit": {
-    "reviewed": 64,
+    "reviewed": 65,
     "READY": 58,
-    "IN_REVIEW": 6,
+    "IN_REVIEW": 7,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -456,6 +456,20 @@
       "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
       "version": "visual-rebirth-v1",
       "size": 300000
+    },
+    {
+      "id": "cryon-leviathan-rift-background-v1",
+      "path": "assets/cryon_leviathan_rift_background_v1.webp",
+      "master": "art-source/visual-rebirth/levels/06/cryon-leviathan-rift-master.png",
+      "dimensions": "941x1672",
+      "format": "webp-opaque",
+      "use": "Classic level 6 Cryon glacial rift, frozen machinery and Leviathan shadow",
+      "level": 6,
+      "animation": "subtle drift with game frost particles",
+      "status": "IN_REVIEW",
+      "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "visual-rebirth-v1",
+      "size": 282296
     }
   ]
 }

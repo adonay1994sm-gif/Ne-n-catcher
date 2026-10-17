@@ -172,7 +172,8 @@
     atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false),
     vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false),
     magmaTunnelBackground: loadSprite("assets/vulkar_magma_tunnel_background_v1.webp", false),
-    cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false)
+    cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false),
+    cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {

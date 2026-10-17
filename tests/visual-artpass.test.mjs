@@ -78,6 +78,15 @@ test('Cryon whiteout has a dedicated illustrated classic level 5 scene', async (
   assert.ok(master.byteLength > runtime.byteLength);
 });
 
+test('Cryon Leviathan rift has its own classic level 6 scene', async () => {
+  const src = await text('src/game/06-world-rendering.js');
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 5 && spriteReady\(SPRITES\.cryonRiftBackground\)/);
+  assert.match(src, /lv\.scene === "gravity" && \(N7_CAMPAIGN \|\| currentLevel !== 5\)/);
+  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/06/cryon-leviathan-rift-master.png'));
+  const runtime = await readFile(join(root, 'assets/cryon_leviathan_rift_background_v1.webp'));
+  assert.ok(master.byteLength > runtime.byteLength);
+});
+
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');

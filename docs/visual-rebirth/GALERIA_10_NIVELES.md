@@ -9,7 +9,7 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 | 3 | Descenso Ígneo · Vulkar | [Escenario nuevo](evidence/gallery-03/level-03-game.png) | Planeta fracturado, refinería orbital, ceniza y estructuras laterales ilustradas; deriva suave | Fondo integrado; Lava Core/Plasma Mine y capas separadas pendientes |
 | 4 | Rastro de la Serpiente · Vulkar | [Escenario nuevo](evidence/gallery-04/level-04-game.png) | Túnel magmático y maquinaria destruida ilustrados; deriva suave | Fondo integrado; Magma Serpent articulada y capas separadas pendientes |
 | 5 | Blanco Absoluto · Cryon | [Escenario nuevo](evidence/gallery-05/level-05-game.png) | Planicie glaciar, cristales y ruinas ilustrados; deriva suave | Fondo integrado; Frost Crystal/Ice Drone y capas separadas pendientes |
-| 6 | Fractura Leviatán · Cryon | [Estado inicial](evidence/gallery-01/level-06-game.png) | Campo procedural; grieta/Leviathan ausentes | Arte propio pendiente |
+| 6 | Fractura Leviatán · Cryon | [Escenario nuevo](evidence/gallery-06/level-06-game.png) | Grieta monumental, ruinas heladas y sombra ambiental ilustradas | Fondo integrado; Cryo Mine/Leviathan jugables y capas separadas pendientes |
 | 7 | Ecos Imposibles · Aether | [Estado inicial](evidence/gallery-01/level-07-game.png) | Efectos procedurales; ruinas ausentes | Arte propio pendiente |
 | 8 | Umbral Fantasma · Aether | [Estado inicial](evidence/gallery-01/level-08-game.png) | Energía procedural; portales/Phantom ausentes | Arte propio pendiente |
 | 9 | Cementerio Gravitatorio · Titan Omega | [Estado inicial](evidence/gallery-01/level-09-game.png) | Planeta simple y geometría; cementerio ausente | Arte propio pendiente |
@@ -25,6 +25,8 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 
 **Nivel 5, Blanco Absoluto.** [Antes: velos procedurales](evidence/gallery-01/level-05-game.png) → [Después: planicie de Cryon](evidence/gallery-05/level-05-game.png). La captura procede del ejecutable; sus enemigos y elementos de hielo aún requieren arte animado.
 
+**Nivel 6, Fractura Leviatán.** [Antes: campo procedural](evidence/gallery-01/level-06-game.png) → [Después: grieta glacial](evidence/gallery-06/level-06-game.png). La sombra es parte de la ilustración ambiental; todavía no hay jefe jugable.
+
 ![Nivel 2 antes, captura real](evidence/gallery-01/level-02-game.png)
 
 ![Nivel 2 después, captura real](evidence/gallery-02/level-02-game.png)
@@ -34,6 +36,8 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 ![Nivel 4 después, captura real](evidence/gallery-04/level-04-game.png)
 
 ![Nivel 5 después, captura real](evidence/gallery-05/level-05-game.png)
+
+![Nivel 6 después, captura real](evidence/gallery-06/level-06-game.png)
 
 ## Onda de choque real en Canvas
 
