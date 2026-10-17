@@ -11,7 +11,7 @@ Se preservaron las tres variantes, sus claves y todo el historial. El clásico r
 - **SHA inicial:** 9c744da4957d776b80940fee2f323a3f4a3ad194.
 - **SHA de la partida natural:** 375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc.
 - **SHA del paquete final publicado:** 2cea7af9dcec78d2e71305526bb33cc5f31752c6, árbol limpio al construir; mismo juego/arte y mejora de caché verificada.
-- **Cierre documental:** esta entrega y sus evidencias se añaden después del SHA funcional; el commit documental se registra en CODEX_STATUS.md y el historial Git del informe.
+- **Cierre documental verificado:** 9d162b9cac8da5b7685a18bbf7459b56446636f5. Las precisiones documentales posteriores no cambian el paquete publicado2cea7af.
 - **Bloque:** P1-FLIGHT-01, integración clásica de la primera misión, armas y servicio.
 - **Niveles modificados:** nuevo recorrido en La Onda de Choque; nuevas armas/movilidad disponibles en el clásico; Atlas adapta su advertencia a la posición vertical real. Los otros nueve escenarios conservan su arte anterior.
 - **Estado:** aceptación técnica del incremento aprobada; arte y balance humano IN_REVIEW; Safari/iPhone físico PENDING. Ningún nivel se declara visualmente completo.
@@ -145,7 +145,7 @@ Prioridad de rendimiento pendiente: perfil de salida en dispositivo y de dibujo/
 
 **Prueba privada publicada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Sites confirmó succeeded el17/10/2026 a13:00:12 UTC. Se preservó la audiencia del propietario; puede requerir acceso a ChatGPT. [Respuesta nativa sin credenciales](evidence/unified-flight/package-375d0e9/site-deployment.json). No se afirma haber jugado remotamente desde Safari: la partida natural se ejecutó localmente con el paquete idéntico publicado.
 
-Netlify no recibió un nuevo despliegue. La antigua deploy-preview3 sigue correspondiendo a la PR3 y no demuestra esta revisión. Alternativa Netlify Drop: extraer el ZIP y cargar la carpeta cuya raíz contiene index.html, build-info.json y juego/, sin añadir un directorio envolvente.
+No se ejecutó ni se verificó un nuevo despliegue de Netlify en esta sesión. La antigua deploy-preview3 sigue correspondiendo a la PR3 y no demuestra esta revisión. Alternativa Netlify Drop: extraer el ZIP y cargar la carpeta cuya raíz contiene index.html, build-info.json y juego/, sin añadir un directorio envolvente.
 
 ## J. Cómo revisar
 

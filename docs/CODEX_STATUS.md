@@ -1,5 +1,7 @@
 ## Cierre vigente — vuelo unificado, 17/10/2026
 
+Cierre documental comprobado en GitHub:9d162b9cac8da5b7685a18bbf7459b56446636f5. Paquete servido:2cea7af9dcec78d2e71305526bb33cc5f31752c6; las precisiones documentales posteriores no representan otro despliegue.
+
 **Prueba privada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Paquete final limpio **2cea7af9dcec78d2e71305526bb33cc5f31752c6**, publicación confirmada succeeded a13:19:54UTC, versión5. CONTINUAR VIAJE → NIVELES → La Onda de Choque para revisar la salida desde un guardado avanzado.
 
 La partida natural375d0e9 aprobó5/5; el paquete final conserva83archivos de juego/arte/presentación idénticos e incorpora caché endurecida. Certificación03 completa, contenido150/150, motor40/40, arquitectura6/6, static13/13 y regresión33/33. Preview23/23; Chromium layout12/12; N-7 smoke6/6; actualización offline3/3; CacheStorage con limpieza controlada4/4. El diagnóstico provisional de caché queda cerrado con esos límites.
