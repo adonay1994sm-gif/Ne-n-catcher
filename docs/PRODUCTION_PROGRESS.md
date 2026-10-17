@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T20:19:15.767833+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T20:47:21.533353+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -17,7 +17,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-02 / P1 | Revisión estética del primer viaje antes de multiplicar contenido | IN_PROGRESS | NOT_APPLICABLE | CHANGES_REQUESTED | PENDING |
 | P2-01 / P2 | Consolidar dos configuraciones viables y economía breve segura | PENDING | PENDING | PENDING | PENDING |
 | PM-01 / M | Decisión técnica reservada sobre Motor V1 | BLOCKED | PENDING_OWNER | NOT_APPLICABLE | PENDING |
-| P3-01 / P3 | Completar diez etapas conectadas del capítulo Chronos-Gaia | PENDING | PENDING | PENDING | PENDING |
+| P3-01 / P3 | Completar diez etapas conectadas del capítulo Chronos-Gaia | IN_PROGRESS | PARTIAL_TEN_TRANSIT_STAGES | PENDING | PENDING |
 | P4-01 / P4 | Expandir la campaña espacial a diez capítulos de diez etapas | PENDING | PENDING | PENDING | PENDING |
 | P5-01 / P5 | Certificar calidad móvil y preparar distribución autorizada | PENDING | PENDING | PENDING | PENDING |
 | P1-SHIP-01 / P1 | Nave ensamblada, dos configuraciones y hangar dentro del clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
@@ -36,6 +36,17 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-INPUT-02 / P1 | Pilotar y disparar con dos contactos independientes y mantener para disparar | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-COMET-02 / P1 | Animar cometa mineral helado y alinear núcleo y estela con su trayectoria | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-CI-01 / P1 | Cerrar fallo de Actions por contrato de nave retirada y verificar la nave actual offline | DONE | PASSED | NOT_APPLICABLE_TO_CI_FIX | NOT_REQUIRED_FOR_CI_FIX; GAME_DEVICE_CERTIFICATION_REMAINS_PENDING |
+| P3-TRANSIT-01 / P3 | Integrar diez etapas jugables del tránsito Chronos–Gaia con vacío, C9 y checkpoints | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-01 / P3 | Etapa 1.1 · Emergencia en Chronos | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-02 / P3 | Etapa 1.2 · Perímetro destruido | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-03 / P3 | Etapa 1.3 · Campo de restos | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-04 / P3 | Etapa 1.4 · Salida orbital | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-05 / P3 | Etapa 1.5 · El gran vacío | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-06 / P3 | Etapa 1.6 · Refugio C9 | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-07 / P3 | Etapa 1.7 · Estela de regreso | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-08 / P3 | Etapa 1.8 · Gaia en la distancia | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-09 / P3 | Etapa 1.9 · Señales de Atlas | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-CH1-10 / P3 | Etapa 1.10 · Llegada a Gaia | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -50,18 +61,18 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 7/54 (13.0%) | 36 | 0 | 0 | 11 |
-| Campaña clásica | 4/22 (18.2%) | 4 | 1 | 0 | 13 |
+| Jugabilidad | 7/65 (10.8%) | 35 | 1 | 0 | 22 |
+| Campaña clásica | 4/33 (12.1%) | 3 | 2 | 0 | 24 |
 | Campaña N-7 | 3/41 (7.3%) | 35 | 1 | 0 | 2 |
 | Enemigos | 5/76 (6.6%) | 60 | 0 | 0 | 11 |
 | Jefes | 0/15 (0.0%) | 13 | 0 | 0 | 2 |
 | Assets | 2/177 (1.1%) | 126 | 3 | 1 | 45 |
 | Animaciones | 5/144 (3.5%) | 111 | 1 | 0 | 27 |
-| Narrativa | 0/19 (0.0%) | 18 | 0 | 0 | 1 |
+| Narrativa | 0/19 (0.0%) | 17 | 1 | 0 | 1 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
 | Interfaz | 4/24 (16.7%) | 9 | 1 | 0 | 10 |
 | Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 19/64 (29.7%) | 20 | 2 | 4 | 19 |
+| QA | 19/75 (25.3%) | 20 | 2 | 4 | 30 |
 | Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
@@ -69,7 +80,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
 | 03 · Prueba integrada y cierre técnico | 19/28 (67.9%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 7 · DONE: 19 |
-| 04 · Jugabilidad procedural | 0/20 (0.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
+| 04 · Jugabilidad procedural | 0/31 (0.0%) | PENDING: 18 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0 |
 | 05 · Producción visual y 150 assets | 5/178 (2.8%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 47 · DONE: 5 |
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |

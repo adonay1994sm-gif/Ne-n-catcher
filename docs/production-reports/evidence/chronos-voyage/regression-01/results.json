@@ -1,0 +1,24 @@
+{
+  "command": "npm test",
+  "head": "d04b5225ccaf1864c677c068716dae0f7d6e38f1",
+  "dirty": true,
+  "execution": "actual root/www/iOS build outputs; JSDOM-controlled legacy gameplay and static packaging assertions",
+  "buildScope": "root build 02; preview-dist was deliberately not rebuilt and is not this regression snapshot",
+  "testedRuntimeFiles": {
+    "index.html": "a28ccf60b91903cd5d6ef3bbeceb7979a49202af7f70150d408b517049d944a5",
+    "core-runtime.js": "f39be54b8347e5b38c8a6d246d0aed95902bbd814b7ac24599106d5a9a244daf",
+    "content-runtime.js": "cdc1f96c132d9dfd93e2fdd52d98dd5be26e8b34b27cf88207a8b896d82937eb",
+    "game.js": "369977a22fbba82b2c8a28108f9c17de32f8be022eee5d5336d34f420d61cf52",
+    "sw.js": "d523e306aca74025915bf0e9d712aaa60cfb1b15e1692e156523c5a2307b40de"
+  },
+  "log": "results.txt",
+  "physicalDevice": "NOT_RUN",
+  "exitCode": 1,
+  "passedBeforeFailure": 27,
+  "failed": 1,
+  "remaining": "not executed because assertion failure stops this sequential runner",
+  "error": "AssertionError [ERR_ASSERTION]: false !== true at tests/run-tests.mjs:586; first-territory supply failure was expected to schedule",
+  "confirmedCause": "The new Chronos ten-stage voyage deliberately reissues missed fragments and does not invoke the old finite-supply defeat. The assertion still chose classic level 0.",
+  "correction": "The original restart/timer invalidation assertion is retained in unchanged Vulkar (classic level 2). A separate group now checks real reissued CRONIUM in Chronos after the old budget is exhausted.",
+  "resolution": "../regression-02/results.json"
+}

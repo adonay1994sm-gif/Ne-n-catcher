@@ -1,0 +1,145 @@
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ three classic charges recharge from played time and freeze completely while paused (392.51349ms)
+✖ a classic projectile travels before impact and applies damage and destruction reward only once (82.898577ms)
+✔ the actual PointerEvent handlers anchor without jumping and move both axes without a second finger stealing control (56.713655ms)
+✔ the Safari touch fallback tracks the first finger and ignores a secondary finger ending (49.652617ms)
+✔ the first mission requires recovered CRONIUM, all ten visible stages and the service stop before Gaia unlocks (2690.316603ms)
+✔ the Chronos attack and reactor rupture occur once in route order and cannot advance during pause (162.084645ms)
+✔ the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station (233.515778ms)
+✔ pause and repeated real background renders freeze the Chronos pose, clock and event stream (143.446497ms)
+✖ a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback (55.812266ms)
+✔ recovering, installing and switching a real weapon preserve ammunition and separate campaign saves (139.925484ms)
+✖ invalid equipment is backed up once before replacement and a failed backup blocks destructive recovery (96.205626ms)
+✔ C9 calibrates the recovered twin into a persistent lance and cycling ×1/×2/×3 never grants ammunition (73.046008ms)
+✔ malformed lance unlocks are preserved as backups instead of granting uncalibrated weapons (177.047649ms)
+✔ Atlas locks its warning and actual projectile trajectory to the movable ship position (140.186567ms)
+✖ the route bar advances between collections without a stage, ammunition or recharge change (107.863519ms)
+✔ compact comms do not repeat the quota and expire only with played time without moving the flight bounds (55.19011ms)
+✔ measured compact bounds release the former top reserve and ignore side controls outside the Canvas (33.745615ms)
+✔ the compact HUD and weapon share menu, completion, death and Atlas visibility while switching preserves ammunition (94.350828ms)
+✔ power pickup and expiry update flight clearance only when chip visibility changes and leave N-7 bounds alone (153.130128ms)
+✔ each Chronos stage gates its actual route on time and its cumulative recovery quota without replaying events (335.000669ms)
+✔ Chronos stage-entry checkpoints restore coherently after reload and retry without rewriting archived campaign saves (632.386322ms)
+✔ the in-route C9 stop pauses the same flight, installs its recovered emitter and continues at stage 7 without granting charges (1537.522288ms)
+✔ the archived N-7 mode neither loads nor modifies the new Chronos voyage record (382.583212ms)
+✔ the ten-stage selector exposes only persisted unlocked entries and an actual launch replays the chosen checkpoint (580.203579ms)
+✔ a malformed new voyage is backed up without inferring stages from old classic or N-7 progress (30.770154ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 21
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8999.511086
+
+✖ failing tests:
+
+test at tests/unified-flight-legacy.test.mjs:226:1
+✖ a classic projectile travels before impact and applies damage and destruction reward only once (82.898577ms)
+  TypeError: Cannot read properties of undefined (reading 'hp')
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/unified-flight-legacy.test.mjs:232:38)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/unified-flight-legacy.test.mjs:394:1
+✖ a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback (55.812266ms)
+  AssertionError [ERR_ASSERTION]: A settled download must clear the transient loading label immediately
+  + actual - expected
+  
+  + '1.1 · Emergencia en Chronos'
+  - 'Emergencia en Chronos'
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/unified-flight-legacy.test.mjs:408:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '1.1 · Emergencia en Chronos',
+    expected: 'Emergencia en Chronos',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/unified-flight-legacy.test.mjs:463:1
+✖ invalid equipment is backed up once before replacement and a failed backup blocks destructive recovery (96.205626ms)
+  AssertionError [ERR_ASSERTION]: The collision loop must retain a recoverable piece until its persistence succeeds
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/unified-flight-legacy.test.mjs:479:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/unified-flight-legacy.test.mjs:593:1
+✖ the route bar advances between collections without a stage, ammunition or recharge change (107.863519ms)
+  AssertionError [ERR_ASSERTION]: A quiet route must visibly advance without requiring a pickup or weapon update
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/unified-flight-legacy.test.mjs:603:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

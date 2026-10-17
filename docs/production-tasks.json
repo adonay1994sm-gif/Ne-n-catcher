@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T20:19:15.767833+00:00",
+  "updatedAt": "2026-10-17T20:47:21.533353+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -4615,12 +4615,21 @@
         "P2-01",
         "PM-01"
       ],
-      "files": [],
-      "commit": "",
-      "tests": [],
-      "evidence": [],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Diez etapas de tránsito integradas; Chromium natural 4/4 y simulación de contratos25/25. El cierre de todo el capítulo sigue separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json"
+      ],
       "openErrors": [
-        "La demo de tres tramos no son diez etapas terminadas."
+        "Diez etapas de tránsito de la orden actual implementadas; aceptación artística/física y cierre fronterizo del capítulo completo pendientes."
       ],
       "acceptance": [
         "Diez etapas con viaje, arte, encuentros, objetivo, frontera, recompensa y guardado integrados"
@@ -4629,16 +4638,20 @@
       "block": "04",
       "canonicalPhase": "P3",
       "name": "Completar diez etapas conectadas del capítulo Chronos-Gaia",
-      "status": "PENDING",
+      "status": "IN_PROGRESS",
       "areas": [
         "Jugabilidad",
         "Campaña clásica",
         "Narrativa"
       ],
       "acceptanceStatus": {
-        "technical": "PENDING",
+        "technical": "PARTIAL_TEN_TRANSIT_STAGES",
         "artistic": "PENDING",
         "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P3-TRANSIT-01",
+        "ownerScopeException": "La orden expresa posterior autoriza diez etapas de tránsito mediante el legacy existente, manteniendo PM-01 reservado y Motor V1 desactivado."
       }
     },
     {
@@ -5693,6 +5706,544 @@
         "extends": "P1-IDENTITY-02",
         "note": "Cierra exclusivamente la incidencia del contrato de CI. No cambia aceptación artística ni física, funcionalidades o terminación de niveles."
       }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-TRANSIT-01",
+      "name": "Integrar diez etapas jugables del tránsito Chronos–Gaia con vacío, C9 y checkpoints",
+      "dependencies": [
+        "P1-IDENTITY-02",
+        "P1-INPUT-02",
+        "P1-CI-01"
+      ],
+      "acceptance": [
+        "1.1–1.10 tienen objetivo, tiempo jugado, acontecimiento, progreso, checkpoint y cierre antes de abrir Gaia.",
+        "Cronos retrocede físicamente; vacío5–7, C9pausa y Gaia crece8–10; todos siguen un solo snapshot.",
+        "Guardado de etapa con clave v2, respaldos de datos inválidos y campañas anteriores intactas.",
+        "Compilación, regresión y partida real conservadas; publicación privada verificable sin activar V1."
+      ]
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-01",
+      "name": "Etapa 1.1 · Emergencia en Chronos",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.1 con cuota acumulada4/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-02",
+      "name": "Etapa 1.2 · Perímetro destruido",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.2 con cuota acumulada8/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-03",
+      "name": "Etapa 1.3 · Campo de restos",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.3 con cuota acumulada12/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-04",
+      "name": "Etapa 1.4 · Salida orbital",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.4 con cuota acumulada16/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-05",
+      "name": "Etapa 1.5 · El gran vacío",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.5 con cuota acumulada18/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-06",
+      "name": "Etapa 1.6 · Refugio C9",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.6 con cuota acumulada18/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-07",
+      "name": "Etapa 1.7 · Estela de regreso",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.7 con cuota acumulada24/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-08",
+      "name": "Etapa 1.8 · Gaia en la distancia",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.8 con cuota acumulada28/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-09",
+      "name": "Etapa 1.9 · Señales de Atlas",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.9 con cuota acumulada32/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
+    },
+    {
+      "block": "04",
+      "canonicalPhase": "P3",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "tests": [
+        "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+      ],
+      "openErrors": [
+        "Revisión artística del propietario y Safari/iPhone físico pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "id": "P3-CH1-10",
+      "name": "Etapa 1.10 · Llegada a Gaia",
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "acceptance": [
+        "Etapa1.10 con cuota acumulada36/36, duración definida y checkpoint al entrar.",
+        "Acontecimiento y escena reales registrados en la partida natural sin insertar entidades ni acelerar reloj.",
+        "Acceso a la etapa siguiente sólo tras cuota/tiempo; C9 además requiere continuar por UI."
+      ],
+      "canonicalRelationship": {
+        "partOf": "P3-TRANSIT-01",
+        "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
+      }
     }
   ],
   "canonicalPlan": {
@@ -5729,8 +6280,8 @@
     },
     "latestClarification": {
       "date": "2026-10-17",
-      "report": "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
-      "scope": "La nave modular actual pasa a ser la única identidad del jugador; mejorar cometas y permitir pilotar y disparar con dos dedos. Es base elegida de desarrollo, sin declarar versión comercial terminada."
+      "report": "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+      "scope": "Implementar diez etapas del trayecto Chronos–Gaia que representen el espacio vacío y el viaje. Orden reanuda este alcance; conserva los otros nueve territorios, N-7 y motor legacy."
     },
     "latestVerification": {
       "date": "2026-10-17",
