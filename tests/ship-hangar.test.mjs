@@ -145,20 +145,20 @@ test('a failed save preserves the applied ship and keeps the draft available for
   assert.equal(h.snapshot().syncs,1);
 });
 
-test('the original ship remains recoverable and legacy mode persists only after apply',t=>{
-  const h=harness(t,{loadout:bastion});
-  h.open();h.node('shipLegacy').click();
+test('historical legacy selection opens as modular without losing its parts or saving until apply',t=>{
+  const h=harness(t,{mode:'legacy',loadout:bastion});
+  h.open();
+  assert.equal(h.node('shipLegacy'),null,'the retired ship is not a selectable alternative');
+  assert.deepEqual(h.snapshot().draft,{mode:'modular',loadout:bastion});
+  assert.equal(h.snapshot().mode,'legacy','opening the hangar never writes storage');
+  for(const id of ['shipHull','shipWings','shipEngines'])assert.equal(h.node(id).disabled,false);
+  h.back();assert.equal(h.snapshot().writes.length,0);
+  h.open();h.apply();
   assert.equal(h.snapshot().mode,'modular');
-  assert.equal(h.node('shipLegacy').getAttribute('aria-pressed'),'true');
-  for(const id of ['shipHull','shipWings','shipEngines'])assert.equal(h.node(id).disabled,true);
-  h.back();assert.equal(h.snapshot().mode,'modular');assert.equal(h.snapshot().writes.length,0);
-  h.open();h.node('shipLegacy').click();h.apply();
-  assert.equal(h.snapshot().mode,'legacy');
-  assert.deepEqual(h.snapshot().loadout,bastion,'the modular assembly is retained for returning later');
-  assert.deepEqual(h.snapshot().writes[0].value,{version:1,mode:'legacy',loadout:bastion});
-  h.open();assert.equal(h.node('shipLegacy').getAttribute('aria-pressed'),'true');
-  h.preset('aster');assert.equal(h.node('shipHull').disabled,false);
-  h.back();assert.equal(h.snapshot().mode,'legacy');
+  assert.deepEqual(h.snapshot().loadout,bastion,'all saved modular components are retained');
+  assert.deepEqual(h.snapshot().writes[0].value,{version:1,mode:'modular',loadout:bastion});
+  h.open();assert.deepEqual(h.snapshot().draft,{mode:'modular',loadout:bastion});
+  h.back();assert.equal(h.snapshot().writes.length,1,'reopening is idempotent');
 });
 
 test('the hangar cannot open during a run or behind an unrelated overlay',t=>{

@@ -215,7 +215,10 @@
   let settings = loadSettings();
   // Cosmetic loadout has its own key; campaign checkpoints and collision stay intact.
   const savedShipFleet = storage.getJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, null);
-  let shipRenderMode = savedShipFleet?.mode === "legacy" ? "legacy" : "modular";
+  // The accepted modular fleet is the single live identity. Old profiles keep
+  // their loadout and progress; a historical render-mode flag cannot revive the
+  // retired illustration. The next explicit hangar save normalizes the flag.
+  let shipRenderMode = "modular";
   let shipLoadout = NeonCampaign.normalizeShipLoadout(savedShipFleet?.loadout);
   let shipHangarDraft = null;
   let shipPresentationSignature = "";
@@ -384,7 +387,9 @@
   }
 
   const SPRITE_GROUPS = {
-    ship: [0,1,2,3,4,5].map((index) => loadSprite(`assets/ship_frame_${String(index).padStart(2,"0")}.webp`, true)),
+    // Historical poses remain on disk for recovery and the reserved engine's
+    // references, but are not requested by the live modular presentation.
+    ship: [0,1,2,3,4,5].map((index) => loadSprite(`assets/ship_frame_${String(index).padStart(2,"0")}.webp`, false)),
     core: [0,1,2,3,4,5].map((index) => loadSprite(`assets/core_frame_${String(index).padStart(2,"0")}.webp`, true)),
     phaser: [0,1,2,3,4,5].map((index) => loadSprite(`assets/phaser_frame_${String(index).padStart(2,"0")}.webp`)),
     tractor: [0,1,2,3,4,5].map((index) => loadSprite(`assets/tractor_frame_${String(index).padStart(2,"0")}.webp`)),
@@ -408,9 +413,10 @@
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
+    shipIdentity: loadSprite("assets/player_ship_identity_v1.webp", true),
     guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
     atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
-    comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
+    comet: loadSprite("assets/comet_flight_atlas_v2.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
@@ -1026,6 +1032,7 @@
 
   function beginAtlasEncounter() {
     if (!isAtlasMission() || atlasBoss || collected < level().goal || state !== "playing") return false;
+    if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
     positionAtlasArena();
@@ -1159,11 +1166,10 @@
     hangar.innerHTML = `<section class="panel ship-hangar-panel" tabindex="-1">
       <header class="ship-hangar-header"><small>FLOTA · CONFIGURACIÓN DE NAVE</small><h2 id="shipHangarTitle">Tu nave, a tu manera.</h2><p id="shipHangarRules">Configuración visual · mismas reglas de vuelo.</p></header>
       <div class="ship-hangar-layout">
-        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption><p id="shipAtlasNotice" class="hidden" role="status">No se ha cargado la nave nueva. Puedes usar la original.</p></figure>
+        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption><p id="shipAtlasNotice" class="hidden" role="status">No se han cargado los componentes. Se muestra la nave de reserva; vuelve a abrir el juego para reintentar.</p></figure>
         <div class="ship-hangar-controls">
           <div class="ship-preset-list" role="group" aria-label="Naves disponibles"><button type="button" data-ship-preset="aster" aria-pressed="false"><b>ASTÉR</b><span>Exploradora</span></button><button type="button" data-ship-preset="bastion" aria-pressed="false"><b>BASTIÓN</b><span>Interceptora</span></button></div>
           <fieldset class="ship-components"><legend>Combina sus componentes</legend><label for="shipHull">Fuselaje<select id="shipHull"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipWings">Alas<select id="shipWings"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipEngines">Propulsores<select id="shipEngines"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label></fieldset>
-          <button id="shipLegacy" class="ship-legacy" type="button" aria-pressed="false">Usar la nave original</button>
           <p id="shipHangarStatus" class="ship-hangar-status" role="status">Los cambios se guardan al aplicar.</p>
         </div>
       </div>
@@ -1177,18 +1183,16 @@
     const sameLoadout = (first, second) => components.every(([key]) => first[key] === second[key]);
 
     function refreshDraft() {
-      const modular = shipHangarDraft.mode === "modular";
       for (const [key, select] of components) {
         select.value = shipHangarDraft.loadout[key];
-        select.disabled = !modular;
+        select.disabled = false;
       }
       for (const button of presetButtons) {
         const preset = NeonCampaign.SHIP_FLEET.find(entry => entry.id === button.dataset.shipPreset);
-        button.setAttribute("aria-pressed", String(modular && Boolean(preset) && sameLoadout(shipHangarDraft.loadout, preset.loadout)));
+        button.setAttribute("aria-pressed", String(Boolean(preset) && sameLoadout(shipHangarDraft.loadout, preset.loadout)));
       }
-      $("shipLegacy").setAttribute("aria-pressed", String(!modular));
       const selected = NeonCampaign.SHIP_FLEET.find(entry => sameLoadout(shipHangarDraft.loadout, entry.loadout));
-      $("shipHangarName").textContent = !modular ? "Nave original" : selected?.name || "Configuración combinada";
+      $("shipHangarName").textContent = selected?.name || "Configuración combinada";
       $("shipHangarCanvas").setAttribute("aria-label", `Vista previa: ${$("shipHangarName").textContent}`);
       $("shipHangarStatus").textContent = "Vista previa · aplica para guardar tu elección.";
     }
@@ -1203,7 +1207,7 @@
 
     openButton.onclick = () => {
       if (state !== "menu" || !(ui.menu.classList.contains("show") || ui.briefing.classList.contains("show"))) return;
-      shipHangarDraft = { mode: shipRenderMode, loadout: { ...NeonCampaign.normalizeShipLoadout(shipLoadout) } };
+      shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout(shipLoadout) } };
       refreshDraft();
       overlay();
       hangar.classList.remove("hidden");
@@ -1222,19 +1226,14 @@
       shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout({ ...shipHangarDraft.loadout, [key]: select.value }) } };
       refreshDraft();
     };
-    $("shipLegacy").onclick = () => {
-      if (!shipHangarDraft) return;
-      shipHangarDraft = { mode: "legacy", loadout: { ...shipHangarDraft.loadout } };
-      refreshDraft();
-    };
     $("shipApply").onclick = () => {
       if (!shipHangarDraft) return;
       const loadout = NeonCampaign.normalizeShipLoadout(shipHangarDraft.loadout);
-      if (!storage.setJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, { version: 1, mode: shipHangarDraft.mode, loadout })) {
+      if (!storage.setJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, { version: 1, mode: "modular", loadout })) {
         $("shipHangarStatus").textContent = "No se pudo guardar. Tu nave anterior sigue seleccionada.";
         return;
       }
-      shipRenderMode = shipHangarDraft.mode;
+      shipRenderMode = "modular";
       shipLoadout = loadout;
       syncShipPresentation();
       closeHangar();
@@ -1468,26 +1467,29 @@
       ammo=classicWeapons.charges;
       const remaining=Math.max(0,NeonCampaign.CLASSIC_WEAPON_RULES.rechargeSeconds-classicWeapons.recharge);
       ui.ammo.textContent=ammo<MAX_AMMO ? `${ammo}/${MAX_AMMO} · ${remaining.toFixed(1)}s` : `${ammo}/${MAX_AMMO}`;
-      ui.fire.disabled=state!=="playing" || ammo<=0 || manualShotCooldown>0 || warpTimer>0;
+      ui.fire.disabled=state!=="playing" || warpTimer>0;
+      ui.fire.setAttribute("aria-disabled", String(ui.fire.disabled || ammo<=0 || manualShotCooldown>0));
       ui.fire.classList.toggle("empty",ammo<=0);
       const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
-      ui.fire.setAttribute("aria-label",`Disparar ${weapon.label}. ${weapon.description} ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
+      ui.fire.setAttribute("aria-label",`Mantener para disparar ${weapon.label}. ${weapon.description} ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
       return;
     }
     if (JOURNEY_DEMO || atlasBoss) {
       ui.fire.classList.remove("empty");
       ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
-      ui.fire.disabled = state !== "playing" || manualShotCooldown > 0 || warpTimer > 0;
-      ui.fire.setAttribute("aria-label", "Disparar pulso básico sin munición limitada");
+      ui.fire.disabled = state !== "playing" || warpTimer > 0;
+      ui.fire.setAttribute("aria-disabled", String(ui.fire.disabled || manualShotCooldown > 0));
+      ui.fire.setAttribute("aria-label", "Mantener para disparar pulso básico sin munición limitada");
       return;
     }
     ui.ammo.textContent = `${ammo}/${MAX_AMMO}`;
     const unavailable = state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0;
-    ui.fire.disabled = unavailable;
+    ui.fire.disabled = state !== "playing" || warpTimer > 0;
+    ui.fire.setAttribute("aria-disabled", String(unavailable));
     ui.fire.classList.toggle("empty", ammo <= 0);
     ui.fire.setAttribute("aria-label", ammo > 0
-      ? `Disparar. Munición ${ammo} de ${MAX_AMMO}`
-      : "Sin munición");
+      ? `Mantener para disparar. Munición ${ammo} de ${MAX_AMMO}`
+      : "Mantener para disparar cuando recuperes munición");
   }
 
   function animateHud(element, className) {
@@ -1653,6 +1655,7 @@
   }
 
   function startLevel(index = currentLevel) {
+    if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
     startMusic();
@@ -1757,6 +1760,7 @@
 
   function pauseGame() {
     if (state !== "playing") return;
+    if (typeof resetGameInput === "function") resetGameInput();
     journey?.setPaused(true);
     NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
@@ -1775,6 +1779,7 @@
   }
 
   function goHome() {
+    if (typeof resetGameInput === "function") resetGameInput();
     classicFlight=null;classicFlightView=null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
     NeonCampaign.endFlightInput(classicFlightInput);
@@ -1828,6 +1833,7 @@
       if (!atlasBoss.resolved) return;
     }
     if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
+    if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
@@ -1889,6 +1895,7 @@
 
   function finishGame(reason = "hull") {
     if (state === "gameover" || state === "complete") return;
+    if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("gameover");
@@ -3954,6 +3961,17 @@
     const source = frame.source, destination = frame.destination;
     const sx = atlas.naturalWidth / frame.sourceWidth;
     const sy = atlas.naturalHeight / frame.sourceHeight;
+    if (part === "flames") {
+      // The paired source plume contains a solid connector in its empty centre.
+      // Keep each authored jet at its nozzle; never paint that extraction seam.
+      for (const [offset, fraction] of [[0, .4], [.6, .4]]) {
+        target.drawImage(atlas, (source.x + source.width * offset) * sx, source.y * sy,
+          source.width * fraction * sx, source.height * sy,
+          destination.x + destination.width * offset, destination.y,
+          destination.width * fraction, destination.height);
+      }
+      return true;
+    }
     target.drawImage(atlas, source.x * sx, source.y * sy, source.width * sx, source.height * sy,
       destination.x, destination.y, destination.width, destination.height);
     return true;
@@ -3990,25 +4008,24 @@
     if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout &&
       shipPresentationSignature?.twin === twin) return;
     if (twin && !spriteReady(SPRITES.flightWeapons)) return;
-    let source = "assets/ship_frame_01.webp";
-    if (shipRenderMode === "modular" || twin) {
-      if (shipRenderMode === "modular" && !spriteReady(SPRITES.modularShip)) return;
+    let source = "assets/player_ship_identity_v1.webp";
+    if (spriteReady(SPRITES.modularShip)) {
       const preview = document.createElement("canvas"); preview.width = preview.height = 384;
       const previewContext = preview.getContext("2d");
       previewContext.translate(192, 170);
-      if (shipRenderMode === "modular") {
-        drawModularShip(previewContext, shipLoadout, 330, 0, 0, 100, 0, twin ? 0 : null);
-      } else {
-        const frame = frameFrom("ship", 1);
-        if (!spriteReady(frame)) return;
-        previewContext.save(); previewContext.scale(330 / 512, 330 / 512);
-        drawClassicTwinMounts(previewContext, 0); previewContext.restore();
-        previewContext.drawImage(frame, -165, -165, 330, 330);
-      }
+      drawModularShip(previewContext, shipLoadout, 330, 0, 0, 100, 0, twin ? 0 : null);
       source = preview.toDataURL("image/png");
     }
     document.querySelectorAll(".menu-ship-image, .briefing-ship").forEach(image => { image.src = source; });
-    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout, twin};
+    // A missing atlas must remain retryable; the portrait is only degradation.
+    if (spriteReady(SPRITES.modularShip)) shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout, twin};
+  }
+
+  function drawShipIdentityFallback(target, size) {
+    if (!spriteReady(SPRITES.shipIdentity)) return false;
+    // Exported from the same assembly: 512x640, hull pivot at (256,256).
+    target.drawImage(SPRITES.shipIdentity, -size / 2, -size / 2, size, size * 1.25);
+    return true;
   }
 
   function drawClassicDock(t) {
@@ -4018,15 +4035,12 @@
     target.clearRect(0, 0, preview.width, preview.height);
     target.save(); target.translate(preview.width / 2, preview.height * .49);
     const twin = hasClassicTwinMounts();
-    const assembled = shipRenderMode === "modular" &&
-      drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
+    const assembled = drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
     if (!assembled) {
       target.save(); target.scale(270 / 512, 270 / 512);
       if (twin) drawClassicTwinMounts(target, 0);
       target.restore();
-      const frame = frameFrom("ship", 1);
-      if (spriteReady(frame)) target.drawImage(frame, -135, -135, 270, 270);
-      else if (spriteReady(SPRITES.shipFallback)) target.drawImage(SPRITES.shipFallback, -126, -143, 252, 286);
+      drawShipIdentityFallback(target, 270);
     }
     target.restore();
   }
@@ -4036,12 +4050,11 @@
     if (preview && $("shipHangar")?.classList.contains("show") && shipHangarDraft) {
       const target = preview.getContext("2d"); target.clearRect(0, 0, 512, 512);
       target.save(); target.translate(256, 224);
-      const atlasUnavailable = shipHangarDraft.mode === "modular" && !spriteReady(SPRITES.modularShip);
+      const atlasUnavailable = !spriteReady(SPRITES.modularShip);
       $("shipAtlasNotice")?.classList.toggle("hidden", !atlasUnavailable);
       $("shipApply").disabled = atlasUnavailable;
-      if (shipHangarDraft.mode === "legacy" || atlasUnavailable) {
-        const frame = frameFrom("ship", Math.floor(t / 220) % 3);
-        if (spriteReady(frame)) target.drawImage(frame, -175, -175, 350, 350);
+      if (atlasUnavailable) {
+        drawShipIdentityFallback(target, 350);
       } else {
         drawModularShip(target, shipHangarDraft.loadout, 380, t / 1000, Math.sin(t / 2000) * .32);
       }
@@ -4093,7 +4106,6 @@
     ctx.translate(player.x, player.y);
 
     const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8;
-    const { frameIndex, flipX } = playerFrameState(t);
 
     if (powers.shield > 0) {
       if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && spriteReady(SPRITES.forceShieldAtlas)) {
@@ -4122,35 +4134,11 @@
     const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
       ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
-    const assembled = shipRenderMode === "modular" && drawModularShip(ctx, assembledLoadout, 208, elapsed,
+    const assembled = drawModularShip(ctx, assembledLoadout, 208, elapsed,
       clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer,
       hasClassicTwinMounts() ? classicTwinFrame() : null);
     ctx.restore();
     if (!assembled) {
-    const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
-    const upgraded = JOURNEY_DEMO && journeyView?.engineBoost;
-    const enginePulse = (0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20) * (upgraded ? 1.28 : 1);
-    ctx.save();
-    ctx.translate(0, 53 * SHIP_VISUAL.scale + bob);
-    ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = 24;
-    ctx.shadowColor = "#56efff";
-    for (const engineX of [-27, 27]) {
-      const plume = ctx.createLinearGradient(engineX, 0, engineX, 48 * SHIP_VISUAL.scale * enginePulse);
-      plume.addColorStop(0, "rgba(255,255,255,.96)");
-      plume.addColorStop(0.25, upgraded ? "rgba(255,196,92,.92)" : "rgba(92,242,255,.82)");
-      plume.addColorStop(1, "rgba(42,116,255,0)");
-      ctx.fillStyle = plume;
-      ctx.beginPath();
-      ctx.moveTo((engineX - 6) * SHIP_VISUAL.scale, 0);
-      ctx.lineTo(engineX * SHIP_VISUAL.scale, 48 * SHIP_VISUAL.scale * enginePulse);
-      ctx.lineTo((engineX + 6) * SHIP_VISUAL.scale, 0);
-      ctx.closePath();
-      ctx.fill();
-    }
-    ctx.restore();
-
-    const frame = frameFrom("ship", frameIndex);
     ctx.save();
     const criticalJitter = hull < 18 && state !== "destroying" ? Math.sin(elapsed * 19) * 1.6 : 0;
     ctx.translate(criticalJitter, bob + SHIP_VISUAL.centerYOffset);
@@ -4158,10 +4146,7 @@
       ctx.save(); ctx.scale(208 / 512, 208 / 512);
       drawClassicTwinMounts(ctx, classicTwinFrame()); ctx.restore();
     }
-    ctx.shadowBlur = 22;
-    ctx.shadowColor = level().accent;
-    if (!drawImageCentered(frame, SHIP_VISUAL.spriteSize, SHIP_VISUAL.spriteSize, 0, 1, flipX)) {
-      if (!drawImageCentered(SPRITES.shipFallback, SHIP_VISUAL.fallbackWidth, SHIP_VISUAL.fallbackHeight)) {
+    if (!drawShipIdentityFallback(ctx, 208)) {
         ctx.save();
         ctx.scale(SHIP_VISUAL.scale, SHIP_VISUAL.scale);
         const body = ctx.createLinearGradient(-75, -55, 75, 55);
@@ -4174,7 +4159,6 @@
         ctx.lineTo(0, 52); ctx.lineTo(-48, 38); ctx.lineTo(-88, 18); ctx.lineTo(-34, -24);
         ctx.closePath(); ctx.fill();
         ctx.restore();
-      }
     }
     ctx.restore();
 
@@ -4331,21 +4315,21 @@
     }
 
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
-      const size = item.r * 4.2;
-      const frame = Math.floor(elapsed * 11 + item.phase) % 8;
+      const size = item.r * 12;
+      const frame = Math.floor(elapsed * 8 + (item.phase || 0)) % 4;
       const sourceWidth = SPRITES.comet.naturalWidth / 4;
-      const sourceHeight = SPRITES.comet.naturalHeight / 2;
-      const sourceX = (frame % 4) * sourceWidth;
-      const sourceY = Math.floor(frame / 4) * sourceHeight;
-      ctx.rotate(item.rot + Math.PI / 2);
-      ctx.shadowBlur = 24;
-      ctx.shadowColor = "#ff754f";
-      // Ocho fotogramas reales: la cola, el humo y las fisuras cambian sin
-      // modificar la silueta de colisión del núcleo rocoso.
+      const sourceHeight = SPRITES.comet.naturalHeight;
+      const sourceX = frame * sourceWidth;
+      const direction = item.flightComet ? Math.atan2(item.vy,item.vx) : Math.PI / 2;
+      ctx.rotate(direction);
+      ctx.shadowBlur = 9;
+      ctx.shadowColor = "#8cdeff";
+      // Authored +X comet: keep the nucleus at the physical item centre. The
+      // long decorative tail has no collision and trails opposite velocity.
       ctx.drawImage(
         SPRITES.comet,
-        sourceX, sourceY, sourceWidth, sourceHeight,
-        -size * 0.66, -size * 0.50, size, size
+        sourceX, 0, sourceWidth, sourceHeight,
+        -size * 0.75, -size * 0.50, size, size
       );
       ctx.restore();
       return;
@@ -4747,6 +4731,10 @@
     // A queued RAF timestamp must never rewind the simulation or stop its loop.
     const dt = Math.max(0, Math.min(0.034, (now - last) / 1000));
     last = now;
+    // Holding the action thumb uses the existing simulation owner. Weapon
+    // cooldown and the rechargeable battery still decide whether a shot fires.
+    if (state !== "playing") resetGameInput();
+    else if (fireInput && !ui.fire.disabled) fireManualShot();
     update(dt);
     if (!legacyRunning) return;
     render(now);
@@ -4761,6 +4749,28 @@
   function pointerY(event, point = event.touches?.[0] || event) {
     const rect = canvas.getBoundingClientRect();
     return (point.clientY - rect.top) * H / rect.height;
+  }
+
+  let legacyPilotId = null;
+  let fireInput = null;
+  let suppressNextFireClick = false;
+
+  function releaseInputCapture(element, id) {
+    if (typeof id !== "number") return;
+    try { element.releasePointerCapture?.(id); } catch { /* Capture may already have ended. */ }
+  }
+
+  // Lifecycle callers use this as well as blur/cancellation. An action thumb
+  // must never survive a pause, restart or return to the menu.
+  function resetGameInput() {
+    const pilotId = classicFlightInput.active ? classicFlightInput.id : legacyPilotId;
+    const previousFire = fireInput;
+    legacyPilotId = null;
+    journeyPointerLast = null;
+    fireInput = null;
+    NeonCampaign.endFlightInput(classicFlightInput);
+    releaseInputCapture(canvas, pilotId);
+    if (previousFire?.kind === "pointer") releaseInputCapture(ui.fire, previousFire.id);
   }
 
   function moveClassicFlight(event) {
@@ -4807,15 +4817,33 @@
 
   function move(event) {
     if (state !== "playing") return;
+    if (event.type.startsWith("touch") && window.PointerEvent) return;
     event.preventDefault();
     if (isUnifiedClassic()) { moveClassicFlight(event); return; }
-    const x = pointerX(event);
+    const press = event.type === "pointerdown" || event.type === "touchstart";
+    let point = event;
+    let id = event.pointerId ?? "mouse";
+    if (event.touches) {
+      point = press ? event.changedTouches?.[0]
+        : Array.from(event.touches).find(touch => touch.identifier === legacyPilotId);
+      if (!point) return;
+      id = point.identifier;
+    }
+    const mouseHover = !event.touches && (!event.pointerType || event.pointerType === "mouse") &&
+      !event.buttons && legacyPilotId === null;
+    if (press) {
+      if (legacyPilotId !== null) return;
+      legacyPilotId = id;
+      if (event.pointerId !== undefined) {
+        try { canvas.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
+      }
+    } else if (id !== legacyPilotId && !mouseHover) return;
+    const x = pointerX(event, point);
+    if (!Number.isFinite(x)) return;
     const factor = settings.sensitivity / 100;
     if (JOURNEY_DEMO) {
-      if (event.type.startsWith("touch") && window.PointerEvent) return;
-      if (event.type === "pointerdown" || event.type === "touchstart") {
+      if (press) {
         journeyPointerLast = x;
-        if (event.pointerId !== undefined) canvas.setPointerCapture?.(event.pointerId);
         return;
       }
       if (journeyPointerLast === null) return;
@@ -4831,22 +4859,61 @@
   canvas.addEventListener("touchstart", move, { passive: false });
   canvas.addEventListener("touchmove", move, { passive: false });
   function finishFlightInput(event) {
-    journeyPointerLast = null;
-    if (!isUnifiedClassic()) return;
+    let ids;
     if (event.type.startsWith("touch")) {
       if (window.PointerEvent) return;
-      for (const touch of Array.from(event.changedTouches || [])) {
-        NeonCampaign.endFlightInput(classicFlightInput, touch.identifier);
+      ids = Array.from(event.changedTouches || [], touch => touch.identifier);
+    } else ids = [event.pointerId ?? "mouse"];
+    for (const id of ids) {
+      if (id === legacyPilotId) {
+        legacyPilotId = null;
+        journeyPointerLast = null;
       }
-    } else NeonCampaign.endFlightInput(classicFlightInput, event.pointerId ?? "mouse");
+      NeonCampaign.endFlightInput(classicFlightInput, id);
+    }
   }
   for (const event of ["pointerup", "pointercancel", "lostpointercapture", "touchend", "touchcancel"]) {
     canvas.addEventListener(event, finishFlightInput);
+    // Pointer capture is not available in every embedded/Safari fallback. A
+    // release over a control must still end only its own pilot contact.
+    if (event !== "lostpointercapture") addEventListener(event, finishFlightInput, {capture: true});
   }
-  addEventListener("blur", () => {
-    journeyPointerLast = null;
-    NeonCampaign.endFlightInput(classicFlightInput);
-  });
+  addEventListener("blur", resetGameInput);
+
+  function startFireInput(event) {
+    const touchFallback = event.type === "touchstart";
+    if (touchFallback && window.PointerEvent) return;
+    if (state !== "playing" || ui.fire.disabled) return;
+    if (!touchFallback && event.pointerType === "mouse" && event.button !== 0) return;
+    const id = touchFallback ? event.changedTouches?.[0]?.identifier : event.pointerId ?? "mouse";
+    if (id === undefined) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (fireInput) return;
+    fireInput = {id, kind: touchFallback ? "touch" : "pointer"};
+    suppressNextFireClick = true;
+    if (!touchFallback && event.pointerId !== undefined) {
+      try { ui.fire.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
+    }
+    fireManualShot();
+  }
+
+  function finishFireInput(event) {
+    if (!fireInput) return;
+    const touchFallback = event.type.startsWith("touch");
+    if (touchFallback && window.PointerEvent) return;
+    const ended = touchFallback
+      ? Array.from(event.changedTouches || []).some(touch => touch.identifier === fireInput.id)
+      : (event.pointerId ?? "mouse") === fireInput.id;
+    if (ended) fireInput = null;
+  }
+
+  ui.fire.addEventListener("pointerdown", startFireInput, {passive: false});
+  ui.fire.addEventListener("touchstart", startFireInput, {passive: false});
+  for (const event of ["pointerup", "pointercancel", "lostpointercapture", "touchend", "touchcancel"]) {
+    ui.fire.addEventListener(event, finishFireInput);
+    if (event !== "lostpointercapture") addEventListener(event, finishFireInput, {capture: true});
+  }
 
   addEventListener("keydown", (event) => {
     if (isUnifiedClassic()) {
@@ -4868,7 +4935,10 @@
       event.preventDefault();
       fireManualShot();
     }
-    if (event.key === "Escape") state === "paused" ? resumeGame() : pauseGame();
+    if (event.key === "Escape") {
+      resetGameInput();
+      state === "paused" ? resumeGame() : pauseGame();
+    }
   });
 
   $("play").onclick = () => {
@@ -4887,7 +4957,15 @@
   $("quickSettings").onclick = () => openSettings("menu");
   $("settingsBack").onclick = closeSettings;
   $("pause").onclick = pauseGame;
-  ui.fire.onclick = fireManualShot;
+  ui.fire.onclick = (event) => {
+    // Pointer/touch presses have fired already. Their compatibility click must
+    // not consume a second battery charge; keyboard/assistive clicks still work.
+    if (event?.detail && (window.PointerEvent || suppressNextFireClick)) {
+      suppressNextFireClick = false;
+      return;
+    }
+    fireManualShot();
+  };
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
   $("restart").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
@@ -4960,6 +5038,7 @@
       last = performance.now();
       return;
     }
+    resetGameInput();
     if (state === "playing") pauseGame();
     await suspendAudio();
   });

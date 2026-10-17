@@ -1,5 +1,7 @@
-const CACHE = "neon-catcher-pre-release-7-2-0-combat-readability-1";
+const CACHE = "neon-catcher-pre-release-7-2-0-ship-touch-comet-1";
 const CORE = [
+  "assets/player_ship_identity_v1.webp",
+  "assets/comet_flight_atlas_v2.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",
@@ -23,12 +25,6 @@ const CORE = [
   "assets/vulkar_orbit_background_v1.webp",
   "assets/vulkar_orbit_planet_v1.webp",
   "assets/force_shield_atlas_v1.webp",
-  "assets/ship_frame_00.webp",
-  "assets/ship_frame_01.webp",
-  "assets/ship_frame_02.webp",
-  "assets/ship_frame_03.webp",
-  "assets/ship_frame_04.webp",
-  "assets/ship_frame_05.webp",
   "assets/core_frame_00.webp",
   "assets/core_frame_01.webp",
   "assets/core_frame_02.webp",
@@ -71,7 +67,6 @@ const CORE = [
   "assets/ch01_atlas_v1.webp",
   "assets/guardian_atlas_states_v1.webp",
   "assets/atlas_combat_vfx_v1.webp",
-  "assets/comet_animation_sheet_v1.webp",
   "assets/debris_metal.webp",
   "assets/debris_panel.webp",
   "assets/debris_hot_00.webp",

@@ -43,7 +43,7 @@ export function previewLauncherWorker(revision) {
   return `const CACHE_PREFIX = "neon-preview-launcher-v1:" + self.registration.scope + "::";
 const CACHE = CACHE_PREFIX + ${JSON.stringify(revision)};
 const CORE = ["./", "index.html", "manifest.webmanifest", "build-info.json",
-  "juego/assets/ship_frame_01.webp", "juego/assets/icon-192.png", "juego/assets/icon-512.png"]
+  "juego/assets/player_ship_identity_v1.webp", "juego/assets/icon-192.png", "juego/assets/icon-512.png"]
   .map(path => new URL(path, self.registration.scope).href);
 const ALLOWED = new Set(CORE);
 self.addEventListener("install", event => {
@@ -143,7 +143,7 @@ export async function buildPreview() {
   if (process.env.COMMIT_REF && process.env.COMMIT_REF !== commit) throw new Error('Netlify COMMIT_REF does not match checkout HEAD');
   const dirty = Boolean(git('status', '--porcelain', '--untracked-files=normal'));
   const trackedDiffSha256 = sha256(execFileSync('git', ['diff', '--binary', 'HEAD'], {cwd: root, maxBuffer: 32 * 1024 * 1024}));
-  for (const file of ['index.html', 'game.js', 'content-runtime.js', 'core-runtime.js', 'sw.js', 'assets/ship_frame_01.webp']) {
+  for (const file of ['index.html', 'game.js', 'content-runtime.js', 'core-runtime.js', 'sw.js', 'assets/player_ship_identity_v1.webp']) {
     const info = await stat(join(source, file));
     if (!info.isFile() || info.size === 0) throw new Error(`Preview source is missing or empty: ${file}`);
   }

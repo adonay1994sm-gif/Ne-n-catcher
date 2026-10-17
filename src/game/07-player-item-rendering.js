@@ -108,6 +108,17 @@
     const source = frame.source, destination = frame.destination;
     const sx = atlas.naturalWidth / frame.sourceWidth;
     const sy = atlas.naturalHeight / frame.sourceHeight;
+    if (part === "flames") {
+      // The paired source plume contains a solid connector in its empty centre.
+      // Keep each authored jet at its nozzle; never paint that extraction seam.
+      for (const [offset, fraction] of [[0, .4], [.6, .4]]) {
+        target.drawImage(atlas, (source.x + source.width * offset) * sx, source.y * sy,
+          source.width * fraction * sx, source.height * sy,
+          destination.x + destination.width * offset, destination.y,
+          destination.width * fraction, destination.height);
+      }
+      return true;
+    }
     target.drawImage(atlas, source.x * sx, source.y * sy, source.width * sx, source.height * sy,
       destination.x, destination.y, destination.width, destination.height);
     return true;
@@ -144,25 +155,24 @@
     if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout &&
       shipPresentationSignature?.twin === twin) return;
     if (twin && !spriteReady(SPRITES.flightWeapons)) return;
-    let source = "assets/ship_frame_01.webp";
-    if (shipRenderMode === "modular" || twin) {
-      if (shipRenderMode === "modular" && !spriteReady(SPRITES.modularShip)) return;
+    let source = "assets/player_ship_identity_v1.webp";
+    if (spriteReady(SPRITES.modularShip)) {
       const preview = document.createElement("canvas"); preview.width = preview.height = 384;
       const previewContext = preview.getContext("2d");
       previewContext.translate(192, 170);
-      if (shipRenderMode === "modular") {
-        drawModularShip(previewContext, shipLoadout, 330, 0, 0, 100, 0, twin ? 0 : null);
-      } else {
-        const frame = frameFrom("ship", 1);
-        if (!spriteReady(frame)) return;
-        previewContext.save(); previewContext.scale(330 / 512, 330 / 512);
-        drawClassicTwinMounts(previewContext, 0); previewContext.restore();
-        previewContext.drawImage(frame, -165, -165, 330, 330);
-      }
+      drawModularShip(previewContext, shipLoadout, 330, 0, 0, 100, 0, twin ? 0 : null);
       source = preview.toDataURL("image/png");
     }
     document.querySelectorAll(".menu-ship-image, .briefing-ship").forEach(image => { image.src = source; });
-    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout, twin};
+    // A missing atlas must remain retryable; the portrait is only degradation.
+    if (spriteReady(SPRITES.modularShip)) shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout, twin};
+  }
+
+  function drawShipIdentityFallback(target, size) {
+    if (!spriteReady(SPRITES.shipIdentity)) return false;
+    // Exported from the same assembly: 512x640, hull pivot at (256,256).
+    target.drawImage(SPRITES.shipIdentity, -size / 2, -size / 2, size, size * 1.25);
+    return true;
   }
 
   function drawClassicDock(t) {
@@ -172,15 +182,12 @@
     target.clearRect(0, 0, preview.width, preview.height);
     target.save(); target.translate(preview.width / 2, preview.height * .49);
     const twin = hasClassicTwinMounts();
-    const assembled = shipRenderMode === "modular" &&
-      drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
+    const assembled = drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
     if (!assembled) {
       target.save(); target.scale(270 / 512, 270 / 512);
       if (twin) drawClassicTwinMounts(target, 0);
       target.restore();
-      const frame = frameFrom("ship", 1);
-      if (spriteReady(frame)) target.drawImage(frame, -135, -135, 270, 270);
-      else if (spriteReady(SPRITES.shipFallback)) target.drawImage(SPRITES.shipFallback, -126, -143, 252, 286);
+      drawShipIdentityFallback(target, 270);
     }
     target.restore();
   }
@@ -190,12 +197,11 @@
     if (preview && $("shipHangar")?.classList.contains("show") && shipHangarDraft) {
       const target = preview.getContext("2d"); target.clearRect(0, 0, 512, 512);
       target.save(); target.translate(256, 224);
-      const atlasUnavailable = shipHangarDraft.mode === "modular" && !spriteReady(SPRITES.modularShip);
+      const atlasUnavailable = !spriteReady(SPRITES.modularShip);
       $("shipAtlasNotice")?.classList.toggle("hidden", !atlasUnavailable);
       $("shipApply").disabled = atlasUnavailable;
-      if (shipHangarDraft.mode === "legacy" || atlasUnavailable) {
-        const frame = frameFrom("ship", Math.floor(t / 220) % 3);
-        if (spriteReady(frame)) target.drawImage(frame, -175, -175, 350, 350);
+      if (atlasUnavailable) {
+        drawShipIdentityFallback(target, 350);
       } else {
         drawModularShip(target, shipHangarDraft.loadout, 380, t / 1000, Math.sin(t / 2000) * .32);
       }
@@ -247,7 +253,6 @@
     ctx.translate(player.x, player.y);
 
     const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8;
-    const { frameIndex, flipX } = playerFrameState(t);
 
     if (powers.shield > 0) {
       if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && spriteReady(SPRITES.forceShieldAtlas)) {
@@ -276,35 +281,11 @@
     const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
       ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
-    const assembled = shipRenderMode === "modular" && drawModularShip(ctx, assembledLoadout, 208, elapsed,
+    const assembled = drawModularShip(ctx, assembledLoadout, 208, elapsed,
       clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer,
       hasClassicTwinMounts() ? classicTwinFrame() : null);
     ctx.restore();
     if (!assembled) {
-    const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
-    const upgraded = JOURNEY_DEMO && journeyView?.engineBoost;
-    const enginePulse = (0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20) * (upgraded ? 1.28 : 1);
-    ctx.save();
-    ctx.translate(0, 53 * SHIP_VISUAL.scale + bob);
-    ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = 24;
-    ctx.shadowColor = "#56efff";
-    for (const engineX of [-27, 27]) {
-      const plume = ctx.createLinearGradient(engineX, 0, engineX, 48 * SHIP_VISUAL.scale * enginePulse);
-      plume.addColorStop(0, "rgba(255,255,255,.96)");
-      plume.addColorStop(0.25, upgraded ? "rgba(255,196,92,.92)" : "rgba(92,242,255,.82)");
-      plume.addColorStop(1, "rgba(42,116,255,0)");
-      ctx.fillStyle = plume;
-      ctx.beginPath();
-      ctx.moveTo((engineX - 6) * SHIP_VISUAL.scale, 0);
-      ctx.lineTo(engineX * SHIP_VISUAL.scale, 48 * SHIP_VISUAL.scale * enginePulse);
-      ctx.lineTo((engineX + 6) * SHIP_VISUAL.scale, 0);
-      ctx.closePath();
-      ctx.fill();
-    }
-    ctx.restore();
-
-    const frame = frameFrom("ship", frameIndex);
     ctx.save();
     const criticalJitter = hull < 18 && state !== "destroying" ? Math.sin(elapsed * 19) * 1.6 : 0;
     ctx.translate(criticalJitter, bob + SHIP_VISUAL.centerYOffset);
@@ -312,10 +293,7 @@
       ctx.save(); ctx.scale(208 / 512, 208 / 512);
       drawClassicTwinMounts(ctx, classicTwinFrame()); ctx.restore();
     }
-    ctx.shadowBlur = 22;
-    ctx.shadowColor = level().accent;
-    if (!drawImageCentered(frame, SHIP_VISUAL.spriteSize, SHIP_VISUAL.spriteSize, 0, 1, flipX)) {
-      if (!drawImageCentered(SPRITES.shipFallback, SHIP_VISUAL.fallbackWidth, SHIP_VISUAL.fallbackHeight)) {
+    if (!drawShipIdentityFallback(ctx, 208)) {
         ctx.save();
         ctx.scale(SHIP_VISUAL.scale, SHIP_VISUAL.scale);
         const body = ctx.createLinearGradient(-75, -55, 75, 55);
@@ -328,7 +306,6 @@
         ctx.lineTo(0, 52); ctx.lineTo(-48, 38); ctx.lineTo(-88, 18); ctx.lineTo(-34, -24);
         ctx.closePath(); ctx.fill();
         ctx.restore();
-      }
     }
     ctx.restore();
 
@@ -485,21 +462,21 @@
     }
 
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
-      const size = item.r * 4.2;
-      const frame = Math.floor(elapsed * 11 + item.phase) % 8;
+      const size = item.r * 12;
+      const frame = Math.floor(elapsed * 8 + (item.phase || 0)) % 4;
       const sourceWidth = SPRITES.comet.naturalWidth / 4;
-      const sourceHeight = SPRITES.comet.naturalHeight / 2;
-      const sourceX = (frame % 4) * sourceWidth;
-      const sourceY = Math.floor(frame / 4) * sourceHeight;
-      ctx.rotate(item.rot + Math.PI / 2);
-      ctx.shadowBlur = 24;
-      ctx.shadowColor = "#ff754f";
-      // Ocho fotogramas reales: la cola, el humo y las fisuras cambian sin
-      // modificar la silueta de colisión del núcleo rocoso.
+      const sourceHeight = SPRITES.comet.naturalHeight;
+      const sourceX = frame * sourceWidth;
+      const direction = item.flightComet ? Math.atan2(item.vy,item.vx) : Math.PI / 2;
+      ctx.rotate(direction);
+      ctx.shadowBlur = 9;
+      ctx.shadowColor = "#8cdeff";
+      // Authored +X comet: keep the nucleus at the physical item centre. The
+      // long decorative tail has no collision and trails opposite velocity.
       ctx.drawImage(
         SPRITES.comet,
-        sourceX, sourceY, sourceWidth, sourceHeight,
-        -size * 0.66, -size * 0.50, size, size
+        sourceX, 0, sourceWidth, sourceHeight,
+        -size * 0.75, -size * 0.50, size, size
       );
       ctx.restore();
       return;

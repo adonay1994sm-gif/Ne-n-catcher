@@ -39,8 +39,15 @@
       "reference": "existing/game design",
       "runtimePath": "assets/ship_modular_atlas_v1.webp",
       "masterPath": "art-source/player/modular-v1/modular-ships-master.png",
-      "integration": "Modular hangar and shared legacy player renderer; owner visual acceptance pending",
-      "animation": "Articulated wings and exhaust; no claim of completed destruction or dedicated state frames"
+      "integration": "Single live modular identity in game, hangar, menu and launcher; previous illustration is retained only as a recovery reference",
+      "animation": "Articulated wings and exhaust; no claim of completed destruction or dedicated state frames",
+      "portrait": {
+        "path": "assets/player_ship_identity_v1.webp",
+        "master": "art-source/ship-identity/player_ship_identity_v1.png",
+        "metadata": "art-source/ship-identity/player_ship_identity_v1.json"
+      },
+      "artisticAcceptance": "ACCEPTED_MODULAR_BASE",
+      "physicalAcceptance": "PENDING"
     },
     {
       "sequence": 2,
@@ -429,16 +436,40 @@
       "id": "shared-comet-living",
       "category": "shared",
       "world": "shared",
-      "name": "Cometa vivo · llama, humo y magma",
+      "name": "Cometa mineral helado · núcleo y estela",
       "type": "sprite-sheet",
-      "masterSize": "1776x888",
-      "runtimeSize": "4x2@256",
-      "frames": 8,
-      "pivot": "0.5,0.5",
-      "level": "5,10",
+      "masterSize": "2048x512",
+      "runtimeSize": "1536x384;4x384²",
+      "frames": 4,
+      "pivot": "0.75,0.5",
+      "level": "1,4,10",
       "priority": "P0",
-      "status": "READY",
-      "reference": "art-source/comet_animation_master_v1.png"
+      "status": "IN_REVIEW",
+      "reference": "art-source/comet-rework/generation-prompts.json",
+      "legacyVersions": [
+        {
+          "sequence": 24,
+          "id": "shared-comet-living",
+          "category": "shared",
+          "world": "shared",
+          "name": "Cometa vivo · llama, humo y magma",
+          "type": "sprite-sheet",
+          "masterSize": "1776x888",
+          "runtimeSize": "4x2@256",
+          "frames": 8,
+          "pivot": "0.5,0.5",
+          "level": "5,10",
+          "priority": "P0",
+          "status": "READY",
+          "reference": "art-source/comet_animation_master_v1.png"
+        }
+      ],
+      "runtimePath": "assets/comet_flight_atlas_v2.webp",
+      "masterPath": "art-source/comet-rework/comet_flight_atlas_master.png",
+      "metadataPath": "art-source/comet-rework/comet_flight_atlas_v2.json",
+      "animation": "4 distinct states;8fps;0.5s loop;played clock;tail decorative",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING"
     },
     {
       "sequence": 25,

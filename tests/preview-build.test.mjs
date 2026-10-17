@@ -254,7 +254,7 @@ test('built launcher has one principal journey, recoverable historical archives 
   const dom = new JSDOM(html);
   try { assertOneMainJourney(dom.window.document); }
   finally { dom.window.close(); }
-  assert.match(html, /juego\/assets\/ship_frame_01\.webp/);
+  assert.match(html, /juego\/assets\/player_ship_identity_v1\.webp/);
   assert.match(html, /neon-preview-v1:neon-n7-unlocked-v1/);
   assert.doesNotMatch(html, /__NEON_PREVIEW_/);
   assert.match(html, /rel="manifest" href="manifest.webmanifest"/);
@@ -262,7 +262,7 @@ test('built launcher has one principal journey, recoverable historical archives 
   for (const name of ['manifest.webmanifest', 'launcher-sw.js', 'build-info.json']) {
     assert.ok((await stat(join(dist, name))).size > 0, name);
   }
-  for (const name of ['index.html', 'game.js', 'core-runtime.js', 'content-runtime.js', 'preview-config.js', 'sw.js', 'assets/ship_frame_01.webp']) {
+  for (const name of ['index.html', 'game.js', 'core-runtime.js', 'content-runtime.js', 'preview-config.js', 'sw.js', 'assets/player_ship_identity_v1.webp']) {
     assert.ok((await stat(join(dist, 'juego', name))).size > 0, name);
   }
   const page = await readFile(join(dist, 'juego/index.html'), 'utf8');

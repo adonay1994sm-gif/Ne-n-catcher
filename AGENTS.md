@@ -1,3 +1,9 @@
+## Decisión vigente — nave única y dos dedos, 17/10/2026
+
+El propietario fija la nave modular actual como identidad de esta versión. Retirar la ilustración antigua de portada, selector y juego; conservar archivos y guardados recuperables. Pilotaje y disparo deben funcionar simultáneamente con dos contactos independientes; mantener DISPARAR reutiliza el RAF existente y respeta batería/cadencia. Mejorar el cometa con arte y trayectoria coherentes. La aceptación de esta base no equivale a certificación física ni autoriza distribución comercial; MotorV1 continúa apagado.
+
+---
+
 ## Última aclaración — destrucción de Chronos, 17/10/2026
 
 Las siete ilustraciones entregadas por el propietario describen **un acontecimiento dentro del nivel clásico 1**, no siete niveles ni el viaje completo. Conservar los diez niveles. Integración actual: seis estados estructurales ilustrados, onda de 7,2 s y restos persistentes mediante el reloj de ruta; leer [cierre Chronos](docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). No sustituirlo por una presentación de fondos completos ni declarar cerrado el nivel. Arte y dispositivo pendientes; Motor V1 = false y las restricciones siguientes siguen vigentes.

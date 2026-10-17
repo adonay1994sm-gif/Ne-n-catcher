@@ -1,3 +1,5 @@
+> Decisión posterior del propietario, 17/10/2026: la nave modular actual es la identidad de la versión. Se retira la nave ilustrada anterior del uso normal, conservando respaldo. Prioridad inmediata: pilotar y disparar con dos dedos, y mejorar la representación del cometa. Esta decisión reemplaza la elección visual legacy/modular; no declara completadas cien etapas, pruebas físicas ni autoriza publicación comercial.
+
 > **Aclaración del propietario, 17/10/2026:** las siete nuevas referencias de destrucción de Chronos corresponden al acontecimiento inicial del **primero de diez niveles clásicos**. No constituyen siete etapas ni una orden para comprimir el juego. Se desarrolla esa secuencia conservando la campaña y su viaje. Incremento integrado y límites en [CHRONOS_DESTRUCTION_2026-10-17.md](production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Las decisiones históricas siguientes se conservan; no interpretar un estado de arte IN_REVIEW como aceptación del propietario.
 
 ---

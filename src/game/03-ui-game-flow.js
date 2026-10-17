@@ -259,6 +259,7 @@
 
   function beginAtlasEncounter() {
     if (!isAtlasMission() || atlasBoss || collected < level().goal || state !== "playing") return false;
+    if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
     positionAtlasArena();
@@ -392,11 +393,10 @@
     hangar.innerHTML = `<section class="panel ship-hangar-panel" tabindex="-1">
       <header class="ship-hangar-header"><small>FLOTA · CONFIGURACIÓN DE NAVE</small><h2 id="shipHangarTitle">Tu nave, a tu manera.</h2><p id="shipHangarRules">Configuración visual · mismas reglas de vuelo.</p></header>
       <div class="ship-hangar-layout">
-        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption><p id="shipAtlasNotice" class="hidden" role="status">No se ha cargado la nave nueva. Puedes usar la original.</p></figure>
+        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption><p id="shipAtlasNotice" class="hidden" role="status">No se han cargado los componentes. Se muestra la nave de reserva; vuelve a abrir el juego para reintentar.</p></figure>
         <div class="ship-hangar-controls">
           <div class="ship-preset-list" role="group" aria-label="Naves disponibles"><button type="button" data-ship-preset="aster" aria-pressed="false"><b>ASTÉR</b><span>Exploradora</span></button><button type="button" data-ship-preset="bastion" aria-pressed="false"><b>BASTIÓN</b><span>Interceptora</span></button></div>
           <fieldset class="ship-components"><legend>Combina sus componentes</legend><label for="shipHull">Fuselaje<select id="shipHull"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipWings">Alas<select id="shipWings"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipEngines">Propulsores<select id="shipEngines"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label></fieldset>
-          <button id="shipLegacy" class="ship-legacy" type="button" aria-pressed="false">Usar la nave original</button>
           <p id="shipHangarStatus" class="ship-hangar-status" role="status">Los cambios se guardan al aplicar.</p>
         </div>
       </div>
@@ -410,18 +410,16 @@
     const sameLoadout = (first, second) => components.every(([key]) => first[key] === second[key]);
 
     function refreshDraft() {
-      const modular = shipHangarDraft.mode === "modular";
       for (const [key, select] of components) {
         select.value = shipHangarDraft.loadout[key];
-        select.disabled = !modular;
+        select.disabled = false;
       }
       for (const button of presetButtons) {
         const preset = NeonCampaign.SHIP_FLEET.find(entry => entry.id === button.dataset.shipPreset);
-        button.setAttribute("aria-pressed", String(modular && Boolean(preset) && sameLoadout(shipHangarDraft.loadout, preset.loadout)));
+        button.setAttribute("aria-pressed", String(Boolean(preset) && sameLoadout(shipHangarDraft.loadout, preset.loadout)));
       }
-      $("shipLegacy").setAttribute("aria-pressed", String(!modular));
       const selected = NeonCampaign.SHIP_FLEET.find(entry => sameLoadout(shipHangarDraft.loadout, entry.loadout));
-      $("shipHangarName").textContent = !modular ? "Nave original" : selected?.name || "Configuración combinada";
+      $("shipHangarName").textContent = selected?.name || "Configuración combinada";
       $("shipHangarCanvas").setAttribute("aria-label", `Vista previa: ${$("shipHangarName").textContent}`);
       $("shipHangarStatus").textContent = "Vista previa · aplica para guardar tu elección.";
     }
@@ -436,7 +434,7 @@
 
     openButton.onclick = () => {
       if (state !== "menu" || !(ui.menu.classList.contains("show") || ui.briefing.classList.contains("show"))) return;
-      shipHangarDraft = { mode: shipRenderMode, loadout: { ...NeonCampaign.normalizeShipLoadout(shipLoadout) } };
+      shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout(shipLoadout) } };
       refreshDraft();
       overlay();
       hangar.classList.remove("hidden");
@@ -455,19 +453,14 @@
       shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout({ ...shipHangarDraft.loadout, [key]: select.value }) } };
       refreshDraft();
     };
-    $("shipLegacy").onclick = () => {
-      if (!shipHangarDraft) return;
-      shipHangarDraft = { mode: "legacy", loadout: { ...shipHangarDraft.loadout } };
-      refreshDraft();
-    };
     $("shipApply").onclick = () => {
       if (!shipHangarDraft) return;
       const loadout = NeonCampaign.normalizeShipLoadout(shipHangarDraft.loadout);
-      if (!storage.setJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, { version: 1, mode: shipHangarDraft.mode, loadout })) {
+      if (!storage.setJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, { version: 1, mode: "modular", loadout })) {
         $("shipHangarStatus").textContent = "No se pudo guardar. Tu nave anterior sigue seleccionada.";
         return;
       }
-      shipRenderMode = shipHangarDraft.mode;
+      shipRenderMode = "modular";
       shipLoadout = loadout;
       syncShipPresentation();
       closeHangar();
@@ -701,26 +694,29 @@
       ammo=classicWeapons.charges;
       const remaining=Math.max(0,NeonCampaign.CLASSIC_WEAPON_RULES.rechargeSeconds-classicWeapons.recharge);
       ui.ammo.textContent=ammo<MAX_AMMO ? `${ammo}/${MAX_AMMO} · ${remaining.toFixed(1)}s` : `${ammo}/${MAX_AMMO}`;
-      ui.fire.disabled=state!=="playing" || ammo<=0 || manualShotCooldown>0 || warpTimer>0;
+      ui.fire.disabled=state!=="playing" || warpTimer>0;
+      ui.fire.setAttribute("aria-disabled", String(ui.fire.disabled || ammo<=0 || manualShotCooldown>0));
       ui.fire.classList.toggle("empty",ammo<=0);
       const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
-      ui.fire.setAttribute("aria-label",`Disparar ${weapon.label}. ${weapon.description} ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
+      ui.fire.setAttribute("aria-label",`Mantener para disparar ${weapon.label}. ${weapon.description} ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
       return;
     }
     if (JOURNEY_DEMO || atlasBoss) {
       ui.fire.classList.remove("empty");
       ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
-      ui.fire.disabled = state !== "playing" || manualShotCooldown > 0 || warpTimer > 0;
-      ui.fire.setAttribute("aria-label", "Disparar pulso básico sin munición limitada");
+      ui.fire.disabled = state !== "playing" || warpTimer > 0;
+      ui.fire.setAttribute("aria-disabled", String(ui.fire.disabled || manualShotCooldown > 0));
+      ui.fire.setAttribute("aria-label", "Mantener para disparar pulso básico sin munición limitada");
       return;
     }
     ui.ammo.textContent = `${ammo}/${MAX_AMMO}`;
     const unavailable = state !== "playing" || ammo <= 0 || manualShotCooldown > 0 || warpTimer > 0;
-    ui.fire.disabled = unavailable;
+    ui.fire.disabled = state !== "playing" || warpTimer > 0;
+    ui.fire.setAttribute("aria-disabled", String(unavailable));
     ui.fire.classList.toggle("empty", ammo <= 0);
     ui.fire.setAttribute("aria-label", ammo > 0
-      ? `Disparar. Munición ${ammo} de ${MAX_AMMO}`
-      : "Sin munición");
+      ? `Mantener para disparar. Munición ${ammo} de ${MAX_AMMO}`
+      : "Mantener para disparar cuando recuperes munición");
   }
 
   function animateHud(element, className) {
@@ -886,6 +882,7 @@
   }
 
   function startLevel(index = currentLevel) {
+    if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
     startMusic();
@@ -990,6 +987,7 @@
 
   function pauseGame() {
     if (state !== "playing") return;
+    if (typeof resetGameInput === "function") resetGameInput();
     journey?.setPaused(true);
     NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
@@ -1008,6 +1006,7 @@
   }
 
   function goHome() {
+    if (typeof resetGameInput === "function") resetGameInput();
     classicFlight=null;classicFlightView=null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
     NeonCampaign.endFlightInput(classicFlightInput);
@@ -1061,6 +1060,7 @@
       if (!atlasBoss.resolved) return;
     }
     if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
+    if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
@@ -1122,6 +1122,7 @@
 
   function finishGame(reason = "hull") {
     if (state === "gameover" || state === "complete") return;
+    if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("gameover");

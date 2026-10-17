@@ -1,19 +1,20 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 80,
-  "runtimeBytes": 7737022,
+  "assetCount": 82,
+  "runtimeBytes": 7956026,
   "audit": {
-    "reviewed": 80,
+    "reviewed": 82,
     "READY": 58,
-    "IN_REVIEW": 22,
+    "IN_REVIEW": 24,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
     "UNUSED": 0,
     "DUPLICATE": 0,
     "MISSING": 0,
-    "method": "dimensions, channels, file size, runtime references and contact-sheet visual review; unified Chronos exports: metadata dimensions, alpha, byte counts and SHA-256 verified against disk; runtime/artistic review pending; combat-readability: three new exports decoded and their dimensions/alpha/bytes/SHA-256 checked against disk; gameplay and artistic review pending"
+    "method": "dimensions, channels, file size, runtime references and contact-sheet visual review; unified Chronos exports: metadata dimensions, alpha, byte counts and SHA-256 verified against disk; runtime/artistic review pending; combat-readability: three new exports decoded and their dimensions/alpha/bytes/SHA-256 checked against disk; gameplay and artistic review pending; ship identity and comet v2: hashes/dimensions/alpha reviewed; old ship/comet references excluded from active precache without deletion",
+    "retainedOutsidePrecache": 7
   },
   "coordinateSystem": {
     "canvas": "720x1280 logical pixels, responsive without stretching",
@@ -99,7 +100,10 @@
           "maxDurationMs": 320
         }
       ],
-      "notes": "Los seis archivos fuente implementan ocho estados lógicos mediante una vuelta a idle y espejo horizontal. El frame 05 solo aparece durante el impacto y nunca queda fijado en estado crítico, destrucción o reaparición."
+      "notes": "Los seis archivos fuente implementan ocho estados lógicos mediante una vuelta a idle y espejo horizontal. El frame 05 solo aparece durante el impacto y nunca queda fijado en estado crítico, destrucción o reaparición.",
+      "activeRuntime": false,
+      "precache": false,
+      "retirement": "Retained reference for history/reserved engine; replaced in the live game and launcher by the modular assembly."
     },
     {
       "id": "core",
@@ -295,7 +299,10 @@
       "status": "READY",
       "origin": "generated with built-in image generation from the previous comet identity reference and runtime-optimized",
       "version": "7.2.0",
-      "size": 116846
+      "size": 116846,
+      "activeRuntime": false,
+      "precache": false,
+      "retirement": "Superseded by comet-flight-v2; preserved on disk with its original master."
     },
     {
       "id": "debris-metal",
@@ -721,6 +728,44 @@
       "size": 319358,
       "sha256": "2be20a0f6f8c17035f88bafde15d5607571a9e216d75b1415737ca683c86b5dc",
       "decodedRGBABytes": 2359296
+    },
+    {
+      "id": "player-ship-identity-v1",
+      "path": "assets/player_ship_identity_v1.webp",
+      "master": "art-source/ship-identity/player_ship_identity_v1.png",
+      "metadata": "art-source/ship-identity/player_ship_identity_v1.json",
+      "dimensions": "512x640",
+      "format": "webp-alpha",
+      "size": 67122,
+      "sha256": "bd22a7d85ccc774c3b5e5fdb219ba417febf547ddc3f08541ac8fa083ae68413",
+      "decodedRGBABytes": 1310720,
+      "use": "Static portrait exported from the accepted modular game assembly; launcher and emergency fallback only.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "ACCEPTED_MODULAR_BASE",
+      "physicalAcceptance": "PENDING",
+      "origin": "Existing authored modular assembly export",
+      "version": 1
+    },
+    {
+      "id": "comet-flight-v2",
+      "path": "assets/comet_flight_atlas_v2.webp",
+      "master": "art-source/comet-rework/comet_flight_atlas_master.png",
+      "metadata": "art-source/comet-rework/comet_flight_atlas_v2.json",
+      "dimensions": "1536x384",
+      "format": "webp-alpha",
+      "size": 151882,
+      "sha256": "6d2989e816f6817c6b979395e299f19a32ba1d344904c4b727579f77d896ad6d",
+      "decodedRGBABytes": 2359296,
+      "use": "Four real illustrated comet states; core pivot(288,192),+X forward,8fps,played clock; tail is not a hitbox.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original built-in image generation; provenance/master/export in metadata",
+      "version": 2
     }
   ]
 }

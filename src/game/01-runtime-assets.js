@@ -12,7 +12,10 @@
   let settings = loadSettings();
   // Cosmetic loadout has its own key; campaign checkpoints and collision stay intact.
   const savedShipFleet = storage.getJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, null);
-  let shipRenderMode = savedShipFleet?.mode === "legacy" ? "legacy" : "modular";
+  // The accepted modular fleet is the single live identity. Old profiles keep
+  // their loadout and progress; a historical render-mode flag cannot revive the
+  // retired illustration. The next explicit hangar save normalizes the flag.
+  let shipRenderMode = "modular";
   let shipLoadout = NeonCampaign.normalizeShipLoadout(savedShipFleet?.loadout);
   let shipHangarDraft = null;
   let shipPresentationSignature = "";
@@ -181,7 +184,9 @@
   }
 
   const SPRITE_GROUPS = {
-    ship: [0,1,2,3,4,5].map((index) => loadSprite(`assets/ship_frame_${String(index).padStart(2,"0")}.webp`, true)),
+    // Historical poses remain on disk for recovery and the reserved engine's
+    // references, but are not requested by the live modular presentation.
+    ship: [0,1,2,3,4,5].map((index) => loadSprite(`assets/ship_frame_${String(index).padStart(2,"0")}.webp`, false)),
     core: [0,1,2,3,4,5].map((index) => loadSprite(`assets/core_frame_${String(index).padStart(2,"0")}.webp`, true)),
     phaser: [0,1,2,3,4,5].map((index) => loadSprite(`assets/phaser_frame_${String(index).padStart(2,"0")}.webp`)),
     tractor: [0,1,2,3,4,5].map((index) => loadSprite(`assets/tractor_frame_${String(index).padStart(2,"0")}.webp`)),
@@ -205,9 +210,10 @@
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
+    shipIdentity: loadSprite("assets/player_ship_identity_v1.webp", true),
     guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
     atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
-    comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
+    comet: loadSprite("assets/comet_flight_atlas_v2.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),

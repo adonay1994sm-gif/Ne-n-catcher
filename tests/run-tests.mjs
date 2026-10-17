@@ -149,16 +149,17 @@ const swContext = {
 vm.runInNewContext(`${serviceWorkerSource}\nglobalThis.__SW_TEST__ = { CACHE, CORE };`, swContext);
 const swCore = swContext.__SW_TEST__.CORE;
 
-await test("service worker incluye código, legales y cada asset", async () => {
+await test("service worker incluye recursos activos y excluye referencias visuales retiradas", async () => {
   const corePaths = new Set(swCore.map(withoutQuery));
   const required = [
     "index.html", "styles.css", "native-admob.js", "ads-config.js", "ad-bridge.js", "analytics-manager.js", "game.js",
     "manifest.webmanifest", "privacy.html", "terms.html",
-    ...assetManifest.groups.flatMap((group) => group.paths),
-    ...assetManifest.standalone.map((item) => item.path)
+    ...assetManifest.groups.filter(group => group.precache !== false).flatMap((group) => group.paths),
+    ...assetManifest.standalone.filter(item => item.precache !== false).map((item) => item.path)
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-combat-readability-1");
+  for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-ship-touch-comet-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {

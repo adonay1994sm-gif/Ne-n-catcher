@@ -34,6 +34,17 @@ const forceShieldAtlas = (cells, options = {}) => define(['assets/force_shield_a
 });
 
 export const ANIMATION_MAP = Object.freeze({
+  cometFlight: Object.freeze({
+    travel: define(['assets/comet_flight_atlas_v2.webp'], {
+      frameMs:125,loop:true,atlasColumns:4,atlasRows:1,
+      atlasCells:Object.freeze([0,1,2,3]),cellWidth:384,cellHeight:384,
+      pivot:Object.freeze({x:288,y:192}),forwardAxis:'+X',tailCollision:false,
+      integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'
+    })
+  }),
+  // Player poses below remain references for the reserved engine. The live
+  // renderer animates its accepted modular assembly directly; no old ship pose
+  // is selected or precached by the normal experience.
   player: Object.freeze({
     idle: define(ship(0, 1, 2, 1)),
     bankLeft: define(ship(3), {loop: false}),

@@ -40,7 +40,7 @@ function harness(t){
   window.HTMLCanvasElement.prototype.toDataURL=()=>`data:image/png;base64,fixture-${++dataUrls}`;
   window.eval(`
     const $=id=>document.getElementById(id),canvas=$('canvas');
-    const ui={menu:$('menu'),briefing:$('briefing')},SPRITES={modularShip:window.__ATLAS__};
+    const ui={menu:$('menu'),briefing:$('briefing')},SPRITES={modularShip:window.__ATLAS__,shipIdentity:{complete:true,naturalWidth:512,naturalHeight:640,_assetPath:'assets/player_ship_identity_v1.webp'}};
     let state='menu',shipRenderMode='modular',shipLoadout=NeonCampaign.normalizeShipLoadout();
     let shipHangarDraft=null,shipPresentationSignature='',writes=[];
     const originals=[0,1,2].map(index=>({complete:true,naturalWidth:320,naturalHeight:320,_assetPath:'assets/ship_frame_0'+index+'.webp'}));
@@ -66,55 +66,45 @@ function harness(t){
     stats:()=>({rafRequests,dataUrls})};
 }
 
-test('legacy menu and briefing presentation update even when the modular atlas is unavailable',t=>{
+test('historical legacy mode cannot bring back the retired menu ship when the atlas is unavailable',t=>{
   const h=harness(t);
   for(const image of h.window.document.querySelectorAll('.menu-ship-image,.briefing-ship'))image.src='data:image/png;base64,stale-modular';
   h.api.active('legacy',aster);h.api.sync();
-  for(const image of h.window.document.querySelectorAll('.menu-ship-image,.briefing-ship'))assert.equal(image.getAttribute('src'),'assets/ship_frame_01.webp');
-  assert.equal(h.snapshot().signature.mode,'legacy');
-  assert.equal(h.stats().dataUrls,0,'legacy must not require a modular Canvas export');
+  for(const image of h.window.document.querySelectorAll('.menu-ship-image,.briefing-ship'))assert.equal(image.getAttribute('src'),'assets/player_ship_identity_v1.webp');
+  assert.equal(h.snapshot().signature,'','an unavailable assembly remains retryable');
+  assert.equal(h.stats().dataUrls,0,'failure must not export an empty Canvas');
   assert.equal(h.stats().rafRequests,0);
 });
 
-test('an unavailable modular atlas does not stamp a successful signature or replace menu images with a blank export',t=>{
-  const h=harness(t);
-  h.api.active('legacy',aster);h.api.sync();
+test('an unavailable atlas keeps a verified signature intact and never stamps an unrendered loadout',t=>{
+  const h=harness(t);h.ready();h.api.sync();
+  const signature=h.snapshot().signature;
+  Object.assign(h.window.__ATLAS__,{complete:false,naturalWidth:0,naturalHeight:0});
   h.api.active('modular',{...aster,hull:'bastion'});h.api.sync();
-  assert.equal(h.snapshot().signature.mode,'legacy','the renderer must be able to retry the pending modular selection');
-  for(const image of h.window.document.querySelectorAll('.menu-ship-image,.briefing-ship'))assert.equal(image.getAttribute('src'),'assets/ship_frame_01.webp');
-  assert.equal(h.stats().dataUrls,0);
+  assert.deepEqual(h.snapshot().signature,signature);
+  for(const image of h.window.document.querySelectorAll('.menu-ship-image,.briefing-ship'))assert.equal(image.getAttribute('src'),'assets/player_ship_identity_v1.webp');
+  assert.equal(h.stats().dataUrls,1,'only the successful assembly was exported');
 });
 
-test('the hangar shows the original ship and an explicit notice while unavailable modular selection cannot be applied',t=>{
+test('the hangar shows the same current ship in reserve while unavailable components cannot be applied',t=>{
   const h=harness(t);h.open();h.api.draw(0);
   assert.equal(h.node('shipAtlasNotice').classList.contains('hidden'),false);
   assert.equal(h.node('shipApply').disabled,true);
-  assert.ok(h.draws.some(draw=>draw.canvas==='shipHangarCanvas'&&draw.path==='assets/ship_frame_00.webp'));
+  assert.ok(h.draws.some(draw=>draw.canvas==='shipHangarCanvas'&&draw.path==='assets/player_ship_identity_v1.webp'));
+  assert.equal(h.draws.some(draw=>/ship_frame_/.test(draw.path)),false,'retired art is not a fallback');
   assert.equal(h.draws.some(draw=>draw.path==='assets/ship_modular_atlas_v1.webp'),false);
+  assert.equal(h.node('shipLegacy'),null);
   h.node('shipApply').click();assert.equal(h.snapshot().writes.length,0);
   assert.equal(h.stats().rafRequests,0);
 });
 
-test('switching to the original ship clears the notice and allows applying without a modular atlas',t=>{
-  const h=harness(t);h.open();h.api.draw(0);
-  h.node('shipLegacy').click();h.api.draw(16);
-  assert.equal(h.node('shipApply').disabled,false);
-  assert.equal(h.node('shipAtlasNotice').classList.contains('hidden'),true);
-  h.node('shipApply').click();
-  assert.equal(h.snapshot().mode,'legacy');
-  assert.equal(h.snapshot().writes.length,1);
-  assert.equal(h.snapshot().writes[0].value.mode,'legacy');
-  for(const image of h.window.document.querySelectorAll('.menu-ship-image,.briefing-ship'))assert.equal(image.getAttribute('src'),'assets/ship_frame_01.webp');
-  assert.equal(h.stats().rafRequests,0);
-});
-
-test('a recovered atlas replaces fallback with the authored assembly, updates presentation and needs no second RAF',t=>{
+test('a recovered atlas replaces reserve with the authored components and keeps a single RAF owner',t=>{
   const h=harness(t);h.open();h.api.draw(0);
   assert.equal(h.node('shipApply').disabled,true);
   h.ready();h.draws.length=0;h.api.draw(32);
   assert.equal(h.node('shipApply').disabled,false);
   assert.equal(h.node('shipAtlasNotice').classList.contains('hidden'),true);
-  assert.equal(h.draws.filter(draw=>draw.canvas==='shipHangarCanvas').length,5,'flames, two articulated wing halves, engines and hull');
+  assert.equal(h.draws.filter(draw=>draw.canvas==='shipHangarCanvas').length,6,'two clean plumes, articulated wing halves, engines and hull');
   assert.ok(h.draws.every(draw=>draw.path==='assets/ship_modular_atlas_v1.webp'));
   h.node('shipApply').click();
   assert.equal(h.snapshot().signature.mode,'modular');
@@ -122,4 +112,17 @@ test('a recovered atlas replaces fallback with the authored assembly, updates pr
   const exports=h.stats().dataUrls;h.api.sync();
   assert.equal(h.stats().dataUrls,exports,'unchanged selection reuses the prepared presentation');
   assert.equal(h.stats().rafRequests,0);
+});
+
+test('the paired plume omits the contaminated centre without moving either mounting point',t=>{
+  const h=harness(t);h.ready();h.open();h.api.draw(0);
+  const plumeDraws=h.draws.filter(draw=>draw.canvas==='shipHangarCanvas').slice(0,2);
+  assert.equal(plumeDraws.length,2);
+  const first=plumeDraws[0].args,second=plumeDraws[1].args;
+  assert.equal(first[0],1455);assert.equal(second[0],1581);
+  assert.equal(first[1],143);assert.equal(second[1],143);
+  assert.equal(first[4],-135);assert.equal(second[4],41.400000000000006);
+  assert.equal(first[5],173);assert.equal(second[5],173);
+  assert.equal(first[6],117.60000000000001);assert.equal(second[6],117.60000000000001);
+  assert.equal(h.draws.some(draw=>/ship_frame_/.test(draw.path)),false);
 });

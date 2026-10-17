@@ -72,6 +72,10 @@
     // A queued RAF timestamp must never rewind the simulation or stop its loop.
     const dt = Math.max(0, Math.min(0.034, (now - last) / 1000));
     last = now;
+    // Holding the action thumb uses the existing simulation owner. Weapon
+    // cooldown and the rechargeable battery still decide whether a shot fires.
+    if (state !== "playing") resetGameInput();
+    else if (fireInput && !ui.fire.disabled) fireManualShot();
     update(dt);
     if (!legacyRunning) return;
     render(now);
@@ -86,6 +90,28 @@
   function pointerY(event, point = event.touches?.[0] || event) {
     const rect = canvas.getBoundingClientRect();
     return (point.clientY - rect.top) * H / rect.height;
+  }
+
+  let legacyPilotId = null;
+  let fireInput = null;
+  let suppressNextFireClick = false;
+
+  function releaseInputCapture(element, id) {
+    if (typeof id !== "number") return;
+    try { element.releasePointerCapture?.(id); } catch { /* Capture may already have ended. */ }
+  }
+
+  // Lifecycle callers use this as well as blur/cancellation. An action thumb
+  // must never survive a pause, restart or return to the menu.
+  function resetGameInput() {
+    const pilotId = classicFlightInput.active ? classicFlightInput.id : legacyPilotId;
+    const previousFire = fireInput;
+    legacyPilotId = null;
+    journeyPointerLast = null;
+    fireInput = null;
+    NeonCampaign.endFlightInput(classicFlightInput);
+    releaseInputCapture(canvas, pilotId);
+    if (previousFire?.kind === "pointer") releaseInputCapture(ui.fire, previousFire.id);
   }
 
   function moveClassicFlight(event) {
@@ -132,15 +158,33 @@
 
   function move(event) {
     if (state !== "playing") return;
+    if (event.type.startsWith("touch") && window.PointerEvent) return;
     event.preventDefault();
     if (isUnifiedClassic()) { moveClassicFlight(event); return; }
-    const x = pointerX(event);
+    const press = event.type === "pointerdown" || event.type === "touchstart";
+    let point = event;
+    let id = event.pointerId ?? "mouse";
+    if (event.touches) {
+      point = press ? event.changedTouches?.[0]
+        : Array.from(event.touches).find(touch => touch.identifier === legacyPilotId);
+      if (!point) return;
+      id = point.identifier;
+    }
+    const mouseHover = !event.touches && (!event.pointerType || event.pointerType === "mouse") &&
+      !event.buttons && legacyPilotId === null;
+    if (press) {
+      if (legacyPilotId !== null) return;
+      legacyPilotId = id;
+      if (event.pointerId !== undefined) {
+        try { canvas.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
+      }
+    } else if (id !== legacyPilotId && !mouseHover) return;
+    const x = pointerX(event, point);
+    if (!Number.isFinite(x)) return;
     const factor = settings.sensitivity / 100;
     if (JOURNEY_DEMO) {
-      if (event.type.startsWith("touch") && window.PointerEvent) return;
-      if (event.type === "pointerdown" || event.type === "touchstart") {
+      if (press) {
         journeyPointerLast = x;
-        if (event.pointerId !== undefined) canvas.setPointerCapture?.(event.pointerId);
         return;
       }
       if (journeyPointerLast === null) return;
@@ -156,22 +200,61 @@
   canvas.addEventListener("touchstart", move, { passive: false });
   canvas.addEventListener("touchmove", move, { passive: false });
   function finishFlightInput(event) {
-    journeyPointerLast = null;
-    if (!isUnifiedClassic()) return;
+    let ids;
     if (event.type.startsWith("touch")) {
       if (window.PointerEvent) return;
-      for (const touch of Array.from(event.changedTouches || [])) {
-        NeonCampaign.endFlightInput(classicFlightInput, touch.identifier);
+      ids = Array.from(event.changedTouches || [], touch => touch.identifier);
+    } else ids = [event.pointerId ?? "mouse"];
+    for (const id of ids) {
+      if (id === legacyPilotId) {
+        legacyPilotId = null;
+        journeyPointerLast = null;
       }
-    } else NeonCampaign.endFlightInput(classicFlightInput, event.pointerId ?? "mouse");
+      NeonCampaign.endFlightInput(classicFlightInput, id);
+    }
   }
   for (const event of ["pointerup", "pointercancel", "lostpointercapture", "touchend", "touchcancel"]) {
     canvas.addEventListener(event, finishFlightInput);
+    // Pointer capture is not available in every embedded/Safari fallback. A
+    // release over a control must still end only its own pilot contact.
+    if (event !== "lostpointercapture") addEventListener(event, finishFlightInput, {capture: true});
   }
-  addEventListener("blur", () => {
-    journeyPointerLast = null;
-    NeonCampaign.endFlightInput(classicFlightInput);
-  });
+  addEventListener("blur", resetGameInput);
+
+  function startFireInput(event) {
+    const touchFallback = event.type === "touchstart";
+    if (touchFallback && window.PointerEvent) return;
+    if (state !== "playing" || ui.fire.disabled) return;
+    if (!touchFallback && event.pointerType === "mouse" && event.button !== 0) return;
+    const id = touchFallback ? event.changedTouches?.[0]?.identifier : event.pointerId ?? "mouse";
+    if (id === undefined) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (fireInput) return;
+    fireInput = {id, kind: touchFallback ? "touch" : "pointer"};
+    suppressNextFireClick = true;
+    if (!touchFallback && event.pointerId !== undefined) {
+      try { ui.fire.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
+    }
+    fireManualShot();
+  }
+
+  function finishFireInput(event) {
+    if (!fireInput) return;
+    const touchFallback = event.type.startsWith("touch");
+    if (touchFallback && window.PointerEvent) return;
+    const ended = touchFallback
+      ? Array.from(event.changedTouches || []).some(touch => touch.identifier === fireInput.id)
+      : (event.pointerId ?? "mouse") === fireInput.id;
+    if (ended) fireInput = null;
+  }
+
+  ui.fire.addEventListener("pointerdown", startFireInput, {passive: false});
+  ui.fire.addEventListener("touchstart", startFireInput, {passive: false});
+  for (const event of ["pointerup", "pointercancel", "lostpointercapture", "touchend", "touchcancel"]) {
+    ui.fire.addEventListener(event, finishFireInput);
+    if (event !== "lostpointercapture") addEventListener(event, finishFireInput, {capture: true});
+  }
 
   addEventListener("keydown", (event) => {
     if (isUnifiedClassic()) {
@@ -193,7 +276,10 @@
       event.preventDefault();
       fireManualShot();
     }
-    if (event.key === "Escape") state === "paused" ? resumeGame() : pauseGame();
+    if (event.key === "Escape") {
+      resetGameInput();
+      state === "paused" ? resumeGame() : pauseGame();
+    }
   });
 
   $("play").onclick = () => {
@@ -212,7 +298,15 @@
   $("quickSettings").onclick = () => openSettings("menu");
   $("settingsBack").onclick = closeSettings;
   $("pause").onclick = pauseGame;
-  ui.fire.onclick = fireManualShot;
+  ui.fire.onclick = (event) => {
+    // Pointer/touch presses have fired already. Their compatibility click must
+    // not consume a second battery charge; keyboard/assistive clicks still work.
+    if (event?.detail && (window.PointerEvent || suppressNextFireClick)) {
+      suppressNextFireClick = false;
+      return;
+    }
+    fireManualShot();
+  };
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
   $("restart").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
@@ -285,6 +379,7 @@
       last = performance.now();
       return;
     }
+    resetGameInput();
     if (state === "playing") pauseGame();
     await suspendAudio();
   });
