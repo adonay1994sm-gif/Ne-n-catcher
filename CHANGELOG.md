@@ -1,3 +1,7 @@
+## 17/10/2026 — NEON CRONIUM
+
+Cambio de marca visible, metadatos web/PWA/iOS, paquete npm, guías activas y nuevos archivos de entrega. Guardados e identificadores de instalación conservados para compatibilidad. Historial anterior intacto; ver informe de rebranding.
+
 # Registro de cambios
 
 ## V6.6 Modular — 4 de agosto de 2026

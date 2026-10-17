@@ -12,15 +12,15 @@ const permittedContext = context === 'branch-deploy' || context === 'local';
 const enabled = process.env.NEON_PREVIEW_DEPLOY === '1' && branch === allowedBranch && permittedContext;
 const command = process.argv[2];
 if (command === '--ignore') {
-  console.log(enabled ? '[Neon Catcher] Preview de rama habilitada explícitamente' : '[Neon Catcher] Preview no autorizada para esta rama/contexto: despliegue omitido');
+  console.log(enabled ? '[NEON CRONIUM] Preview de rama habilitada explícitamente' : '[NEON CRONIUM] Preview no autorizada para esta rama/contexto: despliegue omitido');
   process.exit(enabled ? 1 : 0); // Netlify: 0 = skip build, 1 = proceed.
 }
 if (command === '--require-enabled') {
   if (!enabled) {
-    console.error('[Neon Catcher] Se requiere NEON_PREVIEW_DEPLOY=1, rama continuity-assets-audit-20261013 y contexto branch-deploy/local');
+    console.error('[NEON CRONIUM] Se requiere NEON_PREVIEW_DEPLOY=1, rama continuity-assets-audit-20261013 y contexto branch-deploy/local');
     process.exit(1);
   }
-  console.log('[Neon Catcher] Rama de pruebas autorizada; solo genera preview-dist');
+  console.log('[NEON CRONIUM] Rama de pruebas autorizada; solo genera preview-dist');
   process.exit(0);
 }
 console.error('Uso: netlify-preview-gate.mjs --ignore|--require-enabled');

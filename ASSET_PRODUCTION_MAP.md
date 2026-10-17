@@ -1,4 +1,4 @@
-# NEON CATCHER — MAPA DE PRODUCCIÓN DE 150 ASSETS
+# NEON CRONIUM — MAPA DE PRODUCCIÓN DE 150 ASSETS
 
 Versión de trabajo: **7.2.0**  
 Catálogo vinculante: `ASSET_PRODUCTION_150.json`  

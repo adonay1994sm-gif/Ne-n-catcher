@@ -1,4 +1,4 @@
-name: NEON CATCHER N-7 Integrated Preview QA
+name: NEON CRONIUM N-7 Integrated Preview QA
 
 on:
   push:
@@ -62,7 +62,7 @@ jobs:
       - name: Package verified preview for manual Netlify Drop
         uses: actions/upload-artifact@v4
         with:
-          name: NEON-CATCHER-N7-ARTPASS-NETLIFY-DROP
+          name: NEON-CRONIUM-N7-ARTPASS-NETLIFY-DROP
           path: preview-dist/
           if-no-files-found: error
           retention-days: 14

@@ -91,7 +91,7 @@ const canonicalOverview = canonical.length ? [
   'La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.'
 ].join('\n\n') : '';
 const checklist = [
-  '# NEON CATCHER — Checklist maestra de producción', header, guide,
+  '# NEON CRONIUM — Checklist maestra de producción', header, guide,
   canonicalOverview,
   'Este registro cubre los Bloques 03–10 del mandato. Los avances históricos permanecen en [CODEX_STATUS.md](CODEX_STATUS.md) y [continuity-100/](continuity-100/); no se convierten automáticamente en cierres de los criterios más amplios de esta etapa.',
   '## Organigrama y responsabilidades',
@@ -127,7 +127,7 @@ const checklist = [
   'No modificar main/PR3, activar EngineV1, duplicar RAF, publicar producción ni distribuir App Store/TestFlight sin autorización específica.'
 ].join('\n\n') + '\n';
 const progress = [
-  '# NEON CATCHER — Progreso verificable de producción', header, guide,
+  '# NEON CRONIUM — Progreso verificable de producción', header, guide,
   canonicalOverview,
   '## Método y alcance',
   '**' + ledger.measure + '** Cada porcentaje se refiere exclusivamente a criterios de esta checklist, no al porcentaje comercial, artístico o técnico del juego terminado. El denominador incluye trabajo futuro y queda visible; las áreas se solapan y no deben sumarse. Reorganizar el alcance cambia el denominador y debe documentarse.',

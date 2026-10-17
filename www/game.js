@@ -5284,7 +5284,7 @@
       window.AnalyticsManager?.track("abandon", { level: currentLevel + 1, state });
     }
   }, { once: true });
-  console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
+  console.info(`[NEON CRONIUM] build ${BUILD_VERSION}`);
   setupJourneyUI();
   setupShipHangar();
   setupAtlasEncounter();

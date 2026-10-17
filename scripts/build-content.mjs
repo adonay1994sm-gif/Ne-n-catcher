@@ -8,4 +8,4 @@ await build({
   bundle: true, format: 'iife', globalName: 'NeonCampaign',
   target: ['safari15'], sourcemap: true, legalComments: 'none'
 });
-console.log('[Neon Catcher] content-runtime.js: deterministic campaign modules; no RAF owner.');
+console.log('[NEON CRONIUM] content-runtime.js: deterministic campaign modules; no RAF owner.');

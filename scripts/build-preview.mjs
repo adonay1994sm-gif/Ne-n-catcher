@@ -83,7 +83,7 @@ export function previewManifest(source, nested = false) {
   const base = nested ? '../' : './';
   return JSON.stringify({...original,
     id: base + '?edition=neon-preview-v1',
-    name: 'NEON CATCHER — Prueba experimental', short_name: 'Neon Prueba',
+    name: 'NEON CRONIUM — Prueba experimental', short_name: 'NEON CRONIUM',
     description: 'Edición experimental con selector de campaña clásica y rutas N-7. Guardado de prueba independiente.',
     start_url: base + 'index.html', scope: base,
     icons: original.icons.map(icon => ({...icon, src: nested ? icon.src : 'juego/' + icon.src}))
@@ -118,7 +118,7 @@ export function previewPage(source) {
     '<div class="menu-legal"><a href="../index.html">PRUEBA EXPERIMENTAL · CAMBIAR MODO</a>');
   html = replaceOnce(html, 'rel="manifest" href="manifest.webmanifest"',
     'rel="manifest" href="../manifest.webmanifest"');
-  return html.replace(/<title>[^<]*<\/title>/, '<title>NEON CATCHER — Prueba experimental</title>')
+  return html.replace(/<title>[^<]*<\/title>/, '<title>NEON CRONIUM — Prueba experimental</title>')
     .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARACIÓN DE PRUEBA · SIN ANUNCIO');
 }
 
@@ -197,7 +197,7 @@ export async function buildPreview() {
     engineV1: false, realAds: false, realPayments: false,
     files
   }, null, 2) + '\n');
-  console.log(`[Neon Catcher] preview-dist listo; SHA ${commit}${dirty ? ' + cambios locales' : ''}; ${Object.keys(files).length} archivos verificados; sin despliegue`);
+  console.log(`[NEON CRONIUM] preview-dist listo; SHA ${commit}${dirty ? ' + cambios locales' : ''}; ${Object.keys(files).length} archivos verificados; sin despliegue`);
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await buildPreview();

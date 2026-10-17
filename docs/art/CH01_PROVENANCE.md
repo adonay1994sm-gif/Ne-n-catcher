@@ -5,7 +5,7 @@ Estado: **IN_REVIEW**. Recurso producido y validado como imagen; todavía no cer
 
 ## Inventario previo
 
-Se revisaron `ART_DIRECTION_NEON_CATCHER.md`, `ASSET_PRODUCTION_150.json`, `ASSET_PRODUCTION_MAP.md`, `assets/`, `art-source/` y los nombres CH-01/CH01/ch01/atlas/sprite en `/workspace`.
+Se revisaron `ART_DIRECTION_NEON_CRONIUM.md`, `ASSET_PRODUCTION_150.json`, `ASSET_PRODUCTION_MAP.md`, `assets/`, `art-source/` y los nombres CH-01/CH01/ch01/atlas/sprite en `/workspace`.
 
 El informe Art Pass A mencionaba un atlas externo de diez poses, pero no apareció ningún binario CH-01 recuperable en este entorno. No se sustituyó ni borró ese trabajo: permanece como entrega externa pendiente de recuperación. Se utilizó el dossier canónico ya presente en `art-source/references/gaia_enemy_dossier_v1.jpeg`, inspeccionado visualmente antes de producir la nueva versión.
 

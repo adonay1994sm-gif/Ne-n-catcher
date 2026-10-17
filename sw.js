@@ -1,4 +1,4 @@
-const CACHE = "neon-catcher-pre-release-7-2-0-chronos-voyage-1";
+const CACHE = "neon-cronium-pre-release-7-2-0-brand-1";
 const CORE = [
   "assets/player_ship_identity_v1.webp",
   "assets/comet_flight_atlas_v2.webp",

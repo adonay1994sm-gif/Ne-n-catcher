@@ -32,7 +32,7 @@ await test("V7.2.0 pre-release está alineada en pantalla, juego y caché", asyn
   assert.match(indexHtml, /V7\.2\.0/);
   assert.match(indexHtml, /Compilación V7\.2\.0 · Pre-Release/);
   assert.match(gameSource, /BUILD_VERSION = "7\.2\.0"/);
-  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-2-0/);
+  assert.match(serviceWorkerSource, /neon-cronium-pre-release-7-2-0/);
   assert.doesNotMatch(indexHtml, /[?&]v=6\.8\.0/);
 });
 

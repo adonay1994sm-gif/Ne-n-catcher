@@ -12,4 +12,4 @@ for (const file of files) {
 const bundle=`(()=>{\n"use strict";${chunks.join("")}\n})();\n`;
 await writeFile(join(root,"core-runtime.js"),bundle,"utf8");
 await writeFile(join(root,"core-runtime.js.map"),JSON.stringify({version:3,file:"core-runtime.js",sources:files.map(f=>`src/core/${f}`),names:[],mappings:""}),"utf8");
-console.log(`[Neon Catcher] core-runtime.js generado desde ${files.length} módulos ES`);
+console.log(`[NEON CRONIUM] core-runtime.js generado desde ${files.length} módulos ES`);

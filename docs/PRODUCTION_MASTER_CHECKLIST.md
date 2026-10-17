@@ -1,4 +1,4 @@
-# NEON CATCHER — Checklist maestra de producción
+# NEON CRONIUM — Checklist maestra de producción
 
 Fecha del registro: **2026-10-17T20:54:36.903717+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 

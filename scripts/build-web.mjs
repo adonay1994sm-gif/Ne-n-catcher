@@ -48,4 +48,4 @@ for (const file of publicFiles) {
 }
 await cp(join(root, "assets"), join(iosPublic, "assets"), { recursive: true });
 
-console.log(`[Neon Catcher] game.js: ${bundle.moduleFiles.length} módulos; paquete web limpio: ${publicFiles.length + webOnlyFiles.length} archivos + assets`);
+console.log(`[NEON CRONIUM] game.js: ${bundle.moduleFiles.length} módulos; paquete web limpio: ${publicFiles.length + webOnlyFiles.length} archivos + assets`);

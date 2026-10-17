@@ -2,7 +2,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "com.adonay.neoncatcher",
-  appName: "Neon Catcher",
+  appName: "NEON CRONIUM",
   webDir: "www",
   backgroundColor: "#050610",
   loggingBehavior: "none",

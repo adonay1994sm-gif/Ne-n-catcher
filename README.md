@@ -1,4 +1,20 @@
-# Neon Catcher V6.6 — Corredor Garantizado · Base modular
+# NEON CRONIUM
+
+Aventura arcade espacial en desarrollo. Nombre vigente desde el 17/10/2026; anteriormente NEON CATCHER. Rama de integración: `continuity-assets-audit-20261013`.
+
+[Web privada de pruebas](https://neon-catcher-pruebas.chictide18.chatgpt.site) · [Estado vigente](docs/CODEX_STATUS.md) · [Visión de producto](docs/PRODUCT_VISION.md) · [Dirección artística](ART_DIRECTION_NEON_CRONIUM.md).
+
+La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recuperación de CRONIUM y parada C9. Las campañas y partidas anteriores se conservan. Los nombres técnicos de guardado/instalación y la URL histórica permanecen compatibles; las nuevas compilaciones y archivos de entrega se identifican como NEON CRONIUM. Los informes y ZIP previos conservan su nombre/procedencia histórica. Motor V1 desactivado; sin publicación comercial.
+
+## Compilar y probar
+
+`npm ci`, `npm run build:preview`, `npm run test:engine`, `npm run test:architecture`, `npm run test:content`, `npm run test:static`, `npm test`, `npm run test:preview`. El paquete aislado se crea en `preview-dist/`; las fuentes se regeneran hacia web/iOS con el pipeline existente.
+
+El texto siguiente documenta la base histórica, no certifica la versión actual.
+
+---
+
+## Base histórica V6.6 — Corredor Garantizado · Base modular
 
 V6.6 parte de la V6.4.4 Base Estable y elimina las combinaciones imposibles entre formaciones orbitales y amenazas. Las antiguas vigas artificiales se muestran ahora como formaciones de basura espacial con un pasillo cian protegido. Mientras la formación se aproxima, meteoritos, restos y satélites no pueden aparecer, desplazarse ni permanecer dentro de esa ruta.
 

@@ -1,3 +1,9 @@
+## Nombre vigente — NEON CRONIUM, 17/10/2026
+
+El propietario cambia el nombre del juego a **NEON CRONIUM**. Aplicarlo en pantallas, metadatos, guías activas y nuevos paquetes. Conservar por compatibilidad las claves de guardado, el bundle ID `com.adonay.neoncatcher`, IDs de campaña y URL del repositorio/sitio existentes; no representan la marca visible. Las evidencias, maestros previos y paquetes históricos conservan su procedencia y sus hashes. No renombrar un paquete antiguo como si fuera una nueva compilación. Leer el cierre de rebranding en docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md. Las diez etapas y las restricciones de motor/ramas siguen vigentes.
+
+---
+
 ## Orden vigente — diez etapas Chronos → Gaia, 17/10/2026
 
 El propietario reanuda el desarrollo y pide diez niveles para representar la transición espacial de Chronos a Gaia. Implementación de trabajo: etapas 1.1–1.10 del primer territorio clásico; no sustituir los otros nueve territorios ni confundirlas con diez mundos o cien rutas N-7. Priorizar salida física, espacio abierto, viaje continuo y aproximación; C9 es una parada enlazada y el guardado se realiza por entrada de etapa con clave v2 propia. La pausa anterior de funcionalidades queda levantada para este alcance. Conservar identidad modular, dos dedos, recursos y límites siguientes; Motor V1 sigue desactivado.
@@ -30,7 +36,7 @@ Se rechazaron la integración visual y el ritmo comprimido. Priorizar el juego c
 
 Historial conservado a continuación; las instrucciones incompatibles quedan sustituidas por este cierre.
 
-# NEON CATCHER — Guía de trabajo
+# NEON CRONIUM — Guía de trabajo
 
 ## Referencia vigente
 

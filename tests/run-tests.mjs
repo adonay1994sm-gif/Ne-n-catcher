@@ -41,7 +41,7 @@ await test("versión 7.2.0 pre-release alineada en metadatos y pantalla", async 
   assert.match(indexHtml, /Formación de basura espacial/);
   assert.doesNotMatch(indexHtml, /Barrera orbital:/);
   assert.match(gameSource, /BUILD_VERSION = "7\.2\.0"/);
-  assert.match(serviceWorkerSource, /neon-catcher-pre-release-7-2-0/);
+  assert.match(serviceWorkerSource, /neon-cronium-pre-release-7-2-0/);
   assert.match(await text("netlify.toml"), /publish = "www"/);
 });
 
@@ -159,7 +159,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-chronos-voyage-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-brand-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {

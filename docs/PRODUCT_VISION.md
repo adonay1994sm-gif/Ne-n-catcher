@@ -1,3 +1,9 @@
+## Nombre vigente — NEON CRONIUM, 17/10/2026
+
+El propietario cambia el nombre del juego a **NEON CRONIUM**. Aplicarlo en pantallas, metadatos, guías activas y nuevos paquetes. Conservar por compatibilidad las claves de guardado, el bundle ID `com.adonay.neoncatcher`, IDs de campaña y URL del repositorio/sitio existentes; no representan la marca visible. Las evidencias, maestros previos y paquetes históricos conservan su procedencia y sus hashes. No renombrar un paquete antiguo como si fuera una nueva compilación. Leer el cierre de rebranding en docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md. Las diez etapas y las restricciones de motor/ramas siguen vigentes.
+
+---
+
 ## Aclaración vigente — trayecto Chronos–Gaia, 17/10/2026
 
 El propietario solicita implementar diez niveles del viaje entre el incidente del primer nivel y Gaia. Se integran como diez etapas conectadas (1.1–1.10) dentro del primer territorio clásico: incidente, restos, rescate, salida orbital, vacío, C9, prueba del equipo, Gaia distante, señales Atlas y llegada. Los nueve territorios siguientes se conservan. Esta decisión de trabajo no declara terminadas cien etapas ni altera el Motor V1. El vacío se representa con separación de hitos y ventanas de tránsito tranquilo, sin convertir el recorrido en una presentación de imágenes. Los contratos de CI corregidos siguen vigentes.
@@ -28,7 +34,7 @@ El propietario rechaza la integración actual, el ritmo de la demo comprimida y 
 
 Historial conservado a continuación; las instrucciones incompatibles quedan sustituidas por este cierre.
 
-# NEON CATCHER — Mandato rector de diseño y producción
+# NEON CRONIUM — Mandato rector de diseño y producción
 
 Versión de dirección: **1.0 · 17 de octubre de 2026**. Referencia vigente de producto, dictada por el propietario. Repositorio: `adonay1994sm-gif/Ne-n-catcher`. Única rama autorizada de integración: `continuity-assets-audit-20261013`.
 
@@ -46,7 +52,7 @@ Orden de decisión: requisitos expresos del propietario → seguridad y conserva
 
 Antes de cambiar fuentes, verificar rama, árbol local, remoto, último informe y diferencias. El SHA `bfc6683085e3797a2b0c86957a299f8b7fba0d68` es referencia histórica del informe estratégico, no destino para volver atrás. No ejecutar `pull`, `reset`, `clean` o `checkout` que puedan descartar cambios: preservar, examinar y reconciliar primero. Conservar contribuciones posteriores y documentación de otros agentes.
 
-Consultar los estados vigentes en `docs/CODEX_STATUS.md`, `docs/CODEX_NEXT_ORDERS.md`, `docs/PRODUCTION_LATEST_REPORT.md`, `docs/production-tasks.json`, la checklist/progreso general, los tres informes de `docs/visual-rebirth/`, `docs/immersive-rebirth/IMMERSIVE_LATEST_REPORT.md`, `ASSET_MANIFEST.json`, `ASSET_PRODUCTION_150.json` y `ART_DIRECTION_NEON_CATCHER.md`. Los enlaces vigentes deben resolver a evidencia y código actuales. Diez escenarios ilustrados, CH-01 animado, 69 recursos o cero niveles visualmente completos fueron datos del informe; verificar su estado actual, no convertirlos en objetivos fijos.
+Consultar los estados vigentes en `docs/CODEX_STATUS.md`, `docs/CODEX_NEXT_ORDERS.md`, `docs/PRODUCTION_LATEST_REPORT.md`, `docs/production-tasks.json`, la checklist/progreso general, los tres informes de `docs/visual-rebirth/`, `docs/immersive-rebirth/IMMERSIVE_LATEST_REPORT.md`, `ASSET_MANIFEST.json`, `ASSET_PRODUCTION_150.json` y `ART_DIRECTION_NEON_CRONIUM.md`. Los enlaces vigentes deben resolver a evidencia y código actuales. Diez escenarios ilustrados, CH-01 animado, 69 recursos o cero niveles visualmente completos fueron datos del informe; verificar su estado actual, no convertirlos en objetivos fijos.
 
 Conservar historial, maestros, pruebas útiles, controles, animador CH-01, guardados y build web/iOS. Reutilizar progresivamente los sistemas válidos sin abrir otro repositorio ni reescribir la arquitectura. Registrar diagnóstico breve y pasar a un incremento visible; la documentación demuestra y guía el trabajo, no lo sustituye.
 

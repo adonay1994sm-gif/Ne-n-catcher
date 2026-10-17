@@ -69,7 +69,7 @@
         try {
           return await nativeBridge.initialize(nativeConfig);
         } catch (error) {
-          console.warn("[Neon Catcher] AdMob de prueba no pudo inicializarse", error);
+          console.warn("[NEON CRONIUM] AdMob de prueba no pudo inicializarse", error);
           return false;
         }
       }
