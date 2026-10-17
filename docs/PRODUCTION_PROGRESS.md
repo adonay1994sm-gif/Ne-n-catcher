@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T19:34:35.612758+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T19:58:18.874931+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -32,6 +32,9 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-SHIELD-01 / P1 | Integrar campo de fuerza ilustrado con estados de activación y absorción | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-VULKAR-01 / P1 | Llevar nivel3 al espacio con planeta y restos orbitales independientes | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-TRANSITIONS-01 / P1 | Hacer legibles selector, briefing y victoria de los diez niveles | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-IDENTITY-02 / P1 | Fijar la nave modular como identidad única y retirar la ilustración anterior | IN_REVIEW | PASSED | ACCEPTED_MODULAR_BASE | PENDING |
+| P1-INPUT-02 / P1 | Pilotar y disparar con dos contactos independientes y mantener para disparar | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-COMET-02 / P1 | Animar cometa mineral helado y alinear núcleo y estela con su trayectoria | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -46,27 +49,27 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 7/52 (13.5%) | 36 | 0 | 0 | 9 |
-| Campaña clásica | 4/19 (21.1%) | 4 | 1 | 0 | 10 |
-| Campaña N-7 | 3/39 (7.7%) | 35 | 1 | 0 | 0 |
+| Jugabilidad | 7/54 (13.0%) | 36 | 0 | 0 | 11 |
+| Campaña clásica | 4/22 (18.2%) | 4 | 1 | 0 | 13 |
+| Campaña N-7 | 3/41 (7.3%) | 35 | 1 | 0 | 2 |
 | Enemigos | 5/76 (6.6%) | 60 | 0 | 0 | 11 |
 | Jefes | 0/15 (0.0%) | 13 | 0 | 0 | 2 |
-| Assets | 2/175 (1.1%) | 126 | 3 | 1 | 43 |
-| Animaciones | 5/142 (3.5%) | 111 | 1 | 0 | 25 |
+| Assets | 2/177 (1.1%) | 126 | 3 | 1 | 45 |
+| Animaciones | 5/144 (3.5%) | 111 | 1 | 0 | 27 |
 | Narrativa | 0/19 (0.0%) | 18 | 0 | 0 | 1 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/22 (18.2%) | 9 | 1 | 0 | 8 |
+| Interfaz | 4/24 (16.7%) | 9 | 1 | 0 | 10 |
 | Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 18/60 (30.0%) | 20 | 2 | 4 | 16 |
+| QA | 18/63 (28.6%) | 20 | 2 | 4 | 19 |
 | Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 18/26 (69.2%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 6 · DONE: 18 |
+| 03 · Prueba integrada y cierre técnico | 18/27 (66.7%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 7 · DONE: 18 |
 | 04 · Jugabilidad procedural | 0/20 (0.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 5/176 (2.8%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 45 · DONE: 5 |
+| 05 · Producción visual y 150 assets | 5/178 (2.8%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 47 · DONE: 5 |
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
@@ -75,7 +78,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 33; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**; 155 identificadores. Cierre de los doce requisitos: **0/155 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 34; PLANNED: 119; IMPLEMENTED_CODE: 2**; 155 identificadores. Cierre de los doce requisitos: **0/155 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 

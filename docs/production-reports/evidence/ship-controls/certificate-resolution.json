@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-17",
+  "functionalCommit": "d325e51f19df0dd1e77ab9257ddcdeee775299be",
+  "initialCertificate": "certificate-01/results.json",
+  "initialPhasesPassed": 10,
+  "initialPhasesTotal": 11,
+  "initialFailure": {
+    "phase": "web",
+    "reason": "Outdated contract required retired ship art in the active PWA precache."
+  },
+  "resolution": {
+    "command": "node tests/run-v7-web-tests.mjs",
+    "log": "web-contract-fix-02.txt",
+    "passed": 13,
+    "failed": 0,
+    "exitCode": 0,
+    "commit": "53a8244db58227eee8cc32463a0593eee69ce3bd",
+    "runtimeChanges": false
+  },
+  "notASingleAllGreenCertificate": true,
+  "additionalHarnessCorrections": [
+    {
+      "evidence": "web-contract-fix-01.txt",
+      "reason": "Intermediate assertion referred to engineScale instead of the actual modular pose.enginePulse."
+    },
+    {
+      "evidence": "n7-01/results.json",
+      "reason": "Old probe sampled ammo in onclick, after the new immediate pointerdown shot. Full action is now measured from before interaction."
+    },
+    {
+      "evidence": "touch-after-01/results.json",
+      "reason": "Movement snapshot preceded compositor delivery; wait for DOM event and movement before assertion."
+    },
+    {
+      "evidence": "touch-after-02/results.json",
+      "reason": "CDP versus DOM event-name case in helper; execution aborted with exit 130."
+    }
+  ],
+  "finalBrowserResults": {
+    "multitouch": "touch-after-03/results.json",
+    "compact": "compact-01/results.json",
+    "natural": "natural-01/results.json",
+    "n7": "n7-02/results.json"
+  },
+  "limits": [
+    "Browser runs are Chromium, not Safari or an iPhone.",
+    "Native CDP and explicit TouchEvent capability fixture are reported separately.",
+    "These records certify tested behavior, not artistic or commercial completion."
+  ]
+}

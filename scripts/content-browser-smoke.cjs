@@ -284,8 +284,12 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
       assert.ok(fire && fire.x >= 0 && fire.y >= 0 && fire.x + fire.width <= profile.width + 1 &&
         fire.y + fire.height <= profile.height + 1, 'Fire control outside viewport');
       result.fireBounds = fire;
+      // The action now fires on pointerdown. An onclick wrapper observes the
+      // already-spent battery, so compare the whole real input action instead.
+      const fireBefore = await page.evaluate(() => __GAME_QA__());
       await page.locator('#fire').click();
-      await wait(page, () => __QA_EVENTS__.some(event => event.id === 'fire' && event.after.ammo === event.before.ammo - 1));
+      await wait(page, ammo => __GAME_QA__().ammo === ammo - 1, fireBefore.ammo);
+      result.fire = {before:fireBefore,after:await page.evaluate(() => __GAME_QA__())};
     });
     if (fullRoute) await step('real enemies and moving enemy projectiles reach the visible playfield', async () => {
       await page.waitForFunction(() => __COMBAT_QA__.enemiesSeen > 0 && __COMBAT_QA__.projectilesSeen > 0 &&

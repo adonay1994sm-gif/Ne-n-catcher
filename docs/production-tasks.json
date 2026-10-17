@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T19:34:35.612758+00:00",
+  "updatedAt": "2026-10-17T19:58:18.874931+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -5462,6 +5462,189 @@
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
       },
       "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
+    },
+    {
+      "id": "P1-IDENTITY-02",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Fijar la nave modular como identidad única y retirar la ilustración anterior",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Campaña clásica",
+        "Campaña N-7",
+        "Assets",
+        "Animaciones",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "src/game/01-runtime-assets.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/07-player-item-rendering.js",
+        "preview/launcher.html",
+        "assets/player_ship_identity_v1.webp",
+        "scripts/export-modular-ship-portrait.cjs"
+      ],
+      "commit": "d325e51f19df0dd1e77ab9257ddcdeee775299be",
+      "tests": [
+        "Certificación inicial: build y 9 suites/auditorías aprobadas; 10/11 fases. Contrato web actualizado: 13/13, salida 0.",
+        "Contenido 193/193; motor 40/40; arquitectura 6/6; estáticos 13/13; regresión 33/33; preview 23/23.",
+        "Chromium multitáctil: 14/14 grupos y 70 aserciones (7 grupos CDP nativo y 7 fixture TouchEvent).",
+        "Chromium HUD compacto: 26/26 grupos en 5 tamaños; partida natural Chronos–C9–Gaia: 5/5; N-7: 6 pasos, salida 0."
+      ],
+      "evidence": [
+        "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
+        "docs/production-reports/evidence/ship-controls/certificate-resolution.json",
+        "docs/production-reports/evidence/ship-controls/certificate-01/results.json",
+        "docs/production-reports/evidence/ship-controls/touch-after-03/results.json",
+        "docs/production-reports/evidence/ship-controls/compact-01/results.json",
+        "docs/production-reports/evidence/ship-controls/natural-01/results.json",
+        "docs/production-reports/evidence/ship-controls/n7-02/results.json"
+      ],
+      "openErrors": [
+        "Safari y prueba física iPhone pendientes; aceptación técnica Chromium no equivale a publicación comercial."
+      ],
+      "acceptance": [
+        "Nave actual en portada, juego, hangar y fallback; sin selector legacy.",
+        "Guardados conservan componentes y progreso; recursos originales recuperables fuera de la precarga.",
+        "Base modular aceptada por el propietario; probar nueva exportación y ausencia de línea entre motores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "ACCEPTED_MODULAR_BASE",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "replacesBehavior": "Selector optativo de nave antigua y retrato diferente entre portada y juego.",
+        "note": "Petición actual: consolidar esta versión como base y corregir controles, sin activar el MotorV1 ni declarar terminados cien niveles."
+      }
+    },
+    {
+      "id": "P1-INPUT-02",
+      "block": "03",
+      "canonicalPhase": "P1",
+      "name": "Pilotar y disparar con dos contactos independientes y mantener para disparar",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Campaña clásica",
+        "Campaña N-7",
+        "Jugabilidad",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "src/game/08-loop-input-bootstrap.js",
+        "src/game/03-ui-game-flow.js",
+        "styles.css",
+        "tests/two-finger-input.test.mjs",
+        "scripts/two-touch-browser-smoke.cjs"
+      ],
+      "commit": "d325e51f19df0dd1e77ab9257ddcdeee775299be",
+      "tests": [
+        "Certificación inicial: build y 9 suites/auditorías aprobadas; 10/11 fases. Contrato web actualizado: 13/13, salida 0.",
+        "Contenido 193/193; motor 40/40; arquitectura 6/6; estáticos 13/13; regresión 33/33; preview 23/23.",
+        "Chromium multitáctil: 14/14 grupos y 70 aserciones (7 grupos CDP nativo y 7 fixture TouchEvent).",
+        "Chromium HUD compacto: 26/26 grupos en 5 tamaños; partida natural Chronos–C9–Gaia: 5/5; N-7: 6 pasos, salida 0."
+      ],
+      "evidence": [
+        "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
+        "docs/production-reports/evidence/ship-controls/certificate-resolution.json",
+        "docs/production-reports/evidence/ship-controls/certificate-01/results.json",
+        "docs/production-reports/evidence/ship-controls/touch-after-03/results.json",
+        "docs/production-reports/evidence/ship-controls/compact-01/results.json",
+        "docs/production-reports/evidence/ship-controls/natural-01/results.json",
+        "docs/production-reports/evidence/ship-controls/n7-02/results.json"
+      ],
+      "openErrors": [
+        "Safari y prueba física iPhone pendientes; aceptación técnica Chromium no equivale a publicación comercial."
+      ],
+      "acceptance": [
+        "Dos órdenes de contacto, fuego inmediato y movimiento continuo.",
+        "Hold usa RAF existente y respeta batería/cadencia; sin click duplicado ni disparos tras cancelar/pausar/reiniciar.",
+        "Botón sigue recibiendo contacto durante recarga con disponibilidad comunicada por aria-disabled."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "replacesBehavior": "Disparo únicamente al hacer click y propiedad compartida de contactos táctiles.",
+        "note": "Petición actual: consolidar esta versión como base y corregir controles, sin activar el MotorV1 ni declarar terminados cien niveles."
+      }
+    },
+    {
+      "id": "P1-COMET-02",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Animar cometa mineral helado y alinear núcleo y estela con su trayectoria",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Campaña clásica",
+        "Assets",
+        "Animaciones",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "assets/comet_flight_atlas_v2.webp",
+        "art-source/comet-rework/",
+        "src/game/07-player-item-rendering.js",
+        "src/game/animation/animation-map.js",
+        "tests/comet-presentation.test.mjs"
+      ],
+      "commit": "d325e51f19df0dd1e77ab9257ddcdeee775299be",
+      "tests": [
+        "Certificación inicial: build y 9 suites/auditorías aprobadas; 10/11 fases. Contrato web actualizado: 13/13, salida 0.",
+        "Contenido 193/193; motor 40/40; arquitectura 6/6; estáticos 13/13; regresión 33/33; preview 23/23.",
+        "Chromium multitáctil: 14/14 grupos y 70 aserciones (7 grupos CDP nativo y 7 fixture TouchEvent).",
+        "Chromium HUD compacto: 26/26 grupos en 5 tamaños; partida natural Chronos–C9–Gaia: 5/5; N-7: 6 pasos, salida 0."
+      ],
+      "evidence": [
+        "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
+        "docs/production-reports/evidence/ship-controls/certificate-resolution.json",
+        "docs/production-reports/evidence/ship-controls/certificate-01/results.json",
+        "docs/production-reports/evidence/ship-controls/touch-after-03/results.json",
+        "docs/production-reports/evidence/ship-controls/compact-01/results.json",
+        "docs/production-reports/evidence/ship-controls/natural-01/results.json",
+        "docs/production-reports/evidence/ship-controls/n7-02/results.json"
+      ],
+      "openErrors": [
+        "Safari y prueba física iPhone pendientes; aceptación técnica Chromium no equivale a publicación comercial.",
+        "Aceptación artística del nuevo cometa pendiente del propietario."
+      ],
+      "acceptance": [
+        "Cuatro celdas reales con alfa, pivote0.75/0.5 y8FPS en reloj jugado.",
+        "Núcleo mantiene hitbox; cola decorativa; diagonal sin desfase90grados.",
+        "Captura de cometa en partida real y pausa; arte nuevo pendiente de revisión del propietario."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "replacesBehavior": "Cometa de fuego y orientación diagonal desplazada90grados",
+        "note": "Petición actual: consolidar esta versión como base y corregir controles, sin activar el MotorV1 ni declarar terminados cien niveles."
+      }
     }
   ],
   "canonicalPlan": {
@@ -5498,8 +5681,8 @@
     },
     "latestClarification": {
       "date": "2026-10-17",
-      "report": "docs/production-reports/COMPACT_HUD_2026-10-17.md",
-      "scope": "HUD compacto y jugabilidad visible: integrar información sin tapar amenazas; mantener diez niveles y motor desactivado."
+      "report": "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
+      "scope": "La nave modular actual pasa a ser la única identidad del jugador; mejorar cometas y permitir pilotar y disparar con dos dedos. Es base elegida de desarrollo, sin declarar versión comercial terminada."
     }
   }
 }

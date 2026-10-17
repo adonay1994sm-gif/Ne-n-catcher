@@ -206,5 +206,15 @@
     "src/game/07-player-item-rendering.js",
     "src/game/animation/animation-map.js"
   ],
-  "runtimeQA": "Pending natural browser capture; render pivot/orientation tests passed4/4"
+  "runtimeQA": {
+    "technical": "PASSED_CHROMIUM",
+    "artistic": "PENDING_OWNER",
+    "physical": "PENDING",
+    "evidence": [
+      "docs/production-reports/evidence/ship-controls/natural-01/07-deep-space.png",
+      "docs/production-reports/evidence/ship-controls/natural-01/results.json",
+      "docs/production-reports/evidence/ship-controls/compact-01/results.json"
+    ],
+    "renderContract": "4/4: pivot, orientation, unchanged nucleus collision and played-time animation; natural 5/5 Chronos to C9 and Gaia."
+  }
 }

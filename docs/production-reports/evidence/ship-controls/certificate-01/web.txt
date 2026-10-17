@@ -1,0 +1,20 @@
+PASS 01 · JavaScript principal, runtime y service worker tienen sintaxis válida
+PASS 02 · V7.2.0 pre-release está alineada en pantalla, juego y caché
+PASS 03 · HTML conserva todas sus referencias locales
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: assets/ship_frame_00.webp
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:64:13
+    at test (file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:16:9)
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:53:7 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
