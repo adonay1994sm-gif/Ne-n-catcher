@@ -1,3 +1,19 @@
+<!-- ship-controls-current -->
+## Cierre vigente — nave única, cometa y dos dedos · 17/10/2026
+
+[Informe técnico y capturas](production-reports/SHIP_TOUCH_COMET_2026-10-17.md). **[Web privada de pruebas, versión 9](https://neon-catcher-pruebas.chictide18.chatgpt.site)**: publicación `succeeded` a las 20:04:54 UTC. Paquete limpio `f543056e4bcbd611674926713a899d42a5879144`; [procedencia y ZIP](production-reports/evidence/ship-controls/package-f543056/package.json). Site source `b62289496b9da7cee168924e5f79a56923b1301f`. El código está publicado en la rama autorizada; las anotaciones documentales posteriores no cambian ese paquete.
+
+La nave modular actual es la base elegida por el propietario: portada, hangar, fallback y gameplay comparten identidad. Nave antigua retirada de selección/carga normal/precaché, conservada recuperable. Cometa mineral helado, cuatro estados ilustrados y orientación alineada; núcleo e hitbox conservados. Movimiento y disparo tienen contactos independientes: mantener DISPARAR repite con batería/cadencia, incluso comenzando con cero cargas; pausa, cancelación y reinicio limpian el control sin duplicar RAF.
+
+Chromium: dos contactos **14/14 grupos, 70 aserciones**, CDP nativo separado del fixture TouchEvent; HUD **26/26** en cinco tamaños; partida natural **5/5** Chronos→rescate→C9→gemelo→Gaia (90,0051 s jugados, 41 fragmentos, casco 66%); N-7 una sesión/seis pasos; actualización de workers/offline **3/3** sobre copia del paquete final limpio. Contenido **193/193**, motor 40/40, arquitectura 6/6, estáticos 13/13, regresión 33/33, preview final 23/23. Certificación inicial 10/11 fases: el contrato web antiguo falló al exigir precargar la nave retirada; corregido y repetido **13/13**. [Fallos originales y resolución](production-reports/evidence/ship-controls/certificate-resolution.json) conservados; no se afirma una única certificación 11/11.
+
+Tres incrementos **IN_REVIEW** con técnica aprobada. Base modular aceptada; arte nuevo del cometa y Safari/iPhone físico pendientes. Inventario 82 recursos empaquetados, 7 excluidos de precarga; catálogo 155 identificadores. **No se declara comercialmente terminada la versión ni los diez niveles.** Motor V1=false, un RAF; main, PR3 y producción Netlify intactos. Atlas no se volvió a completar en esta sesión; su combate anterior figura en el informe histórico.
+
+El contenido que sigue es histórico y conserva sus evidencias. Este cierre sustituye las versiones de prueba anteriores.
+<!-- /ship-controls-current -->
+
+---
+
 <!-- combat-readability-current -->
 ## Vigente — combate y órbita de Vulkar, 17/10/2026
 

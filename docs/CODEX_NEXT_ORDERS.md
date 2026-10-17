@@ -1,3 +1,17 @@
+## Continuación vigente — versión 9 · 17/10/2026
+
+[Diagnóstico, informe, capturas y paquete](production-reports/SHIP_TOUCH_COMET_2026-10-17.md). No rehacer los controles ya corregidos ni volver a presentar la nave antigua. La nave modular actual es la base elegida de desarrollo, sin declarar certificación comercial.
+
+1. Validar en Safari/iPhone real que un dedo pilota mientras el otro mantiene DISPARAR, en ambos órdenes, con recarga, pausa y reentrada. Chromium CDP pasó 14/14 grupos; no equivale a físico. Conservar la misma web privada v9 y no desplegar producción Netlify.
+2. Revisar con las capturas y con el propietario el cometa mineral helado animado; no multiplicar una dirección artística pendiente. Técnica comprobada y núcleo sin cambios de colisión. La nave antigua permanece sólo como recurso recuperable fuera de selección/carga normal/precarga.
+3. Completar daño/destrucción modular y animaciones CH-02/CH-03 en lotes pequeños integrados. Conservar el modelo de batería común, gemelo central ×2, lanza ×3, escudo ilustrado y viaje espacial existentes.
+4. Medir rendimiento sostenido y memoria decodificada en dispositivo. Investigar glifos intermitentes si se reproduce su causa. No suponer que el smoke de diez escenas certifica el arte de todos los niveles.
+5. Revisar Atlas con partida natural y equilibrio humano antes de expandir jefes. Su código no cambió en este lote y no se afirma un nuevo combate completo. Motor V1 reservado/desactivado, main y PR3 intactos; no cien etapas terminadas.
+
+Fuente de seguimiento: `production-tasks.json`, P1-IDENTITY-02 / P1-INPUT-02 / P1-COMET-02, aceptación técnica PASSED y físico pendiente. Informes y órdenes siguientes se conservan como historial.
+
+---
+
 <!-- combat-readability-next -->
 ## Siguiente ejecución — versión8 publicada, 17/10/2026
 

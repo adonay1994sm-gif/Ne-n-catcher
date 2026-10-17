@@ -1,3 +1,5 @@
+> Continuidad vigente, 17/10/2026: [nave modular única, cometa y dos dedos — versión privada 9](../production-reports/SHIP_TOUCH_COMET_2026-10-17.md). Este informe y sus capturas son históricos; el lote nuevo no declara ningún nivel adicional completo ni certificación física.
+
 > Actualización posterior,17/10/2026: [combate, escudo y Vulkar orbital](../production-reports/COMBAT_READABILITY_2026-10-17.md), versión8 publicada. El contenido siguiente se conserva como historial; cero niveles nuevos declarados visualmente completos.
 
 > **Nueva captura real del nivel 1, 17/10/2026:** [fractura de Chronos](../production-reports/evidence/chronos-destruction/browser-event-02/natural-03-rupture.png), [seis fases y comparación antes/después](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Es una integración jugable, en revisión artística; no un nivel cerrado. Las imágenes anteriores siguen siendo historial de los otros escenarios.
