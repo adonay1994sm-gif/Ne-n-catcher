@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T12:13:26.123698+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T12:52:35.922390+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -23,6 +23,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-SHIP-01 / P1 | Nave ensamblada, dos configuraciones y hangar dentro del clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-ATLAS-01 / P1 | Guardian Atlas ilustrado y combate integrado a recuperación clásica Gaia | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P0-DESIGN-100 / P0 | Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime | IN_REVIEW | PASSED_EDITORIAL_SCHEMA | PENDING_OWNER | NOT_APPLICABLE |
+| P1-FLIGHT-01 / P1 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | IN_REVIEW | IN_REVIEW | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -37,27 +38,27 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 7/46 (15.2%) | 36 | 0 | 0 | 3 |
-| Campaña clásica | 4/12 (33.3%) | 4 | 1 | 0 | 3 |
+| Jugabilidad | 7/47 (14.9%) | 36 | 0 | 0 | 4 |
+| Campaña clásica | 4/13 (30.8%) | 4 | 1 | 0 | 4 |
 | Campaña N-7 | 3/39 (7.7%) | 35 | 1 | 0 | 0 |
-| Enemigos | 5/74 (6.8%) | 60 | 0 | 0 | 9 |
+| Enemigos | 5/75 (6.7%) | 60 | 0 | 0 | 10 |
 | Jefes | 0/14 (0.0%) | 13 | 0 | 0 | 1 |
-| Assets | 2/166 (1.2%) | 127 | 3 | 1 | 33 |
-| Animaciones | 5/139 (3.6%) | 111 | 1 | 0 | 22 |
+| Assets | 2/170 (1.2%) | 126 | 3 | 1 | 38 |
+| Animaciones | 5/140 (3.6%) | 111 | 1 | 0 | 23 |
 | Narrativa | 0/19 (0.0%) | 18 | 0 | 0 | 1 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/17 (23.5%) | 9 | 1 | 0 | 3 |
+| Interfaz | 4/18 (22.2%) | 9 | 1 | 0 | 4 |
 | Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 18/51 (35.3%) | 20 | 2 | 4 | 7 |
+| QA | 18/52 (34.6%) | 20 | 2 | 4 | 8 |
 | Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 18/23 (78.3%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18 |
+| 03 · Prueba integrada y cierre técnico | 18/24 (75.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 4 · DONE: 18 |
 | 04 · Jugabilidad procedural | 0/20 (0.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 5/165 (3.0%) | PENDING: 124 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 33 · DONE: 5 |
+| 05 · Producción visual y 150 assets | 5/168 (3.0%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 37 · DONE: 5 |
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
@@ -66,7 +67,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 27; PLANNED: 120; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 31; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**; 153 identificadores. Cierre de los doce requisitos: **0/153 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 

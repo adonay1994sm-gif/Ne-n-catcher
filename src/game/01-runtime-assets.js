@@ -90,6 +90,8 @@
   let classicEquipmentWritable = true;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
+  let classicCometSequence = 0;
+  let classicCometWarning = -1;
   let classicThreatSequence = 0;
   let flightDockReturn = 'menu';
   let flightHudSignature = '';

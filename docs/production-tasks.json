@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T12:13:26.123698+00:00",
+  "updatedAt": "2026-10-17T12:52:35.922390+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -311,7 +311,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 150,
+    "expectedCount": 153,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -4752,6 +4752,70 @@
         "technical": "PASSED_EDITORIAL_SCHEMA",
         "artistic": "PENDING_OWNER",
         "physical": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "id": "P1-FLIGHT-01",
+      "block": "03",
+      "canonicalPhase": "P1",
+      "name": "Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Enemigos",
+        "Assets",
+        "Animaciones",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-SHIP-01",
+        "P1-ATLAS-01"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/combat/classic-weapons.js",
+        "src/game/ship/flight-controls.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js",
+        "src/game/07-player-item-rendering.js",
+        "assets/chronos_flight_atlas_v1.webp",
+        "assets/chronos_flight_weapons_v1.webp",
+        "assets/chronos_flight_space_v1.webp"
+      ],
+      "commit": "b956974",
+      "tests": [
+        "npm run build",
+        "npm test",
+        "node --test tests/unified-flight-legacy.test.mjs"
+      ],
+      "evidence": [
+        "docs/production-reports/UNIFIED_FLIGHT_2026-10-17.md",
+        "docs/production-reports/evidence/unified-flight/legacy-integration-03/metadata.json",
+        "docs/production-reports/evidence/unified-flight/regression-03.txt"
+      ],
+      "openErrors": [
+        "QA natural y tres tamaños en curso; fallo de arranque Chromium corregido después del WIP, pendiente repetir.",
+        "Aceptación artística, balance humano y Safari/iPhone físico pendientes.",
+        "Solo la primera misión presenta viaje geográfico; no cien etapas implementadas."
+      ],
+      "acceptance": [
+        "Una entrada principal sin tres campañas obligatorias; archivo histórico y guardados recuperables.",
+        "Partida natural Chronos: ataque, recogida, salida, tránsito y aproximación con progreso único y pausa fiable.",
+        "Tres cargas recargables y montaje real del módulo recuperado; dos trayectorias por una carga y persistencia segura.",
+        "Movimiento táctil relativo XY y claridad de HUD/controles en tres tamaños, un único RAF.",
+        "Regresiones generales y revisión artística del propietario."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "revises": "P1-01",
+        "note": "El propietario pidió integrar los sistemas en el clásico. La demo Journey y N-7 quedan como variantes históricas; no se borran ni se importan sus progresos por coincidencia numérica."
       }
     }
   ],

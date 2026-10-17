@@ -1,6 +1,6 @@
 # NEON CATCHER — Checklist maestra de producción
 
-Fecha del registro: **2026-10-17T12:13:26.123698+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T12:52:35.922390+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -23,6 +23,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-SHIP-01 / P1 | Nave ensamblada, dos configuraciones y hangar dentro del clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-ATLAS-01 / P1 | Guardian Atlas ilustrado y combate integrado a recuperación clásica Gaia | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P0-DESIGN-100 / P0 | Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime | IN_REVIEW | PASSED_EDITORIAL_SCHEMA | PENDING_OWNER | NOT_APPLICABLE |
+| P1-FLIGHT-01 / P1 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | IN_REVIEW | IN_REVIEW | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -106,11 +107,11 @@ Este registro cubre los Bloques 03–10 del mandato. Los avances históricos per
 
 ## Resumen de estados
 
-PENDING: 205 · IN_PROGRESS: 4 · BLOCKED: 7 · IN_REVIEW: 39 · DONE: 23. Total: 278 tareas.
+PENDING: 204 · IN_PROGRESS: 4 · BLOCKED: 7 · IN_REVIEW: 44 · DONE: 23. Total: 282 tareas.
 
 ## Bloque 03 — Prueba integrada y cierre técnico
 
-PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18.
+PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 4 · DONE: 18.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -137,6 +138,7 @@ PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18.
 | P0-01 | Preservar continuidad y fijar mandato rector canónico | CRITICAL | DONE | — | [docs/PRODUCT_VISION.md](PRODUCT_VISION.md)<br>[AGENTS.md](../AGENTS.md)<br>[docs/production-tasks.json](production-tasks.json) | 398d1ca479de9aefe6bacc6f36900c3111ffa7d4 | HEAD/remoto bfc6683 y árbol preservados; mandato y guía publicados | [docs/PRODUCT_VISION.md](PRODUCT_VISION.md)<br>[docs/production-reports/evidence/journey-p1/certification-02/results.json](production-reports/evidence/journey-p1/certification-02/results.json) | — |
 | P1-01 | Demostrar salida, pieza, servicio, mejora y frontera en el ciclo legacy | CRITICAL | IN_REVIEW | P0-01 | [src/game/progression/journey-demo.js](../src/game/progression/journey-demo.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js)<br>[src/game/05-corridor-update.js](../src/game/05-corridor-update.js)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js)<br>[scripts/journey-browser-smoke.cjs](../scripts/journey-browser-smoke.cjs) | ce71b299cb0eea8cbb908dd4886319e4e859580e | Modelo13/13, integración legacy3/3; certificación final11/11 fases con contenido44/44<br>Chromium natural browser-04:5/5 grupos,exit0,72.367s,RAF máximo1,0 errores y solape0<br>Preview15/15,exit0 | [docs/production-reports/evidence/journey-p1/browser-04/results.json](production-reports/evidence/journey-p1/browser-04/results.json)<br>[docs/production-reports/evidence/journey-p1/certification-03/results.json](production-reports/evidence/journey-p1/certification-03/results.json)<br>[docs/production-reports/evidence/journey-p1/preview-final.txt](production-reports/evidence/journey-p1/preview-final.txt) | Aceptación artística pendiente del propietario; físico iPhone pendiente. Estación/operador y equipamiento reutilizan arte previo: no dirección definitiva ni capítulo completo.<br>El propietario rechaza el ritmo comprimido y la integración visual; priorizar el clásico y piezas coherentes. |
 | PM-01 | Decisión técnica reservada sobre Motor V1 | CRITICAL | BLOCKED | P1-01 | [src/engine/CampaignAdapter.js](../src/engine/CampaignAdapter.js)<br>[docs/PRODUCT_VISION.md](PRODUCT_VISION.md) |  | — | — | Requiere orden técnica expresa del propietario; mantener USE_ENGINE_V1=false. |
+| P1-FLIGHT-01 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | CRITICAL | IN_REVIEW | P1-SHIP-01<br>P1-ATLAS-01 | [src/game/progression/chronos-flight.js](../src/game/progression/chronos-flight.js)<br>[src/game/combat/classic-weapons.js](../src/game/combat/classic-weapons.js)<br>[src/game/ship/flight-controls.js](../src/game/ship/flight-controls.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js)<br>[assets/chronos_flight_atlas_v1.webp](../assets/chronos_flight_atlas_v1.webp)<br>[assets/chronos_flight_weapons_v1.webp](../assets/chronos_flight_weapons_v1.webp)<br>[assets/chronos_flight_space_v1.webp](../assets/chronos_flight_space_v1.webp) | b956974 | npm run build<br>npm test<br>node --test tests/unified-flight-legacy.test.mjs | [docs/production-reports/UNIFIED_FLIGHT_2026-10-17.md](production-reports/UNIFIED_FLIGHT_2026-10-17.md)<br>[docs/production-reports/evidence/unified-flight/legacy-integration-03/metadata.json](production-reports/evidence/unified-flight/legacy-integration-03/metadata.json)<br>[docs/production-reports/evidence/unified-flight/regression-03.txt](production-reports/evidence/unified-flight/regression-03.txt) | QA natural y tres tamaños en curso; fallo de arranque Chromium corregido después del WIP, pendiente repetir.<br>Aceptación artística, balance humano y Safari/iPhone físico pendientes.<br>Solo la primera misión presenta viaje geográfico; no cien etapas implementadas. |
 
 ### Criterios verificables
 
@@ -163,6 +165,7 @@ PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18.
 - **P0-01:** Visión 10x10 vigente y campañas previas preservadas con correspondencias históricas explícitas.
 - **P1-01:** Viaje visible gobernado por una sola fuente de progreso; Recogida física, instalación idempotente, efecto visible y combate anunciado; Checkpoint, controles, recompensa única y regresiones comprobados.
 - **PM-01:** Documentar decisión y alcance de integración sin activación automática.
+- **P1-FLIGHT-01:** Una entrada principal sin tres campañas obligatorias; archivo histórico y guardados recuperables.; Partida natural Chronos: ataque, recogida, salida, tránsito y aproximación con progreso único y pausa fiable.; Tres cargas recargables y montaje real del módulo recuperado; dos trayectorias por una carga y persistencia segura.; Movimiento táctil relativo XY y claridad de HUD/controles en tres tamaños, un único RAF.; Regresiones generales y revisión artística del propietario..
 
 ## Bloque 04 — Jugabilidad procedural
 
@@ -216,7 +219,7 @@ PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0.
 
 ## Bloque 05 — Producción visual y 150 assets
 
-PENDING: 124 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 33 · DONE: 5.
+PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 37 · DONE: 5.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -256,7 +259,7 @@ PENDING: 124 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 33 · DONE: 5.
 
 ### Entregas individuales de assets
 
-Catálogo real: **IN_REVIEW: 27; PLANNED: 120; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
+Catálogo real: **IN_REVIEW: 31; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
 
 Todos los assets deben superar estos doce criterios: Identificador y nombre; Archivo maestro existente; Archivo optimizado existente; Fotogramas necesarios reales; Dimensiones verificadas; Escala documentada; Pivote documentado; Transparencia comprobada; Duración/FPS documentados; Integración real en el juego; Prueba visual registrada; Procedencia y derechos registrados.
 
@@ -299,7 +302,7 @@ Todos los assets deben superar estos doce criterios: Identificador y nombre; Arc
 | A035 | Distorsión temporal (chronos-distortion-overlay) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A036 | Baliza de emergencia (chronos-emergency-beacon) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A037 | Key art La Onda de Choque (chronos-level1-keyart) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A038 | Gaia Nova (gaia-planet) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A038 | Gaia Nova (gaia-planet) | P1 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
 | A039 | Nubes de Gaia (gaia-clouds) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A040 | Atmósfera de Gaia (gaia-atmosphere) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A041 | Órbita lejana (gaia-orbit-far) | P2 | IN_REVIEW | B05-02 | [art-source/visual-rebirth/levels/02/atlas-perimeter-master.png](../art-source/visual-rebirth/levels/02/atlas-perimeter-master.png)<br>[assets/atlas_perimeter_background_v1.webp](../assets/atlas_perimeter_background_v1.webp)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js) | — | Chromium classic level 2 1/1<br>Chromium classic/N-7 gameplay 2/2<br>Local certification 11/11 | [docs/visual-rebirth/evidence/gallery-02/results.json](visual-rebirth/evidence/gallery-02/results.json)<br>[docs/visual-rebirth/evidence/gameplay-browser-01/results.json](visual-rebirth/evidence/gameplay-browser-01/results.json) | Composite art is integrated; independent orbital layers, classic Atlas enemies and physical iPhone QA pending. |
@@ -412,6 +415,9 @@ Todos los assets deben superar estos doce criterios: Identificador y nombre; Arc
 | A148 | Cronos Prime · fase 5 (cronos-prime-phase-05) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A149 | Cronos Prime · transiciones (cronos-prime-transition) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A150 | Cronos Prime · destrucción (cronos-prime-destroy) | P3 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A151 | Chronos · estación, Gaia y bombardero aislados (chronos-flight-atlas-v1) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A152 | Módulo emisor doble · cerrado, carga y disparo (shared-twin-emitter-module-v1) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A153 | Chronos → Gaia · espacio profundo independiente (chronos-flight-deep-space-v1) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
 
 Actualizar un recurso en **assetTasks.overrides[asset.id]** con estado, archivos reales, commit, pruebas, evidencia y errores. Ningún estado READY del catálogo concede DONE en este registro.
 
