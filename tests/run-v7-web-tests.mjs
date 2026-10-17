@@ -59,7 +59,8 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
     "assets/chronos_shockwave_atlas_v1.webp", "assets/atlas_perimeter_background_v1.webp",
     "assets/vulkar_descent_background_v1.webp", "assets/vulkar_magma_tunnel_background_v1.webp",
     "assets/cryon_whiteout_background_v1.webp", "assets/cryon_leviathan_rift_background_v1.webp",
-    "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp"
+    "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp",
+    "assets/titan_omega_graveyard_background_v1.webp", "assets/chronos_collapse_background_v1.webp"
   ]) assert.ok(paths.has(path), path);
 });
 

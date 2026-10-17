@@ -566,6 +566,52 @@
         "openErrors": [
           "Portales y arquitectura translúcida compuestos; Chrono Phantom y capas independientes pendientes. Physical iPhone QA pending."
         ]
+      },
+      "titan-omega-scrap-field": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/visual-rebirth/levels/09/titan-omega-graveyard-master.png",
+          "assets/titan_omega_graveyard_background_v1.webp",
+          "src/game/06-world-rendering.js"
+        ],
+        "tests": [
+          "Chromium classic level 9 1/1, exit 0",
+          "Chromium classic/N-7 gameplay 2/2, exit 0",
+          "Local certification 11/11 phases, exit 0",
+          "Preview 15/15, exit 0"
+        ],
+        "evidence": [
+          "docs/visual-rebirth/evidence/gallery-09-10/results.json",
+          "docs/visual-rebirth/evidence/level-09-10-gameplay-browser-01/results.json",
+          "docs/visual-rebirth/evidence/level-09-10-certification-01/results.json"
+        ],
+        "openErrors": [
+          "Naves y maquinaria destruidas compuestas; Gravity Mine/Scrap Collector/Orbital Turret y capas independientes pendientes. Physical iPhone QA pending."
+        ]
+      },
+      "chronos-reactor-core": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/visual-rebirth/levels/10/chronos-collapse-master.png",
+          "assets/chronos_collapse_background_v1.webp",
+          "src/game/06-world-rendering.js"
+        ],
+        "tests": [
+          "Chromium classic level 10 1/1, exit 0",
+          "Chromium classic/N-7 gameplay 2/2, exit 0",
+          "Local certification 11/11 phases, exit 0",
+          "Preview 15/15, exit 0"
+        ],
+        "evidence": [
+          "docs/visual-rebirth/evidence/gallery-09-10/results.json",
+          "docs/visual-rebirth/evidence/level-09-10-gameplay-browser-01/results.json",
+          "docs/visual-rebirth/evidence/level-09-10-certification-01/results.json",
+          "docs/visual-rebirth/evidence/gallery-10-qa02/results.json"
+        ],
+        "openErrors": [
+          "Reactor y estructuras destruidas compuestos; pulso final animado, secuencia de estabilización y capas independientes pendientes. Physical iPhone QA pending.",
+          "Some Chromium screenshots intermittently omit HUD/button glyph pixels while DOM text remains complete; Safari physical QA pending."
+        ]
       }
     },
     "note": "Se genera una tarea A001–A150 por sequence. Catálogo READY/IN_REVIEW/IMPLEMENTED_CODE pasa a IN_REVIEW por defecto; nunca a DONE. Un cambio se registra en overrides por asset.id, con commit, tests y evidence."
@@ -2072,7 +2118,9 @@
         "assets/cryon_whiteout_background_v1.webp",
         "assets/cryon_leviathan_rift_background_v1.webp",
         "assets/aether_echo_cemetery_background_v1.webp",
-        "assets/aether_phantom_threshold_background_v1.webp"
+        "assets/aether_phantom_threshold_background_v1.webp",
+        "assets/titan_omega_graveyard_background_v1.webp",
+        "assets/chronos_collapse_background_v1.webp"
       ],
       "commit": null,
       "tests": [
@@ -2084,7 +2132,9 @@
         "Level 4: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2",
         "Level 5: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2",
         "Level 6: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2",
-        "Levels 7–8: local certification 11/11, preview 15/15, Chromium gallery 2/2, gameplay 2/2"
+        "Levels 7–8: local certification 11/11, preview 15/15, Chromium gallery 2/2, gameplay 2/2",
+        "Levels 9–10: local certification 11/11, preview 15/15, Chromium gallery 2/2, gameplay 2/2",
+        "Final ten-level Chromium gallery 10/10, exit 0; visual HUD artifact remains open"
       ],
       "evidence": [
         "docs/visual-rebirth/evidence/level-01-02-certification-02/results.json",
@@ -2105,10 +2155,15 @@
         "docs/visual-rebirth/evidence/level-06-certification-01/results.json",
         "docs/visual-rebirth/evidence/gallery-07-08/results.json",
         "docs/visual-rebirth/evidence/level-07-08-gameplay-browser-01/results.json",
-        "docs/visual-rebirth/evidence/level-07-08-certification-01/results.json"
+        "docs/visual-rebirth/evidence/level-07-08-certification-01/results.json",
+        "docs/visual-rebirth/evidence/gallery-09-10/results.json",
+        "docs/visual-rebirth/evidence/gallery-final-01/results.json",
+        "docs/visual-rebirth/evidence/level-09-10-gameplay-browser-01/results.json",
+        "docs/visual-rebirth/evidence/visual-rebirth-final-certification-01/results.json"
       ],
       "openErrors": [
-        "Classic levels 9–10 still lack dedicated illustrated scenes; levels 1–8 lack enemy-specific art and full layered parallax."
+        "All ten classic levels now have an illustration or (level 1) an existing illustration plus new shockwave, but dedicated enemies, layered parallax and iPhone QA are still pending.",
+        "Intermittent missing HUD/button glyph pixels in Chromium captures; DOM values intact."
       ],
       "acceptance": [
         "Escenarios diferenciados por arquitectura/objetos, no solo paleta; efectos legibles."

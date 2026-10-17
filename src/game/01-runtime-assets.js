@@ -175,7 +175,9 @@
     cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false),
     cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false),
     aetherEchoBackground: loadSprite("assets/aether_echo_cemetery_background_v1.webp", false),
-    aetherThresholdBackground: loadSprite("assets/aether_phantom_threshold_background_v1.webp", false)
+    aetherThresholdBackground: loadSprite("assets/aether_phantom_threshold_background_v1.webp", false),
+    titanGraveyardBackground: loadSprite("assets/titan_omega_graveyard_background_v1.webp", false),
+    chronosCollapseBackground: loadSprite("assets/chronos_collapse_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {

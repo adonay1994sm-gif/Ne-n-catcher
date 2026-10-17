@@ -119,13 +119,13 @@
         ctx.lineTo(x - 130, H * 0.70);
         ctx.stroke();
       }
-    } else if (lv.scene === "dark") {
+    } else if (lv.scene === "dark" && (N7_CAMPAIGN || currentLevel !== 8)) {
       drawPlanet(W * 0.73, H * 0.18, 112, ["#6d2d73", "#27102f", "#05030a"], false);
       ctx.fillStyle = "rgba(255,92,233,.12)";
       ctx.beginPath();
       ctx.arc(W * 0.73, H * 0.18, 130, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "collapse") {
+    } else if (lv.scene === "collapse" && (N7_CAMPAIGN || currentLevel !== 9)) {
       const x = W * 0.50;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(93,255,236,.58)";
@@ -183,6 +183,8 @@
     if (!N7_CAMPAIGN && currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
     if (!N7_CAMPAIGN && currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
     if (!N7_CAMPAIGN && currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
+    if (!N7_CAMPAIGN && currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
+    if (!N7_CAMPAIGN && currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -321,6 +323,42 @@
       readability.addColorStop(0, "rgba(12,4,25,.10)");
       readability.addColorStop(0.55, "rgba(11,4,26,.16)");
       readability.addColorStop(1, "rgba(4,2,17,.43)");
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = readability;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    } else if (!N7_CAMPAIGN && currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
+      const image = SPRITES.titanGraveyardBackground;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const driftX = Math.sin(t * 0.00010) * W * 0.012;
+      const driftY = Math.cos(t * 0.00007) * H * 0.006;
+      ctx.save();
+      ctx.globalAlpha = 0.87;
+      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+      const readability = ctx.createLinearGradient(0, 0, 0, H);
+      readability.addColorStop(0, "rgba(10,5,14,.09)");
+      readability.addColorStop(0.55, "rgba(7,3,12,.14)");
+      readability.addColorStop(1, "rgba(3,2,8,.38)");
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = readability;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    } else if (!N7_CAMPAIGN && currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
+      const image = SPRITES.chronosCollapseBackground;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const driftX = Math.sin(t * 0.00012) * W * 0.013;
+      const driftY = Math.cos(t * 0.00008) * H * 0.006;
+      ctx.save();
+      ctx.globalAlpha = 0.86;
+      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+      const readability = ctx.createLinearGradient(0, 0, 0, H);
+      readability.addColorStop(0, "rgba(3,5,19,.26)");
+      readability.addColorStop(0.50, "rgba(3,5,19,.10)");
+      readability.addColorStop(1, "rgba(1,3,12,.39)");
       ctx.globalAlpha = 1;
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);

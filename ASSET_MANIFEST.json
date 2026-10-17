@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 67,
-  "runtimeBytes": 4255692,
+  "assetCount": 69,
+  "runtimeBytes": 4936486,
   "audit": {
-    "reviewed": 67,
+    "reviewed": 69,
     "READY": 58,
-    "IN_REVIEW": 9,
+    "IN_REVIEW": 11,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -498,6 +498,34 @@
       "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
       "version": "visual-rebirth-v1",
       "size": 297302
+    },
+    {
+      "id": "titan-omega-graveyard-background-v1",
+      "path": "assets/titan_omega_graveyard_background_v1.webp",
+      "master": "art-source/visual-rebirth/levels/09/titan-omega-graveyard-master.png",
+      "dimensions": "853x1844",
+      "format": "webp-opaque",
+      "use": "Classic level 9 orbital ship graveyard and gravity core",
+      "level": 9,
+      "animation": "subtle drift with separate game particles",
+      "status": "IN_REVIEW",
+      "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "visual-rebirth-v1",
+      "size": 320978
+    },
+    {
+      "id": "chronos-collapse-background-v1",
+      "path": "assets/chronos_collapse_background_v1.webp",
+      "master": "art-source/visual-rebirth/levels/10/chronos-collapse-master.png",
+      "dimensions": "853x1844",
+      "format": "webp-opaque",
+      "use": "Classic level 10 destroyed CRONIUM reactor and collapsing orbital installation",
+      "level": 10,
+      "animation": "subtle drift with separate game particles",
+      "status": "IN_REVIEW",
+      "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "visual-rebirth-v1",
+      "size": 359816
     }
   ]
 }

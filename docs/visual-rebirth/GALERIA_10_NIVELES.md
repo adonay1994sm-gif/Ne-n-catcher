@@ -12,8 +12,8 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 | 6 | Fractura Leviatán · Cryon | [Escenario nuevo](evidence/gallery-06/level-06-game.png) | Grieta monumental, ruinas heladas y sombra ambiental ilustradas | Fondo integrado; Cryo Mine/Leviathan jugables y capas separadas pendientes |
 | 7 | Ecos Imposibles · Aether | [Escenario nuevo](evidence/gallery-07-08/level-07-game.png) | Cementerio temporal y ruinas flotantes ilustrados | Fondo integrado; Time Echo/Rift Orb y capas separadas pendientes |
 | 8 | Umbral Fantasma · Aether | [Escenario nuevo](evidence/gallery-07-08/level-08-game.png) | Portales y arquitectura translúcida ilustrados | Fondo integrado; Chrono Phantom y capas separadas pendientes |
-| 9 | Cementerio Gravitatorio · Titan Omega | [Estado inicial](evidence/gallery-01/level-09-game.png) | Planeta simple y geometría; cementerio ausente | Arte propio pendiente |
-| 10 | Colapso Cronos · Chronos | [Estado inicial](evidence/gallery-01/level-10-game.png) | Aros procedurales; reactor final ausente | Arte propio pendiente |
+| 9 | Cementerio Gravitatorio · Titan Omega | [Escenario nuevo](evidence/gallery-09-10/level-09-game.png) | Cementerio orbital y núcleo gravitatorio ilustrados | Fondo integrado; enemigos y capas separadas pendientes |
+| 10 | Colapso Cronos · Chronos | [Escenario nuevo](evidence/gallery-10-qa02/level-10-game.png) | Reactor inestable e instalación destruida ilustrados | Fondo integrado; secuencia final, animación del reactor y capas separadas pendientes |
 
 ## Comparación antes/después validada
 
@@ -31,6 +31,10 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 
 **Nivel 8, Umbral Fantasma.** [Antes: trazos de energía](evidence/gallery-01/level-08-game.png) → [Después: complejo de portales](evidence/gallery-07-08/level-08-game.png). El Chrono Phantom aún no está representado como entidad animada.
 
+**Nivel 9, Cementerio Gravitatorio.** [Antes: planeta procedural](evidence/gallery-01/level-09-game.png) → [Después: cementerio orbital de Titan Omega](evidence/gallery-09-10/level-09-game.png). Los tres enemigos nombrados carecen todavía de sprites propios.
+
+**Nivel 10, Colapso Cronos.** [Antes: aros procedurales](evidence/gallery-01/level-10-game.png) → [Después: reactor CRONIUM destruido](evidence/gallery-10-qa02/level-10-game.png). La estabilización/colapso animados siguen pendientes. Varias capturas posteriores de Chromium omiten intermitentemente glifos del botón y del HUD pese a que el DOM conserva `DISPARAR`, `3/3` y la geometría del control; la causa del repintado queda en revisión. La captura enlazada muestra una pasada legible, no certificación de ausencia del defecto.
+
 ![Nivel 2 antes, captura real](evidence/gallery-01/level-02-game.png)
 
 ![Nivel 2 después, captura real](evidence/gallery-02/level-02-game.png)
@@ -46,6 +50,10 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 ![Nivel 7 después, captura real](evidence/gallery-07-08/level-07-game.png)
 
 ![Nivel 8 después, captura real](evidence/gallery-07-08/level-08-game.png)
+
+![Nivel 9 después, captura real](evidence/gallery-09-10/level-09-game.png)
+
+![Nivel 10 después, captura real](evidence/gallery-10-qa02/level-10-game.png)
 
 ## Onda de choque real en Canvas
 

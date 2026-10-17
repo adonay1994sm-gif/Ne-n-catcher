@@ -61,6 +61,17 @@ try {
         const value=window.__VISUAL_REBIRTH_QA__.status();
         return value.state==='playing' && value.currentLevel===index && value.warpTimer===0;
       },level-1,{timeout:30000});
+      await page.locator('#fire').waitFor({state:'visible'});
+      await page.waitForFunction(() => document.querySelector('#fire b')?.textContent === 'DISPARAR' &&
+        document.querySelector('#ammo')?.textContent?.trim() === '3/3');
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(level===10 ? 900 : 120);
+      item.fireControl=await page.locator('#fire').evaluate(element => ({
+        label:element.querySelector('b')?.textContent,
+        ammo:element.querySelector('small')?.textContent,
+        buttonWidth:Math.round(element.getBoundingClientRect().width),
+        labelWidth:Math.round(element.querySelector('b').getBoundingClientRect().width)
+      }));
       if (level===1) await page.waitForFunction(() => window.__VISUAL_REBIRTH_QA__.atlas().width>0);
       let file=`level-${String(level).padStart(2,'0')}-game.png`;
       await page.screenshot({path:path.join(output,file)});

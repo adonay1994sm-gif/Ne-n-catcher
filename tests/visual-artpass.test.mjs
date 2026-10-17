@@ -99,6 +99,18 @@ test('Aether cemetery and phantom threshold are separate classic scenes', async 
   }
 });
 
+test('Titan Omega and final Chronos collapse use authored classic backgrounds', async () => {
+  const src = await text('src/game/06-world-rendering.js');
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 8 && spriteReady\(SPRITES\.titanGraveyardBackground\)/);
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 9 && spriteReady\(SPRITES\.chronosCollapseBackground\)/);
+  for (const [master, runtime] of [
+    ['art-source/visual-rebirth/levels/09/titan-omega-graveyard-master.png', 'assets/titan_omega_graveyard_background_v1.webp'],
+    ['art-source/visual-rebirth/levels/10/chronos-collapse-master.png', 'assets/chronos_collapse_background_v1.webp']
+  ]) {
+    assert.ok((await readFile(join(root, master))).byteLength > (await readFile(join(root, runtime))).byteLength);
+  }
+});
+
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');

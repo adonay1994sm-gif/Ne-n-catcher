@@ -1,0 +1,43 @@
+
+> neon-catcher@7.2.0 test:content
+> node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs
+
+✔ every declared animation frame exists in the runtime inventory (17.200079ms)
+✔ banking mirrors the authored pose; impact cannot enter the idle loop (0.854056ms)
+✔ all iOS catalog image entries exist with the required PNG dimensions (7.137209ms)
+✔ 100 levels and five nonoverlapping sectors (0.912752ms)
+✔ deterministic waves for every level across independent calls (25.236141ms)
+✔ difficulty density and speed increase monotonically (0.452616ms)
+✔ bosses at every tenth level with two distinct phases (1.034752ms)
+✔ N-7 contextual triggers and animation metadata (0.261074ms)
+✔ invalid levels and wave counts rejected (0.63253ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ content is packaged before the campaign and adds no RAF owner or Engine V1 import (4.65706ms)
+✔ 100 routes run through the real legacy update and collision pipeline (33747.774048ms)
+✔ N-7 progression unlocks its own next route without overwriting original saves (483.752586ms)
+✔ pause freezes encounters; resume and restart do not duplicate scheduled waves (90.894245ms)
+✔ resume tolerates a queued RAF timestamp older than the resume handler (65.282961ms)
+✔ N-7 labels routes and shows wave progress independently of debris warnings (76.709909ms)
+✔ legacy shots damage and destroy CH-01 while rendering distinct atlas frames (89.006258ms)
+✔ 100 authored routes have distinct names and explicit objectives and rhythms (1.051807ms)
+✔ wave generation never reads nondeterministic entropy (20.791254ms)
+✔ reproduction accepts explicit uint32 seed and rejects unknown generator version (0.99945ms)
+✔ level 37 retains its versioned reproduction fixture (0.817944ms)
+✔ 100 levels reserve a continuous corridor wider than the real ship (6.697411ms)
+✔ swept enemy movement and shooter projectiles preserve the refuge in every level (56.945356ms)
+✔ CH-01 shooter animation gates fire and a hit cancels the charged shot (0.745736ms)
+✔ director emits each entity once, replays after reset and bounds suspended deltas (1.848069ms)
+✔ 3200 level/seed combinations serialize reproducibly and preserve traversable corridors (646.086463ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36038.775233
