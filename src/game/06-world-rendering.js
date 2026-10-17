@@ -191,21 +191,34 @@
       const width = space.naturalWidth * scale, height = space.naturalHeight * scale;
       const offsetX = clamp(view.deepSpace.offsetX * W, -(width - W) / 2, (width - W) / 2);
       const offsetY = clamp((view.deepSpace.offsetY - .27) * H * .25, -(height - H) / 2, (height - H) / 2);
+      // Nebular dust is distant illumination, not another destination image.
+      // The authored route becomes genuinely sparse between Chronos and Gaia;
+      // the opaque origin and destination still travel independently below.
+      ctx.save();
+      ctx.globalAlpha = Number.isFinite(view.deepSpace.nebulaOpacity)
+        ? clamp(view.deepSpace.nebulaOpacity, 0, 1) : 1;
       ctx.drawImage(space, (W - width) / 2 + offsetX, (H - height) / 2 + offsetY, width, height);
+      ctx.restore();
     }
 
     // Tiny secondary stars may use simple marks; all important scene objects
     // below are original illustrated sprites, not substitute geometry.
     ctx.save(); ctx.globalCompositeOperation = "screen";
-    const starCount = settings.effectsQuality === "low" ? 16 : 30;
+    const starBudget = settings.effectsQuality === "low" ? 16 : 30;
+    const starDensity = Number.isFinite(view.deepSpace.starDensity)
+      ? clamp(view.deepSpace.starDensity, 0, 1) : 1;
+    const starCount = Math.round(starBudget * starDensity);
+    // Travel gives every depth layer the same continuous direction even when a
+    // new stage changes cruise speed. No wall clock or additional update loop.
+    const starTravel = clock * .5 + view.deepSpace.travel * 140;
     for (let index = 0; index < starCount; index++) {
       const depth = .24 + (index % 5) * .18;
-      const x = ((index * 149.13 - clock * depth * 1.6) % W + W) % W;
-      const y = (index * 271.73 + clock * depth * (9 + view.deepSpace.speed * 21)) % H;
-      const radius = .7 + depth * .7;
-      ctx.globalAlpha = .15 + depth * .19;
+      const x = ((index * 149.13 - starTravel * depth * 1.6) % W + W) % W;
+      const y = (index * 271.73 + starTravel * depth * 8) % H;
+      const radius = .55 + depth * .65;
+      ctx.globalAlpha = .12 + depth * .18;
       ctx.fillStyle = index % 4 ? "#cce8ff" : "#cbbdff";
-      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed));
+      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed * .6));
     }
     ctx.restore();
 
@@ -218,7 +231,11 @@
     if (view.debris.visible) {
       // These small fragments belong to the Chronos breach.  Their low contrast
       // and scale distinguish ambient parallax from collidable foreground scrap.
-      const count = settings.effectsQuality === "low" ? 3 : 6;
+      const dustBudget = settings.effectsQuality === "low" ? 3 : 6;
+      const sparseTransit = view.stageNumber >= 5 && view.stageNumber <= 7;
+      const dustDensity = Number.isFinite(view.deepSpace.dustDensity)
+        ? clamp(view.deepSpace.dustDensity, 0, 1) : sparseTransit ? .18 : 1;
+      const count = Math.round(dustBudget * dustDensity);
       for (let index = 0; index < count; index++) {
         const depth = .25 + index * .12;
         const image = index % 2 ? SPRITES.debrisPanel : SPRITES.debrisMetal;
@@ -229,6 +246,25 @@
         ctx.save(); ctx.translate(x, y); ctx.rotate(index * .9 + clock * (.035 + index * .009));
         ctx.globalAlpha = .20 + depth * .15;
         ctx.drawImage(image, -size / 2, -size / 2, size, size); ctx.restore();
+      }
+    }
+
+    // C9 is an illustrated relay on the same route, not a new fullscreen plate.
+    // It approaches and recedes with model coordinates; stopping the route also
+    // stops the mast's drift. A service overlay may inspect/install the part.
+    const relay = view.relay || view.service;
+    if (relay?.visible && spriteReady(SPRITES.satellite)) {
+      const size = Math.max(22, W * relay.scale);
+      ctx.save(); ctx.translate(W * relay.x, H * relay.y);
+      ctx.rotate(-.08 + Math.sin(clock * .06) * .035);
+      if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
+      ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      if (relay.active) {
+        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 13px sans-serif";
+        ctx.fillStyle = "#bcefff";
+        ctx.fillText("SERVICIO C9", W * relay.x, H * relay.y + size * .62);
+        ctx.restore();
       }
     }
 

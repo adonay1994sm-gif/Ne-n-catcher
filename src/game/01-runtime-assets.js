@@ -97,6 +97,12 @@
   let classicPatrolSequence = 0;
   let classicCometSequence = 0;
   let classicCometWarning = -1;
+  let classicVoyageRecord = null;
+  let classicVoyageWritable = true;
+  let classicVoyageRequestedStage = null;
+  let classicVoyageSpawnTimer = 0;
+  let classicVoyageHazardTimer = 0;
+  let classicVoyageStageId = "";
   let classicThreatSequence = 0;
   let flightDockReturn = 'menu';
   let flightHudSignature = '';

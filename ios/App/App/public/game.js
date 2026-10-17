@@ -300,6 +300,12 @@
   let classicPatrolSequence = 0;
   let classicCometSequence = 0;
   let classicCometWarning = -1;
+  let classicVoyageRecord = null;
+  let classicVoyageWritable = true;
+  let classicVoyageRequestedStage = null;
+  let classicVoyageSpawnTimer = 0;
+  let classicVoyageHazardTimer = 0;
+  let classicVoyageStageId = "";
   let classicThreatSequence = 0;
   let flightDockReturn = 'menu';
   let flightHudSignature = '';
@@ -777,6 +783,7 @@
 
   function setupClassicFlight() {
     if (!isUnifiedClassic()) return;
+    loadClassicVoyage();
     const raw = storage.getRaw(CLASSIC_EQUIPMENT_KEY);
     if (raw !== null) {
       try {
@@ -826,12 +833,94 @@
         toast("Lanza ×3 calibrada · perfora dos objetivos");updateClassicDock();
       }
     };
-    $("flightDockContinue").onclick = () => { if (flightDockReturn === "complete") prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete"); else goHome(); };
+    $("flightDockContinue").onclick = () => {
+      if (flightDockReturn === "voyage") { resumeClassicVoyageService(); return; }
+      if (flightDockReturn === "complete") prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete"); else goHome();
+    };
     $("flightDockHome").onclick = goHome;
     const workshop = document.createElement("button"); workshop.id="openFlightDock"; workshop.className="secondary hidden";
     workshop.type="button"; workshop.textContent="TALLER C9"; workshop.onclick=()=>openClassicDock("menu");
     ui.menu.querySelector(".menu-actions")?.append(workshop);
+    const stages = document.createElement("section");
+    stages.id="chronosStages"; stages.className="chronos-stages hidden";
+    stages.innerHTML='<small>CHRONOS → GAIA · DIEZ ETAPAS</small><div id="chronosStageGrid" class="chronos-stage-grid"></div><p id="chronosStagesNote"></p>';
+    $("launch").before(stages);
     syncClassicFlightHud();
+  }
+
+  function loadClassicVoyage() {
+    const key=NeonCampaign.CHRONOS_VOYAGE_KEY,raw=storage.getRaw(key);
+    if(raw===null)return;
+    try {
+      const value=JSON.parse(raw),checkpoint=NeonCampaign.normalizeChronosVoyageCheckpoint(value?.checkpoint,{goal:LEVELS[0].goal});
+      if(value?.version!==2 || !checkpoint || !Number.isInteger(value.unlockedStage) || value.unlockedStage<checkpoint.stageNumber || value.unlockedStage>10 ||
+        typeof value.completed!=="boolean" || (value.completed && checkpoint.stageNumber!==10) ||
+        !Number.isFinite(value.entry?.hull) || value.entry.hull<=0 || value.entry.hull>100 ||
+        !Number.isInteger(value.entry?.score) || value.entry.score<0 ||
+        !Number.isFinite(value.entry?.maxCombo) || value.entry.maxCombo<1 || value.entry.maxCombo>12 ||
+        value.entry?.collected!==checkpoint.collected)throw new Error("Invalid voyage save");
+      classicVoyageRecord={...value,checkpoint};
+    } catch {
+      const backup=key+":invalid-backups",previous=storage.getJSON(backup,[]);
+      const copies=Array.isArray(previous)?previous.filter(value=>typeof value==="string"):[];
+      classicVoyageWritable=copies.includes(raw)||storage.setJSON(backup,[...copies,raw]);
+    }
+  }
+
+  function saveClassicVoyageCheckpoint(checkpoint,completed=false) {
+    if(!checkpoint)return false;
+    const previous=classicVoyageRecord;
+    const entry=completed && previous ? previous.entry : {
+      hull:Math.max(1,Math.min(100,hull)),score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected};
+    const record={version:2,checkpoint,entry,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
+    // New route data has its own key. Old classic/N-7 saves are never inferred,
+    // renumbered or replaced. Invalid raw data is backed up before any write.
+    const saved=classicVoyageWritable&&storage.setJSON(NeonCampaign.CHRONOS_VOYAGE_KEY,record);
+    classicVoyageRecord=record;
+    if(!saved)toast("No se pudo guardar esta etapa. El guardado anterior sigue conservado.");
+    return saved;
+  }
+
+  function buildChronosStageGrid() {
+    const section=$("chronosStages");if(!section)return;
+    section.classList.toggle("hidden",!isUnifiedClassic()||pendingLevel!==0);
+    if(!isUnifiedClassic()||pendingLevel!==0)return;
+    const selected=classicVoyageRequestedStage||(!classicVoyageRecord?.completed?classicVoyageRecord?.checkpoint.stageNumber:1)||1;
+    const unlocked=classicVoyageRecord?.unlockedStage||1,grid=$("chronosStageGrid");grid.innerHTML="";
+    for(const stage of NeonCampaign.CHRONOS_VOYAGE_STAGES){
+      const number=stage.number||stage.stageNumber||Number(stage.id.split(".")[1]);
+      const button=document.createElement("button");button.type="button";button.dataset.voyageStage=String(number);
+      button.disabled=number>unlocked;button.classList.toggle("selected",number===selected);
+      button.setAttribute("aria-pressed",String(number===selected));
+      button.textContent=`1.${number} · ${stage.name}`;
+      button.onclick=()=>{classicVoyageRequestedStage=number;buildChronosStageGrid();};
+      grid.append(button);
+    }
+    $("chronosStagesNote").textContent=`Etapa 1.${selected} · ${unlocked}/10 disponibles. Se reanuda desde la entrada de cada etapa; pausa y taller detienen el viaje.`;
+    const stage=NeonCampaign.CHRONOS_VOYAGE_STAGES[selected-1];
+    ui.briefingSector.textContent=`ETAPA 1.${selected} · CHRONOS → GAIA`;
+    ui.briefingName.textContent=stage.name;
+    ui.briefingZone.textContent=`${stage.origin} → ${stage.destination}`;
+    ui.briefingGoal.textContent=stage.goal===18&&selected===6?"Parada en C9":`${stage.goal}/36 CRONIUM`;
+    ui.briefingSupply.textContent="Rastro recuperable";
+    ui.briefingMission.textContent=stage.objective+". La ruta continúa desde el último punto de etapa guardado.";
+  }
+
+  function beginClassicVoyageService() {
+    if(state!=="playing"||classicFlightView?.waitingFor!=="service")return;
+    if(typeof resetGameInput==="function")resetGameInput();
+    items=[];classicWeapons.projectiles.length=0;
+    saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint());
+    setState("paused");flightDockReturn="voyage";hull=100;hud();
+    updateClassicDock();overlay(ui.flightDock);
+  }
+
+  function resumeClassicVoyageService() {
+    if(flightDockReturn!=="voyage"||state!=="paused"||!classicFlight)return;
+    if(typeof resetGameInput==="function")resetGameInput();
+    setState("playing");overlay();last=performance.now();
+    classicFlight.resolveService(classicFlightEvent);classicFlightView=classicFlight.snapshot();
+    syncClassicFlightHud();hud();resumeAudio();
   }
 
   function persistClassicEquipment(next) {
@@ -860,14 +949,14 @@
     ui.flightInstallTwin.textContent=installed ? "EMISOR GEMELO INSTALADO" : "INSTALAR EMISOR GEMELO";
     ui.flightCalibrateLance.disabled=!installed || classicEquipment.unlocked.includes("lance");
     ui.flightCalibrateLance.textContent=classicEquipment.unlocked.includes("lance") ? "LANZA ×3 CALIBRADA" : "CALIBRAR LANZA ×3";
-    $("flightDockContinue").textContent=flightDockReturn==="complete" ? "CONTINUAR HACIA GAIA" : "VOLVER AL VIAJE";
+    $("flightDockContinue").textContent=flightDockReturn==="voyage" ? "SALIR DE C9 · ETAPA 1.7" : flightDockReturn==="complete" ? "CONTINUAR HACIA GAIA" : "VOLVER AL VIAJE";
   }
 
   function syncClassicFlightHud() {
     if (!isUnifiedClassic() || !ui.flightRoute) return;
     $("openFlightDock")?.classList.toggle("hidden",!classicEquipment.recoveredTwin);
     const view=classicFlightView;
-    const stage=atlasBoss ? "ACCESO ATLAS" : view?.stageName || level().name;
+    const stage=atlasBoss ? "ACCESO ATLAS" : view?.stageNumber ? `${view.stageId} · ${view.stageName}` : view?.stageName || level().name;
     // The primary HUD already shows the quota. This reserved, transparent slot
     // is used only for brief contextual comms; it never repeats the counters.
     const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : "";
@@ -877,10 +966,10 @@
     ui.flightStage.textContent=stage;
     if(ui.flightObjective.textContent!==objective)ui.flightObjective.textContent=objective;
     ui.flightObjective.dataset.active=String(Boolean(flightTransmission));
-    ui.flightDestination.textContent=currentLevel===0 ? "CHRONOS → ACCESO DE GAIA" : `${level().world} · RASTRO ${currentLevel+1}/10`;
+    ui.flightDestination.textContent=currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
-    ui.flightDistance.setAttribute("aria-valuetext",view ? `${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
+    ui.flightDistance.setAttribute("aria-valuetext",view ? `Etapa ${view.stageNumber||1} de 10. ${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
     const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
     ui.flightWeaponName.textContent=weapon.label.toUpperCase();
     ui.flightWeaponDamage.textContent=`DAÑO ×${weapon.damageMultiplier}`;
@@ -896,6 +985,22 @@
   }
 
   function classicFlightEvent(event) {
+    if(event.type==="checkpoint") {
+      classicFlightView=classicFlight.snapshot();
+      // Initial assets can finish loading after the player has already fired.
+      // Entry one must keep those real shots; later checkpoints clear leftovers
+      // from the previous encounter before the next stage begins.
+      if(classicFlightView.stageNumber>1){items=[];if(classicWeapons)classicWeapons.projectiles.length=0;}
+      classicVoyageStageId=classicFlightView.stageId;
+      classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicPatrolTimer=8;classicCometSequence=0;
+      saveClassicVoyageCheckpoint(event.checkpoint);
+    }
+    if(event.type==="stage-start") {
+      classicFlightView=classicFlight.snapshot();
+      showStoryTransmission(`TRAYECTO ${classicFlightView.stageId}`,classicFlightView.stageObjective,4.5);
+      hud();
+    }
+    if(event.type==="service") { classicFlightView=classicFlight.snapshot();beginClassicVoyageService(); }
     if(event.type==="attack") { showStoryTransmission("CONTROL CHRONOS","Nave sin identificación. Está cargando sus armas contra el reactor.",5); tone(180,.25,"sawtooth",.045); }
     if(event.type==="rupture") {
       // The authored reactor/wave layers own this blue temporal rupture. A
@@ -915,6 +1020,10 @@
   function advanceClassicFlight(dt) {
     if(!isUnifiedClassic())return;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
+    if(classicFlightView?.stageNumber) {
+      if(state==="playing" && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
+      syncClassicFlightHud();return;
+    }
     if(classicFlightView?.routeProgress>=.30 && classicFlightView.routeProgress<.82) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
@@ -937,6 +1046,48 @@
       }
     }
     syncClassicFlightHud();
+  }
+
+  function advanceClassicVoyageEncounters(dt) {
+    const view=classicFlightView,n=view.stageNumber;
+    if(view.elapsed<9 || view.canFinish)return;
+    classicVoyageSpawnTimer-=dt;
+    // Recoverable signals form a short trail rather than an endless rain.
+    // Missed fragments are reissued while this stage's objective is incomplete.
+    const live=items.filter(item=>item.type==="energy").length;
+    if(collected+live<view.stageGoal && live<2 && classicVoyageSpawnTimer<=0) {
+      const x=W*(.30+.40*(.5+.5*Math.sin(view.stageElapsed*.31+n)));
+      items.push({type:"energy",x,baseX:x,y:-45,r:22,s:175+n*4,rot:0,rs:.2,p:0,phase:n,amp:12,special:"",alpha:1});
+      energySpawned++;classicVoyageSpawnTimer=2.8;
+    }
+    // The empty interstellar legs deliberately leave room to look and pilot.
+    // Only the outer approach has regular patrols; none can fill the corridor.
+    if(n>=7) {
+      classicPatrolTimer-=dt;
+      if(classicPatrolTimer<=0) {
+        if(items.filter(item=>item.flightPatrol).length<(n===10?2:1))spawnClassicFlightPatrol();
+        classicPatrolTimer=23-n;
+      }
+    }
+    if([2,4,8].includes(n)) {
+      classicVoyageHazardTimer-=dt;
+      if(classicVoyageHazardTimer<=0 && items.filter(isThreat).length<2) {
+        const wreck=createThreat("debris",level());wreck.x=wreck.baseX=W*(n%2?.23:.77);wreck.y=-95;wreck.s=110+n*4;
+        items.push(wreck);classicVoyageHazardTimer=20;
+      }
+    }
+    if([5,9].includes(n)) {
+      if(view.stageElapsed>=7 && classicCometSequence===0){classicCometSequence=1;showStoryTransmission("N-7","Cometa cruzando la ruta. Observa su estela antes de atravesar.",3);}
+      if(view.stageElapsed>=10 && classicCometSequence===1){
+        classicCometSequence=2;const fromLeft=n===5,vx=fromLeft?62:-62;
+        items.push({id:`voyage-comet:${n}`,type:"meteor",flightComet:true,x:fromLeft?-45:W+45,y:H*.16,
+          baseX:fromLeft?-45:W+45,vx,vy:82,r:18,s:82,damage:14,hp:2,maxHp:2,special:"comet",spriteKey:"comet",rot:Math.atan2(82,vx),rs:0,p:0,phase:n,amp:0,alpha:1,life:16});
+      }
+    }
+    if([4,8].includes(n) && view.stageElapsed>=15 && classicCometWarning!==n) {
+      classicCometWarning=n;const x=W*.45;
+      items.push({type:"shield",x,baseX:x,y:-45,r:30,s:150,rot:0,rs:.15,p:0,phase:0,amp:18,special:"",alpha:1});
+    }
   }
 
   function spawnClassicFlightPatrol() {
@@ -1418,7 +1569,7 @@
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     const percent = Math.round((completed / LEVELS.length) * 100);
     const finished = completed === LEVELS.length;
-    const target = finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
+    const target = isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed ? 0 : finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
 
     ui.best.textContent = bestScore();
     ui.unlockedText.textContent = `${unlocked}/${LEVELS.length}`;
@@ -1427,6 +1578,7 @@
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
     ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · ETAPA 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -1439,7 +1591,7 @@
     ui.score.textContent = Math.round(displayedScore);
     ui.goal.textContent = `${collected}/${level().goal}`;
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
-    ui.hudLevel.textContent = currentLevel + 1;
+    ui.hudLevel.textContent = classicFlightView?.stageNumber ? classicFlightView.stageId : currentLevel + 1;
     ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : isUnifiedClassic() ? "NIVEL" : "SECTOR";
     if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
@@ -1562,6 +1714,7 @@
   }
 
   function prepareLevel(index, returnTo = "menu") {
+    classicVoyageRequestedStage=null;
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
@@ -1574,6 +1727,7 @@
     ui.briefingMission.textContent = lv.mission;
     ui.briefingVisual.dataset.scene = lv.scene;
     ui.briefingPanel.style.setProperty("--brief-accent", lv.accent);
+    buildChronosStageGrid();
     overlay(ui.briefing);
   }
 
@@ -1660,10 +1814,19 @@
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
-    classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosFlight({goal:LEVELS[0].goal,minDuration:90}) : null;
+    let voyageEntry=null,voyageCheckpoint=null;
+    if(isUnifiedClassic()&&currentLevel===0){
+      const requested=classicVoyageRequestedStage;
+      const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
+      if(resume){voyageCheckpoint=classicVoyageRecord.checkpoint;voyageEntry=classicVoyageRecord.entry;}
+      else if(requested){voyageCheckpoint=NeonCampaign.createChronosVoyageCheckpoint(requested,{goal:LEVELS[0].goal});}
+    }
+    classicVoyageRequestedStage=null;
+    classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
     classicPatrolTimer=0;classicPatrolSequence=0;classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
       ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
@@ -1692,6 +1855,10 @@
     maxCombo = 1;
     comboTimer = 0;
     collected = 0;
+    if(classicFlight){
+      collected=classicFlightView.collected;
+      if(voyageEntry){hull=voyageEntry.hull;score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
+    }
     ammo = INITIAL_AMMO;
     manualShotCooldown = 0;
     elapsed = 0;
@@ -1728,6 +1895,7 @@
     resetPowers();
 
     energySpawned = 0;
+    if(classicFlight)energySpawned=collected;
     energyBudget = level().goal + Math.ceil(level().goal * 0.25);
     powerSpawned = 0;
     powerBudget = 2 + Math.floor(currentLevel / 3);
@@ -1754,6 +1922,7 @@
       if (opening) showStoryTransmission("N-7", opening);
     }
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
+    if(classicFlightView?.waitingFor==="service")beginClassicVoyageService();
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
     window.AnalyticsManager?.track("level_start", { level: currentLevel + 1, continued: false });
   }
@@ -1770,6 +1939,7 @@
 
   function resumeGame() {
     if (state !== "paused") return;
+    if(classicFlightView?.waitingFor==="service"){flightDockReturn="voyage";updateClassicDock();overlay(ui.flightDock);return;}
     if (JOURNEY_DEMO && journey?.snapshot().phase === "station") { showJourneyStation(); return; }
     journey?.setPaused(false);
     setState("playing");
@@ -1862,6 +2032,7 @@
     }
 
     progressSaved = saveScore() && progressSaved;
+    if(classicFlightView?.canFinish)progressSaved=saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint(),true)&&progressSaved;
     registerRun();
     ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
@@ -2625,6 +2796,9 @@
 
   function checkSupplyFailure() {
     if (JOURNEY_DEMO) return;
+    // The staged voyage reissues missed signals locally; the old finite supply
+    // failure remains unchanged in the other nine territories and N-7.
+    if(classicFlightView?.stageNumber)return;
     if (supplyFailureScheduled || energySpawned < energyBudget || collected >= level().goal) return;
     const energyRemaining = items.some((item) => item.type === "energy");
     if (!energyRemaining) {
@@ -2893,6 +3067,7 @@
     }
 
     if(isUnifiedClassic())advanceClassicFlight(dt);
+    if(state!=="playing"){updateEffects(dt);return;}
     if (JOURNEY_DEMO && journey) {
       journey.advance(dt, journeyEvent);
       syncJourneyHud();
@@ -2915,7 +3090,7 @@
         updateEncounterHud();
       }
     } else {
-      if (!atlasBoss && (!classicFlightView || (classicFlightView.recoveryActive && collected<lv.goal))) {
+      if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -3255,21 +3430,34 @@
       const width = space.naturalWidth * scale, height = space.naturalHeight * scale;
       const offsetX = clamp(view.deepSpace.offsetX * W, -(width - W) / 2, (width - W) / 2);
       const offsetY = clamp((view.deepSpace.offsetY - .27) * H * .25, -(height - H) / 2, (height - H) / 2);
+      // Nebular dust is distant illumination, not another destination image.
+      // The authored route becomes genuinely sparse between Chronos and Gaia;
+      // the opaque origin and destination still travel independently below.
+      ctx.save();
+      ctx.globalAlpha = Number.isFinite(view.deepSpace.nebulaOpacity)
+        ? clamp(view.deepSpace.nebulaOpacity, 0, 1) : 1;
       ctx.drawImage(space, (W - width) / 2 + offsetX, (H - height) / 2 + offsetY, width, height);
+      ctx.restore();
     }
 
     // Tiny secondary stars may use simple marks; all important scene objects
     // below are original illustrated sprites, not substitute geometry.
     ctx.save(); ctx.globalCompositeOperation = "screen";
-    const starCount = settings.effectsQuality === "low" ? 16 : 30;
+    const starBudget = settings.effectsQuality === "low" ? 16 : 30;
+    const starDensity = Number.isFinite(view.deepSpace.starDensity)
+      ? clamp(view.deepSpace.starDensity, 0, 1) : 1;
+    const starCount = Math.round(starBudget * starDensity);
+    // Travel gives every depth layer the same continuous direction even when a
+    // new stage changes cruise speed. No wall clock or additional update loop.
+    const starTravel = clock * .5 + view.deepSpace.travel * 140;
     for (let index = 0; index < starCount; index++) {
       const depth = .24 + (index % 5) * .18;
-      const x = ((index * 149.13 - clock * depth * 1.6) % W + W) % W;
-      const y = (index * 271.73 + clock * depth * (9 + view.deepSpace.speed * 21)) % H;
-      const radius = .7 + depth * .7;
-      ctx.globalAlpha = .15 + depth * .19;
+      const x = ((index * 149.13 - starTravel * depth * 1.6) % W + W) % W;
+      const y = (index * 271.73 + starTravel * depth * 8) % H;
+      const radius = .55 + depth * .65;
+      ctx.globalAlpha = .12 + depth * .18;
       ctx.fillStyle = index % 4 ? "#cce8ff" : "#cbbdff";
-      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed));
+      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed * .6));
     }
     ctx.restore();
 
@@ -3282,7 +3470,11 @@
     if (view.debris.visible) {
       // These small fragments belong to the Chronos breach.  Their low contrast
       // and scale distinguish ambient parallax from collidable foreground scrap.
-      const count = settings.effectsQuality === "low" ? 3 : 6;
+      const dustBudget = settings.effectsQuality === "low" ? 3 : 6;
+      const sparseTransit = view.stageNumber >= 5 && view.stageNumber <= 7;
+      const dustDensity = Number.isFinite(view.deepSpace.dustDensity)
+        ? clamp(view.deepSpace.dustDensity, 0, 1) : sparseTransit ? .18 : 1;
+      const count = Math.round(dustBudget * dustDensity);
       for (let index = 0; index < count; index++) {
         const depth = .25 + index * .12;
         const image = index % 2 ? SPRITES.debrisPanel : SPRITES.debrisMetal;
@@ -3293,6 +3485,25 @@
         ctx.save(); ctx.translate(x, y); ctx.rotate(index * .9 + clock * (.035 + index * .009));
         ctx.globalAlpha = .20 + depth * .15;
         ctx.drawImage(image, -size / 2, -size / 2, size, size); ctx.restore();
+      }
+    }
+
+    // C9 is an illustrated relay on the same route, not a new fullscreen plate.
+    // It approaches and recedes with model coordinates; stopping the route also
+    // stops the mast's drift. A service overlay may inspect/install the part.
+    const relay = view.relay || view.service;
+    if (relay?.visible && spriteReady(SPRITES.satellite)) {
+      const size = Math.max(22, W * relay.scale);
+      ctx.save(); ctx.translate(W * relay.x, H * relay.y);
+      ctx.rotate(-.08 + Math.sin(clock * .06) * .035);
+      if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
+      ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      if (relay.active) {
+        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 13px sans-serif";
+        ctx.fillStyle = "#bcefff";
+        ctx.fillText("SERVICIO C9", W * relay.x, H * relay.y + size * .62);
+        ctx.restore();
       }
     }
 
@@ -4943,6 +5154,7 @@
 
   $("play").onclick = () => {
     if (JOURNEY_DEMO) { startJourney(); return; }
+    if(isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -4975,8 +5187,7 @@
   $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
-    if (isUnifiedClassic() && currentLevel === 0) openClassicDock("complete");
-    else prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
+    prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
   };
 
   ui.musicVolume.oninput = (event) => {

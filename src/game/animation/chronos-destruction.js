@@ -14,8 +14,11 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export function getChronosDestructionPose(view) {
   const elapsed = Number.isFinite(view?.elapsed) && view.elapsed >= 0 ? view.elapsed : 0;
-  const minDuration = Number.isFinite(view?.minDuration) && view.minDuration > 0
-    ? view.minDuration : DEFAULT_MIN_DURATION;
+  // The expanded voyage retains the authored nine-second incident. Its route
+  // duration is independent from this presentation timing; neither owns a RAF.
+  const duration = view?.cinematicDuration ?? view?.minDuration;
+  const minDuration = Number.isFinite(duration) && duration > 0
+    ? duration : DEFAULT_MIN_DURATION;
   const ruptureAt = minDuration * RUPTURE_POSITION;
   const beforeRupture = elapsed < ruptureAt;
   const age = Math.max(0, elapsed - ruptureAt);

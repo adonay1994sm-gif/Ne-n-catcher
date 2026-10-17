@@ -252,6 +252,7 @@
     }
 
     if(isUnifiedClassic())advanceClassicFlight(dt);
+    if(state!=="playing"){updateEffects(dt);return;}
     if (JOURNEY_DEMO && journey) {
       journey.advance(dt, journeyEvent);
       syncJourneyHud();
@@ -274,7 +275,7 @@
         updateEncounterHud();
       }
     } else {
-      if (!atlasBoss && (!classicFlightView || (classicFlightView.recoveryActive && collected<lv.goal))) {
+      if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();

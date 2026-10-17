@@ -1,3 +1,9 @@
+## Aclaración vigente — trayecto Chronos–Gaia, 17/10/2026
+
+El propietario solicita implementar diez niveles del viaje entre el incidente del primer nivel y Gaia. Se integran como diez etapas conectadas (1.1–1.10) dentro del primer territorio clásico: incidente, restos, rescate, salida orbital, vacío, C9, prueba del equipo, Gaia distante, señales Atlas y llegada. Los nueve territorios siguientes se conservan. Esta decisión de trabajo no declara terminadas cien etapas ni altera el Motor V1. El vacío se representa con separación de hitos y ventanas de tránsito tranquilo, sin convertir el recorrido en una presentación de imágenes. Los contratos de CI corregidos siguen vigentes.
+
+---
+
 > Decisión posterior del propietario, 17/10/2026: la nave modular actual es la identidad de la versión. Se retira la nave ilustrada anterior del uso normal, conservando respaldo. Prioridad inmediata: pilotar y disparar con dos dedos, y mejorar la representación del cometa. Esta decisión reemplaza la elección visual legacy/modular; no declara completadas cien etapas, pruebas físicas ni autoriza publicación comercial.
 
 > **Aclaración del propietario, 17/10/2026:** las siete nuevas referencias de destrucción de Chronos corresponden al acontecimiento inicial del **primero de diez niveles clásicos**. No constituyen siete etapas ni una orden para comprimir el juego. Se desarrolla esa secuencia conservando la campaña y su viaje. Incremento integrado y límites en [CHRONOS_DESTRUCTION_2026-10-17.md](production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Las decisiones históricas siguientes se conservan; no interpretar un estado de arte IN_REVIEW como aceptación del propietario.

@@ -9,6 +9,7 @@ const [html, core, content, game] = await Promise.all(
     .map(file => readFile(new URL(file, repository), 'utf8'))
 );
 const EQUIPMENT_KEY = 'neonCatcher.flightEquipment.v1';
+const VOYAGE_KEY = 'neonCatcher.chronosVoyage.v2';
 const DESTRUCTION_PATH = 'assets/chronos_destruction_atlas_v1.webp';
 const FLIGHT_KIT_PATH = 'assets/chronos_flight_atlas_v1.webp';
 const plain = value => JSON.parse(JSON.stringify(value));
@@ -22,7 +23,7 @@ const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expec
  * gameplay, a visual acceptance test or a physical iPhone certification.
  */
 function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false,
-  destructionAsset = 'loaded', rects = {}, unlocked = 2} = {}) {
+  destructionAsset = 'loaded', rects = {}, unlocked = 2, savedVoyage} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   const {window} = dom; t.after(() => window.close());
@@ -92,6 +93,8 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
   if (saved !== undefined) window.localStorage.setItem(EQUIPMENT_KEY, saved);
+  if (savedVoyage !== undefined) window.localStorage.setItem(VOYAGE_KEY,
+    typeof savedVoyage === 'string' ? savedVoyage : JSON.stringify(savedVoyage));
   if (backups !== undefined) window.localStorage.setItem(EQUIPMENT_KEY + ':invalid-backups', JSON.stringify(backups));
   if (failBackup) {
     const set = window.Storage.prototype.setItem;
@@ -111,7 +114,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     const originalAddExplosionForTest=addExplosion;
     addExplosion=function(...args){explosionCallsForTest.push([...args]);return originalAddExplosionForTest(...args);};
     window.__UNIFIED_FLIGHT_TEST__={
-      update,render,background,startLevel,pauseGame,resumeGame,goHome,completeLevel,fireManualShot,
+      update,render,background,startLevel,prepareLevel,pauseGame,resumeGame,goHome,completeLevel,fireManualShot,
       finishGame,resumeReward,
       refreshClassicFlightBounds,showStoryTransmission,hideStoryTransmission,syncClassicFlightHud,
       prepare(index=0){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];},
@@ -151,6 +154,29 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     }
     return snapshot();
   }
+  function recoverStageQuota() {
+    const quota = snapshot().route.stageGoal;
+    while (snapshot().collected < quota) api.collectEnergy();
+  }
+  function advanceStage({recover = true, service = false} = {}) {
+    const before = snapshot();
+    if (recover) recoverStageQuota();
+    const remaining = before.route.stageDuration - before.route.stageElapsed;
+    advance(remaining + .04);
+    if (snapshot().route.waitingFor === 'service' && service) {
+      window.document.getElementById('flightDockContinue').click();
+    }
+    return snapshot();
+  }
+  function reachStage(number) {
+    for (let boundary = 0; snapshot().route.stageNumber < number && boundary < 10; boundary++) {
+      const previous = snapshot().route.stageNumber;
+      advanceStage({service: true});
+      assert.ok(snapshot().route.stageNumber > previous, 'A satisfied stage boundary must advance');
+    }
+    assert.equal(snapshot().route.stageNumber, number);
+    return snapshot();
+  }
   function pointer(type, pointerId, clientX, clientY) {
     canvas.dispatchEvent(new window.PointerEvent(type, {pointerId, clientX, clientY,
       pointerType: 'touch', buttons: /up|cancel/.test(type) ? 0 : 1,
@@ -161,7 +187,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     Object.defineProperties(event, {touches: {value: all}, changedTouches: {value: changed}});
     canvas.dispatchEvent(event);
   }
-  return {window, api, snapshot, advance, pointer, touches, pending, drawCalls,
+  return {window, api, snapshot, advance, advanceStage, reachStage, recoverStageQuota, pointer, touches, pending, drawCalls,
     setRect: (id, rect) => layoutRects.set(id, rect),
     rectReads: id => rectReadCounts.get(id) || 0,
     clearDrawCalls: () => { drawCalls.length = 0; },
@@ -172,7 +198,8 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     },
     node: id => window.document.getElementById(id),
     stored: key => window.localStorage.getItem(key),
-    equipment: () => JSON.parse(window.localStorage.getItem(EQUIPMENT_KEY))};
+    equipment: () => JSON.parse(window.localStorage.getItem(EQUIPMENT_KEY)),
+    voyage: () => JSON.parse(window.localStorage.getItem(VOYAGE_KEY))};
 }
 
 test('three classic charges recharge from played time and freeze completely while paused', t => {
@@ -197,7 +224,9 @@ test('three classic charges recharge from played time and freeze completely whil
 });
 
 test('a classic projectile travels before impact and applies damage and destruction reward only once', t => {
-  const h = harness(t); h.api.prepare(); h.api.seedTarget();
+  const h = harness(t); h.api.prepare();
+  h.api.frame(1 / 60, true); // Enter the real first-stage lifecycle before inserting a combat fixture.
+  h.api.seedTarget();
   assert.equal(h.api.fireManualShot(), true);
   const fired = h.snapshot();
   assert.equal(fired.targets[0].hp, 2, 'A trigger must not instantly damage a distant target');
@@ -259,21 +288,44 @@ test('the Safari touch fallback tracks the first finger and ignores a secondary 
   h.touches('touchcancel', [], [moved]); assert.equal(h.snapshot().input.active, false);
 });
 
-test('the first mission requires both recovered CRONIUM and a completed visible route', t => {
-  const h = harness(t); h.api.prepare();
+test('the first mission requires recovered CRONIUM, all ten visible stages and the service stop before Gaia unlocks', t => {
+  const h = harness(t, {unlocked: 1}); h.api.prepare();
   for (let fragment = 0; fragment < 36; fragment++) h.api.collectEnergy();
   let q = h.snapshot();
   assert.equal(q.collected, 36); assert.equal(q.state, 'playing');
   assert.equal(q.route.canFinish, false); assert.equal(q.route.routeProgress, 0);
+  assert.equal(q.route.stageNumber, 1); assert.equal(q.route.minDuration, 360);
   assert.deepEqual(JSON.parse(h.stored('neon-stars-v2')), {});
   h.api.completeLevel(); assert.equal(h.snapshot().state, 'playing');
-  const minimum = q.route.minDuration;
-  h.advance(minimum - .1); q = h.snapshot();
-  assert.equal(q.state, 'playing'); assert.equal(q.route.canFinish, false);
-  assert.ok(q.route.routeProgress > .9 && q.route.routeProgress < 1);
-  h.advance(.15); q = h.snapshot();
+  for (let number = 1; number <= 10; number++) {
+    q = h.snapshot(); assert.equal(q.route.stageNumber, number);
+    h.advance(q.route.stageDuration - q.route.stageElapsed - .05);
+    q = h.snapshot();
+    assert.equal(q.state, 'playing'); assert.equal(q.route.canFinish, false);
+    assert.equal(q.unlocked, 1, 'No intermediate stage may unlock the next classic territory');
+    assert.deepEqual(JSON.parse(h.stored('neon-stars-v2')), {});
+    h.api.completeLevel(); assert.equal(h.snapshot().state, 'playing');
+    if (number === 10) assert.ok(q.route.routeProgress > .9 && q.route.routeProgress < 1);
+    h.advance(.06); q = h.snapshot();
+    if (number === 6) {
+      assert.equal(q.state, 'paused'); assert.equal(q.route.waitingFor, 'service');
+      assert.ok(h.node('flightDock').classList.contains('show'));
+      assert.equal(q.route.canFinish, false);
+      h.node('flightDockContinue').click();
+      assert.equal(h.snapshot().state, 'playing');
+      assert.equal(h.snapshot().route.stageNumber, 7);
+    } else if (number < 10) {
+      assert.equal(q.state, 'playing'); assert.equal(q.route.stageNumber, number + 1);
+      assert.equal(q.route.canFinish, false);
+    }
+  }
+  q = h.snapshot();
   assert.equal(q.state, 'complete'); assert.equal(q.route.canFinish, true);
   assert.equal(q.route.routeProgress, 1); assert.ok(JSON.parse(h.stored('neon-stars-v2'))['1'] >= 1);
+  assert.equal(q.unlocked, 2); assert.equal(h.voyage().completed, true);
+  assert.equal(q.events.filter(event => event.type === 'stage-start').length, 10);
+  assert.equal(q.events.filter(event => event.type === 'stage-complete').length, 10);
+  assert.equal(q.events.filter(event => event.type === 'arrival').length, 1);
   assert.equal(h.pending.size, 1);
 });
 
@@ -355,8 +407,8 @@ test('a pending destruction atlas holds the flight clock and an actual load erro
   assert.deepEqual(h.snapshot().destructionAsset, {ready: false, failed: true});
   h.advance(.2);
   assert.ok(h.snapshot().route.elapsed > 0, 'An explicit download failure must not block the playable fallback');
-  assert.equal(h.node('flightStage').textContent, h.snapshot().route.stageName,
-    'A settled download must clear the transient loading label immediately');
+  assert.equal(h.node('flightStage').textContent, `${h.snapshot().route.stageId} · ${h.snapshot().route.stageName}`,
+    'A settled download must clear the transient loading label immediately and restore the current stage');
   h.clearDrawCalls(); h.api.background(0);
   let fallbackCalls = h.drawCalls.filter(call => call.path === FLIGHT_KIT_PATH);
   assert.ok(fallbackCalls.some(call => call.args[0] === 0 && call.args[1] === 0),
@@ -425,6 +477,7 @@ test('invalid equipment is backed up once before replacement and a failed backup
   assert.equal(blocked.snapshot().equipmentWritable, false);
   assert.equal(blocked.snapshot().equipment.recoveredTwin, false);
   assert.equal(blocked.stored(EQUIPMENT_KEY), invalid, 'Do not overwrite unpreserved data when storage fails');
+  blocked.api.frame(1 / 60, true); // Finish stage-entry cleanup before inserting the persistence fixture.
   blocked.api.seedModule(); blocked.api.frame(1 / 60, false);
   assert.equal(blocked.snapshot().targets.filter(item => item.type === 'flightModule').length, 1,
     'The collision loop must retain a recoverable piece until its persistence succeeds');
@@ -544,7 +597,7 @@ test('the route bar advances between collections without a stage, ammunition or 
   const h = harness(t); h.api.prepare(); h.advance(.1);
   const before = h.snapshot(), distance = h.node('flightDistance').value;
   const stage = h.node('flightStage').textContent;
-  h.advance(.11); const after = h.snapshot();
+  h.advance(.41); const after = h.snapshot(); // Cross the 0.001 route/HUD quantum on the new 360-second flight.
   assert.equal(after.collected, before.collected);
   assert.equal(after.weapons.charges, before.weapons.charges);
   assert.equal(after.weapons.recharge, before.weapons.recharge);
@@ -727,4 +780,164 @@ test('power pickup and expiry update flight clearance only when chip visibility 
   assert.equal(n7.rectReads('powerHud'), n7Reads,
     'The classic layout adapter must not run for the archived N-7 campaign');
   assert.equal(h.pending.size, 1); assert.equal(n7.pending.size, 1);
+});
+
+test('each Chronos stage gates its actual route on time and its cumulative recovery quota without replaying events', t => {
+  const h = harness(t, {unlocked: 1}); h.api.prepare();
+  const first = h.snapshot().route;
+  assert.equal(first.stageNumber, 1); assert.equal(first.stageGoal, 4);
+  h.advance(first.stageDuration + 3);
+  const waiting = h.snapshot();
+  assert.equal(waiting.state, 'playing'); assert.equal(waiting.route.stageNumber, 1);
+  assert.equal(waiting.route.stageProgress, 1); assert.equal(waiting.route.waitingFor, 'cronium');
+  assert.equal(waiting.route.canFinish, false); assert.equal(waiting.unlocked, 1);
+  assert.equal(waiting.events.filter(event => event.type === 'attack').length, 1);
+  assert.equal(waiting.events.filter(event => event.type === 'rupture').length, 1);
+  h.api.pauseGame(); const beforePause = h.snapshot(); h.advance(12);
+  assert.deepEqual(h.snapshot().route, beforePause.route);
+  assert.deepEqual(h.snapshot().events, beforePause.events);
+  h.api.resumeGame();
+  for (let fragment = 0; fragment < 3; fragment++) h.api.collectEnergy();
+  h.advance(.1); assert.equal(h.snapshot().route.stageNumber, 1);
+  assert.equal(h.snapshot().route.waitingFor, 'cronium');
+  h.api.collectEnergy(); h.advance(.04);
+  const next = h.snapshot();
+  assert.equal(next.route.stageNumber, 2); assert.equal(next.route.stageId, '1.2');
+  assert.equal(next.route.stageGoal, 8); assert.ok(next.route.stageElapsed < .1);
+  assert.equal(next.route.station.alpha, 1, 'Departure is spatial recession, rather than fading the origin');
+  assert.ok(next.route.station.scale < first.station.scale);
+  assert.ok(next.route.routeProgress > first.routeProgress);
+  assert.equal(next.events.filter(event => event.type === 'attack').length, 1);
+  assert.equal(next.events.filter(event => event.type === 'rupture').length, 1);
+  assert.equal(next.events.filter(event => event.type === 'stage-complete').length, 1);
+  assert.equal(next.events.filter(event => event.type === 'checkpoint').length, 2);
+  assert.equal(h.voyage().unlockedStage, 2);
+  assert.equal(h.pending.size, 1);
+});
+
+test('Chronos stage-entry checkpoints restore coherently after reload and retry without rewriting archived campaign saves', t => {
+  const h = harness(t, {unlocked: 1}); h.api.prepare(); h.reachStage(3);
+  const entry = h.snapshot(), record = h.voyage();
+  assert.equal(record.version, 2); assert.equal(record.checkpoint.stageNumber, 3);
+  assert.equal(record.unlockedStage, 3); assert.equal(record.completed, false);
+  assert.equal(record.entry.collected, entry.collected);
+  assert.equal(record.entry.score, entry.score);
+  assert.equal(record.entry.hull, entry.hull);
+  assert.equal(record.entry.collected, 8);
+  h.advance(4); h.api.collectEnergy(); h.api.collectEnergy();
+  assert.equal(h.snapshot().collected, entry.collected + 2);
+  assert.ok(h.snapshot().score > entry.score);
+  assert.deepEqual(h.voyage(), record,
+    'Mid-combat changes must not pretend to be a persisted exact-position checkpoint');
+  const restored = harness(t, {unlocked: 1, savedVoyage: h.stored(VOYAGE_KEY)}); restored.api.prepare();
+  const reloaded = restored.snapshot();
+  assert.equal(reloaded.route.stageNumber, 3); assert.equal(reloaded.route.stageElapsed, 0);
+  assert.equal(reloaded.collected, record.entry.collected);
+  assert.equal(reloaded.score, record.entry.score); assert.equal(reloaded.hull, record.entry.hull);
+  assert.equal(reloaded.unlocked, 1);
+  assert.equal(reloaded.events.some(event => ['attack', 'rupture', 'twin-module-marker'].includes(event.type)), false,
+    'Restoring stage 3 must not immediately replay the previous cinematic or spawn its recovered-module event early');
+  h.api.finishGame('hull'); assert.equal(h.snapshot().state, 'gameover');
+  h.api.prepare(); const retried = h.snapshot();
+  assert.equal(retried.route.stageNumber, 3); assert.equal(retried.route.stageElapsed, 0);
+  assert.equal(retried.collected, record.entry.collected);
+  assert.equal(retried.score, record.entry.score); assert.equal(retried.hull, record.entry.hull);
+  for (const fixture of [h, restored]) {
+    assert.equal(fixture.stored('neon-n7-unlocked-v1'), '37');
+    assert.equal(fixture.stored('neon-n7-best-v1'), '2037');
+    assert.deepEqual(JSON.parse(fixture.stored('neon-stars-v2')), {});
+    assert.equal(fixture.pending.size, 1);
+  }
+});
+
+test('the in-route C9 stop pauses the same flight, installs its recovered emitter and continues at stage 7 without granting charges', t => {
+  const h = harness(t, {unlocked: 1}); h.api.prepare(); h.api.collectModule(); h.reachStage(6);
+  assert.equal(h.snapshot().route.stageNumber, 6);
+  assert.equal(h.snapshot().equipment.recoveredTwin, true);
+  h.recoverStageQuota();
+  const remaining = h.snapshot().route.stageDuration - h.snapshot().route.stageElapsed;
+  h.advance(remaining - .3); assert.equal(h.api.fireManualShot(), true);
+  h.advance(.35); const docked = h.snapshot();
+  assert.equal(docked.state, 'paused'); assert.equal(docked.route.waitingFor, 'service');
+  assert.equal(docked.route.stageNumber, 6); assert.ok(h.node('flightDock').classList.contains('show'));
+  assert.equal(h.api.fireManualShot(), false, 'Docking cannot emit a combat projectile');
+  const route = docked.route, ammunition = docked.weapons;
+  h.advance(30); assert.deepEqual(h.snapshot().route, route);
+  assert.deepEqual(h.snapshot().weapons, ammunition);
+  h.api.resumeGame();
+  assert.equal(h.snapshot().state, 'paused', 'The ordinary resume action must not bypass the service interaction');
+  assert.deepEqual(h.snapshot().route, route);
+  h.node('flightInstallTwin').click();
+  assert.equal(h.equipment().selected, 'twin');
+  assert.deepEqual(h.equipment().unlocked, ['pulse', 'twin']);
+  const equipped = h.snapshot().weapons;
+  assert.equal(equipped.charges, ammunition.charges);
+  assert.equal(equipped.recharge, ammunition.recharge);
+  assert.equal(equipped.cooldown, ammunition.cooldown);
+  h.node('flightDockContinue').click(); const continued = h.snapshot();
+  assert.equal(continued.state, 'playing'); assert.equal(continued.currentLevel, 0);
+  assert.equal(continued.route.stageNumber, 7); assert.equal(continued.route.stageElapsed, 0);
+  assert.equal(continued.route.waitingFor, null);
+  assert.equal(h.node('flightDock').classList.contains('show'), false);
+  assert.equal(continued.weapons.selected, 'twin');
+  assert.equal(continued.weapons.charges, ammunition.charges);
+  assert.equal(continued.weapons.recharge, ammunition.recharge);
+  assert.equal(continued.weapons.cooldown, ammunition.cooldown);
+  assert.equal(continued.events.filter(event => event.type === 'service').length, 1);
+  assert.equal(continued.events.filter(event => event.type === 'service-complete').length, 1);
+  assert.equal(h.voyage().checkpoint.stageNumber, 7);
+  assert.equal(h.voyage().entry.collected, 18);
+  assert.equal(continued.unlocked, 1);
+  assert.equal(h.pending.size, 1);
+});
+
+test('the archived N-7 mode neither loads nor modifies the new Chronos voyage record', t => {
+  const h = harness(t); h.api.prepare(); h.reachStage(2);
+  const raw = h.stored(VOYAGE_KEY);
+  const archived = harness(t, {campaign: 'n7', savedVoyage: raw}); archived.api.prepare();
+  assert.equal(archived.snapshot().route, null);
+  archived.advance(3); archived.api.collectEnergy();
+  archived.api.pauseGame(); archived.advance(3); archived.api.resumeGame(); archived.api.goHome();
+  assert.equal(archived.stored(VOYAGE_KEY), raw);
+  assert.equal(archived.stored('neon-n7-unlocked-v1'), '37');
+  assert.equal(archived.stored('neon-n7-best-v1'), '2037');
+  assert.equal(archived.pending.size, 1);
+});
+
+test('the ten-stage selector exposes only persisted unlocked entries and an actual launch replays the chosen checkpoint', t => {
+  const h = harness(t, {unlocked: 1}); h.api.prepare(); h.reachStage(3);
+  h.api.goHome(); h.api.prepareLevel(0);
+  const buttons = [...h.node('chronosStageGrid').querySelectorAll('button[data-voyage-stage]')];
+  assert.equal(buttons.length, 10);
+  assert.deepEqual(buttons.map(button => button.dataset.voyageStage),
+    Array.from({length: 10}, (_, index) => String(index + 1)));
+  assert.deepEqual(buttons.map(button => button.disabled),
+    [false, false, false, true, true, true, true, true, true, true]);
+  assert.match(h.node('chronosStagesNote').textContent, /3\/10/);
+  buttons[9].click();
+  assert.equal(h.voyage().unlockedStage, 3, 'Clicking a locked stage cannot grant progression');
+  buttons[1].click();
+  assert.match(h.node('chronosStagesNote').textContent, /1\.2/);
+  assert.equal(h.node('chronosStageGrid').querySelector('[data-voyage-stage="2"]').getAttribute('aria-pressed'), 'true');
+  h.node('launch').click(); const replayed = h.snapshot();
+  assert.equal(replayed.state, 'playing'); assert.equal(replayed.currentLevel, 0);
+  assert.equal(replayed.route.stageNumber, 2); assert.equal(replayed.route.stageElapsed, 0);
+  assert.equal(replayed.collected, 4);
+  assert.equal(replayed.unlocked, 1); assert.equal(replayed.route.canFinish, false);
+  assert.equal(h.pending.size, 1);
+});
+
+test('a malformed new voyage is backed up without inferring stages from old classic or N-7 progress', t => {
+  const raw = '{incomplete chronos route';
+  const h = harness(t, {unlocked: 7, savedVoyage: raw});
+  assert.equal(h.stored(VOYAGE_KEY), raw);
+  assert.deepEqual(JSON.parse(h.stored(VOYAGE_KEY + ':invalid-backups')), [raw]);
+  h.api.prepare(); h.advance(.05);
+  assert.equal(h.snapshot().route.stageNumber, 1);
+  assert.equal(h.voyage().unlockedStage, 1);
+  assert.deepEqual(JSON.parse(h.stored(VOYAGE_KEY + ':invalid-backups')), [raw]);
+  assert.equal(h.stored('neon-unlocked-v2'), '7');
+  assert.equal(h.stored('neon-n7-unlocked-v1'), '37');
+  assert.equal(h.stored('neon-n7-best-v1'), '2037');
+  assert.equal(h.pending.size, 1);
 });

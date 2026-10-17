@@ -159,7 +159,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-ship-touch-comet-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-chronos-voyage-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -281,7 +281,7 @@ async function loadGameHarness() {
     snapshot: () => ({
       state, hull, currentLevel, score, collected, continued, supplyFailed, ammo, manualShotCooldown, warpTimer,
       destructionTimer, destructionStage, playerVisible, damageSmokeSide, damageSmokeLocked,
-      impactReactionTimer, impactReactionSide, energyBudget, powerBudget, gateCountdown,
+      impactReactionTimer, impactReactionSide, energyBudget, energySpawned, powerBudget, gateCountdown,
       elapsed, storyStep, storyTimer, levelOneShockwaveTriggered,
       supplyFailureScheduled, runToken, settings: { ...settings },
       powers: { ...powers }, player: { ...player },
@@ -579,17 +579,35 @@ await test("escudo de reaparición impide daño inmediato", async () => {
   assert.equal(api.snapshot().hull, before);
 });
 
-await test("reiniciar invalida la derrota de suministro pendiente", async () => {
-  api.startLevel(0);
+await test("reiniciar Vulkar invalida la derrota de suministro pendiente de los territorios con presupuesto finito", async () => {
+  // The new ten-stage Chronos route reissues missed signals. The unchanged
+  // finite-supply contract remains covered in its original territorial flow.
+  api.startLevel(2);
   api.setSupplyExhausted();
   api.checkSupplyFailure();
   assert.equal(api.snapshot().supplyFailureScheduled, true);
   const oldRun = api.snapshot().runToken;
-  api.startLevel(0);
+  api.startLevel(2);
   assert.ok(api.snapshot().runToken > oldRun);
   await new Promise((resolve) => setTimeout(resolve, 480));
   assert.equal(api.snapshot().state, "playing");
   assert.equal(api.snapshot().supplyFailureScheduled, false);
+});
+
+await test("el viaje de diez etapas reexpide CRONIUM sin heredar la derrota por el antiguo suministro finito", async () => {
+  api.startLevel(0);
+  api.prepareWeaponFixture();
+  api.setSupplyExhausted();
+  api.checkSupplyFailure();
+  assert.equal(api.snapshot().supplyFailureScheduled, false);
+  assert.equal(api.snapshot().energySpawned, api.snapshot().energyBudget);
+  api.advancePlayed(10.2);
+  const snapshot = api.snapshot();
+  assert.equal(snapshot.state, "playing");
+  assert.equal(snapshot.supplyFailureScheduled, false);
+  assert.equal(snapshot.collected, 0, "el fixture no recoge fragmentos automáticamente");
+  assert.ok(snapshot.energySpawned > snapshot.energyBudget, "el presupuesto anterior no impide reexpedir la señal perdida");
+  assert.ok(snapshot.items.some((item) => item.type === "energy"), "el nuevo fragmento recuperable debe existir en el campo real");
 });
 
 await test("continuar no repite diálogos ni la onda temporal ya vividos", async () => {

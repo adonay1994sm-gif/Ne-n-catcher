@@ -382,3 +382,13 @@ body.flight-mode .briefing-visual[data-scene="belt"]{background-image:linear-gra
 /* Each action thumb owns its contact; browser gestures must not cancel fire
    while the other finger continues relative flight on the Canvas. */
 .fire-control{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+
+/* Chapter one stage selection lives in the mission panel, outside gameplay. */
+.chronos-stages{margin:12px 0 16px;padding:12px;border:1px solid #63dfea38;border-radius:14px;background:#071421b3;text-align:left}
+.chronos-stages>small{font-size:10px;letter-spacing:.08em;color:#9de9ef}
+.chronos-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.chronos-stage-grid button{min-height:44px;border:1px solid #7693ad38;border-radius:9px;background:#0b1b2b;color:#cfdae9;padding:8px;text-align:left;font:600 11px/1.3 system-ui}
+.chronos-stage-grid button.selected{border-color:#67e7e9;background:#124752;color:#fff}
+.chronos-stage-grid button:disabled{opacity:.38}
+#chronosStagesNote{margin:10px 0 0;font-size:11px;line-height:1.4;color:#a9c2d6}
+@media(max-width:350px){.chronos-stage-grid button{font-size:10px;padding:6px}}

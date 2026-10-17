@@ -644,7 +644,8 @@
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
-      "version": "chronos-flight-v1"
+      "version": "chronos-flight-v1",
+      "integrationNote": "Reused in the ten authored Chronos–Gaia stages (chronos-voyage-v2); depth, origin retreat, C9 relay and destination approach follow one route snapshot. Original v1 master and exports retained unchanged."
     },
     {
       "id": "chronos-destruction-atlas-v1",

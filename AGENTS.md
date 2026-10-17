@@ -1,3 +1,9 @@
+## Orden vigente — diez etapas Chronos → Gaia, 17/10/2026
+
+El propietario reanuda el desarrollo y pide diez niveles para representar la transición espacial de Chronos a Gaia. Implementación de trabajo: etapas 1.1–1.10 del primer territorio clásico; no sustituir los otros nueve territorios ni confundirlas con diez mundos o cien rutas N-7. Priorizar salida física, espacio abierto, viaje continuo y aproximación; C9 es una parada enlazada y el guardado se realiza por entrada de etapa con clave v2 propia. La pausa anterior de funcionalidades queda levantada para este alcance. Conservar identidad modular, dos dedos, recursos y límites siguientes; Motor V1 sigue desactivado.
+
+---
+
 ## Decisión vigente — nave única y dos dedos, 17/10/2026
 
 El propietario fija la nave modular actual como identidad de esta versión. Retirar la ilustración antigua de portada, selector y juego; conservar archivos y guardados recuperables. Pilotaje y disparo deben funcionar simultáneamente con dos contactos independientes; mantener DISPARAR reutiliza el RAF existente y respeta batería/cadencia. Mejorar el cometa con arte y trayectoria coherentes. La aceptación de esta base no equivale a certificación física ni autoriza distribución comercial; MotorV1 continúa apagado.

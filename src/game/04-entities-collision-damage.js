@@ -638,6 +638,9 @@
 
   function checkSupplyFailure() {
     if (JOURNEY_DEMO) return;
+    // The staged voyage reissues missed signals locally; the old finite supply
+    // failure remains unchanged in the other nine territories and N-7.
+    if(classicFlightView?.stageNumber)return;
     if (supplyFailureScheduled || energySpawned < energyBudget || collected >= level().goal) return;
     const energyRemaining = items.some((item) => item.type === "energy");
     if (!energyRemaining) {

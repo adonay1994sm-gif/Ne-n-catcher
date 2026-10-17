@@ -284,6 +284,7 @@
 
   $("play").onclick = () => {
     if (JOURNEY_DEMO) { startJourney(); return; }
+    if(isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -316,8 +317,7 @@
   $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
-    if (isUnifiedClassic() && currentLevel === 0) openClassicDock("complete");
-    else prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
+    prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
   };
 
   ui.musicVolume.oninput = (event) => {
