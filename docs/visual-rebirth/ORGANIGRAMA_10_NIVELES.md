@@ -1,3 +1,21 @@
+<!-- voyage-polish-current -->
+## DIAGNÓSTICO · continuidad y pulido Chronos–Gaia,17/10/2026
+
+El propietario autoriza ejecutar el plan de publicación. Se conserva HEAD827c1b5 y el trabajo externo del motor. Este lote cierra mejoras concretas del clásico; no100etapas ni diez mundos visualmente completos.
+
+## INFORME DE PRODUCCIÓN · versión13 privada publicada
+
+[Informe completo, capturas, pruebas y ZIP](../production-reports/VOYAGE_POLISH_2026-10-17.md). **[Abrir NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE. Paquete limpio6cf67fc; fuente del Site653e328; publicación succeeded22:01:35UTC. C9 ilustrada con cuatro estados, selección de armas, Gaia fuera del HUD, música contextual, confort y journal de finalización. Partida natural Chronos4/4, AtlasGemelo4/4 yAtlasPulso4/4, C9final1/1, actualización/offline5/5, N-7una sesión/seis pasos. Certificación11/11 y Actions39072721336 completo/success. Pulso se completó sobre el paquete final; primer fallo del arnés conservado.
+
+Preservado el avance orbital remoto404b65f y147archivos byteporbyte. El clásico actual ocupa `/clasico-actual/`; no se reemplaza el modo orbital ni se activa MotorV1. Para revisar desde una partida avanzada: NIVELES → La Onda de Choque →1.1.
+
+Registro único314tareas:26DONE,72IN_REVIEW,5IN_PROGRESS,203PENDING,8BLOCKED; no es porcentaje comercial. Confort/recuperación lógica cerrados; arte/audio en revisión; humanos e iPhone pendientes. Contacto de soporte aplazado por el propietario. No producción Netlify, main, PR3, firmado o tiendas.
+
+El contenido siguiente conserva historial y cifras de su propia compilación; no sustituye este cierre.
+<!-- /voyage-polish-current -->
+
+---
+
 > Nombre vigente **NEON CRONIUM**,17/10/2026: [rebranding y versión11](../production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md). Los informes anteriores conservan su marca/procedencia histórica.
 
 > Cierre vigente posterior — 17/10/2026: [diez etapas de tránsito Chronos → Gaia, versión10, capturas reales y certificación](../production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md). El contenido siguiente se conserva como historial de sus entregas; estas etapas no certifican los diez territorios visualmente completos.

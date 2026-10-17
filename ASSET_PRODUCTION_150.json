@@ -2747,10 +2747,11 @@
       "sha256": "ccae6bbb791ee17ffb5662f050b939935365fa0c99abf9fdc00062270cdd277a",
       "decodedRGBABytes": 4194304,
       "integration": "Chronos voyage approach and departure in the existing legacy renderer; dedicated asset replaces satellite reuse.",
-      "technicalAcceptance": "INTEGRATED_PENDING_BROWSER",
+      "technicalAcceptance": "PASSED_CHROMIUM_NATURAL_SERVICE_OFFLINE",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
-      "reference": "art-source/immersive-rebirth/c9/PROVENANCE.md"
+      "reference": "art-source/immersive-rebirth/c9/PROVENANCE.md",
+      "evidence": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json"
     }
   ]
 }

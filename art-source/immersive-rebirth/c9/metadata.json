@@ -4,7 +4,7 @@
   "name": "Estación de servicio C9",
   "generatedAt": "2026-10-17",
   "status": "IN_REVIEW",
-  "technicalAcceptance": "ASSET_REVIEWED_PENDING_GAMEPLAY_INTEGRATION",
+  "technicalAcceptance": "PASSED_CHROMIUM_NATURAL_SERVICE_OFFLINE",
   "artisticAcceptance": "PENDING_OWNER",
   "physicalAcceptance": "PENDING",
   "master": {
@@ -24,7 +24,10 @@
     "sha256": "ccae6bbb791ee17ffb5662f050b939935365fa0c99abf9fdc00062270cdd277a",
     "decodedRgbaBytes": 4194304,
     "transparency": true,
-    "alphaRange": [0, 255],
+    "alphaRange": [
+      0,
+      255
+    ],
     "optimization": "ImageMagick resize 1024x1024, WebP quality 88, alpha quality 100; no painted or synthesized frames"
   },
   "atlas": {
@@ -33,7 +36,10 @@
     "frameCount": 4,
     "frameWidth": 512,
     "frameHeight": 512,
-    "pivotNormalized": [0.5, 0.5],
+    "pivotNormalized": [
+      0.5,
+      0.5
+    ],
     "orientation": "Orthographic three-quarter overhead; docking approach toward screen bottom",
     "frames": [
       {
@@ -73,7 +79,12 @@
       "mode": "event-driven-state-poses",
       "fps": null,
       "durationMs": null,
-      "recommendedSequence": [0, 1, 2, 3],
+      "recommendedSequence": [
+        0,
+        1,
+        2,
+        3
+      ],
       "note": "Four genuine mechanical states, not a high-frame-rate movement cycle. Hold each pose according to approach/service/departure; use the existing route clock and do not create another timer or RAF. Minor generative registration differences may remain between poses; crossfade briefly rather than claiming precision joint animation."
     }
   },
@@ -95,7 +106,11 @@
     "trueAlphaVerified": true,
     "distinctFramesVerified": true,
     "bakedText": false,
-    "intendedGameplayWidthPixels": [180, 275],
-    "note": "Asset production only. Integration, pause, event-driven pose order, WebGL/Canvas rendering and device performance must be verified by the integrating renderer. Important appendages approach cell edges; draw the full square cell without trimming."
+    "intendedGameplayWidthPixels": [
+      180,
+      275
+    ],
+    "note": "Asset production only. Integration, pause, event-driven pose order, WebGL/Canvas rendering and device performance must be verified by the integrating renderer. Important appendages approach cell edges; draw the full square cell without trimming.",
+    "gameplayEvidence": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json"
   }
 }

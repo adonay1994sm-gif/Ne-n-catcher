@@ -785,11 +785,12 @@
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
-      "technicalAcceptance": "INTEGRATED_PENDING_BROWSER",
+      "technicalAcceptance": "PASSED_CHROMIUM_NATURAL_SERVICE_OFFLINE",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "OpenAI image_gen tool; original generated image for this project",
-      "version": "c9-station-v1"
+      "version": "c9-station-v1",
+      "evidence": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json"
     }
   ],
   "project": "NEON CRONIUM"

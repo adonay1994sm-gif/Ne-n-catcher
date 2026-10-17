@@ -1,3 +1,9 @@
+## Estado de integración ·17/10/2026
+
+Comprobada en viaje natural, taller y offline Chromium; paquete funcional6cf67fc, Site privado versión13. Cuatro poses controladas por acontecimientos y contraste15.80:1 en selección de armas. [Evidencia](../../../docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json). Revisión artística y física pendientes. El registro de generación siguiente conserva su estado inicial.
+
+---
+
 # C9 — estación orbital de servicio
 
 Fecha: 17/10/2026. Recurso original producido para NEON CRONIUM con la herramienta de generación de imágenes disponible. Estado: **IN_REVIEW**; maestro y exportación inspeccionados, integración y aceptación artística pendientes. No se declara un nivel terminado por generar este atlas.

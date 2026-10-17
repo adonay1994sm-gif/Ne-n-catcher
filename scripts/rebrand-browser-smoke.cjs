@@ -171,6 +171,7 @@ async function gameBrandAndSave(page, fixture) {
     workingTree: execFileSync('git', ['status', '--short'], {encoding: 'utf8'}).trim()};
   report.previousInfo = JSON.parse(await fs.readFile(path.join(previous, 'build-info.json'), 'utf8'));
   report.currentInfo = JSON.parse(await fs.readFile(path.join(root, 'build-info.json'), 'utf8'));
+  assert.equal(report.currentInfo.dirty, false, 'Upgrade certification requires a clean final package');
   assert.notEqual(report.previousInfo.revision, report.currentInfo.revision, 'Build the new preview before running this test');
   assert.equal(report.previousInfo.storagePrefix, report.currentInfo.storagePrefix, 'Rebranding must not change save isolation');
   assert.equal(report.currentInfo.engineV1, false);

@@ -1,0 +1,23 @@
+{
+  "project_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21",
+  "version": 13,
+  "version_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_129ce6e9f0708191abf3281e9664a3c4",
+  "deployment_id": "appgdep_6ad3f02b8ddc81919542f0545cf94e46",
+  "status": "succeeded",
+  "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "updated_at": "2026-10-17T22:01:35.165292+00:00",
+  "siteSource": "653e32825726221c3c161800c0ad11ab5bb53d8d",
+  "packageCommit": "6cf67fc445e2cadd214ebbd266ba6d36713a0bdc",
+  "revision": "ac73dbbc04d8856a011336172736d43895aff80dbea20bbf37124fb22301aa35",
+  "archive": {
+    "archive_format": "tar",
+    "sediment_file_id": "file_000000000e948210811a220278f41e25",
+    "content_hash": "sha256:fbc4bd855df6e464fa3554f28f96ecd46df2c6850c89b30d2028ed8e69c82cd8",
+    "size_bytes": 18524160,
+    "file_count": 243
+  },
+  "preservedRemoteSiteSource": "404b65f27b766b8333343502e553e41776a4dbfb",
+  "newClassicPath": "clasico-actual/",
+  "externalVisitors": 0,
+  "audience": "Owner-private preserved"
+}

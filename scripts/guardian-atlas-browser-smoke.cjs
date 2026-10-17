@@ -224,7 +224,8 @@ function combatTarget(q) {
         guardianProjectile:Boolean(item.guardianProjectile),projectileId:item.projectileId,
         attackId:item.attackId,scout:Boolean(item.classicScout)})),
       weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,
-        cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge}:null,
+        cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge,shotSequence:classicWeapons.shotSequence}:null,
+      scoreAudio: typeof voyageScore!=="undefined" ? voyageScore?.snapshot() : null,
       legacyRunning,legacyFrameId,atlasAutoFire,manualShotCooldown,
       unlocked:getUnlocked(),keys:{...KEYS}});\n`;
     await route.fulfill({response, body: source.replace(marker, hook + marker)});
@@ -322,14 +323,22 @@ function combatTarget(q) {
           assert.equal(await control.getAttribute('aria-pressed'), 'true');
           await control.click(); assert.equal((await inspect()).atlasAutoFire, false);
           manualStarted = true;
+          // The previous snapshot predates disabling automatic fire. Re-read
+          // the actual battery before making any single-shot assertion.
+          continue;
         }
         if (manualStarted && !manualChecked && q.boss.vulnerability && !q.boss.disabled &&
-          q.weapons.charges > 0 && q.manualShotCooldown <= 0 && Math.abs(q.player.x - q.boss.x) < 105) {
+          q.weapons.charges > 0 && q.weapons.recharge < 2.4 && q.manualShotCooldown <= 0 && Math.abs(q.player.x - q.boss.x) < 105) {
           const charges = q.weapons.charges;
-          await page.locator('#fire').click();
+          // Keyboard activation is a discrete accessible shot. A pointer click
+          // held by a busy browser can legitimately repeat through the RAF.
+          await page.locator('#fire').focus();
+          await page.keyboard.press('Enter');
           const after = await inspect();
           assert.ok(after.manualShotCooldown > 0, 'Manual button did not emit a pulse');
           assert.equal(after.weapons.charges, charges - 1, 'Manual fire must spend one shared battery charge');
+          assert.equal(after.weapons.shotSequence,q.weapons.shotSequence+1,'Discrete activation emits exactly one shot');
+          assert.equal(after.scoreAudio.context,'atlas','The actual guardian selects its musical phrase');
           await page.locator('#atlasAutoFire').click(); assert.equal((await inspect()).atlasAutoFire, true);
           manualChecked = true;
         }
