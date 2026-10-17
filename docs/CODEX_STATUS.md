@@ -10,6 +10,8 @@ Certificación local11/11: contenido223, motor40, arquitectura6, estáticos13, r
 
 Claves `neonCatcher.*`, bundle ID, IDs de contenido, URL de repositorio y pruebas permanecen compatibles. Guía activa renombrada a ART_DIRECTION_NEON_CRONIUM.md; paquetes/evidencias/maestros históricos mantienen procedencia original. P1-BRAND-01 IN_REVIEW, técnica aprobada; rótulo de splash/artística y iPhone físico pendientes. No se cambia jugabilidad, main, PR3, producción Netlify ni MotorV1=false.
 
+Informe publicado y remoto comprobado en `5b666ffdfa81e2e25eb51bb32d03c887a702db51`; [recibo de cierre](production-reports/evidence/neon-cronium/closure.json). El recibo posterior no cambia el paquete.
+
 El contenido siguiente conserva el historial. Para probar desde una partida avanzada, CONTINUAR VIAJE → NIVELES → La Onda de Choque →1.1; CONTINUAR reanuda el checkpoint existente.
 
 ---
