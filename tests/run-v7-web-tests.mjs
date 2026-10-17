@@ -55,7 +55,8 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
   for (const path of [
     "index.html", "styles.css", "game.js", "core-runtime.js", "manifest.webmanifest",
     "privacy.html", "terms.html", "analytics-manager.js", "assets/ship_frame_00.webp", "assets/core_frame_00.webp",
-    "assets/cronium_fragment_v1.webp", "assets/cronos_level1_background.webp"
+    "assets/cronium_fragment_v1.webp", "assets/cronos_level1_background.webp",
+    "assets/chronos_shockwave_atlas_v1.webp", "assets/atlas_perimeter_background_v1.webp"
   ]) assert.ok(paths.has(path), path);
 });
 

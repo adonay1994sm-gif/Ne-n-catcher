@@ -167,7 +167,9 @@
     shieldIdle: loadSprite("assets/shield_idle.webp"),
     explosionSmall: loadSprite("assets/explosion_small.webp"),
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
-    cronosBackground: loadSprite("assets/cronos_level1_background.webp", true)
+    cronosBackground: loadSprite("assets/cronos_level1_background.webp", true),
+    chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
+    atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {

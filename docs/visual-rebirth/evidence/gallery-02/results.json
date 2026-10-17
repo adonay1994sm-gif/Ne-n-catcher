@@ -1,0 +1,20 @@
+{
+  "capturedAt": "2026-10-16T15:26:58.513Z",
+  "sourceCommit": "35bf8e28dd99842b76a043f44df6d08e5da2c44c",
+  "dirty": true,
+  "root": "/workspace/Ne-n-catcher/preview-dist",
+  "viewport": "390x844 @ DPR 2",
+  "kind": "Chromium rendering of the real preview game",
+  "cases": [
+    {
+      "level": 2,
+      "status": "passed",
+      "errors": [],
+      "failedRequests": [],
+      "screenshots": [
+        "level-02-game.png"
+      ]
+    }
+  ],
+  "status": "passed"
+}

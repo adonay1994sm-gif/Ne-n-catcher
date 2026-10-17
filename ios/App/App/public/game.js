@@ -365,7 +365,9 @@
     shieldIdle: loadSprite("assets/shield_idle.webp"),
     explosionSmall: loadSprite("assets/explosion_small.webp"),
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
-    cronosBackground: loadSprite("assets/cronos_level1_background.webp", true)
+    cronosBackground: loadSprite("assets/cronos_level1_background.webp", true),
+    chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
+    atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {
@@ -2084,7 +2086,7 @@
       // The authored Chronos painting is the scene. Avoid artificial bars
       // and geometry that obscure the station, especially on small screens.
       const sx = W * 0.50;
-      const sy = H * 0.28;
+      const sy = H * 0.40;
       const pulse = 1 + Math.sin(t * 0.0025) * 0.025;
       const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, 178 * pulse);
       glow.addColorStop(0, "rgba(214,250,255,.48)");
@@ -2227,6 +2229,7 @@
     }
     ctx.restore();
 
+    if (!N7_CAMPAIGN && currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -2242,7 +2245,30 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
+    } else if (!N7_CAMPAIGN && currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
+      const image = SPRITES.atlasBackground;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.04;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const driftX = Math.sin(t * 0.00018) * W * 0.018;
+      const driftY = Math.cos(t * 0.00011) * H * 0.009;
+      ctx.save();
+      ctx.globalAlpha = 0.86;
+      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 - H * 0.025 + driftY,
+        width, height);
+      ctx.globalAlpha = 1;
+      const readability = ctx.createLinearGradient(0, 0, 0, H);
+      readability.addColorStop(0, "rgba(3,8,23,.12)");
+      readability.addColorStop(0.58, "rgba(2,7,20,.16)");
+      readability.addColorStop(1, "rgba(2,4,11,.36)");
+      ctx.fillStyle = readability;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
     }
+
+    // Start the authored VFX download while the level is still in its menu;
+    // the scripted reactor accident happens thirty-one seconds into play.
+    if (!N7_CAMPAIGN && currentLevel === 0) ensureSprite(SPRITES.chronosShockwave);
 
     ctx.save();
     ctx.globalCompositeOperation = "screen";
@@ -2299,29 +2325,26 @@
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
 
-    if (currentLevel === 0 && levelOneShockwave > 0) {
+    if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0) {
       const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);
-      const radius = 55 + progress * Math.max(W, H) * 0.72;
       const sx = W * 0.50;
-      const sy = H * 0.28;
+      const sy = H * 0.40;
       const strength = Math.sin(progress * Math.PI);
       ctx.save();
       ctx.globalCompositeOperation = "screen";
-      // Layer one: use the existing authored shield texture as an energy
-      // refraction halo. At reduced opacity it cannot conceal hazards.
-      if (spriteReady(SPRITES.shieldEffect)) {
-        ctx.globalAlpha = strength * 0.19;
-        ctx.drawImage(SPRITES.shieldEffect, sx - radius, sy - radius, 2 * radius, 2 * radius);
+      const size = Math.min(W, H) * (0.36 + progress * 1.45);
+      ctx.globalAlpha = strength * 0.62;
+      if (spriteReady(SPRITES.chronosShockwave)) {
+        const atlas = SPRITES.chronosShockwave;
+        const cellWidth = atlas.naturalWidth / 2;
+        const cellHeight = atlas.naturalHeight / 2;
+        const frame = Math.min(3, Math.floor(progress * 4));
+        ctx.drawImage(atlas, (frame % 2) * cellWidth, Math.floor(frame / 2) * cellHeight,
+          cellWidth, cellHeight, sx - size / 2, sy - size / 2, size, size);
+      } else if (spriteReady(SPRITES.shieldEffect)) {
+        // A short-lived fallback if the atlas is still downloading.
+        ctx.drawImage(SPRITES.shieldEffect, sx - size / 2, sy - size / 2, size, size);
       }
-      // Layer two: a single soft rim, not concentric target circles or spokes.
-      ctx.globalAlpha = strength * 0.55;
-      ctx.strokeStyle = "rgba(151,246,255,.78)";
-      ctx.lineWidth = 12 * (1 - progress) + 2;
-      ctx.shadowBlur = 17;
-      ctx.shadowColor = "#57d8ff";
-      ctx.beginPath();
-      ctx.arc(sx, sy, radius, 0, Math.PI * 2);
-      ctx.stroke();
       ctx.restore();
     }
 

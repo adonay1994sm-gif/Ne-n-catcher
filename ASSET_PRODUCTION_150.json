@@ -413,14 +413,16 @@
       "world": "shared",
       "name": "Onda de choque temporal",
       "type": "sprite-sheet",
-      "masterSize": "2048x512",
-      "runtimeSize": "8x512x512",
-      "frames": 8,
+      "masterSize": "1254x1254",
+      "runtimeSize": "2x2 cells at 627x627",
+      "frames": 4,
       "pivot": "0.5,0.5",
       "level": "1,10",
       "priority": "P0",
-      "status": "PLANNED",
-      "reference": "existing/game design"
+      "status": "IN_REVIEW",
+      "reference": "art-source/visual-rebirth/levels/01/chronos-shockwave-atlas-master.png",
+      "runtimeCandidate": "assets/chronos_shockwave_atlas_v1.webp",
+      "integrationScope": "scripted reactor shockwave in classic level 1; level 10 pending"
     },
     {
       "sequence": 26,
@@ -669,14 +671,16 @@
       "world": "gaia",
       "name": "Órbita lejana",
       "type": "background-layer",
-      "masterSize": "2048x2048",
-      "runtimeSize": "720x1280",
+      "masterSize": "941x1672",
+      "runtimeSize": "941x1672",
       "frames": 1,
       "pivot": "0.5,0.5",
       "level": "1-2",
       "priority": "P2",
-      "status": "PLANNED",
-      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg"
+      "status": "IN_REVIEW",
+      "reference": "art-source/visual-rebirth/levels/02/atlas-perimeter-master.png",
+      "runtimeCandidate": "assets/atlas_perimeter_background_v1.webp",
+      "integrationScope": "Level 2 composite planet/Atlas stations; separate cloud/architecture layers still pending"
     },
     {
       "sequence": 42,

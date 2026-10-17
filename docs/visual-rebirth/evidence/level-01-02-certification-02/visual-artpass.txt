@@ -1,0 +1,14 @@
+✔ art pass preserves the nine-source game bundle (12.432698ms)
+✔ Chronos background uses the authored image and bounded readability veil (1.318811ms)
+✔ Chronos accident uses four authored atlas phases instead of a drawn ring (2.223149ms)
+✔ Atlas perimeter draws its own illustrated Gaia Nova environment (3.962612ms)
+✔ level one shockwave retains a graphical fallback while the atlas loads (0.904829ms)
+✔ visual pass does not change collision model or native bundle identifier (1.158794ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.95226

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T14:51:00.000Z",
+  "updatedAt": "2026-10-16T15:30:36.510Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -393,6 +393,46 @@
         ],
         "openErrors": [
           "Asset integrated in N-7 only; Gaia classic pending and iPhone visual QA pending."
+        ]
+      },
+      "shared-temporal-shockwave": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/visual-rebirth/levels/01/chronos-shockwave-atlas-master.png",
+          "assets/chronos_shockwave_atlas_v1.webp",
+          "src/game/06-world-rendering.js"
+        ],
+        "tests": [
+          "Four distinct atlas cells verified",
+          "Chromium controlled Canvas frames 4/4",
+          "Local certification 11/11"
+        ],
+        "evidence": [
+          "docs/visual-rebirth/evidence/gallery-01/results.json",
+          "docs/visual-rebirth/evidence/level-01-02-certification-02/results.json"
+        ],
+        "openErrors": [
+          "Natural event on physical iPhone and integration in level 10 pending."
+        ]
+      },
+      "gaia-orbit-far": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/visual-rebirth/levels/02/atlas-perimeter-master.png",
+          "assets/atlas_perimeter_background_v1.webp",
+          "src/game/06-world-rendering.js"
+        ],
+        "tests": [
+          "Chromium classic level 2 1/1",
+          "Chromium classic/N-7 gameplay 2/2",
+          "Local certification 11/11"
+        ],
+        "evidence": [
+          "docs/visual-rebirth/evidence/gallery-02/results.json",
+          "docs/visual-rebirth/evidence/gameplay-browser-01/results.json"
+        ],
+        "openErrors": [
+          "Composite art is integrated; independent orbital layers, classic Atlas enemies and physical iPhone QA pending."
         ]
       }
     },
@@ -1880,7 +1920,7 @@
       "block": "05",
       "name": "Verificar fondos, profundidad, planetas y VFX por región",
       "priority": "VERY_HIGH",
-      "status": "PENDING",
+      "status": "IN_PROGRESS",
       "areas": [
         "Assets",
         "Campaña clásica",
@@ -1890,15 +1930,28 @@
         "B05-02"
       ],
       "files": [
-        "ASSET_PRODUCTION_150.json",
+        "src/game/06-world-rendering.js",
+        "assets/chronos_shockwave_atlas_v1.webp",
+        "assets/atlas_perimeter_background_v1.webp",
         "ASSET_MANIFEST.json",
-        "ASSET_PRODUCTION_MAP.md",
-        "src/game/animation/animation-map.js"
+        "ASSET_PRODUCTION_150.json"
       ],
       "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "tests": [
+        "Local certification: 11/11 phases, exit 0",
+        "Preview: 15/15, exit 0",
+        "Chromium gallery: 10/10 baseline + 1/1 Gaia recapture",
+        "Chromium gameplay: classic and N-7 2/2, exit 0"
+      ],
+      "evidence": [
+        "docs/visual-rebirth/evidence/level-01-02-certification-02/results.json",
+        "docs/visual-rebirth/evidence/gallery-01/results.json",
+        "docs/visual-rebirth/evidence/gallery-02/results.json",
+        "docs/visual-rebirth/evidence/gameplay-browser-01/results.json"
+      ],
+      "openErrors": [
+        "Classic levels 3–10 still lack dedicated illustrated scenes; levels 1–2 lack enemy-specific art and full layered parallax."
+      ],
       "acceptance": [
         "Escenarios diferenciados por arquitectura/objetos, no solo paleta; efectos legibles."
       ]

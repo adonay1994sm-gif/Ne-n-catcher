@@ -1,4 +1,4 @@
-const CACHE = "neon-catcher-pre-release-7-2-0-ch01";
+const CACHE = "neon-catcher-pre-release-7-2-0-visual-rebirth-02";
 const CORE = [
   "./",
   "index.html",
@@ -71,7 +71,9 @@ const CORE = [
   "assets/shield_effect.webp",
   "assets/shield_idle.webp",
   "assets/explosion_small.webp",
-  "assets/cronos_level1_background.webp"
+  "assets/cronos_level1_background.webp",
+  "assets/chronos_shockwave_atlas_v1.webp",
+  "assets/atlas_perimeter_background_v1.webp"
 ];
 
 self.addEventListener("install", (event) => {
