@@ -1,0 +1,34 @@
+{
+  "createdAt": "2026-10-17T07:34:05.441Z",
+  "branch": "continuity-assets-audit-20261013",
+  "sourceCommit": "80540884b15c8936dbcea9f5131a142077b85a6e",
+  "sourceDirty": false,
+  "engineV1": false,
+  "archive": "docs/visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip",
+  "archiveBytes": 5078663,
+  "archiveSha256": "c2dd3fde85b8a2ff59216e00b0d9ee2eeaa25765139b8f21a520b0410f15fb37",
+  "fileCount": 105,
+  "required": [
+    {
+      "name": "index.html",
+      "present": true
+    },
+    {
+      "name": "juego/index.html",
+      "present": true
+    },
+    {
+      "name": "build-info.json",
+      "present": true
+    },
+    {
+      "name": "juego/assets/chronos_collapse_background_v1.webp",
+      "present": true
+    }
+  ],
+  "netlify": {
+    "deployed": false,
+    "verifiedUrl": null,
+    "reason": "No NETLIFY_AUTH_TOKEN or NETLIFY_SITE_ID configured in this environment."
+  }
+}

@@ -1,5 +1,15 @@
 # INFORME DE PRODUCCIÓN — NEON CATCHER
 
+## Estado vigente — 2026-10-17 UTC
+
+Rama `continuity-assets-audit-20261013`; SHA del lote visual y preview limpia `80540884b15c8936dbcea9f5131a142077b85a6e`. **Diez escenarios ilustrados y fotografiados dentro del juego, cero niveles visualmente completos.** Se integraron nueve fondos nuevos (niveles clásicos 2–10) y el atlas de cuatro fases de la onda Chronos (nivel 1); código, maestros, WebP, capturas y pruebas están publicados. Informe técnico completo: [INFORME_FINAL_10_NIVELES.md](visual-rebirth/INFORME_FINAL_10_NIVELES.md). Galería: [GALERIA_10_NIVELES.md](visual-rebirth/GALERIA_10_NIVELES.md). Organigrama: [ORGANIGRAMA_10_NIVELES.md](visual-rebirth/ORGANIGRAMA_10_NIVELES.md).
+
+Pruebas finales: certificación local 11/11 fases, preview 15/15, galería Chromium 10/10 aperturas y smoke limpio de ambas campañas 2/2; inventario 69 recursos y cero inconsistencias. El ZIP de `preview-dist` contiene `build-info.json` con SHA exacto, `dirty:false` y `engineV1:false`: [neon-catcher-visual-preview-8054088.zip](visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip), SHA-256 `c2dd3fde85b8a2ff59216e00b0d9ee2eeaa25765139b8f21a520b0410f15fb37`. No se desplegó una URL Netlify nueva: faltan credenciales/ID del sitio; la Drop anterior era temporal y previsual. Safari/iPhone físico y perfilado de memoria/FPS pendientes. En capturas Chromium del nivel 10 algunos glifos del HUD desaparecen intermitentemente pese a DOM correcto; QA visual sigue abierta. Ledger: 267 tareas, 22 DONE, 30 IN_REVIEW, 3 IN_PROGRESS, 206 PENDING, 6 BLOCKED.
+
+Próxima prioridad: aislar el defecto de pintado y probarlo en Safari iPhone; después separar capas/animaciones de nivel 1–3 e integrar CH-01 en Gaia clásica con ataque, daño y destrucción. Mantener main, PR #3 y Engine V1 sin cambios. El informe histórico anterior se conserva debajo.
+
+---
+
 **Actualización posterior, 2026-10-16:** se publicó una preview **temporal** en Netlify Drop, URL `https://idyllic-custard-c8c391.netlify.app/`, build `5a2f91647f582ad117b18df58da3d1a77b6c08e0`; contraseña enviada directamente al propietario. Chromium remoto 390×844 aprobó 2/2 casos y el sitio sirve ambas campañas. El sitio no reclamado expira aproximadamente a las 15:45 UTC del 16/10/2026. El informe exacto, límites y evidencia están en [NETLIFY_DROP_2026-10-16.md](production-reports/NETLIFY_DROP_2026-10-16.md). El informe de CH-01 que sigue es el cierre anterior; sus frases «no desplegado» son históricas.
 
 Fecha: 2026-10-16 UTC

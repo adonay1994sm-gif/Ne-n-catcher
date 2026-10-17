@@ -2134,7 +2134,10 @@
         "Level 6: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2",
         "Levels 7–8: local certification 11/11, preview 15/15, Chromium gallery 2/2, gameplay 2/2",
         "Levels 9–10: local certification 11/11, preview 15/15, Chromium gallery 2/2, gameplay 2/2",
-        "Final ten-level Chromium gallery 10/10, exit 0; visual HUD artifact remains open"
+        "Final ten-level Chromium gallery 10/10, exit 0; visual HUD artifact remains open",
+        "Clean preview: 15/15, exact SHA 8054088, dirty:false",
+        "Clean preview Chromium: classic/N-7 2/2, exit 0",
+        "Runtime inventory: 69 assets, 4,936,486 bytes, zero inconsistencies"
       ],
       "evidence": [
         "docs/visual-rebirth/evidence/level-01-02-certification-02/results.json",
@@ -2159,7 +2162,10 @@
         "docs/visual-rebirth/evidence/gallery-09-10/results.json",
         "docs/visual-rebirth/evidence/gallery-final-01/results.json",
         "docs/visual-rebirth/evidence/level-09-10-gameplay-browser-01/results.json",
-        "docs/visual-rebirth/evidence/visual-rebirth-final-certification-01/results.json"
+        "docs/visual-rebirth/evidence/visual-rebirth-final-certification-01/results.json",
+        "docs/visual-rebirth/evidence/clean-preview-browser-01/results.json",
+        "docs/visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip",
+        "docs/visual-rebirth/INFORME_FINAL_10_NIVELES.md"
       ],
       "openErrors": [
         "All ten classic levels now have an illustration or (level 1) an existing illustration plus new shockwave, but dedicated enemies, layered parallax and iPhone QA are still pending.",

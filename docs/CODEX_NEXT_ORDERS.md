@@ -1,3 +1,13 @@
+# Orden vigente 17/10/2026 — producción visual clásica
+
+1. Verificar rama `continuity-assets-audit-20261013`, SHA remoto, árbol de trabajo e informe [INFORME_FINAL_10_NIVELES.md](visual-rebirth/INFORME_FINAL_10_NIVELES.md). Código visual probado: `80540884b15c8936dbcea9f5131a142077b85a6e`; documentación posterior puede añadir un commit. No tocar main ni PR #3, no activar Engine V1.
+2. Reproducir el fallo intermitente de glifos en capturas Chromium del HUD del nivel 10. El DOM conserva `DISPARAR`, `3/3` y ancho de botón; quitar `backdrop-filter` o usar renderizado por software no solucionó consistentemente el problema. Inspeccionar composición/pintado real en Safari iPhone antes de atribuir causa al producto. Evidencia en `visual-rebirth/evidence/gallery-10-*` y nota del informe.
+3. Probar el ZIP experimental [neon-catcher-visual-preview-8054088.zip](visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip) en un sitio Netlify **aislado** mediante Drop o branch deploy autorizado; verificar URL, SHA `8054088`, selector y dos campañas. No presentar la vieja Drop como preview de este arte. Si se usa Netlify Drop, recordar que la URL puede caducar.
+4. Continuar por lotes pequeños de arte **integrado**: primero capas/animaciones de Chronos/Gaia/Vulkar, CH-01 en Gaia clásica con comportamiento comprobado, después CH-02/CH-03 y Magma Serpent segmentada. Los fondos de niveles 2–10 son composiciones únicas en revisión, no cierres visuales; el nivel 1 conserva fondo anterior y onda nueva.
+5. Tras cada lote: `npm run build`, `node scripts/certify-local.mjs <directorio-nuevo>`, `npm run build:preview && npm run test:preview`, Chromium sobre `preview-dist`, auditoría de inventario, actualizar organigrama/ledger/status, commit y push normales a la rama autorizada. No borrar evidencias históricas.
+
+---
+
 # Actualización 16/10/2026 — preview Netlify
 
 La preview temporal `https://idyllic-custard-c8c391.netlify.app/` sirvió el build `5a2f916` y pasó Chromium remoto 2/2 en 390×844. Caduca aproximadamente a las 15:45 UTC del 16/10 si no se reclama. No interpretar el estado anterior de «sin URL» como vigente. Informe y ZIP: `docs/production-reports/NETLIFY_DROP_2026-10-16.md` y `docs/production-reports/evidence/netlify-drop-20261016/`. Próximo paso externo: publicar el ZIP en un sitio Netlify de prueba duradero bajo la cuenta del propietario o habilitar esta rama con `NEON_PREVIEW_DEPLOY=1`, verificar URL/SHA y probar Safari iPhone. No tocar main, PR #3, producción ni `USE_ENGINE_V1`.
