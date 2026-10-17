@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T20:47:21.533353+00:00",
+  "updatedAt": "2026-10-17T20:54:36.903717+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -5725,19 +5725,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -5753,7 +5757,8 @@
         "Cronos retrocede físicamente; vacío5–7, C9pausa y Gaia crece8–10; todos siguen un solo snapshot.",
         "Guardado de etapa con clave v2, respaldos de datos inválidos y campañas anteriores intactas.",
         "Compilación, regresión y partida real conservadas; publicación privada verificable sin activar V1."
-      ]
+      ],
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -5773,19 +5778,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -5802,7 +5811,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -5822,19 +5832,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -5851,7 +5865,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -5871,19 +5886,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -5900,7 +5919,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -5920,19 +5940,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -5949,7 +5973,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -5969,19 +5994,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -5998,7 +6027,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -6018,19 +6048,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -6047,7 +6081,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -6067,19 +6102,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -6096,7 +6135,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -6116,19 +6156,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -6145,7 +6189,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -6165,19 +6210,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -6194,7 +6243,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     },
     {
       "block": "04",
@@ -6214,19 +6264,23 @@
       "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
       "tests": [
         "Modelo/render30 aprobadas; integración25/25; partida Chromium natural diez etapas consecutivas,360s de ruta,36fragmentos y llegada persistida.",
-        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado."
+        "Regresión34/34 incluyendo primer disparo y reexpedición; la aceptación de arte/dispositivo se evalúa por separado.",
+        "Paquete final limpio: certificación11/11; contenido219/219; preview23/23; Chromium offline4/4 y N-7una sesión/seis pasos; Actions39068219262completed/success."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
         "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
         "docs/production-reports/evidence/chronos-voyage/integration-02/results.json",
-        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/regression-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/certificate-02/results.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/site-deployment.json",
+        "docs/production-reports/evidence/chronos-voyage/final-package/github-actions.json"
       ],
       "openErrors": [
         "Revisión artística del propietario y Safari/iPhone físico pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_FINAL_PACKAGE",
+        "technical": "PASSED_CHROMIUM_AND_REGRESSION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -6243,7 +6297,8 @@
       "canonicalRelationship": {
         "partOf": "P3-TRANSIT-01",
         "note": "Etapa de tránsito dentro del primer territorio; no un planeta nuevo ni equivalencia de ruta N-7."
-      }
+      },
+      "packageCommit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f"
     }
   ],
   "canonicalPlan": {
@@ -6285,11 +6340,12 @@
     },
     "latestVerification": {
       "date": "2026-10-17",
-      "report": "docs/production-reports/CI_SHIP_PRECACHE_2026-10-17.md",
-      "commit": "f69d3651e9a180c8502d17aa523a27d9abed92e7",
-      "workflowRun": 39065781507,
+      "report": "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
+      "commit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f",
+      "workflowRun": 39068219262,
       "conclusion": "success",
-      "scope": "PWA current ship contract, explicit offline rendering and complete remote CI; no new gameplay."
+      "siteVersion": 10,
+      "scope": "Ten transit stages Chronos–Gaia, natural Chromium full route and clean final11phase certification, native offline4/4, N-7 regression; owner artistic and physical acceptance pending."
     }
   }
 }

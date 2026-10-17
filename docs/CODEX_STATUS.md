@@ -1,3 +1,23 @@
+## DIAGNÓSTICO — transición Chronos → Gaia · 17/10/2026
+
+La orden vigente reanuda el desarrollo con alcance concreto: diez etapas conectadas del primer territorio a Gaia, mostrando el espacio vacío y el viaje. Sustituye la pausa histórica tras la incidencia CI, ya resuelta; preserva el resto del proyecto.
+
+## INFORME DE PRODUCCIÓN — versión 10 publicada
+
+[Informe completo, mapa y capturas reales](production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md). **[Abrir web privada de pruebas v10](https://neon-catcher-pruebas.chictide18.chatgpt.site)**. Diez etapas `1.1`–`1.10`, 360 segundos mínimos de ruta: Chronos se aleja, espacio vacío central, cometas anunciados, rescate de emisor, parada real C9 y Gaia creciendo al aproximarse. Guardado de entrada por etapa, selector de alcanzadas y llegada persistida.
+
+Para probar desde una partida antigua avanzada: **CONTINUAR VIAJE → NIVELES → La Onda de Choque → 1.1 → INICIAR EXPEDICIÓN**. Las partidas nuevas empiezan allí; CONTINUAR recupera el checkpoint una vez iniciado el recorrido.
+
+Inicial `d04b522`; funcional `9946e29`; paquete limpio `bdf13bd`, revisión `ab82ad8f…`. [ZIP, SHA-256 y procedencia](production-reports/evidence/chronos-voyage/final-package/package.json). Sitio fuente `767fab3d42513fa5fa2791c0f95ba1599e2a6b06`; publicación nativa `succeeded`, versión10 y audiencia privada conservada. [Metadatos](production-reports/evidence/chronos-voyage/final-package/site-deployment.json).
+
+QA: partida natural Chromium diez etapas/36fragmentos, interrupción en1.2, taller, instalación y entrada real a Gaia;4/4grupos,21capturas,0erroresJS y RAFmáximo1. El primer disparo perdido se corrigió después de ese snapshot y su aserción original pasa. Sobre paquete final limpio: **certificación11/11**, motor40, arquitectura6, contenido219, estáticos13, regresión34, web13; preview23/23, offlineChromium4/4 y N-7una sesión/seis pasos. [Actions39068219262: completed/success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39068219262), incluidos todos los pasos de empaquetado. El informe distingue versiones, intentos fallidos y alcance.
+
+Aceptación técnica aprobada; arte del vacío/encuadre de Gaia, ritmo humano y Safari/iPhone físico pendientes. Once tareas nuevas de seguimiento permanecen IN_REVIEW; P3 amplio sigue parcial. Cero imágenes nuevas:82recursos existentes reutilizados. MotorV1=false; campañas históricas/guardados preservados; main,PR3 y producción Netlify intactos.
+
+El contenido que sigue es histórico. Las cifras y la pausa anteriores no sustituyen este cierre.
+
+---
+
 ## Verificación vigente de CI — 17/10/2026
 
 [Diagnóstico, corrección y pruebas completas](production-reports/CI_SHIP_PRECACHE_2026-10-17.md). El aviso correspondía a `d325e51`; la corrección principal ya existía en `53a8244` y no se retrocedió. Refuerzo mínimo publicado en `f69d3651e9a180c8502d17aa523a27d9abed92e7`: comprueba los seis frames retirados y disponibilidad/inventario de los recursos actuales, conservando todas las pruebas.

@@ -1,3 +1,5 @@
+> Cierre vigente posterior — 17/10/2026: [diez etapas de tránsito Chronos → Gaia, versión10, capturas reales y certificación](../production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md). El contenido siguiente se conserva como historial de sus entregas; estas etapas no certifican los diez territorios visualmente completos.
+
 > Continuidad vigente, 17/10/2026: [nave modular única, cometa y dos dedos — versión privada 9](../production-reports/SHIP_TOUCH_COMET_2026-10-17.md). Este informe y sus capturas son históricos; el lote nuevo no declara ningún nivel adicional completo ni certificación física.
 
 > Actualización posterior,17/10/2026: [combate, escudo y Vulkar orbital](../production-reports/COMBAT_READABILITY_2026-10-17.md), versión8 publicada. El contenido siguiente se conserva como historial; cero niveles nuevos declarados visualmente completos.

@@ -1,3 +1,17 @@
+## Continuación vigente — diez etapas Chronos → Gaia · 17/10/2026
+
+[Informe y galería de la versión 10](production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md), [web privada](https://neon-catcher-pruebas.chictide18.chatgpt.site). Orden actual satisfecha técnicamente: diez etapas de tránsito enlazadas, checkpoint, C9, mejora y llegada. La pausa por CI que aparece después es histórica y quedó superada por esta petición.
+
+1. Revisar con el propietario el recorrido v10: espacio vacío1.5–1.7, duración360s, parallax, cometas y aproximación de Gaia. Una partida avanzada conserva destino: NIVELES → La Onda de Choque →1.1 para empezar. No rehacer las diez etapas como si sólo hubiera documentación.
+2. Ajustar encuadre superior de Gaia y ritmo/dificultad según revisión; actualmente técnica PASSED y arte PENDING_OWNER. No declarar P3 comercial terminado ni expandir cien etapas por repetición.
+3. Probar Safari/iPhone físico: dos dedos en ambos órdenes, recarga, pausa, taller, interrupción y checkpoint. Chromium/nave offline ya verificados; no equivalen a dispositivo. Medir consumo/FPS reales antes de afirmarlos.
+4. Si se modifica la ruta, mantener `chronos-voyage-v2` reproducible o versionar/migrar; no reinterpretar partidas N-7/Journey. Conservar el modelo v1. Investigar glifos históricos sólo si se reproduce la causa.
+5. MotorV1 reservado/desactivado y único RAF. Conservar paquete limpio bdf13bd y sitio v10; no tocar producción Netlify/main/PR3. Reanudar lotes pequeños integrados, sin restaurar nave antigua o borrar evidencias.
+
+Seguimiento único: production-tasks.json, P3-TRANSIT-01 y P3-CH1-01…10 IN_REVIEW, técnica aprobada. [CI39068219262 completa y verde](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39068219262). Los informes siguientes conservan el historial.
+
+---
+
 ## Incidencia de CI cerrada — 17/10/2026
 
 [Informe de revisión](production-reports/CI_SHIP_PRECACHE_2026-10-17.md). No restaurar la precarga de la nave antigua: el contrato vigente comprueba retrato/atlas actuales y conserva los seis originales fuera de CORE. Corrección/refuerzo `f69d365`, Actions39065781507 completo y satisfactorio; QA offline4/4. No repetir la reparación como si siguiera pendiente.

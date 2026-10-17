@@ -1,0 +1,33 @@
+{
+  "commit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f",
+  "dirty": false,
+  "revision": "ab82ad8fe2d3b2ab79c05ee1fb49ea935e8aad0555feb3655fed7678eca65d97",
+  "files": 118,
+  "archive": {
+    "file": "neon-catcher-chronos-gaia-ten-stages.zip",
+    "bytes": 8173585,
+    "sha256": "483df0ccfde0975504f7b54d9e0b0ca7a7acd23ecc61e44c13beb099278a6d94"
+  },
+  "finalCertificate": {
+    "command": "node scripts/certify-local.mjs /tmp/neon-voyage-final/certificate-02",
+    "ok": true,
+    "phases": 11
+  },
+  "previewTests": {
+    "command": "npm run test:preview",
+    "exitCode": 0,
+    "passed": 23
+  },
+  "naturalEvidence": "../browser-02/results.json",
+  "unchangedNaturalRuntimeFiles": {
+    "core-runtime.js": "f39be54b8347e5b38c8a6d246d0aed95902bbd814b7ac24599106d5a9a244daf",
+    "content-runtime.js": "cdc1f96c132d9dfd93e2fdd52d98dd5be26e8b34b27cf88207a8b896d82937eb",
+    "styles.css": "510a61e860b2d0a3e97feee9caa7cd9abdd1c3e1ab0db61ba2bf4ee4ce2d48f6"
+  },
+  "gameDifference": "natural-to-final-game.diff: only initial checkpoint now clears leftover entities for stages>1, preserving first-frame real shots; regression case17 retained and passes.",
+  "finalBrowser": {
+    "offline": "offline-final-01/results.json",
+    "n7": "n7-final-01/results.json"
+  },
+  "scope": "Ten connected transit stages inside classic territory1; other9territories,N7,saves and disabled V1 preserved. No commercial/physical/artistic certification."
+}

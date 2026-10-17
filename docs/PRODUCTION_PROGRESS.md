@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T20:47:21.533353+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T20:54:36.903717+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -36,17 +36,17 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-INPUT-02 / P1 | Pilotar y disparar con dos contactos independientes y mantener para disparar | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-COMET-02 / P1 | Animar cometa mineral helado y alinear núcleo y estela con su trayectoria | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-CI-01 / P1 | Cerrar fallo de Actions por contrato de nave retirada y verificar la nave actual offline | DONE | PASSED | NOT_APPLICABLE_TO_CI_FIX | NOT_REQUIRED_FOR_CI_FIX; GAME_DEVICE_CERTIFICATION_REMAINS_PENDING |
-| P3-TRANSIT-01 / P3 | Integrar diez etapas jugables del tránsito Chronos–Gaia con vacío, C9 y checkpoints | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-01 / P3 | Etapa 1.1 · Emergencia en Chronos | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-02 / P3 | Etapa 1.2 · Perímetro destruido | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-03 / P3 | Etapa 1.3 · Campo de restos | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-04 / P3 | Etapa 1.4 · Salida orbital | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-05 / P3 | Etapa 1.5 · El gran vacío | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-06 / P3 | Etapa 1.6 · Refugio C9 | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-07 / P3 | Etapa 1.7 · Estela de regreso | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-08 / P3 | Etapa 1.8 · Gaia en la distancia | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-09 / P3 | Etapa 1.9 · Señales de Atlas | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
-| P3-CH1-10 / P3 | Etapa 1.10 · Llegada a Gaia | IN_REVIEW | IN_REVIEW_FINAL_PACKAGE | PENDING_OWNER | PENDING |
+| P3-TRANSIT-01 / P3 | Integrar diez etapas jugables del tránsito Chronos–Gaia con vacío, C9 y checkpoints | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-01 / P3 | Etapa 1.1 · Emergencia en Chronos | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-02 / P3 | Etapa 1.2 · Perímetro destruido | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-03 / P3 | Etapa 1.3 · Campo de restos | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-04 / P3 | Etapa 1.4 · Salida orbital | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-05 / P3 | Etapa 1.5 · El gran vacío | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-06 / P3 | Etapa 1.6 · Refugio C9 | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-07 / P3 | Etapa 1.7 · Estela de regreso | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-08 / P3 | Etapa 1.8 · Gaia en la distancia | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-09 / P3 | Etapa 1.9 · Señales de Atlas | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P3-CH1-10 / P3 | Etapa 1.10 · Llegada a Gaia | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
