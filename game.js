@@ -673,7 +673,7 @@
     hangar.innerHTML = `<section class="panel ship-hangar-panel" tabindex="-1">
       <header class="ship-hangar-header"><small>FLOTA · CONFIGURACIÓN DE NAVE</small><h2 id="shipHangarTitle">Tu nave, a tu manera.</h2><p id="shipHangarRules">Configuración visual · mismas reglas de vuelo.</p></header>
       <div class="ship-hangar-layout">
-        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption></figure>
+        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption><p id="shipAtlasNotice" class="hidden" role="status">No se ha cargado la nave nueva. Puedes usar la original.</p></figure>
         <div class="ship-hangar-controls">
           <div class="ship-preset-list" role="group" aria-label="Naves disponibles"><button type="button" data-ship-preset="aster" aria-pressed="false"><b>ASTÉR</b><span>Exploradora</span></button><button type="button" data-ship-preset="bastion" aria-pressed="false"><b>BASTIÓN</b><span>Interceptora</span></button></div>
           <fieldset class="ship-components"><legend>Combina sus componentes</legend><label for="shipHull">Fuselaje<select id="shipHull"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipWings">Alas<select id="shipWings"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipEngines">Propulsores<select id="shipEngines"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label></fieldset>
@@ -3072,13 +3072,16 @@
   }
 
   function syncShipPresentation() {
-    if (!spriteReady(SPRITES.modularShip)) return;
     if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout) return;
-    const preview = document.createElement("canvas"); preview.width = preview.height = 384;
-    const previewContext = preview.getContext("2d");
-    previewContext.translate(192, 170);
-    if (shipRenderMode === "modular") drawModularShip(previewContext, shipLoadout, 330, 0);
-    const source = shipRenderMode === "legacy" ? "assets/ship_frame_01.webp" : preview.toDataURL("image/png");
+    let source = "assets/ship_frame_01.webp";
+    if (shipRenderMode === "modular") {
+      if (!spriteReady(SPRITES.modularShip)) return;
+      const preview = document.createElement("canvas"); preview.width = preview.height = 384;
+      const previewContext = preview.getContext("2d");
+      previewContext.translate(192, 170);
+      drawModularShip(previewContext, shipLoadout, 330, 0);
+      source = preview.toDataURL("image/png");
+    }
     document.querySelectorAll(".menu-ship-image, .briefing-ship").forEach(image => { image.src = source; });
     shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout};
   }
@@ -3088,7 +3091,10 @@
     if (preview && $("shipHangar")?.classList.contains("show") && shipHangarDraft) {
       const target = preview.getContext("2d"); target.clearRect(0, 0, 512, 512);
       target.save(); target.translate(256, 224);
-      if (shipHangarDraft.mode === "legacy") {
+      const atlasUnavailable = shipHangarDraft.mode === "modular" && !spriteReady(SPRITES.modularShip);
+      $("shipAtlasNotice")?.classList.toggle("hidden", !atlasUnavailable);
+      $("shipApply").disabled = atlasUnavailable;
+      if (shipHangarDraft.mode === "legacy" || atlasUnavailable) {
         const frame = frameFrom("ship", Math.floor(t / 220) % 3);
         if (spriteReady(frame)) target.drawImage(frame, -175, -175, 350, 350);
       } else {
