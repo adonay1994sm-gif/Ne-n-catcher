@@ -52,6 +52,7 @@ vm.runInNewContext(`${serviceWorkerSource}\nglobalThis.__SW_TEST__ = { CACHE, CO
 
 await test("PWA precarga código, legales, sprites y fondo de Cronos", async () => {
   const paths = new Set(swContext.__SW_TEST__.CORE.map(withoutQuery));
+  const manifest = JSON.parse(await text("ASSET_MANIFEST.json"));
   for (const path of [
     "index.html", "styles.css", "game.js", "core-runtime.js", "manifest.webmanifest",
     "privacy.html", "terms.html", "analytics-manager.js", "assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/core_frame_00.webp",
@@ -62,7 +63,25 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
     "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp",
     "assets/titan_omega_graveyard_background_v1.webp", "assets/chronos_collapse_background_v1.webp"
   ]) assert.ok(paths.has(path), path);
-  for(const retired of ['assets/ship_frame_00.webp','assets/ship_frame_01.webp','assets/comet_animation_sheet_v1.webp']) {
+  // The live ship and its emergency portrait must agree with the inventory;
+  // preserved artwork is not a reason to restore retired images to precache.
+  for (const active of ["assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp"]) {
+    const entry = manifest.standalone.find(asset => asset.path === active);
+    assert.ok(entry, `recurso activo sin inventario: ${active}`);
+    assert.notEqual(entry.activeRuntime, false, active);
+    assert.notEqual(entry.precache, false, active);
+    const bytes = await readFile(join(root, active));
+    assert.ok(bytes.length > 0, `recurso activo vacío: ${active}`);
+    assert.equal(bytes.length, entry.size, `tamaño de inventario: ${active}`);
+    if (entry.sha256) assert.equal(sha256(bytes), entry.sha256, `huella de inventario: ${active}`);
+  }
+  const retiredShip = Array.from({length: 6}, (_, index) => `assets/ship_frame_${String(index).padStart(2, "0")}.webp`);
+  const shipGroup = manifest.groups.find(group => group.id === "ship");
+  assert.ok(shipGroup, "El respaldo histórico debe permanecer inventariado");
+  assert.deepEqual(shipGroup.paths, retiredShip);
+  assert.equal(shipGroup.activeRuntime, false);
+  assert.equal(shipGroup.precache, false);
+  for(const retired of [...retiredShip, 'assets/comet_animation_sheet_v1.webp']) {
     assert.equal(paths.has(retired),false,`referencia retirada precargada: ${retired}`);
     assert.equal(await exists(retired),true,'El respaldo retirado debe seguir recuperable');
   }
