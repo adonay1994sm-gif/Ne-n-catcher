@@ -1,3 +1,9 @@
+## Última aclaración — destrucción de Chronos, 17/10/2026
+
+Las siete ilustraciones entregadas por el propietario describen **un acontecimiento dentro del nivel clásico 1**, no siete niveles ni el viaje completo. Conservar los diez niveles. Integración actual: seis estados estructurales ilustrados, onda de 7,2 s y restos persistentes mediante el reloj de ruta; leer [cierre Chronos](docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). No sustituirlo por una presentación de fondos completos ni declarar cerrado el nivel. Arte y dispositivo pendientes; Motor V1 = false y las restricciones siguientes siguen vigentes.
+
+---
+
 ## Orden vigente — referencias y Guardian Atlas,17/10/2026
 
 El propietario ha autorizado diseñar la campaña espacial de cien etapas y producir arte a partir de sus referencias. Diseñar no equivale a implementar. Cerrar primero un combate natural del clásico: recuperar CRONIUM en Gaia→Atlas animado→permiso/recompensa. No sustituirlo por la demo corta. Leer docs/production-reports/GUARDIAN_ATLAS_2026-10-17.md y docs/design/CAMPAIGN_100_STAGES.md. Arte pendiente de aceptación; Motor V1 false. Las restricciones siguientes siguen vigentes; la antigua prohibición de diseñar cien etapas queda sustituida por esta orden.

@@ -2621,10 +2621,11 @@
       "bytes": 438658,
       "sha256": "c4e6f8f9c866ef075fcef4ac3565004420603d04e246a46f324acb2455d89f2d",
       "decodedRGBABytes": 6291456,
-      "integration": "First classic mission, existing renderer and route clock; browser verification in progress",
+      "integration": "First classic mission, existing renderer and route clock; six poses verified in real Chromium, full natural mission passed, owner art and physical QA pending",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
-      "notes": "Six illustrated changes to station structure, not high-FPS fluid animation; other nine classic levels unchanged."
+      "notes": "Six illustrated changes to station structure, not high-FPS fluid animation; other nine classic levels unchanged.",
+      "technicalAcceptance": "PASSED"
     }
   ]
 }

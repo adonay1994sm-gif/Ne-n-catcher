@@ -1,3 +1,15 @@
+## Cierre vigente — destrucción de Chronos, 17/10/2026
+
+**Prueba privada actualizada, versión 6:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Sites confirmó succeeded a las 17:58:28UTC. Paquete limpio 73e117bacc0b220e477c455c07e278a2326fb4dc. CONTINUAR VIAJE → NIVELES → La Onda de Choque para repetir sin borrar progreso. Seis estados ilustrados de Chronos, frente de 7,2 s y restos persistentes; las siete referencias son un acontecimiento del primer nivel, no siete niveles. Los otros nueve permanecen.
+
+Certificación 11/11; contenido 163/163, motor 40/40, arquitectura 6/6, static 13/13, regresión 33/33; preview 23/23. Chromium: evento 5/5, layout 12/12, misión completa 5/5 (90,0022 s,38 fragmentos, rescate→C9→Gaia→guardado), N-7: una sesión, 6 pasos, actualización offline 3/3. Dos intentos de caché agotaron 30 s; el diagnóstico midió ~59 s de espera nativa y el último harness pasó con 90 s, mismas aserciones. Fallos y límites conservados.
+
+Arte y Safari/iPhone físico pendientes; glifos intermitentes y bajo rendimiento de salida siguen abiertos. Incremento IN_REVIEW, 0/10 niveles visualmente completos. Engine V1 = false, un RAF; main, PR3 y producción Netlify intactos. [Informe y capturas](production-reports/CHRONOS_DESTRUCTION_2026-10-17.md) · [Paquete y hashes](production-reports/evidence/chronos-destruction/package-73e117b/package.json) · [Publicación](production-reports/evidence/chronos-destruction/package-73e117b/site-deployment.json).
+
+El contenido anterior se conserva debajo como historial; no sustituye este cierre.
+
+---
+
 ## Cierre vigente — vuelo unificado, 17/10/2026
 
 Cierre documental comprobado en GitHub:9d162b9cac8da5b7685a18bbf7459b56446636f5. Paquete servido:2cea7af9dcec78d2e71305526bb33cc5f31752c6; las precisiones documentales posteriores no representan otro despliegue.

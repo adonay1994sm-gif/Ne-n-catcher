@@ -1,3 +1,7 @@
+> **Cierre posterior vigente:** [destrucción ilustrada de Chronos, 17/10/2026](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Se desarrolló el acontecimiento del primer nivel; los otros nueve permanecen. El contenido siguiente conserva el cierre histórico, no certifica el código posterior ni significa diez niveles visualmente completos.
+
+---
+
 Vigente17/10/2026: [vuelo unificado, primera misión integrada y publicada](../production-reports/UNIFIED_FLIGHT_2026-10-17.md). El contenido siguiente conserva el historial; no implica cierre de los diez niveles ni certificación de este incremento.
 
 ---

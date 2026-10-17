@@ -1,3 +1,7 @@
+> **Nueva captura real del nivel 1, 17/10/2026:** [fractura de Chronos](../production-reports/evidence/chronos-destruction/browser-event-02/natural-03-rupture.png), [seis fases y comparación antes/después](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Es una integración jugable, en revisión artística; no un nivel cerrado. Las imágenes anteriores siguen siendo historial de los otros escenarios.
+
+---
+
 Actualización17/10/2026: la [galería de partida natural](../production-reports/UNIFIED_FLIGHT_2026-10-17.md#g-galería-real-del-ejecutable) añade ataque, Chronos roto/alejándose, tránsito, taller y disparo gemelo en Gaia. Son capturas reales del primer recorrido, no diez escenarios nuevos. La galería previa queda como historial.
 
 ---

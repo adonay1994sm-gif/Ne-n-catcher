@@ -1,3 +1,7 @@
+> **Actualización integrada, 17/10/2026:** el nivel 1 ya usa estación, Gaia y espacio independientes. Chronos tiene seis estados ilustrados de destrucción y frente energético de 7,2 s, con capturas reales y pausa comprobada. Sigue **IN_REVIEW**, no visualmente completo. Los niveles 2–10 no se modificaron en este lote. El Guardian Atlas integrado y sus pruebas posteriores están en su informe; la tabla de auditoría inicial de abajo se conserva como historial y sus notas «sin combate/natural pendiente» no sustituyen cierres posteriores. Fuente vigente: [ledger](../production-tasks.json) y [cierre Chronos](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md).
+
+---
+
 > **Organigrama histórico de escenarios clásicos.** El registro principal reconciliado es [production-tasks.json](../production-tasks.json), bajo [PRODUCT_VISION.md](../PRODUCT_VISION.md). Nueva demo integrada: [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). No confundir nivel clásico, tramo de demostración y etapa canónica.
 
 # Reconstrucción visual de la campaña clásica — auditoría inicial

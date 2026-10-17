@@ -1,3 +1,7 @@
+> **Aclaración del propietario, 17/10/2026:** las siete nuevas referencias de destrucción de Chronos corresponden al acontecimiento inicial del **primero de diez niveles clásicos**. No constituyen siete etapas ni una orden para comprimir el juego. Se desarrolla esa secuencia conservando la campaña y su viaje. Incremento integrado y límites en [CHRONOS_DESTRUCTION_2026-10-17.md](production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Las decisiones históricas siguientes se conservan; no interpretar un estado de arte IN_REVIEW como aceptación del propietario.
+
+---
+
 Actualización de implementación17/10/2026: [vuelo unificado en el clásico](production-reports/UNIFIED_FLIGHT_2026-10-17.md). La última petición del propietario concentra el acceso en una campaña principal e integra viaje/armas/servicio sobre la base clásica. Las variantes antiguas quedan recuperables en QA; el plan10×10 sigue siendo objetivo y no contenido terminado. Se preservan las restricciones del motor y los guardados.
 
 ---

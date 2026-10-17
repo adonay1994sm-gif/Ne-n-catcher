@@ -27,10 +27,10 @@ async function main(){
   const temp=await fs.mkdtemp(path.join(os.tmpdir(),'neon-preview-sw-upgrade-'));
   let server,browser,context;
   async function save(){await saveEvidence(output,report);}
-  async function step(name,fn){const item={name,status:'running'};report.steps.push(item);await save();
+  async function step(name,fn){const item={name,status:'running'},started=Date.now();report.steps.push(item);await save();
     try{item.result=await fn();item.status='passed';assert.deepEqual(report.errors,[]);}
     catch(error){item.status='failed';item.error=errorText(error);throw error;}
-    finally{await save();}}
+    finally{item.durationMs=Date.now()-started;await save();}}
   try{
     await fs.cp(source,temp,{recursive:true});
     const provenance=JSON.parse(await fs.readFile(path.join(temp,'build-info.json'),'utf8'));
@@ -67,8 +67,11 @@ async function main(){
         const target=path.join(temp,file);const original=await fs.readFile(target,'utf8');
         assert.ok(original.includes(old));await fs.writeFile(target,original.replaceAll(old,newRevision));
       }
+      // Native Chromium delayed the first update job ~59s before fetching the
+      // script (chronos-destruction/sw-diagnosis-01). This is a harness bound,
+      // not a gameplay deadline. Keep every activation/cache/offline assertion.
       await bounded(page.evaluate(async()=>{const registrations=await navigator.serviceWorker.getRegistrations();
-        for(const registration of registrations)await registration.update();}),30000,'Updating worker registrations timed out');
+        for(const registration of registrations)await registration.update();}),90000,'Updating worker registrations timed out');
       await waitAsync(page,async revision=>{
         const keys=await caches.keys();
         const registrations=await navigator.serviceWorker.getRegistrations();

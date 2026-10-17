@@ -1,3 +1,15 @@
+## Próxima actuación — después de Chronos 73e117b, 17/10/2026
+
+1. Revisar versión 6 del sitio privado en PLAYTEST_SITE.md: CONTINUAR VIAJE → NIVELES → La Onda de Choque. Son seis estados de la destrucción dentro del nivel 1 de 10; no repetir el atlas ni convertir las referencias en etapas. Aceptación artística del propietario pendiente.
+2. Perfilar salida y memoria en Safari/iPhone; registrar el defecto intermitente de glifos también visto en capturas del primer nivel. El DOM conserva DISPARAR. No repetir hipótesis de blur/transparencia sin causa reproducida ni prometer 60 FPS.
+3. Siguiente lote visual/jugable: consecuencias de Chronos, campo de restos y recuperación legible; después llegada a Gaia, CH-02/03 y conexión natural con Atlas. No declarar cerrado el nivel ni expandir cien etapas por automatismo.
+4. Caché verificada 3/3 en sw-upgrade-03. Leer diagnóstico: el primer update tardó ~59 s con y sin inspector. Harness ahora 90 s para la invocación, mismas aserciones; fallos 01/02 conservados. No reabrir como fallo de atlas ni eliminar pruebas. La causa interna de demora Chromium no está identificada.
+5. Conservar reloj de ruta, 90 s/cuota 36, recarga 3,6 s, anclajes de armas,hitboxes,claves separadas,atlas anteriores y un RAF. Motor V1 = false. Sin producción,main, PR3,AppStore ni TestFlight.
+
+[Informe completo](production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Las órdenes históricas siguientes conservan contexto; no obligan a rehacer hitos verificados.
+
+---
+
 ## Próxima actuación vigente — después del paquete2cea7af, 17/10/2026
 
 1. Revisar el primer viaje publicado; recoger aceptación estética/balance del propietario sin confundirla con QA técnica. Sitio privado en CODEX_STATUS.md.

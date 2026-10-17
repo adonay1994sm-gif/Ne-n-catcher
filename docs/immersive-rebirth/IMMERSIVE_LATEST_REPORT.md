@@ -1,3 +1,7 @@
+> **Último incremento:** [destrucción de Chronos, 17/10/2026](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md), integrado en el primer nivel clásico. Seis estados de estación, frente energético de 7,2 s, pausa y respaldo comprobados. Arte y prueba física pendientes; diez niveles conservados, V1 false. Los informes siguientes permanecen como historial.
+
+---
+
 Vigente17/10/2026: [vuelo unificado, primera misión integrada y publicada](../production-reports/UNIFIED_FLIGHT_2026-10-17.md). El contenido siguiente conserva el historial; no implica cierre de los diez niveles ni certificación de este incremento.
 
 ---

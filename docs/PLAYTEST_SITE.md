@@ -1,3 +1,19 @@
+## Sitio vigente — Chronos, versión 6, 17/10/2026
+
+**https://neon-catcher-pruebas.chictide18.chatgpt.site** — publicación privada succeeded a las 17:58:28UTC. Acceso del propietario conservado; puede requerir su sesión de ChatGPT. CONTINUAR VIAJE → NIVELES → La Onda de Choque. La nueva destrucción está dentro del juego; no una galería de conceptos. Las otras nueve misiones y los guardados permanecen.
+
+- Juego/ZIP limpio: 73e117bacc0b220e477c455c07e278a2326fb4dc.
+- Revisión: 8ef4444967c63e76828e1b131ad8ab8b30d53788ce501633fd2309b9a22e6aeb.
+- SHA-256 juego de preview: 7986cdf3682fe6808a5df8f8bca236c3c49a420f3fefc487af4dcf0f9c9a69f0.
+- Fuente Sites: 5cd815b0f6eb4610aa023c2f706edf05382362d8; 113 archivos idénticos a preview-dist.
+- version_id: appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_e2ae194639988191b2bc949c774605ea.
+- deployment_id: appgdep_6ad3b7352fec819195e985ae8c5b5775.
+- project_id conservado: appgprj_6ad34f65ce74819195e871d7dd99fe21.
+
+[Informe, pruebas y límites](production-reports/CHRONOS_DESTRUCTION_2026-10-17.md) · [Publicación exacta](production-reports/evidence/chronos-destruction/package-73e117b/site-deployment.json). No se jugó remotamente con la cuenta del propietario; Chromium local aprobó misión completa 5/5 y actualización offline 3/3. Arte, glifos y físico pendientes. Netlify no se modificó. Las versiones siguientes son históricas.
+
+---
+
 ## Cierre vigente — vuelo unificado, 17/10/2026
 
 **Prueba privada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Paquete final limpio **2cea7af9dcec78d2e71305526bb33cc5f31752c6**, publicación confirmada succeeded a13:19:54UTC, versión5. CONTINUAR VIAJE → NIVELES → La Onda de Choque para revisar la salida desde un guardado avanzado.

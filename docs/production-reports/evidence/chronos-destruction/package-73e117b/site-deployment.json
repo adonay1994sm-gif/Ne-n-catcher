@@ -1,0 +1,23 @@
+{
+  "id": "appgdep_6ad3b7352fec819195e985ae8c5b5775",
+  "project_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21",
+  "title": "NEON CATCHER — Laboratorio de pruebas",
+  "version_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_e2ae194639988191b2bc949c774605ea",
+  "type": "publish",
+  "status": "succeeded",
+  "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "has_mcp": false,
+  "screenshot_asset_pointer": null,
+  "provider_deployment_id": "site---6ad34f65ce74819195e871d7dd99fe21",
+  "failure_message": null,
+  "env_set_revision": 0,
+  "updated_at": "2026-10-17T17:58:28.759710+00:00",
+  "sourceGameCommit": "73e117bacc0b220e477c455c07e278a2326fb4dc",
+  "distributionCommit": "5cd815b0f6eb4610aa023c2f706edf05382362d8",
+  "versionNumber": 6,
+  "ownerPrivateConfirmed": true,
+  "exactPackageFilesCompared": 113,
+  "gameSha256": "7986cdf3682fe6808a5df8f8bca236c3c49a420f3fefc487af4dcf0f9c9a69f0",
+  "remoteHumanGameplay": "NOT_EXECUTED",
+  "physicalIPhone": "NOT_EXECUTED"
+}

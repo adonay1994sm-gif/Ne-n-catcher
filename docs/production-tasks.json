@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T17:39:18.864737+00:00",
+  "updatedAt": "2026-10-17T17:59:36.571881+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -644,14 +644,31 @@
           "assets/chronos_destruction_atlas_v1.webp",
           "art-source/chronos-destruction/metadata.json"
         ],
-        "commit": null,
-        "tests": [],
+        "commit": "73e117bacc0b220e477c455c07e278a2326fb4dc",
+        "tests": [
+          "node scripts/certify-local.mjs docs/production-reports/evidence/chronos-destruction/certification-02: 11/11 exit0; contenido163/163",
+          "npm run build:preview; npm run test:preview:23/23 exit0; paquete73e117b dirtyfalse",
+          "node scripts/chronos-destruction-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/browser-event-02:5/5 exit0",
+          "node scripts/unified-flight-layout-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/browser-layout-01:12/12 exit0",
+          "node scripts/unified-flight-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/browser-natural-01 --timeout 900000:5/5 exit0"
+        ],
         "evidence": [
-          "art-source/chronos-destruction/qa-results.json"
+          "docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md",
+          "docs/production-reports/evidence/chronos-destruction/certification-02/results.json",
+          "docs/production-reports/evidence/chronos-destruction/browser-event-02/results.json",
+          "docs/production-reports/evidence/chronos-destruction/browser-layout-01/results.json",
+          "docs/production-reports/evidence/chronos-destruction/browser-natural-01/results.json",
+          "docs/production-reports/evidence/chronos-destruction/browser-n7-01/results.json",
+          "docs/production-reports/evidence/chronos-destruction/package-73e117b/site-deployment.json"
         ],
         "openErrors": [
-          "Integración en verificación; aceptación artística y prueba física pendientes."
-        ]
+          "Aceptación artística y Safari/iPhone físico pendientes; no nivel completo."
+        ],
+        "acceptanceStatus": {
+          "technical": "PASSED",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       }
     },
     "note": "Se genera una tarea A001–A150 por sequence. Catálogo READY/IN_REVIEW/IMPLEMENTED_CODE pasa a IN_REVIEW por defecto; nunca a DONE. Un cambio se registra en overrides por asset.id, con commit, tests y evidence."
@@ -4847,7 +4864,8 @@
         "revises": "P1-01",
         "note": "El propietario pidió integrar los sistemas en el clásico. La demo Journey y N-7 quedan como variantes históricas; no se borran ni se importan sus progresos por coincidencia numérica."
       },
-      "packageCommit": "2cea7af9dcec78d2e71305526bb33cc5f31752c6"
+      "packageCommit": "2cea7af9dcec78d2e71305526bb33cc5f31752c6",
+      "latestFollowup": "P1-CHRONOS-02"
     },
     {
       "id": "P1-CHRONOS-02",
@@ -4855,7 +4873,7 @@
       "canonicalPhase": "P1",
       "name": "Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1",
       "priority": "CRITICAL",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "Campaña clásica",
         "Assets",
@@ -4875,14 +4893,34 @@
         "assets/chronos_destruction_atlas_v1.webp",
         "art-source/chronos-destruction/metadata.json"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "73e117bacc0b220e477c455c07e278a2326fb4dc",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/chronos-destruction/certification-02: 11/11 exit0; contenido163/163",
+        "npm run build:preview; npm run test:preview:23/23 exit0; paquete73e117b dirtyfalse",
+        "node scripts/chronos-destruction-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/browser-event-02:5/5 exit0",
+        "node scripts/unified-flight-layout-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/browser-layout-01:12/12 exit0",
+        "node scripts/unified-flight-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/browser-natural-01 --timeout 900000:5/5 exit0",
+        "node scripts/content-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/browser-n7-01 --profile 390x844 --mode n7:1 sesión6pasos exit0",
+        "node scripts/preview-sw-upgrade-smoke.cjs --root preview-dist --output docs/production-reports/evidence/chronos-destruction/sw-upgrade-03:3/3 exit0; intentos01/02 conservados exit1 por timeout30s"
+      ],
       "evidence": [
         "docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md",
-        "art-source/chronos-destruction/qa-results.json"
+        "docs/production-reports/evidence/chronos-destruction/certification-02/results.json",
+        "docs/production-reports/evidence/chronos-destruction/browser-event-02/results.json",
+        "docs/production-reports/evidence/chronos-destruction/browser-layout-01/results.json",
+        "docs/production-reports/evidence/chronos-destruction/browser-natural-01/results.json",
+        "docs/production-reports/evidence/chronos-destruction/browser-n7-01/results.json",
+        "docs/production-reports/evidence/chronos-destruction/package-73e117b/package.json",
+        "docs/production-reports/evidence/chronos-destruction/sw-upgrade-01/results.json",
+        "docs/production-reports/evidence/chronos-destruction/sw-upgrade-02/results.json",
+        "docs/production-reports/evidence/chronos-destruction/sw-upgrade-03/results.json",
+        "docs/production-reports/evidence/chronos-destruction/sw-diagnosis-01/README.md",
+        "docs/production-reports/evidence/chronos-destruction/package-73e117b/site-deployment.json"
       ],
       "openErrors": [
-        "Verificación integrada en curso; aceptación artística y Safari/iPhone físico pendientes.",
+        "Aceptación artística y Safari/iPhone físico pendientes.",
+        "Glifos parciales reaparecen en capturas Chromium aunque el DOM conserva DISPARAR; causa no demostrada.",
+        "Rendimiento bajo de salida en Chromium por software; no se midió memoria física.",
         "Seis estados no equivalen a nivel completo ni a animación fluida de alta frecuencia."
       ],
       "acceptance": [
@@ -4892,14 +4930,15 @@
         "Chromium real, tres tamaños, regresiones y revisión del propietario."
       ],
       "acceptanceStatus": {
-        "technical": "IN_PROGRESS",
+        "technical": "PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Las siete ilustraciones del propietario describen la destrucción dentro del primer nivel; no siete etapas ni sustitución de los otros nueve."
-      }
+      },
+      "packageCommit": "73e117bacc0b220e477c455c07e278a2326fb4dc"
     }
   ],
   "canonicalPlan": {
@@ -4933,6 +4972,11 @@
       "status": "CHANGES_REQUESTED",
       "report": "docs/production-reports/NAVES_MODULARES_2026-10-17.md",
       "priority": "Recuperar ritmo clásico e integración; no expandir el prototipo corto."
+    },
+    "latestClarification": {
+      "date": "2026-10-17",
+      "report": "docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md",
+      "scope": "Las siete referencias de Chronos describen un acontecimiento del nivel clásico1 de10. Conservar diez niveles; arte y motor no aprobados por silencio."
     }
   }
 }

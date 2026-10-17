@@ -4,7 +4,7 @@
   "contentVersion": "chronos-destruction-art-v1",
   "status": "IN_REVIEW",
   "artisticAcceptance": "PENDING_OWNER",
-  "runtimeIntegration": "PENDING_ROOT_INTEGRATION",
+  "runtimeIntegration": "INTEGRATED_IN_CLASSIC_LEVEL_1",
   "physicalIPhone": "PENDING",
   "purpose": "Six structural states of the Chronos destruction event within classic level 1 of 10; not a whole level or campaign.",
   "runtime": {
@@ -258,5 +258,22 @@
     "Game compositing, duration, pause, reduced-flash handling, asset loading and screenshot verification are root integration tasks.",
     "Final aesthetic acceptance remains with the owner.",
     "This sprite atlas does not replace independent scenery layers or the remaining nine levels."
-  ]
+  ],
+  "browserVerification": {
+    "status": "PASSED",
+    "evidence": "docs/production-reports/evidence/chronos-destruction/browser-event-02/results.json",
+    "scope": "Six real drawImage cells, four wave poses, pause, persistent wreck and missing-atlas fallback in Chromium; not owner aesthetic acceptance or physical iPhone"
+  },
+  "timing": {
+    "clock": "classicFlightView.elapsed",
+    "ruptureAt": "minDuration * .10",
+    "postRuptureFrameEndsSeconds": [
+      0.45,
+      1.25,
+      2.4,
+      4.4
+    ],
+    "aftermath": "retained while station visible",
+    "waveSeconds": 7.2
+  }
 }
