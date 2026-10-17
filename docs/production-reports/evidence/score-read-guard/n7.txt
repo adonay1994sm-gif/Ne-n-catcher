@@ -1,0 +1,7 @@
+[390x844-n7] open selected mode and verify level selector
+[390x844-n7] touch movement and fire with visible controls
+[390x844-n7] pause freezes simulation while one RAF continues
+[390x844-n7] resume advances real game clock and encounter director
+[390x844-n7] restart resets progress, preserves seed and advances again
+[390x844-n7] return to menu and verify resource and RAF health
+{"status":"passed","exitCode":0,"casesPassed":1,"totalCases":1,"output":"/tmp/neon-cronium-score-guard-n7","durationMs":25836}

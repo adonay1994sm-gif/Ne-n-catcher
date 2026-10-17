@@ -1,0 +1,16 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import {createStorageService} from '/workspace/Ne-n-catcher/src/core/storage-service.js';
+const file='/workspace/Ne-n-catcher/src/game/01-runtime-assets.js';
+const source=readFileSync(file,'utf8');
+const match=source.match(/  function migrateLegacyStorage\(\) \{[\s\S]*?\n  \}/);
+assert.ok(match,'Actual runtime migration function found');
+const legacyKey='neon-best-v1',currentKey='neon-best-v2';
+const entries=new Map([[legacyKey,'100'],[currentKey,'9000']]),writes=[];
+const storage=createStorageService({getItem(key){if(key===currentKey)throw new Error('Injected current-best read failure');return entries.get(key)??null;},setItem(key,value){writes.push({key,value});entries.set(key,String(value));}});
+const migrate=new Function('storage','N7_CAMPAIGN','JOURNEY_DEMO','LEGACY_KEYS','KEYS',`${match[0]}\nreturn migrateLegacyStorage();`);
+const before=entries.get(currentKey),returned=migrate(storage,false,false,{best:legacyKey},{best:currentKey});
+const result={testedAt:new Date().toISOString(),kind:'controlled actual-function storage fault reproduction',sourceFile:file,sourceFunction:match[0],before,legacy:entries.get(legacyKey),returned,after:entries.get(currentKey),writes,taggedRead:storage.readRaw(currentKey),reproduced:entries.get(currentKey)==='100'};
+assert.equal(result.reproduced,true,'Current read-denied migration reproduces score loss');
+writeFileSync('/tmp/migration-read-fault-result.json',JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));

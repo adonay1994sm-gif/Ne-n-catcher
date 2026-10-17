@@ -1,3 +1,11 @@
+## Continuación vigente · versión14, 17/10/2026
+
+[Cierre de guardados y paquete](production-reports/SCORE_READ_GUARD_2026-10-17.md). Verificar remoto y conservar avances posteriores. HEAD funcional probado f39082f; web privada14, fuenteSite5f06e63. No repetir la corrección de migración/derrota ni declarar que falta el journal: leer sus pruebas y límites. Guardado de derrota no es una transacción atómica entre dos claves.
+
+Mantener las prioridades siguientes del lote Chronos–Gaia: revisión del propietario, protocolo humano y CH-02/CH-03 por integración pequeña. C9/Gaia/audio/confort están implementados; arte/dispositivo pendientes. El correo público queda aplazado, sin nuevas preguntas repetidas. Preservar misión orbital externa y publicar siguientes paquetes sólo en `dist/clasico-actual/`; MotorV1 sigue desactivado. No producción ni tiendas.
+
+---
+
 <!-- voyage-polish-next -->
 ## Continuación vigente · NEON CRONIUM versión13,17/10/2026
 

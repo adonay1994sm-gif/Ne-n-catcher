@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-17T22:27:49.923Z",
+  "errors": [],
+  "failedRequests": [],
+  "checks": [
+    {
+      "name": "Preserved home opens exact current classic; play and pause work",
+      "status": "passed",
+      "commit": "f39082f04667d7dc18ceba17705095bacb30806e"
+    },
+    {
+      "name": "Existing orbital path remains accessible",
+      "status": "passed"
+    }
+  ],
+  "limits": [
+    "Real local Chromium navigation; no full orbital gameplay or physical iPhone certification.",
+    "Classic package bytes verified separately against clean f39082f; concurrent orbital files preserved by SHA-256."
+  ],
+  "exitCode": 0,
+  "finishedAt": "2026-10-17T22:27:54.538Z"
+}

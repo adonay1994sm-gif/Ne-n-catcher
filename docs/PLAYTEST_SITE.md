@@ -1,3 +1,19 @@
+<!-- score-read-guard-current -->
+## DIAGNÓSTICO · refuerzo final de guardados, 17/10/2026
+
+La revisión posterior a la versión 13 reprodujo pérdida de récord 9000→100 al denegar su lectura durante la migración. Se corrigió esa ruta y la escritura después de derrota, preservando raw inválido y claves existentes.
+
+## INFORME DE PRODUCCIÓN · versión 14 privada
+
+[Informe vigente, paquete, capturas y pruebas](production-reports/SCORE_READ_GUARD_2026-10-17.md). Código limpio **f39082f**, Actions [39074965794](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39074965794) completo/success. Certificación 11/11, contenido 297/297, preview 23/23; Chromium arranque 4/4, actualización/offline 5/5, C9 y N-7 pasan. HTTP remoto 3/3 confirma SHA/bundle. Web privada **[NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)**, versión 14, fuente Site 5f06e63; 147 archivos ajenos preservados. CONTINUAR VIAJE abre `/clasico-actual/`.
+
+Se mantienen C9 ilustrada, selección de armas, Gaia encuadrada, partituras contextuales y confort del lote anterior. [Su informe y partidas naturales](production-reports/VOYAGE_POLISH_2026-10-17.md) siguen válidos con sus SHA originales; el refuerzo sólo altera dos funciones de persistencia. Revisión artística/humana/iPhone y contenido restante pendientes. Correo de soporte aplazado por el propietario. Motor V1 apagado; no producción, main, PR #3 ni tiendas.
+
+Las secciones siguientes conservan el historial de cada versión; esta actualización es el estado vigente.
+<!-- /score-read-guard-current -->
+
+---
+
 <!-- voyage-polish-current -->
 ## DIAGNÓSTICO · continuidad y pulido Chronos–Gaia,17/10/2026
 

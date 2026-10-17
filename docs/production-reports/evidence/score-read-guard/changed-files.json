@@ -1,0 +1,42 @@
+{
+  "base": "24c8b43c77b6b92212736f225d0aa3b13f4fbf36",
+  "functionalCommit": "f39082f04667d7dc18ceba17705095bacb30806e",
+  "files": [
+    {
+      "status": "M",
+      "path": "game.js"
+    },
+    {
+      "status": "M",
+      "path": "ios/App/App/public/game.js"
+    },
+    {
+      "status": "M",
+      "path": "package.json"
+    },
+    {
+      "status": "M",
+      "path": "src/game/01-runtime-assets.js"
+    },
+    {
+      "status": "M",
+      "path": "src/game/03-ui-game-flow.js"
+    },
+    {
+      "status": "M",
+      "path": "tests/completion-journal-legacy.test.mjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/death-score-persistence.test.mjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/legacy-score-migration.test.mjs"
+    },
+    {
+      "status": "M",
+      "path": "www/game.js"
+    }
+  ]
+}

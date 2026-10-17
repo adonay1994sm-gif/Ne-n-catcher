@@ -1,3 +1,5 @@
+> Actualización posterior: [refuerzo de guardados y versión14](SCORE_READ_GUARD_2026-10-17.md), f39082f, CI y web verificados. Este informe conserva la producción visual/audio y sus pruebas de la versión13.
+
 # DIAGNÓSTICO
 
 La orden «Haz todo lo que propones» autoriza ejecutar las metas de la [auditoría de publicación](AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md) por dependencias. HEAD inicial y remoto: `827c1b5f50d88cbca5f68924d6ffc71f0794074e`; árbol inicial limpio. Se preservan los commits externos de cámara/compositor experimental. Motor V1 sigue desactivado.

@@ -1,0 +1,2 @@
+[Voyage polish] explicit saved C9 service checkpoint verifies real contrast, selectable weapons and native offline artwork
+{"status":"passed","exitCode":0,"passed":1,"failed":0,"durationMs":14687,"output":"/tmp/neon-cronium-score-guard-c9"}

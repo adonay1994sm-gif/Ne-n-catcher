@@ -1,0 +1,29 @@
+{
+  "kind": "Authenticated read-only remote HTTP verification",
+  "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 6278,
+      "sha256": "41751f1ad6c6881f4e2347f4e037e6b8921264b4e1ae7ee52a8fbfa05224a4e2"
+    },
+    {
+      "path": "/clasico-actual/build-info.json",
+      "status": 200,
+      "bytes": 31299,
+      "sha256": "a1ae16d353c7e905df5241b68666f7b7ff48443e534dfe738d029f93c8be8c38",
+      "commit": "f39082f04667d7dc18ceba17705095bacb30806e",
+      "revision": "8bbfa6fb32c6d1ca12369f84e16b8bc4ff8e11559c459a094eca1f78cc5db72e"
+    },
+    {
+      "path": "/clasico-actual/juego/game.js",
+      "status": 200,
+      "bytes": 250108,
+      "sha256": "fad019cf9b52342a9345802aef6879f179a0d29368a476707c65745e4a29df5a"
+    }
+  ],
+  "errors": [],
+  "status": "passed",
+  "exitCode": 0
+}

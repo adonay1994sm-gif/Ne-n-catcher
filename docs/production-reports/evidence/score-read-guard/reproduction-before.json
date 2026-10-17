@@ -1,0 +1,20 @@
+{
+  "testedAt": "2026-10-17T22:18:42.926Z",
+  "kind": "controlled actual-function storage fault reproduction",
+  "sourceFile": "/workspace/Ne-n-catcher/src/game/01-runtime-assets.js",
+  "sourceFunction": "  function migrateLegacyStorage() {\n    if (N7_CAMPAIGN || JOURNEY_DEMO) return false;\n    const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));\n    const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));\n    if (legacyBest <= currentBest) return false;\n    return storage.set(KEYS.best, legacyBest);\n  }",
+  "before": "9000",
+  "legacy": "100",
+  "returned": true,
+  "after": "100",
+  "writes": [
+    {
+      "key": "neon-best-v2",
+      "value": "100"
+    }
+  ],
+  "taggedRead": {
+    "ok": false
+  },
+  "reproduced": true
+}

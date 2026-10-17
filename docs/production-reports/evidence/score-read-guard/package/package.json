@@ -1,0 +1,15 @@
+{
+  "commit": "f39082f04667d7dc18ceba17705095bacb30806e",
+  "sourceTree": "4da2b840cafe983763cccf21215b916cee112327",
+  "dirty": false,
+  "revision": "8bbfa6fb32c6d1ca12369f84e16b8bc4ff8e11559c459a094eca1f78cc5db72e",
+  "file": "neon-cronium-score-guard-f39082f.zip",
+  "bytes": 8504676,
+  "entries": 119,
+  "sha256": "9e84933240081b7b767bd25272cc92f91364fc424cddc7318c907099c66d4000",
+  "entriesToOpen": [
+    "index.html",
+    "juego/index.html"
+  ],
+  "buildWorkspace": "Clean authorized branch; pipeline generated; no source or package changes during certification."
+}
