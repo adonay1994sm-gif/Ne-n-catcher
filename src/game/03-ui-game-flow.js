@@ -1,10 +1,133 @@
+  function setupShipHangar() {
+    if ($("shipHangar")) return;
+    const menuActions = ui.menu.querySelector(".menu-actions");
+    if (!menuActions) return;
+
+    const openButton = document.createElement("button");
+    openButton.id = "openHangar";
+    openButton.type = "button";
+    openButton.className = "secondary";
+    openButton.innerHTML = '<span class="button-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 4 7 5 8-7-2-2 3-2-3-7 2 5-8Z"/></svg></span>HANGAR';
+    menuActions.classList.add("has-hangar");
+    menuActions.append(openButton);
+
+    const hangar = document.createElement("div");
+    hangar.id = "shipHangar";
+    hangar.className = "overlay ship-hangar hidden";
+    hangar.setAttribute("role", "dialog");
+    hangar.setAttribute("aria-modal", "true");
+    hangar.setAttribute("aria-labelledby", "shipHangarTitle");
+    hangar.setAttribute("aria-describedby", "shipHangarRules");
+    hangar.innerHTML = `<section class="panel ship-hangar-panel" tabindex="-1">
+      <header class="ship-hangar-header"><small>FLOTA · CONFIGURACIÓN DE NAVE</small><h2 id="shipHangarTitle">Tu nave, a tu manera.</h2><p id="shipHangarRules">Configuración visual · mismas reglas de vuelo.</p></header>
+      <div class="ship-hangar-layout">
+        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption></figure>
+        <div class="ship-hangar-controls">
+          <div class="ship-preset-list" role="group" aria-label="Naves disponibles"><button type="button" data-ship-preset="aster" aria-pressed="false"><b>ASTÉR</b><span>Exploradora</span></button><button type="button" data-ship-preset="bastion" aria-pressed="false"><b>BASTIÓN</b><span>Interceptora</span></button></div>
+          <fieldset class="ship-components"><legend>Combina sus componentes</legend><label for="shipHull">Fuselaje<select id="shipHull"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipWings">Alas<select id="shipWings"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipEngines">Propulsores<select id="shipEngines"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label></fieldset>
+          <button id="shipLegacy" class="ship-legacy" type="button" aria-pressed="false">Usar la nave original</button>
+          <p id="shipHangarStatus" class="ship-hangar-status" role="status">Los cambios se guardan al aplicar.</p>
+        </div>
+      </div>
+      <footer class="ship-hangar-actions"><button id="shipApply" class="primary" type="button">APLICAR CONFIGURACIÓN</button><button id="shipHangarBack" class="secondary" type="button">VOLVER SIN CAMBIAR</button></footer>
+    </section>`;
+    canvas.closest(".game").append(hangar);
+    ui.shipHangar = hangar;
+    const panel = hangar.querySelector(".ship-hangar-panel");
+    const presetButtons = [...hangar.querySelectorAll("[data-ship-preset]")];
+    const components = [["hull", $("shipHull")], ["wings", $("shipWings")], ["engines", $("shipEngines")]];
+    const sameLoadout = (first, second) => components.every(([key]) => first[key] === second[key]);
+
+    function refreshDraft() {
+      const modular = shipHangarDraft.mode === "modular";
+      for (const [key, select] of components) {
+        select.value = shipHangarDraft.loadout[key];
+        select.disabled = !modular;
+      }
+      for (const button of presetButtons) {
+        const preset = NeonCampaign.SHIP_FLEET.find(entry => entry.id === button.dataset.shipPreset);
+        button.setAttribute("aria-pressed", String(modular && Boolean(preset) && sameLoadout(shipHangarDraft.loadout, preset.loadout)));
+      }
+      $("shipLegacy").setAttribute("aria-pressed", String(!modular));
+      const selected = NeonCampaign.SHIP_FLEET.find(entry => sameLoadout(shipHangarDraft.loadout, entry.loadout));
+      $("shipHangarName").textContent = !modular ? "Nave original" : selected?.name || "Configuración combinada";
+      $("shipHangarCanvas").setAttribute("aria-label", `Vista previa: ${$("shipHangarName").textContent}`);
+      $("shipHangarStatus").textContent = "Vista previa · aplica para guardar tu elección.";
+    }
+
+    function closeHangar() {
+      hangar.classList.remove("show");
+      hangar.classList.add("hidden");
+      shipHangarDraft = null;
+      overlay(ui.menu);
+      openButton.focus({ preventScroll: true });
+    }
+
+    openButton.onclick = () => {
+      if (state !== "menu" || !(ui.menu.classList.contains("show") || ui.briefing.classList.contains("show"))) return;
+      shipHangarDraft = { mode: shipRenderMode, loadout: { ...NeonCampaign.normalizeShipLoadout(shipLoadout) } };
+      refreshDraft();
+      overlay();
+      hangar.classList.remove("hidden");
+      hangar.classList.add("show");
+      panel.focus({ preventScroll: true });
+    };
+    for (const button of presetButtons) button.onclick = () => {
+      if (!shipHangarDraft) return;
+      const preset = NeonCampaign.SHIP_FLEET.find(entry => entry.id === button.dataset.shipPreset);
+      if (!preset) return;
+      shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout(preset.loadout) } };
+      refreshDraft();
+    };
+    for (const [key, select] of components) select.onchange = () => {
+      if (!shipHangarDraft) return;
+      shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout({ ...shipHangarDraft.loadout, [key]: select.value }) } };
+      refreshDraft();
+    };
+    $("shipLegacy").onclick = () => {
+      if (!shipHangarDraft) return;
+      shipHangarDraft = { mode: "legacy", loadout: { ...shipHangarDraft.loadout } };
+      refreshDraft();
+    };
+    $("shipApply").onclick = () => {
+      if (!shipHangarDraft) return;
+      const loadout = NeonCampaign.normalizeShipLoadout(shipHangarDraft.loadout);
+      if (!storage.setJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, { version: 1, mode: shipHangarDraft.mode, loadout })) {
+        $("shipHangarStatus").textContent = "No se pudo guardar. Tu nave anterior sigue seleccionada.";
+        return;
+      }
+      shipRenderMode = shipHangarDraft.mode;
+      shipLoadout = loadout;
+      syncShipPresentation();
+      closeHangar();
+      toast("Configuración de nave guardada");
+    };
+    $("shipHangarBack").onclick = closeHangar;
+    hangar.addEventListener("keydown", event => {
+      // Keep preview keyboard navigation out of the campaign's global controls.
+      event.stopPropagation();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeHangar();
+      } else if (event.key === "Tab") {
+        const controls = [...hangar.querySelectorAll("button,select")].filter(element => !element.disabled);
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault(); first.focus();
+        }
+      }
+    });
+  }
+
   function setupJourneyUI() {
     if (!JOURNEY_DEMO) return;
     document.body.classList.add("journey-mode");
     const mount = document.createElement("div");
     mount.innerHTML = `<div id="journeyRoute" class="journey-route hidden"><small>CRONOS → GAIA NOVA</small><b id="journeyDestination"></b><progress id="journeyDistance" max="1" value="0" aria-label="Recorrido hasta Gaia"></progress><span id="journeyObjective"></span></div>
       <div id="journeySkills" class="journey-skills hidden"><button id="journeyShield" type="button">ESCUDO <small>LISTO</small></button><button id="journeyTractor" type="button">TRACTOR <small>LISTO</small></button></div>
-      <div id="journeyStation" class="overlay"><section class="panel journey-service"><small>BALIZA DE SERVICIO C9</small><img src="assets/repair_drone.webp" alt="Mira, robot del taller"><h2>Un momento de respiro.</h2><p>«Soy Mira. Ese módulo rescatado aún puede volar. Te lo monto y sello el casco.»</p><div class="journey-piece"><img src="assets/debris_panel.webp" alt="Aleta de propulsión recuperada"><div><b>Aleta vectorial C9</b><p>Respuesta lateral +20 % y propulsión ámbar visible. Instalación con la pieza recuperada; sin créditos.</p></div></div><button id="journeyInstall" class="primary" type="button">INSTALAR PIEZA Y REPARAR</button><button id="journeyContinue" class="secondary" type="button" disabled>CONTINUAR HACIA GAIA</button><button id="journeyStationHome" class="link" type="button">Guardar y volver</button></section></div>
+      <div id="journeyStation" class="overlay"><section class="panel journey-service"><small>BALIZA DE SERVICIO C9</small><img src="assets/repair_drone.webp" alt="Mira, robot del taller"><h2>Un momento de respiro.</h2><p>«Soy Mira. Ese módulo rescatado aún puede volar. Te lo monto y sello el casco.»</p><div class="journey-piece"><canvas id="journeyModulePreview" width="240" height="150" role="img" aria-label="Propulsor C9 recuperado">Propulsor C9 recuperado.</canvas><div><b>Propulsor C9</b><p>Respuesta lateral +20 % y propulsión ámbar visible. Instalación con la pieza recuperada; sin créditos.</p></div></div><button id="journeyInstall" class="primary" type="button">INSTALAR PIEZA Y REPARAR</button><button id="journeyContinue" class="secondary" type="button" disabled>CONTINUAR HACIA GAIA</button><button id="journeyStationHome" class="link" type="button">Guardar y volver</button></section></div>
       <div id="journeyComplete" class="overlay"><section class="panel journey-service"><small>ACCESO ATLAS · TRAYECTO COMPLETO</small><h2>Gaia nos recibe.</h2><p>Has salido de Chronos, recuperado e instalado una pieza y abierto el paso. El siguiente viaje todavía está en producción.</p><p id="journeyReward"></p><button id="journeyAgain" class="primary" type="button">REPETIR TRAVESÍA</button><button id="journeyHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
     canvas.parentElement.append(mount);
     for (const id of ["journeyRoute", "journeyDestination", "journeyDistance", "journeyObjective", "journeySkills", "journeyShield", "journeyTractor", "journeyStation", "journeyInstall", "journeyContinue", "journeyComplete"]) ui[id] = $(id);
@@ -22,7 +145,7 @@
       ui.fire.classList.remove("hidden"); ui.journeySkills.classList.remove("hidden");
       ui.journeyRoute.classList.remove("hidden");
       syncJourneyHud();
-      showStoryTransmission("MIRA · C9", "Aleta conectada. Prueba el empuje hacia Gaia.", 3.2);
+      showStoryTransmission("MIRA · C9", "Propulsor conectado. Prueba el empuje hacia Gaia.", 3.2);
     };
     $("journeyStationHome").onclick = goHome;
     $("journeyHome").onclick = goHome;
@@ -83,7 +206,7 @@
     ui.journeyRoute.classList.add("hidden");
     ui.banner.classList.remove("show");
     ui.journeyInstall.disabled = journeyView.partInstalled;
-    ui.journeyInstall.textContent = journeyView.partInstalled ? "ALETA MONTADA · CASCO SELLADO" : "INSTALAR PIEZA Y REPARAR";
+    ui.journeyInstall.textContent = journeyView.partInstalled ? "PROPULSOR MONTADO · CASCO SELLADO" : "INSTALAR PIEZA Y REPARAR";
     ui.journeyContinue.disabled = !journeyView.partInstalled;
     overlay(ui.journeyStation); syncJourneyHud();
   }
@@ -103,7 +226,7 @@
     journeyView = journey.snapshot();
     ui.journeyDestination.textContent = journeyView.destination;
     ui.journeyDistance.value = journeyView.routeProgress;
-    ui.journeyObjective.textContent = journeyView.phase === "station" ? "Instala la pieza recuperada" : journeyView.waitingFor === "part" ? "Recupera el módulo · usa TRACTOR si lo necesitas" : journeyView.borderActive && !journeyView.borderResolved ? "Desactiva al guardián CH-01 para abrir el paso" : journeyView.partCollected ? "Pieza a bordo · sigue el corredor" : "Rescata la aleta vectorial señalizada";
+    ui.journeyObjective.textContent = journeyView.phase === "station" ? "Instala la pieza recuperada" : journeyView.waitingFor === "part" ? "Recupera el módulo · usa TRACTOR si lo necesitas" : journeyView.borderActive && !journeyView.borderResolved ? "Desactiva al guardián CH-01 para abrir el paso" : journeyView.partCollected ? "Pieza a bordo · sigue el corredor" : "Rescata el propulsor C9 señalizado";
     for (const [name, cooldown] of [["journeyShield", journeyShieldCooldown], ["journeyTractor", journeyTractorCooldown]]) {
       ui[name].disabled = cooldown > 0 || state !== "playing";
       const label = cooldown > 0 ? `${Math.ceil(cooldown)} s` : "LISTO";
@@ -118,7 +241,7 @@
   function journeyEvent(event) {
     if (event.type === "partAvailable") {
       items.push({type: "journeyPart", x: W * .68, baseX: W * .68, y: H * .35, r: 27, s: 120, rot: 0, rs: .2, p: 0, phase: 0, alpha: 1});
-      showStoryTransmission("BALIZA C9", "Aleta vectorial intacta. Acércate o activa el tractor.", 3.8);
+      showStoryTransmission("BALIZA C9", "Propulsor C9 intacto. Acércate o activa el tractor.", 3.8);
     } else if (event.type === "enemy" || event.type === "border") {
       const enemy = createThreat("scout", level());
       enemy.x = enemy.baseX = event.type === "border" ? W * .5 : W * .28;

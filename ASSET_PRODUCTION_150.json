@@ -36,7 +36,11 @@
       "level": "1-10",
       "priority": "P0",
       "status": "IN_REVIEW",
-      "reference": "existing/game design"
+      "reference": "existing/game design",
+      "runtimePath": "assets/ship_modular_atlas_v1.webp",
+      "masterPath": "art-source/player/modular-v1/modular-ships-master.png",
+      "integration": "Modular hangar and shared legacy player renderer; owner visual acceptance pending",
+      "animation": "Articulated wings and exhaust; no claim of completed destruction or dedicated state frames"
     },
     {
       "sequence": 2,
@@ -52,7 +56,11 @@
       "level": "1-10",
       "priority": "P0",
       "status": "IN_REVIEW",
-      "reference": "existing/game design"
+      "reference": "existing/game design",
+      "runtimePath": "assets/ship_modular_atlas_v1.webp",
+      "masterPath": "art-source/player/modular-v1/modular-ships-master.png",
+      "integration": "Modular hangar and shared legacy player renderer; owner visual acceptance pending",
+      "animation": "Articulated wings and exhaust; no claim of completed destruction or dedicated state frames"
     },
     {
       "sequence": 3,
@@ -67,8 +75,12 @@
       "pivot": "0.5,0.5",
       "level": "1-10",
       "priority": "P1",
-      "status": "PLANNED",
-      "reference": "existing/game design"
+      "status": "IN_REVIEW",
+      "reference": "existing/game design",
+      "runtimePath": "assets/ship_modular_atlas_v1.webp",
+      "masterPath": "art-source/player/modular-v1/modular-ships-master.png",
+      "integration": "Modular hangar and shared legacy player renderer; owner visual acceptance pending",
+      "animation": "Articulated wings and exhaust; no claim of completed destruction or dedicated state frames"
     },
     {
       "sequence": 4,

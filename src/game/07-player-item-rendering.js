@@ -1,3 +1,75 @@
+  // Authored component crops share explicit mounting coordinates, not icon offsets.
+  function drawShipComponent(target, loadout, part) {
+    const atlas = SPRITES.modularShip;
+    if (!spriteReady(atlas)) return false;
+    const frame = NeonCampaign.shipPartFrame(loadout, part);
+    const source = frame.source, destination = frame.destination;
+    const sx = atlas.naturalWidth / frame.sourceWidth;
+    const sy = atlas.naturalHeight / frame.sourceHeight;
+    target.drawImage(atlas, source.x * sx, source.y * sy, source.width * sx, source.height * sy,
+      destination.x, destination.y, destination.width, destination.height);
+    return true;
+  }
+
+  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0) {
+    if (!spriteReady(SPRITES.modularShip)) return false;
+    const pose = NeonCampaign.shipAssemblyPose({elapsedSeconds: time, steering, hull: health, impactSeconds: impact});
+    target.save();
+    target.scale(size / 512, size / 512);
+    target.rotate(pose.bankRotation);
+    target.scale(pose.bankScaleX, 1);
+    // Exhaust stretches from the nozzle, never from the centre of the ship.
+    target.save(); target.translate(0, 173);
+    target.scale(1, pose.enginePulse); target.translate(0, -173);
+    drawShipComponent(target, loadout, "flames"); target.restore();
+    // A small articulated sweep pivots at each root, underneath the fuselage.
+    for (const side of [-1, 1]) {
+      target.save();
+      target.beginPath(); target.rect(side < 0 ? -512 : 0, -512, 512, 1024); target.clip();
+      target.translate(side * 52, -35); target.rotate(side * pose.wingSweep);
+      target.translate(-side * 52, 35);
+      drawShipComponent(target, loadout, "wings"); target.restore();
+    }
+    drawShipComponent(target, loadout, "engines");
+    drawShipComponent(target, loadout, "hull");
+    target.restore();
+    return true;
+  }
+
+  function syncShipPresentation() {
+    if (!spriteReady(SPRITES.modularShip)) return;
+    if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout) return;
+    const preview = document.createElement("canvas"); preview.width = preview.height = 384;
+    const previewContext = preview.getContext("2d");
+    previewContext.translate(192, 170);
+    if (shipRenderMode === "modular") drawModularShip(previewContext, shipLoadout, 330, 0);
+    const source = shipRenderMode === "legacy" ? "assets/ship_frame_01.webp" : preview.toDataURL("image/png");
+    document.querySelectorAll(".menu-ship-image, .briefing-ship").forEach(image => { image.src = source; });
+    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout};
+  }
+
+  function drawShipHangar(t) {
+    const preview = $("shipHangarCanvas");
+    if (preview && $("shipHangar")?.classList.contains("show") && shipHangarDraft) {
+      const target = preview.getContext("2d"); target.clearRect(0, 0, 512, 512);
+      target.save(); target.translate(256, 224);
+      if (shipHangarDraft.mode === "legacy") {
+        const frame = frameFrom("ship", Math.floor(t / 220) % 3);
+        if (spriteReady(frame)) target.drawImage(frame, -175, -175, 350, 350);
+      } else {
+        drawModularShip(target, shipHangarDraft.loadout, 380, t / 1000, Math.sin(t / 2000) * .32);
+      }
+      target.restore();
+    }
+    const modulePreview = $("journeyModulePreview");
+    if (modulePreview && $("journeyStation")?.classList.contains("show")) {
+      const target = modulePreview.getContext("2d"); target.clearRect(0, 0, 240, 150);
+      target.save(); target.translate(120, -7); target.scale(.65, .65);
+      drawShipComponent(target, NeonCampaign.normalizeShipLoadout({engines:"bastion"}), "engines");
+      target.restore();
+    }
+  }
+
   function playerFrameState(t) {
     const desiredDelta = hull < 34 || state === "destroying" ? 0 : player.target + player.drift - player.x;
     const movingHard = Math.abs(desiredDelta) > 72;
@@ -48,6 +120,13 @@
       ctx.restore();
     }
 
+    const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
+      ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
+    ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
+    const assembled = shipRenderMode === "modular" && drawModularShip(ctx, assembledLoadout, 208, elapsed,
+      clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer);
+    ctx.restore();
+    if (!assembled) {
     const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
     const upgraded = JOURNEY_DEMO && journeyView?.engineBoost;
     const enginePulse = (0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20) * (upgraded ? 1.28 : 1);
@@ -95,14 +174,6 @@
     }
     ctx.restore();
 
-    if (upgraded) {
-      ctx.save(); ctx.translate(0, 30 * SHIP_VISUAL.scale);
-      for (const side of [-1, 1]) {
-        ctx.save(); ctx.translate(side * 55 * SHIP_VISUAL.scale, 0);
-        drawImageCentered(SPRITES.debrisPanel, 20, 34, side * .16);
-        ctx.restore();
-      }
-      ctx.restore();
     }
 
     if (hull < 67 && state !== "destroying") {
@@ -562,9 +633,10 @@
     ctx.save(); ctx.translate(item.x, item.y);
     ctx.shadowBlur = 24; ctx.shadowColor = "#ffd877";
     const pulse = 1 + Math.sin(elapsed * 4) * .08;
-    drawImageCentered(SPRITES.debrisPanel, 66 * pulse, 82 * pulse, .12);
-    drawImageCentered(frameFrom("core", Math.floor(elapsed * 8)), 35, 35, 0, .75);
+    ctx.save(); ctx.scale(.27 * pulse, .27 * pulse); ctx.translate(0, -134);
+    drawShipComponent(ctx, NeonCampaign.normalizeShipLoadout({engines: "bastion"}), "engines");
+    ctx.restore();
     ctx.fillStyle = "#fff4c3"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("ALETA C9", 0, -57);
+    ctx.fillText("PROPULSOR C9", 0, -57);
     ctx.restore();
   }

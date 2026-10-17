@@ -71,7 +71,7 @@
   }
 
   function overlay(el) {
-    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete].filter(Boolean)
+    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar].filter(Boolean)
       .forEach((node) => node.classList.remove("show"));
     if (el) el.classList.add("show");
   }
@@ -92,7 +92,11 @@
     H = Math.max(1180, Math.round(W * rect.height / rect.width));
     canvas.width = W;
     canvas.height = H;
-    player.y = H - (JOURNEY_DEMO ? 360 : 135);
+    // Keep the whole ship above thumb controls at every canvas/CSS scale.
+    // The collision polygon is unchanged; only the flight line gains clearance.
+    const controlBandCss = JOURNEY_DEMO ? 136 : 104;
+    const clearance = 110 + controlBandCss * H / rect.height;
+    player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
     player.x = clamp(player.x, 80, W - 80);
     player.target = clamp(player.target, 80, W - 80);
     for (const star of stars) {

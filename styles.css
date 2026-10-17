@@ -184,6 +184,43 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .journey-mode #hudLevel{font-size:18px}.journey-mode #goal{font-size:18px}.journey-mode .fire-control small{font-size:11px}.journey-mode #powerHud{display:none}
 @media (max-height:500px){.journey-route{top:60px;left:28%;width:44%;padding:6px 10px}.journey-route small{display:none}.journey-route span{font-size:9px}.journey-route b{font-size:11px}.journey-skills{flex-direction:row}.journey-skills button{width:85px;min-height:43px}.journey-service{max-height:88dvh}.journey-service>img{width:55px;height:55px}}
 .journey-service button.link{background:transparent;border:1px solid #45647c;border-radius:11px;min-height:40px;color:#a9d6e4;font:inherit;font-size:12px;cursor:pointer}
+
+/* The optional hangar keeps selection in a draft until the player applies it. */
+.menu-actions.has-hangar{grid-template-columns:repeat(4,minmax(0,1fr))}
+#openHangar .button-glyph{display:grid;place-items:center;height:18px}
+#openHangar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
+.ship-hangar{z-index:12;background:rgba(2,7,17,.93)}
+.ship-hangar>.ship-hangar-panel{width:min(100%,760px);padding:22px;border-radius:22px;background:#0b1526;border-color:#476178;backdrop-filter:none;text-align:left}
+.ship-hangar-header small{font-size:9px;font-weight:800;letter-spacing:.15em;color:#93b9ca}
+.ship-hangar-header h2{margin:9px 0 7px;font-size:26px;line-height:1.12;letter-spacing:-.02em}
+.ship-hangar-header p{margin:0 0 16px;font-size:12px;color:#aabfce}
+.ship-hangar-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.ship-hangar-preview{margin:0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #2c4056;border-radius:16px;background:#050d19;overflow:hidden}
+.ship-hangar-preview canvas{display:block;width:min(100%,244px);height:auto;aspect-ratio:1;touch-action:pan-y}
+.ship-hangar-preview figcaption{padding:0 12px 12px;color:#c8e5ef;font-size:12px;font-weight:700;text-align:center}
+.ship-hangar-controls{min-width:0}
+.ship-preset-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ship-preset-list button,.ship-legacy{min-height:48px;padding:10px 8px;border:1px solid #3d5469;border-radius:12px;background:#102034;color:#dfeef4;cursor:pointer}
+.ship-preset-list b{display:block;font-size:12px;letter-spacing:.07em}
+.ship-preset-list span{display:block;margin-top:4px;font-size:11px;color:#a8c0ce}
+.ship-preset-list button[aria-pressed="true"],.ship-legacy[aria-pressed="true"]{border-color:#89dbea;background:#16364a;box-shadow:inset 0 0 0 1px #89dbea}
+.ship-components{min-width:0;margin:16px 0 10px;padding:0;border:0}
+.ship-components legend{padding:0;margin-bottom:10px;color:#9fb8c8;font-size:11px;letter-spacing:.02em}
+.ship-components label{display:grid;grid-template-columns:minmax(72px,.8fr) minmax(0,1.2fr);align-items:center;gap:10px;margin-top:8px;color:#d1dee7;font-size:12px}
+.ship-components select{width:100%;min-width:0;min-height:44px;padding:8px 10px;border:1px solid #456077;border-radius:10px;background:#101f31;color:#eef8fc;font:inherit;font-size:13px;cursor:pointer;color-scheme:dark}
+.ship-components select:disabled{opacity:.5;cursor:default}
+.ship-legacy{width:100%;min-height:44px;font-size:12px}
+.ship-hangar-status{min-height:30px;margin:10px 0 0!important;font-size:11px!important;line-height:1.4!important;color:#a9c1cf!important}
+.journey-piece #journeyModulePreview{width:96px;height:60px;flex:0 0 96px;touch-action:pan-y}
+.ship-hangar-actions{display:flex;gap:10px;margin-top:10px}
+.ship-hangar-actions button{flex:1;min-width:0;min-height:46px;margin-top:0;padding:11px 10px;font-size:11px;letter-spacing:.02em}
+.ship-hangar-actions .primary{background:#83dfeb;box-shadow:none}
+.ship-hangar button:focus-visible,.ship-hangar select:focus-visible{outline:2px solid #c5f6ff;outline-offset:3px}
+@media(min-width:640px){.ship-hangar-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}.ship-hangar-preview canvas{width:min(100%,300px)}}
+@media(max-width:360px){.ship-hangar{padding-left:12px;padding-right:12px}.ship-hangar>.ship-hangar-panel{padding:16px}.ship-hangar-header h2{font-size:23px}.ship-hangar-preview canvas{width:190px}.ship-hangar-actions{flex-direction:column}.ship-hangar-layout{gap:12px}}
+@media(orientation:landscape) and (max-height:500px){.ship-hangar>.ship-hangar-panel{padding:16px}.ship-hangar-header h2{font-size:23px}.ship-hangar-header p{margin-bottom:12px}.ship-hangar-preview canvas{width:min(100%,210px)}.ship-hangar-actions{margin-top:6px}}
 /* Keep the full ship above the thumb controls; transmissions use the upper band. */
+body:not(.journey-mode) .story-transmission{top:calc(env(safe-area-inset-top,0px) + 130px);bottom:auto;max-width:88%}
 .journey-mode .story-transmission{top:calc(env(safe-area-inset-top,0px) + 190px);bottom:auto;max-width:82%}
+@media (max-height:500px){body:not(.journey-mode) .story-transmission{top:100px;width:56%;padding:6px 10px}body:not(.journey-mode) .story-transmission b{font-size:10px}}
 @media (max-height:500px){.journey-mode .story-transmission{top:124px;width:48%;padding:6px 10px}.journey-mode .story-transmission b{font-size:10px}}

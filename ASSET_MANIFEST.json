@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 70,
-  "runtimeBytes": 5038154,
+  "assetCount": 71,
+  "runtimeBytes": 5301870,
   "audit": {
-    "reviewed": 70,
+    "reviewed": 71,
     "READY": 58,
-    "IN_REVIEW": 12,
+    "IN_REVIEW": 13,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -541,6 +541,20 @@
       "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; master preserved",
       "version": "chronos-gaia-demo-v1",
       "size": 101668
+    },
+    {
+      "id": "player-modular-ships-v1",
+      "path": "assets/ship_modular_atlas_v1.webp",
+      "master": "art-source/player/modular-v1/modular-ships-master.png",
+      "dimensions": "1774x887",
+      "format": "webp-alpha",
+      "size": 263716,
+      "pivot": "Authored per-component mounting coordinates in src/game/ship/modular-ship.js",
+      "animation": "Shared banking; articulated wing roots; nozzle-anchored exhaust pulse. Impact/smoke use legacy states. Dedicated destruction frames pending.",
+      "use": "Two compatible modular ship configurations in hangar, menu, briefing and both retained campaigns",
+      "status": "IN_REVIEW",
+      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; master retained",
+      "version": "modular-ships-v1"
     }
   ]
 }

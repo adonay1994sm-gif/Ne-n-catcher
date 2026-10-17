@@ -10,6 +10,12 @@
 
   migrateLegacyStorage();
   let settings = loadSettings();
+  // Cosmetic loadout has its own key; campaign checkpoints and collision stay intact.
+  const savedShipFleet = storage.getJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, null);
+  let shipRenderMode = savedShipFleet?.mode === "legacy" ? "legacy" : "modular";
+  let shipLoadout = NeonCampaign.normalizeShipLoadout(savedShipFleet?.loadout);
+  let shipHangarDraft = null;
+  let shipPresentationSignature = "";
 
   const stateMachine = NeonCore.createGameState(NeonCore.GAME_STATES.MENU);
   let state = stateMachine.value;
@@ -167,6 +173,7 @@
     meteorLarge: loadSprite("assets/meteor_large.webp"),
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
+    modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
     comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),

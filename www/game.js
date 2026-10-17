@@ -212,6 +212,12 @@
 
   migrateLegacyStorage();
   let settings = loadSettings();
+  // Cosmetic loadout has its own key; campaign checkpoints and collision stay intact.
+  const savedShipFleet = storage.getJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, null);
+  let shipRenderMode = savedShipFleet?.mode === "legacy" ? "legacy" : "modular";
+  let shipLoadout = NeonCampaign.normalizeShipLoadout(savedShipFleet?.loadout);
+  let shipHangarDraft = null;
+  let shipPresentationSignature = "";
 
   const stateMachine = NeonCore.createGameState(NeonCore.GAME_STATES.MENU);
   let state = stateMachine.value;
@@ -369,6 +375,7 @@
     meteorLarge: loadSprite("assets/meteor_large.webp"),
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
+    modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
     comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
@@ -513,7 +520,7 @@
   }
 
   function overlay(el) {
-    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete].filter(Boolean)
+    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar].filter(Boolean)
       .forEach((node) => node.classList.remove("show"));
     if (el) el.classList.add("show");
   }
@@ -534,7 +541,11 @@
     H = Math.max(1180, Math.round(W * rect.height / rect.width));
     canvas.width = W;
     canvas.height = H;
-    player.y = H - (JOURNEY_DEMO ? 360 : 135);
+    // Keep the whole ship above thumb controls at every canvas/CSS scale.
+    // The collision polygon is unchanged; only the flight line gains clearance.
+    const controlBandCss = JOURNEY_DEMO ? 136 : 104;
+    const clearance = 110 + controlBandCss * H / rect.height;
+    player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
     player.x = clamp(player.x, 80, W - 80);
     player.target = clamp(player.target, 80, W - 80);
     for (const star of stars) {
@@ -639,13 +650,136 @@
     updateAudioVolumes();
     overlay(settingsReturn === "paused" ? ui.paused : ui.menu);
   }
+  function setupShipHangar() {
+    if ($("shipHangar")) return;
+    const menuActions = ui.menu.querySelector(".menu-actions");
+    if (!menuActions) return;
+
+    const openButton = document.createElement("button");
+    openButton.id = "openHangar";
+    openButton.type = "button";
+    openButton.className = "secondary";
+    openButton.innerHTML = '<span class="button-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 4 7 5 8-7-2-2 3-2-3-7 2 5-8Z"/></svg></span>HANGAR';
+    menuActions.classList.add("has-hangar");
+    menuActions.append(openButton);
+
+    const hangar = document.createElement("div");
+    hangar.id = "shipHangar";
+    hangar.className = "overlay ship-hangar hidden";
+    hangar.setAttribute("role", "dialog");
+    hangar.setAttribute("aria-modal", "true");
+    hangar.setAttribute("aria-labelledby", "shipHangarTitle");
+    hangar.setAttribute("aria-describedby", "shipHangarRules");
+    hangar.innerHTML = `<section class="panel ship-hangar-panel" tabindex="-1">
+      <header class="ship-hangar-header"><small>FLOTA · CONFIGURACIÓN DE NAVE</small><h2 id="shipHangarTitle">Tu nave, a tu manera.</h2><p id="shipHangarRules">Configuración visual · mismas reglas de vuelo.</p></header>
+      <div class="ship-hangar-layout">
+        <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption></figure>
+        <div class="ship-hangar-controls">
+          <div class="ship-preset-list" role="group" aria-label="Naves disponibles"><button type="button" data-ship-preset="aster" aria-pressed="false"><b>ASTÉR</b><span>Exploradora</span></button><button type="button" data-ship-preset="bastion" aria-pressed="false"><b>BASTIÓN</b><span>Interceptora</span></button></div>
+          <fieldset class="ship-components"><legend>Combina sus componentes</legend><label for="shipHull">Fuselaje<select id="shipHull"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipWings">Alas<select id="shipWings"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label><label for="shipEngines">Propulsores<select id="shipEngines"><option value="aster">Astér</option><option value="bastion">Bastión</option></select></label></fieldset>
+          <button id="shipLegacy" class="ship-legacy" type="button" aria-pressed="false">Usar la nave original</button>
+          <p id="shipHangarStatus" class="ship-hangar-status" role="status">Los cambios se guardan al aplicar.</p>
+        </div>
+      </div>
+      <footer class="ship-hangar-actions"><button id="shipApply" class="primary" type="button">APLICAR CONFIGURACIÓN</button><button id="shipHangarBack" class="secondary" type="button">VOLVER SIN CAMBIAR</button></footer>
+    </section>`;
+    canvas.closest(".game").append(hangar);
+    ui.shipHangar = hangar;
+    const panel = hangar.querySelector(".ship-hangar-panel");
+    const presetButtons = [...hangar.querySelectorAll("[data-ship-preset]")];
+    const components = [["hull", $("shipHull")], ["wings", $("shipWings")], ["engines", $("shipEngines")]];
+    const sameLoadout = (first, second) => components.every(([key]) => first[key] === second[key]);
+
+    function refreshDraft() {
+      const modular = shipHangarDraft.mode === "modular";
+      for (const [key, select] of components) {
+        select.value = shipHangarDraft.loadout[key];
+        select.disabled = !modular;
+      }
+      for (const button of presetButtons) {
+        const preset = NeonCampaign.SHIP_FLEET.find(entry => entry.id === button.dataset.shipPreset);
+        button.setAttribute("aria-pressed", String(modular && Boolean(preset) && sameLoadout(shipHangarDraft.loadout, preset.loadout)));
+      }
+      $("shipLegacy").setAttribute("aria-pressed", String(!modular));
+      const selected = NeonCampaign.SHIP_FLEET.find(entry => sameLoadout(shipHangarDraft.loadout, entry.loadout));
+      $("shipHangarName").textContent = !modular ? "Nave original" : selected?.name || "Configuración combinada";
+      $("shipHangarCanvas").setAttribute("aria-label", `Vista previa: ${$("shipHangarName").textContent}`);
+      $("shipHangarStatus").textContent = "Vista previa · aplica para guardar tu elección.";
+    }
+
+    function closeHangar() {
+      hangar.classList.remove("show");
+      hangar.classList.add("hidden");
+      shipHangarDraft = null;
+      overlay(ui.menu);
+      openButton.focus({ preventScroll: true });
+    }
+
+    openButton.onclick = () => {
+      if (state !== "menu" || !(ui.menu.classList.contains("show") || ui.briefing.classList.contains("show"))) return;
+      shipHangarDraft = { mode: shipRenderMode, loadout: { ...NeonCampaign.normalizeShipLoadout(shipLoadout) } };
+      refreshDraft();
+      overlay();
+      hangar.classList.remove("hidden");
+      hangar.classList.add("show");
+      panel.focus({ preventScroll: true });
+    };
+    for (const button of presetButtons) button.onclick = () => {
+      if (!shipHangarDraft) return;
+      const preset = NeonCampaign.SHIP_FLEET.find(entry => entry.id === button.dataset.shipPreset);
+      if (!preset) return;
+      shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout(preset.loadout) } };
+      refreshDraft();
+    };
+    for (const [key, select] of components) select.onchange = () => {
+      if (!shipHangarDraft) return;
+      shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout({ ...shipHangarDraft.loadout, [key]: select.value }) } };
+      refreshDraft();
+    };
+    $("shipLegacy").onclick = () => {
+      if (!shipHangarDraft) return;
+      shipHangarDraft = { mode: "legacy", loadout: { ...shipHangarDraft.loadout } };
+      refreshDraft();
+    };
+    $("shipApply").onclick = () => {
+      if (!shipHangarDraft) return;
+      const loadout = NeonCampaign.normalizeShipLoadout(shipHangarDraft.loadout);
+      if (!storage.setJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, { version: 1, mode: shipHangarDraft.mode, loadout })) {
+        $("shipHangarStatus").textContent = "No se pudo guardar. Tu nave anterior sigue seleccionada.";
+        return;
+      }
+      shipRenderMode = shipHangarDraft.mode;
+      shipLoadout = loadout;
+      syncShipPresentation();
+      closeHangar();
+      toast("Configuración de nave guardada");
+    };
+    $("shipHangarBack").onclick = closeHangar;
+    hangar.addEventListener("keydown", event => {
+      // Keep preview keyboard navigation out of the campaign's global controls.
+      event.stopPropagation();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeHangar();
+      } else if (event.key === "Tab") {
+        const controls = [...hangar.querySelectorAll("button,select")].filter(element => !element.disabled);
+        const first = controls[0], last = controls[controls.length - 1];
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault(); first.focus();
+        }
+      }
+    });
+  }
+
   function setupJourneyUI() {
     if (!JOURNEY_DEMO) return;
     document.body.classList.add("journey-mode");
     const mount = document.createElement("div");
     mount.innerHTML = `<div id="journeyRoute" class="journey-route hidden"><small>CRONOS → GAIA NOVA</small><b id="journeyDestination"></b><progress id="journeyDistance" max="1" value="0" aria-label="Recorrido hasta Gaia"></progress><span id="journeyObjective"></span></div>
       <div id="journeySkills" class="journey-skills hidden"><button id="journeyShield" type="button">ESCUDO <small>LISTO</small></button><button id="journeyTractor" type="button">TRACTOR <small>LISTO</small></button></div>
-      <div id="journeyStation" class="overlay"><section class="panel journey-service"><small>BALIZA DE SERVICIO C9</small><img src="assets/repair_drone.webp" alt="Mira, robot del taller"><h2>Un momento de respiro.</h2><p>«Soy Mira. Ese módulo rescatado aún puede volar. Te lo monto y sello el casco.»</p><div class="journey-piece"><img src="assets/debris_panel.webp" alt="Aleta de propulsión recuperada"><div><b>Aleta vectorial C9</b><p>Respuesta lateral +20 % y propulsión ámbar visible. Instalación con la pieza recuperada; sin créditos.</p></div></div><button id="journeyInstall" class="primary" type="button">INSTALAR PIEZA Y REPARAR</button><button id="journeyContinue" class="secondary" type="button" disabled>CONTINUAR HACIA GAIA</button><button id="journeyStationHome" class="link" type="button">Guardar y volver</button></section></div>
+      <div id="journeyStation" class="overlay"><section class="panel journey-service"><small>BALIZA DE SERVICIO C9</small><img src="assets/repair_drone.webp" alt="Mira, robot del taller"><h2>Un momento de respiro.</h2><p>«Soy Mira. Ese módulo rescatado aún puede volar. Te lo monto y sello el casco.»</p><div class="journey-piece"><canvas id="journeyModulePreview" width="240" height="150" role="img" aria-label="Propulsor C9 recuperado">Propulsor C9 recuperado.</canvas><div><b>Propulsor C9</b><p>Respuesta lateral +20 % y propulsión ámbar visible. Instalación con la pieza recuperada; sin créditos.</p></div></div><button id="journeyInstall" class="primary" type="button">INSTALAR PIEZA Y REPARAR</button><button id="journeyContinue" class="secondary" type="button" disabled>CONTINUAR HACIA GAIA</button><button id="journeyStationHome" class="link" type="button">Guardar y volver</button></section></div>
       <div id="journeyComplete" class="overlay"><section class="panel journey-service"><small>ACCESO ATLAS · TRAYECTO COMPLETO</small><h2>Gaia nos recibe.</h2><p>Has salido de Chronos, recuperado e instalado una pieza y abierto el paso. El siguiente viaje todavía está en producción.</p><p id="journeyReward"></p><button id="journeyAgain" class="primary" type="button">REPETIR TRAVESÍA</button><button id="journeyHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
     canvas.parentElement.append(mount);
     for (const id of ["journeyRoute", "journeyDestination", "journeyDistance", "journeyObjective", "journeySkills", "journeyShield", "journeyTractor", "journeyStation", "journeyInstall", "journeyContinue", "journeyComplete"]) ui[id] = $(id);
@@ -663,7 +797,7 @@
       ui.fire.classList.remove("hidden"); ui.journeySkills.classList.remove("hidden");
       ui.journeyRoute.classList.remove("hidden");
       syncJourneyHud();
-      showStoryTransmission("MIRA · C9", "Aleta conectada. Prueba el empuje hacia Gaia.", 3.2);
+      showStoryTransmission("MIRA · C9", "Propulsor conectado. Prueba el empuje hacia Gaia.", 3.2);
     };
     $("journeyStationHome").onclick = goHome;
     $("journeyHome").onclick = goHome;
@@ -724,7 +858,7 @@
     ui.journeyRoute.classList.add("hidden");
     ui.banner.classList.remove("show");
     ui.journeyInstall.disabled = journeyView.partInstalled;
-    ui.journeyInstall.textContent = journeyView.partInstalled ? "ALETA MONTADA · CASCO SELLADO" : "INSTALAR PIEZA Y REPARAR";
+    ui.journeyInstall.textContent = journeyView.partInstalled ? "PROPULSOR MONTADO · CASCO SELLADO" : "INSTALAR PIEZA Y REPARAR";
     ui.journeyContinue.disabled = !journeyView.partInstalled;
     overlay(ui.journeyStation); syncJourneyHud();
   }
@@ -744,7 +878,7 @@
     journeyView = journey.snapshot();
     ui.journeyDestination.textContent = journeyView.destination;
     ui.journeyDistance.value = journeyView.routeProgress;
-    ui.journeyObjective.textContent = journeyView.phase === "station" ? "Instala la pieza recuperada" : journeyView.waitingFor === "part" ? "Recupera el módulo · usa TRACTOR si lo necesitas" : journeyView.borderActive && !journeyView.borderResolved ? "Desactiva al guardián CH-01 para abrir el paso" : journeyView.partCollected ? "Pieza a bordo · sigue el corredor" : "Rescata la aleta vectorial señalizada";
+    ui.journeyObjective.textContent = journeyView.phase === "station" ? "Instala la pieza recuperada" : journeyView.waitingFor === "part" ? "Recupera el módulo · usa TRACTOR si lo necesitas" : journeyView.borderActive && !journeyView.borderResolved ? "Desactiva al guardián CH-01 para abrir el paso" : journeyView.partCollected ? "Pieza a bordo · sigue el corredor" : "Rescata el propulsor C9 señalizado";
     for (const [name, cooldown] of [["journeyShield", journeyShieldCooldown], ["journeyTractor", journeyTractorCooldown]]) {
       ui[name].disabled = cooldown > 0 || state !== "playing";
       const label = cooldown > 0 ? `${Math.ceil(cooldown)} s` : "LISTO";
@@ -759,7 +893,7 @@
   function journeyEvent(event) {
     if (event.type === "partAvailable") {
       items.push({type: "journeyPart", x: W * .68, baseX: W * .68, y: H * .35, r: 27, s: 120, rot: 0, rs: .2, p: 0, phase: 0, alpha: 1});
-      showStoryTransmission("BALIZA C9", "Aleta vectorial intacta. Acércate o activa el tractor.", 3.8);
+      showStoryTransmission("BALIZA C9", "Propulsor C9 intacto. Acércate o activa el tractor.", 3.8);
     } else if (event.type === "enemy" || event.type === "border") {
       const enemy = createThreat("scout", level());
       enemy.x = enemy.baseX = event.type === "border" ? W * .5 : W * .28;
@@ -2899,6 +3033,78 @@
     veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");
     ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
+  // Authored component crops share explicit mounting coordinates, not icon offsets.
+  function drawShipComponent(target, loadout, part) {
+    const atlas = SPRITES.modularShip;
+    if (!spriteReady(atlas)) return false;
+    const frame = NeonCampaign.shipPartFrame(loadout, part);
+    const source = frame.source, destination = frame.destination;
+    const sx = atlas.naturalWidth / frame.sourceWidth;
+    const sy = atlas.naturalHeight / frame.sourceHeight;
+    target.drawImage(atlas, source.x * sx, source.y * sy, source.width * sx, source.height * sy,
+      destination.x, destination.y, destination.width, destination.height);
+    return true;
+  }
+
+  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0) {
+    if (!spriteReady(SPRITES.modularShip)) return false;
+    const pose = NeonCampaign.shipAssemblyPose({elapsedSeconds: time, steering, hull: health, impactSeconds: impact});
+    target.save();
+    target.scale(size / 512, size / 512);
+    target.rotate(pose.bankRotation);
+    target.scale(pose.bankScaleX, 1);
+    // Exhaust stretches from the nozzle, never from the centre of the ship.
+    target.save(); target.translate(0, 173);
+    target.scale(1, pose.enginePulse); target.translate(0, -173);
+    drawShipComponent(target, loadout, "flames"); target.restore();
+    // A small articulated sweep pivots at each root, underneath the fuselage.
+    for (const side of [-1, 1]) {
+      target.save();
+      target.beginPath(); target.rect(side < 0 ? -512 : 0, -512, 512, 1024); target.clip();
+      target.translate(side * 52, -35); target.rotate(side * pose.wingSweep);
+      target.translate(-side * 52, 35);
+      drawShipComponent(target, loadout, "wings"); target.restore();
+    }
+    drawShipComponent(target, loadout, "engines");
+    drawShipComponent(target, loadout, "hull");
+    target.restore();
+    return true;
+  }
+
+  function syncShipPresentation() {
+    if (!spriteReady(SPRITES.modularShip)) return;
+    if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout) return;
+    const preview = document.createElement("canvas"); preview.width = preview.height = 384;
+    const previewContext = preview.getContext("2d");
+    previewContext.translate(192, 170);
+    if (shipRenderMode === "modular") drawModularShip(previewContext, shipLoadout, 330, 0);
+    const source = shipRenderMode === "legacy" ? "assets/ship_frame_01.webp" : preview.toDataURL("image/png");
+    document.querySelectorAll(".menu-ship-image, .briefing-ship").forEach(image => { image.src = source; });
+    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout};
+  }
+
+  function drawShipHangar(t) {
+    const preview = $("shipHangarCanvas");
+    if (preview && $("shipHangar")?.classList.contains("show") && shipHangarDraft) {
+      const target = preview.getContext("2d"); target.clearRect(0, 0, 512, 512);
+      target.save(); target.translate(256, 224);
+      if (shipHangarDraft.mode === "legacy") {
+        const frame = frameFrom("ship", Math.floor(t / 220) % 3);
+        if (spriteReady(frame)) target.drawImage(frame, -175, -175, 350, 350);
+      } else {
+        drawModularShip(target, shipHangarDraft.loadout, 380, t / 1000, Math.sin(t / 2000) * .32);
+      }
+      target.restore();
+    }
+    const modulePreview = $("journeyModulePreview");
+    if (modulePreview && $("journeyStation")?.classList.contains("show")) {
+      const target = modulePreview.getContext("2d"); target.clearRect(0, 0, 240, 150);
+      target.save(); target.translate(120, -7); target.scale(.65, .65);
+      drawShipComponent(target, NeonCampaign.normalizeShipLoadout({engines:"bastion"}), "engines");
+      target.restore();
+    }
+  }
+
   function playerFrameState(t) {
     const desiredDelta = hull < 34 || state === "destroying" ? 0 : player.target + player.drift - player.x;
     const movingHard = Math.abs(desiredDelta) > 72;
@@ -2949,6 +3155,13 @@
       ctx.restore();
     }
 
+    const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
+      ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
+    ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
+    const assembled = shipRenderMode === "modular" && drawModularShip(ctx, assembledLoadout, 208, elapsed,
+      clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer);
+    ctx.restore();
+    if (!assembled) {
     const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
     const upgraded = JOURNEY_DEMO && journeyView?.engineBoost;
     const enginePulse = (0.78 + Math.sin(t * 0.026) * 0.16 + turnStrength * 0.20) * (upgraded ? 1.28 : 1);
@@ -2996,14 +3209,6 @@
     }
     ctx.restore();
 
-    if (upgraded) {
-      ctx.save(); ctx.translate(0, 30 * SHIP_VISUAL.scale);
-      for (const side of [-1, 1]) {
-        ctx.save(); ctx.translate(side * 55 * SHIP_VISUAL.scale, 0);
-        drawImageCentered(SPRITES.debrisPanel, 20, 34, side * .16);
-        ctx.restore();
-      }
-      ctx.restore();
     }
 
     if (hull < 67 && state !== "destroying") {
@@ -3463,13 +3668,16 @@
     ctx.save(); ctx.translate(item.x, item.y);
     ctx.shadowBlur = 24; ctx.shadowColor = "#ffd877";
     const pulse = 1 + Math.sin(elapsed * 4) * .08;
-    drawImageCentered(SPRITES.debrisPanel, 66 * pulse, 82 * pulse, .12);
-    drawImageCentered(frameFrom("core", Math.floor(elapsed * 8)), 35, 35, 0, .75);
+    ctx.save(); ctx.scale(.27 * pulse, .27 * pulse); ctx.translate(0, -134);
+    drawShipComponent(ctx, NeonCampaign.normalizeShipLoadout({engines: "bastion"}), "engines");
+    ctx.restore();
     ctx.fillStyle = "#fff4c3"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("ALETA C9", 0, -57);
+    ctx.fillText("PROPULSOR C9", 0, -57);
     ctx.restore();
   }
   function render(t) {
+    syncShipPresentation();
+    drawShipHangar(t);
     ctx.save();
     ctx.translate(cameraKickX, -cameraKickY);
     if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
@@ -3705,6 +3913,7 @@
   }, { once: true });
   console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
   setupJourneyUI();
+  setupShipHangar();
   updateMenu();
   hud();
   resetPowers();

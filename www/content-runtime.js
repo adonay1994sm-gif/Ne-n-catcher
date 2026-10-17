@@ -25,11 +25,16 @@ var NeonCampaign = (() => {
     JOURNEY_DEMO_SAVE_KEY: () => JOURNEY_DEMO_SAVE_KEY,
     JOURNEY_DEMO_VERSION: () => JOURNEY_DEMO_VERSION,
     LEVELS: () => LEVELS,
+    SHIP_FLEET: () => SHIP_FLEET,
+    SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     advanceClassicScout: () => advanceClassicScout,
     advanceEnemy: () => advanceEnemy,
     createClassicScout: () => createClassicScout,
     createJourneyDemo: () => createJourneyDemo,
-    n7Dialogue: () => n7Dialogue
+    n7Dialogue: () => n7Dialogue,
+    normalizeShipLoadout: () => normalizeShipLoadout,
+    shipAssemblyPose: () => shipAssemblyPose,
+    shipPartFrame: () => shipPartFrame
   });
 
   // src/game/progression/sectors.js
@@ -1308,6 +1313,84 @@ var NeonCampaign = (() => {
         borderActive = false;
         return true;
       }
+    });
+  }
+
+  // src/game/ship/modular-ship.js
+  var SHIP_FLEET_SAVE_KEY = "neonCatcher.shipFleet.v1";
+  var SLOTS = Object.freeze(["hull", "wings", "engines"]);
+  var VARIANTS = Object.freeze(["aster", "bastion"]);
+  var preset = (id) => Object.freeze({ hull: id, wings: id, engines: id });
+  var SHIP_FLEET = Object.freeze([
+    Object.freeze({ id: "aster", name: "Aster", loadout: preset("aster") }),
+    Object.freeze({ id: "bastion", name: "Bastion", loadout: preset("bastion") })
+  ]);
+  function ownValue(input, key) {
+    if (!input || typeof input !== "object" || Array.isArray(input)) return void 0;
+    try {
+      const descriptor = Object.getOwnPropertyDescriptor(input, key);
+      return descriptor && Object.hasOwn(descriptor, "value") ? descriptor.value : void 0;
+    } catch {
+      return void 0;
+    }
+  }
+  function variantAt(input, slot) {
+    const value = ownValue(input, slot);
+    return VARIANTS.includes(value) ? value : "aster";
+  }
+  function normalizeShipLoadout(input) {
+    return Object.freeze(Object.fromEntries(SLOTS.map((slot) => [slot, variantAt(input, slot)])));
+  }
+  var FRAME_LAYOUTS = Object.freeze({
+    hull: [
+      { source: { x: 146, y: 16, width: 156, height: 409 }, destination: { x: -70, y: -235, width: 140, height: 440 } },
+      { source: { x: 136, y: 453, width: 175, height: 410 }, destination: { x: -88, y: -235, width: 176, height: 440 } }
+    ],
+    wings: [
+      { source: { x: 447, y: 165, width: 439, height: 192 }, destination: { x: -242, y: -50, width: 484, height: 212 } },
+      { source: { x: 423, y: 572, width: 488, height: 218 }, destination: { x: -242, y: -50, width: 484, height: 216 } }
+    ],
+    engines: [
+      { source: { x: 995, y: 229, width: 232, height: 213 }, destination: { x: -138, y: 20, width: 276, height: 228 } },
+      { source: { x: 961, y: 618, width: 306, height: 265 }, destination: { x: -138, y: 20, width: 276, height: 228 } }
+    ],
+    flames: [
+      { source: { x: 1455, y: 143, width: 210, height: 300 }, destination: { x: -135, y: 173, width: 294, height: 145 } },
+      { source: { x: 1450, y: 518, width: 216, height: 369 }, destination: { x: -115, y: 173, width: 250, height: 145 } }
+    ]
+  });
+  var FRAMES = Object.freeze(Object.fromEntries(["hull", "wings", "engines", "flames"].map((part, column) => [
+    part,
+    Object.freeze(VARIANTS.map((_, row) => Object.freeze({
+      column,
+      row,
+      columns: 4,
+      rows: 2,
+      sourceWidth: 1774,
+      sourceHeight: 887,
+      source: Object.freeze(FRAME_LAYOUTS[part][row].source),
+      destination: Object.freeze(FRAME_LAYOUTS[part][row].destination)
+    })))
+  ])));
+  function shipPartFrame(loadout, part) {
+    if (!Object.hasOwn(FRAMES, part)) throw new RangeError("Unknown ship part");
+    const variant = variantAt(loadout, part === "flames" ? "engines" : part);
+    return FRAMES[part][VARIANTS.indexOf(variant)];
+  }
+  var bounded = (value, fallback, min, max) => Number.isFinite(value) ? Math.max(min, Math.min(max, value)) : fallback;
+  function shipAssemblyPose(input = {}) {
+    const elapsed = bounded(ownValue(input, "elapsedSeconds"), 0, 0, Number.MAX_VALUE);
+    const steering = bounded(ownValue(input, "steering"), 0, -1, 1);
+    const impact = bounded(ownValue(input, "impactSeconds"), 0, 0, 1);
+    const health = bounded(ownValue(input, "hull"), 100, 0, 100);
+    const wave = (frequency) => Math.sin(elapsed % (Math.PI * 2 / frequency) * frequency);
+    const turn = steering * (1.5 - 0.5 * steering * steering);
+    const intensity = Math.abs(turn), damage = 1 - health / 100;
+    return Object.freeze({
+      bankScaleX: 1 - intensity * 0.12,
+      bankRotation: turn * 0.1 + wave(43) * impact * 0.018,
+      wingSweep: turn * 0.055,
+      enginePulse: (1 + wave(17) * 0.075 + intensity * 0.12) * (1 - damage * 0.08)
     });
   }
 

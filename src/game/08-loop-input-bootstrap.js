@@ -1,4 +1,6 @@
   function render(t) {
+    syncShipPresentation();
+    drawShipHangar(t);
     ctx.save();
     ctx.translate(cameraKickX, -cameraKickY);
     if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
@@ -234,6 +236,7 @@
   }, { once: true });
   console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
   setupJourneyUI();
+  setupShipHangar();
   updateMenu();
   hud();
   resetPowers();

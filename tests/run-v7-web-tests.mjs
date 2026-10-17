@@ -18,8 +18,8 @@ async function test(name, operation) {
   console.log(`PASS ${String(passed).padStart(2, "0")} · ${name}`);
 }
 
-const [indexHtml, gameSource, serviceWorkerSource, styles, coreSource] = await Promise.all([
-  text("index.html"), text("game.js"), text("sw.js"), text("styles.css"), text("core-runtime.js")
+const [indexHtml, gameSource, serviceWorkerSource, styles, coreSource, contentSource] = await Promise.all([
+  text("index.html"), text("game.js"), text("sw.js"), text("styles.css"), text("core-runtime.js"), text("content-runtime.js")
 ]);
 
 await test("JavaScript principal, runtime y service worker tienen sintaxis válida", async () => {
@@ -97,6 +97,7 @@ async function loadHarness() {
   const dom = new JSDOM(indexHtml, { url: "https://neon.test/", runScripts: "outside-only", pretendToBeVisual: true });
   const { window } = dom;
   window.HTMLCanvasElement.prototype.getContext = () => createCanvasContext();
+  window.HTMLCanvasElement.prototype.toDataURL = () => "data:image/png;base64,";
   window.requestAnimationFrame = () => 1;
   window.cancelAnimationFrame = () => {};
   window.navigator.vibrate = () => true;
@@ -108,6 +109,7 @@ async function loadHarness() {
   };
   window.localStorage.setItem("neon-unlocked-v2", "10");
   window.eval(coreSource);
+  window.eval(contentSource);
   const marker = "  legacyFrameId = requestAnimationFrame(frame);\n})();";
   assert.ok(gameSource.includes(marker), "punto de instrumentación ausente");
   const hooks = `

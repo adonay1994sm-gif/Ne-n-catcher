@@ -29,6 +29,7 @@ const assetProduction = JSON.parse(await text("ASSET_PRODUCTION_150.json"));
 const indexHtml = await text("index.html");
 const gameSource = await text("game.js");
 const coreSource = await text("core-runtime.js");
+const contentSource = await text("content-runtime.js");
 const serviceWorkerSource = await text("sw.js");
 const nativeSource = await text("src/native-admob-entry.js");
 
@@ -243,6 +244,7 @@ async function loadGameHarness() {
   });
   const { window } = dom;
   window.HTMLCanvasElement.prototype.getContext = () => createCanvasContext();
+  window.HTMLCanvasElement.prototype.toDataURL = () => "data:image/png;base64,";
   window.requestAnimationFrame = () => 1;
   window.cancelAnimationFrame = () => {};
   window.navigator.vibrate = () => true;
@@ -265,6 +267,7 @@ async function loadGameHarness() {
   window.localStorage.setItem("neon-best-v1", "1200");
   window.localStorage.setItem("neon-unlocked-v2", "10");
   window.eval(coreSource);
+  window.eval(contentSource);
 
   const marker = "  legacyFrameId = requestAnimationFrame(frame);\n})();";
   assert.ok(gameSource.includes(marker), "no se encontró el punto de instrumentación");

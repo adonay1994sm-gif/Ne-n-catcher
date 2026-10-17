@@ -15,6 +15,7 @@ const CORE = [
   "terms.html",
   "assets/icon-192.png",
   "assets/icon-512.png",
+  "assets/ship_modular_atlas_v1.webp",
   "assets/ship_frame_00.webp",
   "assets/ship_frame_01.webp",
   "assets/ship_frame_02.webp",

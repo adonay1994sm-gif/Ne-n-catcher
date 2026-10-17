@@ -32,6 +32,7 @@ function harness(unlocked = 1) {
   };
   window.__ATLAS_DRAWS__ = atlasDraws;
   window.HTMLCanvasElement.prototype.getContext = () => ctx;
+  window.HTMLCanvasElement.prototype.toDataURL = () => "data:image/png;base64,";
   window.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({left: 0, top: 0, width: 390, height: 844});
   const pending = new Map(); let id = 0;
   window.requestAnimationFrame = callback => { pending.set(++id, callback); return id; };

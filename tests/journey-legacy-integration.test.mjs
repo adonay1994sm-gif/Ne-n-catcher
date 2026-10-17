@@ -15,6 +15,7 @@ function harness(saved) {
   const ctx = new Proxy({}, {get:(object,name)=>object[name] ?? (name==='createLinearGradient'||name==='createRadialGradient'?()=>gradient:()=>{}),
     set:(object,name,value)=>(object[name]=value,true)});
   window.HTMLCanvasElement.prototype.getContext=()=>ctx;
+  window.HTMLCanvasElement.prototype.toDataURL=()=>"data:image/png;base64,";
   window.HTMLCanvasElement.prototype.getBoundingClientRect=()=>({left:0,top:0,width:390,height:844});
   const pending=new Map();let next=0;
   window.requestAnimationFrame=callback=>(pending.set(++next,callback),next);
