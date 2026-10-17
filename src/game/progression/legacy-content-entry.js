@@ -30,6 +30,7 @@ export const LEVELS = Object.freeze(AUTHORED_LEVELS.map(design => Object.freeze(
 })));
 
 export {createChronosFlight, CHRONOS_FLIGHT_VERSION} from './chronos-flight.js';
+export {getChronosDestructionPose} from '../animation/chronos-destruction.js';
 export {CLASSIC_WEAPON_RULES, createClassicWeapons, triggerClassicWeapon, advanceClassicWeapons,
   hitClassicProjectile, unlockClassicWeapon, selectClassicWeapon, classicWeaponSnapshot} from '../combat/classic-weapons.js';
 export {calculateFlightBounds, createRelativeFlightInput, beginFlightInput, moveFlightInput, endFlightInput} from '../ship/flight-controls.js';

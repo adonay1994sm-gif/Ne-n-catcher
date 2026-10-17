@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T13:21:18.136753+00:00",
+  "updatedAt": "2026-10-17T17:39:18.864737+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -311,7 +311,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 153,
+    "expectedCount": 154,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -630,6 +630,27 @@
         ],
         "openErrors": [
           "Owner artistic acceptance and physical iPhone pending; classic level1 integration not claimed."
+        ]
+      },
+      "chronos-destruction-atlas-v1": {
+        "status": "IN_REVIEW",
+        "files": [
+          "src/game/animation/chronos-destruction.js",
+          "src/game/01-runtime-assets.js",
+          "src/game/03-ui-game-flow.js",
+          "src/game/05-corridor-update.js",
+          "src/game/06-world-rendering.js",
+          "src/game/progression/chronos-flight.js",
+          "assets/chronos_destruction_atlas_v1.webp",
+          "art-source/chronos-destruction/metadata.json"
+        ],
+        "commit": null,
+        "tests": [],
+        "evidence": [
+          "art-source/chronos-destruction/qa-results.json"
+        ],
+        "openErrors": [
+          "Integración en verificación; aceptación artística y prueba física pendientes."
         ]
       }
     },
@@ -4827,6 +4848,58 @@
         "note": "El propietario pidió integrar los sistemas en el clásico. La demo Journey y N-7 quedan como variantes históricas; no se borran ni se importan sus progresos por coincidencia numérica."
       },
       "packageCommit": "2cea7af9dcec78d2e71305526bb33cc5f31752c6"
+    },
+    {
+      "id": "P1-CHRONOS-02",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1",
+      "priority": "CRITICAL",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Campaña clásica",
+        "Assets",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01"
+      ],
+      "files": [
+        "src/game/animation/chronos-destruction.js",
+        "src/game/01-runtime-assets.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js",
+        "src/game/06-world-rendering.js",
+        "src/game/progression/chronos-flight.js",
+        "assets/chronos_destruction_atlas_v1.webp",
+        "art-source/chronos-destruction/metadata.json"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md",
+        "art-source/chronos-destruction/qa-results.json"
+      ],
+      "openErrors": [
+        "Verificación integrada en curso; aceptación artística y Safari/iPhone físico pendientes.",
+        "Seis estados no equivalen a nivel completo ni a animación fluida de alta frecuencia."
+      ],
+      "acceptance": [
+        "Seis estados reales integrados, frente7.2seg y restos finales persistentes.",
+        "Pausa/reinicio/clockúnico, geometría de colisión y guardados preservados.",
+        "Recurso ausente permite respaldo jugable sinbloqueo.",
+        "Chromium real, tres tamaños, regresiones y revisión del propietario."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_PROGRESS",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Las siete ilustraciones del propietario describen la destrucción dentro del primer nivel; no siete etapas ni sustitución de los otros nueve."
+      }
     }
   ],
   "canonicalPlan": {

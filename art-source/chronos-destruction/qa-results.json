@@ -1,0 +1,197 @@
+{
+  "command": "Python/Pillow read-only pixel checks; ImageMagick dark-background QA composition; actual view_image inspection",
+  "exitCode": 0,
+  "date": "2026-10-17",
+  "asset": {
+    "path": "assets/chronos_destruction_atlas_v1.webp",
+    "bytes": 438658,
+    "sha256": "c4e6f8f9c866ef075fcef4ac3565004420603d04e246a46f324acb2455d89f2d"
+  },
+  "tests": {
+    "rgba": true,
+    "dimensions": true,
+    "sixUniquePixelHashes": true,
+    "allCornersTransparent": true,
+    "allClearMarginsAtLeast32px": true
+  },
+  "frames": [
+    {
+      "index": 0,
+      "state": "precritical",
+      "sourceRect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        256,
+        256
+      ],
+      "pixelSha256": "853eb6f4d883a5202aa1341b1aec89b692c7311b243cb251f56e9a3b8ea68bca",
+      "alphaBounds": [
+        42,
+        54,
+        425,
+        451
+      ],
+      "clearMargins": {
+        "left": 42,
+        "top": 54,
+        "right": 87,
+        "bottom": 61
+      },
+      "cornersTransparent": true
+    },
+    {
+      "index": 1,
+      "state": "first-breach",
+      "sourceRect": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        256,
+        256
+      ],
+      "pixelSha256": "b4b233b4904002c87712fb314f3ac271ca4d1fc26880477d2f8531d7eeb5bee5",
+      "alphaBounds": [
+        72,
+        68,
+        437,
+        445
+      ],
+      "clearMargins": {
+        "left": 72,
+        "top": 68,
+        "right": 75,
+        "bottom": 67
+      },
+      "cornersTransparent": true
+    },
+    {
+      "index": 2,
+      "state": "ring-separation",
+      "sourceRect": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        256,
+        256
+      ],
+      "pixelSha256": "af0ac0e5c490c6c09be5b3218f88216d5ca9947f27727cd3996bf208311cacfa",
+      "alphaBounds": [
+        68,
+        66,
+        443,
+        437
+      ],
+      "clearMargins": {
+        "left": 68,
+        "top": 66,
+        "right": 69,
+        "bottom": 75
+      },
+      "cornersTransparent": true
+    },
+    {
+      "index": 3,
+      "state": "shock-release",
+      "sourceRect": [
+        0,
+        512,
+        512,
+        512
+      ],
+      "pivot": [
+        256,
+        256
+      ],
+      "pixelSha256": "996b0447fd22d2afa2f130723844fdb64d78eba9b210ffd731d1f31fc98a40d1",
+      "alphaBounds": [
+        47,
+        69,
+        444,
+        437
+      ],
+      "clearMargins": {
+        "left": 47,
+        "top": 69,
+        "right": 68,
+        "bottom": 75
+      },
+      "cornersTransparent": true
+    },
+    {
+      "index": 4,
+      "state": "fragment-dispersal",
+      "sourceRect": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "pivot": [
+        256,
+        256
+      ],
+      "pixelSha256": "2ebd38662cb98b54aa7926a3a259968d8feb5044bc25c7d15ea0b32ee5986052",
+      "alphaBounds": [
+        50,
+        78,
+        443,
+        478
+      ],
+      "clearMargins": {
+        "left": 50,
+        "top": 78,
+        "right": 69,
+        "bottom": 34
+      },
+      "cornersTransparent": true
+    },
+    {
+      "index": 5,
+      "state": "reactor-afterglow",
+      "sourceRect": [
+        1024,
+        512,
+        512,
+        512
+      ],
+      "pivot": [
+        256,
+        256
+      ],
+      "pixelSha256": "dd71dd00369981aced9e364eb53c77b7b08a47d78d5316cb8a6be33f273916cf",
+      "alphaBounds": [
+        62,
+        74,
+        446,
+        473
+      ],
+      "clearMargins": {
+        "left": 62,
+        "top": 74,
+        "right": 66,
+        "bottom": 39
+      },
+      "cornersTransparent": true
+    }
+  ],
+  "visualPreview": "art-source/chronos-destruction/qa-dark-background.jpg",
+  "previewKind": "Atlas-only QA composite, not a game screenshot",
+  "runtimeBrowserTest": "NOT_EXECUTED_BY_ART_AGENT",
+  "ownerAcceptance": "PENDING",
+  "minimumClearMarginPx": 34,
+  "readOnlySecondReview": {
+    "agent": "chronos_sprite_audit",
+    "result": "Six mechanically distinct states; clean actual OVER alpha composite; no edge clipping; playback untested. Initial raw-viewer matte concern withdrawn after actual alpha composition."
+  },
+  "reactorAnchorReview": "Final anchors adjusted after enlarged visual review of all six source cells and crosshair overlay. The surviving reactor/cage center is aligned; crystal silhouette and moving flare shape vary by state."
+}

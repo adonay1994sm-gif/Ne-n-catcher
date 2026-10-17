@@ -56,6 +56,15 @@ export const ANIMATION_MAP = Object.freeze({
     charge: flightAtlas(4, {layer: 'attacker', interruptible: false}),
     fire: flightAtlas(5, {layer: 'attacker', interruptible: false})
   }),
+  chronosDestruction: Object.freeze({
+    rupture: define(['assets/chronos_destruction_atlas_v1.webp'], {
+      loop: false, atlasColumns: 3, atlasRows: 2, cellWidth: 512, cellHeight: 512,
+      atlasCells: Object.freeze([0, 1, 2, 3, 4, 5]),
+      pivot: Object.freeze({x: 256, y: 256}),
+      timing: 'Route clock; intact until rupture, then .45/.80/1.15/2.0 seconds and persistent aftermath',
+      integrationStatus: 'IN_REVIEW', artisticAcceptance: 'PENDING_OWNER', physicalAcceptance: 'PENDING'
+    })
+  }),
   twinEmitter: Object.freeze({
     idle: emitterAtlas(0),
     charge: emitterAtlas(1),

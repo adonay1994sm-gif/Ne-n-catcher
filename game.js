@@ -364,6 +364,8 @@
     const image = new Image();
     image.decoding = "async";
     image._assetPath = path;
+    image._loadError = false;
+    image.onerror = () => { image._loadError = true; };
     if (eager) image.src = path;
     return image;
   }
@@ -390,6 +392,7 @@
 
   const SPRITES = {
     flightKit: loadSprite("assets/chronos_flight_atlas_v1.webp", false),
+    chronosDestruction: loadSprite("assets/chronos_destruction_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
 
@@ -847,8 +850,9 @@
   function classicFlightEvent(event) {
     if(event.type==="attack") { showStoryTransmission("CONTROL CHRONOS","Nave sin identificación. Está cargando sus armas contra el reactor.",5); tone(180,.25,"sawtooth",.045); }
     if(event.type==="rupture") {
-      levelOneShockwave=1.1; levelOneShockwaveTriggered=true;
-      const v=classicFlight.snapshot();addExplosion(v.station.x*W,v.station.y*H,2.6,1.1);
+      // The authored reactor/wave layers own this blue temporal rupture. A
+      // generic orange/pink combat explosion used to obscure its structure.
+      levelOneShockwaveTriggered=true;
       shake=8;stormPulse=.18;tone(72,.5,"sawtooth",.05);
       showStoryTransmission("N-7","¡Impacto! El CRONIUM se dispersa por las rutas. Recupera los fragmentos y sigue su señal.",6);
     }
@@ -1601,7 +1605,10 @@
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
       ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);
-      if(classicFlight){ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);}
+      if(classicFlight){
+        ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
+        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
+      }
     }
 
     atlasBoss = null;
@@ -2772,8 +2779,12 @@
     }
 
     // Do not run invisible encounters while the authored departure layers load.
-    if(classicFlight && (!spriteReady(SPRITES.flightKit) || !spriteReady(SPRITES.flightSpace))) {
-      if(ui.flightStage)ui.flightStage.textContent="CARGANDO SALIDA DE CHRONOS · puedes volver al menú";
+    if(classicFlight && (!spriteReady(SPRITES.flightKit) || !spriteReady(SPRITES.flightSpace) ||
+      (!spriteReady(SPRITES.chronosDestruction) && !SPRITES.chronosDestruction._loadError))) {
+      if(ui.flightStage)ui.flightStage.textContent="CARGANDO CHRONOS";
+      // Loading writes a transient label outside the regular HUD signature.
+      // Invalidate it so the first playable update restores the real stage.
+      flightHudSignature="";
       return;
     }
     elapsed += dt;
@@ -3137,10 +3148,24 @@
     return true;
   }
 
+  function drawChronosDestructionStation(view, pose) {
+    const node = view.station;
+    if (!node.visible || !spriteReady(SPRITES.chronosDestruction)) return false;
+    const image = SPRITES.chronosDestruction;
+    const cellWidth = image.naturalWidth / 3, cellHeight = image.naturalHeight / 2;
+    const size = W * node.scale;
+    ctx.save(); ctx.translate(node.x * W, node.y * H); ctx.rotate(node.rotation || 0);
+    ctx.drawImage(image, (pose.frame % 3) * cellWidth, Math.floor(pose.frame / 3) * cellHeight,
+      cellWidth, cellHeight, -size / 2, -size / 2, size, size);
+    ctx.restore();
+    return true;
+  }
+
   function drawChronosFlightBackground() {
     const view = classicFlightView;
     if (!view) return;
     const clock = view.elapsed;
+    const destruction = NeonCampaign.getChronosDestructionPose(view);
     const space = SPRITES.flightSpace;
     ctx.fillStyle = "#020817"; ctx.fillRect(0, 0, W, H);
     if (spriteReady(space)) {
@@ -3169,7 +3194,10 @@
     ctx.restore();
 
     drawChronosFlightSprite(2, view.planet);
-    drawChronosFlightSprite(view.station.state === "ruptured" ? 1 : 0, view.station);
+    if (!drawChronosDestructionStation(view, destruction)) {
+      // A failed new download keeps the two preserved station poses playable.
+      drawChronosFlightSprite(view.station.state === "ruptured" ? 1 : 0, view.station);
+    }
 
     if (view.debris.visible) {
       // These small fragments belong to the Chronos breach.  Their low contrast
@@ -3226,15 +3254,13 @@
     }
 
     ensureSprite(SPRITES.chronosShockwave);
-    const shockwaveAge = clock - view.minDuration * .10;
-    if (view.station.state === "ruptured" && shockwaveAge >= 0 && shockwaveAge < 1.1 && spriteReady(SPRITES.chronosShockwave)) {
-      const progress = clamp(shockwaveAge / 1.1, 0, 1);
+    if (destruction.waveVisible && spriteReady(SPRITES.chronosShockwave)) {
       const atlas = SPRITES.chronosShockwave;
       const cellWidth = atlas.naturalWidth / 2, cellHeight = atlas.naturalHeight / 2;
-      const frame = Math.min(3, Math.floor(progress * 4));
-      const size = W * (.25 + progress * 1.55);
+      const frame = destruction.waveFrame;
+      const size = W * destruction.waveScale;
       ctx.save(); ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha = Math.sin(progress * Math.PI) * .78;
+      ctx.globalAlpha = destruction.waveAlpha;
       ctx.drawImage(atlas, frame % 2 * cellWidth, Math.floor(frame / 2) * cellHeight,
         cellWidth, cellHeight, view.station.x * W - size / 2, view.station.y * H - size / 2, size, size);
       ctx.restore();

@@ -91,8 +91,9 @@
   function classicFlightEvent(event) {
     if(event.type==="attack") { showStoryTransmission("CONTROL CHRONOS","Nave sin identificación. Está cargando sus armas contra el reactor.",5); tone(180,.25,"sawtooth",.045); }
     if(event.type==="rupture") {
-      levelOneShockwave=1.1; levelOneShockwaveTriggered=true;
-      const v=classicFlight.snapshot();addExplosion(v.station.x*W,v.station.y*H,2.6,1.1);
+      // The authored reactor/wave layers own this blue temporal rupture. A
+      // generic orange/pink combat explosion used to obscure its structure.
+      levelOneShockwaveTriggered=true;
       shake=8;stormPulse=.18;tone(72,.5,"sawtooth",.05);
       showStoryTransmission("N-7","¡Impacto! El CRONIUM se dispersa por las rutas. Recupera los fragmentos y sigue su señal.",6);
     }
@@ -845,7 +846,10 @@
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
       ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);
-      if(classicFlight){ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);}
+      if(classicFlight){
+        ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
+        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
+      }
     }
 
     atlasBoss = null;

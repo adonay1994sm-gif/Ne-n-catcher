@@ -64,7 +64,9 @@ export function createChronosFlight({goal=36,minDuration=CHRONOS_FLIGHT_MIN_DURA
       objectiveComplete,canFinish,recoveryActive:p>=.10&&!canFinish,
       waitingFor:!objectiveComplete&&p>=.66+.20*(collected/goal)-1e-10?'cronium':null,
       // The origin physically retreats and becomes smaller; alpha stays one.
-      station:immutable({x:.48-.72*departure,y:.27+1.10*departure,
+      // Keep the reactor below the tactical HUD during its rupture. Its exit
+      // endpoint and route timing stay unchanged; this is backdrop framing.
+      station:immutable({x:.48-.72*departure,y:.43+.94*departure,
         scale:1.12*Math.pow(.075,departure),rotation:-.10*departure,
         visible:p<.62,alpha:1,state:reactorState}),
       // Gaia is a distant destination that grows during the approach.

@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "project": "NEON CATCHER",
   "build": "7.2.0",
-  "totalAssets": 153,
-  "scope": "Historical 150-asset inventory retained with three traceable Chronos flight additions; canonical 10 chapters x 10 stages under docs/PRODUCT_VISION.md. Planned entries are not finished runtime art.",
+  "totalAssets": 154,
+  "scope": "Historical 150-asset inventory retained with four traceable Chronos flight/destruction additions; ten classic missions retained. Planned entries are not finished runtime art.",
   "statusLegend": {
     "READY": "integrated and runtime-ready",
     "IN_REVIEW": "existing asset under visual/runtime review",
@@ -12,7 +12,7 @@
   },
   "distribution": {
     "shared": 26,
-    "chronos": 14,
+    "chronos": 15,
     "gaia": 20,
     "vulkar": 20,
     "cryon": 20,
@@ -2599,6 +2599,32 @@
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "notes": "A single deep-space plate; isolated station and Gaia atlas objects compose the actual route."
+    },
+    {
+      "sequence": 154,
+      "id": "chronos-destruction-atlas-v1",
+      "category": "chronos",
+      "world": "Chronos",
+      "name": "Chronos · brecha, fractura, liberación y restos del reactor",
+      "type": "state-atlas",
+      "masterSize": "1536x1024",
+      "runtimeSize": "1536x1024",
+      "frames": 6,
+      "pivot": "256,256 in each 512x512 cell",
+      "level": 1,
+      "priority": "P0",
+      "status": "IN_REVIEW",
+      "reference": "Owner-provided seven Chronos destruction illustrations, 2026-10-17; event direction, not seven levels",
+      "runtimePath": "assets/chronos_destruction_atlas_v1.webp",
+      "masterPath": "art-source/chronos-destruction/packed-master.png",
+      "animationMetadata": "art-source/chronos-destruction/metadata.json",
+      "bytes": 438658,
+      "sha256": "c4e6f8f9c866ef075fcef4ac3565004420603d04e246a46f324acb2455d89f2d",
+      "decodedRGBABytes": 6291456,
+      "integration": "First classic mission, existing renderer and route clock; browser verification in progress",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "notes": "Six illustrated changes to station structure, not high-FPS fluid animation; other nine classic levels unchanged."
     }
   ]
 }

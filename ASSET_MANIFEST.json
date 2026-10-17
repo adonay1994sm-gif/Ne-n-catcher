@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 76,
-  "runtimeBytes": 6747610,
+  "assetCount": 77,
+  "runtimeBytes": 7186268,
   "audit": {
-    "reviewed": 76,
+    "reviewed": 77,
     "READY": 58,
-    "IN_REVIEW": 18,
+    "IN_REVIEW": 19,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -638,6 +638,26 @@
       "physicalAcceptance": "PENDING",
       "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
       "version": "chronos-flight-v1"
+    },
+    {
+      "id": "chronos-destruction-atlas-v1",
+      "path": "assets/chronos_destruction_atlas_v1.webp",
+      "master": "art-source/chronos-destruction/packed-master.png",
+      "metadata": "art-source/chronos-destruction/metadata.json",
+      "dimensions": "1536x1024",
+      "format": "webp-alpha",
+      "size": 438658,
+      "sha256": "c4e6f8f9c866ef075fcef4ac3565004420603d04e246a46f324acb2455d89f2d",
+      "decodedRGBABytes": 6291456,
+      "pivot": "256,256 in each 512x512 cell",
+      "level": 1,
+      "use": "Six structural states of Chronos destruction in the first classic mission; independent from planet, deep-space plate and energy front",
+      "animation": "Six distinct atlas poses; route time drives rupture and persistent aftermath. Four existing shockwave poses expand for 7.2 seconds. No new clock or RAF.",
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original built-in image generation from owner Chronos references, 2026-10-17; generated and pivot-aligned masters retained",
+      "version": "chronos-destruction-art-v1"
     }
   ]
 }

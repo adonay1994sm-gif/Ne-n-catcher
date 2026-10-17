@@ -158,7 +158,7 @@ await test("service worker incluye código, legales y cada asset", async () => {
     ...assetManifest.standalone.map((item) => item.path)
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-unified-flight-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-chronos-destruction-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-17T17:40:42.021878+00:00",
+  "head": "81fdf21f089bfb8d768c9ef01730d15df2fc7ad1",
+  "workingTree": " M ASSET_MANIFEST.json\n M ASSET_PRODUCTION_150.json\n M content-runtime.js\n M content-runtime.js.map\n M docs/PRODUCTION_MASTER_CHECKLIST.md\n M docs/PRODUCTION_PROGRESS.md\n M docs/production-tasks.json\n M game.js\n M ios/App/App/public/content-runtime.js\n M ios/App/App/public/content-runtime.js.map\n M ios/App/App/public/game.js\n M ios/App/App/public/sw.js\n M package.json\n M src/game/01-runtime-assets.js\n M src/game/03-ui-game-flow.js\n M src/game/05-corridor-update.js\n M src/game/06-world-rendering.js\n M src/game/animation/animation-map.js\n M src/game/progression/chronos-flight.js\n M src/game/progression/legacy-content-entry.js\n M sw.js\n M tests/run-static-tests.mjs\n M tests/run-tests.mjs\n M tests/unified-flight-legacy.test.mjs\n M www/content-runtime.js\n M www/content-runtime.js.map\n M www/game.js\n M www/sw.js\n?? art-source/chronos-destruction/\n?? assets/chronos_destruction_atlas_v1.webp\n?? docs/production-reports/evidence/chronos-destruction/\n?? scripts/chronos-destruction-browser-smoke.cjs\n?? src/game/animation/chronos-destruction.js\n?? tests/chronos-destruction.test.mjs\n",
+  "results": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "build:preview"
+      ],
+      "exitCode": 0,
+      "durationMs": 1091,
+      "log": "preview-build-01.txt"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:preview"
+      ],
+      "exitCode": 0,
+      "durationMs": 1740,
+      "log": "preview-tests-01.txt"
+    }
+  ]
+}

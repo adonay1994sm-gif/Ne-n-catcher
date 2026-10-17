@@ -162,6 +162,8 @@
     const image = new Image();
     image.decoding = "async";
     image._assetPath = path;
+    image._loadError = false;
+    image.onerror = () => { image._loadError = true; };
     if (eager) image.src = path;
     return image;
   }
@@ -188,6 +190,7 @@
 
   const SPRITES = {
     flightKit: loadSprite("assets/chronos_flight_atlas_v1.webp", false),
+    chronosDestruction: loadSprite("assets/chronos_destruction_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
 

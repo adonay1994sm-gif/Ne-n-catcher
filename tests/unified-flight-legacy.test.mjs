@@ -9,6 +9,8 @@ const [html, core, content, game] = await Promise.all(
     .map(file => readFile(new URL(file, repository), 'utf8'))
 );
 const EQUIPMENT_KEY = 'neonCatcher.flightEquipment.v1';
+const DESTRUCTION_PATH = 'assets/chronos_destruction_atlas_v1.webp';
+const FLIGHT_KIT_PATH = 'assets/chronos_flight_atlas_v1.webp';
 const plain = value => JSON.parse(JSON.stringify(value));
 const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-7,
   `${message || 'Values differ'}: ${actual} !== ${expected}`);
@@ -19,13 +21,16 @@ const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expec
  * target insertion and quiet frames isolate contracts; this is not natural
  * gameplay, a visual acceptance test or a physical iPhone certification.
  */
-function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false} = {}) {
+function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false,
+  destructionAsset = 'loaded'} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   const {window} = dom; t.after(() => window.close());
   const gradient = {addColorStop() {}};
+  const drawCalls = [];
   const context = new Proxy({}, {get(target, key) {
     if (key in target) return target[key];
+    if (key === 'drawImage') return (image, ...args) => drawCalls.push({path: image?._assetPath || image?.path || null, args});
     if (key === 'createLinearGradient' || key === 'createRadialGradient') return () => gradient;
     if (key === 'measureText') return () => ({width: 30});
     return () => {};
@@ -36,9 +41,21 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     width: 390, height: 844, right: 390, bottom: 844});
   window.HTMLCanvasElement.prototype.setPointerCapture = () => {};
   window.HTMLCanvasElement.prototype.releasePointerCapture = () => {};
+  const images = new Map();
+  function configureDestructionImage(image, status) {
+    image.complete = status !== 'unresolved';
+    image.naturalWidth = status === 'loaded' ? 1536 : 0;
+    image.naturalHeight = status === 'loaded' ? 1024 : 0;
+    if (status === 'error') image.onerror?.(new window.Event('error'));
+  }
   window.Image = class {
     constructor() { this.complete = true; this.naturalWidth = this.naturalHeight = 1536; }
-    set src(value) { this.path = value; }
+    get src() { return this.path || ''; }
+    set src(value) {
+      this.path = value; images.set(value, this);
+      if (value === DESTRUCTION_PATH) configureDestructionImage(this, destructionAsset);
+      if (value === FLIGHT_KIT_PATH) { this.naturalWidth = 1536; this.naturalHeight = 1024; }
+    }
   };
   const pending = new Map(); let id = 0;
   window.requestAnimationFrame = callback => (pending.set(++id, callback), id);
@@ -75,8 +92,11 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     const flightEventsForTest=[];
     const originalFlightEventForTest=classicFlightEvent;
     classicFlightEvent=function(event){flightEventsForTest.push({...event});return originalFlightEventForTest(event);};
+    const explosionCallsForTest=[];
+    const originalAddExplosionForTest=addExplosion;
+    addExplosion=function(...args){explosionCallsForTest.push([...args]);return originalAddExplosionForTest(...args);};
     window.__UNIFIED_FLIGHT_TEST__={
-      update,render,startLevel,pauseGame,resumeGame,goHome,completeLevel,fireManualShot,
+      update,render,background,startLevel,pauseGame,resumeGame,goHome,completeLevel,fireManualShot,
       prepare(index=0){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];},
       frame(dt=1/60,quiet=false){
         spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;
@@ -94,6 +114,9 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
         player:{...player},bounds:classicFlightBounds?{...classicFlightBounds}:null,input:{...classicFlightInput},
         weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
         route:classicFlight?.snapshot()||null,equipment:{...classicEquipment,unlocked:[...classicEquipment.unlocked]},
+        destructionPose:classicFlightView?NeonCampaign.getChronosDestructionPose(classicFlightView):null,
+        destructionAsset:{ready:spriteReady(SPRITES.chronosDestruction),failed:SPRITES.chronosDestruction._loadError},
+        explosionCalls:explosionCallsForTest.map(args=>[...args]),
         equipmentWritable:classicEquipmentWritable,events:flightEventsForTest.map(event=>({...event})),
         targets:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,hp:item.hp})),
         projectiles:items.filter(item=>item.guardianProjectile).map(item=>({id:item.projectileId,
@@ -120,7 +143,13 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     Object.defineProperties(event, {touches: {value: all}, changedTouches: {value: changed}});
     canvas.dispatchEvent(event);
   }
-  return {window, api, snapshot, advance, pointer, touches, pending,
+  return {window, api, snapshot, advance, pointer, touches, pending, drawCalls,
+    clearDrawCalls: () => { drawCalls.length = 0; },
+    setDestructionStatus: status => {
+      const image = images.get(DESTRUCTION_PATH);
+      assert.ok(image, 'The actual level loader must request the destruction atlas');
+      configureDestructionImage(image, status);
+    },
     node: id => window.document.getElementById(id),
     stored: key => window.localStorage.getItem(key),
     equipment: () => JSON.parse(window.localStorage.getItem(EQUIPMENT_KEY))};
@@ -242,6 +271,86 @@ test('the Chronos attack and reactor rupture occur once in route order and canno
   const rupture = resumed.events.findIndex(event => event.type === 'rupture');
   assert.ok(attack < rupture);
   h.advance(3); assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
+  assert.equal(h.pending.size, 1);
+});
+
+test('the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station', t => {
+  const h = harness(t); h.api.prepare();
+  let previousTime = 0;
+  for (const [time, frame] of [[0, 0], [9.1, 1], [9.6, 2], [10.5, 3], [11.6, 4], [13.6, 5], [23.6, 5]]) {
+    h.advance(time - previousTime); previousTime = time;
+    const snapshot = h.snapshot();
+    assert.equal(snapshot.destructionPose.frame, frame, `Simulated time ${time}`);
+    h.clearDrawCalls(); h.api.background(999_999);
+    const stationCalls = h.drawCalls.filter(call => call.path === DESTRUCTION_PATH);
+    assert.equal(stationCalls.length, 1, `One authored station layer at time ${time}`);
+    assert.deepEqual(stationCalls[0].args.slice(0, 4),
+      [(frame % 3) * 512, Math.floor(frame / 3) * 512, 512, 512]);
+    assert.ok(stationCalls[0].args.slice(4).every(Number.isFinite));
+    assert.equal(snapshot.explosionCalls.length, 0,
+      'The temporal rupture must not create a generic combat explosion over the reactor');
+  }
+  assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
+  assert.equal(h.snapshot().destructionPose.waveVisible, false);
+  assert.equal(h.pending.size, 1);
+});
+
+test('pause and repeated real background renders freeze the Chronos pose, clock and event stream', t => {
+  const h = harness(t); h.api.prepare(); h.advance(11);
+  h.api.pauseGame(); const before = h.snapshot();
+  assert.equal(before.destructionPose.frame, 3);
+  assert.equal(before.destructionPose.waveVisible, true);
+  h.clearDrawCalls(); h.api.background(0);
+  const pausedDrawing = plain(h.drawCalls);
+  for (const timestamp of [1, 1000, 1e9, 0]) {
+    h.advance(2);
+    h.clearDrawCalls(); h.api.background(timestamp);
+    assert.deepEqual(plain(h.drawCalls), pausedDrawing,
+      'Rendering a different wall-clock timestamp must not advance the authored scene');
+    const repeated = h.snapshot();
+    assert.equal(repeated.elapsed, before.elapsed);
+    assert.deepEqual(repeated.route, before.route);
+    assert.deepEqual(repeated.destructionPose, before.destructionPose);
+    assert.deepEqual(repeated.events, before.events);
+    assert.equal(h.pending.size, 1);
+  }
+  h.api.resumeGame(); h.advance(1);
+  assert.ok(h.snapshot().route.elapsed > before.route.elapsed);
+  assert.equal(h.snapshot().destructionPose.frame, 4);
+  assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
+  assert.equal(h.pending.size, 1);
+});
+
+test('a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback', t => {
+  const h = harness(t, {destructionAsset: 'unresolved'}); h.api.prepare();
+  const initial = h.snapshot();
+  assert.deepEqual(initial.destructionAsset, {ready: false, failed: false});
+  h.advance(3);
+  assert.equal(h.snapshot().elapsed, initial.elapsed);
+  assert.deepEqual(h.snapshot().route, initial.route);
+  assert.equal(h.snapshot().events.length, 0);
+  assert.equal(h.node('flightStage').textContent, 'CARGANDO CHRONOS');
+
+  h.setDestructionStatus('error');
+  assert.deepEqual(h.snapshot().destructionAsset, {ready: false, failed: true});
+  h.advance(.2);
+  assert.ok(h.snapshot().route.elapsed > 0, 'An explicit download failure must not block the playable fallback');
+  assert.equal(h.node('flightStage').textContent, h.snapshot().route.stageName,
+    'A settled download must clear the transient loading label immediately');
+  h.clearDrawCalls(); h.api.background(0);
+  let fallbackCalls = h.drawCalls.filter(call => call.path === FLIGHT_KIT_PATH);
+  assert.ok(fallbackCalls.some(call => call.args[0] === 0 && call.args[1] === 0),
+    'The preserved intact station must render before impact');
+  assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
+
+  h.advance(9.2);
+  assert.equal(h.snapshot().route.station.state, 'ruptured');
+  h.clearDrawCalls(); h.api.background(1e9);
+  fallbackCalls = h.drawCalls.filter(call => call.path === FLIGHT_KIT_PATH);
+  assert.ok(fallbackCalls.some(call => call.args[0] === 512 && call.args[1] === 0),
+    'The preserved ruined station must render after impact');
+  assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
+  assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
   assert.equal(h.pending.size, 1);
 });
 

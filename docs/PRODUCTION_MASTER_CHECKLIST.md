@@ -1,6 +1,6 @@
 # NEON CATCHER — Checklist maestra de producción
 
-Fecha del registro: **2026-10-17T13:21:18.136753+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T17:39:18.864737+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -24,6 +24,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-ATLAS-01 / P1 | Guardian Atlas ilustrado y combate integrado a recuperación clásica Gaia | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P0-DESIGN-100 / P0 | Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime | IN_REVIEW | PASSED_EDITORIAL_SCHEMA | PENDING_OWNER | NOT_APPLICABLE |
 | P1-FLIGHT-01 / P1 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-CHRONOS-02 / P1 | Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1 | IN_PROGRESS | IN_PROGRESS | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -107,7 +108,7 @@ Este registro cubre los Bloques 03–10 del mandato. Los avances históricos per
 
 ## Resumen de estados
 
-PENDING: 204 · IN_PROGRESS: 4 · BLOCKED: 7 · IN_REVIEW: 44 · DONE: 23. Total: 282 tareas.
+PENDING: 204 · IN_PROGRESS: 5 · BLOCKED: 7 · IN_REVIEW: 45 · DONE: 23. Total: 284 tareas.
 
 ## Bloque 03 — Prueba integrada y cierre técnico
 
@@ -219,7 +220,7 @@ PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0.
 
 ## Bloque 05 — Producción visual y 150 assets
 
-PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 37 · DONE: 5.
+PENDING: 123 · IN_PROGRESS: 4 · BLOCKED: 0 · IN_REVIEW: 38 · DONE: 5.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -238,6 +239,7 @@ PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 37 · DONE: 5.
 | B05-13 | Verificar HUD, menús, transiciones y elementos narrativos | VERY_HIGH | PENDING | B05-02<br>B03-13 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
 | P1-02 | Revisión estética del primer viaje antes de multiplicar contenido | CRITICAL | IN_PROGRESS | P1-01 | [docs/PRODUCT_VISION.md](PRODUCT_VISION.md)<br>[docs/visual-rebirth/ORGANIGRAMA_10_NIVELES.md](visual-rebirth/ORGANIGRAMA_10_NIVELES.md) |  | — | — | La aceptación estética corresponde al propietario; no equivale a aprobar código o autorizar Engine V1.<br>El propietario rechaza el ritmo comprimido y la integración visual; priorizar el clásico y piezas coherentes. |
 | P1-SHIP-01 | Nave ensamblada, dos configuraciones y hangar dentro del clásico | CRITICAL | IN_REVIEW | P0-01 | [src/game/ship/modular-ship.js](../src/game/ship/modular-ship.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js)<br>[assets/ship_modular_atlas_v1.webp](../assets/ship_modular_atlas_v1.webp) | 0c056bf431aa65994c9716297c4e59a6ad6ca0ce | node scripts/certify-local.mjs docs/production-reports/evidence/modular-ships/certification-04<br>node scripts/modular-ship-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/modular-ships/browser-03<br>node scripts/ship-fallback-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/modular-ships/fallback-browser-01 | [docs/production-reports/NAVES_MODULARES_2026-10-17.md](production-reports/NAVES_MODULARES_2026-10-17.md)<br>[docs/production-reports/evidence/modular-ships/certification-04/results.json](production-reports/evidence/modular-ships/certification-04/results.json)<br>[docs/production-reports/evidence/modular-ships/browser-03/results.json](production-reports/evidence/modular-ships/browser-03/results.json)<br>[docs/production-reports/evidence/modular-ships/fallback-browser-01/results.json](production-reports/evidence/modular-ships/fallback-browser-01/results.json) | Aceptación artística pendiente; pruebas físicas Safari/iPhone pendientes.<br>Daño y destrucción dedicados por piezas y balance completo aún pendientes. |
+| P1-CHRONOS-02 | Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1 | CRITICAL | IN_PROGRESS | P1-FLIGHT-01 | [src/game/animation/chronos-destruction.js](../src/game/animation/chronos-destruction.js)<br>[src/game/01-runtime-assets.js](../src/game/01-runtime-assets.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js)<br>[src/game/05-corridor-update.js](../src/game/05-corridor-update.js)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js)<br>[src/game/progression/chronos-flight.js](../src/game/progression/chronos-flight.js)<br>[assets/chronos_destruction_atlas_v1.webp](../assets/chronos_destruction_atlas_v1.webp)<br>[art-source/chronos-destruction/metadata.json](../art-source/chronos-destruction/metadata.json) | — | — | [docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md](production-reports/CHRONOS_DESTRUCTION_2026-10-17.md)<br>[art-source/chronos-destruction/qa-results.json](../art-source/chronos-destruction/qa-results.json) | Verificación integrada en curso; aceptación artística y Safari/iPhone físico pendientes.<br>Seis estados no equivalen a nivel completo ni a animación fluida de alta frecuencia. |
 
 ### Criterios verificables
 
@@ -256,10 +258,11 @@ PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 37 · DONE: 5.
 - **B05-13:** Lote G visible en juego con escalas, texto y contraste comprobados..
 - **P1-02:** Revisar capturas/partida del viaje y registrar dirección artística aceptada o correcciones.
 - **P1-SHIP-01:** Piezas unidas y coherentes en hangar, menú, briefing y partida; Guardar/cancelar sin tocar campañas y recuperar nave anterior; Colisión conservada, un RAF y controles sin cubrir la nave; Revisión artística del propietario y prueba móvil.
+- **P1-CHRONOS-02:** Seis estados reales integrados, frente7.2seg y restos finales persistentes.; Pausa/reinicio/clockúnico, geometría de colisión y guardados preservados.; Recurso ausente permite respaldo jugable sinbloqueo.; Chromium real, tres tamaños, regresiones y revisión del propietario..
 
 ### Entregas individuales de assets
 
-Catálogo real: **IN_REVIEW: 31; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
+Catálogo real: **IN_REVIEW: 32; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
 
 Todos los assets deben superar estos doce criterios: Identificador y nombre; Archivo maestro existente; Archivo optimizado existente; Fotogramas necesarios reales; Dimensiones verificadas; Escala documentada; Pivote documentado; Transparencia comprobada; Duración/FPS documentados; Integración real en el juego; Prueba visual registrada; Procedencia y derechos registrados.
 
@@ -418,6 +421,7 @@ Todos los assets deben superar estos doce criterios: Identificador y nombre; Arc
 | A151 | Chronos · estación, Gaia y bombardero aislados (chronos-flight-atlas-v1) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
 | A152 | Módulo emisor doble · cerrado, carga y disparo (shared-twin-emitter-module-v1) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
 | A153 | Chronos → Gaia · espacio profundo independiente (chronos-flight-deep-space-v1) | P0 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A154 | Chronos · brecha, fractura, liberación y restos del reactor (chronos-destruction-atlas-v1) | P0 | IN_REVIEW | B05-02 | [src/game/animation/chronos-destruction.js](../src/game/animation/chronos-destruction.js)<br>[src/game/01-runtime-assets.js](../src/game/01-runtime-assets.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js)<br>[src/game/05-corridor-update.js](../src/game/05-corridor-update.js)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js)<br>[src/game/progression/chronos-flight.js](../src/game/progression/chronos-flight.js)<br>[assets/chronos_destruction_atlas_v1.webp](../assets/chronos_destruction_atlas_v1.webp)<br>[art-source/chronos-destruction/metadata.json](../art-source/chronos-destruction/metadata.json) | — | — | [art-source/chronos-destruction/qa-results.json](../art-source/chronos-destruction/qa-results.json) | Integración en verificación; aceptación artística y prueba física pendientes. |
 
 Actualizar un recurso en **assetTasks.overrides[asset.id]** con estado, archivos reales, commit, pruebas, evidencia y errores. Ningún estado READY del catálogo concede DONE en este registro.
 

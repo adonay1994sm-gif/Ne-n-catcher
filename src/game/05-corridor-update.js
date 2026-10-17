@@ -214,8 +214,12 @@
     }
 
     // Do not run invisible encounters while the authored departure layers load.
-    if(classicFlight && (!spriteReady(SPRITES.flightKit) || !spriteReady(SPRITES.flightSpace))) {
-      if(ui.flightStage)ui.flightStage.textContent="CARGANDO SALIDA DE CHRONOS · puedes volver al menú";
+    if(classicFlight && (!spriteReady(SPRITES.flightKit) || !spriteReady(SPRITES.flightSpace) ||
+      (!spriteReady(SPRITES.chronosDestruction) && !SPRITES.chronosDestruction._loadError))) {
+      if(ui.flightStage)ui.flightStage.textContent="CARGANDO CHRONOS";
+      // Loading writes a transient label outside the regular HUD signature.
+      // Invalidate it so the first playable update restores the real stage.
+      flightHudSignature="";
       return;
     }
     elapsed += dt;

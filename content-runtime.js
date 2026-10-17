@@ -44,6 +44,7 @@ var NeonCampaign = (() => {
     createJourneyDemo: () => createJourneyDemo,
     createRelativeFlightInput: () => createRelativeFlightInput,
     endFlightInput: () => endFlightInput,
+    getChronosDestructionPose: () => getChronosDestructionPose,
     guardianAtlasAnimation: () => guardianAtlasAnimation,
     hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
@@ -1849,9 +1850,11 @@ var NeonCampaign = (() => {
         recoveryActive: p >= 0.1 && !canFinish,
         waitingFor: !objectiveComplete && p >= 0.66 + 0.2 * (collected / goal) - 1e-10 ? "cronium" : null,
         // The origin physically retreats and becomes smaller; alpha stays one.
+        // Keep the reactor below the tactical HUD during its rupture. Its exit
+        // endpoint and route timing stay unchanged; this is backdrop framing.
         station: immutable({
           x: 0.48 - 0.72 * departure,
-          y: 0.27 + 1.1 * departure,
+          y: 0.43 + 0.94 * departure,
           scale: 1.12 * Math.pow(0.075, departure),
           rotation: -0.1 * departure,
           visible: p < 0.62,
@@ -1920,6 +1923,39 @@ var NeonCampaign = (() => {
       return snapshot();
     }
     return immutable({ advance, snapshot });
+  }
+
+  // src/game/animation/chronos-destruction.js
+  var DEFAULT_MIN_DURATION = 90;
+  var RUPTURE_POSITION = 0.1;
+  var WAVE_DURATION = 7.2;
+  var WAVE_FADE_DURATION = 1.2;
+  var WAVE_FRAME_DURATION = WAVE_DURATION / 4;
+  var FRAME_ENDS = Object.freeze([0, 0.45, 1.25, 2.4, 4.4]);
+  var STATES = Object.freeze(["intact", "impact", "fracture", "rupture", "dispersion", "aftermath"]);
+  var clamp7 = (value, min, max) => Math.max(min, Math.min(max, value));
+  function getChronosDestructionPose(view) {
+    const elapsed = Number.isFinite(view?.elapsed) && view.elapsed >= 0 ? view.elapsed : 0;
+    const minDuration = Number.isFinite(view?.minDuration) && view.minDuration > 0 ? view.minDuration : DEFAULT_MIN_DURATION;
+    const ruptureAt = minDuration * RUPTURE_POSITION;
+    const beforeRupture = elapsed < ruptureAt;
+    const age = Math.max(0, elapsed - ruptureAt);
+    let frame = 0;
+    while (frame < FRAME_ENDS.length && elapsed >= ruptureAt + FRAME_ENDS[frame]) frame++;
+    let waveFrame = 0;
+    while (waveFrame < 3 && elapsed >= ruptureAt + (waveFrame + 1) * WAVE_FRAME_DURATION) waveFrame++;
+    const waveVisible = !beforeRupture && elapsed < ruptureAt + WAVE_DURATION;
+    const waveProgress = clamp7(age / WAVE_DURATION, 0, 1);
+    const waveAlpha = waveVisible ? 0.55 * clamp7((WAVE_DURATION - age) / WAVE_FADE_DURATION, 0, 1) : 0;
+    return Object.freeze({
+      frame,
+      age,
+      state: STATES[frame],
+      waveFrame,
+      waveScale: 0.34 + waveProgress * 1.9,
+      waveAlpha,
+      waveVisible
+    });
   }
 
   // src/game/combat/classic-weapons.js
@@ -2166,7 +2202,7 @@ var NeonCampaign = (() => {
     }
     return bounds;
   }
-  var clamp7 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var clamp8 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   function calculateFlightBounds({ width, height, hudBottom, controlsTop }) {
     finite4(width, "width");
     finite4(height, "height");
@@ -2178,7 +2214,7 @@ var NeonCampaign = (() => {
     const firstX = SIDE_CLEARANCE, lastX = width - SIDE_CLEARANCE;
     const firstY = hudBottom + NOSE_CLEARANCE, lastY = controlsTop - TAIL_CLEARANCE;
     const xFits = firstX <= lastX, yFits = firstY <= lastY;
-    const centerY = clamp7(firstY / 2 + lastY / 2, 0, height);
+    const centerY = clamp8(firstY / 2 + lastY / 2, 0, height);
     return Object.freeze({
       minX: xFits ? firstX : width / 2,
       maxX: xFits ? lastX : width / 2,
@@ -2224,8 +2260,8 @@ var NeonCampaign = (() => {
     if (sensitivity <= 0) throw new RangeError("Sensitivity must be positive");
     if (!state.active || state.id !== id) {
       return {
-        targetX: clamp7(targetX, bounds.minX, bounds.maxX),
-        targetY: clamp7(targetY, bounds.minY, bounds.maxY),
+        targetX: clamp8(targetX, bounds.minX, bounds.maxX),
+        targetY: clamp8(targetY, bounds.minY, bounds.maxY),
         moved: false
       };
     }
@@ -2237,8 +2273,8 @@ var NeonCampaign = (() => {
     state.lastX = x;
     state.lastY = y;
     return {
-      targetX: clamp7(nextX, bounds.minX, bounds.maxX),
-      targetY: clamp7(nextY, bounds.minY, bounds.maxY),
+      targetX: clamp8(nextX, bounds.minX, bounds.maxX),
+      targetY: clamp8(nextY, bounds.minY, bounds.maxY),
       moved
     };
   }
