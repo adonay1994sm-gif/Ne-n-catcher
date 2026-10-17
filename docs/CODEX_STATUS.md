@@ -1,5 +1,8 @@
 ## Cierre vigente — destrucción de Chronos, 17/10/2026
 
+Cierre documental verificado en GitHub:61f1baa6950c40b6d7886d73aedf3a59a4bcf9b8. Esta referencia posterior no cambia el paquete73e117b servido por la versión6.
+
+
 **Prueba privada actualizada, versión 6:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Sites confirmó succeeded a las 17:58:28UTC. Paquete limpio 73e117bacc0b220e477c455c07e278a2326fb4dc. CONTINUAR VIAJE → NIVELES → La Onda de Choque para repetir sin borrar progreso. Seis estados ilustrados de Chronos, frente de 7,2 s y restos persistentes; las siete referencias son un acontecimiento del primer nivel, no siete niveles. Los otros nueve permanecen.
 
 Certificación 11/11; contenido 163/163, motor 40/40, arquitectura 6/6, static 13/13, regresión 33/33; preview 23/23. Chromium: evento 5/5, layout 12/12, misión completa 5/5 (90,0022 s,38 fragmentos, rescate→C9→Gaia→guardado), N-7: una sesión, 6 pasos, actualización offline 3/3. Dos intentos de caché agotaron 30 s; el diagnóstico midió ~59 s de espera nativa y el último harness pasó con 90 s, mismas aserciones. Fallos y límites conservados.
