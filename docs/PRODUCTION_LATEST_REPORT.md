@@ -1,3 +1,13 @@
+## Verificación vigente de CI — 17/10/2026
+
+[Diagnóstico, corrección y pruebas completas](production-reports/CI_SHIP_PRECACHE_2026-10-17.md). El aviso correspondía a `d325e51`; la corrección principal ya existía en `53a8244` y no se retrocedió. Refuerzo mínimo publicado en `f69d3651e9a180c8502d17aa523a27d9abed92e7`: comprueba los seis frames retirados y disponibilidad/inventario de los recursos actuales, conservando todas las pruebas.
+
+**[GitHub Actions 39065781507](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065781507): completed/success**, doce pasos satisfactorios incluido empaquetado. Artefacto descargado con el conector nativo y digest comprobado; tres bundles y tres recursos actuales coinciden con el paquete local. Once fases locales aprobadas; Chromium offline4/4 muestra la nave modular real en clásico y N-7 con respuestas de service worker. Los fallos de preparación del harness quedan conservados. Safari/iPhone no certificados por este lote.
+
+`P1-CI-01` DONE para la incidencia. Sin cambios de runtime, guardados, arte o jugabilidad. Sin despliegues: el sitio privado conserva la versión9 y Netlify no cambia. V1=false, main y PR3 intactos. Se mantiene pausada la incorporación de funcionalidades. Los informes siguientes conservan el historial de la entrega visual.
+
+---
+
 <!-- ship-controls-current -->
 ## Cierre vigente — nave única, cometa y dos dedos · 17/10/2026
 

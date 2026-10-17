@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T19:58:18.874931+00:00",
+  "updatedAt": "2026-10-17T20:19:15.767833+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -5645,6 +5645,54 @@
         "replacesBehavior": "Cometa de fuego y orientación diagonal desplazada90grados",
         "note": "Petición actual: consolidar esta versión como base y corregir controles, sin activar el MotorV1 ni declarar terminados cien niveles."
       }
+    },
+    {
+      "id": "P1-CI-01",
+      "block": "03",
+      "canonicalPhase": "P1",
+      "name": "Cerrar fallo de Actions por contrato de nave retirada y verificar la nave actual offline",
+      "priority": "CRITICAL",
+      "status": "DONE",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [
+        "P1-IDENTITY-02"
+      ],
+      "files": [
+        "tests/run-v7-web-tests.mjs",
+        "scripts/ship-offline-browser-smoke.cjs",
+        "docs/production-reports/CI_SHIP_PRECACHE_2026-10-17.md"
+      ],
+      "commit": "f69d3651e9a180c8502d17aa523a27d9abed92e7",
+      "tests": [
+        "Build preview y diez suites/auditorías:11/11 fases, todas con salida0; motor40,arquitectura6,contenido193,static13,regresión33,web13,preview23,artpass12,audio3 e inventario82.",
+        "Chromium offline06:4/4, salida0; cachés nativas y huellas, portada, dibujo modular clásico/N7, pausa/reanudación; sin restaurar recursos retirados.",
+        "GitHub Actions39065781507:completed/success, doce pasos satisfactorios y artefacto12113146729 descargado/verificado."
+      ],
+      "evidence": [
+        "docs/production-reports/CI_SHIP_PRECACHE_2026-10-17.md",
+        "docs/production-reports/evidence/ci-ship-precache/local-01/results.json",
+        "docs/production-reports/evidence/ci-ship-precache/offline-06/results.json",
+        "docs/production-reports/evidence/ci-ship-precache/github-fix-run.json",
+        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065781507"
+      ],
+      "openErrors": [],
+      "acceptance": [
+        "Identificar HEAD actual y corrección posterior sin retroceder ni perder cambios.",
+        "Contrato conserva assets históricos fuera de precarga y comprueba los seis frames y recursos actuales.",
+        "Nave modular y retrato se sirven por workers sin conexión en páginas nuevas, con caché HTTP deshabilitada.",
+        "Todas las suites solicitadas pasan y workflow remoto completa verificaciones y empaquetado."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "NOT_APPLICABLE_TO_CI_FIX",
+        "physical": "NOT_REQUIRED_FOR_CI_FIX; GAME_DEVICE_CERTIFICATION_REMAINS_PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-IDENTITY-02",
+        "note": "Cierra exclusivamente la incidencia del contrato de CI. No cambia aceptación artística ni física, funcionalidades o terminación de niveles."
+      }
     }
   ],
   "canonicalPlan": {
@@ -5683,6 +5731,14 @@
       "date": "2026-10-17",
       "report": "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
       "scope": "La nave modular actual pasa a ser la única identidad del jugador; mejorar cometas y permitir pilotar y disparar con dos dedos. Es base elegida de desarrollo, sin declarar versión comercial terminada."
+    },
+    "latestVerification": {
+      "date": "2026-10-17",
+      "report": "docs/production-reports/CI_SHIP_PRECACHE_2026-10-17.md",
+      "commit": "f69d3651e9a180c8502d17aa523a27d9abed92e7",
+      "workflowRun": 39065781507,
+      "conclusion": "success",
+      "scope": "PWA current ship contract, explicit offline rendering and complete remote CI; no new gameplay."
     }
   }
 }

@@ -1,0 +1,188 @@
+{
+  "verifiedAt": "2026-10-17T20:16:44.269037+00:00",
+  "run": {
+    "id": 39065781507,
+    "name": "NEON CATCHER N-7 Integrated Preview QA",
+    "event": "push",
+    "head_branch": "continuity-assets-audit-20261013",
+    "head_sha": "f69d3651e9a180c8502d17aa523a27d9abed92e7",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "created_at": "2026-10-17T20:13:13Z",
+    "updated_at": "2026-10-17T20:15:29Z",
+    "html_url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065781507"
+  },
+  "jobs": [
+    {
+      "id": 117493022722,
+      "name": "Verify and package Netlify Drop preview",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-17T20:13:16Z",
+      "completed_at": "2026-10-17T20:15:29Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-17T20:13:17Z",
+          "completed_at": "2026-10-17T20:13:18Z"
+        },
+        {
+          "name": "Checkout authorized continuity branch",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-17T20:13:18Z",
+          "completed_at": "2026-10-17T20:13:39Z"
+        },
+        {
+          "name": "Set up Node 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-17T20:13:39Z",
+          "completed_at": "2026-10-17T20:13:48Z"
+        },
+        {
+          "name": "Install locked dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-17T20:13:48Z",
+          "completed_at": "2026-10-17T20:13:51Z"
+        },
+        {
+          "name": "Build isolated test site",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-17T20:13:51Z",
+          "completed_at": "2026-10-17T20:13:54Z"
+        },
+        {
+          "name": "Verify original and procedural architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-17T20:13:54Z",
+          "completed_at": "2026-10-17T20:15:21Z"
+        },
+        {
+          "name": "Verify visual integration and preview isolation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-17T20:15:21Z",
+          "completed_at": "2026-10-17T20:15:23Z"
+        },
+        {
+          "name": "Verify preview entry and published artifact location",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-17T20:15:23Z",
+          "completed_at": "2026-10-17T20:15:23Z"
+        },
+        {
+          "name": "Package verified preview for manual Netlify Drop",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-17T20:15:23Z",
+          "completed_at": "2026-10-17T20:15:26Z"
+        },
+        {
+          "name": "Post Set up Node 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-17T20:15:26Z",
+          "completed_at": "2026-10-17T20:15:26Z"
+        },
+        {
+          "name": "Post Checkout authorized continuity branch",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-17T20:15:26Z",
+          "completed_at": "2026-10-17T20:15:26Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-17T20:15:26Z",
+          "completed_at": "2026-10-17T20:15:26Z"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12113146729,
+      "name": "NEON-CATCHER-N7-ARTPASS-NETLIFY-DROP",
+      "size_in_bytes": 8163033,
+      "digest": "sha256:3fd91520bd9bd7e8485c875e508a2fa9fabe63bbf1caa826cebd5807d8824a3e",
+      "expired": false,
+      "created_at": "2026-10-17T20:15:25Z",
+      "expires_at": "2026-10-31T20:15:24Z"
+    }
+  ],
+  "downloadVerification": {
+    "status": "PASSED",
+    "method": "Native GitHub download_workflow_artifact followed by its returned file reference; fetched through the configured proxy.",
+    "artifactId": 12113146729,
+    "archiveBytes": 8163033,
+    "sha256": "3fd91520bd9bd7e8485c875e508a2fa9fabe63bbf1caa826cebd5807d8824a3e",
+    "matchesGitHubArtifactDigest": true,
+    "entries": 117,
+    "buildCommit": "f69d3651e9a180c8502d17aa523a27d9abed92e7",
+    "dirty": false,
+    "revision": "db6313abea48cd98c196b1211b6976b32e56094ae1aa9f9147fbe2034c7626f2",
+    "localRevision": "db6313abea48cd98c196b1211b6976b32e56094ae1aa9f9147fbe2034c7626f2",
+    "matchedFiles": {
+      "game.js": {
+        "bytes": 227927,
+        "sha256": "688aa9cceb7fca97e2cfa5020aafeff368fbf86e1a73a271204089c07f76ba56",
+        "matchesLocal": true
+      },
+      "core-runtime.js": {
+        "bytes": 3762,
+        "sha256": "f39be54b8347e5b38c8a6d246d0aed95902bbd814b7ac24599106d5a9a244daf",
+        "matchesLocal": true
+      },
+      "content-runtime.js": {
+        "bytes": 88561,
+        "sha256": "7f652b9de89fd2703c72aabcc4947f8a2c76620a85f24539d74e42227cefeeb3",
+        "matchesLocal": true
+      },
+      "assets/player_ship_identity_v1.webp": {
+        "bytes": 67122,
+        "sha256": "bd22a7d85ccc774c3b5e5fdb219ba417febf547ddc3f08541ac8fa083ae68413",
+        "matchesLocal": true
+      },
+      "assets/ship_modular_atlas_v1.webp": {
+        "bytes": 263716,
+        "sha256": "71c050bdf64044fdfe6f009136d352afdb1873fdd00020e165c7141d8bb5fbac",
+        "matchesLocal": true
+      },
+      "assets/comet_flight_atlas_v2.webp": {
+        "bytes": 151882,
+        "sha256": "6d2989e816f6817c6b979395e299f19a32ba1d344904c4b727579f77d896ad6d",
+        "matchesLocal": true
+      }
+    },
+    "retiredOriginalsStillPackaged": 6,
+    "priorAttempt": {
+      "status": "NOT_COMPLETED",
+      "command": "gh run download 39065781507 --repo adonay1994sm-gif/Ne-n-catcher --name NEON-CATCHER-N7-ARTPASS-NETLIFY-DROP --dir /tmp/neon-ci-ship-precache/github-artifact-f69d365",
+      "exitCode": 1,
+      "reason": "GitHub artifact storage redirect returned HTTP 403; no artifact file was downloaded. Signed redirect URL omitted."
+    }
+  },
+  "deployment": "NONE; Actions artifact only, no hosting changed."
+}

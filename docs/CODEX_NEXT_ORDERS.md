@@ -1,3 +1,11 @@
+## Incidencia de CI cerrada — 17/10/2026
+
+[Informe de revisión](production-reports/CI_SHIP_PRECACHE_2026-10-17.md). No restaurar la precarga de la nave antigua: el contrato vigente comprueba retrato/atlas actuales y conserva los seis originales fuera de CORE. Corrección/refuerzo `f69d365`, Actions39065781507 completo y satisfactorio; QA offline4/4. No repetir la reparación como si siguiera pendiente.
+
+La incorporación de funcionalidades permanece en pausa. Mantener recuperable la versión9; este cierre no cambia despliegue, jugabilidad ni decisiones artísticas. Las pruebas físicas Safari/iPhone, glifos históricos y el backlog visual conservan su estado previo, independiente de este incidente resuelto. Antes de retomar, leer el informe y conservar HEAD/remoto nuevos.
+
+---
+
 ## Continuación vigente — versión 9 · 17/10/2026
 
 [Diagnóstico, informe, capturas y paquete](production-reports/SHIP_TOUCH_COMET_2026-10-17.md). No rehacer los controles ya corregidos ni volver a presentar la nave antigua. La nave modular actual es la base elegida de desarrollo, sin declarar certificación comercial.
