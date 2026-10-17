@@ -75,7 +75,7 @@
         ctx.bezierCurveTo(W * 0.25, y - 70, W * 0.62, y + 75, W + 30, y - 25);
         ctx.stroke();
       }
-    } else if (lv.scene === "crimson") {
+    } else if (lv.scene === "crimson" && (N7_CAMPAIGN || currentLevel !== 4)) {
       drawPlanet(W * 0.19, H * 0.16, 92, ["#fff5c7", "#ff744f", "#761737"], false);
       ctx.globalAlpha = 0.14 + Math.sin(t * 0.004) * 0.03;
       ctx.fillStyle = "#ff4965";
@@ -179,6 +179,7 @@
     if (!N7_CAMPAIGN && currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
     if (!N7_CAMPAIGN && currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
     if (!N7_CAMPAIGN && currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
+    if (!N7_CAMPAIGN && currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -245,6 +246,24 @@
       readability.addColorStop(0, "rgba(14,4,3,.12)");
       readability.addColorStop(0.55, "rgba(12,3,3,.18)");
       readability.addColorStop(1, "rgba(10,2,3,.42)");
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = readability;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    } else if (!N7_CAMPAIGN && currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
+      const image = SPRITES.cryonWhiteoutBackground;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const driftX = Math.sin(t * 0.00011) * W * 0.011;
+      const driftY = Math.cos(t * 0.00008) * H * 0.006;
+      ctx.save();
+      ctx.globalAlpha = 0.86;
+      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+      const readability = ctx.createLinearGradient(0, 0, 0, H);
+      readability.addColorStop(0, "rgba(4,10,28,.12)");
+      readability.addColorStop(0.53, "rgba(4,12,31,.13)");
+      readability.addColorStop(1, "rgba(2,6,19,.43)");
       ctx.globalAlpha = 1;
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);

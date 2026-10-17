@@ -69,6 +69,15 @@ test('Vulkar magma tunnel has a separate level 4 illustration and no purple ion 
   assert.ok(master.byteLength > runtime.byteLength);
 });
 
+test('Cryon whiteout has a dedicated illustrated classic level 5 scene', async () => {
+  const src = await text('src/game/06-world-rendering.js');
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 4 && spriteReady\(SPRITES\.cryonWhiteoutBackground\)/);
+  assert.match(src, /lv\.scene === "crimson" && \(N7_CAMPAIGN \|\| currentLevel !== 4\)/);
+  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/05/cryon-whiteout-master.png'));
+  const runtime = await readFile(join(root, 'assets/cryon_whiteout_background_v1.webp'));
+  assert.ok(master.byteLength > runtime.byteLength);
+});
+
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');
