@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-17T21:27:13.483857+00:00",
+  "initialHead": "97220c8bd7f81e7108b6950b1402809ba4d0c9a9",
+  "preservedEngineCommit": "de10d46431210e2691df1fcdd2f2fc72fd27a9a4",
+  "preservedEngineHandoff": "b3e985f743a491d1f79d4eb5ce1d409f200a168b",
+  "localAuditCommit": "7145534277d4620b0ee705f34af83536ba612f99",
+  "method": "Controlled branch merge; normal push only. Both independently prepended CODEX_STATUS sections preserved verbatim, remaining incoming changes retained.",
+  "cause": "Remote advanced during audit; normal push rejected without overwriting any work.",
+  "runtimeChangeFromAudit": false,
+  "publishedPrivatePackage": "207a94edf01eb26f5f4210429cf51a4497b1b6d7"
+}

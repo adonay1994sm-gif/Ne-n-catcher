@@ -23,7 +23,7 @@ No se han cambiado `EngineCore.js`, `ParticleSystem.js`, `CampaignAdapter.js`, `
 - `npm run test:architecture` sobre la copia histórica del 13/10: **6/6**, exit 0. **No es una ejecución de la suite completa sobre el HEAD remoto actual**.
 - `node --check` de los nuevos módulos y pruebas: exit 0.
 
-No se ha ejecutado `npm ci` ni una compilación completa de la rama actual porque este contenedor no puede acceder a GitHub/npm por red. Los resultados no deben extrapolarse a los demás paquetes del juego. CI, Chromium con assets actuales, Safari físico y WKWebView quedan pendientes.
+No se ha ejecutado `npm ci` ni una compilación completa de la rama actual porque este contenedor no puede acceder a GitHub/npm por red. Los resultados no deben extrapolarse a los demás paquetes del juego. La validación local completa del HEAD remoto, Chromium con assets actuales, Safari físico y WKWebView quedan pendientes. GitHub Actions verificó el pipeline remoto según el recibo posterior.
 
 ## 4. Cómo utilizarlo en un laboratorio sin activar producción
 
@@ -66,3 +66,11 @@ Las variables `loadedBackground`, `loadedStation`, `loadedShip`, `canvas` y `dra
 Conectar `Camera2D` y `SceneCompositor` a un laboratorio que utilice los **assets reales de Chronos, Gaia y la nave modular actual**, sin modificar la campaña normal ni crear otro RAF. Ejecutar capturas comparativas y medir tiempos de frame. Solo después estudiar la migración controlada con CampaignAdapter.
 
 **Motor V1: desactivado. `main`, PR #3 y producción: fuera de alcance.**
+
+## 7. Certificación CI posterior a la publicación
+
+- Commit funcional: [de10d464](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/de10d46431210e2691df1fcdd2f2fc72fd27a9a4).
+- [GitHub Actions 39070653009](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39070653009): **completed / success**.
+- Pasos aprobados: instalación de dependencias, build aislado, arquitectura y campañas, integración visual/aislamiento de preview, entradas y empaquetado de artefacto.
+- Artefacto generado: `NEON-CRONIUM-N7-ARTPASS-NETLIFY-DROP` (no desplegado por esta tarea).
+- Esto no equivale a certificación física ni aceptación artística del motor. `USE_ENGINE_V1=false`.

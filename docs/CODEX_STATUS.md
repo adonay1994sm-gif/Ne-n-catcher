@@ -14,6 +14,14 @@ La web privada mantiene **NEON CRONIUM versión11** y su paquete207a94e; esta au
 
 ---
 
+## Motor gráfico 2.5D — bloque inicial de KOO (17/10/2026)
+
+[Diagnóstico](engine-definitivo/01_DIAGNOSTICO.md) · [Informe](engine-definitivo/ENGINE_LATEST_REPORT.md) · [Commit de10d464](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/de10d46431210e2691df1fcdd2f2fc72fd27a9a4) · [CI success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39070653009).
+
+Cámara lógica `Camera2D`, compositor de capas artísticas `SceneCompositor` y HUD aislado en `Renderer.withScreenSpace` añadidos a `src/engine`. `npm run test:engine`: **60/60 local** (40 existentes + 20 nuevas); GitHub Actions del commit: **success**. Es una base experimental, **NO** una escena jugable ni aprobación visual. `USE_ENGINE_V1=false`; no tocar `main`, PR #3 ni producción. Próximo bloque: laboratorio real Chronos → Gaia con assets existentes y capturas.
+
+---
+
 ## DIAGNÓSTICO — nombre vigente NEON CRONIUM · 17/10/2026
 
 El propietario cambia la marca. Se conserva el recorrido Chronos–Gaia, su progreso y el resto del juego; las menciones anteriores de marca/versiones que aparecen debajo son históricas.

@@ -6425,7 +6425,8 @@
       },
       "scope": "Audit and proposed measurable publication goals. No implementation tasks promoted or percentages of commercial completion inferred; original tracking and acceptance states retained.",
       "initialReviewedHead": "97220c8bd7f81e7108b6950b1402809ba4d0c9a9",
-      "concurrentChanges": "External opt-in camera/compositor/HUD commit inspected and preserved by fast-forward; disabled V1 and published game unchanged. Audit commit must not overwrite this work."
+      "concurrentChanges": "External opt-in camera/compositor/HUD commit inspected and preserved by fast-forward; disabled V1 and published game unchanged. Audit commit must not overwrite this work.",
+      "preservedConcurrentHandoff": "b3e985f743a491d1f79d4eb5ce1d409f200a168b"
     }
   }
 }

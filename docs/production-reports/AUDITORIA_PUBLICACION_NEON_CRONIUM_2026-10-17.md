@@ -6,6 +6,8 @@ Fecha: 17/10/2026, UTC. Rama: `continuity-assets-audit-20261013`.
 
 SHA inicial de auditoría: `97220c8bd7f81e7108b6950b1402809ba4d0c9a9`, árbol inicialmente limpio. Durante la revisión llegó el commit remoto `de10d46431210e2691df1fcdd2f2fc72fd27a9a4`, inspeccionado y conservado mediante fast-forward sin descartar el trabajo local. Paquete jugado por los scripts: versión privada 11, commit limpio `207a94edf01eb26f5f4210429cf51a4497b1b6d7`, revisión `ddba1cb90abc61252af4e29f3bee23296ba5ea81887b608d9971a516a1df2838`. El paquete de juego publicado continúa siendo el mismo. El avance remoto añade cámara/compositor/HUD opcionales al motor reservado, su documentación y veinte pruebas; no modifica `src/game/`, assets, guardados ni la bandera de activación.
 
+También se conservó el cierre documental/CI externo `b3e985f743a491d1f79d4eb5ce1d409f200a168b`. La rama avanzó durante la entrega; se reconciliaron ambas secciones de estado mediante merge controlado, sin force push ni pérdida del trabajo del motor. [Registro de conservación](evidence/release-audit-20261017/integration.json).
+
 Esta entrega es una auditoría y una propuesta de metas. No modifica jugabilidad, arte, guardados, motor, sitio publicado ni decisiones comerciales. Los umbrales propuestos no son requisitos ya aprobados por el propietario, ni estadísticas de mercado, ni exigencias de Apple.
 
 ## 1. Qué se revisó y qué se pudo comprobar
