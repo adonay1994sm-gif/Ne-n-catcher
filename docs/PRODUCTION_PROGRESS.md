@@ -26,12 +26,12 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-FLIGHT-01 / P1 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-CHRONOS-02 / P1 | Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-HUD-01 / P1 | Integrar HUD compacto y recuperar espacio real de pilotaje clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
-| P1-COMBAT-02 / P1 | Concentrar gemelo y añadir lanza con daño ×1/×2/×3 y batería común | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
-| P1-ATLAS-02 / P1 | Aumentar desafío de Atlas sin mostrar la solución de esquiva | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
-| P1-ORBS-01 / P1 | Reducir orbes clásicos al50% visual conservando recogida | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
-| P1-SHIELD-01 / P1 | Integrar campo de fuerza ilustrado con estados de activación y absorción | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
-| P1-VULKAR-01 / P1 | Llevar nivel3 al espacio con planeta y restos orbitales independientes | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
-| P1-TRANSITIONS-01 / P1 | Hacer legibles selector, briefing y victoria de los diez niveles | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
+| P1-COMBAT-02 / P1 | Concentrar gemelo y añadir lanza con daño ×1/×2/×3 y batería común | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-ATLAS-02 / P1 | Aumentar desafío de Atlas sin mostrar la solución de esquiva | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-ORBS-01 / P1 | Reducir orbes clásicos al50% visual conservando recogida | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-SHIELD-01 / P1 | Integrar campo de fuerza ilustrado con estados de activación y absorción | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-VULKAR-01 / P1 | Llevar nivel3 al espacio con planeta y restos orbitales independientes | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-TRANSITIONS-01 / P1 | Hacer legibles selector, briefing y victoria de los diez niveles | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -84,6 +84,7 @@ Catálogo: **IN_REVIEW: 33; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**; 155 i
 - **Preview estática**, commit **5c5f062cd1109b95a189f002d955c0b9ec81d45e**: [docs/continuity-100/evidence/netlify-20261014/test-preview-01.txt](continuity-100/evidence/netlify-20261014/test-preview-01.txt). 11 pruebas anteriores; no certifican despliegue.
 - **Workflow integrado informado por Dirección**, commit **f5b486ccfcdc56319417c33d7fa9282708ed6d64**: [enlace](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/38531391709). Estado remoto comprobado por integración mediante conector GitHub; conservar referencia y distinguirlo de Chromium/Safari.
 - **Bloque03:regresión local sobre base f5b486c y cambios publicados en e1a7aa8**, commit **e1a7aa8498b1c5f9f5558425a61b748f4ab1f869**: [docs/production-reports/evidence/block-03/certification-01/results.json](production-reports/evidence/block-03/certification-01/results.json). 11fases exit0. Preview15/15 registrado aparte. Chromium global permanece en curso al actualizar esta checklist.
+- **Referencia artística anterior de vulkar-planet**, commit **null**: [docs/visual-rebirth/evidence/gallery-03/results.json](visual-rebirth/evidence/gallery-03/results.json). Historial preservado. La variante orbital actual se verifica con el lote combat-readability.
 
 ## Bloqueos actuales del registro
 

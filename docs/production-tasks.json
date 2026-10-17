@@ -61,12 +61,12 @@
     {
       "scope": "Referencia artística anterior de vulkar-planet",
       "commit": null,
-      "evidence": [
-        "docs/visual-rebirth/evidence/gallery-03/results.json",
+      "evidence": "docs/visual-rebirth/evidence/gallery-03/results.json",
+      "note": "Historial preservado. La variante orbital actual se verifica con el lote combat-readability.",
+      "relatedEvidence": [
         "docs/visual-rebirth/evidence/level-03-gameplay-browser-01/results.json",
         "docs/visual-rebirth/evidence/level-03-certification-01/results.json"
-      ],
-      "note": "Historial preservado. La variante orbital actual se verifica con el lote combat-readability."
+      ]
     }
   ],
   "organization": [
