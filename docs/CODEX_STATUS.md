@@ -14,6 +14,8 @@ QA: partida natural Chromium diez etapas/36fragmentos, interrupción en1.2, tall
 
 Aceptación técnica aprobada; arte del vacío/encuadre de Gaia, ritmo humano y Safari/iPhone físico pendientes. Once tareas nuevas de seguimiento permanecen IN_REVIEW; P3 amplio sigue parcial. Cero imágenes nuevas:82recursos existentes reutilizados. MotorV1=false; campañas históricas/guardados preservados; main,PR3 y producción Netlify intactos.
 
+Informe publicado y remoto comprobado: `7fffad14425484346abf269096e8f8b57ae8a5d0`; [recibo de cierre](production-reports/evidence/chronos-voyage/closure.json). El recibo posterior es exclusivamente documental.
+
 El contenido que sigue es histórico. Las cifras y la pausa anteriores no sustituyen este cierre.
 
 ---
