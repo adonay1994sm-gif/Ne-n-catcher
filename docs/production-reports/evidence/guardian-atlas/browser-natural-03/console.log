@@ -1,0 +1,4 @@
+[Guardian natural] navigate from the preview selector into classic Gaia using the real level menu
+[Guardian natural] recover CRONIUM, face Atlas, pause/resume and finish through natural controls
+[Guardian natural] victory persists once and preserves the separate N-7 campaign
+{"status":"passed","exitCode":0,"checks":[{"name":"navigate from the preview selector into classic Gaia using the real level menu","status":"passed"},{"name":"recover CRONIUM, face Atlas, pause/resume and finish through natural controls","status":"passed"},{"name":"victory persists once and preserves the separate N-7 campaign","status":"passed"}],"output":"/workspace/Ne-n-catcher/docs/production-reports/evidence/guardian-atlas/browser-natural-03"}
