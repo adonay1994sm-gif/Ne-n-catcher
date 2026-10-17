@@ -12,6 +12,16 @@ const source=path.resolve(args.root||'preview-dist');
 const output=path.resolve(args.output||'docs/production-reports/evidence/block-03/sw-upgrade-01');
 const report={status:'running',exitCode:null,startedAt:new Date().toISOString(),source,
   steps:[],errors:[],limits:['Chromium on a temporary package copy; synthetic revision change, not an installed iPhone PWA upgrade.']};
+
+// This installed Playwright treats a Promise from waitForFunction as truthy.
+// Poll evaluated asynchronous predicates in Node so false really keeps waiting.
+async function waitAsync(page,predicate,argument,{timeout=30000}={}) {
+ const until=Date.now()+timeout;
+ while(Date.now()<until){if(await page.evaluate(predicate,argument))return;await page.waitForTimeout(100);}
+ throw new Error('Asynchronous browser predicate timed out after '+timeout+' ms');
+}
+
+const bounded=(promise,milliseconds,label)=>{let timer;return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label)),milliseconds);})]).finally(()=>clearTimeout(timer));};
 async function main(){
   await prepareEvidence(output);
   const temp=await fs.mkdtemp(path.join(os.tmpdir(),'neon-preview-sw-upgrade-'));
@@ -38,7 +48,7 @@ async function main(){
     const root=server.url,game=new URL('juego/index.html?campaign=n7',root).href;
     const state=async()=>({...await page.evaluate(async()=>({controller:navigator.serviceWorker.controller?.scriptURL,
       registrations:(await navigator.serviceWorker.getRegistrations()).map(reg=>({scope:reg.scope,active:reg.active?.scriptURL,state:reg.active?.state})),
-      caches:await caches.keys()})),workers:await Promise.all(context.serviceWorkers().map(async worker=>{try{return{url:worker.url(),...await worker.evaluate(()=>({cache:typeof CACHE==='string'?CACHE:null,scope:self.registration.scope}))};}catch(error){return{url:worker.url(),error:String(error)};}}))});
+      caches:await caches.keys()})),workers:await Promise.all(context.serviceWorkers().map(async worker=>{try{return{url:worker.url(),...await bounded(worker.evaluate(()=>({cache:typeof CACHE==='string'?CACHE:null,scope:self.registration.scope})),2000,'Retired worker inspection timed out')};}catch(error){return{url:worker.url(),error:String(error)};}}))});
     await step('install launcher and game workers and keep foreign caches',async()=>{
       await page.goto(root,{waitUntil:'load'});
       await page.waitForFunction(()=>navigator.serviceWorker.controller?.scriptURL.endsWith('/launcher-sw.js'));
@@ -57,9 +67,9 @@ async function main(){
         const target=path.join(temp,file);const original=await fs.readFile(target,'utf8');
         assert.ok(original.includes(old));await fs.writeFile(target,original.replaceAll(old,newRevision));
       }
-      await page.evaluate(async()=>{const registrations=await navigator.serviceWorker.getRegistrations();
-        for(const registration of registrations)await registration.update();});
-      await page.waitForFunction(async revision=>{
+      await bounded(page.evaluate(async()=>{const registrations=await navigator.serviceWorker.getRegistrations();
+        for(const registration of registrations)await registration.update();}),30000,'Updating worker registrations timed out');
+      await waitAsync(page,async revision=>{
         const keys=await caches.keys();
         const registrations=await navigator.serviceWorker.getRegistrations();
         if(!registrations.every(registration=>registration.active?.state==='activated'))return false;
@@ -71,7 +81,7 @@ async function main(){
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(500);
       report.afterNetworkIdle=await state();
-      await page.waitForFunction(async revision=>{
+      await waitAsync(page,async revision=>{
         const keys=await caches.keys();
         const registrations=await navigator.serviceWorker.getRegistrations();
         if(!registrations.every(registration=>registration.active?.state==='activated'))return false;

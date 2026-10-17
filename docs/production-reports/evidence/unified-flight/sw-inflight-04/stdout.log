@@ -1,0 +1,9 @@
+[SW in-flight] activate the original game worker on a resource-free diagnostic document
+[SW in-flight] hold an actual network response requested by the old service worker
+[SW in-flight] activate a new worker and verify the old named cache was deleted while the response is held
+Error: Asynchronous browser predicate timed out after 30000 ms
+    at waitAsync (/workspace/Ne-n-catcher/scripts/service-worker-inflight-smoke.cjs:30:8)
+    at async /workspace/Ne-n-catcher/scripts/service-worker-inflight-smoke.cjs:78:3
+    at async step (/workspace/Ne-n-catcher/scripts/service-worker-inflight-smoke.cjs:22:20)
+    at async /workspace/Ne-n-catcher/scripts/service-worker-inflight-smoke.cjs:74:2
+{"status":"failed","exitCode":1,"steps":[{"name":"activate the original game worker on a resource-free diagnostic document","status":"passed"},{"name":"hold an actual network response requested by the old service worker","status":"passed"},{"name":"activate a new worker and verify the old named cache was deleted while the response is held","status":"failed"}],"output":"/workspace/Ne-n-catcher/docs/production-reports/evidence/unified-flight/sw-inflight-04","durationMs":31277}

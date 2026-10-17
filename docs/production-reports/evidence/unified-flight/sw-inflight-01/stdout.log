@@ -1,0 +1,9 @@
+[SW in-flight] activate the original game worker on a resource-free diagnostic document
+[SW in-flight] hold an actual network response requested by the old service worker
+[SW in-flight] activate a new worker and verify the old named cache was deleted while the response is held
+[SW in-flight] release the old response without resurrecting its deleted cache
+AssertionError [ERR_ASSERTION]: An old in-flight response resurrected its deleted named cache
+    at /workspace/Ne-n-catcher/scripts/service-worker-inflight-smoke.cjs:70:10
+    at async step (/workspace/Ne-n-catcher/scripts/service-worker-inflight-smoke.cjs:22:20)
+    at async /workspace/Ne-n-catcher/scripts/service-worker-inflight-smoke.cjs:64:2
+{"status":"failed","exitCode":1,"steps":[{"name":"activate the original game worker on a resource-free diagnostic document","status":"passed"},{"name":"hold an actual network response requested by the old service worker","status":"passed"},{"name":"activate a new worker and verify the old named cache was deleted while the response is held","status":"passed"},{"name":"release the old response without resurrecting its deleted cache","status":"failed"}],"output":"/workspace/Ne-n-catcher/docs/production-reports/evidence/unified-flight/sw-inflight-01","durationMs":3124}

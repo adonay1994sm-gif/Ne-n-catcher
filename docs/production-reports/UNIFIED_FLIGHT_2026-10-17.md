@@ -178,8 +178,17 @@ N-7 real390×844,DPR3:1/1caso y6/6pasos aprobados, código0; mismo plan/semilla 
 
 La prueba real de actualización de workers sw-upgrade-01 falló al ver una caché anterior tras reload con un worker aúnactivating. Se conservó el fallo y se está diferenciando un estado transitorio de una respuesta antigua reabriendo la caché. No se atribuye una causa ni se declara aprobada hasta reproducirla. La publicación jugable y sus pruebas con recursos frescos no certifican este ciclo offline.
 
-## Cierre causal de caché, en curso de publicación
+## Cierre de actualización y endurecimiento de caché
 
-La segunda ejecución Chromium SW upgrade02 pasó3/3 tras esperar activación estable. Independientemente, seis pruebas deterministas nuevas reprodujeron un defecto real: una respuesta de un worker antiguo abría su caché por nombre después de terminar la red y la recreaba tras la limpieza del nuevo worker. Antes del arreglo3/6, después6/6 sin modificar las pruebas.
+La segunda ejecución Chromium SW upgrade02 pasó3/3 tras esperar activación estable. Independientemente, seis pruebas deterministas nuevas reprodujeron una reapertura ante limpieza concurrente: una respuesta de un worker antiguo abría su caché por nombre después de terminar la red y la recreaba tras la limpieza del nuevo worker. Antes del arreglo3/6, después6/6 sin modificar las pruebas.
 
-Se corrigió sw.js para obtener el objeto Cache antes de esperar la red y reutilizarlo tanto en escritura como en fallback. La activación espera limpieza antes de claim y la instalación espera precarga antes de skipWaiting. build-preview conserva el mismo objeto al adaptar el fallback de índice al scope; el launcher ya seguía ese patrón. No cambia ningún byte de la lógica de viaje/combate. La nueva suite queda incluida en test:preview. Confirmación de respuesta tardía en Chromium y nuevo paquete limpio todavía en curso.
+Se corrigió sw.js para obtener el objeto Cache antes de esperar la red y reutilizarlo tanto en escritura como en fallback. La activación espera limpieza antes de claim y la instalación espera precarga antes de skipWaiting. build-preview conserva el mismo objeto al adaptar el fallback de índice al scope; el launcher ya seguía ese patrón. No cambia ningún byte de la lógica de viaje/combate. La nueva suite queda incluida en test:preview. Chromium CacheStorage real confirmó el antes/después ante eliminación controlada: código anterior recrea exactamente la entrada retenida; código corregido4/4, código0. La actualización normal de Chromium espera las solicitudes previas y no reprodujo ese intercalado; se probó por separado3/3 con ambos workers activados, caché vieja ausente, caché ajena conservada y navegación offline. No se afirma que el caso controlado sea una carrera observada en una actualización normal.
+
+### Dictamen final del QA offline
+
+- N-7:6/6 pasos reales aprobados.
+- SW upgrade-fixed-03:3/3, código0,68,619s; espera asíncrona real, dos scopes, limpieza propia, caché ajena, juego y selector sin conexión.
+- CacheStorage real con limpieza provocada: unlink-old-01 fallo esperado3/4; unlink-fixed-01 aprobó4/4,código0. La limpieza se dispara desde QA, no se llama activación real.
+- El fixture de activación con respuesta retenida no llegó a reproducir ese orden: Chromium pospone la activación. Se conserva el intento y su timeout como límite del fixture, no como defecto del juego.
+- Se detectó además que la versión instalada de waitForFunction aceptaba Promise como verdadero sin esperar false. Los dos scripts de SW ahora esperan page.evaluate desde Node con tiempos acotados. Las capturas/fixtures de juego usan predicados síncronos y no dependen de ese error. Se guardan los scripts exactos ejecutados antes de añadir límites diagnósticos finales.
+- Certificación03 repetida tras el endurecimiento:11/11 fases, contenido150/150 y el resto sin regresiones; preview ampliado23/23, incluido el nuevo contrato de generación. El juego, arte, controles y estilos conservan los mismos bytes que la partida natural aprobada.

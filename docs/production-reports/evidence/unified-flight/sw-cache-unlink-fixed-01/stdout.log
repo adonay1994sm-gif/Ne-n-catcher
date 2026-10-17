@@ -1,0 +1,5 @@
+[SW in-flight] activate the original game worker on a resource-free diagnostic document
+[SW in-flight] hold an actual network response requested by the old service worker
+[SW in-flight] unlink the old named cache while a worker-owned response remains held
+[SW in-flight] release the old response without resurrecting its deleted cache
+{"status":"passed","exitCode":0,"steps":[{"name":"activate the original game worker on a resource-free diagnostic document","status":"passed"},{"name":"hold an actual network response requested by the old service worker","status":"passed"},{"name":"unlink the old named cache while a worker-owned response remains held","status":"passed"},{"name":"release the old response without resurrecting its deleted cache","status":"passed"}],"output":"/workspace/Ne-n-catcher/docs/production-reports/evidence/unified-flight/sw-cache-unlink-fixed-01","durationMs":2949}
