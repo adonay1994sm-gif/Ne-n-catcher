@@ -92,7 +92,6 @@
     const canvasRect = canvas.getBoundingClientRect();
     if (!canvasRect.width || !canvasRect.height) return classicFlightBounds;
     const verticalScale = H / canvasRect.height;
-    const horizontal = canvasRect.height < 500;
     const visibleRect = (node) => {
       if (!node || node.classList.contains("hidden")) return null;
       const style = window.getComputedStyle(node);
@@ -100,19 +99,22 @@
       const rect = node.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0 ? rect : null;
     };
-    // Reserve room for brief transmissions before they appear, avoiding a
-    // sudden displacement of the ship when the first message is displayed.
-    let hudBottomCss = canvasRect.top + (horizontal ? 126 : 182);
-    for (const node of [ui.hud, $("flightRoute"),
+    // Reserve only the actual interface footprint, including the fixed-height
+    // comms slot. Side panels outside the portrait Canvas do not obstruct it.
+    const crossesCanvas = rect => rect && rect.right > canvasRect.left && rect.left < canvasRect.right;
+    let hudBottomCss = canvasRect.top;
+    for (const node of [ui.hud, ui.flightRoute, ui.flightObjective, ui.atlasEncounter,
       ui.storyTransmission?.classList.contains("show") ? ui.storyTransmission : null]) {
       const rect = visibleRect(node);
-      if (rect) hudBottomCss = Math.max(hudBottomCss, rect.bottom);
+      if (crossesCanvas(rect)) hudBottomCss = Math.max(hudBottomCss, rect.bottom);
     }
     let controlsTopCss = canvasRect.bottom - 104;
-    const fireRect = visibleRect(ui.fire);
-    if (fireRect) controlsTopCss = Math.min(controlsTopCss, fireRect.top);
+    for(const node of [ui.fire,ui.flightWeapon]) {
+      const rect=visibleRect(node);
+      if(crossesCanvas(rect))controlsTopCss=Math.min(controlsTopCss,rect.top);
+    }
     const powersRect = visibleRect(ui.powerHud);
-    if (powersRect) {
+    if (crossesCanvas(powersRect)) {
       // Existing N-7 uses an upper power row; the unified classic moves it
       // above the fire control. Never mistake an upper row for a bottom edge.
       if (powersRect.top >= canvasRect.top + canvasRect.height / 2) {

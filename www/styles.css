@@ -234,18 +234,33 @@ body:not(.journey-mode) .story-transmission{top:calc(env(safe-area-inset-top,0px
 @media(max-height:500px){.atlas-encounter{top:59px;left:14%;right:14%;padding:5px 9px}.atlas-identity b{font-size:9px}.atlas-identity span{font-size:8px}.atlas-encounter p{font-size:9px}#atlasAutoFire{min-height:35px;font-size:9px}}
 
 /* The principal flight reuses the legacy HUD; archived modes keep their layout. */
-body.flight-mode .flight-route{position:absolute;z-index:6;top:calc(env(safe-area-inset-top,0px) + 72px);left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:6px 10px;padding:9px 11px;border:1px solid #486b83;border-radius:14px;background:rgba(5,17,32,.95);box-shadow:0 9px 24px #0005;color:#edf9ff;pointer-events:none}
-body.flight-mode .flight-route>div{min-width:0;align-self:center}
-body.flight-mode #flightDestination{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#a1cbd9;font-size:9px;font-weight:750;line-height:1.4;letter-spacing:.04em}
-body.flight-mode #flightStage{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px;font-size:13px;line-height:1.35;font-weight:800;color:#effcff}
-body.flight-mode #flightWeapon{align-self:center;min-width:0;min-height:44px;padding:8px 6px;border:1px solid #6aa6bb;border-radius:10px;background:#133044;color:#d8f8ff;font-size:10px;font-weight:800;line-height:1.3;letter-spacing:.03em;pointer-events:auto;touch-action:manipulation;cursor:pointer}
+body.flight-mode .hud{width:auto;transform:none;top:max(6px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));height:46px;grid-template-columns:32px minmax(0,.85fr) minmax(0,1.1fr) minmax(0,1.15fr) 44px;gap:6px;padding:0 0 0 3px;border:1px solid rgba(143,194,211,.28);border-radius:9px;background:linear-gradient(180deg,rgba(3,10,20,.85),rgba(3,10,20,.62));box-shadow:none}
+body.flight-mode .hud>div{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:3px 1px;border:0;border-radius:0;background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+body.flight-mode .hud small{font-size:8px;font-weight:750;line-height:1.1;letter-spacing:.05em;color:#a9bfcd}
+body.flight-mode .hud b{font-size:14px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+body.flight-mode .hud>div:nth-child(2) b{font-size:12px;color:#c9d6df}
+body.flight-mode .hud .hull-cell{gap:1px}
+body.flight-mode .hull-cell i{height:2px;margin:2px 1px 0}
+body.flight-mode #pause{width:44px;height:44px;border:0;border-left:1px solid rgba(143,194,211,.22);border-radius:0 8px 8px 0;background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+body.flight-mode #pause svg{width:20px;height:20px}
+body.flight-mode .flight-hud{position:absolute;inset:0;z-index:6;pointer-events:none}
+body.flight-mode .flight-route{position:absolute;top:calc(max(6px,env(safe-area-inset-top)) + 52px);left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));height:24px;display:grid;grid-template-rows:18px 2px;gap:4px;padding:0;border:0;border-radius:3px;background:none;box-shadow:none;color:#edf9ff;pointer-events:none}
+body.flight-mode .flight-route>div{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px;background:rgba(3,10,20,.62);border-radius:3px}
+body.flight-mode #flightDestination{display:block;min-width:0;max-width:47%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#a1cbd9;font-size:9px;font-weight:650;line-height:18px;letter-spacing:.01em}
+body.flight-mode #flightStage{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0;font-size:11px;line-height:18px;font-weight:700;color:#effcff;text-align:right}
+body.flight-mode #flightWeapon{position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(20px,env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 18px;gap:1px 8px;align-content:center;width:104px;min-height:48px;padding:6px 10px;border:1px solid rgba(99,180,198,.6);border-radius:12px;background:rgba(6,23,35,.86);color:#d8f8ff;box-shadow:none;font-size:11px;font-weight:750;line-height:1.2;pointer-events:auto;touch-action:manipulation;cursor:pointer}
+body.flight-mode #flightWeapon small{font-size:8px;letter-spacing:.1em;color:#a1bdc9;text-align:left}
+body.flight-mode #flightWeapon b{grid-column:1;font-size:11px;text-align:left}
+body.flight-mode #flightWeapon svg{grid-column:2;grid-row:1/3;align-self:center;width:18px;height:18px;fill:none;stroke:#9cd7e0;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+body.flight-mode #flightWeapon[data-switchable=false] svg{opacity:.35}
 body.flight-mode #flightWeapon:active{background:#21516b}
 body.flight-mode #flightWeapon:focus-visible{outline:2px solid #c4f7ff;outline-offset:3px}
-body.flight-mode #flightDistance{grid-column:1/-1;display:block;width:100%;height:4px;margin:0;border:0;border-radius:4px;overflow:hidden;accent-color:#79e8e2;background:#233849}
+body.flight-mode #flightDistance{display:block;width:100%;height:2px;margin:0;border:0;border-radius:2px;overflow:hidden;accent-color:#79e8e2;background:rgba(51,80,96,.7)}
 body.flight-mode #flightDistance::-webkit-progress-bar{background:#233849}
 body.flight-mode #flightDistance::-webkit-progress-value{background:#79e8e2}
 body.flight-mode #flightDistance::-moz-progress-bar{background:#79e8e2}
-body.flight-mode #flightObjective{grid-column:1/-1;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:28px;max-height:28px;font-size:11px;line-height:14px;color:#d9e6ef;overflow-wrap:anywhere}
+body.flight-mode #flightObjective{position:absolute;top:calc(max(6px,env(safe-area-inset-top)) + 82px);left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));height:34px;margin:0;padding:4px 7px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;border-left:2px solid #72c8d6;border-radius:3px;background:rgba(3,10,20,.74);font-size:11px;line-height:13px;color:#d9e6ef;overflow-wrap:anywhere;opacity:0;transition:opacity .15s;pointer-events:none}
+body.flight-mode #flightObjective[data-active=true]{opacity:1}
 body.flight-mode #powerHud{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 108px);left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));gap:5px;align-content:end}
 body.flight-mode .level-banner{display:none}
 body.flight-mode.atlas-combat #flightRoute{display:none}
@@ -261,11 +276,9 @@ body.flight-mode .flight-dock button{min-height:44px;margin-top:8px;padding:11px
 body.flight-mode .flight-dock button:disabled{opacity:.56;cursor:default;box-shadow:none}
 body.flight-mode .flight-dock button:focus-visible{outline:2px solid #c4f7ff;outline-offset:3px}
 @media(max-width:350px){
-  body.flight-mode .flight-route{left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));grid-template-columns:minmax(0,1fr) 94px;gap:5px 7px;padding:8px 9px}
-  body.flight-mode #flightDestination{font-size:8px;letter-spacing:.02em}
-  body.flight-mode #flightStage{font-size:12px}
-  body.flight-mode #flightWeapon{font-size:9px}
-  body.flight-mode #flightObjective{font-size:10px}
+  body.flight-mode .hud{grid-template-columns:30px minmax(0,.85fr) minmax(0,1.1fr) minmax(0,1.15fr) 44px;gap:4px}
+  body.flight-mode #flightDestination{font-size:8px;letter-spacing:0}
+  body.flight-mode #flightStage{font-size:10px}
   body.flight-mode #powerHud{gap:4px}
   body.flight-mode .power-chip{padding:4px 6px;font-size:7px}
   body.flight-mode #flightDock{padding-left:12px;padding-right:12px}
@@ -279,11 +292,13 @@ body.flight-mode .flight-dock button:focus-visible{outline:2px solid #c4f7ff;out
   body.flight-mode .flight-dock h2{font-size:22px}
 }
 @media(orientation:landscape) and (max-height:500px){
-  body.flight-mode .flight-route{top:calc(env(safe-area-inset-top,0px) + 67px);left:max(14px,env(safe-area-inset-left));right:auto;width:min(29%,250px);grid-template-columns:minmax(0,1fr) 88px;padding:8px;gap:5px 7px}
+  body.flight-mode .hud{left:50%;right:auto;transform:translateX(-50%);width:min(520px,calc(100% - max(12px,env(safe-area-inset-left)) - max(12px,env(safe-area-inset-right))))}
+  body.flight-mode .flight-route{top:calc(max(6px,env(safe-area-inset-top)) + 52px);left:max(14px,env(safe-area-inset-left));right:auto;width:min(29%,250px);height:42px;grid-template-rows:36px 2px}
+  body.flight-mode .flight-route>div{display:block;padding:0 5px}
   body.flight-mode #flightDestination{font-size:8px;letter-spacing:0}
-  body.flight-mode #flightStage{font-size:11px}
-  body.flight-mode #flightWeapon{font-size:9px;min-height:44px}
-  body.flight-mode #flightObjective{font-size:10px}
+  body.flight-mode #flightDestination{max-width:none}
+  body.flight-mode #flightStage{font-size:11px;text-align:left}
+  body.flight-mode #flightObjective{top:calc(max(6px,env(safe-area-inset-top)) + 108px);left:max(14px,env(safe-area-inset-left));right:auto;width:min(29%,250px);font-size:10px}
   body.flight-mode #powerHud{left:max(14px,env(safe-area-inset-left));right:auto;width:min(29%,250px);bottom:calc(env(safe-area-inset-bottom,0px) + 102px);justify-content:flex-start}
   body.flight-mode .power-chip{padding:4px 6px;font-size:7px}
   body.flight-mode #flightDock{padding:max(12px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}

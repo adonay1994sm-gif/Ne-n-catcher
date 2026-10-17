@@ -22,7 +22,7 @@ const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expec
  * gameplay, a visual acceptance test or a physical iPhone certification.
  */
 function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false,
-  destructionAsset = 'loaded'} = {}) {
+  destructionAsset = 'loaded', rects = {}, unlocked = 2} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   const {window} = dom; t.after(() => window.close());
@@ -37,8 +37,19 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
   }, set(target, key, value) { target[key] = value; return true; }});
   window.HTMLCanvasElement.prototype.getContext = () => context;
   window.HTMLCanvasElement.prototype.toDataURL = () => 'data:image/png;base64,';
-  window.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({x: 0, y: 0, left: 0, top: 0,
-    width: 390, height: 844, right: 390, bottom: 844});
+  // JSDOM has no layout engine. These optional measured-rectangle fixtures
+  // exercise the real UI-to-Canvas boundary adapter, not CSS appearance.
+  const layoutRects = new Map(Object.entries(rects));
+  const rectangle = ({left = 0, top = 0, width = 0, height = 0} = {}) => ({
+    x: left, y: top, left, top, width, height, right: left + width, bottom: top + height});
+  const originalRect = window.Element.prototype.getBoundingClientRect;
+  window.Element.prototype.getBoundingClientRect = function() {
+    if (this.closest('.hidden')) return rectangle();
+    return layoutRects.has(this.id) ? rectangle(layoutRects.get(this.id)) : originalRect.call(this);
+  };
+  window.HTMLCanvasElement.prototype.getBoundingClientRect = function() {
+    return rectangle(layoutRects.get(this.id) || {width: 390, height: 844});
+  };
   window.HTMLCanvasElement.prototype.setPointerCapture = () => {};
   window.HTMLCanvasElement.prototype.releasePointerCapture = () => {};
   const images = new Map();
@@ -72,7 +83,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       }
     };
   } else window.PointerEvent = undefined;
-  window.localStorage.setItem('neon-unlocked-v2', '2');
+  window.localStorage.setItem('neon-unlocked-v2', String(unlocked));
   window.localStorage.setItem('neon-stars-v2', '{}');
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
@@ -97,6 +108,8 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     addExplosion=function(...args){explosionCallsForTest.push([...args]);return originalAddExplosionForTest(...args);};
     window.__UNIFIED_FLIGHT_TEST__={
       update,render,background,startLevel,pauseGame,resumeGame,goHome,completeLevel,fireManualShot,
+      finishGame,resumeReward,
+      refreshClassicFlightBounds,showStoryTransmission,hideStoryTransmission,syncClassicFlightHud,
       prepare(index=0){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];},
       frame(dt=1/60,quiet=false){
         spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;
@@ -144,6 +157,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     canvas.dispatchEvent(event);
   }
   return {window, api, snapshot, advance, pointer, touches, pending, drawCalls,
+    setRect: (id, rect) => layoutRects.set(id, rect),
     clearDrawCalls: () => { drawCalls.length = 0; },
     setDestructionStatus: status => {
       const image = images.get(DESTRUCTION_PATH);
@@ -442,4 +456,135 @@ test('Atlas locks its warning and actual projectile trajectory to the movable sh
   closeTo(crossingX, locked.targetX, 'The emitted projectile must cross the announced location');
   assert.ok(Math.abs(locked.targetY - fired.player.y) > 10, 'The fixture must actually move after the warning');
   assert.ok(locked.targetY > origin); assert.equal(h.pending.size, 1);
+});
+
+test('the route bar advances between collections without a stage, ammunition or recharge change', t => {
+  const h = harness(t); h.api.prepare(); h.advance(.1);
+  const before = h.snapshot(), distance = h.node('flightDistance').value;
+  const stage = h.node('flightStage').textContent;
+  h.advance(.11); const after = h.snapshot();
+  assert.equal(after.collected, before.collected);
+  assert.equal(after.weapons.charges, before.weapons.charges);
+  assert.equal(after.weapons.recharge, before.weapons.recharge);
+  assert.equal(h.node('flightStage').textContent, stage);
+  assert.ok(after.route.routeProgress > before.route.routeProgress);
+  assert.ok(h.node('flightDistance').value > distance,
+    'A quiet route must visibly advance without requiring a pickup or weapon update');
+  assert.ok(Math.abs(h.node('flightDistance').value - after.route.routeProgress) < .001);
+  assert.equal(h.node('flightDistance').getAttribute('aria-label'), 'Recorrido hasta el destino');
+  assert.equal(h.pending.size, 1);
+});
+
+test('compact comms do not repeat the quota and expire only with played time without moving the flight bounds', t => {
+  const h = harness(t, {unlocked: 3, rects: {
+    hud: {left: 10, top: 10, width: 370, height: 44},
+    flightRoute: {left: 10, top: 58, width: 370, height: 24},
+    flightObjective: {left: 10, top: 86, width: 370, height: 34}
+  }});
+  h.api.prepare(2); h.api.collectEnergy();
+  assert.equal(h.node('goal').textContent, '1/60');
+  assert.equal(h.node('flightObjective').textContent, '');
+  assert.equal(h.node('flightObjective').dataset.active, 'false');
+  assert.equal(h.node('flightDistance').getAttribute('aria-label'), 'CRONIUM recuperado');
+  const bounds = h.snapshot().bounds;
+  h.api.showStoryTransmission('CONTROL', 'Restos por babor. Mantén el corredor.', 1.1);
+  h.api.refreshClassicFlightBounds();
+  assert.equal(h.node('flightObjective').textContent, 'CONTROL: Restos por babor. Mantén el corredor.');
+  assert.equal(h.node('flightObjective').dataset.active, 'true');
+  assert.deepEqual(h.snapshot().bounds, bounds);
+  h.api.pauseGame(); h.advance(3);
+  assert.equal(h.node('flightObjective').dataset.active, 'true',
+    'A paused transmission must remain readable until its played-time duration elapses');
+  h.api.resumeGame(); h.advance(1.11); h.api.refreshClassicFlightBounds();
+  assert.equal(h.node('flightObjective').textContent, '');
+  assert.equal(h.node('flightObjective').dataset.active, 'false');
+  assert.deepEqual(h.snapshot().bounds, bounds,
+    'Showing or clearing comms must not displace the playable boundary');
+  assert.equal(h.pending.size, 1);
+});
+
+test('measured compact bounds release the former top reserve and ignore side controls outside the Canvas', t => {
+  const h = harness(t, {unlocked: 3, rects: {
+    hud: {left: 10, top: 10, width: 370, height: 44},
+    flightRoute: {left: 10, top: 58, width: 370, height: 24},
+    flightObjective: {left: 10, top: 86, width: 370, height: 34},
+    fire: {left: 258, top: 760, width: 116, height: 64},
+    flightWeapon: {left: 10, top: 700, width: 104, height: 48}
+  }});
+  h.api.prepare(2); const first = h.snapshot(), scale = first.H / 844;
+  assert.equal(first.bounds.fits, true);
+  closeTo((first.bounds.minY - 158) / scale, 120,
+    'The upper boundary follows the actual comms slot rather than a 182px minimum');
+  closeTo((first.bounds.maxY + 104) / scale, 700,
+    'The complete ship tail must clear the measured weapon button');
+  h.setRect('flightObjective', {left: 500, top: 400, width: 200, height: 34});
+  h.setRect('flightWeapon', {left: 500, top: 200, width: 104, height: 48});
+  h.api.refreshClassicFlightBounds(); const lateral = h.snapshot();
+  closeTo((lateral.bounds.minY - 158) / scale, 82,
+    'An off-Canvas transmission must not lower the playable ceiling');
+  closeTo((lateral.bounds.maxY + 104) / scale, 740,
+    'An off-Canvas weapon must not constrain the lower boundary');
+  assert.ok(lateral.bounds.minY < first.bounds.minY);
+  assert.ok(lateral.bounds.maxY > first.bounds.maxY);
+  assert.equal(lateral.bounds.fits, true);
+  assert.equal(h.pending.size, 1);
+});
+
+test('the compact HUD and weapon share menu, completion, death and Atlas visibility while switching preserves ammunition', t => {
+  const saved = JSON.stringify({version: 1, recoveredTwin: true,
+    unlocked: ['pulse', 'twin'], selected: 'twin'});
+  const h = harness(t, {saved, unlocked: 3, rects: {
+    hud: {left: 10, top: 10, width: 370, height: 44},
+    flightRoute: {left: 10, top: 58, width: 370, height: 24},
+    flightObjective: {left: 10, top: 86, width: 370, height: 34},
+    fire: {left: 258, top: 760, width: 116, height: 64},
+    flightWeapon: {left: 10, top: 700, width: 104, height: 48}
+  }});
+  const hidden = () => {
+    assert.equal(h.node('flightHud').classList.contains('hidden'), true);
+    assert.equal(h.node('flightRoute').classList.contains('hidden'), true);
+    assert.ok(h.node('flightWeapon').closest('#flightHud.hidden'),
+      'The detached lower weapon control must remain inside the hidden HUD lifecycle');
+  };
+  hidden(); h.api.prepare(2);
+  assert.equal(h.node('flightHud').classList.contains('hidden'), false);
+  assert.equal(h.node('flightRoute').classList.contains('hidden'), false);
+  assert.equal(h.api.fireManualShot(), true); const fired = h.snapshot().weapons;
+  for (const selected of ['pulse', 'twin']) {
+    h.node('flightWeapon').click(); const switched = h.snapshot().weapons;
+    assert.equal(switched.selected, selected);
+    assert.equal(switched.charges, fired.charges);
+    assert.equal(switched.recharge, fired.recharge);
+    assert.equal(switched.cooldown, fired.cooldown);
+    assert.equal(switched.projectiles.length, fired.projectiles.length);
+    assert.equal(h.node('flightWeapon').getAttribute('aria-pressed'), String(selected === 'twin'));
+  }
+  const normalBounds = h.snapshot().bounds;
+  h.api.finishGame('hull');
+  assert.equal(h.snapshot().state, 'gameover'); hidden();
+  h.api.refreshClassicFlightBounds();
+  assert.ok(h.snapshot().bounds.minY < normalBounds.minY,
+    'A layout refresh while defeated must actually observe the hidden interface');
+  assert.equal(h.api.resumeReward(), true);
+  assert.equal(h.snapshot().state, 'playing');
+  assert.equal(h.node('flightHud').classList.contains('hidden'), false,
+    'Continuing an ordinary flight must restore its compact HUD and weapon');
+  assert.equal(h.node('flightRoute').classList.contains('hidden'), false);
+  assert.deepEqual(h.snapshot().bounds, normalBounds,
+    'Continuing after a defeated-state layout refresh must restore measured HUD and weapon clearance');
+  for (let fragment = 0; fragment < 60; fragment++) h.api.collectEnergy();
+  assert.equal(h.snapshot().state, 'complete'); hidden();
+  h.api.goHome(); assert.equal(h.snapshot().state, 'menu'); hidden();
+  h.api.prepare(1);
+  for (let fragment = 0; fragment < 45; fragment++) h.api.collectEnergy();
+  assert.ok(h.snapshot().boss, 'The actual Gaia quota must enter Atlas'); hidden();
+  assert.equal(h.snapshot().state, 'playing');
+  h.api.finishGame('hull');
+  assert.equal(h.snapshot().state, 'gameover'); hidden();
+  assert.equal(h.api.resumeReward(), true);
+  assert.equal(h.snapshot().state, 'playing');
+  assert.ok(h.snapshot().boss); hidden();
+  assert.equal(h.node('atlasEncounter').classList.contains('hidden'), false,
+    'Continuing Atlas restores its combat interface without leaking the ordinary route controls');
+  assert.equal(h.pending.size, 1);
 });

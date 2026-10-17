@@ -21,10 +21,14 @@
     }
     document.body.classList.add("flight-mode");
     const mount = document.createElement("div");
-    mount.innerHTML = `<section id="flightRoute" class="flight-route hidden" aria-label="Trayecto espacial"><div><small id="flightDestination">CHRONOS → GAIA NOVA</small><b id="flightStage">Recupera el CRONIUM</b></div><button id="flightWeapon" type="button">ARMA · PULSO</button><progress id="flightDistance" max="1" value="0" aria-label="Recorrido hasta el destino"></progress><span id="flightObjective">Tres cargas · recarga en vuelo</span></section>
+    mount.innerHTML = `<div id="flightHud" class="flight-hud hidden">
+      <section id="flightRoute" class="flight-route hidden" aria-label="Trayecto espacial"><div><small id="flightDestination">CHRONOS → GAIA NOVA</small><b id="flightStage">Recupera el CRONIUM</b></div><progress id="flightDistance" max="1" value="0" aria-label="Recorrido hasta el destino"></progress></section>
+      <p id="flightObjective" class="flight-comms" role="status" aria-live="polite" data-active="false"></p>
+      <button id="flightWeapon" class="flight-weapon" type="button"><small>ARMA</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
+      </div>
       <div id="flightDock" class="overlay"><section class="panel flight-dock"><small>TALLER C9 · MIRA</small><h2>Que la pieza vuelva a volar.</h2><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p><button id="flightInstallTwin" class="primary" type="button">INSTALAR EMISOR GEMELO</button><button id="flightDockContinue" class="secondary" type="button">CONTINUAR HACIA GAIA</button><button id="flightDockHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
     canvas.parentElement.append(mount);
-    for (const id of ["flightRoute","flightDestination","flightStage","flightWeapon","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
+    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
     ui.flightWeapon.onclick = () => {
       if (classicEquipment.unlocked.length < 2) { toast("Rescata el emisor gemelo de Chronos y móntalo en C9"); return; }
       const selected = classicEquipment.selected === "pulse" ? "twin" : "pulse";
@@ -75,17 +79,29 @@
     $("openFlightDock")?.classList.toggle("hidden",!classicEquipment.recoveredTwin);
     const view=classicFlightView;
     const stage=atlasBoss ? "ACCESO ATLAS" : view?.stageName || level().name;
-    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : view ? `${collected}/${level().goal} CRONIUM · ${Math.round(view.routeProgress*100)}% del tramo` : `${collected}/${level().goal} CRONIUM · sigue la señal`;
-    const signature=[stage,objective,classicEquipment.selected,classicWeapons?.charges,Math.floor((classicWeapons?.recharge||0)*5)].join(":");
+    // The primary HUD already shows the quota. This reserved, transparent slot
+    // is used only for brief contextual comms; it never repeats the counters.
+    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : "";
+    const signature=[currentLevel,stage,objective,collected,Math.floor((view?.routeProgress||0)*1000),classicEquipment.selected,classicWeapons?.charges,Math.floor((classicWeapons?.recharge||0)*5)].join(":");
     if(signature===flightHudSignature)return;
     flightHudSignature=signature;
     ui.flightStage.textContent=stage;
-    ui.flightObjective.textContent=objective;
+    if(ui.flightObjective.textContent!==objective)ui.flightObjective.textContent=objective;
+    ui.flightObjective.dataset.active=String(Boolean(flightTransmission));
     ui.flightDestination.textContent=currentLevel===0 ? "CHRONOS → ACCESO DE GAIA" : `${level().world} · RASTRO ${currentLevel+1}/10`;
-    ui.flightDistance.value=view?.routeProgress || collected/level().goal;
-    ui.flightWeapon.textContent=classicEquipment.selected==="twin" ? "ARMA · GEMELO" : "ARMA · PULSO";
+    ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
+    ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
+    ui.flightDistance.setAttribute("aria-valuetext",view ? `${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
+    ui.flightWeaponName.textContent=classicEquipment.selected==="twin" ? "GEMELO" : "PULSO";
+    ui.flightWeapon.dataset.switchable=String(classicEquipment.unlocked.length>1);
+    ui.flightWeapon.setAttribute("aria-pressed",String(classicEquipment.selected==="twin"));
     ui.flightWeapon.setAttribute("aria-label",`Cambiar arma. ${classicEquipment.selected==="twin"?"Doble pulso":"Pulso central"}`);
     updateAmmoHud();
+  }
+
+  function setClassicFlightHudVisible(visible) {
+    ui.flightHud?.classList.toggle("hidden",!visible);
+    ui.flightRoute?.classList.toggle("hidden",!visible);
   }
 
   function classicFlightEvent(event) {
@@ -231,7 +247,7 @@
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
-    ui.flightRoute?.classList.add("hidden");
+    setClassicFlightHudVisible(false);
     ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
     hideWarning(); hideStoryTransmission(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
@@ -631,7 +647,8 @@
     ui.goal.textContent = `${collected}/${level().goal}`;
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
     ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : "SECTOR";
+    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : isUnifiedClassic() ? "NIVEL" : "SECTOR";
+    if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
       ? "linear-gradient(90deg,#63ffc4,#64e9ff)"
@@ -923,7 +940,7 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
-    if(isUnifiedClassic()){ui.flightRoute?.classList.remove("hidden");refreshClassicFlightBounds(true);}
+    if(isUnifiedClassic()){setClassicFlightHudVisible(true);refreshClassicFlightBounds(true);}
     hud();
     updateEncounterHud();
     if(!isUnifiedClassic()) showBanner();
@@ -959,7 +976,7 @@
     classicFlight=null;classicFlightView=null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
     NeonCampaign.endFlightInput(classicFlightInput);
-    ui.flightRoute?.classList.add("hidden");
+    setClassicFlightHudVisible(false);
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("menu");
@@ -1012,7 +1029,7 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
-    ui.flightRoute?.classList.add("hidden");
+    setClassicFlightHudVisible(false);
     if(classicWeapons)classicWeapons.projectiles.length=0;
     ui.atlasEncounter?.classList.add("hidden");
     document.body.classList.remove("atlas-combat");
@@ -1073,6 +1090,7 @@
     cancelSupplyFailureTimer();
     setState("gameover");
     ui.atlasEncounter?.classList.add("hidden");
+    setClassicFlightHudVisible(false);
     supplyFailed = reason === "supply";
     hideWarning();
     ui.hud.classList.add("hidden");
@@ -1149,8 +1167,10 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
+    setClassicFlightHudVisible(isUnifiedClassic() && !atlasBoss);
     hud();
     updatePowerHud();
+    refreshClassicFlightBounds();
     showBanner();
     window.AnalyticsManager?.track("continue_used", { level: currentLevel + 1, elapsed: Math.round(elapsed) });
     return true;
