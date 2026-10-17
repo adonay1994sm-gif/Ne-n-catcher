@@ -8,6 +8,7 @@ Gemelo central×2, lanza perforante×3 calibrable en C9, batería común tambié
 Certificación02:11/11 fases; contenido179/179. Preview final23/23. Chromium:HUD26, integración8 grupos y suplemento3, partida naturalGaia/Atlas4, N-7una sesión6pasos y caché3. Fallos iniciales conservados y explicados en el informe. Gaia completada en108,426s simulados;45 fragmentos,2 fases,66%casco, continuación a Vulkar y recarga con guardado intacto. Perfil gemelo inicial declarado.
 
 Seis incrementos IN_REVIEW: técnica aprobada, arte del propietario y físico pendientes. Inventario80 recursos; catálogo155. Cero niveles declarados visualmente completos. MotorV1=false; un RAF; main, PR3 y producción Netlify intactos. Glifos históricos y rendimiento sostenido siguen abiertos. Los cierres siguientes son históricos.
+Informe publicado en `f812dc2cf551a4b6964ef3b571b5c97095c42b59`; [cierre verificable](production-reports/evidence/combat-readability/closure.json). Esta anotación posterior no cambia el paquete ni declara CI remota verde.
 <!-- /combat-readability-current -->
 
 ---
