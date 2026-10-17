@@ -111,10 +111,11 @@ await test("manifiesto y archivos conservados coinciden exactamente con el disco
   assert.equal(result.actualBytes, assetManifest.runtimeBytes);
 });
 
-await test("plan de producción contiene exactamente 150 assets únicos y trazables", async () => {
-  assert.equal(assetProduction.assets.length, 150);
-  assert.equal(new Set(assetProduction.assets.map((item) => item.id)).size, 150);
-  assert.equal(Object.values(assetProduction.distribution).reduce((total, count) => total + count, 0), 150);
+await test("plan de producción conserva los 150 IDs históricos y registra ampliaciones únicas y trazables", async () => {
+  assert.ok(assetProduction.totalAssets >= 150);
+  assert.equal(assetProduction.assets.length, assetProduction.totalAssets);
+  assert.equal(new Set(assetProduction.assets.map((item) => item.id)).size, assetProduction.totalAssets);
+  assert.equal(Object.values(assetProduction.distribution).reduce((total, count) => total + count, 0), assetProduction.totalAssets);
   assert.equal(await exists("ASSET_PRODUCTION_MAP.md"), true);
   assert.equal(await exists("art-source/comet_animation_master_v1.png"), true);
   assert.equal(await exists("assets/comet_animation_sheet_v1.webp"), true);
@@ -157,7 +158,7 @@ await test("service worker incluye código, legales y cada asset", async () => {
     ...assetManifest.standalone.map((item) => item.path)
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-journey-demo-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-unified-flight-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -245,6 +246,9 @@ async function loadGameHarness() {
   const { window } = dom;
   window.HTMLCanvasElement.prototype.getContext = () => createCanvasContext();
   window.HTMLCanvasElement.prototype.toDataURL = () => "data:image/png;base64,";
+  window.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({
+    x: 0, y: 0, left: 0, top: 0, right: 390, bottom: 844, width: 390, height: 844
+  });
   window.requestAnimationFrame = () => 1;
   window.cancelAnimationFrame = () => {};
   window.navigator.vibrate = () => true;
@@ -280,7 +284,8 @@ async function loadGameHarness() {
       elapsed, storyStep, storyTimer, levelOneShockwaveTriggered,
       supplyFailureScheduled, runToken, settings: { ...settings },
       powers: { ...powers }, player: { ...player },
-      counts: { items: items.length, gates: gates.length, shots: shots.length, parts: parts.length, rings: rings.length, explosions: explosions.length, impacts: impactEffects.length },
+      weapons: classicWeapons ? NeonCampaign.classicWeaponSnapshot(classicWeapons) : null,
+      counts: { items: items.length, gates: gates.length, shots: shots.length, projectiles: classicWeapons?.projectiles.length || 0, parts: parts.length, rings: rings.length, explosions: explosions.length, impacts: impactEffects.length },
       items: items.map((item) => ({ type: item.type, x: item.x, y: item.y, r: item.r, spriteKey: item.spriteKey, special: item.special })),
       gates: gates.map((gate) => ({ ...gate, pieces: (gate.pieces || []).map((piece) => ({ ...piece })) }))
     }),
@@ -297,7 +302,12 @@ async function loadGameHarness() {
       collected = 0;
       items = [];
     },
-    setManualFireReady: () => { warpTimer = 0; manualShotCooldown = 0; },
+    prepareWeaponFixture: () => { warpTimer = 0; spawnTimer = 999; classicScoutTimer = 999; items = []; gates = []; },
+    advancePlayed: (seconds) => {
+      for (let remaining = seconds; remaining > 1e-9; remaining -= Math.min(1/60, remaining)) {
+        update(Math.min(1/60, remaining));
+      }
+    },
     setStoryState: ({ elapsedValue, step, shockwaveTriggered }) => {
       elapsed = elapsedValue;
       storyStep = step;
@@ -363,17 +373,28 @@ await test("claves, campaña y balance crítico permanecen iguales", async () =>
   assert.deepEqual(Array.from(api.levels, (level) => level.spawn), [0.69, 0.72, 0.67, 0.62, 0.58, 0.54, 0.51, 0.47, 0.44, 0.4]);
 });
 
-await test("cada partida entrega exactamente tres disparos manuales", async () => {
+await test("cada partida comienza con tres cargas y recupera una tras 3,6 segundos jugados", async () => {
   api.startLevel(0);
+  api.prepareWeaponFixture();
   assert.equal(api.snapshot().ammo, 3);
   for (let shot = 0; shot < 3; shot++) {
-    api.setManualFireReady();
     assert.equal(api.fireManualShot(), true);
+    api.advancePlayed(.25);
   }
-  api.setManualFireReady();
   assert.equal(api.snapshot().ammo, 0);
   assert.equal(api.fireManualShot(), false);
-  assert.equal(api.snapshot().counts.shots, 3);
+  assert.equal(api.snapshot().counts.projectiles, 3, "el pulso nuevo recorre el espacio como proyectil físico");
+  assert.equal(api.snapshot().counts.shots, 0, "no duplica el proyectil con un haz instantáneo heredado");
+  assert.equal(api.snapshot().weapons.shotSequence, 3);
+  api.advancePlayed(2.84);
+  assert.equal(api.snapshot().ammo, 0, "3,59 segundos aún no conceden una carga");
+  assert.equal(api.fireManualShot(), false);
+  api.advancePlayed(.02);
+  assert.equal(api.snapshot().ammo, 1);
+  assert.equal(api.snapshot().weapons.shotSequence, 3, "la recarga no dispara por sí sola");
+  assert.equal(api.fireManualShot(), true);
+  assert.equal(api.snapshot().ammo, 0);
+  assert.equal(api.snapshot().weapons.shotSequence, 4);
 });
 
 await test("guardados corruptos se normalizan sin romper el menú ni el control", async () => {

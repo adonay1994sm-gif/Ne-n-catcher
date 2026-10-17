@@ -145,7 +145,138 @@
     ctx.restore();
   }
 
+  // The first classic route composes independent illustrated objects.  A single
+  // simulation snapshot drives geography, scenery and the mission HUD; render
+  // timestamps never advance this journey while the game is paused.
+  function drawChronosFlightSprite(frame, node, sizeMultiplier = 1) {
+    if (!node?.visible || !spriteReady(SPRITES.flightKit)) return false;
+    const image = SPRITES.flightKit;
+    const cellWidth = image.naturalWidth / 3;
+    const cellHeight = image.naturalHeight / 2;
+    const size = W * node.scale * sizeMultiplier;
+    ctx.save();
+    ctx.translate(node.x * W, node.y * H);
+    ctx.rotate(node.rotation || 0);
+    // Both station poses share their reactor pivot and remain fully opaque.
+    ctx.drawImage(image, (frame % 3) * cellWidth, Math.floor(frame / 3) * cellHeight,
+      cellWidth, cellHeight, -size / 2, -size / 2, size, size);
+    ctx.restore();
+    return true;
+  }
+
+  function drawChronosFlightBackground() {
+    const view = classicFlightView;
+    if (!view) return;
+    const clock = view.elapsed;
+    const space = SPRITES.flightSpace;
+    ctx.fillStyle = "#020817"; ctx.fillRect(0, 0, W, H);
+    if (spriteReady(space)) {
+      // Overscan bounds the drift so no transparent edge or repeated painting
+      // appears.  The station and Gaia move separately over this distant plate.
+      const scale = Math.max(W / space.naturalWidth, H / space.naturalHeight) * 1.20;
+      const width = space.naturalWidth * scale, height = space.naturalHeight * scale;
+      const offsetX = clamp(view.deepSpace.offsetX * W, -(width - W) / 2, (width - W) / 2);
+      const offsetY = clamp((view.deepSpace.offsetY - .27) * H * .25, -(height - H) / 2, (height - H) / 2);
+      ctx.drawImage(space, (W - width) / 2 + offsetX, (H - height) / 2 + offsetY, width, height);
+    }
+
+    // Tiny secondary stars may use simple marks; all important scene objects
+    // below are original illustrated sprites, not substitute geometry.
+    ctx.save(); ctx.globalCompositeOperation = "screen";
+    const starCount = settings.effectsQuality === "low" ? 16 : 30;
+    for (let index = 0; index < starCount; index++) {
+      const depth = .24 + (index % 5) * .18;
+      const x = ((index * 149.13 - clock * depth * 1.6) % W + W) % W;
+      const y = (index * 271.73 + clock * depth * (9 + view.deepSpace.speed * 21)) % H;
+      const radius = .7 + depth * .7;
+      ctx.globalAlpha = .15 + depth * .19;
+      ctx.fillStyle = index % 4 ? "#cce8ff" : "#cbbdff";
+      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed));
+    }
+    ctx.restore();
+
+    drawChronosFlightSprite(2, view.planet);
+    drawChronosFlightSprite(view.station.state === "ruptured" ? 1 : 0, view.station);
+
+    if (view.debris.visible) {
+      // These small fragments belong to the Chronos breach.  Their low contrast
+      // and scale distinguish ambient parallax from collidable foreground scrap.
+      const count = settings.effectsQuality === "low" ? 3 : 6;
+      for (let index = 0; index < count; index++) {
+        const depth = .25 + index * .12;
+        const image = index % 2 ? SPRITES.debrisPanel : SPRITES.debrisMetal;
+        if (!spriteReady(image)) continue;
+        const x = ((W * (.22 + index * .23) + clock * view.debris.directionX * 18 * depth) % (W + 80) + W + 80) % (W + 80) - 40;
+        const y = (H * .13 + index * 189 + clock * view.debris.directionY * (21 + depth * 33)) % (H + 100) - 50;
+        const size = 12 + depth * 24;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(index * .9 + clock * (.035 + index * .009));
+        ctx.globalAlpha = .20 + depth * .15;
+        ctx.drawImage(image, -size / 2, -size / 2, size, size); ctx.restore();
+      }
+    }
+
+    if (view.beacon.visible && spriteReady(SPRITES.satellite)) {
+      const size = Math.max(30, W * view.beacon.scale);
+      ctx.save(); ctx.translate(W * view.beacon.x, H * view.beacon.y);
+      ctx.rotate(-.12 + Math.sin(clock * .08) * .04);
+      ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      if (view.beacon.active) {
+        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 17px sans-serif";
+        ctx.fillStyle = "#bcefff";
+        ctx.fillText("BALIZA GAIA", W * view.beacon.x, H * view.beacon.y + size * .65);
+        ctx.restore();
+      }
+    }
+
+    if (view.attacker.visible) {
+      const attacker = view.attacker;
+      const size = W * attacker.scale * 1.4;
+      // The artwork's cannon points down-left.  Rotate its measured muzzle
+      // offset with the hull rather than emitting the attack from its centre.
+      const localX = -129 / 512 * size, localY = 134 / 512 * size;
+      const angle = attacker.rotation || 0;
+      const muzzleX = W * attacker.x + localX * Math.cos(angle) - localY * Math.sin(angle);
+      const muzzleY = H * attacker.y + localX * Math.sin(angle) + localY * Math.cos(angle);
+      if (attacker.state === "fire") {
+        const targetX = W * view.station.x, targetY = H * view.station.y;
+        const dx = targetX - muzzleX, dy = targetY - muzzleY;
+        ctx.save();
+        ctx.translate((muzzleX + targetX) / 2, (muzzleY + targetY) / 2);
+        ctx.rotate(Math.atan2(dy, dx) - Math.PI / 2);
+        ctx.globalCompositeOperation = "screen";
+        drawAtlasVfx(0, 17, Math.max(30, Math.hypot(dx, dy)), .88 + Math.sin(clock * 43) * .10);
+        ctx.restore();
+      }
+      const frame = attacker.state === "charge" ? 4 : attacker.state === "fire" ? 5 : 3;
+      drawChronosFlightSprite(frame, attacker, 1.4);
+    }
+
+    ensureSprite(SPRITES.chronosShockwave);
+    const shockwaveAge = clock - view.minDuration * .10;
+    if (view.station.state === "ruptured" && shockwaveAge >= 0 && shockwaveAge < 1.1 && spriteReady(SPRITES.chronosShockwave)) {
+      const progress = clamp(shockwaveAge / 1.1, 0, 1);
+      const atlas = SPRITES.chronosShockwave;
+      const cellWidth = atlas.naturalWidth / 2, cellHeight = atlas.naturalHeight / 2;
+      const frame = Math.min(3, Math.floor(progress * 4));
+      const size = W * (.25 + progress * 1.55);
+      ctx.save(); ctx.globalCompositeOperation = "screen";
+      ctx.globalAlpha = Math.sin(progress * Math.PI) * .78;
+      ctx.drawImage(atlas, frame % 2 * cellWidth, Math.floor(frame / 2) * cellHeight,
+        cellWidth, cellHeight, view.station.x * W - size / 2, view.station.y * H - size / 2, size, size);
+      ctx.restore();
+    }
+
+    // Keep the flight lane readable without fading the origin into a second
+    // background.  Its disappearance is solely movement and scale from the route.
+    const veil = ctx.createLinearGradient(0, H * .40, 0, H);
+    veil.addColorStop(0, "rgba(2,6,15,0)");
+    veil.addColorStop(1, "rgba(2,6,15,.35)");
+    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
+  }
+
   function background(t) {
+    if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
     if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);

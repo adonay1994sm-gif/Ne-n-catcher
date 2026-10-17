@@ -18,6 +18,57 @@
     ctx.restore();
   }
 
+  function drawClassicProjectiles() {
+    if (!isUnifiedClassic() || !classicWeapons || atlasBoss) return;
+    for (const shot of classicWeapons.projectiles) {
+      ctx.save(); ctx.translate(shot.x, shot.y);
+      ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
+      drawAtlasVfx(1, shot.weapon === "twin" ? 16 : 23,
+        shot.weapon === "twin" ? 58 : 68, 1, .10);
+      ctx.restore();
+    }
+  }
+
+  function drawFlightModule(item) {
+    if (!isUnifiedClassic() || !spriteReady(SPRITES.flightWeapons)) return;
+    const atlas = SPRITES.flightWeapons;
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.globalAlpha *= itemVisualAlpha(item);
+    ctx.rotate(Math.sin(elapsed * .8 + (item.p || 0)) * .08);
+    // A small navigation halo identifies a recoverable object. The object
+    // itself is the authored hardware, not an icon substituted for the part.
+    ctx.strokeStyle = "rgba(255,208,123,.75)"; ctx.lineWidth = 2;
+    ctx.setLineDash([5, 7]); ctx.beginPath(); ctx.arc(0, 0, 47, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.drawImage(atlas, 0, 0, atlas.naturalWidth / 3, atlas.naturalHeight,
+      -64, -78, 128, 128);
+    ctx.restore();
+  }
+
+  function hasClassicTwinMounts() {
+    // Some isolated render fixtures deliberately do not install campaign UI.
+    return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
+      typeof classicEquipment !== "undefined" && classicEquipment.selected === "twin";
+  }
+
+  function classicTwinFrame() {
+    const cooldown = atlasBoss ? manualShotCooldown : classicWeapons?.cooldown || 0;
+    if (cooldown > .10) return 2;
+    if (classicWeapons && classicWeapons.charges < 3 && classicWeapons.recharge > .10) return 1;
+    return 0;
+  }
+
+  function drawClassicTwinMounts(target, frame = 0) {
+    const atlas = SPRITES.flightWeapons;
+    if (!spriteReady(atlas)) return false;
+    const frameWidth = atlas.naturalWidth / 3;
+    // All three poses share the same manufactured mount: roots +/-102,116;
+    // muzzles +/-102,-134. The hull and wing layers cover the attachment roots.
+    target.drawImage(atlas, frame * frameWidth, 0, frameWidth, atlas.naturalHeight,
+      -256, -324, 512, 512);
+    return true;
+  }
+
   function drawGuardianAtlas() {
     if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
     const boss = atlasBoss;
@@ -34,7 +85,7 @@
       ctx.fillStyle = "#beffe6"; ctx.fillText("RUTA LIBRE", activeGap.center, player.y - 180);
       ctx.restore();
     } else if (boss.state === "charge" && boss.telegraph) {
-      ctx.save(); ctx.translate(boss.telegraph.targetX, player.y);
+      ctx.save(); ctx.translate(boss.telegraph.targetX, boss.telegraph.targetY);
       drawAtlasVfx(3, 85, 85, .65 + boss.telegraph.progress * .30);
       ctx.restore();
     }
@@ -68,7 +119,7 @@
     return true;
   }
 
-  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0) {
+  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0, weaponFrame = null) {
     if (!spriteReady(SPRITES.modularShip)) return false;
     const pose = NeonCampaign.shipAssemblyPose({elapsedSeconds: time, steering, hull: health, impactSeconds: impact});
     target.save();
@@ -79,6 +130,7 @@
     target.save(); target.translate(0, 173);
     target.scale(1, pose.enginePulse); target.translate(0, -173);
     drawShipComponent(target, loadout, "flames"); target.restore();
+    if (weaponFrame !== null) drawClassicTwinMounts(target, weaponFrame);
     // A small articulated sweep pivots at each root, underneath the fuselage.
     for (const side of [-1, 1]) {
       target.save();
@@ -94,18 +146,49 @@
   }
 
   function syncShipPresentation() {
-    if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout) return;
+    const twin = hasClassicTwinMounts();
+    if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout &&
+      shipPresentationSignature?.twin === twin) return;
+    if (twin && !spriteReady(SPRITES.flightWeapons)) return;
     let source = "assets/ship_frame_01.webp";
-    if (shipRenderMode === "modular") {
-      if (!spriteReady(SPRITES.modularShip)) return;
+    if (shipRenderMode === "modular" || twin) {
+      if (shipRenderMode === "modular" && !spriteReady(SPRITES.modularShip)) return;
       const preview = document.createElement("canvas"); preview.width = preview.height = 384;
       const previewContext = preview.getContext("2d");
       previewContext.translate(192, 170);
-      drawModularShip(previewContext, shipLoadout, 330, 0);
+      if (shipRenderMode === "modular") {
+        drawModularShip(previewContext, shipLoadout, 330, 0, 0, 100, 0, twin ? 0 : null);
+      } else {
+        const frame = frameFrom("ship", 1);
+        if (!spriteReady(frame)) return;
+        previewContext.save(); previewContext.scale(330 / 512, 330 / 512);
+        drawClassicTwinMounts(previewContext, 0); previewContext.restore();
+        previewContext.drawImage(frame, -165, -165, 330, 330);
+      }
       source = preview.toDataURL("image/png");
     }
     document.querySelectorAll(".menu-ship-image, .briefing-ship").forEach(image => { image.src = source; });
-    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout};
+    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout, twin};
+  }
+
+  function drawClassicDock(t) {
+    if (!isUnifiedClassic() || !ui.flightDockCanvas || !ui.flightDock?.classList.contains("show")) return;
+    const preview = ui.flightDockCanvas;
+    const target = preview.getContext("2d");
+    target.clearRect(0, 0, preview.width, preview.height);
+    target.save(); target.translate(preview.width / 2, preview.height * .49);
+    const twin = hasClassicTwinMounts();
+    const assembled = shipRenderMode === "modular" &&
+      drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
+    if (!assembled) {
+      target.save(); target.scale(270 / 512, 270 / 512);
+      if (twin) drawClassicTwinMounts(target, 0);
+      target.restore();
+      const frame = frameFrom("ship", 1);
+      if (spriteReady(frame)) target.drawImage(frame, -135, -135, 270, 270);
+      else if (spriteReady(SPRITES.shipFallback)) target.drawImage(SPRITES.shipFallback, -126, -143, 252, 286);
+    }
+    target.restore();
   }
 
   function drawShipHangar(t) {
@@ -187,7 +270,8 @@
       ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
     const assembled = shipRenderMode === "modular" && drawModularShip(ctx, assembledLoadout, 208, elapsed,
-      clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer);
+      clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer,
+      hasClassicTwinMounts() ? classicTwinFrame() : null);
     ctx.restore();
     if (!assembled) {
     const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
@@ -217,6 +301,10 @@
     ctx.save();
     const criticalJitter = hull < 18 && state !== "destroying" ? Math.sin(elapsed * 19) * 1.6 : 0;
     ctx.translate(criticalJitter, bob + SHIP_VISUAL.centerYOffset);
+    if (hasClassicTwinMounts()) {
+      ctx.save(); ctx.scale(208 / 512, 208 / 512);
+      drawClassicTwinMounts(ctx, classicTwinFrame()); ctx.restore();
+    }
     ctx.shadowBlur = 22;
     ctx.shadowColor = level().accent;
     if (!drawImageCentered(frame, SHIP_VISUAL.spriteSize, SHIP_VISUAL.spriteSize, 0, 1, flipX)) {

@@ -106,7 +106,7 @@
       accent: "#57f4ff", top: "#173460", mid: "#07172f", hazard: "shockwave", scene: "cronos",
       world: "CRONOS / GAIA NOVA", enemyCue: "Restos temporales",
       zone: "Perímetro exterior del Centro Cronos", desc: "Cruza la zona de impacto",
-      mission: "Alcanza el perímetro, recupera 36 fragmentos temporales y localiza la señal de emergencia del Centro Cronos.",
+      mission: "Una nave desconocida ataca Chronos. Recupera 36 fragmentos de CRONIUM mientras abandonas la estación y sigue su rastro hacia Gaia Nova. Rescata el emisor gemelo: Mira puede montarlo en C9.",
       threatLabel: "Roca y restos orbitales", threatPool: ["meteor", "meteor", "debris"], gate: 0
     },
     {

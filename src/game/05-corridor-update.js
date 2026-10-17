@@ -213,6 +213,11 @@
       return;
     }
 
+    // Do not run invisible encounters while the authored departure layers load.
+    if(classicFlight && (!spriteReady(SPRITES.flightKit) || !spriteReady(SPRITES.flightSpace))) {
+      if(ui.flightStage)ui.flightStage.textContent="CARGANDO SALIDA DE CHRONOS · puedes volver al menú";
+      return;
+    }
     elapsed += dt;
     if (manualShotCooldown > 0) {
       const previousCooldown = manualShotCooldown;
@@ -228,6 +233,11 @@
     const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
+    if(isUnifiedClassic() && classicFlightBounds) {
+      player.x=clamp(player.x,classicFlightBounds.minX,classicFlightBounds.maxX);
+      player.y+=(player.targetY-player.y)*Math.min(1,dt*follow);
+      player.y=clamp(player.y,classicFlightBounds.minY,classicFlightBounds.maxY);
+    }
     engineTrail();
 
     if (warpTimer > 0) {
@@ -237,6 +247,7 @@
       return;
     }
 
+    if(isUnifiedClassic())advanceClassicFlight(dt);
     if (JOURNEY_DEMO && journey) {
       journey.advance(dt, journeyEvent);
       syncJourneyHud();
@@ -259,7 +270,7 @@
         updateEncounterHud();
       }
     } else {
-      if (!atlasBoss) {
+      if (!atlasBoss && (!classicFlightView || (classicFlightView.recoveryActive && collected<lv.goal))) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -312,6 +323,7 @@
 
     if (powers.tractor > 0 && (!tractorTarget || !items.includes(tractorTarget))) selectTractorTarget();
 
+    advanceClassicWeaponField(dt);
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
@@ -320,7 +332,10 @@
       // Recovering the final fragment can replace the field with the Atlas
       // arena synchronously. The old loop indexes must not read that old field.
       if (!item) continue;
-      if (item.guardianProjectile) {
+      if(item.flightComet) {
+        item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
+        if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
+      } else if (item.guardianProjectile) {
         item.x += item.vx * dt * scale;
         item.y += item.vy * dt * scale;
         item.life -= dt * scale;
@@ -329,6 +344,9 @@
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
+      if(item.flightPatrol && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
+      if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
+
       if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
       if (item.journeyEntry && item.classicScout.age < .9) {
         const entry = item.classicScout.age / .9;
@@ -361,8 +379,9 @@
         item.y += dy * dt * 5.8;
       }
 
+      if(interceptClassicProjectile(item)){items.splice(index,1);continue;}
       if (hit(item)) {
-        collectItem(item);
+        if(collectItem(item)===false)continue;
         const actualIndex = items.indexOf(item);
         if (actualIndex >= 0) items.splice(actualIndex, 1);
         if (item === tractorTarget) tractorTarget = null;
@@ -381,6 +400,7 @@
       }
     }
 
+    if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
     if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {

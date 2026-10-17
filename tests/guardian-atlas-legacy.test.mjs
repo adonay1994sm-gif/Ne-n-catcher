@@ -28,7 +28,9 @@ function harness(t, campaign = '') {
     set(target, key, value) { target[key] = value; return true; }});
   window.HTMLCanvasElement.prototype.getContext = () => ctx;
   window.HTMLCanvasElement.prototype.toDataURL = () => 'data:image/png;base64,';
-  window.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({left: 0, top: 0, width: 390, height: 844});
+  window.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({
+    x: 0, y: 0, left: 0, top: 0, right: 390, bottom: 844, width: 390, height: 844
+  });
   window.Image = class {
     constructor() { this.complete = true; this.naturalWidth = this.naturalHeight = 1024; }
     set src(value) { this.path = value; }
@@ -78,6 +80,7 @@ function harness(t, campaign = '') {
     snapshot:()=>({state,hull,score,collected,ammo,manualShotCooldown,currentLevel,runToken,
       elapsed,unlocked:getUnlocked(),stars:getStars(),continued,atlasAutoFire,slow:powers.slow,
       player:{x:player.x,y:player.y},
+      weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
       projectiles:items.filter(item=>item.guardianProjectile).map(item=>({
         id:item.projectileId,attackId:item.attackId,volley:item.volley,
         x:item.x,y:item.y,vx:item.vx,vy:item.vy,r:item.r,life:item.life})),
@@ -182,7 +185,7 @@ test('death, a rewarded continuation and retry cannot bypass or prematurely save
   assert.equal(h.pending.size, 1);
 });
 
-test('Gaia exposes a usable manual basic pulse beyond three shots while the original first mission keeps its contract', t => {
+test('Gaia keeps its manual pulse and Chronos begins with three charges before recharging through played time', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal();
   const toggle = h.window.document.getElementById('atlasAutoFire');
   assert.ok(toggle, 'The encounter must expose the automatic/manual fire choice');
@@ -200,6 +203,19 @@ test('Gaia exposes a usable manual basic pulse beyond three shots while the orig
     for (let frame = 0; frame < 20; frame++) h.api.isolatedFrame(1 / 60);
   }
   assert.equal(h.snapshot().ammo, 0); assert.equal(h.api.fireManualShot(), false);
+  assert.equal(h.snapshot().weapons.shotSequence, 3);
+  // Frame the actual legacy update, not a synthetic jump or a cooldown reset.
+  // Immediately before 3.6 played seconds there is still no fourth charge.
+  while (h.snapshot().weapons.recharge + 1 / 60 < 3.6 - 1e-8) h.api.isolatedFrame(1 / 60);
+  const beforeRecharge = h.snapshot();
+  assert.ok(beforeRecharge.weapons.recharge < 3.6);
+  assert.equal(beforeRecharge.ammo, 0); assert.equal(h.api.fireManualShot(), false);
+  h.api.isolatedFrame(1 / 60);
+  const recharged = h.snapshot();
+  assert.equal(recharged.ammo, 1);
+  assert.equal(recharged.weapons.shotSequence, 3, 'Recharging cannot silently emit a shot');
+  assert.equal(h.api.fireManualShot(), true);
+  assert.equal(h.snapshot().ammo, 0); assert.equal(h.snapshot().weapons.shotSequence, 4);
 });
 
 test('leaving the encounter does not mutate saves and N-7 cannot start classic Atlas', t => {

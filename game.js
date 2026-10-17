@@ -106,7 +106,7 @@
       accent: "#57f4ff", top: "#173460", mid: "#07172f", hazard: "shockwave", scene: "cronos",
       world: "CRONOS / GAIA NOVA", enemyCue: "Restos temporales",
       zone: "Perímetro exterior del Centro Cronos", desc: "Cruza la zona de impacto",
-      mission: "Alcanza el perímetro, recupera 36 fragmentos temporales y localiza la señal de emergencia del Centro Cronos.",
+      mission: "Una nave desconocida ataca Chronos. Recupera 36 fragmentos de CRONIUM mientras abandonas la estación y sigue su rastro hacia Gaia Nova. Rescata el emisor gemelo: Mira puede montarlo en C9.",
       threatLabel: "Roca y restos orbitales", threatPool: ["meteor", "meteor", "debris"], gate: 0
     },
     {
@@ -282,6 +282,21 @@
   let lastHudHull = 100;
   let ammo = INITIAL_AMMO;
   let manualShotCooldown = 0;
+  let classicWeapons = null;
+  let classicFlight = null;
+  let classicFlightView = null;
+  let classicFlightBounds = null;
+  let classicFlightAnchorY = null;
+  const classicFlightInput = NeonCampaign.createRelativeFlightInput();
+  let classicEquipment = {version:1, recoveredTwin:false, unlocked:['pulse'], selected:'pulse'};
+  let classicEquipmentWritable = true;
+  let classicPatrolTimer = 0;
+  let classicPatrolSequence = 0;
+  let classicThreatSequence = 0;
+  let flightDockReturn = 'menu';
+  let flightHudSignature = '';
+  let flightTransmission = null;
+
 
   let items = [];
   let gates = [];
@@ -372,6 +387,10 @@
   };
 
   const SPRITES = {
+    flightKit: loadSprite("assets/chronos_flight_atlas_v1.webp", false),
+    flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
+    flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
+
     shipFallback: SPRITE_GROUPS.ship[0],
     meteorSmall: loadSprite("assets/meteor_small.webp", true),
     meteorSmallAlt: loadSprite("assets/meteor_small_alt.webp"),
@@ -527,7 +546,7 @@
   }
 
   function overlay(el) {
-    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar].filter(Boolean)
+    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar, ui.flightDock].filter(Boolean)
       .forEach((node) => node.classList.remove("show"));
     if (el) el.classList.add("show");
   }
@@ -541,21 +560,96 @@
 
   addEventListener("game-toast", (event) => toast(event.detail));
 
+  // DOM geometry is sampled on layout changes, never from the drawing loop.
+  // All returned coordinates use the same logical Canvas units as collisions.
+  function refreshClassicFlightBounds(reset = false) {
+    if (!isUnifiedClassic()) return null;
+    const canvasRect = canvas.getBoundingClientRect();
+    if (!canvasRect.width || !canvasRect.height) return classicFlightBounds;
+    const verticalScale = H / canvasRect.height;
+    const horizontal = canvasRect.height < 500;
+    const visibleRect = (node) => {
+      if (!node || node.classList.contains("hidden")) return null;
+      const style = window.getComputedStyle(node);
+      if (style.display === "none" || style.visibility === "hidden") return null;
+      const rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 ? rect : null;
+    };
+    // Reserve room for brief transmissions before they appear, avoiding a
+    // sudden displacement of the ship when the first message is displayed.
+    let hudBottomCss = canvasRect.top + (horizontal ? 126 : 182);
+    for (const node of [ui.hud, $("flightRoute"),
+      ui.storyTransmission?.classList.contains("show") ? ui.storyTransmission : null]) {
+      const rect = visibleRect(node);
+      if (rect) hudBottomCss = Math.max(hudBottomCss, rect.bottom);
+    }
+    let controlsTopCss = canvasRect.bottom - 104;
+    const fireRect = visibleRect(ui.fire);
+    if (fireRect) controlsTopCss = Math.min(controlsTopCss, fireRect.top);
+    const powersRect = visibleRect(ui.powerHud);
+    if (powersRect) {
+      // Existing N-7 uses an upper power row; the unified classic moves it
+      // above the fire control. Never mistake an upper row for a bottom edge.
+      if (powersRect.top >= canvasRect.top + canvasRect.height / 2) {
+        controlsTopCss = Math.min(controlsTopCss, powersRect.top);
+      } else hudBottomCss = Math.max(hudBottomCss, powersRect.bottom);
+    }
+    const hudBottom = clamp((hudBottomCss - canvasRect.top) * verticalScale, 0, H);
+    const controlsTop = clamp((controlsTopCss - canvasRect.top) * verticalScale, hudBottom, H);
+    const base = NeonCampaign.calculateFlightBounds({ width: W, height: H, hudBottom, controlsTop });
+    let minY = base.minY, maxY = base.maxY, yFits = base.yFits;
+    if (atlasBoss) {
+      const bossBottom = atlasBoss.targetY + (atlasBoss.visualSize || 350) * .52;
+      minY = Math.max(minY, bossBottom + 158);
+      if (minY > maxY) {
+        // Keep the ship within the measured UI envelope even if the boss must
+        // be resized by its presentation owner; report that the arena is tight.
+        const center = clamp(minY / 2 + maxY / 2, base.minY, base.maxY);
+        minY = center; maxY = center; yFits = false;
+      }
+    }
+    classicFlightBounds = Object.freeze({ ...base, minY, maxY, yFits, fits: base.xFits && yFits });
+    classicFlightAnchorY = maxY;
+    player.x = clamp(player.x, classicFlightBounds.minX, classicFlightBounds.maxX);
+    player.target = clamp(player.target, classicFlightBounds.minX, classicFlightBounds.maxX);
+    if (reset || !Number.isFinite(player.y)) player.y = classicFlightAnchorY;
+    else player.y = clamp(player.y, minY, maxY);
+    if (reset || !Number.isFinite(player.targetY)) player.targetY = player.y;
+    else player.targetY = clamp(player.targetY, minY, maxY);
+    return classicFlightBounds;
+  }
+
   function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
+    const previousBounds = classicFlightBounds;
+    const fractionY = previousBounds && previousBounds.maxY > previousBounds.minY
+      ? clamp((player.y - previousBounds.minY) / (previousBounds.maxY - previousBounds.minY), 0, 1) : 1;
+    const targetFractionY = previousBounds && previousBounds.maxY > previousBounds.minY && Number.isFinite(player.targetY)
+      ? clamp((player.targetY - previousBounds.minY) / (previousBounds.maxY - previousBounds.minY), 0, 1) : fractionY;
     W = 720;
     H = Math.max(1180, Math.round(W * rect.height / rect.width));
     canvas.width = W;
     canvas.height = H;
-    // Keep the whole ship above thumb controls at every canvas/CSS scale.
-    // The collision polygon is unchanged; only the flight line gains clearance.
-    const controlBandCss = JOURNEY_DEMO ? 136 : 104;
-    const clearance = 110 + controlBandCss * H / rect.height;
-    player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
-    player.x = clamp(player.x, 80, W - 80);
-    player.target = clamp(player.target, 80, W - 80);
-    positionAtlasArena();
+    if (isUnifiedClassic()) {
+      refreshClassicFlightBounds(!previousBounds);
+      // Atlas derives its arena from a stable lower anchor, not from the
+      // player's current vertical maneuver; refresh never calls back into it.
+      positionAtlasArena();
+      const next = refreshClassicFlightBounds();
+      if (next) {
+        player.y = next.minY + fractionY * (next.maxY - next.minY);
+        player.targetY = next.minY + targetFractionY * (next.maxY - next.minY);
+      }
+    } else {
+      // Preserve the experimental campaigns' existing horizontal flight line.
+      const controlBandCss = JOURNEY_DEMO ? 136 : 104;
+      const clearance = 110 + controlBandCss * H / rect.height;
+      player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
+      player.x = clamp(player.x, 80, W - 80);
+      player.target = clamp(player.target, 80, W - 80);
+      positionAtlasArena();
+    }
     for (const star of stars) {
       star.x = clamp(star.x, 0, W);
       star.y = clamp(star.y, 0, H);
@@ -658,6 +752,191 @@
     updateAudioVolumes();
     overlay(settingsReturn === "paused" ? ui.paused : ui.menu);
   }
+  const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
+
+  function isUnifiedClassic() { return !N7_CAMPAIGN && !JOURNEY_DEMO; }
+
+  function setupClassicFlight() {
+    if (!isUnifiedClassic()) return;
+    const raw = storage.getRaw(CLASSIC_EQUIPMENT_KEY);
+    if (raw !== null) {
+      try {
+        const value = JSON.parse(raw);
+        if (value?.version !== 1 || typeof value.recoveredTwin !== "boolean" || !Array.isArray(value.unlocked) ||
+          !value.unlocked.includes("pulse") || value.unlocked.some(type => !["pulse", "twin"].includes(type)) ||
+          !value.unlocked.includes(value.selected) || (value.unlocked.includes("twin") && !value.recoveredTwin)) throw new Error("Invalid equipment");
+        classicEquipment = {version:1,recoveredTwin:value.recoveredTwin,unlocked:[...new Set(value.unlocked)],selected:value.selected};
+      } catch {
+        const backupKey = CLASSIC_EQUIPMENT_KEY + ":invalid-backups";
+        const previous = storage.getJSON(backupKey, []);
+        const backups = Array.isArray(previous) ? previous.filter(value => typeof value === "string") : [];
+        classicEquipmentWritable = backups.includes(raw) || storage.setJSON(backupKey, [...backups, raw]);
+      }
+    }
+    document.body.classList.add("flight-mode");
+    const mount = document.createElement("div");
+    mount.innerHTML = `<section id="flightRoute" class="flight-route hidden" aria-label="Trayecto espacial"><div><small id="flightDestination">CHRONOS → GAIA NOVA</small><b id="flightStage">Recupera el CRONIUM</b></div><button id="flightWeapon" type="button">ARMA · PULSO</button><progress id="flightDistance" max="1" value="0" aria-label="Recorrido hasta el destino"></progress><span id="flightObjective">Tres cargas · recarga en vuelo</span></section>
+      <div id="flightDock" class="overlay"><section class="panel flight-dock"><small>TALLER C9 · MIRA</small><h2>Que la pieza vuelva a volar.</h2><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p><button id="flightInstallTwin" class="primary" type="button">INSTALAR EMISOR GEMELO</button><button id="flightDockContinue" class="secondary" type="button">CONTINUAR HACIA GAIA</button><button id="flightDockHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
+    canvas.parentElement.append(mount);
+    for (const id of ["flightRoute","flightDestination","flightStage","flightWeapon","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
+    ui.flightWeapon.onclick = () => {
+      if (classicEquipment.unlocked.length < 2) { toast("Rescata el emisor gemelo de Chronos y móntalo en C9"); return; }
+      const selected = classicEquipment.selected === "pulse" ? "twin" : "pulse";
+      if (persistClassicEquipment({...classicEquipment, selected})) { tone(selected === "twin" ? 860 : 650, .12, "triangle", .045); syncClassicFlightHud(); }
+    };
+    ui.flightInstallTwin.onclick = () => {
+      if (!classicEquipment.recoveredTwin || classicEquipment.unlocked.includes("twin")) return;
+      if (persistClassicEquipment({...classicEquipment,unlocked:["pulse","twin"],selected:"twin"})) {
+        toast("Emisor gemelo montado · dos cañones, una carga"); updateClassicDock();
+      }
+    };
+    $("flightDockContinue").onclick = () => { if (flightDockReturn === "complete") prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete"); else goHome(); };
+    $("flightDockHome").onclick = goHome;
+    const workshop = document.createElement("button"); workshop.id="openFlightDock"; workshop.className="secondary hidden";
+    workshop.type="button"; workshop.textContent="TALLER C9"; workshop.onclick=()=>openClassicDock("menu");
+    ui.menu.querySelector(".menu-actions")?.append(workshop);
+    syncClassicFlightHud();
+  }
+
+  function persistClassicEquipment(next) {
+    if (!classicEquipmentWritable || !storage.setJSON(CLASSIC_EQUIPMENT_KEY,next)) { toast("No se pudo guardar la pieza. Puedes reintentarlo."); return false; }
+    classicEquipment = {...next,unlocked:[...next.unlocked]};
+    if (classicWeapons) {
+      for (const type of next.unlocked) NeonCampaign.unlockClassicWeapon(classicWeapons,type);
+      NeonCampaign.selectClassicWeapon(classicWeapons,next.selected);
+    }
+    if (next.selected === "twin") ensureSprite(SPRITES.flightWeapons);
+    shipPresentationSignature="";
+    $("openFlightDock")?.classList.toggle("hidden",!next.recoveredTwin);
+    return true;
+  }
+
+  function openClassicDock(from="menu") {
+    if (!isUnifiedClassic() || !["menu","complete"].includes(state)) return;
+    flightDockReturn=from; updateClassicDock(); overlay(ui.flightDock);
+  }
+
+  function updateClassicDock() {
+    const installed=classicEquipment.unlocked.includes("twin");
+    ui.flightDockStatus.textContent=installed ? "Dos emisores montados en las raíces de las alas. Doble pulso: dos trayectorias por una carga; puedes alternarlo con el pulso central." : classicEquipment.recoveredTwin ? "Recuperaste un emisor del laboratorio. Lo adaptamos a las alas: más cobertura, tres cargas y recarga de una cada 3,6 segundos de vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Puedes recuperarlo al repetir el primer tramo. Tu pulso central ya se recarga en vuelo.";
+    ui.flightInstallTwin.disabled=installed || !classicEquipment.recoveredTwin;
+    ui.flightInstallTwin.textContent=installed ? "EMISOR GEMELO INSTALADO" : "INSTALAR EMISOR GEMELO";
+    $("flightDockContinue").textContent=flightDockReturn==="complete" ? "CONTINUAR HACIA GAIA" : "VOLVER AL VIAJE";
+  }
+
+  function syncClassicFlightHud() {
+    if (!isUnifiedClassic() || !ui.flightRoute) return;
+    $("openFlightDock")?.classList.toggle("hidden",!classicEquipment.recoveredTwin);
+    const view=classicFlightView;
+    const stage=atlasBoss ? "ACCESO ATLAS" : view?.stageName || level().name;
+    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : view ? `${collected}/${level().goal} CRONIUM · ${Math.round(view.routeProgress*100)}% del tramo` : `${collected}/${level().goal} CRONIUM · sigue la señal`;
+    const signature=[stage,objective,classicEquipment.selected,classicWeapons?.charges,Math.floor((classicWeapons?.recharge||0)*5)].join(":");
+    if(signature===flightHudSignature)return;
+    flightHudSignature=signature;
+    ui.flightStage.textContent=stage;
+    ui.flightObjective.textContent=objective;
+    ui.flightDestination.textContent=currentLevel===0 ? "CHRONOS → ACCESO DE GAIA" : `${level().world} · RASTRO ${currentLevel+1}/10`;
+    ui.flightDistance.value=view?.routeProgress || collected/level().goal;
+    ui.flightWeapon.textContent=classicEquipment.selected==="twin" ? "ARMA · GEMELO" : "ARMA · PULSO";
+    ui.flightWeapon.setAttribute("aria-label",`Cambiar arma. ${classicEquipment.selected==="twin"?"Doble pulso":"Pulso central"}`);
+    updateAmmoHud();
+  }
+
+  function classicFlightEvent(event) {
+    if(event.type==="attack") { showStoryTransmission("CONTROL CHRONOS","Nave sin identificación. Está cargando sus armas contra el reactor.",5); tone(180,.25,"sawtooth",.045); }
+    if(event.type==="rupture") {
+      levelOneShockwave=1.1; levelOneShockwaveTriggered=true;
+      const v=classicFlight.snapshot();addExplosion(v.station.x*W,v.station.y*H,2.6,1.1);
+      shake=8;stormPulse=.18;tone(72,.5,"sawtooth",.05);
+      showStoryTransmission("N-7","¡Impacto! El CRONIUM se dispersa por las rutas. Recupera los fragmentos y sigue su señal.",6);
+    }
+    if(event.type==="departure") { showStoryTransmission("N-7","Chronos queda atrás. La primera señal conduce a Gaia Nova.",4.6); classicPatrolTimer=.6; }
+    if(event.type==="twin-module-marker" && !classicEquipment.recoveredTwin) {
+      items.push({type:"flightModule",x:W*.66,baseX:W*.66,y:H*.33,r:29,s:95,rot:0,rs:.12,p:0,phase:0,amp:0,alpha:1});
+      showStoryTransmission("MIRA · C9","Hay un emisor gemelo entre los restos. Rescátalo: puedo montarlo en tu nave.",5.5);
+    }
+    if(event.type==="gaia-beacon") showStoryTransmission("BALIZA GAIA","Acceso localizado. Atlas está reteniendo todas las naves con CRONIUM a bordo.",5);
+  }
+
+  function advanceClassicFlight(dt) {
+    if(!isUnifiedClassic())return;
+    if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
+    if(classicFlightView?.routeProgress>=.30 && classicFlightView.routeProgress<.82) {
+      classicPatrolTimer-=dt;
+      if(classicPatrolTimer<=0) {
+        if(items.filter(item=>item.flightPatrol).length<2) spawnClassicFlightPatrol();
+        classicPatrolTimer=9;
+      }
+    }
+    if(classicFlightView) {
+      const crossings=[.46,.61,.76],progress=classicFlightView.routeProgress;
+      const threshold=crossings[classicCometSequence];
+      if(threshold!==undefined && progress>=threshold-.025 && classicCometWarning!==classicCometSequence) {
+        classicCometWarning=classicCometSequence;
+        showStoryTransmission("N-7","Cometa por babor. Cruza en diagonal; mantén libre su trayectoria.",2.4);
+      }
+      if(threshold!==undefined && progress>=threshold) {
+        classicCometSequence++;
+        items.push({id:`chronos-comet:${classicCometSequence}`,type:"meteor",flightComet:true,
+          x:-45,y:H*.16,baseX:-45,vx:62,vy:82,r:18,s:82,damage:14,hp:2,maxHp:2,
+          special:"comet",spriteKey:"comet",rot:Math.atan2(82,62),rs:0,p:0,phase:classicCometSequence,amp:0,alpha:1,life:16});
+      }
+    }
+    syncClassicFlightHud();
+  }
+
+  function spawnClassicFlightPatrol() {
+    const ordinal=classicPatrolSequence++;
+    const pattern=["linear","zigzag","chaser","shooter"][ordinal%4];
+    const left=ordinal%2===0, bounds=left?{min:60,max:180}:{min:540,max:660};
+    const spec={id:`chronos-flight-v1:${ordinal}`,type:pattern,x:(bounds.min+bounds.max)/2,bounds,
+      phase:ordinal*1.7,speedMultiplier:.78,telegraphSeconds:1.15,fireInterval:2.6,projectileMultiplier:.8};
+    const item=NeonCampaign.makeLegacyEntity({kind:"enemy",data:spec},{corridor:{left:260,right:460}});
+    const scout=createThreat("scout",level());
+    item.type="scout";item.flightPatrol=true;item.damage=16;item.s=138;
+    item.n7.ch01Animator=scout.classicScout.animator;
+    items.push(item);
+  }
+
+  function fireClassicWeapon() {
+    if(!classicWeapons || !spriteReady(SPRITES.atlasVfx))return false;
+    const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-(classicWeapons.selected==="twin"?55-SHIP_VISUAL.centerYOffset:114)});
+    if(!result.accepted)return false;
+    ammo=classicWeapons.charges;manualShotCooldown=classicWeapons.cooldown;
+    tone(classicWeapons.selected==="twin"?820:670,.065,"triangle",.04);
+    cameraKickY=Math.max(cameraKickY,2.5);vibrate(12);updateAmmoHud();return true;
+  }
+
+  function advanceClassicWeaponField(dt) {
+    if(!classicWeapons || atlasBoss)return;
+    for(const shot of classicWeapons.projectiles){shot.previousX=shot.x;shot.previousY=shot.y;}
+    const events=NeonCampaign.advanceClassicWeapons(classicWeapons,dt);
+    ammo=classicWeapons.charges;
+    if(events.some(event=>event.type==="recharged")){tone(520,.035,"sine",.025);updateAmmoHud();}
+  }
+
+  function interceptClassicProjectile(item) {
+    if(!isUnifiedClassic() || !classicWeapons || atlasBoss || !isThreat(item))return false;
+    if(!item.id)item.id=`classic-target:${++classicThreatSequence}`;
+    for(const shot of [...classicWeapons.projectiles]) {
+      const ax=shot.previousX??shot.x,ay=shot.previousY??shot.y,dx=shot.x-ax,dy=shot.y-ay;
+      const cosine=Math.cos(item.rot||0),sine=Math.sin(item.rot||0);
+      const intersects=collisionCircles(item).some(circle=>{
+        const x=item.x+circle.x*cosine-circle.y*sine,y=item.y+circle.x*sine+circle.y*cosine;
+        return squaredDistanceToSegment(x,y,ax,ay,shot.x,shot.y)<=(circle.r+shot.radius)**2;
+      });
+      if(!intersects)continue;
+      const impact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,item.id);
+      if(!impact.accepted)continue;
+      item.hp=Math.max(0,(item.hp??1)-impact.damage);
+      const destroyed=item.hp<=1e-8;
+      animateScoutHit(item,destroyed);addImpactEffect(item.x,item.y,.8);
+      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);tone(destroyed?920:620,.05,"triangle",.04);
+      if(destroyed){addExplosion(item.x,item.y,.7,.5);return true;}
+    }
+    return false;
+  }
+
   function isAtlasMission() {
     return !N7_CAMPAIGN && !JOURNEY_DEMO && currentLevel === 1;
   }
@@ -681,11 +960,12 @@
     if (!atlasBoss) return;
     const rect = canvas.getBoundingClientRect();
     const horizontal = rect.height < 500;
-    atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = player.y;
+    const anchorY = isUnifiedClassic() ? (classicFlightAnchorY || player.y) : player.y;
+    atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = anchorY;
     const hudBottom = Math.max($('hud').getBoundingClientRect().bottom,
       ui.atlasEncounter?.getBoundingClientRect().bottom || 0);
     const headerClearance = (Math.max(0, hudBottom - rect.top) + 8) * H / Math.max(1, rect.height);
-    const shipTop = player.y - 145;
+    const shipTop = anchorY - 145;
     // Poses have distinct reactor pivots. Reserve the complete authored cell,
     // including the highest ring and lowest wreckage, rather than half a tile.
     atlasBoss.visualSize = Math.min(horizontal ? 300 : 350,
@@ -703,13 +983,15 @@
     positionAtlasArena();
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
     items = []; gates = []; shots = []; tractorTarget = null;
+    if(classicWeapons)classicWeapons.projectiles.length=0;
+    ui.flightRoute?.classList.add("hidden");
     ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
     hideWarning(); hideStoryTransmission(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
     ui.atlasEncounter.classList.remove("hidden");
     ui.goal.previousElementSibling.textContent = "CRONIUM";
     ui.goal.textContent = `${collected}/${level().goal}`;
-    syncAtlasHud(); updateAmmoHud();
+    syncAtlasHud(); refreshClassicFlightBounds(); updateAmmoHud();
     tone(135, .28, "triangle", .065);
     return true;
   }
@@ -769,17 +1051,21 @@
   function fireAtlasPulse(kind) {
     if (!atlasBoss || atlasBoss.disabled || !spriteReady(SPRITES.guardianAtlas) || Math.abs(atlasBoss.x - player.x) >= 115) return false;
     if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-    shots.push({x1: player.x, y1: player.y - (shipRenderMode === "modular" ? 114 : SHIP_VISUAL.phaserMuzzleOffset),
-      x2: atlasBoss.x, y2: atlasBoss.y, life: .24, duration: .24,
-      hit: false, destroyed: false, impactX: atlasBoss.x, impactY: atlasBoss.y,
-      impactScale: .7, kind, atlasPulse: true, atlasTarget: atlasBoss});
+    const twin=isUnifiedClassic() && classicEquipment.selected==="twin";
+    for(const offset of twin?[-42,42]:[0]) {
+      if(shots.length>=EFFECT_LIMITS.shots)shots.shift();
+      shots.push({x1:player.x+offset,y1:player.y-(twin?55-SHIP_VISUAL.centerYOffset:114),
+        x2:atlasBoss.x+offset*.25,y2:atlasBoss.y,life:.24,duration:.24,
+        hit:false,destroyed:false,impactX:atlasBoss.x,impactY:atlasBoss.y,
+        impactScale:.7,kind,atlasPulse:true,atlasTarget:atlasBoss,damage:twin?.7:1});
+    }
     tone(740, .04, "triangle", .025);
     return true;
   }
 
   function resolveAtlasPulse(shot) {
     if (state !== "playing" || shot.atlasTarget !== atlasBoss || atlasBoss.disabled) return;
-    const result = NeonCampaign.hitGuardianAtlas(atlasBoss, 1);
+    const result = NeonCampaign.hitGuardianAtlas(atlasBoss, shot.damage || 1);
     for (const event of result.events) consumeAtlasEvent(event);
     if (result.accepted) {
       score += 3;
@@ -1083,7 +1369,7 @@
     ui.totalStars.textContent = `${totalStars()}/${LEVELS.length * 3}`;
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
-    ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR CAMPAÑA";
+    ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
     ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
@@ -1115,10 +1401,20 @@
     lastHudHull = hull;
     updateAmmoHud();
     if (JOURNEY_DEMO) syncJourneyHud();
+    else syncClassicFlightHud();
   }
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
+    if(isUnifiedClassic() && classicWeapons && !atlasBoss) {
+      ammo=classicWeapons.charges;
+      const remaining=Math.max(0,NeonCampaign.CLASSIC_WEAPON_RULES.rechargeSeconds-classicWeapons.recharge);
+      ui.ammo.textContent=ammo<MAX_AMMO ? `${ammo}/${MAX_AMMO} · ${remaining.toFixed(1)}s` : `${ammo}/${MAX_AMMO}`;
+      ui.fire.disabled=state!=="playing" || ammo<=0 || manualShotCooldown>0 || warpTimer>0;
+      ui.fire.classList.toggle("empty",ammo<=0);
+      ui.fire.setAttribute("aria-label",`Disparar ${classicEquipment.selected==="twin"?"doble pulso":"pulso"}. ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
+      return;
+    }
     if (JOURNEY_DEMO || atlasBoss) {
       ui.fire.classList.remove("empty");
       ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
@@ -1248,9 +1544,13 @@
 
   function hideStoryTransmission() {
     ui.storyTransmission?.classList.remove("show");
+    flightTransmission=null;
   }
 
   function showStoryTransmission(speaker, text, duration = 4.6) {
+    if(isUnifiedClassic() && !atlasBoss && ui.flightRoute) {
+      flightTransmission={speaker,text,remaining:duration};syncClassicFlightHud();return;
+    }
     if (!ui.storyTransmission) return;
     ui.storySpeaker.textContent = speaker;
     ui.storyText.textContent = text;
@@ -1260,11 +1560,15 @@
   }
 
   function updateLevelStory(dt) {
+    if(flightTransmission) {
+      flightTransmission.remaining=Math.max(0,flightTransmission.remaining-dt);
+      if(flightTransmission.remaining===0){flightTransmission=null;syncClassicFlightHud();}
+    }
     if (storyTimer > 0) {
       storyTimer = Math.max(0, storyTimer - dt);
       if (storyTimer === 0) hideStoryTransmission();
     }
-    if (N7_CAMPAIGN || JOURNEY_DEMO || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
+    if (classicFlight || N7_CAMPAIGN || JOURNEY_DEMO || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -1288,6 +1592,16 @@
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
+    classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosFlight({goal:LEVELS[0].goal,minDuration:90}) : null;
+    classicFlightView=classicFlight?.snapshot() || null;
+    classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
+    classicPatrolTimer=0;classicPatrolSequence=0;classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    NeonCampaign.endFlightInput(classicFlightInput);
+    if(isUnifiedClassic()) {
+      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);
+      if(classicFlight){ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);}
+    }
+
     atlasBoss = null;
     atlasFireTimer = atlasReentryGrace = 0;
     atlasLastStatus = "";
@@ -1313,7 +1627,7 @@
     spawnTimer = 0.35;
     classicScoutTimer = !N7_CAMPAIGN && currentLevel === 1 ? 3.8 : 0;
     classicScoutAnnounced = false;
-    warpTimer = 1.25;
+    warpTimer = classicFlight ? 0 : 1.25;
     supplyFailed = false;
     shake = 0;
     flash = 0;
@@ -1359,9 +1673,10 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
+    if(isUnifiedClassic()){ui.flightRoute?.classList.remove("hidden");refreshClassicFlightBounds(true);}
     hud();
     updateEncounterHud();
-    showBanner();
+    if(!isUnifiedClassic()) showBanner();
     if (N7_CAMPAIGN) {
       const opening = NeonCampaign.n7Dialogue("sectorStart", {level: currentLevel + 1});
       if (opening) showStoryTransmission("N-7", opening);
@@ -1374,6 +1689,7 @@
   function pauseGame() {
     if (state !== "playing") return;
     journey?.setPaused(true);
+    NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
     hideWarning();
     overlay(ui.paused);
@@ -1390,6 +1706,10 @@
   }
 
   function goHome() {
+    classicFlight=null;classicFlightView=null;
+    if(classicWeapons)classicWeapons.projectiles.length=0;
+    NeonCampaign.endFlightInput(classicFlightInput);
+    ui.flightRoute?.classList.add("hidden");
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("menu");
@@ -1433,6 +1753,7 @@
   function completeLevel() {
     if (JOURNEY_DEMO) return;
     if (state !== "playing") return;
+    if(classicFlight && !classicFlight.snapshot().canFinish)return;
     if (isAtlasMission() && collected >= level().goal) {
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
@@ -1441,6 +1762,8 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
+    ui.flightRoute?.classList.add("hidden");
+    if(classicWeapons)classicWeapons.projectiles.length=0;
     ui.atlasEncounter?.classList.add("hidden");
     document.body.classList.remove("atlas-combat");
     hideWarning();
@@ -1568,6 +1891,7 @@
 
     // Breve protección para evitar morir de nuevo en el mismo instante.
     powers.shield = Math.max(powers.shield, 4);
+    if(isUnifiedClassic() && classicWeapons) {classicWeapons.charges=Math.max(classicWeapons.charges,1);classicWeapons.cooldown=0;classicWeapons.projectiles.length=0;}
     ammo = Math.max(ammo, 1);
     manualShotCooldown = 0;
 
@@ -2015,7 +2339,14 @@
   }
 
   function collectItem(item) {
-    if (item.type === "journeyPart") {
+    if(item.type==="flightModule") {
+      if(!classicEquipment.recoveredTwin) {
+        if(!persistClassicEquipment({...classicEquipment,recoveredTwin:true}))return false;
+        toast("Emisor gemelo recuperado · taller C9 al llegar");tone(900,.18,"triangle",.06);
+        pulseRing(item.x,item.y,"#ffc874",90,.45);
+        showStoryTransmission("MIRA · C9","Pieza asegurada. La montamos antes de entrar en la red Atlas.",4.5);
+      }
+    } else if (item.type === "journeyPart") {
       if (journey?.collectPart()) {
         persistJourney();
         pulseRing(item.x, item.y, "#ffd877", 95, .48);
@@ -2149,6 +2480,10 @@
   }
 
   function fireManualShot() {
+    if(isUnifiedClassic() && !atlasBoss) {
+      if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
+      return fireClassicWeapon();
+    }
     if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
     if (!JOURNEY_DEMO && !atlasBoss) ammo -= 1;
@@ -2434,6 +2769,11 @@
       return;
     }
 
+    // Do not run invisible encounters while the authored departure layers load.
+    if(classicFlight && (!spriteReady(SPRITES.flightKit) || !spriteReady(SPRITES.flightSpace))) {
+      if(ui.flightStage)ui.flightStage.textContent="CARGANDO SALIDA DE CHRONOS · puedes volver al menú";
+      return;
+    }
     elapsed += dt;
     if (manualShotCooldown > 0) {
       const previousCooldown = manualShotCooldown;
@@ -2449,6 +2789,11 @@
     const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
+    if(isUnifiedClassic() && classicFlightBounds) {
+      player.x=clamp(player.x,classicFlightBounds.minX,classicFlightBounds.maxX);
+      player.y+=(player.targetY-player.y)*Math.min(1,dt*follow);
+      player.y=clamp(player.y,classicFlightBounds.minY,classicFlightBounds.maxY);
+    }
     engineTrail();
 
     if (warpTimer > 0) {
@@ -2458,6 +2803,7 @@
       return;
     }
 
+    if(isUnifiedClassic())advanceClassicFlight(dt);
     if (JOURNEY_DEMO && journey) {
       journey.advance(dt, journeyEvent);
       syncJourneyHud();
@@ -2480,7 +2826,7 @@
         updateEncounterHud();
       }
     } else {
-      if (!atlasBoss) {
+      if (!atlasBoss && (!classicFlightView || (classicFlightView.recoveryActive && collected<lv.goal))) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -2533,6 +2879,7 @@
 
     if (powers.tractor > 0 && (!tractorTarget || !items.includes(tractorTarget))) selectTractorTarget();
 
+    advanceClassicWeaponField(dt);
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
@@ -2541,7 +2888,10 @@
       // Recovering the final fragment can replace the field with the Atlas
       // arena synchronously. The old loop indexes must not read that old field.
       if (!item) continue;
-      if (item.guardianProjectile) {
+      if(item.flightComet) {
+        item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
+        if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
+      } else if (item.guardianProjectile) {
         item.x += item.vx * dt * scale;
         item.y += item.vy * dt * scale;
         item.life -= dt * scale;
@@ -2550,6 +2900,9 @@
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
+      if(item.flightPatrol && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
+      if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
+
       if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
       if (item.journeyEntry && item.classicScout.age < .9) {
         const entry = item.classicScout.age / .9;
@@ -2582,8 +2935,9 @@
         item.y += dy * dt * 5.8;
       }
 
+      if(interceptClassicProjectile(item)){items.splice(index,1);continue;}
       if (hit(item)) {
-        collectItem(item);
+        if(collectItem(item)===false)continue;
         const actualIndex = items.indexOf(item);
         if (actualIndex >= 0) items.splice(actualIndex, 1);
         if (item === tractorTarget) tractorTarget = null;
@@ -2602,6 +2956,7 @@
       }
     }
 
+    if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
     if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
@@ -2761,7 +3116,138 @@
     ctx.restore();
   }
 
+  // The first classic route composes independent illustrated objects.  A single
+  // simulation snapshot drives geography, scenery and the mission HUD; render
+  // timestamps never advance this journey while the game is paused.
+  function drawChronosFlightSprite(frame, node, sizeMultiplier = 1) {
+    if (!node?.visible || !spriteReady(SPRITES.flightKit)) return false;
+    const image = SPRITES.flightKit;
+    const cellWidth = image.naturalWidth / 3;
+    const cellHeight = image.naturalHeight / 2;
+    const size = W * node.scale * sizeMultiplier;
+    ctx.save();
+    ctx.translate(node.x * W, node.y * H);
+    ctx.rotate(node.rotation || 0);
+    // Both station poses share their reactor pivot and remain fully opaque.
+    ctx.drawImage(image, (frame % 3) * cellWidth, Math.floor(frame / 3) * cellHeight,
+      cellWidth, cellHeight, -size / 2, -size / 2, size, size);
+    ctx.restore();
+    return true;
+  }
+
+  function drawChronosFlightBackground() {
+    const view = classicFlightView;
+    if (!view) return;
+    const clock = view.elapsed;
+    const space = SPRITES.flightSpace;
+    ctx.fillStyle = "#020817"; ctx.fillRect(0, 0, W, H);
+    if (spriteReady(space)) {
+      // Overscan bounds the drift so no transparent edge or repeated painting
+      // appears.  The station and Gaia move separately over this distant plate.
+      const scale = Math.max(W / space.naturalWidth, H / space.naturalHeight) * 1.20;
+      const width = space.naturalWidth * scale, height = space.naturalHeight * scale;
+      const offsetX = clamp(view.deepSpace.offsetX * W, -(width - W) / 2, (width - W) / 2);
+      const offsetY = clamp((view.deepSpace.offsetY - .27) * H * .25, -(height - H) / 2, (height - H) / 2);
+      ctx.drawImage(space, (W - width) / 2 + offsetX, (H - height) / 2 + offsetY, width, height);
+    }
+
+    // Tiny secondary stars may use simple marks; all important scene objects
+    // below are original illustrated sprites, not substitute geometry.
+    ctx.save(); ctx.globalCompositeOperation = "screen";
+    const starCount = settings.effectsQuality === "low" ? 16 : 30;
+    for (let index = 0; index < starCount; index++) {
+      const depth = .24 + (index % 5) * .18;
+      const x = ((index * 149.13 - clock * depth * 1.6) % W + W) % W;
+      const y = (index * 271.73 + clock * depth * (9 + view.deepSpace.speed * 21)) % H;
+      const radius = .7 + depth * .7;
+      ctx.globalAlpha = .15 + depth * .19;
+      ctx.fillStyle = index % 4 ? "#cce8ff" : "#cbbdff";
+      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed));
+    }
+    ctx.restore();
+
+    drawChronosFlightSprite(2, view.planet);
+    drawChronosFlightSprite(view.station.state === "ruptured" ? 1 : 0, view.station);
+
+    if (view.debris.visible) {
+      // These small fragments belong to the Chronos breach.  Their low contrast
+      // and scale distinguish ambient parallax from collidable foreground scrap.
+      const count = settings.effectsQuality === "low" ? 3 : 6;
+      for (let index = 0; index < count; index++) {
+        const depth = .25 + index * .12;
+        const image = index % 2 ? SPRITES.debrisPanel : SPRITES.debrisMetal;
+        if (!spriteReady(image)) continue;
+        const x = ((W * (.22 + index * .23) + clock * view.debris.directionX * 18 * depth) % (W + 80) + W + 80) % (W + 80) - 40;
+        const y = (H * .13 + index * 189 + clock * view.debris.directionY * (21 + depth * 33)) % (H + 100) - 50;
+        const size = 12 + depth * 24;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(index * .9 + clock * (.035 + index * .009));
+        ctx.globalAlpha = .20 + depth * .15;
+        ctx.drawImage(image, -size / 2, -size / 2, size, size); ctx.restore();
+      }
+    }
+
+    if (view.beacon.visible && spriteReady(SPRITES.satellite)) {
+      const size = Math.max(30, W * view.beacon.scale);
+      ctx.save(); ctx.translate(W * view.beacon.x, H * view.beacon.y);
+      ctx.rotate(-.12 + Math.sin(clock * .08) * .04);
+      ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      if (view.beacon.active) {
+        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 17px sans-serif";
+        ctx.fillStyle = "#bcefff";
+        ctx.fillText("BALIZA GAIA", W * view.beacon.x, H * view.beacon.y + size * .65);
+        ctx.restore();
+      }
+    }
+
+    if (view.attacker.visible) {
+      const attacker = view.attacker;
+      const size = W * attacker.scale * 1.4;
+      // The artwork's cannon points down-left.  Rotate its measured muzzle
+      // offset with the hull rather than emitting the attack from its centre.
+      const localX = -129 / 512 * size, localY = 134 / 512 * size;
+      const angle = attacker.rotation || 0;
+      const muzzleX = W * attacker.x + localX * Math.cos(angle) - localY * Math.sin(angle);
+      const muzzleY = H * attacker.y + localX * Math.sin(angle) + localY * Math.cos(angle);
+      if (attacker.state === "fire") {
+        const targetX = W * view.station.x, targetY = H * view.station.y;
+        const dx = targetX - muzzleX, dy = targetY - muzzleY;
+        ctx.save();
+        ctx.translate((muzzleX + targetX) / 2, (muzzleY + targetY) / 2);
+        ctx.rotate(Math.atan2(dy, dx) - Math.PI / 2);
+        ctx.globalCompositeOperation = "screen";
+        drawAtlasVfx(0, 17, Math.max(30, Math.hypot(dx, dy)), .88 + Math.sin(clock * 43) * .10);
+        ctx.restore();
+      }
+      const frame = attacker.state === "charge" ? 4 : attacker.state === "fire" ? 5 : 3;
+      drawChronosFlightSprite(frame, attacker, 1.4);
+    }
+
+    ensureSprite(SPRITES.chronosShockwave);
+    const shockwaveAge = clock - view.minDuration * .10;
+    if (view.station.state === "ruptured" && shockwaveAge >= 0 && shockwaveAge < 1.1 && spriteReady(SPRITES.chronosShockwave)) {
+      const progress = clamp(shockwaveAge / 1.1, 0, 1);
+      const atlas = SPRITES.chronosShockwave;
+      const cellWidth = atlas.naturalWidth / 2, cellHeight = atlas.naturalHeight / 2;
+      const frame = Math.min(3, Math.floor(progress * 4));
+      const size = W * (.25 + progress * 1.55);
+      ctx.save(); ctx.globalCompositeOperation = "screen";
+      ctx.globalAlpha = Math.sin(progress * Math.PI) * .78;
+      ctx.drawImage(atlas, frame % 2 * cellWidth, Math.floor(frame / 2) * cellHeight,
+        cellWidth, cellHeight, view.station.x * W - size / 2, view.station.y * H - size / 2, size, size);
+      ctx.restore();
+    }
+
+    // Keep the flight lane readable without fading the origin into a second
+    // background.  Its disappearance is solely movement and scale from the route.
+    const veil = ctx.createLinearGradient(0, H * .40, 0, H);
+    veil.addColorStop(0, "rgba(2,6,15,0)");
+    veil.addColorStop(1, "rgba(2,6,15,.35)");
+    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
+  }
+
   function background(t) {
+    if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
     if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
@@ -3244,6 +3730,57 @@
     ctx.restore();
   }
 
+  function drawClassicProjectiles() {
+    if (!isUnifiedClassic() || !classicWeapons || atlasBoss) return;
+    for (const shot of classicWeapons.projectiles) {
+      ctx.save(); ctx.translate(shot.x, shot.y);
+      ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
+      drawAtlasVfx(1, shot.weapon === "twin" ? 16 : 23,
+        shot.weapon === "twin" ? 58 : 68, 1, .10);
+      ctx.restore();
+    }
+  }
+
+  function drawFlightModule(item) {
+    if (!isUnifiedClassic() || !spriteReady(SPRITES.flightWeapons)) return;
+    const atlas = SPRITES.flightWeapons;
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.globalAlpha *= itemVisualAlpha(item);
+    ctx.rotate(Math.sin(elapsed * .8 + (item.p || 0)) * .08);
+    // A small navigation halo identifies a recoverable object. The object
+    // itself is the authored hardware, not an icon substituted for the part.
+    ctx.strokeStyle = "rgba(255,208,123,.75)"; ctx.lineWidth = 2;
+    ctx.setLineDash([5, 7]); ctx.beginPath(); ctx.arc(0, 0, 47, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.drawImage(atlas, 0, 0, atlas.naturalWidth / 3, atlas.naturalHeight,
+      -64, -78, 128, 128);
+    ctx.restore();
+  }
+
+  function hasClassicTwinMounts() {
+    // Some isolated render fixtures deliberately do not install campaign UI.
+    return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
+      typeof classicEquipment !== "undefined" && classicEquipment.selected === "twin";
+  }
+
+  function classicTwinFrame() {
+    const cooldown = atlasBoss ? manualShotCooldown : classicWeapons?.cooldown || 0;
+    if (cooldown > .10) return 2;
+    if (classicWeapons && classicWeapons.charges < 3 && classicWeapons.recharge > .10) return 1;
+    return 0;
+  }
+
+  function drawClassicTwinMounts(target, frame = 0) {
+    const atlas = SPRITES.flightWeapons;
+    if (!spriteReady(atlas)) return false;
+    const frameWidth = atlas.naturalWidth / 3;
+    // All three poses share the same manufactured mount: roots +/-102,116;
+    // muzzles +/-102,-134. The hull and wing layers cover the attachment roots.
+    target.drawImage(atlas, frame * frameWidth, 0, frameWidth, atlas.naturalHeight,
+      -256, -324, 512, 512);
+    return true;
+  }
+
   function drawGuardianAtlas() {
     if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
     const boss = atlasBoss;
@@ -3260,7 +3797,7 @@
       ctx.fillStyle = "#beffe6"; ctx.fillText("RUTA LIBRE", activeGap.center, player.y - 180);
       ctx.restore();
     } else if (boss.state === "charge" && boss.telegraph) {
-      ctx.save(); ctx.translate(boss.telegraph.targetX, player.y);
+      ctx.save(); ctx.translate(boss.telegraph.targetX, boss.telegraph.targetY);
       drawAtlasVfx(3, 85, 85, .65 + boss.telegraph.progress * .30);
       ctx.restore();
     }
@@ -3294,7 +3831,7 @@
     return true;
   }
 
-  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0) {
+  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0, weaponFrame = null) {
     if (!spriteReady(SPRITES.modularShip)) return false;
     const pose = NeonCampaign.shipAssemblyPose({elapsedSeconds: time, steering, hull: health, impactSeconds: impact});
     target.save();
@@ -3305,6 +3842,7 @@
     target.save(); target.translate(0, 173);
     target.scale(1, pose.enginePulse); target.translate(0, -173);
     drawShipComponent(target, loadout, "flames"); target.restore();
+    if (weaponFrame !== null) drawClassicTwinMounts(target, weaponFrame);
     // A small articulated sweep pivots at each root, underneath the fuselage.
     for (const side of [-1, 1]) {
       target.save();
@@ -3320,18 +3858,49 @@
   }
 
   function syncShipPresentation() {
-    if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout) return;
+    const twin = hasClassicTwinMounts();
+    if (shipPresentationSignature?.mode === shipRenderMode && shipPresentationSignature?.loadout === shipLoadout &&
+      shipPresentationSignature?.twin === twin) return;
+    if (twin && !spriteReady(SPRITES.flightWeapons)) return;
     let source = "assets/ship_frame_01.webp";
-    if (shipRenderMode === "modular") {
-      if (!spriteReady(SPRITES.modularShip)) return;
+    if (shipRenderMode === "modular" || twin) {
+      if (shipRenderMode === "modular" && !spriteReady(SPRITES.modularShip)) return;
       const preview = document.createElement("canvas"); preview.width = preview.height = 384;
       const previewContext = preview.getContext("2d");
       previewContext.translate(192, 170);
-      drawModularShip(previewContext, shipLoadout, 330, 0);
+      if (shipRenderMode === "modular") {
+        drawModularShip(previewContext, shipLoadout, 330, 0, 0, 100, 0, twin ? 0 : null);
+      } else {
+        const frame = frameFrom("ship", 1);
+        if (!spriteReady(frame)) return;
+        previewContext.save(); previewContext.scale(330 / 512, 330 / 512);
+        drawClassicTwinMounts(previewContext, 0); previewContext.restore();
+        previewContext.drawImage(frame, -165, -165, 330, 330);
+      }
       source = preview.toDataURL("image/png");
     }
     document.querySelectorAll(".menu-ship-image, .briefing-ship").forEach(image => { image.src = source; });
-    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout};
+    shipPresentationSignature = {mode: shipRenderMode, loadout: shipLoadout, twin};
+  }
+
+  function drawClassicDock(t) {
+    if (!isUnifiedClassic() || !ui.flightDockCanvas || !ui.flightDock?.classList.contains("show")) return;
+    const preview = ui.flightDockCanvas;
+    const target = preview.getContext("2d");
+    target.clearRect(0, 0, preview.width, preview.height);
+    target.save(); target.translate(preview.width / 2, preview.height * .49);
+    const twin = hasClassicTwinMounts();
+    const assembled = shipRenderMode === "modular" &&
+      drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
+    if (!assembled) {
+      target.save(); target.scale(270 / 512, 270 / 512);
+      if (twin) drawClassicTwinMounts(target, 0);
+      target.restore();
+      const frame = frameFrom("ship", 1);
+      if (spriteReady(frame)) target.drawImage(frame, -135, -135, 270, 270);
+      else if (spriteReady(SPRITES.shipFallback)) target.drawImage(SPRITES.shipFallback, -126, -143, 252, 286);
+    }
+    target.restore();
   }
 
   function drawShipHangar(t) {
@@ -3413,7 +3982,8 @@
       ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
     const assembled = shipRenderMode === "modular" && drawModularShip(ctx, assembledLoadout, 208, elapsed,
-      clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer);
+      clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer,
+      hasClassicTwinMounts() ? classicTwinFrame() : null);
     ctx.restore();
     if (!assembled) {
     const turnStrength = clamp(Math.abs(player.target + player.drift - player.x) / 95, 0, 1);
@@ -3443,6 +4013,10 @@
     ctx.save();
     const criticalJitter = hull < 18 && state !== "destroying" ? Math.sin(elapsed * 19) * 1.6 : 0;
     ctx.translate(criticalJitter, bob + SHIP_VISUAL.centerYOffset);
+    if (hasClassicTwinMounts()) {
+      ctx.save(); ctx.scale(208 / 512, 208 / 512);
+      drawClassicTwinMounts(ctx, classicTwinFrame()); ctx.restore();
+    }
     ctx.shadowBlur = 22;
     ctx.shadowColor = level().accent;
     if (!drawImageCentered(frame, SHIP_VISUAL.spriteSize, SHIP_VISUAL.spriteSize, 0, 1, flipX)) {
@@ -3945,6 +4519,7 @@
   function render(t) {
     syncShipPresentation();
     drawShipHangar(t);
+    drawClassicDock(t);
     ctx.save();
     ctx.translate(cameraKickX, -cameraKickY);
     if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
@@ -3953,7 +4528,8 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.guardianProjectile) drawAtlasProjectile(item);
+      if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
+      else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
@@ -3964,6 +4540,7 @@
     drawGuardianAtlas();
     drawPlayer(t);
     drawShots();
+    drawClassicProjectiles();
     drawExplosions();
     drawImpactEffects();
     drawRings();
@@ -4019,15 +4596,62 @@
     if (legacyRunning) legacyFrameId = requestAnimationFrame(frame);
   }
 
-  function pointerX(event) {
+  function pointerX(event, point = event.touches?.[0] || event) {
     const rect = canvas.getBoundingClientRect();
-    const x = event.touches ? event.touches[0].clientX : event.clientX;
-    return (x - rect.left) * W / rect.width;
+    return (point.clientX - rect.left) * W / rect.width;
+  }
+
+  function pointerY(event, point = event.touches?.[0] || event) {
+    const rect = canvas.getBoundingClientRect();
+    return (point.clientY - rect.top) * H / rect.height;
+  }
+
+  function moveClassicFlight(event) {
+    if (event.type.startsWith("touch") && window.PointerEvent) return;
+    const press = event.type === "pointerdown" || event.type === "touchstart";
+    let point = event;
+    let id = event.pointerId ?? "mouse";
+    if (event.touches) {
+      const candidates = press ? event.changedTouches : event.touches;
+      point = press || !classicFlightInput.active ? candidates?.[0]
+        : Array.from(candidates || []).find(touch => touch.identifier === classicFlightInput.id);
+      if (!point) return;
+      id = point.identifier;
+    }
+    const x = pointerX(event, point), y = pointerY(event, point);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    const bounds = classicFlightBounds || refreshClassicFlightBounds();
+    if (!bounds) return;
+    if (press) {
+      // A press only anchors relative input, regardless of where the finger
+      // touches. Captured movement remains continuous outside the canvas.
+      const started = NeonCampaign.beginFlightInput(classicFlightInput, { id, x, y });
+      if (started && event.pointerId !== undefined) {
+        try { canvas.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
+      }
+      return;
+    }
+    const factor = settings.sensitivity / 100;
+    const mouseHover = !event.touches && (!event.pointerType || event.pointerType === "mouse") &&
+      !event.buttons && !classicFlightInput.active;
+    if (mouseHover) {
+      // Desktop hover retains the original accessible horizontal alternative;
+      // vertical control requires dragging or the up/down keys.
+      player.target = clamp(player.x + (x - player.x) * factor, bounds.minX, bounds.maxX);
+      return;
+    }
+    const next = NeonCampaign.moveFlightInput(classicFlightInput, {
+      id, x, y, targetX: player.target, targetY: player.targetY,
+      sensitivity: factor, bounds
+    });
+    player.target = next.targetX;
+    player.targetY = next.targetY;
   }
 
   function move(event) {
     if (state !== "playing") return;
     event.preventDefault();
+    if (isUnifiedClassic()) { moveClassicFlight(event); return; }
     const x = pointerX(event);
     const factor = settings.sensitivity / 100;
     if (JOURNEY_DEMO) {
@@ -4049,11 +4673,40 @@
   canvas.addEventListener("pointermove", move, { passive: false });
   canvas.addEventListener("touchstart", move, { passive: false });
   canvas.addEventListener("touchmove", move, { passive: false });
-  for (const event of ["pointerup", "pointercancel", "touchend", "touchcancel"]) canvas.addEventListener(event, () => { journeyPointerLast = null; });
+  function finishFlightInput(event) {
+    journeyPointerLast = null;
+    if (!isUnifiedClassic()) return;
+    if (event.type.startsWith("touch")) {
+      if (window.PointerEvent) return;
+      for (const touch of Array.from(event.changedTouches || [])) {
+        NeonCampaign.endFlightInput(classicFlightInput, touch.identifier);
+      }
+    } else NeonCampaign.endFlightInput(classicFlightInput, event.pointerId ?? "mouse");
+  }
+  for (const event of ["pointerup", "pointercancel", "lostpointercapture", "touchend", "touchcancel"]) {
+    canvas.addEventListener(event, finishFlightInput);
+  }
+  addEventListener("blur", () => {
+    journeyPointerLast = null;
+    NeonCampaign.endFlightInput(classicFlightInput);
+  });
 
   addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") player.target -= 85;
-    if (event.key === "ArrowRight") player.target += 85;
+    if (isUnifiedClassic()) {
+      if (state === "playing" && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+        event.preventDefault();
+        const bounds = classicFlightBounds || refreshClassicFlightBounds();
+        if (bounds) {
+          const dx = event.key === "ArrowLeft" ? -85 : event.key === "ArrowRight" ? 85 : 0;
+          const dy = event.key === "ArrowUp" ? -85 : event.key === "ArrowDown" ? 85 : 0;
+          player.target = clamp(player.target + dx, bounds.minX, bounds.maxX);
+          player.targetY = clamp(player.targetY + dy, bounds.minY, bounds.maxY);
+        }
+      }
+    } else {
+      if (event.key === "ArrowLeft") player.target -= 85;
+      if (event.key === "ArrowRight") player.target += 85;
+    }
     if (event.key === " " && state === "playing") {
       event.preventDefault();
       fireManualShot();
@@ -4086,7 +4739,10 @@
   $("completeHome").onclick = goHome;
   $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
-  ui.nextLevel.onclick = () => prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
+  ui.nextLevel.onclick = () => {
+    if (isUnifiedClassic() && currentLevel === 0) openClassicDock("complete");
+    else prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
+  };
 
   ui.musicVolume.oninput = (event) => {
     settings.music = +event.target.value;
@@ -4169,6 +4825,7 @@
     addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
 
+  setupClassicFlight();
   resizeCanvas();
   syncSettingsUI();
   window.AnalyticsManager?.track("app_open", { build: BUILD_VERSION });

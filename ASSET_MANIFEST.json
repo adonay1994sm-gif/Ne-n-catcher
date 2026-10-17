@@ -1,19 +1,19 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 73,
-  "runtimeBytes": 6239042,
+  "assetCount": 76,
+  "runtimeBytes": 6747610,
   "audit": {
-    "reviewed": 73,
+    "reviewed": 76,
     "READY": 58,
-    "IN_REVIEW": 15,
+    "IN_REVIEW": 18,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
     "UNUSED": 0,
     "DUPLICATE": 0,
     "MISSING": 0,
-    "method": "dimensions, channels, file size, runtime references and contact-sheet visual review"
+    "method": "dimensions, channels, file size, runtime references and contact-sheet visual review; unified Chronos exports: metadata dimensions, alpha, byte counts and SHA-256 verified against disk; runtime/artistic review pending"
   },
   "coordinateSystem": {
     "canvas": "720x1280 logical pixels, responsive without stretching",
@@ -581,6 +581,63 @@
       "status": "IN_REVIEW",
       "origin": "Original built-in image generation 2026-10-17, matching user-supplied Gaia direction; masters retained",
       "version": "guardian-atlas-v1"
+    },
+    {
+      "id": "chronos-flight-atlas-v1",
+      "path": "assets/chronos_flight_atlas_v1.webp",
+      "master": "art-source/unified-flight/atlas-packed-master.png",
+      "metadata": "art-source/unified-flight/metadata.json",
+      "dimensions": "1536x1024",
+      "format": "webp-alpha",
+      "size": 314136,
+      "sha256": "7cb2bc69b582fbca961972443d20380ad73294483f111bc451a3ffbab17349d1",
+      "decodedRGBABytes": 6291456,
+      "level": 1,
+      "use": "Original isolated Chronos intact/ruptured station, Gaia destination and three raider weapon poses",
+      "animation": "Six atlas cells: two station states, one Gaia object and three genuine bomber approach/charge/fire poses. Scenery depth uses route transforms, not crossfade.",
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
+      "version": "chronos-flight-v1"
+    },
+    {
+      "id": "chronos-flight-weapons-v1",
+      "path": "assets/chronos_flight_weapons_v1.webp",
+      "master": "art-source/unified-flight/weapons-packed-master.png",
+      "metadata": "art-source/unified-flight/metadata.json",
+      "dimensions": "1536x512",
+      "format": "webp-alpha",
+      "size": 84948,
+      "sha256": "f0f4b3bbdeed03cd25301ef6e1699e2d1c28d1659b7f08bc1ed53bebaffe9c71",
+      "decodedRGBABytes": 3145728,
+      "level": 1,
+      "use": "Two under-hull wing-root emitter modules with matched hardpoint pivots",
+      "animation": "Three genuine closed/charge/fire poses in 512px cells; shared mounts [154,440]/[358,440], muzzles [154,190]/[358,190].",
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
+      "version": "chronos-flight-v1"
+    },
+    {
+      "id": "chronos-flight-space-v1",
+      "path": "assets/chronos_flight_space_v1.webp",
+      "master": "art-source/unified-flight/space-generated-master.png",
+      "metadata": "art-source/unified-flight/metadata.json",
+      "dimensions": "768x1152",
+      "format": "webp-opaque",
+      "size": 109484,
+      "sha256": "243362aac0c6815c667f3f7d7354407cda513259d30be6c0ae195ac1262cded3",
+      "decodedRGBABytes": 3538944,
+      "level": 1,
+      "use": "Deep-space plate behind independently positioned station, raider and Gaia",
+      "animation": "Route-driven continuous background offset. This is one plate, not an invented frame sequence.",
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
+      "version": "chronos-flight-v1"
     }
   ]
 }

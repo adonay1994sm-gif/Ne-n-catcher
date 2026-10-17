@@ -1,5 +1,5 @@
 import {AUTHORED_LEVELS} from './level-designs.js';
-export {EncounterDirector, advanceEnemy} from './encounter-director.js';
+export {EncounterDirector, advanceEnemy, makeLegacyEntity} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createJourneyDemo, JOURNEY_DEMO_SAVE_KEY, JOURNEY_DEMO_VERSION} from './journey-demo.js';
 export {GENERATOR_VERSION} from './generator.js';
@@ -28,3 +28,8 @@ export const LEVELS = Object.freeze(AUTHORED_LEVELS.map(design => Object.freeze(
   threatPool: Object.freeze(['meteor']), gate: 0,
   sectorId: design.sectorId, bossEncounter: design.isBoss
 })));
+
+export {createChronosFlight, CHRONOS_FLIGHT_VERSION} from './chronos-flight.js';
+export {CLASSIC_WEAPON_RULES, createClassicWeapons, triggerClassicWeapon, advanceClassicWeapons,
+  hitClassicProjectile, unlockClassicWeapon, selectClassicWeapon, classicWeaponSnapshot} from '../combat/classic-weapons.js';
+export {calculateFlightBounds, createRelativeFlightInput, beginFlightInput, moveFlightInput, endFlightInput} from '../ship/flight-controls.js';

@@ -1,0 +1,30 @@
+PASS 01 · JavaScript principal, runtime y service worker tienen sintaxis válida
+PASS 02 · V7.2.0 pre-release está alineada en pantalla, juego y caché
+PASS 03 · HTML conserva todas sus referencias locales
+PASS 04 · PWA precarga código, legales, sprites y fondo de Cronos
+PASS 05 · parallax V7 reemplaza la antigua rejilla
+PASS 06 · núcleo, tractor, phaser, pulso, motores y HUD tienen respuesta multietapa
+[Neon Catcher] build 7.2.0
+PASS 07 · campaña, guardados, balance y tamaño visual permanecen compatibles
+PASS 08 · hitbox estable no fue modificada
+PASS 09 · arranque de nivel conserva presupuestos y estados limpios
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+false !== true
+
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:170:12
+    at test (file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:16:9)
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:166:7 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

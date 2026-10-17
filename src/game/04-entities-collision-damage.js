@@ -432,7 +432,14 @@
   }
 
   function collectItem(item) {
-    if (item.type === "journeyPart") {
+    if(item.type==="flightModule") {
+      if(!classicEquipment.recoveredTwin) {
+        if(!persistClassicEquipment({...classicEquipment,recoveredTwin:true}))return false;
+        toast("Emisor gemelo recuperado · taller C9 al llegar");tone(900,.18,"triangle",.06);
+        pulseRing(item.x,item.y,"#ffc874",90,.45);
+        showStoryTransmission("MIRA · C9","Pieza asegurada. La montamos antes de entrar en la red Atlas.",4.5);
+      }
+    } else if (item.type === "journeyPart") {
       if (journey?.collectPart()) {
         persistJourney();
         pulseRing(item.x, item.y, "#ffd877", 95, .48);
@@ -566,6 +573,10 @@
   }
 
   function fireManualShot() {
+    if(isUnifiedClassic() && !atlasBoss) {
+      if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
+      return fireClassicWeapon();
+    }
     if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
     if (!JOURNEY_DEMO && !atlasBoss) ammo -= 1;

@@ -1,3 +1,11 @@
+## Vuelo unificado — integración WIP conservada, 17/10/2026
+
+Primera misión clásica con salida real de Chronos, arte multicapa, atacante, recuperación y aproximación a Gaia; movimiento relativo XY; tres cargas que se recargan; módulo gemelo recuperable e instalación en C9. Una entrada principal; variantes históricas conservadas en QA. No son cien etapas nuevas ni diez niveles rehechos.
+
+Build e inventario correctos. Primeras regresiones pendientes de corregir/repetir; **esta revisión aún no está certificada ni desplegada**. Prueba privada actual sigue siendo la entrega Atlas anterior. [Diagnóstico y seguimiento](production-reports/UNIFIED_FLIGHT_2026-10-17.md). Se conserva todo el trabajo y las evidencias fallidas. MotorV1 desactivado.
+
+---
+
 ## Guardian Atlas — cierre técnico comprobado, 17/10/2026
 
 **Prueba privada actualizada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Desbloqueo clásico de QA → campaña clásica → NIVELES → Perímetro Atlas. Recuperar 45 fragmentos inicia al guardián. Ocho poses ilustradas, dos fases, avisos, pulsos que impactan, daño y desactivación con permiso de paso. Hangar y variantes anteriores conservados.

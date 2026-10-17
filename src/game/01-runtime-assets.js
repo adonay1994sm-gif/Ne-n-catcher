@@ -80,6 +80,21 @@
   let lastHudHull = 100;
   let ammo = INITIAL_AMMO;
   let manualShotCooldown = 0;
+  let classicWeapons = null;
+  let classicFlight = null;
+  let classicFlightView = null;
+  let classicFlightBounds = null;
+  let classicFlightAnchorY = null;
+  const classicFlightInput = NeonCampaign.createRelativeFlightInput();
+  let classicEquipment = {version:1, recoveredTwin:false, unlocked:['pulse'], selected:'pulse'};
+  let classicEquipmentWritable = true;
+  let classicPatrolTimer = 0;
+  let classicPatrolSequence = 0;
+  let classicThreatSequence = 0;
+  let flightDockReturn = 'menu';
+  let flightHudSignature = '';
+  let flightTransmission = null;
+
 
   let items = [];
   let gates = [];
@@ -170,6 +185,10 @@
   };
 
   const SPRITES = {
+    flightKit: loadSprite("assets/chronos_flight_atlas_v1.webp", false),
+    flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
+    flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
+
     shipFallback: SPRITE_GROUPS.ship[0],
     meteorSmall: loadSprite("assets/meteor_small.webp", true),
     meteorSmallAlt: loadSprite("assets/meteor_small_alt.webp"),

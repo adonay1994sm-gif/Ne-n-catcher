@@ -6,6 +6,24 @@ const define = (frames, options = {}) => Object.freeze({
   status: 'verified-assets', ...options
 });
 const ship = (...indices) => sequence('ship', indices);
+// These are actual atlas cells, never duplicated file names masquerading as
+// different drawings. Timing/geometry remain owned by the legacy flight model.
+const flightAtlas = (cell, options = {}) => define(['assets/chronos_flight_atlas_v1.webp'], {
+  loop: false, atlasColumns: 3, atlasRows: 2,
+  atlasCells: Object.freeze([cell]), cellWidth: 512, cellHeight: 512,
+  pivot: Object.freeze({x: 256, y: 256}),
+  integrationStatus: 'IN_REVIEW', artisticAcceptance: 'PENDING_OWNER',
+  physicalAcceptance: 'PENDING', ...options
+});
+const emitterAtlas = cell => define(['assets/chronos_flight_weapons_v1.webp'], {
+  loop: false, atlasColumns: 3, atlasRows: 1,
+  atlasCells: Object.freeze([cell]), cellWidth: 512, cellHeight: 512,
+  pivot: Object.freeze({x: 256, y: 440}),
+  mounts: Object.freeze([Object.freeze({x:154,y:440}),Object.freeze({x:358,y:440})]),
+  muzzles: Object.freeze([Object.freeze({x:154,y:190}),Object.freeze({x:358,y:190})]),
+  integrationStatus: 'IN_REVIEW', artisticAcceptance: 'PENDING_OWNER',
+  physicalAcceptance: 'PENDING'
+});
 
 export const ANIMATION_MAP = Object.freeze({
   player: Object.freeze({
@@ -27,6 +45,21 @@ export const ANIMATION_MAP = Object.freeze({
   }),
   energyCore: Object.freeze({
     pulse: define(sequence('core', [0, 1, 2, 3, 4, 5]), {frameMs: 111})
+  }),
+  chronosFlight: Object.freeze({
+    stationIntact: flightAtlas(0, {layer: 'landmark'}),
+    stationBroken: flightAtlas(1, {layer: 'landmark'}),
+    gaia: flightAtlas(2, {layer: 'destination'})
+  }),
+  chronosRaider: Object.freeze({
+    approach: flightAtlas(3, {layer: 'attacker'}),
+    charge: flightAtlas(4, {layer: 'attacker', interruptible: false}),
+    fire: flightAtlas(5, {layer: 'attacker', interruptible: false})
+  }),
+  twinEmitter: Object.freeze({
+    idle: emitterAtlas(0),
+    charge: emitterAtlas(1),
+    fire: emitterAtlas(2)
   })
 });
 export const VFX_PRESETS=Object.freeze({

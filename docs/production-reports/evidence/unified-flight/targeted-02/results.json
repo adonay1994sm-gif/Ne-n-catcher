@@ -1,0 +1,36 @@
+{
+  "startedAt": "2026-10-17T12:49:28.884352+00:00",
+  "head": "9c744da4957d776b80940fee2f323a3f4a3ad194",
+  "branch": "continuity-assets-audit-20261013",
+  "workingTree": " M ASSET_MANIFEST.json\n M ASSET_PRODUCTION_150.json\n M content-runtime.js\n M content-runtime.js.map\n M docs/CODEX_STATUS.md\n M game.js\n M index.html\n M ios/App/App/public/content-runtime.js\n M ios/App/App/public/content-runtime.js.map\n M ios/App/App/public/game.js\n M ios/App/App/public/index.html\n M ios/App/App/public/styles.css\n M ios/App/App/public/sw.js\n M package.json\n M preview/launcher.html\n M src/game/00-bootstrap-config.js\n M src/game/01-runtime-assets.js\n M src/game/02-storage-audio.js\n M src/game/03-ui-game-flow.js\n M src/game/04-entities-collision-damage.js\n M src/game/05-corridor-update.js\n M src/game/06-world-rendering.js\n M src/game/07-player-item-rendering.js\n M src/game/08-loop-input-bootstrap.js\n M src/game/animation/animation-map.js\n M src/game/combat/guardian-atlas.js\n M src/game/progression/legacy-content-entry.js\n M styles.css\n M sw.js\n M tests/guardian-atlas-legacy.test.mjs\n M tests/preview-build.test.mjs\n M tests/run-static-tests.mjs\n M tests/run-tests.mjs\n M tests/run-v7-web-tests.mjs\n M www/content-runtime.js\n M www/content-runtime.js.map\n M www/game.js\n M www/index.html\n M www/styles.css\n M www/sw.js\n?? art-source/unified-flight/\n?? assets/chronos_flight_atlas_v1.webp\n?? assets/chronos_flight_space_v1.webp\n?? assets/chronos_flight_weapons_v1.webp\n?? docs/production-reports/UNIFIED_FLIGHT_2026-10-17.md\n?? docs/production-reports/evidence/unified-flight/\n?? scripts/unified-flight-browser-smoke.cjs\n?? src/game/combat/classic-weapons.js\n?? src/game/progression/chronos-flight.js\n?? src/game/ship/flight-controls.js\n?? tests/chronos-flight.test.mjs\n?? tests/classic-weapons.test.mjs\n?? tests/flight-controls.test.mjs\n?? tests/unified-flight-legacy.test.mjs\n",
+  "artifacts": {
+    "game.js": "220e028fa6697693dd4997a23ca9aab7c5677bf5f24c42b34561b168fbee6821",
+    "content-runtime.js": "4c904f506e947672a15898a846a93348128aa29713790728898e72a89c2d1a2b"
+  },
+  "kind": "Controlled JSDOM regression and legacy integration; not browser or physical device certification",
+  "results": [
+    {
+      "name": "atlas-legacy",
+      "command": "node --test tests/guardian-atlas-legacy.test.mjs",
+      "exitCode": 0,
+      "durationMs": 3215,
+      "log": "atlas-legacy.txt"
+    },
+    {
+      "name": "regression",
+      "command": "node tests/run-tests.mjs",
+      "exitCode": 1,
+      "durationMs": 999,
+      "log": "regression.txt"
+    },
+    {
+      "name": "web",
+      "command": "node tests/run-v7-web-tests.mjs",
+      "exitCode": 0,
+      "durationMs": 1847,
+      "log": "web.txt"
+    }
+  ],
+  "finishedAt": "2026-10-17T12:49:32.111390+00:00",
+  "ok": false
+}

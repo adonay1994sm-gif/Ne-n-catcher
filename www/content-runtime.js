@@ -20,6 +20,8 @@ var NeonCampaign = (() => {
   // src/game/progression/legacy-content-entry.js
   var legacy_content_entry_exports = {};
   __export(legacy_content_entry_exports, {
+    CHRONOS_FLIGHT_VERSION: () => CHRONOS_FLIGHT_VERSION,
+    CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
     EncounterDirector: () => EncounterDirector,
     GENERATOR_VERSION: () => GENERATOR_VERSION,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
@@ -29,17 +31,31 @@ var NeonCampaign = (() => {
     SHIP_FLEET: () => SHIP_FLEET,
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     advanceClassicScout: () => advanceClassicScout,
+    advanceClassicWeapons: () => advanceClassicWeapons,
     advanceEnemy: () => advanceEnemy,
     advanceGuardianAtlas: () => advanceGuardianAtlas,
+    beginFlightInput: () => beginFlightInput,
+    calculateFlightBounds: () => calculateFlightBounds,
+    classicWeaponSnapshot: () => classicWeaponSnapshot,
+    createChronosFlight: () => createChronosFlight,
     createClassicScout: () => createClassicScout,
+    createClassicWeapons: () => createClassicWeapons,
     createGuardianAtlas: () => createGuardianAtlas,
     createJourneyDemo: () => createJourneyDemo,
+    createRelativeFlightInput: () => createRelativeFlightInput,
+    endFlightInput: () => endFlightInput,
     guardianAtlasAnimation: () => guardianAtlasAnimation,
+    hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
+    makeLegacyEntity: () => makeLegacyEntity,
+    moveFlightInput: () => moveFlightInput,
     n7Dialogue: () => n7Dialogue,
     normalizeShipLoadout: () => normalizeShipLoadout,
+    selectClassicWeapon: () => selectClassicWeapon,
     shipAssemblyPose: () => shipAssemblyPose,
-    shipPartFrame: () => shipPartFrame
+    shipPartFrame: () => shipPartFrame,
+    triggerClassicWeapon: () => triggerClassicWeapon,
+    unlockClassicWeapon: () => unlockClassicWeapon
   });
 
   // src/game/progression/sectors.js
@@ -733,11 +749,11 @@ var NeonCampaign = (() => {
       throw new RangeError(`Invalid CH-01 animation: ${name}`);
     }
     const durations = Object.freeze([...definition.durationMs]);
-    const events = Object.freeze((definition.events || []).map((event) => {
-      if (!Number.isInteger(event.frameOffset) || event.frameOffset < 0 || event.frameOffset >= definition.frames.length) {
+    const events = Object.freeze((definition.events || []).map((event2) => {
+      if (!Number.isInteger(event2.frameOffset) || event2.frameOffset < 0 || event2.frameOffset >= definition.frames.length) {
         throw new RangeError(`Invalid CH-01 event: ${name}`);
       }
-      return Object.freeze({ ...event, atMs: durations.slice(0, event.frameOffset).reduce((sum, value) => sum + value, 0) });
+      return Object.freeze({ ...event2, atMs: durations.slice(0, event2.frameOffset).reduce((sum, value) => sum + value, 0) });
     }).sort((a, b) => a.atMs - b.atMs));
     return [name, Object.freeze({
       ...definition,
@@ -852,13 +868,13 @@ var NeonCampaign = (() => {
         elapsedMs += step;
         remaining -= step;
         while (eventCursor < definition.events.length && definition.events[eventCursor].atMs <= elapsedMs + EPSILON_MS) {
-          const event = definition.events[eventCursor++];
-          if (event.name === "fire") attackFired = true;
+          const event2 = definition.events[eventCursor++];
+          if (event2.name === "fire") attackFired = true;
           emitted.push({
-            name: event.name,
+            name: event2.name,
             state,
-            frameIndex: definition.frames[event.frameOffset],
-            atMs: event.atMs,
+            frameIndex: definition.frames[event2.frameOffset],
+            atMs: event2.atMs,
             attackId
           });
         }
@@ -923,8 +939,8 @@ var NeonCampaign = (() => {
       this.elapsed += Math.min(0.05, dt);
       this.wave = Math.min(this.plan.waves.length, Math.max(0, Math.floor((this.elapsed - 2) / 8.5) + 1));
       while (this.cursor < this.events.length && this.events[this.cursor].at <= this.elapsed + 1e-9) {
-        const event = this.events[this.cursor];
-        spawn(makeLegacyEntity(event, this.plan));
+        const event2 = this.events[this.cursor];
+        spawn(makeLegacyEntity(event2, this.plan));
         this.cursor++;
       }
     }
@@ -935,9 +951,9 @@ var NeonCampaign = (() => {
       return { level: this.plan.level, seed: this.plan.seed, version: this.plan.version };
     }
   };
-  function makeLegacyEntity(event, plan) {
-    const spec = event.data;
-    const pickup = event.kind === "pickup";
+  function makeLegacyEntity(event2, plan) {
+    const spec = event2.data;
+    const pickup = event2.kind === "pickup";
     const pattern = pickup ? null : spec.type;
     return {
       id: spec.id,
@@ -998,8 +1014,8 @@ var NeonCampaign = (() => {
       behavior.attackScheduled = animator.request("attack");
     }
     const animationEvents = animator?.update(dt, { hp: item.hp, maxHp: item.maxHp, vy: item.s }) || [];
-    for (const event of animationEvents) {
-      if (event.name === "attackCanceled" && !event.fired) {
+    for (const event2 of animationEvents) {
+      if (event2.name === "attackCanceled" && !event2.fired) {
         behavior.attackScheduled = false;
         behavior.nextFire = behavior.age + Math.max(0.8, behavior.telegraphSeconds);
       }
@@ -1009,7 +1025,7 @@ var NeonCampaign = (() => {
       return;
     }
     behavior.telegraph = clamp2(1 - (behavior.nextFire - behavior.age) / behavior.telegraphSeconds, 0, 1);
-    if (behavior.fired >= 3 || animator && !animationEvents.some((event) => event.name === "fire") || !animator && behavior.age + 1e-9 < behavior.nextFire) return;
+    if (behavior.fired >= 3 || animator && !animationEvents.some((event2) => event2.name === "fire") || !animator && behavior.age + 1e-9 < behavior.nextFire) return;
     spawnProjectile({
       id: `${item.id}:shot:${++behavior.fired}`,
       type: "meteor",
@@ -1077,14 +1093,14 @@ var NeonCampaign = (() => {
       vx: (item.x - previousX) / dt,
       vy: item.s
     });
-    for (const event of events) {
-      if (event.name === "attackCanceled" && !event.fired) {
+    for (const event2 of events) {
+      if (event2.name === "attackCanceled" && !event2.fired) {
         scout.attackScheduled = false;
         scout.nextFire = scout.age + 1.1;
       }
     }
     scout.telegraph = inRange && scout.attackScheduled ? clamp3(1 - (scout.nextFire - scout.age) / 0.46, 0, 1) : 0;
-    if (!inRange || scout.fired >= 2 || !events.some((event) => event.name === "fire")) return;
+    if (!inRange || scout.fired >= 2 || !events.some((event2) => event2.name === "fire")) return;
     spawnProjectile({
       type: "meteor",
       x: item.x,
@@ -1115,7 +1131,7 @@ var NeonCampaign = (() => {
   var JOURNEY_DEMO_SAVE_KEY = "neonCatcher.journeyDemo.v1";
   var JOURNEY_DEMO_MAX_DELTA = 0.034;
   var JOURNEY_DEMO_REWARD = 120;
-  var freezeEvent = (event) => Object.freeze(event);
+  var freezeEvent = (event2) => Object.freeze(event2);
   var JOURNEY_DEMO_SEGMENTS = Object.freeze([
     Object.freeze({
       id: "departure",
@@ -1246,10 +1262,10 @@ var NeonCampaign = (() => {
         recovery: restored.recovery
       });
     }
-    function emitEvent(emit, event) {
-      if (fired.has(event.id)) return;
-      fired.add(event.id);
-      emit(Object.freeze({ ...event, segmentId: JOURNEY_DEMO_SEGMENTS[segmentIndex].id, version: JOURNEY_DEMO_VERSION }));
+    function emitEvent(emit, event2) {
+      if (fired.has(event2.id)) return;
+      fired.add(event2.id);
+      emit(Object.freeze({ ...event2, segmentId: JOURNEY_DEMO_SEGMENTS[segmentIndex].id, version: JOURNEY_DEMO_VERSION }));
     }
     function advance(dt, emit = NOOP) {
       if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
@@ -1257,11 +1273,11 @@ var NeonCampaign = (() => {
       if (paused || phase !== "travel") return snapshot();
       const segment = JOURNEY_DEMO_SEGMENTS[segmentIndex];
       elapsed = Math.min(segment.duration, elapsed + Math.min(dt, JOURNEY_DEMO_MAX_DELTA));
-      for (const event of segment.events) {
-        if (elapsed < event.at || fired.has(event.id) || event.type === "partAvailable" && partCollected) continue;
-        if (event.type === "partAvailable" && !partCollected) partAvailable = true;
-        if (event.type === "border") borderActive = true;
-        emitEvent(emit, event);
+      for (const event2 of segment.events) {
+        if (elapsed < event2.at || fired.has(event2.id) || event2.type === "partAvailable" && partCollected) continue;
+        if (event2.type === "partAvailable" && !partCollected) partAvailable = true;
+        if (event2.type === "border") borderActive = true;
+        emitEvent(emit, event2);
       }
       if (elapsed === segment.duration) {
         if (segmentIndex === 0 && partCollected) {
@@ -1439,7 +1455,7 @@ var NeonCampaign = (() => {
       kind: boss.phase === 1 ? "aimedSalvo" : "openCorridor",
       progress: 0,
       targetX: clamp4(player.x, 24, boss.width - 24),
-      targetY: boss.playerY,
+      targetY: clamp4(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 24),
       originX: boss.x,
       originY,
       seconds: timing.chargeSeconds,
@@ -1476,7 +1492,7 @@ var NeonCampaign = (() => {
       telegraphSeconds: timing.chargeSeconds,
       safeGap: boss.telegraph.safeGap && { ...boss.telegraph.safeGap },
       targetX: boss.telegraph.targetX,
-      targetY: boss.playerY,
+      targetY: boss.telegraph.targetY,
       rot: Math.atan2(vy, vx) - Math.PI / 2,
       rs: 0,
       p: 0,
@@ -1592,7 +1608,7 @@ var NeonCampaign = (() => {
       if (boss.stateTime + 1e-10 >= duration) finishState(boss, player, events);
       else break;
     }
-    for (const event of events) emit(event);
+    for (const event2 of events) emit(event2);
     return events;
   }
   function hitGuardianAtlas(boss, damage = 1) {
@@ -1765,15 +1781,476 @@ var NeonCampaign = (() => {
     criticalHull: "Integridad cr\xEDtica. Prioriza la supervivencia y busca reparaci\xF3n.",
     perfectStreak: "Racha perfecta confirmada. La sincronizaci\xF3n es extraordinaria."
   });
-  function n7Dialogue(event, { level, hull, perfectStreak = false } = {}) {
-    if (event === "sectorStart") {
+  function n7Dialogue(event2, { level, hull, perfectStreak = false } = {}) {
+    if (event2 === "sectorStart") {
       if (!Number.isInteger(level) || level < 1 || level > 100) return null;
       return (level - 1) % 20 === 0 ? N7_DIALOGUES.sectorStart[Math.floor((level - 1) / 20) + 1] : null;
     }
-    if (event === "bossWarning") return N7_DIALOGUES.bossWarning[level] ?? null;
-    if (event === "criticalHull") return Number.isFinite(hull) && hull <= 20 ? N7_DIALOGUES.criticalHull : null;
-    if (event === "perfectStreak") return perfectStreak ? N7_DIALOGUES.perfectStreak : null;
+    if (event2 === "bossWarning") return N7_DIALOGUES.bossWarning[level] ?? null;
+    if (event2 === "criticalHull") return Number.isFinite(hull) && hull <= 20 ? N7_DIALOGUES.criticalHull : null;
+    if (event2 === "perfectStreak") return perfectStreak ? N7_DIALOGUES.perfectStreak : null;
     return null;
+  }
+
+  // src/game/progression/chronos-flight.js
+  var CHRONOS_FLIGHT_VERSION = "chronos-flight-v1";
+  var CHRONOS_FLIGHT_MIN_DURATION = 60;
+  var CHRONOS_FLIGHT_MAX_DELTA = 0.034;
+  var clamp6 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var smooth = (value, start, end) => {
+    const t = clamp6((value - start) / (end - start), 0, 1);
+    return t * t * (3 - 2 * t);
+  };
+  var immutable = (object) => Object.freeze(object);
+  var NOOP2 = () => {
+  };
+  var CHRONOS_FLIGHT_EVENTS = immutable([
+    immutable({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
+    immutable({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
+    immutable({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
+    immutable({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
+    immutable({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
+    immutable({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
+  ]);
+  var PHASES = immutable([
+    immutable({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
+    immutable({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
+    immutable({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
+    immutable({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
+    immutable({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
+  ]);
+  function createChronosFlight({ goal = 36, minDuration = CHRONOS_FLIGHT_MIN_DURATION } = {}) {
+    if (!Number.isInteger(goal) || goal < 1) throw new RangeError("goal must be a positive integer");
+    if (!Number.isFinite(minDuration) || minDuration < 20) throw new RangeError("minDuration must be at least 20 seconds");
+    let elapsed = 0, routeProgress = 0, collected = 0;
+    const fired = /* @__PURE__ */ new Set();
+    function snapshot() {
+      const p = routeProgress, phase = PHASES.find((candidate) => p < candidate.to) || PHASES[PHASES.length - 1];
+      const departure = smooth(p, 0.08, 0.6), approach = smooth(p, 0.58, 1);
+      const attackApproach = smooth(p, 0.015, 0.055), attackExit = smooth(p, 0.12, 0.24);
+      const objectiveComplete = collected >= goal, canFinish = objectiveComplete && p === 1;
+      const reactorState = p < 0.07 ? "stable" : p < 0.1 ? "struck" : "ruptured";
+      const attackerState = p < 0.055 ? "approach" : p < 0.07 ? "charge" : p < 0.1 ? "fire" : "retreat";
+      return immutable({
+        version: CHRONOS_FLIGHT_VERSION,
+        elapsed,
+        minDuration,
+        routeProgress: p,
+        phase: canFinish ? "arrived" : phase.id,
+        stageName: canFinish ? "Acceso a Gaia localizado" : phase.name,
+        origin: "Centro Chronos",
+        destination: "Baliza de acceso a Gaia Nova",
+        collected,
+        goal,
+        remaining: Math.max(0, goal - collected),
+        collectionFraction: collected / goal,
+        objectiveComplete,
+        canFinish,
+        recoveryActive: p >= 0.1 && !canFinish,
+        waitingFor: !objectiveComplete && p >= 0.66 + 0.2 * (collected / goal) - 1e-10 ? "cronium" : null,
+        // The origin physically retreats and becomes smaller; alpha stays one.
+        station: immutable({
+          x: 0.48 - 0.72 * departure,
+          y: 0.27 + 1.1 * departure,
+          scale: 1.12 * Math.pow(0.075, departure),
+          rotation: -0.1 * departure,
+          visible: p < 0.62,
+          alpha: 1,
+          state: reactorState
+        }),
+        // Gaia is a distant destination that grows during the approach.
+        planet: immutable({
+          x: 0.79 - 0.15 * approach,
+          y: 0.06 + 0.03 * approach,
+          scale: 0.035 + 0.69 * approach * approach,
+          rotation: 0.06 * p,
+          visible: true,
+          alpha: 1
+        }),
+        beacon: immutable({
+          x: 0.54 + 0.08 * (1 - approach),
+          y: 0.16 + 0.1 * approach,
+          scale: 0.018 + 0.21 * approach,
+          visible: p >= 0.78,
+          alpha: 1,
+          active: p >= 0.83
+        }),
+        attacker: immutable({
+          x: 1.12 - 0.48 * attackApproach - 0.95 * attackExit,
+          y: 0.13 + 0.11 * attackApproach - 0.15 * attackExit,
+          scale: 0.1 + 0.07 * attackApproach - 0.05 * attackExit,
+          rotation: -0.18 - 0.65 * attackExit,
+          visible: p >= 0.015 && p < 0.24,
+          state: attackerState
+        }),
+        deepSpace: immutable({
+          travel: p,
+          offsetX: -0.09 * p,
+          offsetY: 0.54 * p,
+          speed: 0.22 + 0.78 * smooth(p, 0.25, 0.56),
+          alpha: 1
+        }),
+        debris: immutable({
+          visible: p >= 0.1 && !canFinish,
+          travel: p,
+          directionX: -0.28,
+          directionY: 0.96,
+          depth: smooth(p, 0.1, 0.45)
+        }),
+        distance: immutable({ unit: "tramo", covered: p, total: 1 })
+      });
+    }
+    function advance(dt, collectionCount = collected, emit = NOOP2) {
+      if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
+      if (!Number.isFinite(collectionCount) || collectionCount < 0) throw new RangeError("collectionCount must be nonnegative");
+      if (typeof emit !== "function") throw new TypeError("emit must be a function");
+      if (dt === 0 || routeProgress === 1) return snapshot();
+      const step = Math.min(dt, CHRONOS_FLIGHT_MAX_DELTA);
+      elapsed += step;
+      collected = Math.min(goal, Math.max(collected, Math.floor(collectionCount)));
+      const collectionCap = collected >= goal ? 1 : 0.66 + 0.2 * (collected / goal);
+      const target = Math.min(1, elapsed / minDuration, collectionCap);
+      routeProgress = Math.min(target, routeProgress + step / minDuration);
+      if (collected >= goal && 1 - routeProgress < 1e-10 && elapsed >= minDuration - 1e-8) routeProgress = 1;
+      for (const event2 of CHRONOS_FLIGHT_EVENTS) {
+        if (routeProgress + 1e-10 < event2.at || fired.has(event2.id)) continue;
+        fired.add(event2.id);
+        emit(immutable({ ...event2, version: CHRONOS_FLIGHT_VERSION, elapsed, routeProgress }));
+      }
+      return snapshot();
+    }
+    return immutable({ advance, snapshot });
+  }
+
+  // src/game/combat/classic-weapons.js
+  var finite3 = (value, name) => {
+    if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
+    return value;
+  };
+  var weapon = (definition) => Object.freeze({
+    ...definition,
+    barrels: Object.freeze(definition.barrels.map((barrel) => Object.freeze({ ...barrel })))
+  });
+  var CLASSIC_WEAPON_RULES = Object.freeze({
+    version: "classic-weapons-v1",
+    maxCharges: 3,
+    rechargeSeconds: 3.6,
+    maxDelta: 0.05,
+    maxProjectiles: 32,
+    boundsMargin: 80,
+    types: Object.freeze({
+      pulse: weapon({
+        id: "pulse",
+        label: "Pulso",
+        cooldown: 0.24,
+        speed: 920,
+        damage: 1,
+        radius: 9,
+        duration: 2.4,
+        barrels: [{ offset: 0, spread: 0 }]
+      }),
+      twin: weapon({
+        id: "twin",
+        label: "Doble pulso",
+        cooldown: 0.3,
+        speed: 900,
+        damage: 0.7,
+        radius: 7,
+        duration: 2.4,
+        barrels: [{ offset: -42, spread: -0.025 }, { offset: 42, spread: 0.025 }]
+      })
+    })
+  });
+  function knownType(type) {
+    if (!Object.hasOwn(CLASSIC_WEAPON_RULES.types, type)) {
+      throw new RangeError(`Unknown classic weapon: ${String(type)}`);
+    }
+    return type;
+  }
+  function createClassicWeapons({
+    type = "pulse",
+    unlocked = ["pulse"],
+    width = 720,
+    height = 1280
+  } = {}) {
+    finite3(width, "width");
+    finite3(height, "height");
+    knownType(type);
+    if (width < 240 || height < 240) throw new RangeError("Invalid weapon arena");
+    if (!Array.isArray(unlocked) || unlocked.length === 0) {
+      throw new TypeError("At least one unlocked weapon is required");
+    }
+    const available = [...new Set(unlocked.map(knownType))];
+    if (!available.includes(type)) throw new RangeError("Selected weapon must be unlocked");
+    return {
+      version: CLASSIC_WEAPON_RULES.version,
+      width,
+      height,
+      selected: type,
+      unlocked: available,
+      charges: CLASSIC_WEAPON_RULES.maxCharges,
+      recharge: 0,
+      cooldown: 0,
+      elapsed: 0,
+      projectileSequence: 0,
+      eventSequence: 0,
+      shotSequence: 0,
+      projectiles: []
+    };
+  }
+  function event(state, type, details = {}) {
+    return { id: `${state.version}:event:${++state.eventSequence}`, type, ...details };
+  }
+  function unlockClassicWeapon(state, type) {
+    knownType(type);
+    if (state.unlocked.includes(type)) return { accepted: false, reason: "unlocked", events: [] };
+    state.unlocked.push(type);
+    return { accepted: true, events: [event(state, "unlocked", { weapon: type })] };
+  }
+  function selectClassicWeapon(state, type) {
+    knownType(type);
+    if (!state.unlocked.includes(type)) return { accepted: false, reason: "locked", events: [] };
+    if (state.selected === type) return { accepted: false, reason: "selected", events: [] };
+    state.selected = type;
+    return { accepted: true, events: [event(state, "selected", { weapon: type })] };
+  }
+  function triggerClassicWeapon(state, { x, y, angle = -Math.PI / 2 } = {}) {
+    finite3(x, "origin x");
+    finite3(y, "origin y");
+    finite3(angle, "angle");
+    if (state.charges === 0) return { accepted: false, reason: "empty", events: [], projectiles: [] };
+    if (state.cooldown > 1e-9) return { accepted: false, reason: "cooldown", events: [], projectiles: [] };
+    const definition = CLASSIC_WEAPON_RULES.types[state.selected];
+    if (state.projectiles.length + definition.barrels.length > CLASSIC_WEAPON_RULES.maxProjectiles) {
+      return { accepted: false, reason: "capacity", events: [], projectiles: [] };
+    }
+    const wasFull = state.charges === CLASSIC_WEAPON_RULES.maxCharges;
+    state.charges--;
+    if (wasFull) state.recharge = 0;
+    state.cooldown = definition.cooldown;
+    const shotId = `${state.version}:shot:${++state.shotSequence}`;
+    const events = [event(state, "fired", {
+      shotId,
+      weapon: state.selected,
+      charges: state.charges,
+      barrels: definition.barrels.length
+    })];
+    const projectiles = definition.barrels.map((barrel, barrelIndex) => {
+      const direction = angle + barrel.spread;
+      const projectile2 = {
+        id: `${state.version}:projectile:${++state.projectileSequence}`,
+        shotId,
+        weapon: state.selected,
+        barrel: barrelIndex,
+        x: x - Math.sin(angle) * barrel.offset,
+        y: y + Math.cos(angle) * barrel.offset,
+        vx: Math.cos(direction) * definition.speed,
+        vy: Math.sin(direction) * definition.speed,
+        damage: definition.damage,
+        radius: definition.radius,
+        pierce: 1,
+        duration: definition.duration,
+        life: definition.duration,
+        hitTargets: []
+      };
+      events.push(event(state, "projectile", { projectile: { ...projectile2, hitTargets: [] } }));
+      return projectile2;
+    });
+    state.projectiles.push(...projectiles);
+    return { accepted: true, shotId, events, projectiles };
+  }
+  function advanceClassicWeapons(state, delta) {
+    finite3(delta, "delta");
+    if (delta < 0) throw new RangeError("Finite nonnegative delta required");
+    if (delta === 0) return [];
+    const dt = Math.min(delta, CLASSIC_WEAPON_RULES.maxDelta);
+    const events = [];
+    state.elapsed += dt;
+    state.cooldown = Math.max(0, state.cooldown - dt);
+    if (state.charges < CLASSIC_WEAPON_RULES.maxCharges) {
+      state.recharge += dt;
+      while (state.recharge + 1e-9 >= CLASSIC_WEAPON_RULES.rechargeSeconds && state.charges < CLASSIC_WEAPON_RULES.maxCharges) {
+        state.charges++;
+        state.recharge = Math.max(0, state.recharge - CLASSIC_WEAPON_RULES.rechargeSeconds);
+        events.push(event(state, "recharged", { charges: state.charges }));
+      }
+    }
+    if (state.charges === CLASSIC_WEAPON_RULES.maxCharges) state.recharge = 0;
+    const margin = CLASSIC_WEAPON_RULES.boundsMargin;
+    for (let index = state.projectiles.length - 1; index >= 0; index--) {
+      const projectile2 = state.projectiles[index];
+      projectile2.x += projectile2.vx * dt;
+      projectile2.y += projectile2.vy * dt;
+      projectile2.life = Math.max(0, projectile2.life - dt);
+      const outside = projectile2.x < -margin || projectile2.x > state.width + margin || projectile2.y < -margin || projectile2.y > state.height + margin;
+      if (projectile2.life <= 1e-9 || outside) {
+        state.projectiles.splice(index, 1);
+        events.push(event(state, "expired", {
+          projectileId: projectile2.id,
+          reason: outside ? "bounds" : "lifetime"
+        }));
+      }
+    }
+    return events;
+  }
+  function hitClassicProjectile(state, projectileId, targetId) {
+    if (typeof projectileId !== "string" || !projectileId) throw new TypeError("Projectile ID required");
+    if (!(typeof targetId === "string" && targetId.length > 0 || Number.isSafeInteger(targetId))) {
+      throw new TypeError("Stable target ID required");
+    }
+    const index = state.projectiles.findIndex((projectile3) => projectile3.id === projectileId);
+    if (index < 0) return { accepted: false, reason: "inactive", damage: 0, events: [] };
+    const projectile2 = state.projectiles[index];
+    const key = `${typeof targetId}:${targetId}`;
+    if (projectile2.hitTargets.includes(key)) {
+      return { accepted: false, reason: "duplicate", damage: 0, events: [] };
+    }
+    projectile2.hitTargets.push(key);
+    projectile2.pierce--;
+    if (projectile2.pierce <= 0) state.projectiles.splice(index, 1);
+    return {
+      accepted: true,
+      damage: projectile2.damage,
+      events: [event(state, "hit", {
+        projectileId,
+        shotId: projectile2.shotId,
+        targetId,
+        damage: projectile2.damage,
+        x: projectile2.x,
+        y: projectile2.y,
+        weapon: projectile2.weapon
+      })]
+    };
+  }
+  function classicWeaponSnapshot(state) {
+    return {
+      ...state,
+      unlocked: [...state.unlocked],
+      rechargeProgress: state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 : Math.min(1, state.recharge / CLASSIC_WEAPON_RULES.rechargeSeconds),
+      projectiles: state.projectiles.map((projectile2) => ({
+        ...projectile2,
+        hitTargets: [...projectile2.hitTargets]
+      }))
+    };
+  }
+
+  // src/game/ship/flight-controls.js
+  var SIDE_CLEARANCE = 119;
+  var NOSE_CLEARANCE = 158;
+  var TAIL_CLEARANCE = 104;
+  function finite4(value, name) {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new RangeError(`${name} must be finite`);
+    }
+    return value;
+  }
+  function pointerId(value) {
+    if (typeof value === "number" && Number.isSafeInteger(value) || typeof value === "string" && value.length > 0) return value;
+    throw new TypeError("A finite integer or nonempty string pointer id is required");
+  }
+  function inputState(state) {
+    if (!state || typeof state !== "object" || typeof state.active !== "boolean") {
+      throw new TypeError("A relative flight input state is required");
+    }
+    if (state.active) {
+      pointerId(state.id);
+      finite4(state.lastX, "lastX");
+      finite4(state.lastY, "lastY");
+    }
+  }
+  function checkedBounds(bounds) {
+    if (!bounds || typeof bounds !== "object") throw new TypeError("Flight bounds are required");
+    for (const key of ["minX", "maxX", "minY", "maxY"]) finite4(bounds[key], key);
+    if (bounds.minX > bounds.maxX || bounds.minY > bounds.maxY) {
+      throw new RangeError("Flight bounds must be ordered");
+    }
+    return bounds;
+  }
+  var clamp7 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  function calculateFlightBounds({ width, height, hudBottom, controlsTop }) {
+    finite4(width, "width");
+    finite4(height, "height");
+    finite4(hudBottom, "hudBottom");
+    finite4(controlsTop, "controlsTop");
+    if (width <= 0 || height <= 0 || hudBottom < 0 || controlsTop > height || hudBottom > controlsTop) {
+      throw new RangeError("A positive viewport and ordered HUD/control boundaries are required");
+    }
+    const firstX = SIDE_CLEARANCE, lastX = width - SIDE_CLEARANCE;
+    const firstY = hudBottom + NOSE_CLEARANCE, lastY = controlsTop - TAIL_CLEARANCE;
+    const xFits = firstX <= lastX, yFits = firstY <= lastY;
+    const centerY = clamp7(firstY / 2 + lastY / 2, 0, height);
+    return Object.freeze({
+      minX: xFits ? firstX : width / 2,
+      maxX: xFits ? lastX : width / 2,
+      minY: yFits ? firstY : centerY,
+      maxY: yFits ? lastY : centerY,
+      fits: xFits && yFits,
+      xFits,
+      yFits
+    });
+  }
+  function createRelativeFlightInput() {
+    return { active: false, id: null, lastX: null, lastY: null };
+  }
+  function beginFlightInput(state, { id, x, y }) {
+    inputState(state);
+    pointerId(id);
+    finite4(x, "x");
+    finite4(y, "y");
+    if (state.active) return false;
+    state.active = true;
+    state.id = id;
+    state.lastX = x;
+    state.lastY = y;
+    return true;
+  }
+  function moveFlightInput(state, {
+    id,
+    x,
+    y,
+    targetX,
+    targetY,
+    sensitivity = 1,
+    bounds
+  }) {
+    inputState(state);
+    pointerId(id);
+    finite4(x, "x");
+    finite4(y, "y");
+    finite4(targetX, "targetX");
+    finite4(targetY, "targetY");
+    finite4(sensitivity, "sensitivity");
+    checkedBounds(bounds);
+    if (sensitivity <= 0) throw new RangeError("Sensitivity must be positive");
+    if (!state.active || state.id !== id) {
+      return {
+        targetX: clamp7(targetX, bounds.minX, bounds.maxX),
+        targetY: clamp7(targetY, bounds.minY, bounds.maxY),
+        moved: false
+      };
+    }
+    const nextX = targetX + (x - state.lastX) * sensitivity;
+    const nextY = targetY + (y - state.lastY) * sensitivity;
+    finite4(nextX, "computed targetX");
+    finite4(nextY, "computed targetY");
+    const moved = x !== state.lastX || y !== state.lastY;
+    state.lastX = x;
+    state.lastY = y;
+    return {
+      targetX: clamp7(nextX, bounds.minX, bounds.maxX),
+      targetY: clamp7(nextY, bounds.minY, bounds.maxY),
+      moved
+    };
+  }
+  function endFlightInput(state, id = null) {
+    inputState(state);
+    if (id !== null) pointerId(id);
+    if (!state.active || id !== null && state.id !== id) return false;
+    state.active = false;
+    state.id = null;
+    state.lastX = null;
+    state.lastY = null;
+    return true;
   }
 
   // src/game/progression/legacy-content-entry.js

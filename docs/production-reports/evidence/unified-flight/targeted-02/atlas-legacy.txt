@@ -1,0 +1,25 @@
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ Gaia keeps recovery meaningful and gates saved victory behind the real Atlas encounter (542.626298ms)
+✔ the actual legacy pause freezes Atlas and resume continues without a duplicate loop (270.383167ms)
+✔ the threshold capture can replace active items without crashing the real collision loop (76.113422ms)
+✔ Atlas deactivation completes before a single persisted victory and preserves N-7 saves (421.287544ms)
+✔ death, a rewarded continuation and retry cannot bypass or prematurely save Atlas (105.954821ms)
+✔ Gaia keeps its manual pulse and Chronos begins with three charges before recharging through played time (115.646573ms)
+✔ leaving the encounter does not mutate saves and N-7 cannot start classic Atlas (105.623368ms)
+✔ slow time shares the real Atlas and projectile clock before announcing another corridor (427.132974ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3169.801752

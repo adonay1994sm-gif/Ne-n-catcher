@@ -98,6 +98,9 @@ async function loadHarness() {
   const { window } = dom;
   window.HTMLCanvasElement.prototype.getContext = () => createCanvasContext();
   window.HTMLCanvasElement.prototype.toDataURL = () => "data:image/png;base64,";
+  window.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({
+    x: 0, y: 0, left: 0, top: 0, right: 390, bottom: 844, width: 390, height: 844
+  });
   window.requestAnimationFrame = () => 1;
   window.cancelAnimationFrame = () => {};
   window.navigator.vibrate = () => true;
@@ -117,6 +120,7 @@ async function loadHarness() {
     snapshot: () => ({
       state, hull, score, collected, currentLevel, energyBudget, powerBudget, ammo, manualShotCooldown, warpTimer,
       displayedScore, hudScoreTarget, visualSpeed, shake, levelOneShockwave,
+      weapons: classicWeapons ? NeonCampaign.classicWeaponSnapshot(classicWeapons) : null,
       player: { ...player }, powers: { ...powers },
       counts: { items: items.length, shots: shots.length, rings: rings.length, parts: parts.length }
     }),
@@ -124,7 +128,12 @@ async function loadHarness() {
     keys: { ...KEYS },
     collisionOutline: SHIP_COLLISION_OUTLINE.map((point) => [...point]),
     startLevel, damageShip, update, render, firePhaser, fireManualShot, pulseRing,
-    setManualFireReady: () => { warpTimer = 0; manualShotCooldown = 0; },
+    prepareWeaponFixture: () => { warpTimer = 0; spawnTimer = 999; classicScoutTimer = 999; items = []; gates = []; },
+    advancePlayed: (seconds) => {
+      for (let remaining = seconds; remaining > 1e-9; remaining -= Math.min(1/60, remaining)) {
+        update(Math.min(1/60, remaining));
+      }
+    },
     setPower: (name, value) => { powers[name] = value; },
     seedThreat: () => items.push({ type: "meteor", x: player.x, baseX: player.x, y: player.y - 260, r: 32, s: 0, rot: 0, rs: 0, p: 0, phase: 0, amp: 0, alpha: 1, hp: 1, damage: 25, spriteKey: "meteorMedium" })
   };
@@ -163,15 +172,25 @@ await test("arranque de nivel conserva presupuestos y estados limpios", async ()
   assert.equal(snapshot.ammo, 3);
 });
 
-await test("control táctil consume tres disparos y bloquea el cuarto", async () => {
+await test("control de disparo agota tres cargas, bloquea la cuarta y recarga sin emitir disparos fantasma", async () => {
   api.startLevel(0);
+  api.prepareWeaponFixture();
   for (let shot = 0; shot < 3; shot++) {
-    api.setManualFireReady();
     assert.equal(api.fireManualShot(), true);
+    api.advancePlayed(.25);
   }
-  api.setManualFireReady();
   assert.equal(api.snapshot().ammo, 0);
   assert.equal(api.fireManualShot(), false);
+  assert.equal(api.snapshot().weapons.shotSequence, 3);
+  api.advancePlayed(2.84);
+  assert.equal(api.snapshot().ammo, 0);
+  assert.equal(api.fireManualShot(), false);
+  api.advancePlayed(.02);
+  assert.equal(api.snapshot().ammo, 1);
+  assert.equal(api.snapshot().weapons.shotSequence, 3);
+  assert.equal(api.fireManualShot(), true);
+  assert.equal(api.snapshot().ammo, 0);
+  assert.equal(api.snapshot().weapons.shotSequence, 4);
 });
 
 await test("daño activa respuesta de cámara/HUD sin alterar la lógica de casco", async () => {

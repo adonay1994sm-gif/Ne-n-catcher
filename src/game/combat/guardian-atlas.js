@@ -81,7 +81,7 @@ function beginCharge(boss, player, events) {
   }
   boss.telegraph = {
     kind: boss.phase === 1 ? 'aimedSalvo' : 'openCorridor',
-    progress: 0, targetX: clamp(player.x, 24, boss.width - 24), targetY: boss.playerY,
+    progress: 0, targetX: clamp(player.x, 24, boss.width - 24), targetY: clamp(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height-24),
     originX: boss.x, originY, seconds: timing.chargeSeconds,
     safeGap, attackId: boss.attackId
   };
@@ -100,7 +100,7 @@ function projectile(boss, x, y, vx, vy, ordinal) {
     r: boss.phase === 1 ? 10 : 11,
     damage: timing.projectileDamage, duration: 7, life: 7,
     telegraphSeconds: timing.chargeSeconds, safeGap: boss.telegraph.safeGap && {...boss.telegraph.safeGap},
-    targetX: boss.telegraph.targetX, targetY: boss.playerY,
+    targetX: boss.telegraph.targetX, targetY: boss.telegraph.targetY,
     rot: Math.atan2(vy, vx) - Math.PI / 2, rs: 0,
     p: 0, phase: 0, amp: 0, special: '', alpha: 1, hp: 1, maxHp: 1
   };

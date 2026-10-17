@@ -15,7 +15,41 @@ const dist = join(root, 'preview-dist');
 const text = file => readFile(join(root, file), 'utf8');
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
+function assertOneMainJourney(document) {
+  const mainLink = document.getElementById('classiclink');
+  const archive = document.getElementById('qaArchive');
+  assert.equal(mainLink.getAttribute('href'), 'juego/index.html');
+  assert.match(mainLink.textContent, /CONTINUAR VIAJE/);
+  assert.equal(mainLink.closest('details'), null, 'The principal journey must be visible');
+  assert.equal(archive.tagName, 'DETAILS');
+  assert.equal(archive.hasAttribute('open'), false, 'Historical variants start collapsed');
+  assert.match(archive.querySelector('summary').textContent, /ARCHIVO DE PRUEBAS/);
+  for (const [id, destination] of [['journeylink', 'journey'], ['n7link', 'n7']]) {
+    const link = document.getElementById(id);
+    assert.equal(link.closest('details'), archive);
+    assert.equal(link.getAttribute('href'), `juego/index.html?campaign=${destination}`);
+    assert.equal(link.classList.contains('card'), false, 'Archives are not competing game cards');
+  }
+  assert.equal(document.getElementById('unlockClassic').closest('details'), archive);
+  assert.equal(document.getElementById('unlock').closest('details'), archive);
+  const principalEntries = [...document.querySelectorAll('a[href^="juego/index.html"]')]
+    .filter(link => !link.closest('details'));
+  assert.deepEqual(principalEntries, [mainLink]);
+}
+
 // Tests named "unit:" do not require or create build output.
+test('unit: preview offers one main journey and preserves historical versions inside a closed QA archive', async () => {
+  const dom = new JSDOM(await text('preview/launcher.html'));
+  try { assertOneMainJourney(dom.window.document); }
+  finally { dom.window.close(); }
+  const game = new JSDOM(await text('index.html'));
+  try {
+    assert.equal(game.window.document.getElementById('playLabel').textContent, 'CONTINUAR VIAJE');
+    assert.match(game.window.document.querySelector('.menu-panel > p').textContent, /Chronos ha sido atacado/);
+    assert.match(game.window.document.querySelector('.menu-panel > p').textContent, /CRONIUM/);
+  } finally { game.window.close(); }
+});
+
 test('unit: isolated storage never reads, overwrites or removes normal campaign keys', () => {
   const data = new Map([['neon-unlocked-v2', '8'], ['neon-n7-unlocked-v1', '42'], ['neon-settings-v5', '{"music":12}']]);
   const storage = {getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, String(value)), removeItem: key => data.delete(key)};
@@ -215,10 +249,11 @@ test('unit: Netlify opt-in cannot authorize main or PR deploy contexts', () => {
   assert.equal(run('--unknown', '1').status, 2);
 });
 
-test('built launcher presents both modes and all paths resolve within the preview package', async () => {
+test('built launcher has one principal journey, recoverable historical archives and resolving package paths', async () => {
   const html = await readFile(join(dist, 'index.html'), 'utf8');
-  assert.match(html, /href="juego\/index\.html\?campaign=n7"/);
-  assert.match(html, /href="juego\/index\.html"/);
+  const dom = new JSDOM(html);
+  try { assertOneMainJourney(dom.window.document); }
+  finally { dom.window.close(); }
   assert.match(html, /juego\/assets\/ship_frame_01\.webp/);
   assert.match(html, /neon-preview-v1:neon-n7-unlocked-v1/);
   assert.doesNotMatch(html, /__NEON_PREVIEW_/);

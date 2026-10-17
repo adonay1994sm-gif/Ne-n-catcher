@@ -1,6 +1,7 @@
   function render(t) {
     syncShipPresentation();
     drawShipHangar(t);
+    drawClassicDock(t);
     ctx.save();
     ctx.translate(cameraKickX, -cameraKickY);
     if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
@@ -9,7 +10,8 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.guardianProjectile) drawAtlasProjectile(item);
+      if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
+      else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
@@ -20,6 +22,7 @@
     drawGuardianAtlas();
     drawPlayer(t);
     drawShots();
+    drawClassicProjectiles();
     drawExplosions();
     drawImpactEffects();
     drawRings();
@@ -75,15 +78,62 @@
     if (legacyRunning) legacyFrameId = requestAnimationFrame(frame);
   }
 
-  function pointerX(event) {
+  function pointerX(event, point = event.touches?.[0] || event) {
     const rect = canvas.getBoundingClientRect();
-    const x = event.touches ? event.touches[0].clientX : event.clientX;
-    return (x - rect.left) * W / rect.width;
+    return (point.clientX - rect.left) * W / rect.width;
+  }
+
+  function pointerY(event, point = event.touches?.[0] || event) {
+    const rect = canvas.getBoundingClientRect();
+    return (point.clientY - rect.top) * H / rect.height;
+  }
+
+  function moveClassicFlight(event) {
+    if (event.type.startsWith("touch") && window.PointerEvent) return;
+    const press = event.type === "pointerdown" || event.type === "touchstart";
+    let point = event;
+    let id = event.pointerId ?? "mouse";
+    if (event.touches) {
+      const candidates = press ? event.changedTouches : event.touches;
+      point = press || !classicFlightInput.active ? candidates?.[0]
+        : Array.from(candidates || []).find(touch => touch.identifier === classicFlightInput.id);
+      if (!point) return;
+      id = point.identifier;
+    }
+    const x = pointerX(event, point), y = pointerY(event, point);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    const bounds = classicFlightBounds || refreshClassicFlightBounds();
+    if (!bounds) return;
+    if (press) {
+      // A press only anchors relative input, regardless of where the finger
+      // touches. Captured movement remains continuous outside the canvas.
+      const started = NeonCampaign.beginFlightInput(classicFlightInput, { id, x, y });
+      if (started && event.pointerId !== undefined) {
+        try { canvas.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
+      }
+      return;
+    }
+    const factor = settings.sensitivity / 100;
+    const mouseHover = !event.touches && (!event.pointerType || event.pointerType === "mouse") &&
+      !event.buttons && !classicFlightInput.active;
+    if (mouseHover) {
+      // Desktop hover retains the original accessible horizontal alternative;
+      // vertical control requires dragging or the up/down keys.
+      player.target = clamp(player.x + (x - player.x) * factor, bounds.minX, bounds.maxX);
+      return;
+    }
+    const next = NeonCampaign.moveFlightInput(classicFlightInput, {
+      id, x, y, targetX: player.target, targetY: player.targetY,
+      sensitivity: factor, bounds
+    });
+    player.target = next.targetX;
+    player.targetY = next.targetY;
   }
 
   function move(event) {
     if (state !== "playing") return;
     event.preventDefault();
+    if (isUnifiedClassic()) { moveClassicFlight(event); return; }
     const x = pointerX(event);
     const factor = settings.sensitivity / 100;
     if (JOURNEY_DEMO) {
@@ -105,11 +155,40 @@
   canvas.addEventListener("pointermove", move, { passive: false });
   canvas.addEventListener("touchstart", move, { passive: false });
   canvas.addEventListener("touchmove", move, { passive: false });
-  for (const event of ["pointerup", "pointercancel", "touchend", "touchcancel"]) canvas.addEventListener(event, () => { journeyPointerLast = null; });
+  function finishFlightInput(event) {
+    journeyPointerLast = null;
+    if (!isUnifiedClassic()) return;
+    if (event.type.startsWith("touch")) {
+      if (window.PointerEvent) return;
+      for (const touch of Array.from(event.changedTouches || [])) {
+        NeonCampaign.endFlightInput(classicFlightInput, touch.identifier);
+      }
+    } else NeonCampaign.endFlightInput(classicFlightInput, event.pointerId ?? "mouse");
+  }
+  for (const event of ["pointerup", "pointercancel", "lostpointercapture", "touchend", "touchcancel"]) {
+    canvas.addEventListener(event, finishFlightInput);
+  }
+  addEventListener("blur", () => {
+    journeyPointerLast = null;
+    NeonCampaign.endFlightInput(classicFlightInput);
+  });
 
   addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") player.target -= 85;
-    if (event.key === "ArrowRight") player.target += 85;
+    if (isUnifiedClassic()) {
+      if (state === "playing" && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+        event.preventDefault();
+        const bounds = classicFlightBounds || refreshClassicFlightBounds();
+        if (bounds) {
+          const dx = event.key === "ArrowLeft" ? -85 : event.key === "ArrowRight" ? 85 : 0;
+          const dy = event.key === "ArrowUp" ? -85 : event.key === "ArrowDown" ? 85 : 0;
+          player.target = clamp(player.target + dx, bounds.minX, bounds.maxX);
+          player.targetY = clamp(player.targetY + dy, bounds.minY, bounds.maxY);
+        }
+      }
+    } else {
+      if (event.key === "ArrowLeft") player.target -= 85;
+      if (event.key === "ArrowRight") player.target += 85;
+    }
     if (event.key === " " && state === "playing") {
       event.preventDefault();
       fireManualShot();
@@ -142,7 +221,10 @@
   $("completeHome").onclick = goHome;
   $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
-  ui.nextLevel.onclick = () => prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
+  ui.nextLevel.onclick = () => {
+    if (isUnifiedClassic() && currentLevel === 0) openClassicDock("complete");
+    else prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
+  };
 
   ui.musicVolume.oninput = (event) => {
     settings.music = +event.target.value;
@@ -225,6 +307,7 @@
     addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
 
+  setupClassicFlight();
   resizeCanvas();
   syncSettingsUI();
   window.AnalyticsManager?.track("app_open", { build: BUILD_VERSION });
