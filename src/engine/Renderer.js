@@ -29,5 +29,20 @@ export class Renderer {
  shakeScreen(intensity=6,duration=.2){this.shake=Math.max(this.shake,intensity);this.shakeTime=Math.max(this.shakeTime,duration);}
  update(dt){this.shakeTime=Math.max(0,this.shakeTime-Math.max(0,dt));if(!this.shakeTime)this.shake=0;}
  beginFrame(){const c=this.ctx;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,this.canvas.width,this.canvas.height);c.setTransform(this.scaleX,0,0,this.scaleY,0,0);c.save();if(this.shakeTime)c.translate((Math.random()-.5)*this.shake,(Math.random()-.5)*this.shake);return c;}
+ /** Render HUD in logical screen coordinates, independent of world transforms/shake. */
+ withScreenSpace(draw) {
+  if (typeof draw !== 'function') throw new TypeError('Screen-space draw callback required');
+  const ctx = this.ctx;
+  ctx.save();
+  try {
+   ctx.setTransform(this.scaleX, 0, 0, this.scaleY, 0, 0);
+   ctx.globalAlpha = 1;
+   ctx.globalCompositeOperation = 'source-over';
+   if ('filter' in ctx) ctx.filter = 'none';
+   return draw(ctx);
+  } finally {
+   ctx.restore();
+  }
+ }
  endFrame(){this.ctx.restore();}
 }
