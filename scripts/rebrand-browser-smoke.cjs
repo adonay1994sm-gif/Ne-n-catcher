@@ -217,7 +217,10 @@ async function gameBrandAndSave(page, fixture) {
   });
   await step('install the actual previous launcher/game workers and seed declared prior-save fixtures', async () => {
     const page = await newPage(); await page.goto(server.url, {waitUntil: 'load'});
-    assert.match(await page.title(), /NEON\s*CATCHER/i);
+    const previousHtml=await fs.readFile(path.join(previous,'index.html'),'utf8');
+    const previousTitle=previousHtml.match(/<title>([^<]+)<\/title>/)?.[1];
+    assert.ok(previousTitle,'Previous real package must declare its own title');
+    assert.equal(await page.title(),previousTitle,'Install the exact prior release, including its actual brand');
     await waitAsync(page, () => navigator.serviceWorker.controller?.scriptURL.endsWith('/launcher-sw.js'));
     await capture(page, 'previous-launcher');
     await page.locator('#classiclink').click();
