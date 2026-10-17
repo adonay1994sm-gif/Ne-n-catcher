@@ -9,11 +9,12 @@ const {execFileSync} = require('node:child_process');
 const {parseArgs} = require('node:util');
 const {startStaticServer, prepareEvidence, saveEvidence, sha256, errorText} = require('./browser-qa-helpers.cjs');
 
-const {values} = parseArgs({options: {root: {type: 'string'}, output: {type: 'string'}, timeout: {type: 'string'}}});
+const {values} = parseArgs({options: {root: {type: 'string'}, output: {type: 'string'}, timeout: {type: 'string'},
+  'profile-cpu': {type: 'boolean'}}});
 const root = path.resolve(values.root || 'preview-dist');
 const output = path.resolve(values.output || `docs/production-reports/evidence/guardian-atlas/browser-${new Date().toISOString().replace(/[:.]/g, '-')}`);
 const timeout = Number(values.timeout || 180000);
-assert.ok(Number.isFinite(timeout) && timeout >= 30000 && timeout <= 360000, 'Timeout must be 30000–360000 ms');
+assert.ok(Number.isFinite(timeout) && timeout >= 30000 && timeout <= 900000, 'Timeout must be 30000–900000 ms');
 const began = Date.now();
 const report = {status: 'running', exitCode: null, command: process.argv, sourceRoot: root,
   startedAt: new Date().toISOString(), browser: 'Real Chromium, 390x844, DPR 1', checks: [],
@@ -202,6 +203,28 @@ function combatTarget(q) {
       await page.locator(`a.card[href="${href}"]`).click();
     }
     await wait(() => typeof __ATLAS_QA__ === 'function' && __ATLAS_QA__().state === 'menu');
+    if (values['profile-cpu']) {
+      const cdp = await context.newCDPSession(page);
+      await cdp.send('Profiler.enable');
+      await cdp.send('Profiler.setSamplingInterval', {interval: 1000});
+      await cdp.send('Profiler.start');
+      await page.waitForTimeout(1500);
+      const {profile} = await cdp.send('Profiler.stop');
+      await fs.writeFile(path.join(output, 'menu-cpu-profile.json'), JSON.stringify(profile) + '\n');
+      const self = new Map();
+      for (let index = 0; index < profile.samples.length; index++) {
+        const id = profile.samples[index];
+        self.set(id, (self.get(id) || 0) + (profile.timeDeltas[index] || 0));
+      }
+      report.menuCpuProfile = {file: 'menu-cpu-profile.json',
+        note: 'One desktop-software-rendered Gaia menu sample before play; not an iPhone GPU measurement.',
+        durationMs: (profile.endTime - profile.startTime) / 1000,
+        hottestSelfSamples: profile.nodes.map(node => ({function: node.callFrame.functionName || '(anonymous)',
+          url: node.callFrame.url, line: node.callFrame.lineNumber + 1,
+          sampledSelfMs: (self.get(node.id) || 0) / 1000}))
+          .sort((a, b) => b.sampledSelfMs - a.sampledSelfMs).slice(0, 18)};
+      await cdp.detach(); await save();
+    }
     await page.locator('#levels').click();
     await page.locator('#levelGrid button').nth(1).click();
     await page.locator('#launch').click();
@@ -228,7 +251,7 @@ function combatTarget(q) {
       maxCollected = Math.max(maxCollected, q.collected); minX = Math.min(minX, q.player.x); maxX = Math.max(maxX, q.player.x);
       if (Date.now() - lastSample > 1000) {
         report.samples.push({wallMs: Date.now() - sessionBegan, elapsed: q.elapsed, state: q.state,
-          collected: q.collected, hull: q.hull, entities: q.items.length,
+          collected: q.collected, hull: q.hull, entities: q.items.length, rafFrames: q.raf.frames,
           boss: q.boss && {state: q.boss.state, phase: q.boss.phase, hp: q.boss.hp, age: q.boss.age}});
         lastSample = Date.now(); await save();
       }

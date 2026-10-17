@@ -4684,7 +4684,7 @@
         "assets/guardian_atlas_states_v1.webp",
         "assets/atlas_combat_vfx_v1.webp"
       ],
-      "commit": "",
+      "commit": "009e5299e1d0cad12fadde787060d658ae87bb3b",
       "tests": [
         "npm run test:content",
         "npm run test:preview",
@@ -4726,7 +4726,7 @@
         "docs/design/CAMPAIGN_100_STAGES.md",
         "tests/campaign-space-design.test.mjs"
       ],
-      "commit": "",
+      "commit": "009e5299e1d0cad12fadde787060d658ae87bb3b",
       "tests": [
         "node --test tests/campaign-space-design.test.mjs"
       ],

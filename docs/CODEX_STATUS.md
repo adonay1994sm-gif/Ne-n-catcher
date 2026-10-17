@@ -1,6 +1,6 @@
 ## Guardian Atlas — conservación WIP,17/10/2026
 
-Arte nuevo real y combate integrado al recuperar CRONIUM en Gaia clásica. Ocho poses, dos fases, avisos, disparos, daño y desactivación. Cien etapas diseñadas editorialmente, no implementadas. Certificación inicial11/11; nuevo arreglo slow8/8; preview16/16. Chromium natural01 falló por muerte del piloto antes del jefe; siguiente ejecución pendiente. Sitio privado aún sin esta revisión. [Informe y evidencia](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Motor V1 false; ninguna prueba física.
+Arte nuevo real y combate integrado al recuperar CRONIUM en Gaia clásica. Ocho poses, dos fases, avisos, disparos, daño y desactivación. Cien etapas diseñadas editorialmente, no implementadas. Certificación inicial11/11; nuevo arreglo slow8/8; preview16/16. Chromium natural01 falló por muerte del piloto antes del jefe; natural02 recuperó45/45 y llegó al jefe con76% pero agotó240s. Certificación02:105/105contenido,11/11comandos. Visual04:10/10escenas controladas,3tamaños. Partida natural larga pendiente. Sitio privado aún sin esta revisión. [Informe y evidencia](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Motor V1 false; ninguna prueba física.
 
 ---
 

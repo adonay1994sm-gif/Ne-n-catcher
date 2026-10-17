@@ -682,9 +682,17 @@
     const rect = canvas.getBoundingClientRect();
     const horizontal = rect.height < 500;
     atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = player.y;
-    atlasBoss.visualSize = horizontal ? 300 : 350;
-    const headerClearance = (horizontal ? 104 : 144) * H / Math.max(1, rect.height);
-    atlasBoss.targetY = Math.min(player.y - 360, Math.max(H * .30, headerClearance + atlasBoss.visualSize / 2));
+    const hudBottom = Math.max($('hud').getBoundingClientRect().bottom,
+      ui.atlasEncounter?.getBoundingClientRect().bottom || 0);
+    const headerClearance = (Math.max(0, hudBottom - rect.top) + 8) * H / Math.max(1, rect.height);
+    const shipTop = player.y - 145;
+    // Poses have distinct reactor pivots. Reserve the complete authored cell,
+    // including the highest ring and lowest wreckage, rather than half a tile.
+    atlasBoss.visualSize = Math.min(horizontal ? 300 : 350,
+      Math.max(80, (shipTop - headerClearance - 12) / 1.07));
+    atlasBoss.targetY = clamp(H * .30,
+      headerClearance + atlasBoss.visualSize * .55,
+      shipTop - atlasBoss.visualSize * .52);
     if (atlasBoss.state !== "entry") atlasBoss.y = atlasBoss.targetY;
   }
 
@@ -699,7 +707,7 @@
     hideWarning(); hideStoryTransmission(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
     ui.atlasEncounter.classList.remove("hidden");
-    ui.goal.previousElementSibling.textContent = "CRONIUM A SALVO";
+    ui.goal.previousElementSibling.textContent = "CRONIUM";
     ui.goal.textContent = `${collected}/${level().goal}`;
     syncAtlasHud(); updateAmmoHud();
     tone(135, .28, "triangle", .065);
@@ -716,7 +724,8 @@
     const health = atlasBoss.hp / atlasBoss.maxHp;
     const phaseLabel = atlasBoss.disabled ? "PROTOCOLO RESTAURADO" : `FASE ${atlasBoss.phase} · ${atlasBoss.vulnerability ? "NÚCLEO EXPUESTO" : "BLINDAJE CERRADO"}`;
     if (ui.atlasHealth.value !== health) ui.atlasHealth.value = health;
-    if (ui.atlasPhase.textContent !== phaseLabel) ui.atlasPhase.textContent = phaseLabel;
+    let layoutChanged = false;
+    if (ui.atlasPhase.textContent !== phaseLabel) { ui.atlasPhase.textContent = phaseLabel; layoutChanged = true; }
     let status;
     if (!spriteReady(SPRITES.guardianAtlas) || !spriteReady(SPRITES.atlasVfx)) status = "Atlas no se ha cargado. Pausa y vuelve al menú para reintentar.";
     else if (atlasReentryGrace > 0) status = "Enlace recuperado. Retoma el control.";
@@ -726,7 +735,8 @@
     else if (atlasBoss.telegraph?.safeGap) status = "DOBLE CORTINA · atraviesa la franja iluminada.";
     else if (atlasBoss.state === "charge") status = "SALVA FIJADA · cambia de posición antes del disparo.";
     else status = "NÚCLEO EXPUESTO · alinea la nave y abre fuego.";
-    if (status !== atlasLastStatus) { ui.atlasStatus.textContent = status; atlasLastStatus = status; }
+    if (status !== atlasLastStatus) { ui.atlasStatus.textContent = status; atlasLastStatus = status; layoutChanged = true; }
+    if (layoutChanged) positionAtlasArena();
   }
 
   function consumeAtlasEvent(event) {

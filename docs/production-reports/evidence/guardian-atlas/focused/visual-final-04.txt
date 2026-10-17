@@ -1,0 +1,11 @@
+[Atlas controlled 390x844] arrival-pose
+[Atlas controlled 390x844] idle-open
+[Atlas controlled 390x844] attack-windup
+[Atlas controlled 390x844] first-volley
+[Atlas controlled 390x844] impact-hurt
+[Atlas controlled 390x844] phase-two-warning
+[Atlas controlled 390x844] phase-two-volley
+[Atlas controlled 390x844] restored-disabled
+[Atlas controlled 320x568] phase-two-volley
+[Atlas controlled 844x390] phase-two-volley
+{"status":"passed","exitCode":0,"output":"/workspace/Ne-n-catcher/docs/production-reports/evidence/guardian-atlas/visual-04","cases":[{"id":"390x844","status":"passed"},{"id":"320x568","status":"passed"},{"id":"844x390","status":"passed"}]}

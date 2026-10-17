@@ -110,5 +110,19 @@
     "note": "Explicit crops replace the generator layout; four effects, not an animation sequence."
   },
   "decodedRgbaBytes": 7869572,
-  "rights": "Original built-in generated artwork; no external licensed resources or purchases. Reference supplied by owner and already retained in project."
+  "rights": "Original built-in generated artwork; no external licensed resources or purchases. Reference supplied by owner and already retained in project.",
+  "playback": {
+    "clock": "Existing legacy update, paused with gameplay; no RAF owner",
+    "type": "State poses with crossfades, not four cyclic frames per state",
+    "rules": "src/game/combat/guardian-atlas.js",
+    "animator": "src/game/animation/guardian-atlas-animator.js",
+    "entrySeconds": 2.2,
+    "phaseOneWarningSeconds": 1.15,
+    "phaseTwoWarningSeconds": 1.4,
+    "hurtSeconds": 0.16,
+    "phaseBreakSeconds": 1.65,
+    "shutdownSeconds": 1.55,
+    "playerPulseSeconds": 0.24,
+    "impactSeconds": 0.24
+  }
 }
