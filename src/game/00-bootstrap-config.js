@@ -114,7 +114,7 @@
       world: "GAIA NOVA", enemyCue: "Red defensiva CH",
       zone: "Anillo defensivo de Gaia Nova", desc: "La red Atlas despierta",
       mission: "Recupera energía mientras evitas las patrullas CH y confirma quién reprogramó las defensas orbitales.",
-      threatLabel: "Drones y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
+      threatLabel: "Drones CH-01 y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
     },
     {
       name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,

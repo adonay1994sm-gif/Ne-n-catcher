@@ -67,7 +67,7 @@
   }
 
   function isThreat(item) {
-    return item && ["meteor", "debris", "satellite"].includes(item.type);
+    return item && ["meteor", "debris", "satellite", "scout"].includes(item.type);
   }
 
   function overlay(el) {

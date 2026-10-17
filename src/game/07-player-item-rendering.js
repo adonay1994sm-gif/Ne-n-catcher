@@ -207,20 +207,24 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
-    if (item.n7Projectile) {
-      ctx.fillStyle = "#ff7bce";
-      ctx.shadowColor = "#ff4bbb";
+    if (item.n7Projectile || item.classicScoutProjectile) {
+      const atlasPulse = item.classicScoutProjectile;
+      ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
+      ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
       ctx.shadowBlur = 12;
-      ctx.fillRect(-4, -12, 8, 24);
+      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42, Math.PI / 2)) {
+        ctx.fillRect(-4, -12, 8, 24);
+      }
       ctx.restore();
       return;
     }
-    if (item.n7?.telegraph > 0) {
-      ctx.strokeStyle = `rgba(255,130,100,${item.n7.telegraph})`;
+    const telegraph = item.n7?.telegraph || item.classicScout?.telegraph || 0;
+    if (telegraph > 0) {
+      ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(0, 28); ctx.lineTo(0, 160); ctx.stroke();
     }
-    if (drawCh01Frame(item.n7?.ch01Animator)) {
+    if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
       ctx.restore();
       return;
     }

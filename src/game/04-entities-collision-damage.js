@@ -34,6 +34,7 @@
   }
 
   function chooseThreatSprite(type, radius, special) {
+    if (type === "scout") return "ch01";
     if (special === "comet") return "comet";
     if (type === "meteor") {
       if (radius < 36) return Math.random() < 0.55 ? "meteorSmall" : "meteorSmallAlt";
@@ -48,9 +49,14 @@
   }
 
   function threatHitPoints(type, spriteKey, special) {
+    if (type === "scout") return 2;
     if (special === "comet") return 2;
     if (type === "satellite") return 3;
-    if (type === "debris") {
+    if (type === "scout") {
+      radius = 32;
+      speed = 172 * lv.speed;
+      damage = 26;
+    } else if (type === "debris") {
       if (spriteKey === "debrisPanel") return 1;
       if (spriteKey && spriteKey.includes("Hot")) return 3;
       return 2;
@@ -114,7 +120,8 @@
       maxHp: hitPoints,
       shape: type === "meteor" ? meteorShape() : null,
       craters: type === "meteor" ? makeCraters(radius) : null,
-      variant: type === "debris" ? (Math.random() < 0.5 ? "panel" : "strut") : ""
+      variant: type === "debris" ? (Math.random() < 0.5 ? "panel" : "strut") : "",
+      classicScout: type === "scout" ? NeonCampaign.createClassicScout({x, phase: Math.random() * Math.PI * 2, width: W}) : null
     };
   }
 
@@ -137,7 +144,7 @@
       type = chooseThreatType(lv);
     }
 
-    if (["meteor", "debris", "satellite"].includes(type)) {
+    if (["meteor", "debris", "satellite", "scout"].includes(type)) {
       const threat = createThreat(type, lv);
       // Una formación activa reserva su abertura desde la parte superior de la
       // pantalla hasta la nave. Las amenazas que nacen dentro no llegan a
@@ -202,6 +209,7 @@
       const factor = item.type === "repair" ? 1.05 : (item.type === "tractor" || item.type === "phaser") ? 0.92 : 1.0;
       return [{ x: 0, y: 0, r: item.r * factor }];
     }
+    if (item.classicScout || item.classicScoutProjectile) return [{ x: 0, y: 0, r: item.r * 0.94 }];
     if (item.special === "comet") return [{ x: 0, y: 0, r: item.r * 0.94 }];
     if (item.type === "satellite") {
       return [
@@ -493,8 +501,8 @@
     tractorTarget = candidates[0] || null;
   }
 
-  function animateN7EnemyHit(target, destroyed) {
-    const animator = target.n7?.ch01Animator;
+  function animateScoutHit(target, destroyed) {
+    const animator = target.n7?.ch01Animator || target.classicScout?.animator;
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
@@ -517,7 +525,7 @@
     if (target) {
       target.hp = Math.max(0, (target.hp || 1) - 1);
       const destroyed = target.hp <= 0;
-      animateN7EnemyHit(target, destroyed);
+      animateScoutHit(target, destroyed);
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({
         x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: target.x, y2: target.y,
@@ -559,7 +567,7 @@
     if (target) {
       target.hp = Math.max(0, (target.hp || 1) - 1);
       const destroyed = target.hp <= 0;
-      animateN7EnemyHit(target, destroyed);
+      animateScoutHit(target, destroyed);
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({
         x1: player.x, y1: muzzleY, x2: target.x, y2: target.y,

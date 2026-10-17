@@ -257,6 +257,19 @@
         if (lv.hazard === "final" && Math.sin(elapsed * 0.95) > 0.60) interval *= 0.62;
         spawnTimer = Math.max(0.23, interval);
       }
+      if (currentLevel === 1) {
+        classicScoutTimer -= dt;
+        if (classicScoutTimer <= 0) {
+          if (items.filter(item => item.classicScout).length < 2) {
+            items.push(createThreat("scout", lv));
+            if (!classicScoutAnnounced) {
+              classicScoutAnnounced = true;
+              showStoryTransmission("RED ATLAS", "Identificación denegada. Dron CH-01 armado.", 3.2);
+            }
+          }
+          classicScoutTimer = 6.2 + Math.random() * 1.5;
+        }
+      }
     }
 
     if (comboTimer > 0) {
@@ -291,6 +304,7 @@
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
+      if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item)) {

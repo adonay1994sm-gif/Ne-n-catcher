@@ -23,6 +23,8 @@
   let last = performance.now();
   let elapsed = 0;
   let spawnTimer = 0;
+  let classicScoutTimer = 0;
+  let classicScoutAnnounced = false;
   let warpTimer = 0;
   let score = 0;
   let hull = 100;

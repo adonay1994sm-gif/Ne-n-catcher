@@ -23,7 +23,7 @@
     "verify": "npm run build && npm run test:static && npm run test:architecture",
     "test:architecture": "node tests/run-architecture-tests.mjs",
     "test:engine": "node --test tests/engine-lifecycle.test.mjs",
-    "test:content": "node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs",
+    "test:content": "node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs tests/classic-scout.test.mjs",
     "build:preview": "npm run build && node scripts/build-preview.mjs",
     "test:preview": "node --test tests/preview-build.test.mjs"
   },

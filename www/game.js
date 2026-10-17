@@ -114,7 +114,7 @@
       world: "GAIA NOVA", enemyCue: "Red defensiva CH",
       zone: "Anillo defensivo de Gaia Nova", desc: "La red Atlas despierta",
       mission: "Recupera energía mientras evitas las patrullas CH y confirma quién reprogramó las defensas orbitales.",
-      threatLabel: "Drones y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
+      threatLabel: "Drones CH-01 y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
     },
     {
       name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
@@ -221,6 +221,8 @@
   let last = performance.now();
   let elapsed = 0;
   let spawnTimer = 0;
+  let classicScoutTimer = 0;
+  let classicScoutAnnounced = false;
   let warpTimer = 0;
   let score = 0;
   let hull = 100;
@@ -494,7 +496,7 @@
   }
 
   function isThreat(item) {
-    return item && ["meteor", "debris", "satellite"].includes(item.type);
+    return item && ["meteor", "debris", "satellite", "scout"].includes(item.type);
   }
 
   function overlay(el) {
@@ -806,18 +808,11 @@
   }
 
   function updateLevelStory(dt) {
-    if (N7_CAMPAIGN) {
-      if (storyTimer > 0) {
-        storyTimer = Math.max(0, storyTimer - dt);
-        if (storyTimer === 0) hideStoryTransmission();
-      }
-      return;
-    }
-    if (currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     if (storyTimer > 0) {
       storyTimer = Math.max(0, storyTimer - dt);
       if (storyTimer === 0) hideStoryTransmission();
     }
+    if (N7_CAMPAIGN || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -857,6 +852,8 @@
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
+    classicScoutTimer = !N7_CAMPAIGN && currentLevel === 1 ? 3.8 : 0;
+    classicScoutAnnounced = false;
     warpTimer = 1.25;
     supplyFailed = false;
     shake = 0;
@@ -1136,6 +1133,7 @@
   }
 
   function chooseThreatSprite(type, radius, special) {
+    if (type === "scout") return "ch01";
     if (special === "comet") return "comet";
     if (type === "meteor") {
       if (radius < 36) return Math.random() < 0.55 ? "meteorSmall" : "meteorSmallAlt";
@@ -1150,9 +1148,14 @@
   }
 
   function threatHitPoints(type, spriteKey, special) {
+    if (type === "scout") return 2;
     if (special === "comet") return 2;
     if (type === "satellite") return 3;
-    if (type === "debris") {
+    if (type === "scout") {
+      radius = 32;
+      speed = 172 * lv.speed;
+      damage = 26;
+    } else if (type === "debris") {
       if (spriteKey === "debrisPanel") return 1;
       if (spriteKey && spriteKey.includes("Hot")) return 3;
       return 2;
@@ -1216,7 +1219,8 @@
       maxHp: hitPoints,
       shape: type === "meteor" ? meteorShape() : null,
       craters: type === "meteor" ? makeCraters(radius) : null,
-      variant: type === "debris" ? (Math.random() < 0.5 ? "panel" : "strut") : ""
+      variant: type === "debris" ? (Math.random() < 0.5 ? "panel" : "strut") : "",
+      classicScout: type === "scout" ? NeonCampaign.createClassicScout({x, phase: Math.random() * Math.PI * 2, width: W}) : null
     };
   }
 
@@ -1239,7 +1243,7 @@
       type = chooseThreatType(lv);
     }
 
-    if (["meteor", "debris", "satellite"].includes(type)) {
+    if (["meteor", "debris", "satellite", "scout"].includes(type)) {
       const threat = createThreat(type, lv);
       // Una formación activa reserva su abertura desde la parte superior de la
       // pantalla hasta la nave. Las amenazas que nacen dentro no llegan a
@@ -1304,6 +1308,7 @@
       const factor = item.type === "repair" ? 1.05 : (item.type === "tractor" || item.type === "phaser") ? 0.92 : 1.0;
       return [{ x: 0, y: 0, r: item.r * factor }];
     }
+    if (item.classicScout || item.classicScoutProjectile) return [{ x: 0, y: 0, r: item.r * 0.94 }];
     if (item.special === "comet") return [{ x: 0, y: 0, r: item.r * 0.94 }];
     if (item.type === "satellite") {
       return [
@@ -1595,8 +1600,8 @@
     tractorTarget = candidates[0] || null;
   }
 
-  function animateN7EnemyHit(target, destroyed) {
-    const animator = target.n7?.ch01Animator;
+  function animateScoutHit(target, destroyed) {
+    const animator = target.n7?.ch01Animator || target.classicScout?.animator;
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
@@ -1619,7 +1624,7 @@
     if (target) {
       target.hp = Math.max(0, (target.hp || 1) - 1);
       const destroyed = target.hp <= 0;
-      animateN7EnemyHit(target, destroyed);
+      animateScoutHit(target, destroyed);
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({
         x1: player.x, y1: player.y - SHIP_VISUAL.phaserMuzzleOffset, x2: target.x, y2: target.y,
@@ -1661,7 +1666,7 @@
     if (target) {
       target.hp = Math.max(0, (target.hp || 1) - 1);
       const destroyed = target.hp <= 0;
-      animateN7EnemyHit(target, destroyed);
+      animateScoutHit(target, destroyed);
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
       shots.push({
         x1: player.x, y1: muzzleY, x2: target.x, y2: target.y,
@@ -1967,6 +1972,19 @@
         if (lv.hazard === "final" && Math.sin(elapsed * 0.95) > 0.60) interval *= 0.62;
         spawnTimer = Math.max(0.23, interval);
       }
+      if (currentLevel === 1) {
+        classicScoutTimer -= dt;
+        if (classicScoutTimer <= 0) {
+          if (items.filter(item => item.classicScout).length < 2) {
+            items.push(createThreat("scout", lv));
+            if (!classicScoutAnnounced) {
+              classicScoutAnnounced = true;
+              showStoryTransmission("RED ATLAS", "Identificación denegada. Dron CH-01 armado.", 3.2);
+            }
+          }
+          classicScoutTimer = 6.2 + Math.random() * 1.5;
+        }
+      }
     }
 
     if (comboTimer > 0) {
@@ -2001,6 +2019,7 @@
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
+      if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item)) {
@@ -2837,20 +2856,24 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
-    if (item.n7Projectile) {
-      ctx.fillStyle = "#ff7bce";
-      ctx.shadowColor = "#ff4bbb";
+    if (item.n7Projectile || item.classicScoutProjectile) {
+      const atlasPulse = item.classicScoutProjectile;
+      ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
+      ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
       ctx.shadowBlur = 12;
-      ctx.fillRect(-4, -12, 8, 24);
+      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42, Math.PI / 2)) {
+        ctx.fillRect(-4, -12, 8, 24);
+      }
       ctx.restore();
       return;
     }
-    if (item.n7?.telegraph > 0) {
-      ctx.strokeStyle = `rgba(255,130,100,${item.n7.telegraph})`;
+    const telegraph = item.n7?.telegraph || item.classicScout?.telegraph || 0;
+    if (telegraph > 0) {
+      ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(0, 28); ctx.lineTo(0, 160); ctx.stroke();
     }
-    if (drawCh01Frame(item.n7?.ch01Animator)) {
+    if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
       ctx.restore();
       return;
     }
@@ -3183,7 +3206,7 @@
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
       if (item.type === "energy") drawEnergy(item);
-      else if (item.type === "meteor") drawMeteor(item);
+      else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
       else if (item.type === "debris") drawDebris(item);
       else if (item.type === "satellite") drawSatellite(item);
       else drawPower(item);

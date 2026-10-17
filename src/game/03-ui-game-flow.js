@@ -180,18 +180,11 @@
   }
 
   function updateLevelStory(dt) {
-    if (N7_CAMPAIGN) {
-      if (storyTimer > 0) {
-        storyTimer = Math.max(0, storyTimer - dt);
-        if (storyTimer === 0) hideStoryTransmission();
-      }
-      return;
-    }
-    if (currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     if (storyTimer > 0) {
       storyTimer = Math.max(0, storyTimer - dt);
       if (storyTimer === 0) hideStoryTransmission();
     }
+    if (N7_CAMPAIGN || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -231,6 +224,8 @@
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
+    classicScoutTimer = !N7_CAMPAIGN && currentLevel === 1 ? 3.8 : 0;
+    classicScoutAnnounced = false;
     warpTimer = 1.25;
     supplyFailed = false;
     shake = 0;
