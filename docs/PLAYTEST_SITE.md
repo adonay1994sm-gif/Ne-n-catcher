@@ -1,3 +1,11 @@
+<!-- compact-hud-current -->
+## HUD compacto — publicación pendiente,17/10/2026
+
+Implementación verificada localmente; falta cerrar el paquete y publicación. El sitio anterior sigue en versión6: no acredita todavía este HUD. [Informe del incremento](production-reports/COMPACT_HUD_2026-10-17.md). No se ha modificado producción Netlify. El contenido siguiente es histórico.
+<!-- /compact-hud-current -->
+
+---
+
 ## Sitio vigente — Chronos, versión 6, 17/10/2026
 
 **https://neon-catcher-pruebas.chictide18.chatgpt.site** — publicación privada succeeded a las 17:58:28UTC. Acceso del propietario conservado; puede requerir su sesión de ChatGPT. CONTINUAR VIAJE → NIVELES → La Onda de Choque. La nueva destrucción está dentro del juego; no una galería de conceptos. Las otras nueve misiones y los guardados permanecen.

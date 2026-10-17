@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T17:59:36.571881+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T18:43:00.661472+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -25,6 +25,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P0-DESIGN-100 / P0 | Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime | IN_REVIEW | PASSED_EDITORIAL_SCHEMA | PENDING_OWNER | NOT_APPLICABLE |
 | P1-FLIGHT-01 / P1 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-CHRONOS-02 / P1 | Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-HUD-01 / P1 | Integrar HUD compacto y recuperar espacio real de pilotaje clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -39,8 +40,8 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 7/47 (14.9%) | 36 | 0 | 0 | 4 |
-| Campaña clásica | 4/14 (28.6%) | 4 | 1 | 0 | 5 |
+| Jugabilidad | 7/48 (14.6%) | 36 | 0 | 0 | 5 |
+| Campaña clásica | 4/15 (26.7%) | 4 | 1 | 0 | 6 |
 | Campaña N-7 | 3/39 (7.7%) | 35 | 1 | 0 | 0 |
 | Enemigos | 5/75 (6.7%) | 60 | 0 | 0 | 10 |
 | Jefes | 0/14 (0.0%) | 13 | 0 | 0 | 1 |
@@ -48,16 +49,16 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Animaciones | 5/141 (3.5%) | 111 | 1 | 0 | 24 |
 | Narrativa | 0/19 (0.0%) | 18 | 0 | 0 | 1 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/18 (22.2%) | 9 | 1 | 0 | 4 |
+| Interfaz | 4/19 (21.1%) | 9 | 1 | 0 | 5 |
 | Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 18/53 (34.0%) | 20 | 2 | 4 | 9 |
+| QA | 18/54 (33.3%) | 20 | 2 | 4 | 10 |
 | Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 18/24 (75.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 4 · DONE: 18 |
+| 03 · Prueba integrada y cierre técnico | 18/25 (72.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 5 · DONE: 18 |
 | 04 · Jugabilidad procedural | 0/20 (0.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 05 · Producción visual y 150 assets | 5/170 (2.9%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 39 · DONE: 5 |
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |

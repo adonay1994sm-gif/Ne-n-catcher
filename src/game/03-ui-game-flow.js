@@ -710,6 +710,7 @@
   }
 
   function updatePowerHud() {
+    let layoutChanged = false;
     const map = [
       ["shield", ui.powerShield],
       ["tractor", ui.powerTractor],
@@ -719,10 +720,14 @@
     ];
     for (const [name, element] of map) {
       const active = powers[name] > 0;
+      if (element.classList.contains("active") !== active) layoutChanged = true;
       element.dataset.power = name;
       element.classList.toggle("active", active);
       element.querySelector("em").textContent = active ? Math.ceil(powers[name]) : "0";
     }
+    // Only additions/removals can resize the row. Countdown frames must not
+    // measure layout; a newly collected power must not cover the ship's tail.
+    if (layoutChanged && isUnifiedClassic() && state === "playing") refreshClassicFlightBounds();
   }
 
   function updateEncounterHud() {

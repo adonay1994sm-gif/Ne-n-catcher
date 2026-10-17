@@ -1,3 +1,7 @@
+Actualización de interfaz17/10/2026: [cierre más reciente de HUD compacto](../production-reports/COMPACT_HUD_2026-10-17.md). Este historial mantiene sus evidencias; no acredita versiones posteriores ni certificación física.
+
+---
+
 > **Último incremento:** [destrucción de Chronos, 17/10/2026](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md), integrado en el primer nivel clásico. Seis estados de estación, frente energético de 7,2 s, pausa y respaldo comprobados. Arte y prueba física pendientes; diez niveles conservados, V1 false. Los informes siguientes permanecen como historial.
 
 ---

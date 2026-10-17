@@ -1,3 +1,7 @@
+Actualización de interfaz17/10/2026: [cierre más reciente de HUD compacto](../production-reports/COMPACT_HUD_2026-10-17.md). Este historial mantiene sus evidencias; no acredita versiones posteriores ni certificación física.
+
+---
+
 > **Cierre posterior vigente:** [destrucción ilustrada de Chronos, 17/10/2026](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md). Se desarrolló el acontecimiento del primer nivel; los otros nueve permanecen. El contenido siguiente conserva el cierre histórico, no certifica el código posterior ni significa diez niveles visualmente completos.
 
 ---

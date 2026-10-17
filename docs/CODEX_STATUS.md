@@ -1,3 +1,13 @@
+<!-- compact-hud-current -->
+## HUD compacto — 17/10/2026
+
+Integrado sobre legacy: HUD/ruta estables82px en vertical, arma inferior, mensajes temporales y límites de movimiento medidos. Pausa, derrota/continuación y cambios de poder actualizan la interfaz. Certificación03:11/11 fases, contenido168/168; Chromium after04:26/26 grupos, cinco tamaños y diez escenas. N-7 real1sesión/6pasos aprobada. Cierre de poderes/paquete/publicación en curso; la URL previa todavía no acredita esta revisión.
+
+Aceptación artística y Safari/iPhone físico pendientes. MotorV1=false. [Informe vigente](production-reports/COMPACT_HUD_2026-10-17.md). El contenido siguiente es histórico.
+<!-- /compact-hud-current -->
+
+---
+
 ## Cierre vigente — destrucción de Chronos, 17/10/2026
 
 Cierre documental verificado en GitHub:61f1baa6950c40b6d7886d73aedf3a59a4bcf9b8. Esta referencia posterior no cambia el paquete73e117b servido por la versión6.

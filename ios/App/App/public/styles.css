@@ -244,6 +244,10 @@ body.flight-mode .hull-cell i{height:2px;margin:2px 1px 0}
 body.flight-mode #pause{width:44px;height:44px;border:0;border-left:1px solid rgba(143,194,211,.22);border-radius:0 8px 8px 0;background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
 body.flight-mode #pause svg{width:20px;height:20px}
 body.flight-mode .flight-hud{position:absolute;inset:0;z-index:6;pointer-events:none}
+/* Brief notices temporarily use the route line, leaving flight controls and
+   the separate emergency-comms slot unobstructed. */
+body.flight-mode .toast{top:calc(max(6px,env(safe-area-inset-top)) + 52px);bottom:auto;max-width:calc(100% - 16px);padding:2px 8px;border-radius:4px;font-size:11px;line-height:18px;transform:translate(-50%,6px);pointer-events:none}
+body.flight-mode .toast.show{transform:translate(-50%,0)}
 body.flight-mode .flight-route{position:absolute;top:calc(max(6px,env(safe-area-inset-top)) + 52px);left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));height:24px;display:grid;grid-template-rows:18px 2px;gap:4px;padding:0;border:0;border-radius:3px;background:none;box-shadow:none;color:#edf9ff;pointer-events:none}
 body.flight-mode .flight-route>div{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px;background:rgba(3,10,20,.62);border-radius:3px}
 body.flight-mode #flightDestination{display:block;min-width:0;max-width:47%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#a1cbd9;font-size:9px;font-weight:650;line-height:18px;letter-spacing:.01em}
@@ -294,6 +298,8 @@ body.flight-mode .flight-dock button:focus-visible{outline:2px solid #c4f7ff;out
 @media(orientation:landscape) and (max-height:500px){
   body.flight-mode .hud{left:50%;right:auto;transform:translateX(-50%);width:min(520px,calc(100% - max(12px,env(safe-area-inset-left)) - max(12px,env(safe-area-inset-right))))}
   body.flight-mode .flight-route{top:calc(max(6px,env(safe-area-inset-top)) + 52px);left:max(14px,env(safe-area-inset-left));right:auto;width:min(29%,250px);height:42px;grid-template-rows:36px 2px}
+  body.flight-mode .toast{left:max(14px,env(safe-area-inset-left));max-width:min(29%,250px);transform:translateY(6px)}
+  body.flight-mode .toast.show{transform:translateY(0)}
   body.flight-mode .flight-route>div{display:block;padding:0 5px}
   body.flight-mode #flightDestination{font-size:8px;letter-spacing:0}
   body.flight-mode #flightDestination{max-width:none}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T17:59:36.571881+00:00",
+  "updatedAt": "2026-10-17T18:43:00.661472+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -4939,6 +4939,73 @@
         "note": "Las siete ilustraciones del propietario describen la destrucción dentro del primer nivel; no siete etapas ni sustitución de los otros nueve."
       },
       "packageCommit": "73e117bacc0b220e477c455c07e278a2326fb4dc"
+    },
+    {
+      "id": "P1-HUD-01",
+      "block": "03",
+      "canonicalPhase": "P1",
+      "name": "Integrar HUD compacto y recuperar espacio real de pilotaje clásico",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Interfaz",
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01"
+      ],
+      "files": [
+        "styles.css",
+        "src/game/02-storage-audio.js",
+        "src/game/03-ui-game-flow.js",
+        "tests/unified-flight-legacy.test.mjs",
+        "scripts/compact-hud-browser-smoke.cjs",
+        "scripts/compact-hud-powers-smoke.cjs"
+      ],
+      "commit": "ad4f82911f7c661f7762f84f202d7ba6099e49e2",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/compact-hud/certification-03:11/11 exit0; contenido168/168",
+        "node scripts/compact-hud-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/after-04:26/26 exit0; antes del ajuste final del toast",
+        "node scripts/compact-hud-powers-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/powers-02:15/15 exit0; activaciones controladas, no recogida natural",
+        "node scripts/content-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/n7-01 --profile 390x844 --mode n7:1 sesión/6pasos exit0",
+        "node scripts/compact-hud-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/after-05:26/26 exit0; CSS final y cinco tamaños",
+        "node scripts/compact-hud-powers-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/powers-layout-01 --layout-only:12/12 exit0; CSS final, expiración no ejecutada en este smoke",
+        "npm run test:architecture; npm run test:static:6/6 y13/13 exit0 después del último ajuste CSS"
+      ],
+      "evidence": [
+        "docs/production-reports/COMPACT_HUD_2026-10-17.md",
+        "docs/production-reports/evidence/compact-hud/certification-03/results.json",
+        "docs/production-reports/evidence/compact-hud/baseline-01/results.json",
+        "docs/production-reports/evidence/compact-hud/after-05/results.json",
+        "docs/production-reports/evidence/compact-hud/powers-layout-01/results.json",
+        "docs/production-reports/evidence/compact-hud/powers-raf-diagnosis-01/results.json",
+        "docs/production-reports/evidence/compact-hud/n7-01/results.json",
+        "docs/production-reports/evidence/compact-hud/powers-04/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística del propietario pendiente.",
+        "Safari/iPhone físico y áreas seguras reales pendientes.",
+        "Glifos intermitentes y rendimiento de Chronos siguen abiertos; no se declara que este ajuste los resuelva.",
+        "QA: full powers-04 falló esperando todos los poderes apagados con recogidas normales habilitadas; aislar renovaciones en el harness. CSS final se certifica por separado12/12; test17 mantiene expiración simulada."
+      ],
+      "acceptance": [
+        "HUD y ruta estables <=100px, <=90px en320px; controles pausa/arma/disparo >=44x44.",
+        "Nave completa fuera del HUD y controles, límites medidos sin reserva superior fija182px.",
+        "Transmisiones temporales, pausa y recorrido sincronizados; arma no repone munición.",
+        "Menú, reinicio, derrota, continuación, victoria y Atlas sin controles de vuelo filtrados.",
+        "QA Chromium sobre preview-dist; paquete exacto publicado y revisión del propietario."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Petición actual: liberar el escenario y pilotaje, sin expandir niveles ni activar MotorV1."
+      }
     }
   ],
   "canonicalPlan": {
@@ -4975,8 +5042,8 @@
     },
     "latestClarification": {
       "date": "2026-10-17",
-      "report": "docs/production-reports/CHRONOS_DESTRUCTION_2026-10-17.md",
-      "scope": "Las siete referencias de Chronos describen un acontecimiento del nivel clásico1 de10. Conservar diez niveles; arte y motor no aprobados por silencio."
+      "report": "docs/production-reports/COMPACT_HUD_2026-10-17.md",
+      "scope": "HUD compacto y jugabilidad visible: integrar información sin tapar amenazas; mantener diez niveles y motor desactivado."
     }
   }
 }

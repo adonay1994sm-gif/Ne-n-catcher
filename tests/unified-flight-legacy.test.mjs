@@ -40,12 +40,16 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
   // JSDOM has no layout engine. These optional measured-rectangle fixtures
   // exercise the real UI-to-Canvas boundary adapter, not CSS appearance.
   const layoutRects = new Map(Object.entries(rects));
+  const rectReadCounts = new Map();
   const rectangle = ({left = 0, top = 0, width = 0, height = 0} = {}) => ({
     x: left, y: top, left, top, width, height, right: left + width, bottom: top + height});
   const originalRect = window.Element.prototype.getBoundingClientRect;
   window.Element.prototype.getBoundingClientRect = function() {
+    rectReadCounts.set(this.id, (rectReadCounts.get(this.id) || 0) + 1);
     if (this.closest('.hidden')) return rectangle();
-    return layoutRects.has(this.id) ? rectangle(layoutRects.get(this.id)) : originalRect.call(this);
+    if (!layoutRects.has(this.id)) return originalRect.call(this);
+    const fixture = layoutRects.get(this.id);
+    return rectangle(typeof fixture === 'function' ? fixture(this) : fixture);
   };
   window.HTMLCanvasElement.prototype.getBoundingClientRect = function() {
     return rectangle(layoutRects.get(this.id) || {width: 390, height: 844});
@@ -118,6 +122,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       },
       collectEnergy(){energySpawned++;collectItem({type:'energy',x:player.x,y:player.y-30,r:22});},
       collectModule(){collectItem({type:'flightModule',x:player.x,y:player.y-40,r:29});},
+      collectPower(type){collectItem({type,x:player.x,y:player.y-40,r:22});},
       seedModule(){items=[{type:'flightModule',x:player.x,y:player.y-65,r:29,s:0,rot:0,rs:0,p:0,phase:0,amp:0,alpha:1}];},
       seedTarget(){
         items=[{id:'fixture-target',type:'meteor',x:player.x,baseX:player.x,y:player.y-350,
@@ -158,6 +163,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
   }
   return {window, api, snapshot, advance, pointer, touches, pending, drawCalls,
     setRect: (id, rect) => layoutRects.set(id, rect),
+    rectReads: id => rectReadCounts.get(id) || 0,
     clearDrawCalls: () => { drawCalls.length = 0; },
     setDestructionStatus: status => {
       const image = images.get(DESTRUCTION_PATH);
@@ -587,4 +593,54 @@ test('the compact HUD and weapon share menu, completion, death and Atlas visibil
   assert.equal(h.node('atlasEncounter').classList.contains('hidden'), false,
     'Continuing Atlas restores its combat interface without leaking the ordinary route controls');
   assert.equal(h.pending.size, 1);
+});
+
+test('power pickup and expiry update flight clearance only when chip visibility changes and leave N-7 bounds alone', t => {
+  const rects = {
+    hud: {left: 10, top: 10, width: 370, height: 44},
+    flightRoute: {left: 10, top: 58, width: 370, height: 24},
+    flightObjective: {left: 10, top: 86, width: 370, height: 34},
+    fire: {left: 258, top: 760, width: 116, height: 64},
+    flightWeapon: {left: 10, top: 776, width: 104, height: 48},
+    powerHud: node => ({left: 10, top: 712, width: 370,
+      height: node.querySelector('.power-chip.active') ? 24 : 0})
+  };
+  const h = harness(t, {unlocked: 3, rects}); h.api.prepare(2);
+  const before = h.snapshot(), scale = before.H / 844;
+  closeTo((before.bounds.maxY + 104) / scale, 740);
+  const initialReads = h.rectReads('powerHud');
+  h.api.collectPower('shield'); const active = h.snapshot();
+  assert.equal(h.node('powerShield').classList.contains('active'), true);
+  assert.ok(h.rectReads('powerHud') > initialReads,
+    'A real pickup must resample the newly visible chip row');
+  closeTo((active.bounds.maxY + 104) / scale, 712);
+  assert.ok(active.bounds.maxY < before.bounds.maxY);
+  assert.ok(active.player.y + 104 <= 712 * scale,
+    'The complete ship tail must remain above the newly visible power chip');
+  const activeReads = h.rectReads('powerHud');
+  h.advance(.5);
+  assert.equal(h.rectReads('powerHud'), activeReads,
+    'An unchanged countdown must not trigger layout sampling every frame');
+  h.api.collectPower('shield');
+  assert.equal(h.rectReads('powerHud'), activeReads,
+    'Extending an already visible power must not resample unchanged geometry');
+  h.advance(6.9);
+  assert.equal(h.node('powerShield').classList.contains('active'), true);
+  assert.equal(h.rectReads('powerHud'), activeReads);
+  h.advance(.11);
+  assert.equal(h.node('powerShield').classList.contains('active'), false);
+  assert.ok(h.rectReads('powerHud') > activeReads,
+    'Expiry must release the measured chip clearance');
+  assert.deepEqual(h.snapshot().bounds, before.bounds);
+  const expiredReads = h.rectReads('powerHud'); h.advance(.2);
+  assert.equal(h.rectReads('powerHud'), expiredReads);
+
+  const n7 = harness(t, {campaign: 'n7', rects}); n7.api.prepare();
+  const n7Reads = n7.rectReads('powerHud');
+  n7.api.collectPower('shield'); n7.advance(.5);
+  assert.equal(n7.node('powerShield').classList.contains('active'), true);
+  assert.equal(n7.snapshot().bounds, null);
+  assert.equal(n7.rectReads('powerHud'), n7Reads,
+    'The classic layout adapter must not run for the archived N-7 campaign');
+  assert.equal(h.pending.size, 1); assert.equal(n7.pending.size, 1);
 });

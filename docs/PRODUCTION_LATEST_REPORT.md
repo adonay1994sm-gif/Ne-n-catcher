@@ -1,3 +1,13 @@
+<!-- compact-hud-current -->
+## Cierre local vigente — HUD compacto,17/10/2026
+
+[Diagnóstico e informe técnico](production-reports/COMPACT_HUD_2026-10-17.md). La franja fija pasa de180a82px en390×844 y se recuperan60px superiores de pilotaje. Estadísticas reunidas, arma abajo y mensajes breves. Fuentes y tests regenerados; se conserva el arte y las campañas. Certificación03:11/11 fases,168content. Chromium after04:26/26 en cinco tamaños, N-7:6pasos.
+
+Paquete y publicación nuevos pendientes de cierre; no se atribuye la versión6 al HUD nuevo. Revisión artística/física pendiente; EngineV1=false. El historial siguiente conserva sus evidencias sin certificar revisiones posteriores.
+<!-- /compact-hud-current -->
+
+---
+
 ## Cierre vigente — destrucción de Chronos, 17/10/2026
 
 Cierre documental verificado en GitHub:61f1baa6950c40b6d7886d73aedf3a59a4bcf9b8. Esta referencia posterior no cambia el paquete73e117b servido por la versión6.

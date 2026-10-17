@@ -1,3 +1,13 @@
+<!-- compact-hud-current -->
+## Continuación vigente — HUD compacto,17/10/2026
+
+Cerrar powers-02, crear paquete limpio cuyo game.js/CSS coincidan con after04 y powers02, comprobar preview23tests y publicar el mismo sitio privado con su fuente exacta. Actualizar [informe](production-reports/COMPACT_HUD_2026-10-17.md) y acta de publicación.
+
+Después: revisión del propietario sobre legibilidad y espacio; prueba física con notch/orientación, perfil de rendimiento de Chronos y reproducción del defecto de glifos. No activar MotorV1 ni expandir cien etapas. Preservar campañas/guardados. Las órdenes siguientes son históricas.
+<!-- /compact-hud-current -->
+
+---
+
 ## Próxima actuación — después de Chronos 73e117b, 17/10/2026
 
 1. Revisar versión 6 del sitio privado en PLAYTEST_SITE.md: CONTINUAR VIAJE → NIVELES → La Onda de Choque. Son seis estados de la destrucción dentro del nivel 1 de 10; no repetir el atlas ni convertir las referencias en etapas. Aceptación artística del propietario pendiente.
