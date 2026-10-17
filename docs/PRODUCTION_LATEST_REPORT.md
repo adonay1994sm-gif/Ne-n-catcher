@@ -1,3 +1,17 @@
+<!-- combat-readability-current -->
+## Vigente — combate y órbita de Vulkar, 17/10/2026
+
+[Informe completo y capturas](production-reports/COMBAT_READABILITY_2026-10-17.md). Paquete limpio `d93b1352c9a036ccec0fc6337b02e41acd8a7832`; sitio privado versión8 confirmado `succeeded` a19:31:54UTC: https://neon-catcher-pruebas.chictide18.chatgpt.site .
+
+Gemelo central×2, lanza perforante×3 calibrable en C9, batería común también en Atlas, orbes al50% visual, escudo ilustrado con4 estados, Vulkar en órbita con2 capas independientes y transiciones ilustradas legibles. Atlas alterna ataques más exigentes sin señalar la solución de esquiva.
+
+Certificación02:11/11 fases; contenido179/179. Preview final23/23. Chromium:HUD26, integración8 grupos y suplemento3, partida naturalGaia/Atlas4, N-7una sesión6pasos y caché3. Fallos iniciales conservados y explicados en el informe. Gaia completada en108,426s simulados;45 fragmentos,2 fases,66%casco, continuación a Vulkar y recarga con guardado intacto. Perfil gemelo inicial declarado.
+
+Seis incrementos IN_REVIEW: técnica aprobada, arte del propietario y físico pendientes. Inventario80 recursos; catálogo155. Cero niveles declarados visualmente completos. MotorV1=false; un RAF; main, PR3 y producción Netlify intactos. Glifos históricos y rendimiento sostenido siguen abiertos. Los cierres siguientes son históricos.
+<!-- /combat-readability-current -->
+
+---
+
 <!-- compact-hud-current -->
 ## DIAGNÓSTICO Y CIERRE VIGENTE — HUD,17/10/2026
 

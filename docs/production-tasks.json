@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T19:23:35.697718+00:00",
+  "updatedAt": "2026-10-17T19:34:35.612758+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -5103,7 +5103,8 @@
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
         "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
-        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado",
+        "Paquete limpio d93b135:preview23/23, caché3/3; Siteversión8 succeeded19:31:54UTC;116archivos idénticos"
       ],
       "evidence": [
         "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
@@ -5114,7 +5115,10 @@
         "docs/production-reports/evidence/combat-readability/browser-01/results.json",
         "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
         "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
-        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/package.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/site-deployment.json",
+        "docs/production-reports/evidence/combat-readability/sw-upgrade-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
@@ -5133,7 +5137,8 @@
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
-      }
+      },
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
     },
     {
       "id": "P1-ATLAS-02",
@@ -5164,7 +5169,8 @@
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
         "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
-        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado",
+        "Paquete limpio d93b135:preview23/23, caché3/3; Siteversión8 succeeded19:31:54UTC;116archivos idénticos"
       ],
       "evidence": [
         "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
@@ -5175,7 +5181,10 @@
         "docs/production-reports/evidence/combat-readability/browser-01/results.json",
         "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
         "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
-        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/package.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/site-deployment.json",
+        "docs/production-reports/evidence/combat-readability/sw-upgrade-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
@@ -5194,7 +5203,8 @@
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
-      }
+      },
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
     },
     {
       "id": "P1-ORBS-01",
@@ -5221,7 +5231,8 @@
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
         "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
-        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado",
+        "Paquete limpio d93b135:preview23/23, caché3/3; Siteversión8 succeeded19:31:54UTC;116archivos idénticos"
       ],
       "evidence": [
         "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
@@ -5232,7 +5243,10 @@
         "docs/production-reports/evidence/combat-readability/browser-01/results.json",
         "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
         "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
-        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/package.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/site-deployment.json",
+        "docs/production-reports/evidence/combat-readability/sw-upgrade-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
@@ -5251,7 +5265,8 @@
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
-      }
+      },
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
     },
     {
       "id": "P1-SHIELD-01",
@@ -5282,7 +5297,8 @@
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
         "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
-        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado",
+        "Paquete limpio d93b135:preview23/23, caché3/3; Siteversión8 succeeded19:31:54UTC;116archivos idénticos"
       ],
       "evidence": [
         "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
@@ -5293,7 +5309,10 @@
         "docs/production-reports/evidence/combat-readability/browser-01/results.json",
         "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
         "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
-        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/package.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/site-deployment.json",
+        "docs/production-reports/evidence/combat-readability/sw-upgrade-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
@@ -5312,7 +5331,8 @@
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
-      }
+      },
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
     },
     {
       "id": "P1-VULKAR-01",
@@ -5342,7 +5362,8 @@
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
         "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
-        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado",
+        "Paquete limpio d93b135:preview23/23, caché3/3; Siteversión8 succeeded19:31:54UTC;116archivos idénticos"
       ],
       "evidence": [
         "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
@@ -5353,7 +5374,10 @@
         "docs/production-reports/evidence/combat-readability/browser-01/results.json",
         "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
         "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
-        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/package.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/site-deployment.json",
+        "docs/production-reports/evidence/combat-readability/sw-upgrade-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
@@ -5372,7 +5396,8 @@
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
-      }
+      },
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
     },
     {
       "id": "P1-TRANSITIONS-01",
@@ -5401,7 +5426,8 @@
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
         "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
         "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
-        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado",
+        "Paquete limpio d93b135:preview23/23, caché3/3; Siteversión8 succeeded19:31:54UTC;116archivos idénticos"
       ],
       "evidence": [
         "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
@@ -5412,7 +5438,10 @@
         "docs/production-reports/evidence/combat-readability/browser-01/results.json",
         "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
         "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
-        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/package.json",
+        "docs/production-reports/evidence/combat-readability/package-d93b135/site-deployment.json",
+        "docs/production-reports/evidence/combat-readability/sw-upgrade-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
@@ -5431,7 +5460,8 @@
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
-      }
+      },
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
     }
   ],
   "canonicalPlan": {

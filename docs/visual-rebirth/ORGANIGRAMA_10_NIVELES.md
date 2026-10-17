@@ -1,3 +1,5 @@
+> Actualización posterior,17/10/2026: [combate, escudo y Vulkar orbital](../production-reports/COMBAT_READABILITY_2026-10-17.md), versión8 publicada. El contenido siguiente se conserva como historial; cero niveles nuevos declarados visualmente completos.
+
 > **Actualización integrada, 17/10/2026:** el nivel 1 ya usa estación, Gaia y espacio independientes. Chronos tiene seis estados ilustrados de destrucción y frente energético de 7,2 s, con capturas reales y pausa comprobada. Sigue **IN_REVIEW**, no visualmente completo. Los niveles 2–10 no se modificaron en este lote. El Guardian Atlas integrado y sus pruebas posteriores están en su informe; la tabla de auditoría inicial de abajo se conserva como historial y sus notas «sin combate/natural pendiente» no sustituyen cierres posteriores. Fuente vigente: [ledger](../production-tasks.json) y [cierre Chronos](../production-reports/CHRONOS_DESTRUCTION_2026-10-17.md).
 
 ---

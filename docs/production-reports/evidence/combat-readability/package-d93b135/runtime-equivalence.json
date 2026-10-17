@@ -1,0 +1,20 @@
+{
+  "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832",
+  "dirty": false,
+  "revision": "3ab2e4eb9b54164b0f63eb7d7d2148cc39680f0d6cf3411f39b508f0e1d0ae53",
+  "comparison": {
+    "game.js": {
+      "sha256": "71014c334eaf37a8acc7af0a6cb503ba1b15807b0669548dc5e98e11689debbc",
+      "matchesTestedRuntime": true
+    },
+    "content-runtime.js": {
+      "sha256": "7f652b9de89fd2703c72aabcc4947f8a2c76620a85f24539d74e42227cefeeb3",
+      "matchesTestedRuntime": true
+    },
+    "styles.css": {
+      "sha256": "5dda3aa74506e699cffbd74a7ef686811ba14535175cca1f2efc27cf22ab69a2",
+      "matchesTestedRuntime": true
+    }
+  },
+  "source": "compact-browser-01 actual Chromium package hashes; index has build-specific provenance parameters"
+}

@@ -1,3 +1,19 @@
+<!-- combat-readability-next -->
+## Siguiente ejecución — versión8 publicada, 17/10/2026
+
+Leer primero [el cierre de combate](production-reports/COMBAT_READABILITY_2026-10-17.md), `docs/PRODUCT_VISION.md` y las seis tareas actuales de `production-tasks.json`. No volver a integrar arte o reabrir defectos ya corregidos sin evidencia.
+
+1. Verificar HEAD/remoto y conservar nuevos avances. El paquete servido es d93b135, no el SHA documental posterior; fuente del sitio aefbbac, versión8.
+2. Reproducir la revisión del propietario sobre gemelo central, lanza×3 en C9, escudo, Vulkar orbital y Atlas. La aceptación artística permanece pendiente; no expandir cien etapas con una dirección aún no validada.
+3. Si aparece un fallo, reproducirlo con viewport/controles y capturas. Glifos intermitentes, rendimiento sostenido y Safari/iPhone siguen abiertos; no atribuirles una causa sin prueba.
+4. Próximo incremento artístico independiente: siguiente escenario orbital con capas, enemigo y acontecimiento; conservar guardados, campaña N-7 y progresión. No activar MotorV1 ni crear RAF adicional.
+5. Usar el harness actual con `--supplement-only` para scroll/C9/escudo. El primer8/9 queda conservado: su botón era accesible mediante scroll real. El piloto Atlas actual solo observa balas; no volver al piloto que leía safeGap.
+
+Regresiones finales:11 fases/179content, preview23, HUD26, Gaia/Atlas natural4, N-7una sesión6pasos y SW3. No repetir auditorías sin un cambio o fallo que lo justifique. [ZIP y procedencia](production-reports/evidence/combat-readability/package-d93b135/package.json). Las instrucciones siguientes se conservan como historial y ceden ante este cierre y el mandato rector vigente.
+<!-- /combat-readability-next -->
+
+---
+
 <!-- compact-hud-current -->
 ## Continuación vigente — HUD publicado,17/10/2026
 

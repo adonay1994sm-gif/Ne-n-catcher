@@ -1,0 +1,21 @@
+{
+  "id": "appgdep_6ad3cd1af7888191a5b0bf34b61d1c67",
+  "project_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21",
+  "title": "NEON CATCHER — Laboratorio de pruebas",
+  "version_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_a99926db6c088191b2bf93ef7657ec96",
+  "type": "publish",
+  "status": "succeeded",
+  "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "has_mcp": false,
+  "screenshot_asset_pointer": null,
+  "provider_deployment_id": "site---6ad34f65ce74819195e871d7dd99fe21",
+  "failure_message": null,
+  "env_set_revision": 0,
+  "updated_at": "2026-10-17T19:31:54.428310+00:00",
+  "siteVersion": 8,
+  "gamePackageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832",
+  "siteSourceCommit": "aefbbac7b8b5b2e647bc4fe98fa0b4cc6bb56293",
+  "matchingStaticFiles": 116,
+  "access": "existing owner-private audience preserved",
+  "verification": "Native private save-and-deploy terminal succeeded; no anonymous HTTP bypass used."
+}

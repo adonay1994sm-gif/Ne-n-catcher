@@ -1,3 +1,5 @@
+> Actualización posterior,17/10/2026: [combate, escudo y Vulkar orbital](../production-reports/COMBAT_READABILITY_2026-10-17.md), versión8 publicada. El contenido siguiente se conserva como historial; cero niveles nuevos declarados visualmente completos.
+
 Actualización de interfaz17/10/2026: [cierre más reciente de HUD compacto](../production-reports/COMPACT_HUD_2026-10-17.md). Este historial mantiene sus evidencias; no acredita versiones posteriores ni certificación física.
 
 ---
