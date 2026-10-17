@@ -14,6 +14,7 @@
     "juego/index.html?campaign=journey"
   ],
   "engineV1": false,
-  "status": "Verified package; experimental private deployment succeeded; full natural Chromium session pending",
-  "siteDeployment": "site-deployment.json"
+  "status": "Verified clean package; private deployment succeeded; complete natural Chromium session passed",
+  "siteDeployment": "site-deployment.json",
+  "naturalEvidence": "../browser-natural-03/results.json"
 }

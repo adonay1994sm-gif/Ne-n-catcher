@@ -1,6 +1,12 @@
-## Guardian Atlas — conservación WIP,17/10/2026
+## Guardian Atlas — cierre técnico comprobado, 17/10/2026
 
-Arte nuevo real y combate integrado al recuperar CRONIUM en Gaia clásica. Ocho poses, dos fases, avisos, disparos, daño y desactivación. Cien etapas diseñadas editorialmente, no implementadas. Certificación inicial11/11; nuevo arreglo slow8/8; preview16/16. Chromium natural01 falló por muerte del piloto antes del jefe; natural02 recuperó45/45 y llegó al jefe con76% pero agotó240s. Certificación02:105/105contenido,11/11comandos. Visual04:10/10escenas controladas,3tamaños. Partida natural larga pendiente. Sitio privado actualizado y confirmado: https://neon-catcher-pruebas.chictide18.chatgpt.site . Paquete limpio11dfa7b; [acta](production-reports/PAQUETE_ATLAS_2026-10-17.md). [Informe y evidencia](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Motor V1 false; ninguna prueba física.
+**Prueba privada actualizada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Desbloqueo clásico de QA → campaña clásica → NIVELES → Perímetro Atlas. Recuperar 45 fragmentos inicia al guardián. Ocho poses ilustradas, dos fases, avisos, pulsos que impactan, daño y desactivación con permiso de paso. Hangar y variantes anteriores conservados.
+
+Juego y paquete limpio: **11dfa7bf7d3e287dd979c8dfc1dbafd8c1388473**. Sites confirmó `succeeded`; el hash publicado coincide con el probado. Chromium natural **3/3**, recuperación 45/45, ambas fases y victoria guardada con casco32%; N-7 intacto. Regresión Chromium clásica/N-7 **2/2**; visual controlado **10/10** en tres tamaños. Cero errores JS/HTTP/consola y máximo un RAF. Certificación local 11/11 fases, contenido105/105, motor40/40, arquitectura6/6, static13/13, regresión33/33; preview16/16.
+
+**Arte y balance humano en revisión; Safari/iPhone físico pendiente.** Rendimiento bajo en el host software (5.37RAF/s recuperación,12.27 Atlas), sin afirmar60FPS móviles. Cien etapas diseñadas editorialmente, todas PENDING de implementación; no cien niveles terminados. Los otros jefes, audio final y animaciones completas por pieza siguen pendientes. EngineV1=false, sin cambios en main, PR3 ni producción.
+
+[Informe completo y capturas](production-reports/GUARDIAN_ATLAS_2026-10-17.md) · [ZIP, SHA-256 y publicación](production-reports/PAQUETE_ATLAS_2026-10-17.md) · [Diseño cien etapas](design/CAMPAIGN_100_STAGES.md).
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T11:55:24.859258+00:00",
+  "updatedAt": "2026-10-17T12:13:26.123698+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -4684,18 +4684,25 @@
         "assets/guardian_atlas_states_v1.webp",
         "assets/atlas_combat_vfx_v1.webp"
       ],
-      "commit": "009e5299e1d0cad12fadde787060d658ae87bb3b",
+      "commit": "11dfa7bf7d3e287dd979c8dfc1dbafd8c1388473",
       "tests": [
-        "npm run test:content",
+        "node scripts/certify-local.mjs docs/production-reports/evidence/guardian-atlas/certification-02",
+        "node --test tests/guardian-atlas-legacy.test.mjs",
+        "npm run test:static",
         "npm run test:preview",
-        "node scripts/guardian-atlas-browser-smoke.cjs --root preview-dist"
+        "node scripts/guardian-atlas-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/guardian-atlas/browser-natural-03 --timeout 900000 --profile-cpu",
+        "node scripts/guardian-atlas-visual-smoke.cjs --root preview-dist --output docs/production-reports/evidence/guardian-atlas/visual-04"
       ],
       "evidence": [
-        "docs/production-reports/GUARDIAN_ATLAS_2026-10-17.md"
+        "docs/production-reports/GUARDIAN_ATLAS_2026-10-17.md",
+        "docs/production-reports/evidence/guardian-atlas/browser-natural-03/results.json",
+        "docs/production-reports/evidence/guardian-atlas/visual-04/results.json",
+        "docs/production-reports/PAQUETE_ATLAS_2026-10-17.md"
       ],
       "openErrors": [
-        "Partida natural completa pendiente; intento01 murió recuperando CRONIUM.",
-        "Revisión de arte/pivotes/gutters y Safari físico pendientes."
+        "Aceptación artística y balance humano pendientes; poses por estado, no ciclos completos por cada pose.",
+        "Rendimiento en host Chromium software bajo; sin perfil GPU/Skia ni certificación física.",
+        "Formato horizontal conserva franja jugable vertical y jefe pequeño; revisión artística pendiente."
       ],
       "acceptance": [
         "Recuperación, fases, avisos, corredor transitable, daño y desactivación naturales",
@@ -4703,7 +4710,7 @@
         "Arte visible y revisado en tres tamaños"
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW",
+        "technical": "PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       }

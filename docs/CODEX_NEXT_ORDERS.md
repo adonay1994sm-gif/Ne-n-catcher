@@ -1,10 +1,12 @@
-## Continuación Guardian Atlas —17/10/2026
+## Continuación exacta — Guardian Atlas cerrado técnicamente, 17/10/2026
 
-1. Leer [informe actual](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Conservar fuentes/maestros y el intento Chromium fallido.
-2. Cerrar certificación del fix de ralentización, ejecutar el piloto natural desde selector→Gaia→45CRONIUM→Atlas→victoria. No inyectar casco/tiempo/recogidas.
-3. Revisar capturas de ambas fases, señales y desactivación en tres tamaños. Corregir causas reales.
-4. Empaquetar con SHA limpio y actualizar únicamente el sitio privado existente; comprobar resultado antes de afirmar publicado.
-5. Revisar estilo/balance con el propietario antes de multiplicar arte. Las cien etapas de design/campaign-space-v1.json son diseño, todas PENDING.
+1. Verificar rama/HEAD/remoto y leer [informe](production-reports/GUARDIAN_ATLAS_2026-10-17.md) y [paquete publicado](production-reports/PAQUETE_ATLAS_2026-10-17.md). Código del juego probado/publicado:11dfa7b; cierres posteriores son documentación. No reconstruir el diseño desde un SHA antiguo.
+2. Atlas permanece IN_REVIEW por arte/balance humano y dispositivo; su partida Chromium natural03 pasó3/3 y regresión clásica/N-7 pasó2/2. Conservar intentos01/02 fallidos y visual01/03. No repetirlos como si siguieran bloqueados ni declarar aprobados los intentos fallidos.
+3. Prioridad técnica: perfilar render legacy en dispositivo/navegador apropiado. El host software midió5.37RAF/s en recuperación y12.27 en Atlas; perfil corto nativo no identifica culpable JS. No arreglarlo acelerando delta ni ocultando recursos. Añadir medición comparativa antes de optimizar, mantener arte y colisiones.
+4. Próximo lote artístico pequeño: CH-02/CH-03 con despliegue, disparo anunciado, daño y destrucción; integración progresiva en recuperación Gaia, sin repetir la misma pose como animación. Terminar daño/destrucción modular del jugador. Revisar Atlas con el propietario antes de generalizar su dirección a todos los mundos.
+5. Las cien etapas de design/campaign-space-v1.json son diseño editorial verificable, no runtime. Mantener PENDING; los diez jefes/campaña completa/audio final no existen por tener sus registros.
+6. Tests: npm run build; npm run test:content; npm run test:engine; npm run test:architecture; npm run test:static; npm test; npm run build:preview; npm run test:preview; node scripts/audit-asset-inventory.mjs. certify-local exige directorio nuevo. Natural Atlas: node scripts/guardian-atlas-browser-smoke.cjs --root preview-dist --output NUEVO_DIR --timeout 900000 --profile-cpu. Visual: node scripts/guardian-atlas-visual-smoke.cjs --root preview-dist --output NUEVO_DIR. No certificar mientras otros agentes cambian fuentes.
+7. Reutilizar el mismo sitio privado y sus manifest/ID; no crear otro. Leer PLAYTEST_SITE.md y preservar audiencia. GitHub push no lo actualiza solo. No exponer credenciales; se usan memoria/stdin. No prometer ejecución fuera de sesión activa.
 
 ---
 
