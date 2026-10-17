@@ -10,6 +10,7 @@ Chromium: dos contactos **14/14 grupos, 70 aserciones**, CDP nativo separado del
 Tres incrementos **IN_REVIEW** con técnica aprobada. Base modular aceptada; arte nuevo del cometa y Safari/iPhone físico pendientes. Inventario 82 recursos empaquetados, 7 excluidos de precarga; catálogo 155 identificadores. **No se declara comercialmente terminada la versión ni los diez niveles.** Motor V1=false, un RAF; main, PR3 y producción Netlify intactos. Atlas no se volvió a completar en esta sesión; su combate anterior figura en el informe histórico.
 
 El contenido que sigue es histórico y conserva sus evidencias. Este cierre sustituye las versiones de prueba anteriores.
+Informe publicado y comprobado en GitHub: `5e00c42b64b0d8b90df078a0ad97e02c3876ccca`; [cierre verificable](production-reports/evidence/ship-controls/closure.json). Esta anotación posterior no cambia el paquete ni declara CI remota verde.
 <!-- /ship-controls-current -->
 
 ---
