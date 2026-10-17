@@ -371,7 +371,9 @@
     vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false),
     magmaTunnelBackground: loadSprite("assets/vulkar_magma_tunnel_background_v1.webp", false),
     cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false),
-    cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false)
+    cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false),
+    aetherEchoBackground: loadSprite("assets/aether_echo_cemetery_background_v1.webp", false),
+    aetherThresholdBackground: loadSprite("assets/aether_phantom_threshold_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {
@@ -2153,7 +2155,7 @@
       ctx.beginPath();
       ctx.arc(x, y, 61, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "ghost") {
+    } else if (lv.scene === "ghost" && (N7_CAMPAIGN || currentLevel !== 6)) {
       ctx.globalAlpha = 0.20;
       ctx.fillStyle = "#b99bea";
       ctx.fillRect(W * 0.10, H * 0.17, W * 0.80, 12);
@@ -2165,7 +2167,7 @@
       fog.addColorStop(1, "rgba(174,132,232,0)");
       ctx.fillStyle = fog;
       ctx.fillRect(0, H * 0.12, W, H * 0.62);
-    } else if (lv.scene === "overdrive") {
+    } else if (lv.scene === "overdrive" && (N7_CAMPAIGN || currentLevel !== 7)) {
       ctx.globalAlpha = 0.20;
       ctx.strokeStyle = "#fff27b";
       ctx.lineWidth = 2;
@@ -2238,6 +2240,8 @@
     if (!N7_CAMPAIGN && currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
     if (!N7_CAMPAIGN && currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
     if (!N7_CAMPAIGN && currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
+    if (!N7_CAMPAIGN && currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
+    if (!N7_CAMPAIGN && currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -2340,6 +2344,42 @@
       readability.addColorStop(0, "rgba(3,11,29,.1)");
       readability.addColorStop(0.50, "rgba(3,11,29,.13)");
       readability.addColorStop(1, "rgba(2,7,20,.47)");
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = readability;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    } else if (!N7_CAMPAIGN && currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
+      const image = SPRITES.aetherEchoBackground;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const driftX = Math.sin(t * 0.00010) * W * 0.013;
+      const driftY = Math.cos(t * 0.00007) * H * 0.006;
+      ctx.save();
+      ctx.globalAlpha = 0.86;
+      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+      const readability = ctx.createLinearGradient(0, 0, 0, H);
+      readability.addColorStop(0, "rgba(9,3,23,.08)");
+      readability.addColorStop(0.55, "rgba(8,3,21,.16)");
+      readability.addColorStop(1, "rgba(4,2,15,.43)");
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = readability;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    } else if (!N7_CAMPAIGN && currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
+      const image = SPRITES.aetherThresholdBackground;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const driftX = Math.sin(t * 0.00009) * W * 0.011;
+      const driftY = Math.cos(t * 0.00007) * H * 0.006;
+      ctx.save();
+      ctx.globalAlpha = 0.87;
+      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+      const readability = ctx.createLinearGradient(0, 0, 0, H);
+      readability.addColorStop(0, "rgba(12,4,25,.10)");
+      readability.addColorStop(0.55, "rgba(11,4,26,.16)");
+      readability.addColorStop(1, "rgba(4,2,17,.43)");
       ctx.globalAlpha = 1;
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);

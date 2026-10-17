@@ -10,8 +10,8 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 | 4 | Rastro de la Serpiente · Vulkar | [Escenario nuevo](evidence/gallery-04/level-04-game.png) | Túnel magmático y maquinaria destruida ilustrados; deriva suave | Fondo integrado; Magma Serpent articulada y capas separadas pendientes |
 | 5 | Blanco Absoluto · Cryon | [Escenario nuevo](evidence/gallery-05/level-05-game.png) | Planicie glaciar, cristales y ruinas ilustrados; deriva suave | Fondo integrado; Frost Crystal/Ice Drone y capas separadas pendientes |
 | 6 | Fractura Leviatán · Cryon | [Escenario nuevo](evidence/gallery-06/level-06-game.png) | Grieta monumental, ruinas heladas y sombra ambiental ilustradas | Fondo integrado; Cryo Mine/Leviathan jugables y capas separadas pendientes |
-| 7 | Ecos Imposibles · Aether | [Estado inicial](evidence/gallery-01/level-07-game.png) | Efectos procedurales; ruinas ausentes | Arte propio pendiente |
-| 8 | Umbral Fantasma · Aether | [Estado inicial](evidence/gallery-01/level-08-game.png) | Energía procedural; portales/Phantom ausentes | Arte propio pendiente |
+| 7 | Ecos Imposibles · Aether | [Escenario nuevo](evidence/gallery-07-08/level-07-game.png) | Cementerio temporal y ruinas flotantes ilustrados | Fondo integrado; Time Echo/Rift Orb y capas separadas pendientes |
+| 8 | Umbral Fantasma · Aether | [Escenario nuevo](evidence/gallery-07-08/level-08-game.png) | Portales y arquitectura translúcida ilustrados | Fondo integrado; Chrono Phantom y capas separadas pendientes |
 | 9 | Cementerio Gravitatorio · Titan Omega | [Estado inicial](evidence/gallery-01/level-09-game.png) | Planeta simple y geometría; cementerio ausente | Arte propio pendiente |
 | 10 | Colapso Cronos · Chronos | [Estado inicial](evidence/gallery-01/level-10-game.png) | Aros procedurales; reactor final ausente | Arte propio pendiente |
 
@@ -27,6 +27,10 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 
 **Nivel 6, Fractura Leviatán.** [Antes: campo procedural](evidence/gallery-01/level-06-game.png) → [Después: grieta glacial](evidence/gallery-06/level-06-game.png). La sombra es parte de la ilustración ambiental; todavía no hay jefe jugable.
 
+**Nivel 7, Ecos Imposibles.** [Antes: rectángulos de eco](evidence/gallery-01/level-07-game.png) → [Después: cementerio temporal](evidence/gallery-07-08/level-07-game.png). Persisten enemigos genéricos.
+
+**Nivel 8, Umbral Fantasma.** [Antes: trazos de energía](evidence/gallery-01/level-08-game.png) → [Después: complejo de portales](evidence/gallery-07-08/level-08-game.png). El Chrono Phantom aún no está representado como entidad animada.
+
 ![Nivel 2 antes, captura real](evidence/gallery-01/level-02-game.png)
 
 ![Nivel 2 después, captura real](evidence/gallery-02/level-02-game.png)
@@ -38,6 +42,10 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 ![Nivel 5 después, captura real](evidence/gallery-05/level-05-game.png)
 
 ![Nivel 6 después, captura real](evidence/gallery-06/level-06-game.png)
+
+![Nivel 7 después, captura real](evidence/gallery-07-08/level-07-game.png)
+
+![Nivel 8 después, captura real](evidence/gallery-07-08/level-08-game.png)
 
 ## Onda de choque real en Canvas
 

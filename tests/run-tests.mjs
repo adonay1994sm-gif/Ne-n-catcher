@@ -105,7 +105,7 @@ await test("manifiesto y archivos conservados coinciden exactamente con el disco
   const { audit } = await import("../scripts/audit-asset-inventory.mjs");
   const result = await audit(root);
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
-  assert.equal(result.runtimeCount, 65);
+  assert.equal(result.runtimeCount, 67);
   assert.equal(result.preservedCount, 2);
   assert.equal(result.actualBytes, assetManifest.runtimeBytes);
 });
@@ -156,7 +156,7 @@ await test("service worker incluye código, legales y cada asset", async () => {
     ...assetManifest.standalone.map((item) => item.path)
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-visual-rebirth-06");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-catcher-pre-release-7-2-0-visual-rebirth-08");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {

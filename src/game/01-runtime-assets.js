@@ -173,7 +173,9 @@
     vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false),
     magmaTunnelBackground: loadSprite("assets/vulkar_magma_tunnel_background_v1.webp", false),
     cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false),
-    cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false)
+    cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false),
+    aetherEchoBackground: loadSprite("assets/aether_echo_cemetery_background_v1.webp", false),
+    aetherThresholdBackground: loadSprite("assets/aether_phantom_threshold_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {

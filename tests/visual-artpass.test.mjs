@@ -87,6 +87,18 @@ test('Cryon Leviathan rift has its own classic level 6 scene', async () => {
   assert.ok(master.byteLength > runtime.byteLength);
 });
 
+test('Aether cemetery and phantom threshold are separate classic scenes', async () => {
+  const src = await text('src/game/06-world-rendering.js');
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 6 && spriteReady\(SPRITES\.aetherEchoBackground\)/);
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 7 && spriteReady\(SPRITES\.aetherThresholdBackground\)/);
+  for (const [master, runtime] of [
+    ['art-source/visual-rebirth/levels/07/aether-echo-cemetery-master.png', 'assets/aether_echo_cemetery_background_v1.webp'],
+    ['art-source/visual-rebirth/levels/08/aether-phantom-threshold-master.png', 'assets/aether_phantom_threshold_background_v1.webp']
+  ]) {
+    assert.ok((await readFile(join(root, master))).byteLength > (await readFile(join(root, runtime))).byteLength);
+  }
+});
+
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');

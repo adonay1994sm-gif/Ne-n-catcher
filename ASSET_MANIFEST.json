@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 65,
-  "runtimeBytes": 3650764,
+  "assetCount": 67,
+  "runtimeBytes": 4255692,
   "audit": {
-    "reviewed": 65,
+    "reviewed": 67,
     "READY": 58,
-    "IN_REVIEW": 7,
+    "IN_REVIEW": 9,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -470,6 +470,34 @@
       "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
       "version": "visual-rebirth-v1",
       "size": 282296
+    },
+    {
+      "id": "aether-echo-cemetery-background-v1",
+      "path": "assets/aether_echo_cemetery_background_v1.webp",
+      "master": "art-source/visual-rebirth/levels/07/aether-echo-cemetery-master.png",
+      "dimensions": "853x1844",
+      "format": "webp-opaque",
+      "use": "Classic level 7 Aether temporal cemetery, floating ruins and fissures",
+      "level": 7,
+      "animation": "subtle drift with game temporal particles",
+      "status": "IN_REVIEW",
+      "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "visual-rebirth-v1",
+      "size": 307626
+    },
+    {
+      "id": "aether-phantom-threshold-background-v1",
+      "path": "assets/aether_phantom_threshold_background_v1.webp",
+      "master": "art-source/visual-rebirth/levels/08/aether-phantom-threshold-master.png",
+      "dimensions": "853x1844",
+      "format": "webp-opaque",
+      "use": "Classic level 8 Aether damaged portals and phased alien architecture",
+      "level": 8,
+      "animation": "subtle drift with game temporal particles",
+      "status": "IN_REVIEW",
+      "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "visual-rebirth-v1",
+      "size": 297302
     }
   ]
 }
