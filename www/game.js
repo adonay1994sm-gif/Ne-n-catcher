@@ -367,7 +367,8 @@
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
     cronosBackground: loadSprite("assets/cronos_level1_background.webp", true),
     chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
-    atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false)
+    atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false),
+    vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {
@@ -2230,6 +2231,7 @@
     ctx.restore();
 
     if (!N7_CAMPAIGN && currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
+    if (!N7_CAMPAIGN && currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -2261,6 +2263,24 @@
       readability.addColorStop(0, "rgba(3,8,23,.12)");
       readability.addColorStop(0.58, "rgba(2,7,20,.16)");
       readability.addColorStop(1, "rgba(2,4,11,.36)");
+      ctx.fillStyle = readability;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    } else if (!N7_CAMPAIGN && currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
+      const image = SPRITES.vulkarBackground;
+      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const driftX = Math.sin(t * 0.00014) * W * 0.012;
+      const driftY = Math.cos(t * 0.00009) * H * 0.008;
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+      const readability = ctx.createLinearGradient(0, 0, 0, H);
+      readability.addColorStop(0, "rgba(18,4,4,.08)");
+      readability.addColorStop(0.48, "rgba(14,3,4,.19)");
+      readability.addColorStop(1, "rgba(9,2,3,.42)");
+      ctx.globalAlpha = 1;
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();

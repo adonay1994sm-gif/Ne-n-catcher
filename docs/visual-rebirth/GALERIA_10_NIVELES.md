@@ -6,7 +6,7 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 | --- | --- | --- | --- | --- |
 | 1 | La Onda de Choque · Chronos/Gaia Nova | [Escenario](evidence/gallery-01/level-01-game.png) · [Fase 1](evidence/gallery-01/level-01-shockwave-frame-0.png) · [Fase 2](evidence/gallery-01/level-01-shockwave-frame-1.png) · [Fase 3](evidence/gallery-01/level-01-shockwave-frame-2.png) · [Fase 4](evidence/gallery-01/level-01-shockwave-frame-3.png) | Fondo Chronos anterior + atlas CRONIUM nuevo, cuatro poses no idénticas, nave existente | Atlas integrado; escenario multicapa y enemigos propios pendientes |
 | 2 | Perímetro Atlas · Gaia Nova | [Escenario nuevo](evidence/gallery-02/level-02-game.png) | Planeta y estaciones Atlas ilustrados, deriva suave, nave existente | Fondo integrado; capas separadas y CH-01/02/03 clásicos pendientes |
-| 3 | Descenso Ígneo · Vulkar | [Estado inicial](evidence/gallery-01/level-03-game.png) | Gradiente y cinturón procedural, nave existente | Arte propio pendiente |
+| 3 | Descenso Ígneo · Vulkar | [Escenario nuevo](evidence/gallery-03/level-03-game.png) | Planeta fracturado, refinería orbital, ceniza y estructuras laterales ilustradas; deriva suave | Fondo integrado; Lava Core/Plasma Mine y capas separadas pendientes |
 | 4 | Rastro de la Serpiente · Vulkar | [Estado inicial](evidence/gallery-01/level-04-game.png) | Trazos procedurales; Magma Serpent ausente | Arte propio pendiente |
 | 5 | Blanco Absoluto · Cryon | [Estado inicial](evidence/gallery-01/level-05-game.png) | Velos procedurales; planeta/glaciares ausentes | Arte propio pendiente |
 | 6 | Fractura Leviatán · Cryon | [Estado inicial](evidence/gallery-01/level-06-game.png) | Campo procedural; grieta/Leviathan ausentes | Arte propio pendiente |
@@ -19,9 +19,13 @@ Capturas **del ejecutable real** en Chromium 390×844, con la compilación local
 
 **Nivel 2, Perímetro Atlas.** [Antes: gradiente casi vacío](evidence/gallery-01/level-02-game.png) → [Después: Gaia Nova y plataforma orbital integradas](evidence/gallery-02/level-02-game.png). Ambas son capturas del juego en la misma resolución y pantalla; los controles permanecen visibles. El fondo nuevo mejora la identidad del escenario, pero la animación de drones y las capas individuales no están finalizadas.
 
+**Nivel 3, Descenso Ígneo.** [Antes: cinturón procedural](evidence/gallery-01/level-03-game.png) → [Después: Vulkar y refinería orbital](evidence/gallery-03/level-03-game.png). Son capturas del juego en Chromium; el fondo sigue en revisión porque faltan enemigos y profundidad multicapa.
+
 ![Nivel 2 antes, captura real](evidence/gallery-01/level-02-game.png)
 
 ![Nivel 2 después, captura real](evidence/gallery-02/level-02-game.png)
+
+![Nivel 3 después, captura real](evidence/gallery-03/level-03-game.png)
 
 ## Onda de choque real en Canvas
 

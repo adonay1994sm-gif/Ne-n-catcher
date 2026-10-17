@@ -50,6 +50,16 @@ test('Atlas perimeter draws its own illustrated Gaia Nova environment', async ()
   assert.ok(master.byteLength > runtime.byteLength);
 });
 
+test('Vulkar descent uses a real background in classic level 3 only', async () => {
+  const src = await text('src/game/06-world-rendering.js');
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 2 && spriteReady\(SPRITES\.vulkarBackground\)/);
+  const assets = await text('src/game/01-runtime-assets.js');
+  assert.match(assets, /assets\/vulkar_descent_background_v1\.webp/);
+  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/03/vulkar-descent-master.png'));
+  const runtime = await readFile(join(root, 'assets/vulkar_descent_background_v1.webp'));
+  assert.ok(master.byteLength > runtime.byteLength);
+});
+
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');

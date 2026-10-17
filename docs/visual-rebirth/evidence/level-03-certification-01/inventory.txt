@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "errors": [],
+  "duplicates": [],
+  "overlap": [],
+  "missing": [],
+  "unexpected": [],
+  "runtimeCount": 62,
+  "preservedCount": 2,
+  "hashMismatches": [],
+  "expectedBytes": 2785714,
+  "actualBytes": 2785714
+}

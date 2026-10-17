@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 61,
-  "runtimeBytes": 2545592,
+  "assetCount": 62,
+  "runtimeBytes": 2785714,
   "audit": {
-    "reviewed": 61,
+    "reviewed": 62,
     "READY": 58,
-    "IN_REVIEW": 3,
+    "IN_REVIEW": 4,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -19,8 +19,14 @@
     "canvas": "720x1280 logical pixels, responsive without stretching",
     "origin": "top-left",
     "shipAnchor": "player.x/player.y",
-    "shipVisualOffset": { "x": 0, "y": -19.2 },
-    "shipVisualSize": { "width": 198.4, "height": 198.4 },
+    "shipVisualOffset": {
+      "x": 0,
+      "y": -19.2
+    },
+    "shipVisualSize": {
+      "width": 198.4,
+      "height": 198.4
+    },
     "shipCollision": "SHIP_COLLISION_OUTLINE in game.js; independent from sprite bounds"
   },
   "groups": [
@@ -28,7 +34,10 @@
       "id": "ship",
       "format": "webp-alpha",
       "dimensions": "320x320",
-      "pivot": { "x": 0.5, "y": 0.5 },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
       "loop": true,
       "sourceFrameCount": 6,
       "paths": [
@@ -40,14 +49,55 @@
         "assets/ship_frame_05.webp"
       ],
       "logicalStates": [
-        { "order": 1, "name": "idle_dim", "source": 0, "mirrorX": false },
-        { "order": 2, "name": "idle_bright", "source": 1, "mirrorX": false },
-        { "order": 3, "name": "idle_pulse", "source": 2, "mirrorX": false },
-        { "order": 4, "name": "idle_return", "source": 1, "mirrorX": false },
-        { "order": 5, "name": "bank_left", "source": 3, "mirrorX": false },
-        { "order": 6, "name": "bank_right", "source": 3, "mirrorX": true },
-        { "order": 7, "name": "boost", "source": 4, "mirrorX": "movement side" },
-        { "order": 8, "name": "damage_reaction", "source": 5, "mirrorX": "impact side", "maxDurationMs": 320 }
+        {
+          "order": 1,
+          "name": "idle_dim",
+          "source": 0,
+          "mirrorX": false
+        },
+        {
+          "order": 2,
+          "name": "idle_bright",
+          "source": 1,
+          "mirrorX": false
+        },
+        {
+          "order": 3,
+          "name": "idle_pulse",
+          "source": 2,
+          "mirrorX": false
+        },
+        {
+          "order": 4,
+          "name": "idle_return",
+          "source": 1,
+          "mirrorX": false
+        },
+        {
+          "order": 5,
+          "name": "bank_left",
+          "source": 3,
+          "mirrorX": false
+        },
+        {
+          "order": 6,
+          "name": "bank_right",
+          "source": 3,
+          "mirrorX": true
+        },
+        {
+          "order": 7,
+          "name": "boost",
+          "source": 4,
+          "mirrorX": "movement side"
+        },
+        {
+          "order": 8,
+          "name": "damage_reaction",
+          "source": 5,
+          "mirrorX": "impact side",
+          "maxDurationMs": 320
+        }
       ],
       "notes": "Los seis archivos fuente implementan ocho estados lógicos mediante una vuelta a idle y espejo horizontal. El frame 05 solo aparece durante el impacto y nunca queda fijado en estado crítico, destrucción o reaparición."
     },
@@ -55,7 +105,10 @@
       "id": "core",
       "format": "webp-alpha",
       "dimensions": "192x192",
-      "pivot": { "x": 0.5, "y": 0.5 },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
       "loop": true,
       "frameDurationMs": 111,
       "paths": [
@@ -71,7 +124,10 @@
       "id": "phaser",
       "format": "webp-alpha",
       "dimensions": "192x96",
-      "pivot": { "x": 0.5, "y": 0.5 },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
       "loop": true,
       "frameDurationMs": 63,
       "paths": [
@@ -87,7 +143,10 @@
       "id": "tractor",
       "format": "webp-alpha",
       "dimensions": "512x96",
-      "pivot": { "x": 0.5, "y": 0.5 },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
       "loop": true,
       "frameDurationMs": 77,
       "paths": [
@@ -103,7 +162,10 @@
       "id": "impact",
       "format": "webp-alpha",
       "dimensions": "128x128",
-      "pivot": { "x": 0.5, "y": 0.5 },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
       "loop": false,
       "selection": "random variant per impact; 240 ms lifetime",
       "paths": [
@@ -117,10 +179,18 @@
       "id": "smoke",
       "format": "webp-alpha",
       "dimensions": "192x160",
-      "pivot": { "x": 0.5, "y": 0.5 },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
       "loop": true,
       "frameDurationMs": 222,
-      "sequence": [0, 1, 2, 1],
+      "sequence": [
+        0,
+        1,
+        2,
+        1
+      ],
       "paths": [
         "assets/smoke_frame_00.webp",
         "assets/smoke_frame_01.webp",
@@ -132,7 +202,10 @@
       "id": "explosion",
       "format": "webp-alpha",
       "dimensions": "256x192",
-      "pivot": { "x": 0.5, "y": 0.5 },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
       "loop": false,
       "defaultDurationMs": 520,
       "paths": [
@@ -148,14 +221,67 @@
     }
   ],
   "standalone": [
-    { "id": "icon-192", "path": "assets/icon-192.png", "dimensions": "192x192", "format": "png-opaque", "use": "PWA icon" },
-    { "id": "icon-512", "path": "assets/icon-512.png", "dimensions": "512x512", "format": "png-opaque", "use": "PWA icon and iOS source" },
-    { "id": "meteor-small", "path": "assets/meteor_small.webp", "dimensions": "160x160", "format": "webp-alpha", "use": "small meteor" },
-    { "id": "meteor-small-alt", "path": "assets/meteor_small_alt.webp", "dimensions": "160x160", "format": "webp-alpha", "use": "small meteor variant" },
-    { "id": "meteor-medium", "path": "assets/meteor_medium.webp", "dimensions": "208x208", "format": "webp-alpha", "use": "medium meteor" },
-    { "id": "meteor-medium-alt", "path": "assets/meteor_medium_alt.webp", "dimensions": "208x208", "format": "webp-alpha", "use": "medium meteor variant" },
-    { "id": "meteor-large", "path": "assets/meteor_large.webp", "dimensions": "272x272", "format": "webp-alpha", "use": "large meteor; multi-hit phaser target" },
-    { "id": "ch01-scout-v1", "path": "assets/ch01_atlas_v1.webp", "master": "art-source/enemies/ch01/ch01-master-v2.png", "dimensions": "1024x1536", "cell": "256x256; 4x6", "format": "webp-alpha", "use": "N-7 shooter visuals: spawn, flight, bank, attack, hurt, damage and destroy", "status": "IN_REVIEW", "size": 484814, "origin": "original generated art; see docs/art/CH01_PROVENANCE.md" },
+    {
+      "id": "icon-192",
+      "path": "assets/icon-192.png",
+      "dimensions": "192x192",
+      "format": "png-opaque",
+      "use": "PWA icon"
+    },
+    {
+      "id": "icon-512",
+      "path": "assets/icon-512.png",
+      "dimensions": "512x512",
+      "format": "png-opaque",
+      "use": "PWA icon and iOS source"
+    },
+    {
+      "id": "meteor-small",
+      "path": "assets/meteor_small.webp",
+      "dimensions": "160x160",
+      "format": "webp-alpha",
+      "use": "small meteor"
+    },
+    {
+      "id": "meteor-small-alt",
+      "path": "assets/meteor_small_alt.webp",
+      "dimensions": "160x160",
+      "format": "webp-alpha",
+      "use": "small meteor variant"
+    },
+    {
+      "id": "meteor-medium",
+      "path": "assets/meteor_medium.webp",
+      "dimensions": "208x208",
+      "format": "webp-alpha",
+      "use": "medium meteor"
+    },
+    {
+      "id": "meteor-medium-alt",
+      "path": "assets/meteor_medium_alt.webp",
+      "dimensions": "208x208",
+      "format": "webp-alpha",
+      "use": "medium meteor variant"
+    },
+    {
+      "id": "meteor-large",
+      "path": "assets/meteor_large.webp",
+      "dimensions": "272x272",
+      "format": "webp-alpha",
+      "use": "large meteor; multi-hit phaser target"
+    },
+    {
+      "id": "ch01-scout-v1",
+      "path": "assets/ch01_atlas_v1.webp",
+      "master": "art-source/enemies/ch01/ch01-master-v2.png",
+      "dimensions": "1024x1536",
+      "cell": "256x256; 4x6",
+      "format": "webp-alpha",
+      "use": "N-7 shooter visuals: spawn, flight, bank, attack, hurt, damage and destroy",
+      "status": "IN_REVIEW",
+      "size": 484814,
+      "origin": "original generated art; see docs/art/CH01_PROVENANCE.md"
+    },
     {
       "id": "comet-living-v1",
       "path": "assets/comet_animation_sheet_v1.webp",
@@ -171,15 +297,69 @@
       "version": "7.2.0",
       "size": 116846
     },
-    { "id": "debris-metal", "path": "assets/debris_metal.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "orbital debris and protected-corridor formation piece" },
-    { "id": "debris-panel", "path": "assets/debris_panel.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "solar panel; specific collision circles and formation piece" },
-    { "id": "debris-hot-0", "path": "assets/debris_hot_00.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "heated debris and formation variant" },
-    { "id": "debris-hot-1", "path": "assets/debris_hot_01.webp", "dimensions": "224x224", "format": "webp-alpha", "use": "heated debris and formation variant" },
-    { "id": "satellite", "path": "assets/satellite_old.webp", "dimensions": "272x272", "format": "webp-alpha", "use": "satellite; specific collision circles" },
-    { "id": "repair-drone", "path": "assets/repair_drone.webp", "dimensions": "176x176", "format": "webp-alpha", "use": "rare repair pickup" },
-    { "id": "shield-effect", "path": "assets/shield_effect.webp", "dimensions": "256x256", "format": "webp-alpha", "use": "active shield pulse" },
-    { "id": "shield-idle", "path": "assets/shield_idle.webp", "dimensions": "256x256", "format": "webp-alpha", "use": "shield pickup and active alternate" },
-    { "id": "explosion-small", "path": "assets/explosion_small.webp", "dimensions": "192x192", "format": "webp-alpha", "use": "explosion fallback" },
+    {
+      "id": "debris-metal",
+      "path": "assets/debris_metal.webp",
+      "dimensions": "224x224",
+      "format": "webp-alpha",
+      "use": "orbital debris and protected-corridor formation piece"
+    },
+    {
+      "id": "debris-panel",
+      "path": "assets/debris_panel.webp",
+      "dimensions": "224x224",
+      "format": "webp-alpha",
+      "use": "solar panel; specific collision circles and formation piece"
+    },
+    {
+      "id": "debris-hot-0",
+      "path": "assets/debris_hot_00.webp",
+      "dimensions": "224x224",
+      "format": "webp-alpha",
+      "use": "heated debris and formation variant"
+    },
+    {
+      "id": "debris-hot-1",
+      "path": "assets/debris_hot_01.webp",
+      "dimensions": "224x224",
+      "format": "webp-alpha",
+      "use": "heated debris and formation variant"
+    },
+    {
+      "id": "satellite",
+      "path": "assets/satellite_old.webp",
+      "dimensions": "272x272",
+      "format": "webp-alpha",
+      "use": "satellite; specific collision circles"
+    },
+    {
+      "id": "repair-drone",
+      "path": "assets/repair_drone.webp",
+      "dimensions": "176x176",
+      "format": "webp-alpha",
+      "use": "rare repair pickup"
+    },
+    {
+      "id": "shield-effect",
+      "path": "assets/shield_effect.webp",
+      "dimensions": "256x256",
+      "format": "webp-alpha",
+      "use": "active shield pulse"
+    },
+    {
+      "id": "shield-idle",
+      "path": "assets/shield_idle.webp",
+      "dimensions": "256x256",
+      "format": "webp-alpha",
+      "use": "shield pickup and active alternate"
+    },
+    {
+      "id": "explosion-small",
+      "path": "assets/explosion_small.webp",
+      "dimensions": "192x192",
+      "format": "webp-alpha",
+      "use": "explosion fallback"
+    },
     {
       "id": "cronium-fragment-v1",
       "path": "assets/cronium_fragment_v1.webp",
@@ -234,6 +414,20 @@
       "origin": "original image generation for NEON CATCHER on 2026-10-16; master preserved",
       "version": "visual-rebirth-v1",
       "size": 229456
+    },
+    {
+      "id": "vulkar-descent-background-v1",
+      "path": "assets/vulkar_descent_background_v1.webp",
+      "master": "art-source/visual-rebirth/levels/03/vulkar-descent-master.png",
+      "dimensions": "852x1846",
+      "format": "webp-opaque",
+      "use": "Classic level 3 Vulkar planet, ash atmosphere and orbital refinery composite",
+      "level": 3,
+      "animation": "subtle background drift with separate game dust and belt particles",
+      "status": "IN_REVIEW",
+      "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "visual-rebirth-v1",
+      "size": 240122
     }
   ]
 }
