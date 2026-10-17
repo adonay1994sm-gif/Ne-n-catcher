@@ -1,5 +1,7 @@
 ## Vigente — mandato rector 10×10 y primera unidad de viaje, 17/10/2026
 
+Sitio privado de pruebas publicado y confirmado: https://neon-catcher-pruebas.chictide18.chatgpt.site . Revisión del juego `24b591c`; actualizaciones posteriores deben reutilizar el mismo Site. Datos de continuidad y publicación: [PLAYTEST_SITE.md](PLAYTEST_SITE.md). No es Netlify ni producción del juego.
+
 Paquete experimental limpio de `24b591ca6814e21a8cfd75eb017ad869b18e1e66`, ZIP y SHA-256 comprobados: [acta de entrega](production-reports/PAQUETE_JOURNEY_2026-10-17.md). No hay URL Netlify nueva; el código y la evidencia sí están publicados.
 
 Referencia creativa actual: [PRODUCT_VISION.md](PRODUCT_VISION.md). El incremento **WIP** `398d1ca479de9aefe6bacc6f36900c3111ffa7d4` y la corrección funcional `ce71b299cb0eea8cbb908dd4886319e4e859580e` están en la rama autorizada. Puede jugarse `?campaign=journey`: salida de Chronos, pieza recogida en vuelo, parada C9, instalación visible y útil, tránsito, guardián CH-01 y llegada guardada. Se conservan clásica/N-7 y sus datos. Nuevo arte real: módulo Chronos transparente 640×640, 101 668 bytes; inventario 70 recursos sin inconsistencias. Motor V1 sigue false, un RAF, main/PR #3 intactas.
