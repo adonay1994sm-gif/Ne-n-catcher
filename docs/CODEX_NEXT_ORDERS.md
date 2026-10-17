@@ -1,5 +1,7 @@
 ## Orden vigente — mandato rector espacial, 17/10/2026
 
+Paquete experimental limpio de `24b591ca6814e21a8cfd75eb017ad869b18e1e66`, ZIP y SHA-256 comprobados: [acta de entrega](production-reports/PAQUETE_JOURNEY_2026-10-17.md). No hay URL Netlify nueva; el código y la evidencia sí están publicados.
+
 1. Comprobar remoto y leer [PRODUCT_VISION.md](PRODUCT_VISION.md) y [P0–P1 Chronos-Gaia](production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). No reconstruir lo ya integrado ni convertir rutas N-7 en etapas canónicas por numeración. Conservar clásica/N-7, maestros y evidencias.
 2. Probar la demo `juego/index.html?campaign=journey` del paquete con build-info limpio. Revisión estética del propietario y decisión del motor siguen reservadas; no activar V1. No expandir masivamente antes de esas puertas.
 3. Tareas independientes desbloqueadas: QA 320×568/horizontal, partida natural con auto desactivado, interrupciones/checkpoints en dispositivo, opciones de reducción de destellos/sacudidas y arte específico de estación/Mira. El bucle básico y la pieza están integrados; no duplicarlos.

@@ -11,12 +11,12 @@ El producto anterior no tenía un viaje con pieza→servicio→mejora→frontera
 - SHA inicial: `bfc6683085e3797a2b0c86957a299f8b7fba0d68`.
 - Primer incremento publicado: `398d1ca479de9aefe6bacc6f36900c3111ffa7d4` — **WIP**, viaje integrado y mandato rector.
 - SHA funcional probado/publicado: `ce71b299cb0eea8cbb908dd4886319e4e859580e` — corrección de zona útil y regresión visual.
-- SHA de cierre documental y paquete: se registra en el acta de paquete al construir desde un árbol limpio; consultar también `git log -3 --format='%H %s'`.
+- SHA de cierre documental y snapshot limpio: `24b591ca6814e21a8cfd75eb017ad869b18e1e66`; [acta y ZIP](PAQUETE_JOURNEY_2026-10-17.md). El commit posterior de acta se consulta en `git log -1`.
 - Tiempo total de producción: no se midió; no se atribuyen horas. La última partida Chromium registró **72,367 s de pared**.
 
 Puede jugarse una demostración comprimida con **salida Chronos → baliza C9 → tránsito → acceso Atlas a Gaia**. Se inicia directamente con CONTINUAR VIAJE. El recorrido gobierna el paisaje, los encuentros, la disponibilidad de la pieza, la parada y la llegada. El jugador recoge una pieza físicamente, Mira la instala gratis, sella el casco, se continúa con respuesta lateral +20 % y propulsión ámbar, se desactiva un guardián CH-01 y se llega con una recompensa única de 120 créditos. La recarga conserva checkpoints coherentes, sin afirmar guardado exacto en mitad de combate.
 
-**P1 está técnicamente en revisión y pendiente de aceptación artística y física.** Esta demostración no son diez etapas acabadas, no es una economía completa y no cierra ningún nivel artístico clásico.
+**P1 permanece IN_REVIEW como entrega: verificación técnica aprobada y aceptación artística/física pendientes.** Esta demostración no son diez etapas acabadas, no es una economía completa y no cierra ningún nivel artístico clásico.
 
 ## 2. Requisitos y decisiones de trabajo
 
@@ -80,6 +80,6 @@ La fuente única es [production-tasks.json](../production-tasks.json): contiene 
 
 Se registraron duración/callbacks del navegador y bytes de recursos; no se midió memoria del proceso ni se certificaron60FPS. La memoria de1,56MiB indicada para el nuevo módulo es cálculo deRGBA, no perfilado. Safari/iPhone físico, simulador/iOS nativo, pruebas prolongadas, pequeña pantalla y horizontal de esta demo siguen pendientes. El defecto intermitente de glifos del nivel10 histórico sigue abierto.
 
-**Netlify:** no hay nuevo despliegue comprobado. Token/siteID y CLI no están disponibles, y no se encontró herramienta Netlify conectada. Se preparará ZIP con selector y build-info de SHA limpio; el acta del paquete registrará hash/entradas. No se reutiliza una URL antigua ni se toca producción, main o PR3.
+**Netlify:** no hay nuevo despliegue comprobado. Token/siteID y CLI no están disponibles, y no se encontró herramienta Netlify conectada. Se preparó el [ZIP verificado](PAQUETE_JOURNEY_2026-10-17.md) desde `24b591c`, con selector y build-info de árbol limpio; el acta registra hash, entradas y operación externa pendiente. No se reutiliza una URL antigua ni se toca producción, main o PR3.
 
 Siguiente tarea exacta: revisar la demostración con el propietario en el paquete aislado, obtener aceptación/correcciones artísticas y la decisión reservada del motor antes de expandir. Mientras tanto: QA de320×568 y horizontal, guardado por interrupción real, modo manual natural, reducción de destellos/sacudidas y arte propio de estación/Mira. No iniciar producción masiva de cien etapas. Mantener `USE_ENGINE_V1=false`.

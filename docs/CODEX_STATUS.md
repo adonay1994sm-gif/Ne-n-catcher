@@ -1,5 +1,7 @@
 ## Vigente — mandato rector 10×10 y primera unidad de viaje, 17/10/2026
 
+Paquete experimental limpio de `24b591ca6814e21a8cfd75eb017ad869b18e1e66`, ZIP y SHA-256 comprobados: [acta de entrega](production-reports/PAQUETE_JOURNEY_2026-10-17.md). No hay URL Netlify nueva; el código y la evidencia sí están publicados.
+
 Referencia creativa actual: [PRODUCT_VISION.md](PRODUCT_VISION.md). El incremento **WIP** `398d1ca479de9aefe6bacc6f36900c3111ffa7d4` y la corrección funcional `ce71b299cb0eea8cbb908dd4886319e4e859580e` están en la rama autorizada. Puede jugarse `?campaign=journey`: salida de Chronos, pieza recogida en vuelo, parada C9, instalación visible y útil, tránsito, guardián CH-01 y llegada guardada. Se conservan clásica/N-7 y sus datos. Nuevo arte real: módulo Chronos transparente 640×640, 101 668 bytes; inventario 70 recursos sin inconsistencias. Motor V1 sigue false, un RAF, main/PR #3 intactas.
 
 Certificación final 11/11 fases (contenido 44/44), preview 15/15, partida Chromium natural 5/5 y regresión de zona útil sin solapes. Prueba adicional de integración/manual 4/4. P1 queda **IN_REVIEW** por aceptación artística y prueba física, no capítulo terminado ni 100 etapas. No hay URL Netlify nueva. Informe/capturas/errores/órdenes exactas: [P0–P1 Chronos-Gaia](production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). Todo el contenido anterior de este archivo se conserva como historial.

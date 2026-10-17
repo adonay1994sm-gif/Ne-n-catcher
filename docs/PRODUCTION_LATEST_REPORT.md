@@ -1,5 +1,7 @@
 ## Referencia vigente — P0/P1 canónico, 17/10/2026
 
+Paquete experimental limpio de `24b591ca6814e21a8cfd75eb017ad869b18e1e66`, ZIP y SHA-256 comprobados: [acta de entrega](production-reports/PAQUETE_JOURNEY_2026-10-17.md). No hay URL Netlify nueva; el código y la evidencia sí están publicados.
+
 **Mandato rector:** [PRODUCT_VISION.md](PRODUCT_VISION.md), campaña espacial 10 capítulos × 10 etapas. La demo aislada Chronos→C9→Gaia está integrada y publicada en `398d1ca479de9aefe6bacc6f36900c3111ffa7d4`, corregida en `ce71b299cb0eea8cbb908dd4886319e4e859580e`. Incluye viaje visible, control relativo, CH-01, pieza, parada, instalación con efecto, frontera y checkpoint/recompensa únicos. Certificación 11/11 fases, Chromium natural 5/5, preview 15/15 y prueba adicional de integración/manual 4/4. **P1 IN_REVIEW**, sin aceptación estética/física ni diez etapas completas. Nuevo módulo Chronos: WebP 640×640 con alfa; inventario 70 recursos. No hay URL Netlify nueva ni cambio de motor/producción.
 
 Informe rector de esta entrega, con diagnóstico, archivos, pruebas, capturas, organigrama y riesgos: [P0_P1_CHRONOS_GAIA_2026-10-17.md](production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). Los informes y órdenes que siguen son historial; sus evidencias no se borran ni se extrapolan al producto nuevo.
