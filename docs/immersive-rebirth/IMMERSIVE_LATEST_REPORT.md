@@ -1,0 +1,27 @@
+# INFORME DE PRODUCCIÓN — IMMERSIVE REBIRTH
+
+Fecha: 17/10/2026 UTC
+Rama: `continuity-assets-audit-20261013`
+SHA inicial: `d396f9f0e3b86693d7454f18cf9e6ca9e15f36b4`
+SHA funcional publicado: `58c6c6785a4186978449a7a9636ccecab465e780`
+Bloques trabajados: Entrega A, primer corte de Gaia clásica
+Niveles modificados: nivel 2; nivel 1 intacto
+Mecánicas nuevas: patrullas CH-01 espaciadas, proyectil anunciado, aviso Atlas
+Mecánicas rediseñadas: caducidad de transmisiones en todos los niveles clásicos
+Assets creados: 0; assets integrados: atlas CH-01 existente y efecto phaser en Gaia clásica
+Animaciones: ataque, daño y destrucción CH-01 mediante atlas existente
+Enemigos: CH-01 integrado en campaña clásica; CH-02/03 pendientes
+Eventos ambientales: ninguno nuevo
+Cambios narrativos: primera identificación hostil de la red Atlas durante el juego
+Audio: tono breve del sistema de transmisiones ya existente; audio exclusivo pendiente
+Pruebas aprobadas: certificación 11/11 fases; contenido 28/28; Chromium Gaia 7/7; Chromium ambos modos 2/2; preview 15/15
+Pruebas fallidas conservadas: intentos iniciales de QA y certificación concurrente; corregidos y repetidos
+Errores corregidos: timeout de QA, carga diferida en QA, temporizador de transmisiones, prueba focal
+Errores abiertos: glifos intermitentes HUD nivel 10, balance/partida natural completa de Gaia, Safari/iPhone
+Estado de Netlify: sin URL nueva ni despliegue de este commit
+Estado del motor gráfico: legacy activo; `USE_ENGINE_V1 = false`
+Tareas completadas en este corte: integración funcional comprobada; ningún nivel completo
+Tareas pendientes: art pass modular, CH-02/03, combate natural extenso, sonido propio, QA móvil
+Siguiente prioridad: cerrar Entrega A en niveles 1–2.
+
+Informe reproducible: [ENTREGA_A_2026-10-17.md](reports/ENTREGA_A_2026-10-17.md). Organigrama: [10 niveles](../visual-rebirth/ORGANIGRAMA_10_NIVELES.md). Fuente de estados: [production-tasks.json](../production-tasks.json). Capturas reales: [ataque](evidence/classic-scout-06/gaia-scout-attack.png), [daño](evidence/classic-scout-06/gaia-scout-hurt.png). La satisfacción estética del propietario y la prueba física siguen pendientes.

@@ -1,0 +1,29 @@
+
+> neon-catcher@7.2.0 test
+> node tests/run-tests.mjs
+
+PASS 01 · versión 7.2.0 pre-release alineada en metadatos y pantalla
+PASS 02 · dependencias exactas y reproducibles
+PASS 03 · JavaScript y JSON con sintaxis válida
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '33a5f8d75acee20d8253a65bfb3464b241d2d9e8c833038868e5e3378bb1a9cc'
+- 'bdbbf5b08e55f1ac3466f3050f1dd904164f0dae474bfc2f56c4019dc9f5b5d3'
+
+    at file:///workspace/Ne-n-catcher/tests/run-tests.mjs:86:10
+    at async test (file:///workspace/Ne-n-catcher/tests/run-tests.mjs:14:3)
+    at async file:///workspace/Ne-n-catcher/tests/run-tests.mjs:68:1 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '33a5f8d75acee20d8253a65bfb3464b241d2d9e8c833038868e5e3378bb1a9cc',
+  expected: 'bdbbf5b08e55f1ac3466f3050f1dd904164f0dae474bfc2f56c4019dc9f5b5d3',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

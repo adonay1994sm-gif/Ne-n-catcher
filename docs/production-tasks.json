@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-16T15:30:36.510Z",
+  "updatedAt": "2026-10-17T08:52:02Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -1950,12 +1950,18 @@
         "src/game/animation/animation-map.js",
         "assets/ch01_atlas_v1.webp",
         "src/game/07-player-item-rendering.js",
-        "scripts/ch01-browser-smoke.cjs"
+        "scripts/ch01-browser-smoke.cjs",
+        "src/game/progression/classic-scout.js",
+        "scripts/classic-scout-browser-smoke.cjs",
+        "tests/classic-scout.test.mjs"
       ],
       "commit": "9d28569fe13ecb1d7e6cd53693dc10ae580db9e4",
       "tests": [
         "Chromium sprite decoded 1024x1536 and combat screenshot: pass",
-        "Controlled Chromium Canvas 4/4 with attack/hurt/destroy screenshots, exit 0"
+        "Controlled Chromium Canvas 4/4 with attack/hurt/destroy screenshots, exit 0",
+        "Classic Gaia CH-01 unit simulation 3/3, exit 0",
+        "Classic Gaia Chromium controlled patrol/attack/hurt and pause/resume 7/7, exit 0",
+        "Final local certification 11/11 phases, exit 0"
       ],
       "evidence": [
         "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
@@ -1963,10 +1969,14 @@
         "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json",
         "docs/production-reports/evidence/block-05/ch01-visual-browser-04/ch01-attack.png",
         "docs/production-reports/evidence/block-05/ch01-visual-browser-04/ch01-hurt.png",
-        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/ch01-destroy.png"
+        "docs/production-reports/evidence/block-05/ch01-visual-browser-04/ch01-destroy.png",
+        "docs/immersive-rebirth/evidence/classic-scout-06/results.json",
+        "docs/immersive-rebirth/evidence/classic-scout-06/gaia-scout-attack.png",
+        "docs/immersive-rebirth/evidence/classic-scout-06/gaia-scout-hurt.png",
+        "docs/immersive-rebirth/evidence/certification-02/results.json"
       ],
       "openErrors": [
-        "Natural player-controlled hit/destroy in a full route and Safari/iPhone visual QA remain pending."
+        "Natural full-length classic Gaia combat, CH-01 destruction, balance, CH-02/03 and physical Safari/iPhone QA remain pending."
       ],
       "acceptance": [
         "Capturas y prueba real de atacar, recibir daño y destruirse con assets definitivos."

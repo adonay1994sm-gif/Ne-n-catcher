@@ -59,3 +59,11 @@ No hay fecha de lanzamiento. No publicar antes de completar y certificar conteni
 Registrar pruebas con comandos y resultados verificables. Si no hay simulador/iPhone, dejarlo pendiente explícitamente. Si surge una decisión de producto con impacto irreversible, documentar alternativas y solicitar autorización solo para ese caso.
 
 **Empieza por Bloque 02 sin esperar aprobación adicional.**
+## Continuación de Immersive Rebirth — 17/10/2026
+
+1. Leer [informe parcial de Entrega A](immersive-rebirth/reports/ENTREGA_A_2026-10-17.md), verificar el SHA remoto y conservar evidencias. CH-01 ya funciona en Gaia clásica; no duplicar su integración.
+2. Probar una partida natural larga del nivel 2 con derribo y destrucción de CH-01; comprobar cadencia, precisión táctil, daño/recompensa y máximo de entidades. Ajustar sólo con evidencia reproducible.
+3. Producir e integrar CH-02 Interceptor y CH-03 Defense Satellite con arte/ataques distinguibles; después dar profundidad y eventos reales a Chronos/Gaia. El Nivel 1 necesita certificación natural del accidente a los 31 s. Mantener Engine V1 desactivado.
+4. Repetir certificación y Chromium tras cada lote; mantener `production-tasks.json`, organigrama, capturas y reportes. El bug intermitente de glifos HUD nivel 10 sigue abierto. Netlify requiere credenciales de sitio experimental; Safari/iPhone físico sigue pendiente.
+
+---
