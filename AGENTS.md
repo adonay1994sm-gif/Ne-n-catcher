@@ -1,3 +1,9 @@
+## Ejecución autorizada del plan de publicación ·17/10/2026
+
+El propietario acepta ejecutar las metas de la [auditoría de publicación](docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md). Cerrar incrementos integrados y comprobables antes de expandir: primero Chronos–Gaia/Atlas, presentación de C9, audio contextual, accesibilidad y persistencia ante interrupciones. Las metas de contenido, pruebas humanas, dispositivos y distribución no se consideran terminadas por aprobar el plan. Motor V1 reservado/desactivado; historial y límites siguientes vigentes.
+
+---
+
 ## Nombre vigente — NEON CRONIUM, 17/10/2026
 
 El propietario cambia el nombre del juego a **NEON CRONIUM**. Aplicarlo en pantallas, metadatos, guías activas y nuevos paquetes. Conservar por compatibilidad las claves de guardado, el bundle ID `com.adonay.neoncatcher`, IDs de campaña y URL del repositorio/sitio existentes; no representan la marca visible. Las evidencias, maestros previos y paquetes históricos conservan su procedencia y sus hashes. No renombrar un paquete antiguo como si fuera una nueva compilación. Leer el cierre de rebranding en docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md. Las diez etapas y las restricciones de motor/ramas siguen vigentes.

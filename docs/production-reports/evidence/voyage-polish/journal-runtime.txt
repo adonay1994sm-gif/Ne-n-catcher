@@ -1,0 +1,61 @@
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ actual Chronos completion resumes its neon-stars-v2 interrupted write before loading route/menu (597.991176ms)
+✔ actual Chronos completion resumes its neon-level-best-v2 interrupted write before loading route/menu (331.634361ms)
+✔ actual Chronos completion resumes its neon-best-v2 interrupted write before loading route/menu (273.206347ms)
+✔ actual Chronos completion resumes its neonCatcher.chronosVoyage.v2 interrupted write before loading route/menu (266.858563ms)
+✔ actual Chronos completion resumes its neon-unlocked-v2 interrupted write before loading route/menu (259.781847ms)
+✔ actual Chronos completion resumes its receipt interrupted write before loading route/menu (276.151663ms)
+✔ blocked startup recovery warns and forbids checkpoint writes over its pending durable intent (242.741063ms)
+✔ completion writes intent first, checkpoint before unlock, then one bounded receipt (2.833927ms)
+✔ recover every actual completion write on reload: before atomic write 1/7 (4.936539ms)
+✔ recover every actual completion write on reload: before atomic write 2/7 (0.499434ms)
+✔ recover every actual completion write on reload: before atomic write 3/7 (0.466926ms)
+✔ recover every actual completion write on reload: before atomic write 4/7 (0.486856ms)
+✔ recover every actual completion write on reload: before atomic write 5/7 (0.364827ms)
+✔ recover every actual completion write on reload: before atomic write 6/7 (0.369894ms)
+✔ recover every actual completion write on reload: before atomic write 7/7 (0.407579ms)
+✔ recover every actual completion write on reload: after atomic write 1/7 (0.410453ms)
+✔ recover every actual completion write on reload: after atomic write 2/7 (0.487938ms)
+✔ recover every actual completion write on reload: after atomic write 3/7 (0.403713ms)
+✔ recover every actual completion write on reload: after atomic write 4/7 (0.419607ms)
+✔ recover every actual completion write on reload: after atomic write 5/7 (0.565261ms)
+✔ recover every actual completion write on reload: after atomic write 6/7 (0.305639ms)
+✔ recover every actual completion write on reload: after atomic write 7/7 (0.270317ms)
+✔ storage denied before intent changes no legacy key and does not invent success (0.220495ms)
+✔ read denial is distinct from an absent save; completion never writes defaults over old saves (0.50284ms)
+✔ new saves and old classic keys keep their original shape; no checkpoint is required outside Chronos (0.202889ms)
+✔ replay preserves higher scores, other levels and external advancement instead of rolling back (0.322144ms)
+✔ pending checkpoint conflicts block replay before any progress key is changed (0.347581ms)
+✔ invalid existing saves and journal bytes remain recoverable, never silently removed (0.508968ms)
+✔ journal is bound to real campaign keys and cannot replay a classic intent into N-7 (0.341712ms)
+✔ a pending prior completion is recovered before replacing the one-record receipt for the next level (0.361171ms)
+✔ replaying an older level never skips a gate; the final level never unlocks a nonexistent territory (0.26545ms)
+✔ invalid requests fail before writes and caller checkpoint objects cannot mutate the durable snapshot (0.890429ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2924.090541

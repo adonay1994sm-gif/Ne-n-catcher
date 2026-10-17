@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T21:25:59.219351+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T21:43:11.910622+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -48,6 +48,11 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P3-CH1-09 / P3 | Etapa 1.9 · Señales de Atlas | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
 | P3-CH1-10 / P3 | Etapa 1.10 · Llegada a Gaia | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
 | P1-BRAND-01 / P1 | Nombre activo NEON CRONIUM en juego, distribución y splash | IN_REVIEW | PASSED_CHROMIUM_UPGRADE_OFFLINE | PENDING_OWNER_SPLASH | PENDING |
+| P2-PRESENTATION-01 / P2 | Encuadrar Gaia fuera del HUD e integrar C9 ilustrada con estados reales | IN_PROGRESS | IN_REVIEW | PENDING_OWNER | PENDING |
+| P2-AUDIO-01 / P2 | Integrar cuatro partituras originales contextuales sin un segundo reloj | IN_PROGRESS | IN_REVIEW | PENDING_OWNER | PENDING |
+| P2-COMFORT-01 / P2 | Aplicar reducción de sacudidas y destellos también a Canvas | IN_PROGRESS | IN_REVIEW | NOT_APPLICABLE | PENDING |
+| P2-SAVE-01 / P2 | Recuperar finalización interrumpida sin dividir desbloqueo y checkpoint | IN_PROGRESS | IN_REVIEW | NOT_APPLICABLE | PENDING |
+| P2-PLAYTEST-01 / P2 | Preparar y ejecutar diez pruebas humanas de Chronos–Gaia | BLOCKED | PREPARED_NOT_EXECUTED | NOT_APPLICABLE | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -62,27 +67,27 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 7/65 (10.8%) | 35 | 1 | 0 | 22 |
-| Campaña clásica | 4/33 (12.1%) | 3 | 2 | 0 | 24 |
-| Campaña N-7 | 3/41 (7.3%) | 35 | 1 | 0 | 2 |
+| Jugabilidad | 7/67 (10.4%) | 35 | 2 | 1 | 22 |
+| Campaña clásica | 4/36 (11.1%) | 3 | 5 | 0 | 24 |
+| Campaña N-7 | 3/42 (7.1%) | 35 | 2 | 0 | 2 |
 | Enemigos | 5/76 (6.6%) | 60 | 0 | 0 | 11 |
 | Jefes | 0/15 (0.0%) | 13 | 0 | 0 | 2 |
-| Assets | 2/178 (1.1%) | 126 | 3 | 1 | 46 |
-| Animaciones | 5/144 (3.5%) | 111 | 1 | 0 | 27 |
+| Assets | 2/180 (1.1%) | 126 | 5 | 1 | 46 |
+| Animaciones | 5/145 (3.4%) | 111 | 2 | 0 | 27 |
 | Narrativa | 0/19 (0.0%) | 17 | 1 | 0 | 1 |
-| Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/25 (16.0%) | 9 | 1 | 0 | 11 |
-| Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 19/76 (25.0%) | 20 | 2 | 4 | 31 |
+| Audio | 0/15 (0.0%) | 12 | 1 | 1 | 1 |
+| Interfaz | 4/27 (14.8%) | 9 | 3 | 0 | 11 |
+| Rendimiento | 1/14 (7.1%) | 12 | 1 | 0 | 0 |
+| QA | 19/79 (24.1%) | 20 | 4 | 5 | 31 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 19/29 (65.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 8 · DONE: 19 |
-| 04 · Jugabilidad procedural | 0/31 (0.0%) | PENDING: 18 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 5/178 (2.8%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 47 · DONE: 5 |
+| 03 · Prueba integrada y cierre técnico | 19/30 (63.3%) | PENDING: 0 · IN_PROGRESS: 2 · BLOCKED: 1 · IN_REVIEW: 8 · DONE: 19 |
+| 04 · Jugabilidad procedural | 0/35 (0.0%) | PENDING: 18 · IN_PROGRESS: 4 · BLOCKED: 1 · IN_REVIEW: 12 · DONE: 0 |
+| 05 · Producción visual y 150 assets | 5/179 (2.8%) | PENDING: 123 · IN_PROGRESS: 4 · BLOCKED: 0 · IN_REVIEW: 47 · DONE: 5 |
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
@@ -91,7 +96,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 34; PLANNED: 119; IMPLEMENTED_CODE: 2**; 155 identificadores. Cierre de los doce requisitos: **0/155 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 35; PLANNED: 119; IMPLEMENTED_CODE: 2**; 156 identificadores. Cierre de los doce requisitos: **0/156 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 
@@ -111,6 +116,7 @@ Catálogo: **IN_REVIEW: 34; PLANNED: 119; IMPLEMENTED_CODE: 2**; 155 identificad
 - **B10-11 — Preparar TestFlight; distribución requiere autorización:** Requiere credenciales o autorización específica del propietario.
 - **B10-12 — Ejecutar pruebas físicas de candidato de lanzamiento:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
 - **PM-01 — Decisión técnica reservada sobre Motor V1:** Requiere orden técnica expresa del propietario; mantener USE_ENGINE_V1=false.
+- **P2-PLAYTEST-01 — Preparar y ejecutar diez pruebas humanas de Chronos–Gaia:** Reclutamiento y acceso a jugadores/dispositivos pendientes; no se han realizado sesiones.
 
 ## Orden de continuidad
 

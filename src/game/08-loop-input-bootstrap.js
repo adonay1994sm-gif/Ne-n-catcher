@@ -3,8 +3,10 @@
     drawShipHangar(t);
     drawClassicDock(t);
     ctx.save();
-    ctx.translate(cameraKickX, -cameraKickY);
-    if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    if (!settings.reduceEffects) {
+      ctx.translate(cameraKickX, -cameraKickY);
+      if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    }
     background(t);
     drawWarp();
     drawTractorCable();
@@ -32,7 +34,7 @@
       ctx.fillStyle = "rgba(75,125,255,.055)";
       ctx.fillRect(0, 0, W, H);
     }
-    if (flash > 0) {
+    if (flash > 0 && !settings.reduceEffects) {
       ctx.fillStyle = `rgba(255,40,80,${Math.min(0.28, flash)})`;
       ctx.fillRect(0, 0, W, H);
     }
@@ -78,6 +80,11 @@
     else if (fireInput && !ui.fire.disabled) fireManualShot();
     update(dt);
     if (!legacyRunning) return;
+    const servicing = ui.flightDock?.classList.contains("show");
+    signalScoreContext(servicing ? "station" : state === "complete" ? "arrival"
+      : atlasBoss && !atlasBoss.resolved ? "atlas" : "transit");
+    updateScore(dt, document.hidden || (state === "paused" && !servicing)
+      || state === "gameover" || state === "destroying");
     render(now);
     if (legacyRunning) legacyFrameId = requestAnimationFrame(frame);
   }
@@ -343,6 +350,10 @@
     settings.effectsQuality = ["low", "normal", "high"].includes(event.target.value) ? event.target.value : "normal";
     settings.effects = settings.effectsQuality !== "low";
   };
+  ui.reduceEffects.onchange = (event) => {
+    settings.reduceEffects = event.target.checked;
+    document.body.classList.toggle("reduced-effects", settings.reduceEffects);
+  };
 
   ui.reward.onclick = async () => {
     ui.reward.disabled = true;
@@ -402,6 +413,8 @@
     addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
 
+  recoverCampaignCompletion();
+  currentLevel=Math.max(0,Math.min(LEVELS.length-1,getUnlocked()-1));
   setupClassicFlight();
   resizeCanvas();
   syncSettingsUI();

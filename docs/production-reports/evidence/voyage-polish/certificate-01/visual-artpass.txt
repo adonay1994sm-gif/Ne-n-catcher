@@ -1,0 +1,238 @@
+✔ art pass preserves the nine-source game bundle (9.815057ms)
+✔ Chronos background uses the authored image and bounded readability veil (1.864633ms)
+✖ Chronos accident uses four authored atlas phases instead of a drawn ring (5.163697ms)
+✔ Atlas perimeter draws its own illustrated Gaia Nova environment (4.255981ms)
+✔ Vulkar level 3 uses separate illustrated space and planet layers with the played clock (3.096304ms)
+✔ Vulkar magma tunnel has a separate level 4 illustration and no purple ion overlay (3.459278ms)
+✔ Cryon whiteout has a dedicated illustrated classic level 5 scene (2.999031ms)
+✔ Cryon Leviathan rift has its own classic level 6 scene (2.674044ms)
+✔ Aether cemetery and phantom threshold are separate classic scenes (5.833802ms)
+✔ Titan Omega and final Chronos collapse use authored classic backgrounds (5.375328ms)
+✖ level one shockwave retains a graphical fallback while the atlas loads (4.849053ms)
+✔ visual pass does not change collision model or native bundle identifier (1.215177ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 10
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 104.238589
+
+✖ failing tests:
+
+test at tests/visual-artpass.test.mjs:33:1
+✖ Chronos accident uses four authored atlas phases instead of a drawn ring (5.163697ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /ctx\.arc\(/. Input:
+  
+  'if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0) {\n' +
+    '      const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);\n' +
+    '      const sx = W * 0.50;\n' +
+    '      const sy = H * 0.40;\n' +
+    '      const strength = Math.sin(progress * Math.PI);\n' +
+    '      ctx.save();\n' +
+    '      ctx.globalCompositeOperation = "screen";\n' +
+    '      const size = Math.min(W, H) * (0.36 + progress * 1.45);\n' +
+    '      ctx.globalAlpha = strength * 0.62;\n' +
+    '      if (spriteReady(SPRITES.chronosShockwave)) {\n' +
+    '        const atlas = SPRITES.chronosShockwave;\n' +
+    '        const cellWidth = atlas.naturalWidth / 2;\n' +
+    '        const cellHeight = atlas.naturalHeight / 2;\n' +
+    '        const frame = Math.min(3, Math.floor(progress * 4));\n' +
+    '        ctx.drawImage(atlas, (frame % 2) * cellWidth, Math.floor(frame / 2) * cellHeight,\n' +
+    '          cellWidth, cellHeight, sx - size / 2, sy - size / 2, size, size);\n' +
+    '      } else if (spriteReady(SPRITES.shieldEffect)) {\n' +
+    '        // A short-lived fallback if the atlas is still downloading.\n' +
+    '        ctx.drawImage(SPRITES.shieldEffect, sx - size / 2, sy - size / 2, size, size);\n' +
+    '      }\n' +
+    '      ctx.restore();\n' +
+    '    }\n' +
+    '\n' +
+    '    if (stormPulse > 0 && !settings.reduceEffects) {\n' +
+    '      ctx.fillStyle = `rgba(255,255,255,${stormPulse * 0.28})`;\n' +
+    '      ctx.fillRect(0, 0, W, H);\n' +
+    '    }\n' +
+    '  }\n' +
+    '\n' +
+    '  function drawWarp() {\n' +
+    '    if (warpTimer <= 0) return;\n' +
+    '    const progress = clamp(1 - warpTimer / 1.25, 0, 1);\n' +
+    '    const intensity = Math.sin(progress * Math.PI);\n' +
+    '    const centerX = W * 0.5;\n' +
+    '    const centerY = H * 0.42;\n' +
+    '    const count = settings.effectsQuality === "high" ? 30 : settings.effectsQuality === "normal" ? 23 : 14;\n' +
+    '    ctx.save();\n' +
+    '    ctx.globalCompositeOperation = "screen";\n' +
+    '    ctx.strokeStyle = level().accent;\n' +
+    '    ctx.shadowColor = level().accent;\n' +
+    '    ctx.shadowBlur = 8;\n' +
+    '    ctx.lineCap = "round";\n' +
+    '    for (let index = 0; index < count; index++) {\n' +
+    '      const angle = index * 2.3999632297 + (index % 3) * 0.19;\n' +
+    '      const seed = ((index * 37) % count) / count;\n' +
+    '      const travel = (seed + progress * (0.72 + (index % 5) * 0.035)) % 1;\n' +
+    '      const radius = 42 + Math.pow(travel, 1.65) * Math.max(W, H) * 0.72;\n' +
+    '      const directionX = Math.cos(angle);\n' +
+    '      const directionY = Math.sin(angle);\n' +
+    '      const x = centerX + directionX * radius;\n' +
+    '      const y = centerY + directionY * radius;\n' +
+    '      const length = 5 + travel * travel * 38;\n' +
+    '      ctx.globalAlpha = intensity * (0.12 + travel * 0.42);\n' +
+    '      ctx.lineWidth = 0.8 + travel * 1.4;\n' +
+    '      ctx.beginPath();\n' +
+    '      ctx.moveTo(x - directionX * length, y - directionY * length);\n' +
+    '      ctx.lineTo(x + directionX * length * 0.18, y + directionY * length * 0.18);\n' +
+    '      ctx.stroke();\n' +
+    '    }\n' +
+    '    ctx.globalAlpha = intensity * 0.34;\n' +
+    '    ctx.lineWidth = 2.5;\n' +
+    '    ctx.beginPath();\n' +
+    '    ctx.arc(centerX, centerY, 24 + progress * 74, 0, Math.PI * 2);\n' +
+    '    ctx.stroke();\n' +
+    '    ctx.restore();\n' +
+    '  }\n' +
+    '\n' +
+    '  function drawTractorCable() {\n' +
+    '    if (powers.tractor <= 0 || !tractorTarget) return;\n' +
+    '    const startX = player.x;\n' +
+    '    const startY = player.y - SHIP_VISUAL.tractorMuzzleOffset;\n' +
+    '    const dx = tractorTarget.x - startX;\n' +
+    '    const dy = tractorTarget.y - startY;\n' +
+    '    const distance = Math.hypot(dx, dy);\n' +
+    '    const angle = Math.atan2(dy, dx);\n' +
+    '    const frame = frameFrom("tractor", Math.floor(elapsed * 13));\n' +
+    '    const intensity = clamp(1 - distance / 430, 0.25, 1);\n' +
+    '    const targetWidth = Math.max(20, tractorTarget.r * 1.25);\n' +
+    '\n' +
+    '    ctx.save();\n' +
+    '    ctx.translate(startX, startY);\n' +
+    '    ctx.rotate(angle);\n' +
+    '    ctx.globalCompositeOperation = "screen";\n' +
+    '    ctx.shadowBlur = 18 + intensity * 18;\n' +
+    '    ctx.shadowColor = "#45eaff";\n' +
+    '\n' +
+    '    const volume = ctx.createLinearGradient(0, 0, distance, 0);\n' +
+    '    volume.addColorStop(0, `rgba(210,255,255,${0.18 + intensity * 0.18})`);\n' +
+    '    volume.addColorStop(0.48, `rgba(57,225,255,${0.08 + intensity * 0.12})`);\n' +
+    '    volume.addColorStop(1, `rgba(102,137,255,${0.22 + intensity * 0.16})`);\n' +
+    '    ctx.fillStyle = volume;\n' +
+    '    ctx.beginPath();\n' +
+    '    ctx.moveTo(0, -7);\n' +
+    '    ctx.lineTo(distance, -targetWidth);\n' +
+    '    ctx.lineTo(distance, targetWidth);\n' +
+    '    ctx.lineTo(0, 7);\n' +
+    '    ctx.closePath();\n' +
+    '    ctx.fill();\n' +
+    '\n' +
+    '    ctx.save();\n' +
+    '    ctx.beginPath();\n' +
+    '    ctx.moveTo(0, -9); ctx.lineTo(distance, -targetWidth); ctx.lineTo(distance, targetWidth); ctx.lineTo(0, 9); ctx.closePath();\n' +
+    '    ctx.clip();\n' +
+    '    for (let index = 0; index < 13; index++) {\n' +
+    '      const travel = (elapsed * (0.82 + intensity * 0.55) + index / 13) % 1;\n' +
+    '      const x = distance * (1 - travel);\n' +
+    '      const spread = 6 + (x / Math.max(1, distance)) * targetWidth * 0.72;\n' +
+    '      const y = Math.sin(index * 2.43 + elapsed * 7.5) * spread;\n' +
+    '      ctx.globalAlpha = 0.22 + intensity * 0.55;\n' +
+    '      ctx.fillStyle = index % 3 ? "#7df5ff" : "#ffffff";\n' +
+    '      ctx.beginPath(); ctx.arc(x, y, 1.4 + intensity * 1.7, 0, Math.PI * 2); ctx.fill();\n' +
+    '    }\n' +
+    '    ctx.strokeStyle = `rgba(210,255,255,${0.22 + intensity * 0.42})`;\n' +
+    '    ctx.lineWidth = 1.2 + intensity;\n' +
+    '    for (let arc = 0; arc < 2; arc++) {\n' +
+    '      ctx.beginPath();\n' +
+    '      for (let segment = 0; segment <= 8; segment++) {\n' +
+    '        const x = distance * segment / 8;\n' +
+    '        const y = Math.sin(elapsed * 18 + segment * 2.2 + arc * 3.1) * (4 + x / Math.max(1, distance) * targetWidth * 0.34);\n' +
+    '        if (segment) ctx.lineTo(x, y); else ctx.moveTo(x, y);\n' +
+    '      }\n' +
+    '      ctx.stroke();\n' +
+    '    }\n' +
+    '    ctx.restore();\n' +
+    '\n' +
+    '    if (frame) {\n' +
+    '      ctx.globalAlpha = 0.18 + intensity * 0.16;\n' +
+    '      ctx.drawImage(frame, 0, -targetWidth, distance, targetWidth * 2);\n' +
+    '    } else {\n' +
+    '      ctx.strokeStyle = "#55eaff";\n' +
+    '      ctx.lineWidth = 2.5;\n' +
+    '      ctx.setLineDash([10, 8]);\n' +
+    '      ctx.lineDashOffset = -elapsed * 60;\n' +
+    '      ctx.beginPath();\n' +
+    '      ctx.moveTo(0, 0);\n' +
+    '      ctx.lineTo(distance, 0);\n' +
+    '      ctx.stroke();\n' +
+    '    }\n' +
+    '    ctx.globalAlpha = 0.58 + intensity * 0.35;\n' +
+    '    ctx.fillStyle = "#eaffff";\n' +
+    '    ctx.beginPath(); ctx.arc(0, 0, 5 + intensity * 4, 0, Math.PI * 2); ctx.fill();\n' +
+    '    ctx.restore();\n' +
+    '  }\n' +
+    '  function drawJourneyBackground() {\n' +
+    '    const view = journeyView || {routeProgress: 0, segmentId: "departure", segmentProgress: 0};\n' +
+    '    const progress = view.routeProgress;\n' +
+    '    ctx.fillStyle = "#020917"; ctx.fillRect(0, 0, W, H);\n' +
+    '    const painting = (image, alpha, zoom) => {\n' +
+    '      if (!spriteReady(image) || alpha <= 0) return;\n' +
+    '      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * zoom;\n' +
+    '      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;\n' +
+    '      ctx.save(); ctx.globalAlpha = alpha;\n' +
+    '      ctx.drawImage(image, (W - width) / 2, (H - height) / 2, width, height); ctx.restore();\n' +
+    '    };\n' +
+    '    painting(SPRITES.cronosBackground, clamp(1 - progress * 2.6, 0, 1), 1.16 - progress * .3);\n' +
+    '    painting(SPRITES.atlasBackground, clamp((progress - .18) / .65, 0, .94), 1.02 + progress * .18);\n' +
+    '    ctx.save(); ctx.globalAlpha = .5;\n' +
+    '    for (const star of stars) {\n' +
+    '      ctx.fillStyle = star.tint;\n' +
+    '      ctx.fillRect(star.x, star.y, star.r, star.r * 2.5);\n' +
+    '    }\n' +
+    '    ctx.restore();\n' +
+    '    if (progress < .42 && spriteReady(SPRITES.chronosModule)) {\n' +
+    '      const distance = progress / .42;\n' +
+    '      const size = 320 - distance * 230;\n' +
+    '      ctx.save(); ctx.globalAlpha = (1 - distance) * .85;\n' +
+    '      ctx.translate(W * (.61 - distance * .39), H * (.32 - distance * .16));\n' +
+    '      ctx.rotate(-.2 + distance * .4);\n' +
+    '      ctx.drawImage(SPRITES.chronosModule, -size / 2, -size / 2, size, size);\n' +
+    '      ctx.restore();\n' +
+    '    }\n' +
+    '    if (view.segmentId === "departure" && view.segmentProgress >= .08 && view.segmentProgress < .12 && spriteReady(SPRITES.chronosShockwave)) {\n' +
+    '      const phase = (view.segmentProgress - .08) / .04;\n' +
+    '      const atlas = SPRITES.chronosShockwave, cell = atlas.naturalWidth / 2;\n' +
+    '      const frame = Math.min(3, Math.floor(phase * 4)), size = 250 + phase * 700;\n' +
+    '      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.sin(phase * Math.PI) * .8;\n' +
+    '      ctx.drawImage(atlas, frame % 2 * cell, Math.floor(frame / 2) * cell, cell, cell, W * .5 - size / 2, H * .32 - size / 2, size, size);\n' +
+    '      ctx.restore();\n' +
+    '    }\n' +
+    '    const veil = ctx.createLinearGradient(0, H * .3, 0, H);\n' +
+    '    veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");\n' +
+    '    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);\n' +
+    '  }'
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/visual-artpass.test.mjs:39:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0) {\n      const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);\n      const sx = W * 0.50;\n      const sy = H * 0.40;\n      const strength = Math.sin(progress * Math.PI);\n      ctx.save();\n      ctx.globalCompositeOperation = "screen";\n      const size = Math.min(W, H) * (0.36 + progress * 1.45);\n      ctx.globalAlpha = strength * 0.62;\n      if (spriteReady(SPRITES.chronosShockwave)) {\n        const atlas = SPRITES.chronosShockwave;\n        const cellWidth = atlas.naturalWidth / 2;\n        const cellHeight = atlas.naturalHeight / 2;\n        const frame = Math.min(3, Math.floor(progress * 4));\n        ctx.drawImage(atlas, (frame % 2) * cellWidth, Math.floor(frame / 2) * cellHeight,\n          cellWidth, cellHeight, sx - size / 2, sy - size / 2, size, size);\n      } else if (spriteReady(SPRITES.shieldEffect)) {\n        // A short-lived fallback if the atlas is still downloading.\n        ctx.drawImage(SPRITES.shieldEffect, sx - size / 2, sy - size / 2, size, size);\n      }\n      ctx.restore();\n    }\n\n    if (stormPulse > 0 && !settings.reduceEffects) {\n      ctx.fillStyle = `rgba(255,255,255,${stormPulse * 0.28})`;\n      ctx.fillRect(0, 0, W, H);\n    }\n  }\n\n  function drawWarp() {\n    if (warpTimer <= 0) return;\n    const progress = clamp(1 - warpTimer / 1.25, 0, 1);\n    const intensity = Math.sin(progress * Math.PI);\n    const centerX = W * 0.5;\n    const centerY = H * 0.42;\n    const count = settings.effectsQuality === "high" ? 30 : settings.effectsQuality === "normal" ? 23 : 14;\n    ctx.save();\n    ctx.globalCompositeOperation = "screen";\n    ctx.strokeStyle = level().accent;\n    ctx.shadowColor = level().accent;\n    ctx.shadowBlur = 8;\n    ctx.lineCap = "round";\n    for (let index = 0; index < count; index++) {\n      const angle = index * 2.3999632297 + (index % 3) * 0.19;\n      const seed = ((index * 37) % count) / count;\n      const travel = (seed + progress * (0.72 + (index % 5) * 0.035)) % 1;\n      const radius = 42 + Math.pow(travel, 1.65) * Math.max(W, H) * 0.72;\n      const directionX = Math.cos(angle);\n      const directionY = Math.sin(angle);\n      const x = centerX + directionX * radius;\n      const y = centerY + directionY * radius;\n      const length = 5 + travel * travel * 38;\n      ctx.globalAlpha = intensity * (0.12 + travel * 0.42);\n      ctx.lineWidth = 0.8 + travel * 1.4;\n      ctx.beginPath();\n      ctx.moveTo(x - directionX * length, y - directionY * length);\n      ctx.lineTo(x + directionX * length * 0.18, y + directionY * length * 0.18);\n      ctx.stroke();\n    }\n    ctx.globalAlpha = intensity * 0.34;\n    ctx.lineWidth = 2.5;\n    ctx.beginPath();\n    ctx.arc(centerX, centerY, 24 + progress * 74, 0, Math.PI * 2);\n    ctx.stroke();\n    ctx.restore();\n  }\n\n  function drawTractorCable() {\n    if (powers.tractor <= 0 || !tractorTarget) return;\n    const startX = player.x;\n    const startY = player.y - SHIP_VISUAL.tractorMuzzleOffset;\n    const dx = tractorTarget.x - startX;\n    const dy = tractorTarget.y - startY;\n    const distance = Math.hypot(dx, dy);\n    const angle = Math.atan2(dy, dx);\n    const frame = frameFrom("tractor", Math.floor(elapsed * 13));\n    const intensity = clamp(1 - distance / 430, 0.25, 1);\n    const targetWidth = Math.max(20, tractorTarget.r * 1.25);\n\n    ctx.save();\n    ctx.translate(startX, startY);\n    ctx.rotate(angle);\n    ctx.globalCompositeOperation = "screen";\n    ctx.shadowBlur = 18 + intensity * 18;\n    ctx.shadowColor = "#45eaff";\n\n    const volume = ctx.createLinearGradient(0, 0, distance, 0);\n    volume.addColorStop(0, `rgba(210,255,255,${0.18 + intensity * 0.18})`);\n    volume.addColorStop(0.48, `rgba(57,225,255,${0.08 + intensity * 0.12})`);\n    volume.addColorStop(1, `rgba(102,137,255,${0.22 + intensity * 0.16})`);\n    ctx.fillStyle = volume;\n    ctx.beginPath();\n    ctx.moveTo(0, -7);\n    ctx.lineTo(distance, -targetWidth);\n    ctx.lineTo(distance, targetWidth);\n    ctx.lineTo(0, 7);\n    ctx.closePath();\n    ctx.fill();\n\n    ctx.save();\n    ctx.beginPath();\n    ctx.moveTo(0, -9); ctx.lineTo(distance, -targetWidth); ctx.lineTo(distance, targetWidth); ctx.lineTo(0, 9); ctx.closePath();\n    ctx.clip();\n    for (let index = 0; index < 13; index++) {\n      const travel = (elapsed * (0.82 + intensity * 0.55) + index / 13) % 1;\n      const x = distance * (1 - travel);\n      const spread = 6 + (x / Math.max(1, distance)) * targetWidth * 0.72;\n      const y = Math.sin(index * 2.43 + elapsed * 7.5) * spread;\n      ctx.globalAlpha = 0.22 + intensity * 0.55;\n      ctx.fillStyle = index % 3 ? "#7df5ff" : "#ffffff";\n      ctx.beginPath(); ctx.arc(x, y, 1.4 + intensity * 1.7, 0, Math.PI * 2); ctx.fill();\n    }\n    ctx.strokeStyle = `rgba(210,255,255,${0.22 + intensity * 0.42})`;\n    ctx.lineWidth = 1.2 + intensity;\n    for (let arc = 0; arc < 2; arc++) {\n      ctx.beginPath();\n      for (let segment = 0; segment <= 8; segment++) {\n        const x = distance * segment / 8;\n        const y = Math.sin(elapsed * 18 + segment * 2.2 + arc * 3.1) * (4 + x / Math.max(1, distance) * targetWidth * 0.34);\n        if (segment) ctx.lineTo(x, y); else ctx.moveTo(x, y);\n      }\n      ctx.stroke();\n    }\n    ctx.restore();\n\n    if (frame) {\n      ctx.globalAlpha = 0.18 + intensity * 0.16;\n      ctx.drawImage(frame, 0, -targetWidth, distance, targetWidth * 2);\n    } else {\n      ctx.strokeStyle = "#55eaff";\n      ctx.lineWidth = 2.5;\n      ctx.setLineDash([10, 8]);\n      ctx.lineDashOffset = -elapsed * 60;\n      ctx.beginPath();\n      ctx.moveTo(0, 0);\n      ctx.lineTo(distance, 0);\n      ctx.stroke();\n    }\n    ctx.globalAlpha = 0.58 + intensity * 0.35;\n    ctx.fillStyle = "#eaffff";\n    ctx.beginPath(); ctx.arc(0, 0, 5 + intensity * 4, 0, Math.PI * 2); ctx.fill();\n    ctx.restore();\n  }\n  function drawJourneyBackground() {\n    const view = journeyView || {routeProgress: 0, segmentId: "departure", segmentProgress: 0};\n    const progress = view.routeProgress;\n    ctx.fillStyle = "#020917"; ctx.fillRect(0, 0, W, H);\n    const painting = (image, alpha, zoom) => {\n      if (!spriteReady(image) || alpha <= 0) return;\n      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * zoom;\n      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;\n      ctx.save(); ctx.globalAlpha = alpha;\n      ctx.drawImage(image, (W - width) / 2, (H - height) / 2, width, height); ctx.restore();\n    };\n    painting(SPRITES.cronosBackground, clamp(1 - progress * 2.6, 0, 1), 1.16 - progress * .3);\n    painting(SPRITES.atlasBackground, clamp((progress - .18) / .65, 0, .94), 1.02 + progress * .18);\n    ctx.save(); ctx.globalAlpha = .5;\n    for (const star of stars) {\n      ctx.fillStyle = star.tint;\n      ctx.fillRect(star.x, star.y, star.r, star.r * 2.5);\n    }\n    ctx.restore();\n    if (progress < .42 && spriteReady(SPRITES.chronosModule)) {\n      const distance = progress / .42;\n      const size = 320 - distance * 230;\n      ctx.save(); ctx.globalAlpha = (1 - distance) * .85;\n      ctx.translate(W * (.61 - distance * .39), H * (.32 - distance * .16));\n      ctx.rotate(-.2 + distance * .4);\n      ctx.drawImage(SPRITES.chronosModule, -size / 2, -size / 2, size, size);\n      ctx.restore();\n    }\n    if (view.segmentId === "departure" && view.segmentProgress >= .08 && view.segmentProgress < .12 && spriteReady(SPRITES.chronosShockwave)) {\n      const phase = (view.segmentProgress - .08) / .04;\n      const atlas = SPRITES.chronosShockwave, cell = atlas.naturalWidth / 2;\n      const frame = Math.min(3, Math.floor(phase * 4)), size = 250 + phase * 700;\n      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.sin(phase * Math.PI) * .8;\n      ctx.drawImage(atlas, frame % 2 * cell, Math.floor(frame / 2) * cell, cell, cell, W * .5 - size / 2, H * .32 - size / 2, size, size);\n      ctx.restore();\n    }\n    const veil = ctx.createLinearGradient(0, H * .3, 0, H);\n    veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");\n    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);\n  }',
+    expected: /ctx\.arc\(/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/visual-artpass.test.mjs:121:1
+✖ level one shockwave retains a graphical fallback while the atlas loads (4.849053ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(a > 0 && b > a)
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/visual-artpass.test.mjs:125:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -57,6 +57,9 @@ function harness(t, {pointerEvents = true, mode = 'classic'} = {}) {
     }
     function update(dt){cooldown=Math.max(0,cooldown-dt);}
     function render(){}
+    const atlasBoss=null;
+    function signalScoreContext(){}
+    function updateScore(){}
     function pauseGame(){resetGameInput();state='paused';}
     function resumeGame(){state='playing';}
     async function suspendAudio(){}

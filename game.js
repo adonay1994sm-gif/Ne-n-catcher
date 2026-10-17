@@ -96,6 +96,7 @@
     sensitivity: $("sensitivity"),
     vibration: $("vibration"),
     effectsQuality: $("effectsQuality"),
+    reduceEffects: $("reduceEffects"),
     musicValue: $("musicValue"),
     fxValue: $("fxValue"),
     sensitivityValue: $("sensitivityValue")
@@ -302,6 +303,8 @@
   let classicCometWarning = -1;
   let classicVoyageRecord = null;
   let classicVoyageWritable = true;
+  let completionJournal = null;
+  let completionPersistenceBlocked = false;
   let classicVoyageRequestedStage = null;
   let classicVoyageSpawnTimer = 0;
   let classicVoyageHazardTimer = 0;
@@ -409,6 +412,7 @@
     chronosDestruction: loadSprite("assets/chronos_destruction_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
+    c9Station: loadSprite("assets/c9_station_v1.webp", false),
 
     shipFallback: SPRITE_GROUPS.ship[0],
     meteorSmall: loadSprite("assets/meteor_small.webp", true),
@@ -494,7 +498,6 @@
 
   let audioCtx = null;
   let musicGain = null;
-  let musicNodes = [];
   let resumeAudioAfterAd = false;
   function loadSettings() {
     const saved = storage.getJSON(KEYS.settings, {});
@@ -511,6 +514,8 @@
       fx: Math.round(finite(source.fx, DEFAULT_SETTINGS.fx, 0, 100)),
       sensitivity: Math.round(finite(source.sensitivity, DEFAULT_SETTINGS.sensitivity, 60, 150) / 5) * 5,
       vibration: typeof source.vibration === "boolean" ? source.vibration : DEFAULT_SETTINGS.vibration,
+      reduceEffects: typeof source.reduceEffects === "boolean" ? source.reduceEffects
+        : Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches),
       effectsQuality: savedQuality,
       effects: savedQuality !== "low"
     };
@@ -633,7 +638,8 @@
         minY = center; maxY = center; yFits = false;
       }
     }
-    classicFlightBounds = Object.freeze({ ...base, minY, maxY, yFits, fits: base.xFits && yFits });
+    classicFlightBounds = Object.freeze({ ...base, minY, maxY, yFits, fits: base.xFits && yFits,
+      presentationTop: hudBottom, presentationBottom: controlsTop });
     classicFlightAnchorY = maxY;
     player.x = clamp(player.x, classicFlightBounds.minX, classicFlightBounds.maxX);
     player.target = clamp(player.target, classicFlightBounds.minX, classicFlightBounds.maxX);
@@ -683,6 +689,13 @@
 
   addEventListener("resize", resizeCanvas, { passive: true });
 
+  // The score shares the legacy AudioContext. The existing frame owner calls
+  // updateScore; no score timer, RAF or permanently running drone is created.
+  let voyageScore = null;
+  let voyageScoreContext = "transit";
+  let scoreSuspended = false;
+  const activeToneVoices = new Set();
+
   function ensureAudio() {
     if (audioCtx) return audioCtx;
     try {
@@ -700,24 +713,37 @@
     const ac = ensureAudio();
     if (!ac) return;
     if (ac.state === "suspended") ac.resume().catch(() => {});
-    if (musicNodes.length) {
-      updateAudioVolumes();
-      return;
+    if (!voyageScore && typeof NeonCampaign !== "undefined" && typeof NeonCampaign.createVoyageScore === "function") {
+      voyageScore = NeonCampaign.createVoyageScore({context: ac, output: musicGain});
+      voyageScore.setContext(voyageScoreContext);
     }
-    [55, 82.41, 110].forEach((frequency, index) => {
-      const oscillator = ac.createOscillator();
-      const gain = ac.createGain();
-      oscillator.type = index === 0 ? "sine" : "triangle";
-      oscillator.frequency.value = frequency;
-      gain.gain.value = index === 0 ? 0.33 : 0.11;
-      oscillator.connect(gain).connect(musicGain);
-      oscillator.start();
-      musicNodes.push(oscillator, gain);
-    });
+    scoreSuspended = false;
     updateAudioVolumes();
   }
 
+  function signalScoreContext(context) {
+    if (!["transit", "atlas", "station", "arrival"].includes(context)) return false;
+    voyageScoreContext = context;
+    return voyageScore?.setContext(context) ?? true;
+  }
+
+  function updateScore(dt, paused = false) {
+    if (!voyageScore) return;
+    voyageScore.setPaused(paused || scoreSuspended);
+    voyageScore.advance(dt);
+  }
+
+  function stopToneVoices() {
+    for (const voice of [...activeToneVoices]) {
+      try { voice.oscillator.stop(audioCtx.currentTime); } catch { /* already ended */ }
+      voice.release();
+    }
+  }
+
   async function suspendAudio() {
+    scoreSuspended = true;
+    voyageScore?.setPaused(true);
+    stopToneVoices();
     if (audioCtx?.state === "running") await audioCtx.suspend().catch(() => {});
   }
 
@@ -725,29 +751,41 @@
     if (audioCtx?.state === "suspended" && (settings.music > 0 || settings.fx > 0)) {
       await audioCtx.resume().catch(() => {});
     }
+    scoreSuspended = audioCtx?.state !== "running";
     updateAudioVolumes();
   }
 
   function updateAudioVolumes() {
+    voyageScore?.setEnabled(settings.music > 0);
+    if (settings.fx <= 0) stopToneVoices();
     if (musicGain && audioCtx) {
-      const value = (settings.music / 100) * 0.09;
+      const value = (settings.music / 100) * 0.26;
       musicGain.gain.setTargetAtTime(value, audioCtx.currentTime, 0.08);
     }
   }
 
   function tone(frequency = 440, duration = 0.06, type = "sine", base = 0.06) {
-    if (settings.fx <= 0) return;
+    if (settings.fx <= 0) { stopToneVoices(); return; }
     const ac = ensureAudio();
-    if (!ac) return;
+    if (!ac || ac.state !== "running" || scoreSuspended) return;
+    for (const voice of [...activeToneVoices]) if (voice.end <= ac.currentTime) voice.release();
+    if (activeToneVoices.size >= 16) return;
     const oscillator = ac.createOscillator();
     const gain = ac.createGain();
     oscillator.type = type;
     oscillator.frequency.value = frequency;
-    gain.gain.value = base * (settings.fx / 100);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + duration);
+    const length = Math.max(.015, Math.min(2, Number(duration) || .06));
+    gain.gain.value = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
+    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + length);
     oscillator.connect(gain).connect(ac.destination);
+    const voice = {oscillator, end: ac.currentTime + length, release() {
+      if (!activeToneVoices.delete(voice)) return;
+      oscillator.disconnect(); gain.disconnect();
+    }};
+    activeToneVoices.add(voice);
+    oscillator.onended = voice.release;
     oscillator.start();
-    oscillator.stop(ac.currentTime + duration);
+    oscillator.stop(voice.end);
   }
 
   function vibrate(pattern) {
@@ -755,11 +793,13 @@
   }
 
   function syncSettingsUI() {
+    document.body.classList.toggle("reduced-effects", settings.reduceEffects);
     ui.musicVolume.value = settings.music;
     ui.fxVolume.value = settings.fx;
     ui.sensitivity.value = settings.sensitivity;
     ui.vibration.checked = settings.vibration;
     ui.effectsQuality.value = settings.effectsQuality;
+    ui.reduceEffects.checked = settings.reduceEffects;
     ui.musicValue.textContent = `${settings.music}%`;
     ui.fxValue.textContent = `${settings.fx}%`;
     ui.sensitivityValue.textContent = `${settings.sensitivity}%`;
@@ -780,6 +820,17 @@
   const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
 
   function isUnifiedClassic() { return !N7_CAMPAIGN && !JOURNEY_DEMO; }
+
+  function recoverCampaignCompletion() {
+    if(JOURNEY_DEMO)return true;
+    if(!completionJournal)completionJournal=NeonCampaign.createCompletionJournal({storage,keys:KEYS,
+      levelCount:LEVELS.length,checkpointKey:N7_CAMPAIGN?null:NeonCampaign.CHRONOS_VOYAGE_KEY,
+      validateCheckpoint:value=>normalizeClassicVoyageRecord(value)!==null});
+    const result=completionJournal.recover();
+    completionPersistenceBlocked=!result.ok;
+    if(!result.ok)toast("Guardado pendiente: no se sobrescribirá. Reintenta cuando el almacenamiento esté disponible.");
+    return result.ok;
+  }
 
   function setupClassicFlight() {
     if (!isUnifiedClassic()) return;
@@ -816,6 +867,21 @@
     for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
     const calibrate=document.createElement("button");calibrate.id="flightCalibrateLance";calibrate.className="secondary";calibrate.type="button";
     ui.flightInstallTwin.after(calibrate);ui.flightCalibrateLance=calibrate;
+    const loadout = document.createElement("div");
+    loadout.id="flightLoadoutChoices";loadout.className="flight-loadout-choices";
+    loadout.setAttribute("role","group");loadout.setAttribute("aria-label","Arma al salir de C9");
+    ui.flightDockStatus.after(loadout);
+    for(const [type,weapon] of Object.entries(NeonCampaign.CLASSIC_WEAPON_RULES.types)) {
+      const button=document.createElement("button");button.type="button";button.dataset.flightLoadout=type;
+      button.innerHTML=`<b>${weapon.label} ×${weapon.damageMultiplier}</b><small>${type==="pulse"?"Ágil · un pulso":type==="twin"?"Dos pulsos centrados":"Perfora dos objetivos"}</small>`;
+      button.onclick=()=>{
+        if(!classicEquipment.unlocked.includes(type))return;
+        if(persistClassicEquipment({...classicEquipment,selected:type})) {
+          updateClassicDock();syncClassicFlightHud();tone(720,.08,"triangle",.035);
+        }
+      };
+      loadout.append(button);
+    }
     ui.flightWeapon.onclick = () => {
       if (classicEquipment.unlocked.length < 2) { toast("Rescata el emisor gemelo de Chronos y móntalo en C9"); return; }
       const selected = classicEquipment.unlocked[(classicEquipment.unlocked.indexOf(classicEquipment.selected)+1)%classicEquipment.unlocked.length];
@@ -848,31 +914,44 @@
     syncClassicFlightHud();
   }
 
-  function loadClassicVoyage() {
-    const key=NeonCampaign.CHRONOS_VOYAGE_KEY,raw=storage.getRaw(key);
-    if(raw===null)return;
+  function normalizeClassicVoyageRecord(value) {
     try {
-      const value=JSON.parse(raw),checkpoint=NeonCampaign.normalizeChronosVoyageCheckpoint(value?.checkpoint,{goal:LEVELS[0].goal});
+      const checkpoint=NeonCampaign.normalizeChronosVoyageCheckpoint(value?.checkpoint,{goal:LEVELS[0].goal});
       if(value?.version!==2 || !checkpoint || !Number.isInteger(value.unlockedStage) || value.unlockedStage<checkpoint.stageNumber || value.unlockedStage>10 ||
         typeof value.completed!=="boolean" || (value.completed && checkpoint.stageNumber!==10) ||
         !Number.isFinite(value.entry?.hull) || value.entry.hull<=0 || value.entry.hull>100 ||
         !Number.isInteger(value.entry?.score) || value.entry.score<0 ||
         !Number.isFinite(value.entry?.maxCombo) || value.entry.maxCombo<1 || value.entry.maxCombo>12 ||
         value.entry?.collected!==checkpoint.collected)throw new Error("Invalid voyage save");
-      classicVoyageRecord={...value,checkpoint};
-    } catch {
+      return {...value,checkpoint};
+    } catch {return null;}
+  }
+
+  function loadClassicVoyage() {
+    const key=NeonCampaign.CHRONOS_VOYAGE_KEY,raw=storage.getRaw(key);
+    if(raw===null)return;
+    let normalized=null;
+    try {normalized=normalizeClassicVoyageRecord(JSON.parse(raw));} catch {}
+    if(normalized)classicVoyageRecord=normalized;
+    else {
       const backup=key+":invalid-backups",previous=storage.getJSON(backup,[]);
       const copies=Array.isArray(previous)?previous.filter(value=>typeof value==="string"):[];
       classicVoyageWritable=copies.includes(raw)||storage.setJSON(backup,[...copies,raw]);
     }
   }
 
-  function saveClassicVoyageCheckpoint(checkpoint,completed=false) {
-    if(!checkpoint)return false;
+  function classicVoyageCheckpointRecord(checkpoint,completed=false) {
+    if(!checkpoint)return null;
     const previous=classicVoyageRecord;
     const entry=completed && previous ? previous.entry : {
       hull:Math.max(1,Math.min(100,hull)),score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected};
-    const record={version:2,checkpoint,entry,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
+    return {version:2,checkpoint,entry,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
+  }
+
+  function saveClassicVoyageCheckpoint(checkpoint,completed=false) {
+    if(!checkpoint)return false;
+    if(completionPersistenceBlocked&&!recoverCampaignCompletion())return false;
+    const record=classicVoyageCheckpointRecord(checkpoint,completed);
     // New route data has its own key. Old classic/N-7 saves are never inferred,
     // renumbered or replaced. Invalid raw data is backed up before any write.
     const saved=classicVoyageWritable&&storage.setJSON(NeonCampaign.CHRONOS_VOYAGE_KEY,record);
@@ -944,7 +1023,13 @@
 
   function updateClassicDock() {
     const installed=classicEquipment.unlocked.includes("twin");
-    ui.flightDockStatus.textContent=installed ? "Pulso ×1: 1 de daño. Gemelo ×2: dos tiros centrados de 1. Calibra la misma pieza como lanza ×3: 3 de daño y hasta dos objetivos perforados. Todos comparten tres cargas; recuperas una cada 3,6 segundos de vuelo. Sin coste." : classicEquipment.recoveredTwin ? "Recuperaste un emisor del laboratorio. Lo montamos en las alas y concentramos sus dos tiros delante de la proa. Tres cargas con recarga en vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Puedes recuperarlo al repetir el primer tramo. Tu pulso central ya se recarga en vuelo.";
+    const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
+    ui.flightDockStatus.textContent=installed ? `${weapon.label} equipado. ${weapon.description} Tres cargas; recuperas una cada 3,6 segundos de vuelo. Cambiar de arma no recarga la batería. Sin coste.` : classicEquipment.recoveredTwin ? "Emisor rescatado de Chronos. Instálalo para abrir dos calibraciones y ver el armamento en las alas. Tres cargas con recarga en vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Tu pulso central ya se recarga en vuelo.";
+    for(const button of $("flightLoadoutChoices").querySelectorAll("button")) {
+      const type=button.dataset.flightLoadout,unlocked=classicEquipment.unlocked.includes(type);
+      button.disabled=!unlocked;button.setAttribute("aria-pressed",String(type===classicEquipment.selected));
+      button.title=unlocked?NeonCampaign.CLASSIC_WEAPON_RULES.types[type].description:type==="twin"?"Instala el emisor rescatado":"Instala el emisor y calibra la lanza";
+    }
     ui.flightInstallTwin.disabled=installed || !classicEquipment.recoveredTwin;
     ui.flightInstallTwin.textContent=installed ? "EMISOR GEMELO INSTALADO" : "INSTALAR EMISOR GEMELO";
     ui.flightCalibrateLance.disabled=!installed || classicEquipment.unlocked.includes("lance");
@@ -1833,7 +1918,7 @@
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
-        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
+        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);ensureSprite(SPRITES.c9Station);
       }
     }
 
@@ -2019,20 +2104,16 @@
 
     const missed = energySpawned - collected;
     const earned = hull >= 90 && missed <= Math.ceil(energyBudget * 0.1) ? 3 : hull >= 55 ? 2 : 1;
-    const starsMap = getStars();
-    const oldStars = +(starsMap[currentLevel + 1] || 0);
-    starsMap[currentLevel + 1] = Math.max(oldStars, earned);
-    let progressSaved = storage.setJSON(KEYS.stars, starsMap);
-
-    const oldUnlocked = getUnlocked();
-    let newlyUnlocked = false;
-    if (currentLevel + 1 === oldUnlocked && oldUnlocked < LEVELS.length) {
-      progressSaved = storage.set(KEYS.unlocked, oldUnlocked + 1) && progressSaved;
-      newlyUnlocked = true;
-    }
-
-    progressSaved = saveScore() && progressSaved;
-    if(classicFlightView?.canFinish)progressSaved=saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint(),true)&&progressSaved;
+    const completedVoyage=classicFlightView?.canFinish
+      ? classicVoyageCheckpointRecord(classicFlight.exportCheckpoint(),true) : null;
+    // The bounded intent is written before any progress key. A reload replays
+    // only durable monotonic targets, without replaying game events or rewards.
+    const completion = !classicVoyageWritable ? {ok:false,status:"blocked"}
+      : completionJournal.complete({completionId:`${KEYS.unlocked}:${currentLevel+1}:${runToken}:${Date.now()}`,
+        level:currentLevel+1,stars:earned,score:Math.max(0,Math.floor(score)),checkpoint:completedVoyage});
+    const progressSaved=completion.ok,newlyUnlocked=Boolean(completion.newlyUnlocked);
+    completionPersistenceBlocked=!completion.ok;
+    if(completedVoyage&&completion.ok)classicVoyageRecord=completedVoyage;
     registerRun();
     ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
@@ -3416,6 +3497,67 @@
     return true;
   }
 
+  function chronosSceneryFrame() {
+    // Reuse geometry sampled by the UI's layout owner. Reading the DOM here
+    // would force a layout on every rendered frame, including paused frames.
+    const measured = typeof classicFlightBounds === "object" ? classicFlightBounds : null;
+    const top = clamp(Number.isFinite(measured?.presentationTop) ? measured.presentationTop : H * .14, 0, H * .70);
+    const bottom = clamp(Number.isFinite(measured?.presentationBottom) ? measured.presentationBottom : H * .88, top, H);
+    return { top, bottom, height: Math.max(1, bottom - top), gap: Math.max(10, H * .012) };
+  }
+
+  function chronosDestinationPresentation(node) {
+    const frame = chronosSceneryFrame();
+    const maximumSize = Math.max(1, frame.height - frame.gap * 2);
+    const scale = Math.min(node.scale, maximumSize / W);
+    const radius = W * scale * .5;
+    // Keep the growing illustrated globe below the measured tactical strip.
+    // This is a camera projection only: route coordinates, scale, collisions
+    // and the sparse middle stages remain untouched.
+    const y = clamp(Math.max(frame.top + frame.gap + node.y * frame.height,
+      frame.top + frame.gap + radius), frame.top + frame.gap + radius,
+      frame.bottom - frame.gap - radius);
+    return { ...node, scale, y: y / H };
+  }
+
+  function drawChronosServiceRelay(view) {
+    const relay = view.relay || view.service;
+    if (!relay?.visible) return;
+    const station = SPRITES.c9Station;
+    ensureSprite(station);
+    const illustratedStation = spriteReady(station);
+    const image = illustratedStation ? station : SPRITES.satellite;
+    if (!spriteReady(image)) return;
+    const frame = chronosSceneryFrame();
+    const size = illustratedStation ? clamp(W * relay.scale * 4, 36, Math.min(W * .76, frame.height * .78))
+      : Math.max(22, W * relay.scale);
+    const x = clamp(W * relay.x, size * .56, W - size * .56);
+    const y = Math.max(frame.top + frame.gap + relay.y * (H - frame.top),
+      frame.top + frame.gap + size * .56);
+    ctx.save(); ctx.translate(x, y);
+    ctx.rotate(-.08 + Math.sin(view.elapsed * .06) * .035);
+    if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
+    if (illustratedStation) {
+      // Four real machine states, 2x2, one shared centre pivot. Rendering a
+      // repair pose does not install anything or replay a gameplay event.
+      const pose = view.stageNumber >= 7 ? 3 : relay.active ? 2 : view.stageNumber === 6 ? 1 : 0;
+      const cellWidth = image.naturalWidth / 2, cellHeight = image.naturalHeight / 2;
+      ctx.drawImage(image, pose % 2 * cellWidth, Math.floor(pose / 2) * cellHeight,
+        cellWidth, cellHeight, -size / 2, -size / 2, size, size);
+    } else {
+      // The historical relay remains a download-failure fallback, not the new
+      // station's final illustration. It stays available to older campaigns.
+      ctx.drawImage(image, -size / 2, -size / 2, size, size);
+    }
+    ctx.restore();
+    if (relay.active) {
+      ctx.save(); ctx.textAlign = "center"; ctx.font = `bold ${Math.max(15, W * .032)}px sans-serif`;
+      ctx.fillStyle = "#bcefff"; ctx.shadowColor = "#020817"; ctx.shadowBlur = 5;
+      ctx.fillText("SERVICIO C9", x, y + size * .56 + frame.gap);
+      ctx.restore();
+    }
+  }
+
   function drawChronosFlightBackground() {
     const view = classicFlightView;
     if (!view) return;
@@ -3461,7 +3603,7 @@
     }
     ctx.restore();
 
-    drawChronosFlightSprite(2, view.planet);
+    drawChronosFlightSprite(2, chronosDestinationPresentation(view.planet));
     if (!drawChronosDestructionStation(view, destruction)) {
       // A failed new download keeps the two preserved station poses playable.
       drawChronosFlightSprite(view.station.state === "ruptured" ? 1 : 0, view.station);
@@ -3488,24 +3630,7 @@
       }
     }
 
-    // C9 is an illustrated relay on the same route, not a new fullscreen plate.
-    // It approaches and recedes with model coordinates; stopping the route also
-    // stops the mast's drift. A service overlay may inspect/install the part.
-    const relay = view.relay || view.service;
-    if (relay?.visible && spriteReady(SPRITES.satellite)) {
-      const size = Math.max(22, W * relay.scale);
-      ctx.save(); ctx.translate(W * relay.x, H * relay.y);
-      ctx.rotate(-.08 + Math.sin(clock * .06) * .035);
-      if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
-      ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
-      ctx.restore();
-      if (relay.active) {
-        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 13px sans-serif";
-        ctx.fillStyle = "#bcefff";
-        ctx.fillText("SERVICIO C9", W * relay.x, H * relay.y + size * .62);
-        ctx.restore();
-      }
-    }
+    drawChronosServiceRelay(view);
 
     if (view.beacon.visible && spriteReady(SPRITES.satellite)) {
       const size = Math.max(30, W * view.beacon.scale);
@@ -3902,7 +4027,7 @@
       ctx.restore();
     }
 
-    if (stormPulse > 0) {
+    if (stormPulse > 0 && !settings.reduceEffects) {
       ctx.fillStyle = `rgba(255,255,255,${stormPulse * 0.28})`;
       ctx.fillRect(0, 0, W, H);
     }
@@ -4244,14 +4369,22 @@
     const preview = ui.flightDockCanvas;
     const target = preview.getContext("2d");
     target.clearRect(0, 0, preview.width, preview.height);
-    target.save(); target.translate(preview.width / 2, preview.height * .49);
+    const servicing=flightDockReturn==="voyage"&&spriteReady(SPRITES.c9Station);
+    if(servicing) {
+      const image=SPRITES.c9Station,cellWidth=image.naturalWidth/2,cellHeight=image.naturalHeight/2;
+      // Service pose, with the bay facing the real modular hull. No second
+      // station clock: the stopped route owns the docking state.
+      target.drawImage(image,0,cellHeight,cellWidth,cellHeight,71,-8,242,242);
+    }
+    const size=servicing?165:270;
+    target.save(); target.translate(preview.width / 2, servicing?218:preview.height * .49);
     const twin = hasClassicTwinMounts();
-    const assembled = drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
+    const assembled = drawModularShip(target, shipLoadout, size, t / 1000, 0, 100, 0, twin ? 0 : null);
     if (!assembled) {
-      target.save(); target.scale(270 / 512, 270 / 512);
+      target.save(); target.scale(size / 512, size / 512);
       if (twin) drawClassicTwinMounts(target, 0);
       target.restore();
-      drawShipIdentityFallback(target, 270);
+      drawShipIdentityFallback(target, size);
     }
     target.restore();
   }
@@ -4873,8 +5006,10 @@
     drawShipHangar(t);
     drawClassicDock(t);
     ctx.save();
-    ctx.translate(cameraKickX, -cameraKickY);
-    if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    if (!settings.reduceEffects) {
+      ctx.translate(cameraKickX, -cameraKickY);
+      if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    }
     background(t);
     drawWarp();
     drawTractorCable();
@@ -4902,7 +5037,7 @@
       ctx.fillStyle = "rgba(75,125,255,.055)";
       ctx.fillRect(0, 0, W, H);
     }
-    if (flash > 0) {
+    if (flash > 0 && !settings.reduceEffects) {
       ctx.fillStyle = `rgba(255,40,80,${Math.min(0.28, flash)})`;
       ctx.fillRect(0, 0, W, H);
     }
@@ -4948,6 +5083,11 @@
     else if (fireInput && !ui.fire.disabled) fireManualShot();
     update(dt);
     if (!legacyRunning) return;
+    const servicing = ui.flightDock?.classList.contains("show");
+    signalScoreContext(servicing ? "station" : state === "complete" ? "arrival"
+      : atlasBoss && !atlasBoss.resolved ? "atlas" : "transit");
+    updateScore(dt, document.hidden || (state === "paused" && !servicing)
+      || state === "gameover" || state === "destroying");
     render(now);
     if (legacyRunning) legacyFrameId = requestAnimationFrame(frame);
   }
@@ -5213,6 +5353,10 @@
     settings.effectsQuality = ["low", "normal", "high"].includes(event.target.value) ? event.target.value : "normal";
     settings.effects = settings.effectsQuality !== "low";
   };
+  ui.reduceEffects.onchange = (event) => {
+    settings.reduceEffects = event.target.checked;
+    document.body.classList.toggle("reduced-effects", settings.reduceEffects);
+  };
 
   ui.reward.onclick = async () => {
     ui.reward.disabled = true;
@@ -5272,6 +5416,8 @@
     addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
 
+  recoverCampaignCompletion();
+  currentLevel=Math.max(0,Math.min(LEVELS.length-1,getUnlocked()-1));
   setupClassicFlight();
   resizeCanvas();
   syncSettingsUI();

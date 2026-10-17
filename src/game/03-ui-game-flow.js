@@ -2,6 +2,17 @@
 
   function isUnifiedClassic() { return !N7_CAMPAIGN && !JOURNEY_DEMO; }
 
+  function recoverCampaignCompletion() {
+    if(JOURNEY_DEMO)return true;
+    if(!completionJournal)completionJournal=NeonCampaign.createCompletionJournal({storage,keys:KEYS,
+      levelCount:LEVELS.length,checkpointKey:N7_CAMPAIGN?null:NeonCampaign.CHRONOS_VOYAGE_KEY,
+      validateCheckpoint:value=>normalizeClassicVoyageRecord(value)!==null});
+    const result=completionJournal.recover();
+    completionPersistenceBlocked=!result.ok;
+    if(!result.ok)toast("Guardado pendiente: no se sobrescribirá. Reintenta cuando el almacenamiento esté disponible.");
+    return result.ok;
+  }
+
   function setupClassicFlight() {
     if (!isUnifiedClassic()) return;
     loadClassicVoyage();
@@ -37,6 +48,21 @@
     for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
     const calibrate=document.createElement("button");calibrate.id="flightCalibrateLance";calibrate.className="secondary";calibrate.type="button";
     ui.flightInstallTwin.after(calibrate);ui.flightCalibrateLance=calibrate;
+    const loadout = document.createElement("div");
+    loadout.id="flightLoadoutChoices";loadout.className="flight-loadout-choices";
+    loadout.setAttribute("role","group");loadout.setAttribute("aria-label","Arma al salir de C9");
+    ui.flightDockStatus.after(loadout);
+    for(const [type,weapon] of Object.entries(NeonCampaign.CLASSIC_WEAPON_RULES.types)) {
+      const button=document.createElement("button");button.type="button";button.dataset.flightLoadout=type;
+      button.innerHTML=`<b>${weapon.label} ×${weapon.damageMultiplier}</b><small>${type==="pulse"?"Ágil · un pulso":type==="twin"?"Dos pulsos centrados":"Perfora dos objetivos"}</small>`;
+      button.onclick=()=>{
+        if(!classicEquipment.unlocked.includes(type))return;
+        if(persistClassicEquipment({...classicEquipment,selected:type})) {
+          updateClassicDock();syncClassicFlightHud();tone(720,.08,"triangle",.035);
+        }
+      };
+      loadout.append(button);
+    }
     ui.flightWeapon.onclick = () => {
       if (classicEquipment.unlocked.length < 2) { toast("Rescata el emisor gemelo de Chronos y móntalo en C9"); return; }
       const selected = classicEquipment.unlocked[(classicEquipment.unlocked.indexOf(classicEquipment.selected)+1)%classicEquipment.unlocked.length];
@@ -69,31 +95,44 @@
     syncClassicFlightHud();
   }
 
-  function loadClassicVoyage() {
-    const key=NeonCampaign.CHRONOS_VOYAGE_KEY,raw=storage.getRaw(key);
-    if(raw===null)return;
+  function normalizeClassicVoyageRecord(value) {
     try {
-      const value=JSON.parse(raw),checkpoint=NeonCampaign.normalizeChronosVoyageCheckpoint(value?.checkpoint,{goal:LEVELS[0].goal});
+      const checkpoint=NeonCampaign.normalizeChronosVoyageCheckpoint(value?.checkpoint,{goal:LEVELS[0].goal});
       if(value?.version!==2 || !checkpoint || !Number.isInteger(value.unlockedStage) || value.unlockedStage<checkpoint.stageNumber || value.unlockedStage>10 ||
         typeof value.completed!=="boolean" || (value.completed && checkpoint.stageNumber!==10) ||
         !Number.isFinite(value.entry?.hull) || value.entry.hull<=0 || value.entry.hull>100 ||
         !Number.isInteger(value.entry?.score) || value.entry.score<0 ||
         !Number.isFinite(value.entry?.maxCombo) || value.entry.maxCombo<1 || value.entry.maxCombo>12 ||
         value.entry?.collected!==checkpoint.collected)throw new Error("Invalid voyage save");
-      classicVoyageRecord={...value,checkpoint};
-    } catch {
+      return {...value,checkpoint};
+    } catch {return null;}
+  }
+
+  function loadClassicVoyage() {
+    const key=NeonCampaign.CHRONOS_VOYAGE_KEY,raw=storage.getRaw(key);
+    if(raw===null)return;
+    let normalized=null;
+    try {normalized=normalizeClassicVoyageRecord(JSON.parse(raw));} catch {}
+    if(normalized)classicVoyageRecord=normalized;
+    else {
       const backup=key+":invalid-backups",previous=storage.getJSON(backup,[]);
       const copies=Array.isArray(previous)?previous.filter(value=>typeof value==="string"):[];
       classicVoyageWritable=copies.includes(raw)||storage.setJSON(backup,[...copies,raw]);
     }
   }
 
-  function saveClassicVoyageCheckpoint(checkpoint,completed=false) {
-    if(!checkpoint)return false;
+  function classicVoyageCheckpointRecord(checkpoint,completed=false) {
+    if(!checkpoint)return null;
     const previous=classicVoyageRecord;
     const entry=completed && previous ? previous.entry : {
       hull:Math.max(1,Math.min(100,hull)),score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected};
-    const record={version:2,checkpoint,entry,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
+    return {version:2,checkpoint,entry,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
+  }
+
+  function saveClassicVoyageCheckpoint(checkpoint,completed=false) {
+    if(!checkpoint)return false;
+    if(completionPersistenceBlocked&&!recoverCampaignCompletion())return false;
+    const record=classicVoyageCheckpointRecord(checkpoint,completed);
     // New route data has its own key. Old classic/N-7 saves are never inferred,
     // renumbered or replaced. Invalid raw data is backed up before any write.
     const saved=classicVoyageWritable&&storage.setJSON(NeonCampaign.CHRONOS_VOYAGE_KEY,record);
@@ -165,7 +204,13 @@
 
   function updateClassicDock() {
     const installed=classicEquipment.unlocked.includes("twin");
-    ui.flightDockStatus.textContent=installed ? "Pulso ×1: 1 de daño. Gemelo ×2: dos tiros centrados de 1. Calibra la misma pieza como lanza ×3: 3 de daño y hasta dos objetivos perforados. Todos comparten tres cargas; recuperas una cada 3,6 segundos de vuelo. Sin coste." : classicEquipment.recoveredTwin ? "Recuperaste un emisor del laboratorio. Lo montamos en las alas y concentramos sus dos tiros delante de la proa. Tres cargas con recarga en vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Puedes recuperarlo al repetir el primer tramo. Tu pulso central ya se recarga en vuelo.";
+    const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
+    ui.flightDockStatus.textContent=installed ? `${weapon.label} equipado. ${weapon.description} Tres cargas; recuperas una cada 3,6 segundos de vuelo. Cambiar de arma no recarga la batería. Sin coste.` : classicEquipment.recoveredTwin ? "Emisor rescatado de Chronos. Instálalo para abrir dos calibraciones y ver el armamento en las alas. Tres cargas con recarga en vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Tu pulso central ya se recarga en vuelo.";
+    for(const button of $("flightLoadoutChoices").querySelectorAll("button")) {
+      const type=button.dataset.flightLoadout,unlocked=classicEquipment.unlocked.includes(type);
+      button.disabled=!unlocked;button.setAttribute("aria-pressed",String(type===classicEquipment.selected));
+      button.title=unlocked?NeonCampaign.CLASSIC_WEAPON_RULES.types[type].description:type==="twin"?"Instala el emisor rescatado":"Instala el emisor y calibra la lanza";
+    }
     ui.flightInstallTwin.disabled=installed || !classicEquipment.recoveredTwin;
     ui.flightInstallTwin.textContent=installed ? "EMISOR GEMELO INSTALADO" : "INSTALAR EMISOR GEMELO";
     ui.flightCalibrateLance.disabled=!installed || classicEquipment.unlocked.includes("lance");
@@ -1054,7 +1099,7 @@
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
-        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
+        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);ensureSprite(SPRITES.c9Station);
       }
     }
 
@@ -1240,20 +1285,16 @@
 
     const missed = energySpawned - collected;
     const earned = hull >= 90 && missed <= Math.ceil(energyBudget * 0.1) ? 3 : hull >= 55 ? 2 : 1;
-    const starsMap = getStars();
-    const oldStars = +(starsMap[currentLevel + 1] || 0);
-    starsMap[currentLevel + 1] = Math.max(oldStars, earned);
-    let progressSaved = storage.setJSON(KEYS.stars, starsMap);
-
-    const oldUnlocked = getUnlocked();
-    let newlyUnlocked = false;
-    if (currentLevel + 1 === oldUnlocked && oldUnlocked < LEVELS.length) {
-      progressSaved = storage.set(KEYS.unlocked, oldUnlocked + 1) && progressSaved;
-      newlyUnlocked = true;
-    }
-
-    progressSaved = saveScore() && progressSaved;
-    if(classicFlightView?.canFinish)progressSaved=saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint(),true)&&progressSaved;
+    const completedVoyage=classicFlightView?.canFinish
+      ? classicVoyageCheckpointRecord(classicFlight.exportCheckpoint(),true) : null;
+    // The bounded intent is written before any progress key. A reload replays
+    // only durable monotonic targets, without replaying game events or rewards.
+    const completion = !classicVoyageWritable ? {ok:false,status:"blocked"}
+      : completionJournal.complete({completionId:`${KEYS.unlocked}:${currentLevel+1}:${runToken}:${Date.now()}`,
+        level:currentLevel+1,stars:earned,score:Math.max(0,Math.floor(score)),checkpoint:completedVoyage});
+    const progressSaved=completion.ok,newlyUnlocked=Boolean(completion.newlyUnlocked);
+    completionPersistenceBlocked=!completion.ok;
+    if(completedVoyage&&completion.ok)classicVoyageRecord=completedVoyage;
     registerRun();
     ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;

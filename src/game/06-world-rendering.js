@@ -177,6 +177,67 @@
     return true;
   }
 
+  function chronosSceneryFrame() {
+    // Reuse geometry sampled by the UI's layout owner. Reading the DOM here
+    // would force a layout on every rendered frame, including paused frames.
+    const measured = typeof classicFlightBounds === "object" ? classicFlightBounds : null;
+    const top = clamp(Number.isFinite(measured?.presentationTop) ? measured.presentationTop : H * .14, 0, H * .70);
+    const bottom = clamp(Number.isFinite(measured?.presentationBottom) ? measured.presentationBottom : H * .88, top, H);
+    return { top, bottom, height: Math.max(1, bottom - top), gap: Math.max(10, H * .012) };
+  }
+
+  function chronosDestinationPresentation(node) {
+    const frame = chronosSceneryFrame();
+    const maximumSize = Math.max(1, frame.height - frame.gap * 2);
+    const scale = Math.min(node.scale, maximumSize / W);
+    const radius = W * scale * .5;
+    // Keep the growing illustrated globe below the measured tactical strip.
+    // This is a camera projection only: route coordinates, scale, collisions
+    // and the sparse middle stages remain untouched.
+    const y = clamp(Math.max(frame.top + frame.gap + node.y * frame.height,
+      frame.top + frame.gap + radius), frame.top + frame.gap + radius,
+      frame.bottom - frame.gap - radius);
+    return { ...node, scale, y: y / H };
+  }
+
+  function drawChronosServiceRelay(view) {
+    const relay = view.relay || view.service;
+    if (!relay?.visible) return;
+    const station = SPRITES.c9Station;
+    ensureSprite(station);
+    const illustratedStation = spriteReady(station);
+    const image = illustratedStation ? station : SPRITES.satellite;
+    if (!spriteReady(image)) return;
+    const frame = chronosSceneryFrame();
+    const size = illustratedStation ? clamp(W * relay.scale * 4, 36, Math.min(W * .76, frame.height * .78))
+      : Math.max(22, W * relay.scale);
+    const x = clamp(W * relay.x, size * .56, W - size * .56);
+    const y = Math.max(frame.top + frame.gap + relay.y * (H - frame.top),
+      frame.top + frame.gap + size * .56);
+    ctx.save(); ctx.translate(x, y);
+    ctx.rotate(-.08 + Math.sin(view.elapsed * .06) * .035);
+    if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
+    if (illustratedStation) {
+      // Four real machine states, 2x2, one shared centre pivot. Rendering a
+      // repair pose does not install anything or replay a gameplay event.
+      const pose = view.stageNumber >= 7 ? 3 : relay.active ? 2 : view.stageNumber === 6 ? 1 : 0;
+      const cellWidth = image.naturalWidth / 2, cellHeight = image.naturalHeight / 2;
+      ctx.drawImage(image, pose % 2 * cellWidth, Math.floor(pose / 2) * cellHeight,
+        cellWidth, cellHeight, -size / 2, -size / 2, size, size);
+    } else {
+      // The historical relay remains a download-failure fallback, not the new
+      // station's final illustration. It stays available to older campaigns.
+      ctx.drawImage(image, -size / 2, -size / 2, size, size);
+    }
+    ctx.restore();
+    if (relay.active) {
+      ctx.save(); ctx.textAlign = "center"; ctx.font = `bold ${Math.max(15, W * .032)}px sans-serif`;
+      ctx.fillStyle = "#bcefff"; ctx.shadowColor = "#020817"; ctx.shadowBlur = 5;
+      ctx.fillText("SERVICIO C9", x, y + size * .56 + frame.gap);
+      ctx.restore();
+    }
+  }
+
   function drawChronosFlightBackground() {
     const view = classicFlightView;
     if (!view) return;
@@ -222,7 +283,7 @@
     }
     ctx.restore();
 
-    drawChronosFlightSprite(2, view.planet);
+    drawChronosFlightSprite(2, chronosDestinationPresentation(view.planet));
     if (!drawChronosDestructionStation(view, destruction)) {
       // A failed new download keeps the two preserved station poses playable.
       drawChronosFlightSprite(view.station.state === "ruptured" ? 1 : 0, view.station);
@@ -249,24 +310,7 @@
       }
     }
 
-    // C9 is an illustrated relay on the same route, not a new fullscreen plate.
-    // It approaches and recedes with model coordinates; stopping the route also
-    // stops the mast's drift. A service overlay may inspect/install the part.
-    const relay = view.relay || view.service;
-    if (relay?.visible && spriteReady(SPRITES.satellite)) {
-      const size = Math.max(22, W * relay.scale);
-      ctx.save(); ctx.translate(W * relay.x, H * relay.y);
-      ctx.rotate(-.08 + Math.sin(clock * .06) * .035);
-      if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
-      ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
-      ctx.restore();
-      if (relay.active) {
-        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 13px sans-serif";
-        ctx.fillStyle = "#bcefff";
-        ctx.fillText("SERVICIO C9", W * relay.x, H * relay.y + size * .62);
-        ctx.restore();
-      }
-    }
+    drawChronosServiceRelay(view);
 
     if (view.beacon.visible && spriteReady(SPRITES.satellite)) {
       const size = Math.max(30, W * view.beacon.scale);
@@ -663,7 +707,7 @@
       ctx.restore();
     }
 
-    if (stormPulse > 0) {
+    if (stormPulse > 0 && !settings.reduceEffects) {
       ctx.fillStyle = `rgba(255,255,255,${stormPulse * 0.28})`;
       ctx.fillRect(0, 0, W, H);
     }

@@ -1,5 +1,6 @@
-const CACHE = "neon-cronium-pre-release-7-2-0-brand-1";
+const CACHE = "neon-cronium-pre-release-7-2-0-voyage-polish-1";
 const CORE = [
+  "assets/c9_station_v1.webp",
   "assets/player_ship_identity_v1.webp",
   "assets/comet_flight_atlas_v2.webp",
   "./",

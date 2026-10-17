@@ -99,6 +99,8 @@
   let classicCometWarning = -1;
   let classicVoyageRecord = null;
   let classicVoyageWritable = true;
+  let completionJournal = null;
+  let completionPersistenceBlocked = false;
   let classicVoyageRequestedStage = null;
   let classicVoyageSpawnTimer = 0;
   let classicVoyageHazardTimer = 0;
@@ -206,6 +208,7 @@
     chronosDestruction: loadSprite("assets/chronos_destruction_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
+    c9Station: loadSprite("assets/c9_station_v1.webp", false),
 
     shipFallback: SPRITE_GROUPS.ship[0],
     meteorSmall: loadSprite("assets/meteor_small.webp", true),
@@ -291,5 +294,4 @@
 
   let audioCtx = null;
   let musicGain = null;
-  let musicNodes = [];
   let resumeAudioAfterAd = false;

@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 82,
-  "runtimeBytes": 7956026,
+  "assetCount": 83,
+  "runtimeBytes": 8272028,
   "audit": {
-    "reviewed": 82,
+    "reviewed": 83,
     "READY": 58,
-    "IN_REVIEW": 24,
+    "IN_REVIEW": 25,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -767,6 +767,29 @@
       "physicalAcceptance": "PENDING",
       "origin": "Original built-in image generation; provenance/master/export in metadata",
       "version": 2
+    },
+    {
+      "id": "c9-station-v1",
+      "path": "assets/c9_station_v1.webp",
+      "master": "art-source/immersive-rebirth/c9/c9-station-atlas-master.png",
+      "metadata": "art-source/immersive-rebirth/c9/metadata.json",
+      "dimensions": "1024x1024",
+      "format": "webp-alpha",
+      "size": 316002,
+      "sha256": "ccae6bbb791ee17ffb5662f050b939935365fa0c99abf9fdc00062270cdd277a",
+      "decodedRGBABytes": 4194304,
+      "pivot": "256,256 in each 512x512 cell",
+      "level": "1.6-1.7",
+      "use": "Independent illustrated C9 orbital workshop, event-driven 2x2 atlas: closed, docking, service, departure",
+      "animation": "Four genuine mechanical poses controlled by existing route/service state; no high-FPS articulated cycle claimed.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "INTEGRATED_PENDING_BROWSER",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "OpenAI image_gen tool; original generated image for this project",
+      "version": "c9-station-v1"
     }
   ],
   "project": "NEON CRONIUM"

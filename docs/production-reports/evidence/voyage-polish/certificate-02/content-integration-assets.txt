@@ -1,0 +1,333 @@
+
+> neon-cronium@7.2.0 test:content
+> node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs tests/classic-scout.test.mjs tests/journey-demo.test.mjs tests/journey-legacy-integration.test.mjs tests/modular-ship.test.mjs tests/ship-hangar.test.mjs tests/ship-render-fallback.test.mjs tests/guardian-atlas.test.mjs tests/guardian-atlas-animation.test.mjs tests/guardian-atlas-legacy.test.mjs tests/campaign-space-design.test.mjs tests/chronos-flight.test.mjs tests/classic-weapons.test.mjs tests/flight-controls.test.mjs tests/two-finger-input.test.mjs tests/unified-flight-legacy.test.mjs tests/chronos-destruction.test.mjs tests/comet-presentation.test.mjs tests/chronos-voyage.test.mjs tests/chronos-voyage-rendering.test.mjs tests/product-brand.test.mjs tests/reduced-effects.test.mjs tests/voyage-score.test.mjs tests/completion-journal.test.mjs
+
+✔ campaign data explicitly distinguishes editorial design from implemented, artistic and physical acceptance (1.190041ms)
+✔ ten ordered chapters contain one hundred stable, unique and correctly indexed stage identifiers (0.674302ms)
+✔ one hundred routes form a continuous chain of 101 named locations across chapter boundaries (1.287103ms)
+✔ chapter route spans cover zero to one without gaps, overlaps or events scheduled inside recovery (1.218893ms)
+✔ versioned authored routes and unique seeds do not masquerade as an executable generator (0.607283ms)
+✔ first-clear rewards have unique transaction identities, safe checkpoints and consistent chapter unlocks (0.393989ms)
+✔ authored stages have varied objectives, ten safe service stops and ten distinct chapter resolutions (0.555848ms)
+✔ progressive difficulty remains bounded by explicit reaction and navigability targets, never certified measurements (2.66495ms)
+✔ art references resolve to catalog identities without claiming asset completion or five-phase gameplay (0.943558ms)
+✔ shared editorial policy references cannot silently drop retry, reward, dialogue or recovery contracts (5.891386ms)
+✔ Chronos remains intact until the existing route reaches its rupture position (1.033269ms)
+✔ the six authored poses follow their actual time boundaries without repeated starts (1.632441ms)
+✔ rupture timing derives from the supplied route duration rather than a second clock (0.356825ms)
+✔ all four front poses remain readable instead of disappearing at either end (0.19707ms)
+✔ the front expands monotonically and fades only during the final 1.2 seconds (0.229878ms)
+✔ the destroyed final pose persists for the rest of the mission without replaying the wave (0.134788ms)
+✔ paused snapshots and repeated renders return identical poses without mutating inputs (0.769321ms)
+✔ low effects quality preserves all story poses and the complete front sequence (0.21129ms)
+✔ null, incomplete and nonfinite inputs use safe finite defaults (0.273552ms)
+✔ presentation owns no update loop, event emission, storage, damage or random time source (7.459822ms)
+✔ Chronos is one versioned classic route with a hostile cause and a linked Gaia destination (2.989627ms)
+✔ a paused legacy update freezes route, visuals, mission input and events (3.259595ms)
+✔ a long resumed timestamp is capped and invalid inputs cannot corrupt the route (0.486986ms)
+✔ waiting never wins a recovery mission or silently manufactures CRONIUM (19.462717ms)
+✔ an early quota still travels through distinct scenes and cannot skip the minimum flight (6.52699ms)
+✔ the last late fragment opens a continuous approach rather than teleporting to Gaia (8.53254ms)
+✔ collection affects progress without moving backwards when the caller reports an older count (12.254665ms)
+✔ the station recedes geometrically and Gaia grows without fading scenery as a route substitute (2.877453ms)
+✔ authored attack has preparation, discharge and reactor consequences before the escape (0.764163ms)
+✔ all narrative and module events emit once in order, even while holding a collection gate (11.329896ms)
+✔ snapshots, nested scenery and event definitions cannot mutate the route (0.253603ms)
+✔ an event callback failure cannot duplicate its attack or suppress the later rupture (0.58471ms)
+✔ configuration is explicit and the model does not own a loop, browser state, storage or randomness (9.483809ms)
+✔ the empty transit composes one distant plate and a separate tiny, opaque Gaia (3.985512ms)
+✔ star and ambient-dust density are bounded at both effects qualities (3.000413ms)
+✔ middle stages remain sparse without optional density fields and old flights retain their scenery (1.346801ms)
+✔ paused snapshots freeze every parallax layer and the relay without acquiring a render clock (3.734794ms)
+✔ C9 preserves its illustrated download-failure fallback and active-only service label (1.020731ms)
+✔ Gaia grows below the measured HUD without changing its route coordinates or hitboxes (4.951723ms)
+✔ the independent C9 atlas shows four real route/service states from a shared centre pivot (1.975656ms)
+✔ a failed space plate still renders the independent stars and planet (0.725387ms)
+✔ reduced effects removes the actual full-screen storm flash without changing storm state (1.661094ms)
+✔ ten authored crossings are stable stages inside Chronos and preserve the reproducible v1 model (3.161149ms)
+✔ the only clock freezes route, scenery, collection and events when the legacy loop is paused (4.595489ms)
+✔ time alone cannot unlock any new crossing or manufacture a fragment (15.092289ms)
+✔ an early complete quota must still travel all ten stages and cannot bypass C9 (60.284592ms)
+✔ each quota gate advances one stage, with no teleport and monotonically retained collection (41.071682ms)
+✔ stage entry checkpoints reproduce a coherent boundary rather than a mid-combat timestamp (23.610949ms)
+✔ resuming a checkpoint never repeats earlier attacks, salvage markers, service or stage rewards (14.35825ms)
+✔ a saved service boundary remains docked and an idempotent confirmation enters 1.7 once (4.599075ms)
+✔ checkpoint validation rejects incompatible saves without changing them and clamps safe numeric excess (0.583208ms)
+✔ future event IDs in a forged checkpoint cannot hide a future module or arrival (4.382606ms)
+✔ Chronos shrinks into the empty route and Gaia remains a distant point before the designed approach (0.287442ms)
+✔ the rupture still happens at nine played seconds and phase poses remain immutable (0.792025ms)
+✔ invalid delta inputs do not advance a route and a background-sized delta is capped (0.75457ms)
+✔ a throwing narrative callback cannot duplicate its attack on the next update (1.169119ms)
+✔ classic CH-01 pauses with a zero delta and fires only after a visible approach (2.431707ms)
+✔ classic CH-01 hit interrupts a charged shot without inventing a projectile (0.387921ms)
+✔ classic CH-01 stays inside the viewport and rejects invalid simulation deltas (0.725217ms)
+✔ a match starts with three pulses and a trigger cannot spend through cooldown (3.28373ms)
+✔ recharge gives one charge per 3.6 played seconds and does not restart on another shot (0.714972ms)
+✔ zero delta freezes cooldown, charge recovery, projectile movement and event identity (1.329366ms)
+✔ a suspended-frame delta cannot refill ammunition or jump projectiles across the arena (0.388311ms)
+✔ twin keeps two centered, parallel muzzles and spends one shared charge (0.594805ms)
+✔ muzzles rotate with the direction and selecting a weapon never refills or bypasses cooldown (0.311718ms)
+✔ locked and unknown selections cannot mutate the current match (0.411556ms)
+✔ a repeated unlock reward is idempotent and cannot equip or refill a weapon (0.20405ms)
+✔ collision damage is delivered once per projectile and twin barrels remain independent (0.337977ms)
+✔ weapon metadata explains exact damage per charge with multipliers 1, 2 and 3 (0.443101ms)
+✔ lance is a faster, narrower shot with its own cooldown and bounded lifetime (0.274754ms)
+✔ lance hits two distinct targets once each and never delivers duplicate damage or reward events (0.220524ms)
+✔ switching through all three types cannot refill, reset recharge or bypass the lance cooldown (0.193875ms)
+✔ v1 saved type identifiers remain accepted and the additive lance type round-trips (0.176209ms)
+✔ projectiles have bounded lifetime/space, never exceed capacity and expire only once (0.604639ms)
+✔ event IDs are unique, diagnostics cannot mutate combat, and events do not move with projectiles (0.314021ms)
+✔ invalid arguments reject before mutating ammunition, clocks or existing projectiles (0.868678ms)
+✔ long play stays bounded and deterministic with the same player inputs (8.629218ms)
+✔ the model has no independent clock, random source, renderer or persistence (6.635389ms)
+✔ a diagonal comet points along its velocity without the previous extra quarter-turn (3.701876ms)
+✔ vertical comets face downstream independently of decorative old rotation (1.061341ms)
+✔ the authored nucleus pivot stays on the same physical collection/collision centre (1.248677ms)
+✔ four actual atlas cells advance only with played time and remain fixed when paused (1.663006ms)
+✔ completion writes intent first, checkpoint before unlock, then one bounded receipt (2.918834ms)
+✔ recover every actual completion write on reload: before atomic write 1/7 (1.840828ms)
+✔ recover every actual completion write on reload: before atomic write 2/7 (0.568346ms)
+✔ recover every actual completion write on reload: before atomic write 3/7 (0.48975ms)
+✔ recover every actual completion write on reload: before atomic write 4/7 (0.558141ms)
+✔ recover every actual completion write on reload: before atomic write 5/7 (0.385036ms)
+✔ recover every actual completion write on reload: before atomic write 6/7 (0.378076ms)
+✔ recover every actual completion write on reload: before atomic write 7/7 (0.452505ms)
+✔ recover every actual completion write on reload: after atomic write 1/7 (0.438675ms)
+✔ recover every actual completion write on reload: after atomic write 2/7 (0.618059ms)
+✔ recover every actual completion write on reload: after atomic write 3/7 (0.587053ms)
+✔ recover every actual completion write on reload: after atomic write 4/7 (0.426828ms)
+✔ recover every actual completion write on reload: after atomic write 5/7 (0.737676ms)
+✔ recover every actual completion write on reload: after atomic write 6/7 (0.321673ms)
+✔ recover every actual completion write on reload: after atomic write 7/7 (0.322755ms)
+✔ storage denied before intent changes no legacy key and does not invent success (0.268125ms)
+✔ read denial is distinct from an absent save; completion never writes defaults over old saves (0.529479ms)
+✔ new saves and old classic keys keep their original shape; no checkpoint is required outside Chronos (0.243949ms)
+✔ replay preserves higher scores, other levels and external advancement instead of rolling back (0.458454ms)
+✔ pending checkpoint conflicts block replay before any progress key is changed (0.366309ms)
+✔ invalid existing saves and journal bytes remain recoverable, never silently removed (0.369854ms)
+✔ journal is bound to real campaign keys and cannot replay a classic intent into N-7 (0.30578ms)
+✔ a pending prior completion is recovered before replacing the one-record receipt for the next level (0.390524ms)
+✔ replaying an older level never skips a gate; the final level never unlocks a nonexistent territory (0.26557ms)
+✔ invalid requests fail before writes and caller checkpoint objects cannot mutate the durable snapshot (0.921866ms)
+✔ every declared animation frame exists in the runtime inventory (19.36868ms)
+✔ banking mirrors the authored pose; impact cannot enter the idle loop (0.920473ms)
+✔ all iOS catalog image entries exist with the required PNG dimensions (6.247449ms)
+✔ 100 levels and five nonoverlapping sectors (0.945041ms)
+✔ deterministic waves for every level across independent calls (25.600605ms)
+✔ difficulty density and speed increase monotonically (0.456532ms)
+✔ bosses at every tenth level with two distinct phases (0.844061ms)
+✔ N-7 contextual triggers and animation metadata (0.182869ms)
+✔ invalid levels and wave counts rejected (0.395832ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ content is packaged before the campaign and adds no RAF owner or Engine V1 import (4.488652ms)
+✔ 100 routes run through the real legacy update and collision pipeline (38160.82244ms)
+✔ N-7 progression unlocks its own next route without overwriting original saves (596.008077ms)
+✔ pause freezes encounters; resume and restart do not duplicate scheduled waves (107.164789ms)
+✔ resume tolerates a queued RAF timestamp older than the resume handler (74.088983ms)
+✔ N-7 labels routes and shows wave progress independently of debris warnings (80.725071ms)
+✔ legacy shots damage and destroy CH-01 while rendering distinct atlas frames (92.688552ms)
+✔ flight bounds retain the complete unchanged ship outline clear of HUD and controls (1.456572ms)
+✔ a short landscape arena reports insufficient room instead of inventing safe movement (0.164462ms)
+✔ exact-fit arenas allow one coherent center and reject impossible viewport boundaries (1.120278ms)
+✔ a distant initial touch only sets an anchor and subsequent movement is relative in both axes (0.44858ms)
+✔ a second touch cannot take over or shift the active anchor, including its release (0.207335ms)
+✔ dragging beyond any boundary clamps the whole ship and reversing an edge drag responds immediately (0.208146ms)
+✔ release, cancellation and reentry do not reuse a stale finger position or produce a jump (0.267754ms)
+✔ invalid pointer data and arithmetic overflow are rejected before mutating input (0.477242ms)
+✔ layout changes clamp stale desired positions and inactive pointers remain inert (0.321582ms)
+✔ authored poses map combat states into one 4 by 2 atlas (2.270609ms)
+✔ entry retains closed shutters until the last 250 milliseconds (0.662585ms)
+✔ charge deploys illustrated barrels during 180 milliseconds without looping a shot (0.12921ms)
+✔ phase transition opens the ring and subsequent damage cannot restore intact geometry (0.197891ms)
+✔ shutdown fades from an opened ring to the cyan deactivated core and never loops (0.174537ms)
+✔ repeated rendering is read-only, emits no combat events, and stays frozen during pause (7.52507ms)
+✔ real encounter transitions select phase-two hurt geometry and terminal art consistently (0.56405ms)
+✔ invalid presentation inputs fail clearly instead of sampling an unrelated atlas cell (0.321222ms)
+✔ presentation does not own clocks, random sources, combat calls or event emitters (11.641467ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ Gaia keeps recovery meaningful and gates saved victory behind the real Atlas encounter (310.678878ms)
+✔ the actual legacy pause freezes Atlas and resume continues without a duplicate loop (203.551689ms)
+✔ the threshold capture can replace active items without crashing the real collision loop (73.506005ms)
+✔ Atlas deactivation completes before a single persisted victory and preserves N-7 saves (1331.596125ms)
+✔ death, a rewarded continuation and retry cannot bypass or prematurely save Atlas (110.180343ms)
+✔ Gaia and Chronos share three manual charges with played-time recharge instead of unlimited boss ammunition (219.71787ms)
+✔ Atlas receives the advertised ×1, ×2 and ×3 damage once and converts each trigger into beams without duplicate projectiles (254.821263ms)
+✔ leaving the encounter does not mutate saves and N-7 cannot start classic Atlas (98.141731ms)
+✔ slow time shares the real Atlas and projectile clock before announcing another corridor (807.811213ms)
+✔ Guardian arrives visibly before fighting and does not accept damage during entry (2.436152ms)
+✔ zero delta freezes entry, warnings, hurt, fire and terminal animation exactly (1.812996ms)
+✔ phase-one aim is announced, then fixed, with one salvo and no homing (1.370765ms)
+✔ half-health causes a protected phase transition and a different attack pattern (0.592992ms)
+✔ phase two alternates curtains and fixed-target crossfire from distinct weapon origins (2.105886ms)
+✔ faster concentrated fans still permit a full-wing escape, without consulting safeGap (3.900646ms)
+✔ standing on the announced aim takes fire while moving avoids the fixed target (0.297077ms)
+✔ both phase-two curtains preserve one announced traversable corridor at three viewport widths (2.800517ms)
+✔ repeat hits play one hurt response without permanently resetting recovery or duplicating fire (0.443082ms)
+✔ the next corridor warning waits until the previous curtain has passed the player on tall screens (0.989836ms)
+✔ deactivation has a visible duration and emits its progression event exactly once (0.485023ms)
+✔ same seed and inputs reproduce warnings, transitions and projectile trajectories (1.914305ms)
+✔ callback delivery preserves returned-event order and does not duplicate emission (0.254835ms)
+✔ long deltas are bounded and invalid state inputs fail without advancing combat (0.454789ms)
+✔ encounter has no independent animation loop, wall clock, random source or save owner (9.943722ms)
+✔ three connected authored segments are versioned and isolated from old campaign saves (2.294274ms)
+✔ one bounded clock drives segment and whole-route progress, while invalid deltas are rejected (0.565512ms)
+✔ explicit pause freezes progress, events and combat/pickup actions (2.766889ms)
+✔ the station cannot be reached by waiting without physically collecting the available part (6.876882ms)
+✔ free recovered module installs once, persists at station and produces a visible/runtime propulsion modifier (0.858752ms)
+✔ station is a natural pause without consuming route time and explicit pause blocks service actions (1.342173ms)
+✔ checkpoints resume coherent beginnings rather than claiming an exact mid-combat save (3.177382ms)
+✔ authored events fire once even across held clocks and repeated tiny updates (0.651077ms)
+✔ border guardian must be active and resolved, and completion reward is idempotent after reload (4.872966ms)
+✔ snapshots and checkpoint exports cannot mutate the controller state (0.360891ms)
+✔ an early guardian defeat stays resolved while the ship finishes approaching the border (0.97247ms)
+✔ malformed, foreign-version and inconsistent saves recover safely without importing old progress (1.119897ms)
+✔ an event callback failure cannot duplicate the same authored spawn (0.343154ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ journey uses relative pointer movement and pause freezes its route without adding RAF owners (237.797095ms)
+✔ the real legacy pipeline can collect, dock, install, continue and resolve the border with isolated saves (941.459001ms)
+✔ invalid journey data is backed up before recovery and legacy progress remains untouched (27.304601ms)
+✔ manual basic fire remains available beyond three shots when automatic fire is disabled (57.784922ms)
+✔ two immutable cosmetic presets have a separate stable save key and no collision or combat modifiers (1.261654ms)
+✔ normalization preserves mixed assemblies while independently repairing invalid slots (0.444733ms)
+✔ corrupt data and inherited values cannot equip parts, and accessors are never executed (1.015513ms)
+✔ all eight combinations resolve to reviewed crops inside the real atlas and a shared destination artboard (0.526444ms)
+✔ explicit source crops exclude neighboring parts and destinations preserve the reviewed mechanical joints (0.621604ms)
+✔ exhaust always follows the equipped engine and invalid part names cannot alias prototype properties (0.179143ms)
+✔ paused assembly poses are deterministic, finite and cannot mutate their inputs (0.636286ms)
+✔ steering produces a smooth mirrored common bank and continuous wing motion (0.184071ms)
+✔ extreme and malformed pose inputs remain bounded without changing cosmetic assembly into physics (0.325398ms)
+✔ 100 authored routes have distinct names and explicit objectives and rhythms (0.839525ms)
+✔ wave generation never reads nondeterministic entropy (21.767321ms)
+✔ reproduction accepts explicit uint32 seed and rejects unknown generator version (1.007581ms)
+✔ level 37 retains its versioned reproduction fixture (0.65273ms)
+✔ 100 levels reserve a continuous corridor wider than the real ship (7.343817ms)
+✔ swept enemy movement and shooter projectiles preserve the refuge in every level (61.002498ms)
+✔ CH-01 shooter animation gates fire and a hit cancels the charged shot (0.670866ms)
+✔ director emits each entity once, replays after reset and bounds suspended deltas (2.342254ms)
+✔ 3200 level/seed combinations serialize reproducibly and preserve traversable corridors (627.762451ms)
+✔ NEON CRONIUM appears in live pages and accessible names without the retired wordmark (317.371922ms)
+✔ package, install names and generated preview agree while application identity stays compatible (4.599462ms)
+✔ renaming preserves existing preview saves and resumes a pre-rename voyage checkpoint (2.513385ms)
+✔ ordinary PWA gets a fresh branded cache and active art documentation resolves after the filename change (2.942545ms)
+✔ old settings inherit the system comfort preference without overwriting their audio or quality (2.046058ms)
+✔ an explicit saved comfort choice overrides either system preference; corrupt values fall back safely (1.404064ms)
+✔ comfort rendering removes camera kicks, shake and full-screen damage flash while retaining the scene (1.33952ms)
+✔ hangar setup is idempotent and creates an accessible draft preview in the existing menu (135.028492ms)
+✔ presets and mixed components remain a draft; returning discards them without saving (44.035168ms)
+✔ applying saves one normalized selection and then updates presentation without changing campaign state (28.684621ms)
+✔ a failed save preserves the applied ship and keeps the draft available for a coherent retry (31.083076ms)
+✔ historical legacy selection opens as modular without losing its parts or saving until apply (25.642778ms)
+✔ the hangar cannot open during a run or behind an unrelated overlay (30.775524ms)
+✔ keyboard focus stays in the dialog; Escape cancels without saving or owning a new RAF (35.599126ms)
+✔ historical legacy mode cannot bring back the retired menu ship when the atlas is unavailable (144.141705ms)
+✔ an unavailable atlas keeps a verified signature intact and never stamps an unrendered loadout (39.42433ms)
+✔ the hangar shows the same current ship in reserve while unavailable components cannot be applied (35.5516ms)
+✔ a recovered atlas replaces reserve with the authored components and keeps a single RAF owner (37.321918ms)
+✔ the paired plume omits the contaminated centre without moving either mounting point (23.025386ms)
+✔ pilot first: a nonprimary action pointer fires immediately and its release cannot cancel steering (81.048263ms)
+✔ fire first: the secondary pilot remains independent while a held action repeats through the existing frame (11.98334ms)
+✔ touch fallback pilot first tracks identifiers when touches[0] belongs to the other control (9.588759ms)
+✔ touch fallback fire first tracks identifiers when touches[0] belongs to the other control (8.539307ms)
+✔ pause, restart, blur and nonplaying frame clear held fire without resurrecting it on resume (9.635107ms)
+✔ cancellation and lost capture only clear their own control; a third contact cannot take either control (9.081253ms)
+✔ background visibility stops both contacts immediately and returning does not resume held fire (9.069646ms)
+✔ keyboard and assistive click remain single-shot alternatives while right mouse and compatibility touch events are ignored (16.52591ms)
+✔ n7 keeps its historical movement rule while a second action contact starts and ends (11.355116ms)
+✔ journey keeps its historical movement rule while a second action contact starts and ends (10.754494ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ three classic charges recharge from played time and freeze completely while paused (375.547239ms)
+✔ a classic projectile travels before impact and applies damage and destruction reward only once (112.210299ms)
+✔ the actual PointerEvent handlers anchor without jumping and move both axes without a second finger stealing control (60.627496ms)
+✔ the Safari touch fallback tracks the first finger and ignores a secondary finger ending (46.94666ms)
+✔ the first mission requires recovered CRONIUM, all ten visible stages and the service stop before Gaia unlocks (2672.49125ms)
+✔ the Chronos attack and reactor rupture occur once in route order and cannot advance during pause (165.64256ms)
+✔ the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station (225.036488ms)
+✔ pause and repeated real background renders freeze the Chronos pose, clock and event stream (140.831538ms)
+✔ a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback (133.053602ms)
+✔ recovering, installing and switching a real weapon preserve ammunition and separate campaign saves (124.207254ms)
+✔ invalid equipment is backed up once before replacement and a failed backup blocks destructive recovery (99.436521ms)
+✔ C9 calibrates the recovered twin into a persistent lance and cycling ×1/×2/×3 never grants ammunition (101.451429ms)
+✔ malformed lance unlocks are preserved as backups instead of granting uncalibrated weapons (191.001503ms)
+✔ Atlas locks its warning and actual projectile trajectory to the movable ship position (231.738257ms)
+✔ the route bar advances between collections without a stage, ammunition or recharge change (42.62777ms)
+✔ compact comms do not repeat the quota and expire only with played time without moving the flight bounds (61.512698ms)
+✔ measured compact bounds release the former top reserve and ignore side controls outside the Canvas (47.568885ms)
+✔ the compact HUD and weapon share menu, completion, death and Atlas visibility while switching preserves ammunition (109.186858ms)
+✔ power pickup and expiry update flight clearance only when chip visibility changes and leave N-7 bounds alone (168.79807ms)
+✔ each Chronos stage gates its actual route on time and its cumulative recovery quota without replaying events (379.064045ms)
+✔ Chronos stage-entry checkpoints restore coherently after reload and retry without rewriting archived campaign saves (623.890587ms)
+✔ the in-route C9 stop pauses the same flight, installs its recovered emitter and continues at stage 7 without granting charges (1592.926119ms)
+✔ the archived N-7 mode neither loads nor modifies the new Chronos voyage record (389.124838ms)
+✔ the ten-stage selector exposes only persisted unlocked entries and an actual launch replays the chosen checkpoint (551.132113ms)
+✔ a malformed new voyage is backed up without inferring stages from old classic or N-7 progress (34.928409ms)
+✔ authored territorial phrases have distinct motifs, finite note envelopes and no random notes (2.231011ms)
+✔ one update owner plays finite notes, cleans nodes and stays bounded through repeated phrases (33.672832ms)
+✔ pause and shared-context suspension freeze the score without catch-up bursts (3.891663ms)
+✔ mute cancels current music and re-enabling resumes its phrase once (0.348192ms)
+✔ context signals are idempotent, replace voices and cannot restart a phrase every frame (0.480447ms)
+✔ score uses supplied simulation steps without a timer, random generator or RAF owner (12.157987ms)
+✔ legacy startMusic is one shared-context owner and no permanent drone is created (1.593503ms)
+✔ legacy volumes isolate music/FX, bound effects and suspend/resume safely (1.800678ms)
+ℹ tests 262
+ℹ suites 0
+ℹ pass 262
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 59962.097507

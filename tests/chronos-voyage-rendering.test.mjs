@@ -8,9 +8,9 @@ const source = await readFile(new URL('../src/game/06-world-rendering.js', impor
 
 // Execute the actual legacy scenery functions with a recording Canvas. These
 // tests check drawing contracts and finite budgets, not aesthetic acceptance.
-function harness(overrides = {}, quality = 'high') {
+function harness(overrides = {}, quality = 'high', geometry = {}) {
   const calls = [], stack = [];
-  const state = {globalAlpha: 1, globalCompositeOperation: 'source-over'};
+  const state = {globalAlpha: 1, globalCompositeOperation: 'source-over', x: 0, y: 0};
   const ctx = new Proxy({}, {
     get(_target, key) {
       if (key in state) return state[key];
@@ -23,8 +23,14 @@ function harness(overrides = {}, quality = 'high') {
       if (key === 'createLinearGradient' || key === 'createRadialGradient') {
         return () => ({addColorStop() {}});
       }
+      if (key === 'translate') return (x, y) => {
+        state.x += x; state.y += y;
+        calls.push({method: key, args: [x, y], alpha: state.globalAlpha,
+          composite: state.globalCompositeOperation, x: state.x, y: state.y});
+      };
       return (...args) => calls.push({method: key, args, alpha: state.globalAlpha,
-        composite: state.globalCompositeOperation});
+        composite: state.globalCompositeOperation, x: state.x, y: state.y,
+        fillStyle: typeof state.fillStyle === 'string' ? state.fillStyle : null});
     },
     set(_target, key, value) { state[key] = value; return true; }
   });
@@ -48,12 +54,13 @@ function harness(overrides = {}, quality = 'high') {
     ...overrides
   };
   const sandbox = vm.createContext({ctx, W: 390, H: 844, classicFlightView: view,
+    classicFlightBounds: null, ...geometry,
     SPRITES, settings: {effectsQuality: quality}, NeonCampaign: {getChronosDestructionPose},
     spriteReady: candidate => Boolean(candidate?.naturalWidth), ensureSprite() {},
     clamp: (n, a, b) => Math.max(a, Math.min(b, n))});
   vm.runInContext(source, sandbox);
   const draw = () => { calls.length = 0; sandbox.drawChronosFlightBackground(); return structuredClone(calls); };
-  return {sandbox, view, SPRITES, draw};
+  return {sandbox, view, SPRITES, draw, recording: () => structuredClone(calls)};
 }
 
 const images = calls => calls.filter(call => call.method === 'drawImage');
@@ -115,17 +122,70 @@ test('paused snapshots freeze every parallax layer and the relay without acquiri
   assert.notDeepEqual(next.filter(call => call.method === 'rotate'), first.filter(call => call.method === 'rotate'));
 });
 
-test('C9 uses the existing illustrated satellite with an active-only service label', () => {
+test('C9 preserves its illustrated download-failure fallback and active-only service label', () => {
   const h = harness(); h.view.relay.visible = true;
   let calls = h.draw();
   assert.equal(images(calls).filter(call => call.args[0].name === 'satellite').length, 1);
   assert.equal(calls.some(call => call.method === 'fillText'), false);
   h.view.relay.active = true;
   calls = h.draw();
-  assert.deepEqual(calls.find(call => call.method === 'fillText').args, ['SERVICIO C9', 390 * .68, 844 * .25 + 390 * .18 * .62]);
+  const label = calls.find(call => call.method === 'fillText').args;
+  assert.equal(label[0], 'SERVICIO C9'); assert.equal(label[1], 390 * .68);
   const relay = images(calls).find(call => call.args[0].name === 'satellite');
+  assert.ok(label[2] > relay.y + relay.args[3] * .5);
+  assert.ok(label[2] < 844);
   assert.equal(relay.args[3], 390 * .18);
   assert.equal(relay.alpha, 1);
+});
+
+test('Gaia grows below the measured HUD without changing its route coordinates or hitboxes', () => {
+  for (const [width, height, top, bottom] of [[720,1280,200,1100], [390,844,130,730],
+    [320,568,145,460], [844,390,100,310]]) {
+    const bounds = Object.freeze({presentationTop: top, presentationBottom: bottom,
+      minX: 119, maxX: width - 119, minY: top + 158, maxY: bottom - 104});
+    const h = harness({}, 'high', {W: width, H: height, classicFlightBounds: bounds});
+    const before = structuredClone(h.view);
+    let previousSize = 0;
+    for (const scale of [.014, .05, .2, .4, .724]) {
+      h.view.planet.scale = scale;
+      const draw = images(h.draw()).find(call => call.args[0].name === 'kit');
+      const size = draw.args[7];
+      assert.ok(draw.y - size / 2 > top, `planet above HUD at ${width}x${height}`);
+      assert.ok(draw.y + size / 2 < bottom, `planet above controls at ${width}x${height}`);
+      assert.equal(draw.x, width * h.view.planet.x);
+      assert.ok(size >= previousSize, 'approach cannot visually retreat');
+      assert.equal(draw.alpha, 1); previousSize = size;
+      assert.equal(h.view.planet.scale, scale, 'cosmetic fitting cannot mutate the model');
+    }
+    h.view.planet.scale = before.planet.scale;
+    assert.deepEqual(h.view, before);
+    assert.deepEqual(h.sandbox.classicFlightBounds, bounds, 'flight bounds are read-only');
+  }
+});
+
+test('the independent C9 atlas shows four real route/service states from a shared centre pivot', () => {
+  const h = harness({}, 'high', {classicFlightBounds: {presentationTop: 150, presentationBottom: 740}});
+  h.SPRITES.c9Station = {name: 'c9', naturalWidth: 1024, naturalHeight: 1024};
+  h.view.relay.visible = true;
+  const before = structuredClone(h.view);
+  for (const [stageNumber, active, x, y] of [[5,false,0,0], [6,false,512,0],
+    [6,true,0,512], [7,false,512,512]]) {
+    h.view.stageNumber = stageNumber; h.view.relay.active = active;
+    const calls = h.draw(), station = images(calls).find(call => call.args[0].name === 'c9');
+    assert.deepEqual(station.args.slice(1,5), [x,y,512,512]);
+    assert.equal(station.args[5] + station.args[7] / 2, 0);
+    assert.equal(station.args[6] + station.args[8] / 2, 0);
+    assert.ok(station.y - station.args[8] / 2 > 150);
+    assert.ok(station.x - station.args[7] * .55 >= 0);
+    assert.ok(station.x + station.args[7] * .55 <= 390);
+    assert.equal(images(calls).some(call => call.args[0].name === 'satellite'), false);
+    assert.equal(station.alpha, 1);
+    assert.deepEqual(h.draw(), calls, 'repeated service renders neither animate clocks nor repeat operations');
+  }
+  h.view.stageNumber = before.stageNumber; h.view.relay.active = before.relay.active;
+  assert.deepEqual(h.view, before);
+  h.SPRITES.c9Station.naturalWidth = 0;
+  assert.equal(images(h.draw()).filter(call => call.args[0].name === 'satellite').length, 1);
 });
 
 test('a failed space plate still renders the independent stars and planet', () => {
@@ -134,4 +194,24 @@ test('a failed space plate still renders the independent stars and planet', () =
   assert.equal(images(calls).some(call => call.args[0].name === 'space'), false);
   assert.equal(images(calls).some(call => call.args[0].name === 'kit'), true);
   assert.ok(stars(calls).length > 0);
+});
+
+test('reduced effects removes the actual full-screen storm flash without changing storm state', () => {
+  const h = harness();
+  Object.assign(h.sandbox, {classicFlightView: null, isUnifiedClassic: () => false,
+    JOURNEY_DEMO: false, N7_CAMPAIGN: true, currentLevel: 1, state: 'playing',
+    level: () => ({top: '#020817', mid: '#050b17', accent: '#55eeee', scene: 'quiet'}),
+    stars: [], spaceDust: [], foregroundParticles: [], visualSpeed: 1,
+    stormPulse: 1, levelOneShockwave: 0});
+  const draw = reduced => {
+    h.sandbox.settings.reduceEffects = reduced;
+    h.draw(); // clears the recording; the flight view is deliberately absent
+    h.sandbox.background(1000);
+    return h.recording();
+  };
+  const flash = calls => calls.filter(call => call.method === 'fillRect' &&
+    call.fillStyle === 'rgba(255,255,255,0.28)' && call.args.join() === '0,0,390,844');
+  assert.equal(flash(draw(false)).length, 1);
+  assert.equal(flash(draw(true)).length, 0);
+  assert.equal(h.sandbox.stormPulse, 1, 'presentation cannot alter storm timing or damage');
 });

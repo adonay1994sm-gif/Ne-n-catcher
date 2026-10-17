@@ -33,7 +33,7 @@ test('Chronos background uses the authored image and bounded readability veil', 
 test('Chronos accident uses four authored atlas phases instead of a drawn ring', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const scene = src.slice(src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)'),
-    src.indexOf('if (stormPulse > 0)'));
+    src.indexOf('if (stormPulse > 0 && !settings.reduceEffects)'));
   assert.match(scene, /SPRITES\.chronosShockwave/);
   assert.match(scene, /Math\.floor\(progress \* 4\)/);
   assert.doesNotMatch(scene, /ctx\.arc\(/);
@@ -121,7 +121,7 @@ test('Titan Omega and final Chronos collapse use authored classic backgrounds', 
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');
-  const b = src.indexOf('if (stormPulse > 0)', a);
+  const b = src.indexOf('if (stormPulse > 0 && !settings.reduceEffects)', a);
   assert.ok(a > 0 && b > a);
   const snippet = src.slice(a, b);
   assert.match(snippet, /spriteReady\(SPRITES\.shieldEffect\)/);

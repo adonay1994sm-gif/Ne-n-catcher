@@ -55,6 +55,15 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 @keyframes hudPop{0%{transform:scale(1);color:#fff;text-shadow:none}42%{transform:scale(1.32);color:#b9ffff;text-shadow:0 0 15px #52f4ff}100%{transform:scale(1);color:#fff;text-shadow:none}}
 @keyframes hudDamage{0%{transform:translateX(0);filter:none}20%{transform:translateX(-3px);filter:brightness(1.8) saturate(1.6)}45%{transform:translateX(3px)}70%{transform:translateX(-1px)}100%{transform:translateX(0);filter:none}}
 @media(prefers-reduced-motion:reduce){.hud-pop,.hud-damage{animation-duration:.01ms}}
+/* The explicit comfort setting also reaches Canvas; these are the matching
+   interface effects. Warnings keep their icon/text and a steady border. */
+.reduced-effects .hud-pop,.reduced-effects .hud-damage,
+.reduced-effects .hazard-warning.show{animation:none}
+.reduced-effects .overlay{transition:none}
+.flight-loadout-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}
+body.flight-mode .flight-loadout-choices button{display:flex;flex-direction:column;gap:5px;margin:0;padding:10px 4px;background:#0c1d2d;border:1px solid #49616e;border-radius:12px;letter-spacing:0}
+.flight-loadout-choices button[aria-pressed="true"]{border-color:#77edec!important;box-shadow:inset 0 0 16px #52c9cf22}
+.flight-loadout-choices small{font-size:10px;font-weight:500;line-height:1.25;color:#c1d8e4}
 
 
 /* Portrait-first layout: no temporary landscape or Netlify overlay offsets. */

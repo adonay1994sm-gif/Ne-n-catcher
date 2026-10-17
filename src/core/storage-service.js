@@ -4,6 +4,11 @@ export function createStorageService(storage) {
   };
   const resolveStorage = () => storage ?? globalThis.localStorage;
   return Object.freeze({
+    // Transaction recovery must distinguish an absent key from an unreadable
+    // store. Existing convenience getters retain their fallback contract.
+    readRaw(key) {
+      return safe(() => ({ok: true, value: resolveStorage().getItem(key)}), {ok: false});
+    },
     getRaw(key, fallback = null) {
       return safe(() => resolveStorage().getItem(key) ?? fallback, fallback);
     },

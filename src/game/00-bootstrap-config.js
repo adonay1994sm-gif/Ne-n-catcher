@@ -96,6 +96,7 @@
     sensitivity: $("sensitivity"),
     vibration: $("vibration"),
     effectsQuality: $("effectsQuality"),
+    reduceEffects: $("reduceEffects"),
     musicValue: $("musicValue"),
     fxValue: $("fxValue"),
     sensitivityValue: $("sensitivityValue")

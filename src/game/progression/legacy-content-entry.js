@@ -1,4 +1,6 @@
 import {AUTHORED_LEVELS} from './level-designs.js';
+export {createVoyageScore} from '../audio/voyage-score.js';
+export {createCompletionJournal} from './completion-journal.js';
 export {EncounterDirector, advanceEnemy, makeLegacyEntity} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createJourneyDemo, JOURNEY_DEMO_SAVE_KEY, JOURNEY_DEMO_VERSION} from './journey-demo.js';

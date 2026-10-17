@@ -1,0 +1,11 @@
+✔ effects-only audio resumes after the shared context is suspended (2.11493ms)
+✔ music-only audio resumes, while fully muted audio stays suspended (2.188197ms)
+✔ missing audio support and rejected autoplay do not break game resumption (0.663476ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 62.958184

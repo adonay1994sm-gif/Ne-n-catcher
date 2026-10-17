@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T21:25:59.219351+00:00",
+  "updatedAt": "2026-10-17T21:43:11.910622+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -321,7 +321,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 155,
+    "expectedCount": 156,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -729,6 +729,24 @@
           "artistic": "PENDING_OWNER",
           "physical": "PENDING"
         }
+      },
+      "c9-station-v1": {
+        "status": "IN_PROGRESS",
+        "files": [
+          "assets/c9_station_v1.webp",
+          "art-source/immersive-rebirth/c9/metadata.json",
+          "src/game/06-world-rendering.js",
+          "src/game/07-player-item-rendering.js"
+        ],
+        "tests": [
+          "Exportación: alfa y cuatro celdas distintas verificadas."
+        ],
+        "evidence": [
+          "art-source/immersive-rebirth/c9/PROVENANCE.md"
+        ],
+        "openErrors": [
+          "Prueba visual de juego y revisión del propietario pendientes."
+        ]
       }
     },
     "note": "Se genera una tarea por sequence estable del catálogo (155 entradas tras el fondo orbital). READY/IN_REVIEW/IMPLEMENTED_CODE exige verificación técnica y aceptación artística separadas; no equivale a DONE."
@@ -6354,6 +6372,188 @@
         "Paquete, navegador y publicación privada comprobados; historial previo conserva su procedencia."
       ],
       "packageCommit": "207a94edf01eb26f5f4210429cf51a4497b1b6d7"
+    },
+    {
+      "id": "P2-PRESENTATION-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Encuadrar Gaia fuera del HUD e integrar C9 ilustrada con estados reales",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Campaña clásica",
+        "Interfaz"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/06-world-rendering.js",
+        "src/game/07-player-item-rendering.js",
+        "assets/c9_station_v1.webp",
+        "art-source/immersive-rebirth/c9/metadata.json"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/VOYAGE_POLISH_2026-10-17.md"
+      ],
+      "openErrors": [
+        "Integración en certificación local y navegador; aceptación humana/dispositivo pendiente."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Gaia visible fuera del HUD medido en pantallas pequeñas.",
+        "C9 con poses de aproximación, atraque, servicio y salida; pausa conserva la ruta."
+      ]
+    },
+    {
+      "id": "P2-AUDIO-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Integrar cuatro partituras originales contextuales sin un segundo reloj",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Audio",
+        "Campaña clásica",
+        "Rendimiento"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/audio/voyage-score.js",
+        "src/game/02-storage-audio.js",
+        "src/game/08-loop-input-bootstrap.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/VOYAGE_POLISH_2026-10-17.md"
+      ],
+      "openErrors": [
+        "Integración en certificación local y navegador; aceptación humana/dispositivo pendiente."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Música distingue tránsito, C9, Atlas y llegada; volumen, silencio y recuperación coherentes.",
+        "Voces finitas y acotadas; pausa/segundo plano no acumulan notas."
+      ]
+    },
+    {
+      "id": "P2-COMFORT-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Aplicar reducción de sacudidas y destellos también a Canvas",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Interfaz",
+        "QA",
+        "Jugabilidad"
+      ],
+      "dependencies": [],
+      "files": [
+        "index.html",
+        "src/game/02-storage-audio.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "tests/reduced-effects.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/VOYAGE_POLISH_2026-10-17.md"
+      ],
+      "openErrors": [
+        "Integración en certificación local y navegador; aceptación humana/dispositivo pendiente."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Preferencia del sistema por defecto y opción persistente explícita.",
+        "Suprime camera kick y flash de pantalla; conserva escena, avisos y colisiones."
+      ]
+    },
+    {
+      "id": "P2-SAVE-01",
+      "block": "03",
+      "canonicalPhase": "P2",
+      "name": "Recuperar finalización interrumpida sin dividir desbloqueo y checkpoint",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA",
+        "Campaña clásica",
+        "Campaña N-7"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/core/storage-service.js",
+        "src/game/progression/completion-journal.js",
+        "src/game/03-ui-game-flow.js",
+        "tests/completion-journal.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/VOYAGE_POLISH_2026-10-17.md"
+      ],
+      "openErrors": [
+        "Integración en certificación local y navegador; aceptación humana/dispositivo pendiente."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Intención persistida antes de progreso; replay idempotente tras interrupciones.",
+        "Aislamiento de claves, preservación de raw corrupto/conflictos y valores superiores."
+      ]
+    },
+    {
+      "id": "P2-PLAYTEST-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Preparar y ejecutar diez pruebas humanas de Chronos–Gaia",
+      "priority": "HIGH",
+      "status": "BLOCKED",
+      "areas": [
+        "QA",
+        "Jugabilidad"
+      ],
+      "dependencies": [],
+      "files": [
+        "docs/playtests/CHRONOS_GAIA_PROTOCOL.md",
+        "docs/playtests/session-template.csv"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/VOYAGE_POLISH_2026-10-17.md"
+      ],
+      "openErrors": [
+        "Reclutamiento y acceso a jugadores/dispositivos pendientes; no se han realizado sesiones."
+      ],
+      "acceptanceStatus": {
+        "technical": "PREPARED_NOT_EXECUTED",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Diez sesiones reales con revisión registrada, controles, recarga, C9, Atlas y voluntad de seguir.",
+        "Protocolo preparado no equivale a sesiones realizadas."
+      ]
     }
   ],
   "canonicalPlan": {
@@ -6427,6 +6627,22 @@
       "initialReviewedHead": "97220c8bd7f81e7108b6950b1402809ba4d0c9a9",
       "concurrentChanges": "External opt-in camera/compositor/HUD commit inspected and preserved by fast-forward; disabled V1 and published game unchanged. Audit commit must not overwrite this work.",
       "preservedConcurrentHandoff": "b3e985f743a491d1f79d4eb5ce1d409f200a168b"
+    },
+    "releasePlanExecution": {
+      "approvedByOwner": true,
+      "approvedAt": "2026-10-17",
+      "source": "Haz todo lo que propones",
+      "initialHead": "827c1b5f50d88cbca5f68924d6ffc71f0794074e",
+      "audit": "docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md",
+      "currentBatch": [
+        "P2-PRESENTATION-01",
+        "P2-AUDIO-01",
+        "P2-COMFORT-01",
+        "P2-SAVE-01",
+        "P2-PLAYTEST-01"
+      ],
+      "report": "docs/production-reports/VOYAGE_POLISH_2026-10-17.md",
+      "note": "Se ejecuta por dependencias; aprobación del plan no equivale a terminar100etapas ni autoriza MotorV1, producción, beta o tiendas."
     }
   }
 }

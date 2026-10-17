@@ -159,7 +159,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-brand-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-voyage-polish-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -409,7 +409,7 @@ await test("guardados corruptos se normalizan sin romper el menú ni el control"
   assert.deepEqual({ ...api.getStars() }, { 1: 3, 3: 2 });
   assert.deepEqual({ ...api.getLevelBest() }, { 2: 900 });
   assert.deepEqual({ ...api.loadSettings() }, {
-    music: 100, fx: 0, sensitivity: 100, vibration: true, effectsQuality: "normal", effects: true
+    music: 100, fx: 0, sensitivity: 100, vibration: true, reduceEffects: false, effectsQuality: "normal", effects: true
   });
   gameWindow.localStorage.setItem(api.keys.unlocked, "10");
 });

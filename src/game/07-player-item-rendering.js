@@ -180,14 +180,22 @@
     const preview = ui.flightDockCanvas;
     const target = preview.getContext("2d");
     target.clearRect(0, 0, preview.width, preview.height);
-    target.save(); target.translate(preview.width / 2, preview.height * .49);
+    const servicing=flightDockReturn==="voyage"&&spriteReady(SPRITES.c9Station);
+    if(servicing) {
+      const image=SPRITES.c9Station,cellWidth=image.naturalWidth/2,cellHeight=image.naturalHeight/2;
+      // Service pose, with the bay facing the real modular hull. No second
+      // station clock: the stopped route owns the docking state.
+      target.drawImage(image,0,cellHeight,cellWidth,cellHeight,71,-8,242,242);
+    }
+    const size=servicing?165:270;
+    target.save(); target.translate(preview.width / 2, servicing?218:preview.height * .49);
     const twin = hasClassicTwinMounts();
-    const assembled = drawModularShip(target, shipLoadout, 270, t / 1000, 0, 100, 0, twin ? 0 : null);
+    const assembled = drawModularShip(target, shipLoadout, size, t / 1000, 0, 100, 0, twin ? 0 : null);
     if (!assembled) {
-      target.save(); target.scale(270 / 512, 270 / 512);
+      target.save(); target.scale(size / 512, size / 512);
       if (twin) drawClassicTwinMounts(target, 0);
       target.restore();
-      drawShipIdentityFallback(target, 270);
+      drawShipIdentityFallback(target, size);
     }
     target.restore();
   }

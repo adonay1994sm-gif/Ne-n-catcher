@@ -509,6 +509,14 @@ test('C9 calibrates the recovered twin into a persistent lance and cycling Ã—1/Ã
   const saved = h.stored(EQUIPMENT_KEY);
   h.node('flightCalibrateLance').click();
   assert.equal(h.stored(EQUIPMENT_KEY), saved, 'Repeating calibration cannot duplicate an unlock');
+  const choices=h.node('flightLoadoutChoices');
+  for(const type of ['pulse','twin','lance']) {
+    choices.querySelector(`[data-flight-loadout="${type}"]`).click();
+    assert.equal(h.equipment().selected,type,'C9 selection persists the actual weapon');
+    assert.equal(choices.querySelector(`[data-flight-loadout="${type}"]`).getAttribute('aria-pressed'),'true');
+    assert.equal(h.snapshot().weapons.charges,calibrated.weapons.charges,'C9 comparison cannot manufacture ammunition');
+    assert.equal(h.snapshot().weapons.recharge,calibrated.weapons.recharge);
+  }
 
   h.api.prepare(1);
   assert.equal(h.node('flightWeaponName').textContent, 'LANZA');

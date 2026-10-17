@@ -45,9 +45,11 @@ var NeonCampaign = (() => {
     createChronosVoyageCheckpoint: () => createChronosVoyageCheckpoint,
     createClassicScout: () => createClassicScout,
     createClassicWeapons: () => createClassicWeapons,
+    createCompletionJournal: () => createCompletionJournal,
     createGuardianAtlas: () => createGuardianAtlas,
     createJourneyDemo: () => createJourneyDemo,
     createRelativeFlightInput: () => createRelativeFlightInput,
+    createVoyageScore: () => createVoyageScore,
     endFlightInput: () => endFlightInput,
     getChronosDestructionPose: () => getChronosDestructionPose,
     guardianAtlasAnimation: () => guardianAtlasAnimation,
@@ -151,6 +153,377 @@ var NeonCampaign = (() => {
     });
   }
   var AUTHORED_LEVELS = Object.freeze(Array.from({ length: 100 }, (_, i) => authoredLevel(i + 1)));
+
+  // src/game/audio/voyage-score.js
+  var VOYAGE_SCORE_VERSION = "chronos-score-v1";
+  var SCORE_VOICE_LIMIT = 12;
+  var note = (beat, midi, length, voice = "glass", level = 0.095) => Object.freeze({ beat, midi, length, voice, level });
+  var phrase = (bpm, beats, notes) => Object.freeze({
+    bpm,
+    beats,
+    notes: Object.freeze([...notes].sort((a, b) => a.beat - b.beat))
+  });
+  var transit = phrase(84, 32, [
+    ...[38, 34, 41, 36].flatMap((root, bar) => [
+      note(bar * 8, root, 3.5, "hull", 0.13),
+      note(bar * 8 + 4, root + 12, 2.8, "hull", 0.075)
+    ]),
+    note(0, 62, 2.6, "air", 0.055),
+    note(0, 69, 2.6, "air", 0.045),
+    note(8, 65, 2.6, "air", 0.055),
+    note(8, 69, 2.6, "air", 0.045),
+    note(16, 65, 2.6, "air", 0.055),
+    note(16, 72, 2.6, "air", 0.045),
+    note(24, 64, 2.6, "air", 0.055),
+    note(24, 67, 2.6, "air", 0.045),
+    ...[
+      [1.5, 74],
+      [3, 69],
+      [5.5, 77],
+      [7, 76],
+      [10, 74],
+      [13, 69],
+      [17.5, 77],
+      [19, 79],
+      [21.5, 81],
+      [23, 77],
+      [26, 76],
+      [29, 74]
+    ].map(([beat, midi]) => note(beat, midi, 0.85))
+  ]);
+  var atlas = phrase(120, 16, [
+    ...[0, 2, 4, 6, 8, 10, 12, 14].map((beat, index) => note(beat, [38, 38, 41, 39, 38, 45, 39, 45][index], 0.65, "hull", 0.14)),
+    ...[0, 1.5, 3, 4, 5.5, 7, 8, 9.5, 11, 12, 13.5, 15].map((beat, index) => note(beat, [62, 69, 65, 63, 69, 65, 62, 72, 69, 63, 69, 74][index], 0.34, "pulse", 0.075)),
+    note(2.5, 74, 1, "glass", 0.085),
+    note(6.5, 75, 1, "glass", 0.085),
+    note(10.5, 77, 1, "glass", 0.085),
+    note(14.5, 76, 0.8, "glass", 0.085)
+  ]);
+  var station = phrase(76, 16, [
+    note(0, 41, 3.5, "hull", 0.1),
+    note(4, 48, 2.5, "hull", 0.075),
+    note(8, 46, 3.5, "hull", 0.1),
+    note(12, 48, 2.5, "hull", 0.075),
+    ...[[0, 65], [0, 69], [8, 62], [8, 69]].map(([beat, midi]) => note(beat, midi, 2.5, "air", 0.045)),
+    ...[[1, 72], [3, 69], [5, 67], [7, 65], [9, 69], [11, 72], [14, 74]].map(([beat, midi]) => note(beat, midi, 1.1, "glass", 0.07))
+  ]);
+  var arrival = phrase(92, 16, [
+    note(0, 38, 3.5, "hull", 0.11),
+    note(4, 41, 3.5, "hull", 0.11),
+    note(8, 36, 3.5, "hull", 0.1),
+    note(12, 38, 3.5, "hull", 0.11),
+    ...[[0, 62], [0, 69], [4, 65], [4, 72], [8, 64], [8, 67], [12, 66], [12, 69]].map(([beat, midi]) => note(beat, midi, 2.8, "air", 0.045)),
+    ...[[0.5, 74], [2, 77], [4.5, 79], [6, 81], [8.5, 79], [10, 76], [12.5, 78], [14, 81]].map(([beat, midi]) => note(beat, midi, 1.15, "glass", 0.09))
+  ]);
+  var VOYAGE_SCORE_PHRASES = Object.freeze({ transit, atlas, station, arrival });
+  var safeDisconnect = (node) => {
+    try {
+      node.disconnect();
+    } catch {
+    }
+  };
+  function createVoyageScore({ context, output }) {
+    if (!context || !output) throw new TypeError("A shared AudioContext and music output are required");
+    const active = /* @__PURE__ */ new Set();
+    let selected = "transit", beat = 0, cursor = 0, cycles = 0;
+    let enabled = true, paused = false, disposed = false, totalVoices = 0;
+    function release(record) {
+      if (!active.delete(record)) return;
+      safeDisconnect(record.oscillator);
+      safeDisconnect(record.gain);
+      safeDisconnect(record.filter);
+    }
+    function stopVoices() {
+      for (const record of [...active]) {
+        try {
+          record.oscillator.stop(context.currentTime);
+        } catch {
+        }
+        release(record);
+      }
+    }
+    function play(event2, delay) {
+      if (active.size >= SCORE_VOICE_LIMIT) return;
+      const now = context.currentTime + Math.max(0, delay);
+      const seconds = Math.min(4, Math.max(0.07, event2.length * 60 / VOYAGE_SCORE_PHRASES[selected].bpm));
+      const oscillator = context.createOscillator(), gain = context.createGain(), filter = context.createBiquadFilter();
+      const hull = event2.voice === "hull", air = event2.voice === "air";
+      oscillator.type = hull ? "triangle" : air ? "sine" : "triangle";
+      oscillator.frequency.setValueAtTime(440 * 2 ** ((event2.midi - 69) / 12), now);
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(hull ? 360 : air ? 1400 : event2.voice === "pulse" ? 1700 : 3500, now);
+      filter.Q.setValueAtTime(0.65, now);
+      const attack = Math.min(seconds * 0.25, air ? 0.25 : hull ? 0.035 : 0.012);
+      gain.gain.setValueAtTime(1e-4, now);
+      gain.gain.linearRampToValueAtTime(event2.level, now + attack);
+      gain.gain.exponentialRampToValueAtTime(1e-4, now + seconds);
+      oscillator.connect(filter);
+      filter.connect(gain);
+      gain.connect(output);
+      const record = { oscillator, gain, filter, end: now + seconds + 0.015 };
+      active.add(record);
+      totalVoices++;
+      oscillator.onended = () => release(record);
+      oscillator.start(now);
+      oscillator.stop(record.end);
+    }
+    function advance(seconds) {
+      if (disposed || !enabled || paused || context.state !== "running") return;
+      const dt = Number.isFinite(seconds) ? Math.max(0, Math.min(0.1, seconds)) : 0;
+      if (!dt) return;
+      for (const record of [...active]) if (record.end <= context.currentTime) release(record);
+      const phrase2 = VOYAGE_SCORE_PHRASES[selected], beatsPerSecond = phrase2.bpm / 60;
+      const endBeat = beat + dt * beatsPerSecond;
+      while (cursor < phrase2.notes.length && phrase2.notes[cursor].beat <= endBeat) {
+        const event2 = phrase2.notes[cursor++];
+        play(event2, Math.max(0, event2.beat - beat) / beatsPerSecond);
+      }
+      beat = endBeat;
+      if (beat >= phrase2.beats) {
+        beat -= phrase2.beats;
+        cursor = 0;
+        cycles++;
+      }
+    }
+    return Object.freeze({
+      advance,
+      setContext(value) {
+        if (disposed || !Object.prototype.hasOwnProperty.call(VOYAGE_SCORE_PHRASES, value) || value === selected) return false;
+        stopVoices();
+        selected = value;
+        beat = 0;
+        cursor = 0;
+        cycles = 0;
+        return true;
+      },
+      setEnabled(value) {
+        const next = value === true;
+        if (disposed || enabled === next) return;
+        enabled = next;
+        if (!enabled) stopVoices();
+      },
+      setPaused(value) {
+        const next = value === true;
+        if (disposed || paused === next) return;
+        paused = next;
+        if (paused) stopVoices();
+      },
+      snapshot: () => Object.freeze({
+        version: VOYAGE_SCORE_VERSION,
+        context: selected,
+        beat,
+        cycles,
+        activeVoices: active.size,
+        totalVoices,
+        enabled,
+        paused,
+        disposed
+      }),
+      dispose() {
+        if (!disposed) {
+          stopVoices();
+          disposed = true;
+        }
+      }
+    });
+  }
+
+  // src/game/progression/completion-journal.js
+  function createCompletionJournal({
+    storage,
+    keys,
+    levelCount,
+    checkpointKey = null,
+    validateCheckpoint = null
+  } = {}) {
+    const names = ["stars", "unlocked", "best", "levelBest"];
+    if (!storage || !["readRaw", "set", "setJSON"].every((name) => typeof storage[name] === "function")) {
+      throw new TypeError("Storage facade with tagged readRaw/set/setJSON required");
+    }
+    if (!Number.isSafeInteger(levelCount) || levelCount < 1 || !keys || !names.every((name) => typeof keys[name] === "string" && keys[name])) {
+      throw new TypeError("Existing campaign keys and positive levelCount required");
+    }
+    keys = Object.freeze(Object.fromEntries(names.map((name) => [name, keys[name]])));
+    const targets = names.map((name) => keys[name]);
+    if (new Set(targets).size !== names.length || checkpointKey !== null && (typeof checkpointKey !== "string" || !checkpointKey || targets.includes(checkpointKey))) {
+      throw new TypeError("Save keys must be distinct");
+    }
+    if (checkpointKey !== null && typeof validateCheckpoint !== "function") {
+      throw new TypeError("Checkpoint writes require the runtime validator");
+    }
+    const journalKey = `${keys.unlocked}:completion-journal:v1`;
+    if (targets.includes(journalKey) || checkpointKey === journalKey) throw new TypeError("Journal key collision");
+    const scope = JSON.stringify([...targets, checkpointKey, levelCount]);
+    const unreadable = Object.freeze({});
+    const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
+    const result = (ok, status, extra = {}) => ({ ok, status, ...extra });
+    const blocked = (reason, key) => result(false, "blocked", { reason, key });
+    const read = (key) => {
+      try {
+        const outcome = storage.readRaw(key);
+        return outcome?.ok === true && (outcome.value === null || typeof outcome.value === "string") ? outcome.value : unreadable;
+      } catch {
+        return unreadable;
+      }
+    };
+    const write = (key, value, json = false) => {
+      try {
+        return (json ? storage.setJSON(key, value) : storage.set(key, value)) === true;
+      } catch {
+        return false;
+      }
+    };
+    const checkpointValid = (value) => {
+      try {
+        return validateCheckpoint(value) === true;
+      } catch {
+        return false;
+      }
+    };
+    function parseNumber(raw, fallback, min = 0) {
+      if (raw === null || raw === "") return fallback;
+      const value = Number(raw);
+      return integer(value, min) ? value : null;
+    }
+    function parseMap(raw) {
+      if (raw === null) return {};
+      try {
+        const value = JSON.parse(raw);
+        return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+      } catch {
+        return null;
+      }
+    }
+    function readSave2() {
+      const raw = {};
+      for (const name of names) {
+        raw[name] = read(keys[name]);
+        if (raw[name] === unreadable) return { error: blocked("storage-read-denied", keys[name]) };
+      }
+      const save = {
+        raw,
+        stars: parseMap(raw.stars),
+        levelBest: parseMap(raw.levelBest),
+        unlocked: parseNumber(raw.unlocked, 1, 1),
+        best: parseNumber(raw.best, 0)
+      };
+      for (const name of names) if (save[name] === null) return { error: blocked("invalid-existing-save", keys[name]) };
+      return save;
+    }
+    function validRecord(record) {
+      if (!record || typeof record !== "object" || record.version !== 1 || record.scope !== scope || !["pending", "committed"].includes(record.phase) || typeof record.id !== "string" || record.id.length < 1 || record.id.length > 200 || !integer(record.level, 1) || record.level > levelCount || !integer(record.stars, 1) || record.stars > 3 || !integer(record.score) || !integer(record.unlockTo, 1) || record.unlockTo > levelCount) return false;
+      if (record.checkpoint === null) return true;
+      return checkpointKey !== null && record.checkpoint && (record.checkpoint.before === null || typeof record.checkpoint.before === "string") && checkpointValid(record.checkpoint.after);
+    }
+    function readRecord() {
+      const raw = read(journalKey);
+      if (raw === unreadable) return { error: blocked("storage-read-denied", journalKey) };
+      if (raw === null) return { record: null };
+      try {
+        const record = JSON.parse(raw);
+        return validRecord(record) ? { record } : { error: blocked("invalid-journal", journalKey) };
+      } catch {
+        return { error: blocked("invalid-journal", journalKey) };
+      }
+    }
+    function replay(record) {
+      const save = readSave2();
+      if (save.error) return save.error;
+      const key = String(record.level);
+      const oldStars = parseNumber(save.stars[key] === void 0 ? null : save.stars[key], 0);
+      const oldBest = parseNumber(save.levelBest[key] === void 0 ? null : save.levelBest[key], 0);
+      if (oldStars === null || oldStars > 3) return blocked("invalid-existing-save", keys.stars);
+      if (oldBest === null) return blocked("invalid-existing-save", keys.levelBest);
+      let checkpointRaw = null, checkpointAfter = null;
+      if (record.checkpoint !== null) {
+        checkpointRaw = read(checkpointKey);
+        if (checkpointRaw === unreadable) return blocked("storage-read-denied", checkpointKey);
+        checkpointAfter = JSON.stringify(record.checkpoint.after);
+        if (checkpointRaw !== record.checkpoint.before && checkpointRaw !== checkpointAfter) {
+          return blocked("checkpoint-conflict", checkpointKey);
+        }
+      }
+      const stars = { ...save.stars, [key]: Math.max(oldStars, record.stars) };
+      const bests = { ...save.levelBest, [key]: Math.max(oldBest, record.score) };
+      const writes = [
+        [keys.stars, stars, true, save.raw.stars],
+        [keys.levelBest, bests, true, save.raw.levelBest],
+        [keys.best, Math.max(save.best, record.score), false, save.raw.best],
+        ...record.checkpoint === null ? [] : [[checkpointKey, record.checkpoint.after, true, checkpointRaw]],
+        [keys.unlocked, Math.max(save.unlocked, record.unlockTo), false, save.raw.unlocked]
+      ];
+      for (const [target, value, json, current] of writes) {
+        if ((json ? JSON.stringify(value) : String(value)) === current) continue;
+        if (!write(target, value, json)) return result(false, "pending", { reason: "storage-write-denied", key: target, completionId: record.id });
+      }
+      if (!write(journalKey, { ...record, phase: "committed" }, true)) {
+        return result(false, "pending", { reason: "receipt-write-denied", key: journalKey, completionId: record.id });
+      }
+      return result(true, "committed", {
+        completionId: record.id,
+        newlyUnlocked: record.unlockTo > save.unlocked
+      });
+    }
+    function recover() {
+      const loaded = readRecord();
+      if (loaded.error) return loaded.error;
+      if (!loaded.record) return result(true, "idle");
+      if (loaded.record.phase === "committed") return result(true, "committed", {
+        completionId: loaded.record.id,
+        duplicate: true
+      });
+      return { ...replay(loaded.record), recovered: true };
+    }
+    function complete({ completionId, level, stars, score, checkpoint = null } = {}) {
+      if (typeof completionId !== "string" || !completionId || completionId.length > 200 || !integer(level, 1) || level > levelCount || !integer(stars, 1) || stars > 3 || !integer(score)) {
+        throw new TypeError("Valid completionId, campaign level, stars and score required");
+      }
+      const recovery = recover();
+      if (!recovery.ok || recovery.completionId === completionId) return recovery;
+      const save = readSave2();
+      if (save.error) return save.error;
+      if (save.unlocked > levelCount) return blocked("unsupported-campaign-progress", keys.unlocked);
+      let checkpointIntent = null;
+      if (checkpoint !== null) {
+        if (!checkpointKey || !checkpointValid(checkpoint)) throw new TypeError("Invalid completion checkpoint");
+        const before = read(checkpointKey);
+        if (before === unreadable) return blocked("storage-read-denied", checkpointKey);
+        if (before !== null) {
+          try {
+            if (!checkpointValid(JSON.parse(before))) return blocked("invalid-existing-checkpoint", checkpointKey);
+          } catch {
+            return blocked("invalid-existing-checkpoint", checkpointKey);
+          }
+        }
+        let after;
+        try {
+          after = JSON.parse(JSON.stringify(checkpoint));
+        } catch {
+          throw new TypeError("Checkpoint must be JSON data");
+        }
+        if (!checkpointValid(after)) throw new TypeError("Invalid JSON checkpoint");
+        checkpointIntent = { before, after };
+      }
+      const record = {
+        version: 1,
+        scope,
+        phase: "pending",
+        id: completionId,
+        level,
+        stars,
+        score,
+        unlockTo: save.unlocked === level ? Math.min(levelCount, level + 1) : save.unlocked,
+        checkpoint: checkpointIntent
+      };
+      if (!write(journalKey, record, true)) return result(false, "blocked", {
+        reason: "intent-write-denied",
+        key: journalKey,
+        completionId
+      });
+      return replay(record);
+    }
+    return Object.freeze({ complete, recover, journalKey });
+  }
 
   // src/core/player-model.js
   var PLAYER_GEOMETRY = Object.freeze({

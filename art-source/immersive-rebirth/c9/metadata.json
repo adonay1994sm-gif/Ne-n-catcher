@@ -1,0 +1,101 @@
+{
+  "id": "C9-STATION-01",
+  "version": "c9-station-v1",
+  "name": "Estación de servicio C9",
+  "generatedAt": "2026-10-17",
+  "status": "IN_REVIEW",
+  "technicalAcceptance": "ASSET_REVIEWED_PENDING_GAMEPLAY_INTEGRATION",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "master": {
+    "path": "art-source/immersive-rebirth/c9/c9-station-atlas-master.png",
+    "format": "PNG",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 2432561,
+    "sha256": "6d898baceb3ba42531c1ba9a3a1e804bf86198f66db47dbbd65a02b40f86a3ac"
+  },
+  "runtime": {
+    "path": "assets/c9_station_v1.webp",
+    "format": "WebP",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 316002,
+    "sha256": "ccae6bbb791ee17ffb5662f050b939935365fa0c99abf9fdc00062270cdd277a",
+    "decodedRgbaBytes": 4194304,
+    "transparency": true,
+    "alphaRange": [0, 255],
+    "optimization": "ImageMagick resize 1024x1024, WebP quality 88, alpha quality 100; no painted or synthesized frames"
+  },
+  "atlas": {
+    "columns": 2,
+    "rows": 2,
+    "frameCount": 4,
+    "frameWidth": 512,
+    "frameHeight": 512,
+    "pivotNormalized": [0.5, 0.5],
+    "orientation": "Orthographic three-quarter overhead; docking approach toward screen bottom",
+    "frames": [
+      {
+        "index": 0,
+        "name": "idle-closed",
+        "x": 0,
+        "y": 0,
+        "description": "Dock shutter closed; both maintenance arms folded beside the hull; low cyan guide lights",
+        "rgbaSha256": "002944ad1f5eddd0c3cc39b0d926f882f2f2a096c362f9492b77aa8e181a08eb"
+      },
+      {
+        "index": 1,
+        "name": "docking-open",
+        "x": 512,
+        "y": 0,
+        "description": "Dock doors retracted outward; arms unfolded away from the bay; amber work lights",
+        "rgbaSha256": "e3bd85da3271260b7e714c03a079482580e417b0c185235214125529cf57bf93"
+      },
+      {
+        "index": 2,
+        "name": "service-active",
+        "x": 0,
+        "y": 512,
+        "description": "Open lit bay; arms articulated down and inward, tool pads toward the docking corridor",
+        "rgbaSha256": "a6148903f6305f684ad2d4edafc4bbebf375206e1d44402116eb64b540427200"
+      },
+      {
+        "index": 3,
+        "name": "departure-clear",
+        "x": 512,
+        "y": 512,
+        "description": "Open unobstructed bay; arms retracted upward; brighter cyan guide rails and amber beacon",
+        "rgbaSha256": "75d2701be7071138e90f80ce1d941d778c1952b17689192407214e8841389cc9"
+      }
+    ],
+    "playback": {
+      "mode": "event-driven-state-poses",
+      "fps": null,
+      "durationMs": null,
+      "recommendedSequence": [0, 1, 2, 3],
+      "note": "Four genuine mechanical states, not a high-frame-rate movement cycle. Hold each pose according to approach/service/departure; use the existing route clock and do not create another timer or RAF. Minor generative registration differences may remain between poses; crossfade briefly rather than claiming precision joint animation."
+    }
+  },
+  "provenance": {
+    "method": "OpenAI image_gen tool; original generated image for this project",
+    "generatedOriginal": "/workspace/generated_images/exec-8464689f-4860-4cc5-ab41-ac7d8ddc04d8.png",
+    "prompt": "PROVENANCE.md",
+    "styleReferencesInspected": [
+      "assets/player_ship_identity_v1.webp",
+      "assets/guardian_atlas_states_v1.webp",
+      "assets/satellite_old.webp"
+    ],
+    "referenceUse": "Visual style inspection; no reference image was submitted to generation and no third-party graphic was imported",
+    "rights": "Generated for the project with the available OpenAI tool. No external asset license was purchased. Owner retains responsibility for final commercial provenance review; no independent exclusivity or legal clearance claimed."
+  },
+  "review": {
+    "masterInspected": true,
+    "runtimeInspected": true,
+    "trueAlphaVerified": true,
+    "distinctFramesVerified": true,
+    "bakedText": false,
+    "intendedGameplayWidthPixels": [180, 275],
+    "note": "Asset production only. Integration, pause, event-driven pose order, WebGL/Canvas rendering and device performance must be verified by the integrating renderer. Important appendages approach cell edges; draw the full square cell without trimming."
+  }
+}

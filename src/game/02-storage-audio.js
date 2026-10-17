@@ -13,6 +13,8 @@
       fx: Math.round(finite(source.fx, DEFAULT_SETTINGS.fx, 0, 100)),
       sensitivity: Math.round(finite(source.sensitivity, DEFAULT_SETTINGS.sensitivity, 60, 150) / 5) * 5,
       vibration: typeof source.vibration === "boolean" ? source.vibration : DEFAULT_SETTINGS.vibration,
+      reduceEffects: typeof source.reduceEffects === "boolean" ? source.reduceEffects
+        : Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches),
       effectsQuality: savedQuality,
       effects: savedQuality !== "low"
     };
@@ -135,7 +137,8 @@
         minY = center; maxY = center; yFits = false;
       }
     }
-    classicFlightBounds = Object.freeze({ ...base, minY, maxY, yFits, fits: base.xFits && yFits });
+    classicFlightBounds = Object.freeze({ ...base, minY, maxY, yFits, fits: base.xFits && yFits,
+      presentationTop: hudBottom, presentationBottom: controlsTop });
     classicFlightAnchorY = maxY;
     player.x = clamp(player.x, classicFlightBounds.minX, classicFlightBounds.maxX);
     player.target = clamp(player.target, classicFlightBounds.minX, classicFlightBounds.maxX);
@@ -185,6 +188,13 @@
 
   addEventListener("resize", resizeCanvas, { passive: true });
 
+  // The score shares the legacy AudioContext. The existing frame owner calls
+  // updateScore; no score timer, RAF or permanently running drone is created.
+  let voyageScore = null;
+  let voyageScoreContext = "transit";
+  let scoreSuspended = false;
+  const activeToneVoices = new Set();
+
   function ensureAudio() {
     if (audioCtx) return audioCtx;
     try {
@@ -202,24 +212,37 @@
     const ac = ensureAudio();
     if (!ac) return;
     if (ac.state === "suspended") ac.resume().catch(() => {});
-    if (musicNodes.length) {
-      updateAudioVolumes();
-      return;
+    if (!voyageScore && typeof NeonCampaign !== "undefined" && typeof NeonCampaign.createVoyageScore === "function") {
+      voyageScore = NeonCampaign.createVoyageScore({context: ac, output: musicGain});
+      voyageScore.setContext(voyageScoreContext);
     }
-    [55, 82.41, 110].forEach((frequency, index) => {
-      const oscillator = ac.createOscillator();
-      const gain = ac.createGain();
-      oscillator.type = index === 0 ? "sine" : "triangle";
-      oscillator.frequency.value = frequency;
-      gain.gain.value = index === 0 ? 0.33 : 0.11;
-      oscillator.connect(gain).connect(musicGain);
-      oscillator.start();
-      musicNodes.push(oscillator, gain);
-    });
+    scoreSuspended = false;
     updateAudioVolumes();
   }
 
+  function signalScoreContext(context) {
+    if (!["transit", "atlas", "station", "arrival"].includes(context)) return false;
+    voyageScoreContext = context;
+    return voyageScore?.setContext(context) ?? true;
+  }
+
+  function updateScore(dt, paused = false) {
+    if (!voyageScore) return;
+    voyageScore.setPaused(paused || scoreSuspended);
+    voyageScore.advance(dt);
+  }
+
+  function stopToneVoices() {
+    for (const voice of [...activeToneVoices]) {
+      try { voice.oscillator.stop(audioCtx.currentTime); } catch { /* already ended */ }
+      voice.release();
+    }
+  }
+
   async function suspendAudio() {
+    scoreSuspended = true;
+    voyageScore?.setPaused(true);
+    stopToneVoices();
     if (audioCtx?.state === "running") await audioCtx.suspend().catch(() => {});
   }
 
@@ -227,29 +250,41 @@
     if (audioCtx?.state === "suspended" && (settings.music > 0 || settings.fx > 0)) {
       await audioCtx.resume().catch(() => {});
     }
+    scoreSuspended = audioCtx?.state !== "running";
     updateAudioVolumes();
   }
 
   function updateAudioVolumes() {
+    voyageScore?.setEnabled(settings.music > 0);
+    if (settings.fx <= 0) stopToneVoices();
     if (musicGain && audioCtx) {
-      const value = (settings.music / 100) * 0.09;
+      const value = (settings.music / 100) * 0.26;
       musicGain.gain.setTargetAtTime(value, audioCtx.currentTime, 0.08);
     }
   }
 
   function tone(frequency = 440, duration = 0.06, type = "sine", base = 0.06) {
-    if (settings.fx <= 0) return;
+    if (settings.fx <= 0) { stopToneVoices(); return; }
     const ac = ensureAudio();
-    if (!ac) return;
+    if (!ac || ac.state !== "running" || scoreSuspended) return;
+    for (const voice of [...activeToneVoices]) if (voice.end <= ac.currentTime) voice.release();
+    if (activeToneVoices.size >= 16) return;
     const oscillator = ac.createOscillator();
     const gain = ac.createGain();
     oscillator.type = type;
     oscillator.frequency.value = frequency;
-    gain.gain.value = base * (settings.fx / 100);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + duration);
+    const length = Math.max(.015, Math.min(2, Number(duration) || .06));
+    gain.gain.value = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
+    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + length);
     oscillator.connect(gain).connect(ac.destination);
+    const voice = {oscillator, end: ac.currentTime + length, release() {
+      if (!activeToneVoices.delete(voice)) return;
+      oscillator.disconnect(); gain.disconnect();
+    }};
+    activeToneVoices.add(voice);
+    oscillator.onended = voice.release;
     oscillator.start();
-    oscillator.stop(ac.currentTime + duration);
+    oscillator.stop(voice.end);
   }
 
   function vibrate(pattern) {
@@ -257,11 +292,13 @@
   }
 
   function syncSettingsUI() {
+    document.body.classList.toggle("reduced-effects", settings.reduceEffects);
     ui.musicVolume.value = settings.music;
     ui.fxVolume.value = settings.fx;
     ui.sensitivity.value = settings.sensitivity;
     ui.vibration.checked = settings.vibration;
     ui.effectsQuality.value = settings.effectsQuality;
+    ui.reduceEffects.checked = settings.reduceEffects;
     ui.musicValue.textContent = `${settings.music}%`;
     ui.fxValue.textContent = `${settings.fx}%`;
     ui.sensitivityValue.textContent = `${settings.sensitivity}%`;
