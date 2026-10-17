@@ -2,8 +2,18 @@
 
   function migrateLegacyStorage() {
     if (N7_CAMPAIGN || JOURNEY_DEMO) return false;
-    const legacyBest = Math.max(0, storage.getNumber(LEGACY_KEYS.best, 0));
-    const currentBest = Math.max(0, storage.getNumber(KEYS.best, 0));
+    // A denied read is not an absent score: do not overwrite an unreadable
+    // current record with a smaller historical one while writes still work.
+    const legacyRead = storage.readRaw(LEGACY_KEYS.best);
+    const currentRead = storage.readRaw(KEYS.best);
+    if (!legacyRead.ok || !currentRead.ok) return false;
+    const scoreFromRaw = raw => {
+      const value = Number(raw);
+      return Number.isFinite(value) ? Math.max(0, value) : null;
+    };
+    const legacyBest = scoreFromRaw(legacyRead.value);
+    const currentBest = scoreFromRaw(currentRead.value);
+    if (legacyBest === null || currentBest === null) return false;
     if (legacyBest <= currentBest) return false;
     return storage.set(KEYS.best, legacyBest);
   }

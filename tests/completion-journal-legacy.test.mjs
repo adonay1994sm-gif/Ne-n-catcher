@@ -121,3 +121,40 @@ test('blocked startup recovery warns and forbids checkpoint writes over its pend
   assert.equal(available.snapshot().blocked, false); assert.equal(available.snapshot().voyage.completed, true);
   assert.equal(available.dump().get(K.unlocked), '2');
 });
+
+test('bootstrap with legacy 100 and current 9000 never rewrites an unreadable current best without a journal', t => {
+  const saved = initialSave(); saved.set('neon-best-v1', '100'); saved.set(K.best, '9000');
+  const blocked = harness(t, {saved, denyRead: K.best});
+  assert.equal(blocked.dump().get(K.best), '9000');
+  assert.equal(blocked.dump().get('neon-best-v1'), '100');
+  assert.equal(blocked.dump().has(K.journal), false);
+  assert.equal(blocked.writes.some(write => write.key === K.best), false);
+  assert.deepEqual(blocked.dump(), saved);
+  const available = harness(t, {saved: blocked.dump()});
+  assert.equal(available.dump().get(K.best), '9000');
+  assert.equal(available.writes.some(write => write.key === K.best), false);
+  assert.deepEqual(available.dump(), saved);
+});
+
+test('bootstrap migration cannot lower unreadable current 9000 before recovering a pending journal with legacy 100', t => {
+  const saved = initialSave(); saved.set('neon-best-v1', '100'); saved.set(K.best, '9000');
+  const first = harness(t, {saved, failTarget: K.stars});
+  first.fault.armed = true; first.api.finishChronos();
+  const pending = first.dump();
+  assert.equal(JSON.parse(pending.get(K.journal)).phase, 'pending');
+  assert.equal(pending.get(K.best), '9000');
+  const blocked = harness(t, {saved: pending, denyRead: K.best});
+  assert.equal(blocked.snapshot().blocked, true);
+  assert.equal(blocked.dump().get(K.best), '9000');
+  assert.equal(blocked.writes.some(write => write.key === K.best), false);
+  assert.deepEqual(blocked.dump(), pending);
+  const available = harness(t, {saved: blocked.dump()});
+  assert.equal(available.snapshot().blocked, false);
+  assert.equal(available.snapshot().voyage.completed, true);
+  assert.equal(available.dump().get(K.unlocked), '2');
+  assert.equal(available.dump().get(K.best), '9000');
+  assert.equal(available.writes.some(write => write.key === K.best), false);
+  assert.equal(JSON.parse(available.dump().get(K.journal)).phase, 'committed');
+  assert.equal(JSON.parse(available.dump().get(K.levelBest))['1'], 777);
+  assert.equal(available.dump().get('neon-best-v1'), '100');
+});

@@ -1250,14 +1250,20 @@
   }
 
   function saveScore() {
-    let saved = true;
-    if (score > bestScore()) saved = storage.set(KEYS.best, score) && saved;
-    const bests = getLevelBest();
-    if (score > (+bests[currentLevel + 1] || 0)) {
-      bests[currentLevel + 1] = score;
-      saved = storage.setJSON(KEYS.levelBest, bests) && saved;
-    }
-    return saved;
+    // Game-over saves run outside the completion journal. Read both records
+    // explicitly before writing: a denied read must never become a zero/default.
+    const bestRead=storage.readRaw(KEYS.best),levelsRead=storage.readRaw(KEYS.levelBest);
+    if(!bestRead.ok||!levelsRead.ok||!Number.isFinite(score)||score<0)return false;
+    const previousBest=bestRead.value===null||bestRead.value===""?0:Number(bestRead.value);
+    if(!Number.isFinite(previousBest)||previousBest<0)return false;
+    let bests;
+    try {bests=levelsRead.value===null?{}:JSON.parse(levelsRead.value);} catch {return false;}
+    if(!bests||typeof bests!=="object"||Array.isArray(bests)||
+      Object.values(bests).some(value=>!Number.isFinite(Number(value))||Number(value)<0))return false;
+    const previousLevel=Object.hasOwn(bests,currentLevel+1)?Number(bests[currentLevel+1]):0;
+    if(score>previousBest&&!storage.set(KEYS.best,score))return false;
+    if(score>previousLevel)return storage.setJSON(KEYS.levelBest,{...bests,[currentLevel+1]:score});
+    return true;
   }
 
   function completeLevel() {
