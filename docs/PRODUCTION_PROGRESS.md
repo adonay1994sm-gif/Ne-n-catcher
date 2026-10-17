@@ -1,10 +1,27 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T08:52:02Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T10:22:53.757Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
 Estados: **PENDING**, **IN_PROGRESS**, **BLOCKED**, **IN_REVIEW**, **DONE**. DONE exige todos los criterios, SHA de implementación, pruebas ejecutadas y evidencia; la presencia de un archivo o dato no basta. Dependencias indican orden de producción, no certificación automática. SHA y pruebas vacíos significan que no existe cierre verificado en este registro.
+
+## Mandato rector vigente — campaña espacial 10 × 10
+
+Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el catálogo conservan evidencia histórica y backlog; las rutas N-7 no equivalen a las nuevas etapas. El registro anterior tenía 22/267 tareas cerradas: ese cociente no mide el nuevo juego. Los cambios de denominador quedan en production-tasks.json.
+
+| ID / puerta | Entrega | Estado de trabajo | Técnica | Artística | Física |
+| --- | --- | --- | --- | --- | --- |
+| P0-01 / P0 | Preservar continuidad y fijar mandato rector canónico | DONE | PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
+| P1-01 / P1 | Demostrar salida, pieza, servicio, mejora y frontera en el ciclo legacy | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-02 / P1 | Revisión estética del primer viaje antes de multiplicar contenido | BLOCKED | NOT_APPLICABLE | PENDING_OWNER | PENDING |
+| P2-01 / P2 | Consolidar dos configuraciones viables y economía breve segura | PENDING | PENDING | PENDING | PENDING |
+| PM-01 / M | Decisión técnica reservada sobre Motor V1 | BLOCKED | PENDING_OWNER | NOT_APPLICABLE | PENDING |
+| P3-01 / P3 | Completar diez etapas conectadas del capítulo Chronos-Gaia | PENDING | PENDING | PENDING | PENDING |
+| P4-01 / P4 | Expandir la campaña espacial a diez capítulos de diez etapas | PENDING | PENDING | PENDING | PENDING |
+| P5-01 / P5 | Certificar calidad móvil y preparar distribución autorizada | PENDING | PENDING | PENDING | PENDING |
+
+P1 es una demostración comprimida Chronos → C9 → Gaia con pieza, servicio y frontera; no un capítulo terminado ni un porcentaje comercial. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
 ## Método y alcance
 
@@ -16,37 +33,37 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
-| Motor | 2/9 (22.2%) | 7 | 0 | 0 | 0 |
-| Jugabilidad | 7/40 (17.5%) | 33 | 0 | 0 | 0 |
-| Campaña clásica | 3/6 (50.0%) | 2 | 1 | 0 | 0 |
-| Campaña N-7 | 2/38 (5.3%) | 35 | 1 | 0 | 0 |
-| Enemigos | 5/72 (6.9%) | 63 | 0 | 0 | 4 |
-| Jefes | 0/12 (0.0%) | 12 | 0 | 0 | 0 |
-| Assets | 2/163 (1.2%) | 132 | 2 | 1 | 26 |
-| Animaciones | 5/136 (3.7%) | 115 | 0 | 0 | 16 |
-| Narrativa | 0/16 (0.0%) | 16 | 0 | 0 | 0 |
+| Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
+| Jugabilidad | 7/44 (15.9%) | 36 | 0 | 0 | 1 |
+| Campaña clásica | 4/10 (40.0%) | 4 | 1 | 0 | 1 |
+| Campaña N-7 | 3/39 (7.7%) | 35 | 1 | 0 | 0 |
+| Enemigos | 5/73 (6.8%) | 63 | 0 | 0 | 5 |
+| Jefes | 0/13 (0.0%) | 13 | 0 | 0 | 0 |
+| Assets | 2/164 (1.2%) | 131 | 2 | 2 | 27 |
+| Animaciones | 5/137 (3.6%) | 115 | 0 | 1 | 16 |
+| Narrativa | 0/18 (0.0%) | 18 | 0 | 0 | 0 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/13 (30.8%) | 8 | 0 | 0 | 1 |
-| Rendimiento | 1/12 (8.3%) | 11 | 0 | 0 | 0 |
-| QA | 17/45 (37.8%) | 18 | 2 | 4 | 4 |
-| Preparación iOS | 0/19 (0.0%) | 13 | 0 | 6 | 0 |
+| Interfaz | 4/16 (25.0%) | 9 | 0 | 1 | 2 |
+| Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
+| QA | 18/49 (36.7%) | 20 | 2 | 4 | 5 |
+| Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 17/20 (85.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 2 · DONE: 17 |
-| 04 · Jugabilidad procedural | 0/17 (0.0%) | PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 5/163 (3.1%) | PENDING: 129 · IN_PROGRESS: 2 · BLOCKED: 0 · IN_REVIEW: 27 · DONE: 5 |
+| 03 · Prueba integrada y cierre técnico | 18/23 (78.3%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18 |
+| 04 · Jugabilidad procedural | 0/19 (0.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
+| 05 · Producción visual y 150 assets | 5/164 (3.0%) | PENDING: 128 · IN_PROGRESS: 2 · BLOCKED: 1 · IN_REVIEW: 28 · DONE: 5 |
 | 06 · Diez jefes | 0/10 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
-| 08 · Audio y experiencia sensorial | 0/13 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
+| 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
 | 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 15 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
-| 10 · Preparación para lanzamiento | 0/14 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0 |
+| 10 · Preparación para lanzamiento | 0/15 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0 |
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 22; PLANNED: 125; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 23; PLANNED: 124; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 
@@ -64,6 +81,8 @@ Catálogo: **IN_REVIEW: 22; PLANNED: 125; IMPLEMENTED_CODE: 2; READY: 1**; 150 i
 - **B10-09 — Verificar icono y splash en aplicación nativa:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
 - **B10-11 — Preparar TestFlight; distribución requiere autorización:** Requiere credenciales o autorización específica del propietario.
 - **B10-12 — Ejecutar pruebas físicas de candidato de lanzamiento:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
+- **P1-02 — Revisión estética del primer viaje antes de multiplicar contenido:** La aceptación estética corresponde al propietario; no equivale a aprobar código o autorizar Engine V1.
+- **PM-01 — Decisión técnica reservada sobre Motor V1:** Requiere orden técnica expresa del propietario; mantener USE_ENGINE_V1=false.
 
 ## Orden de continuidad
 

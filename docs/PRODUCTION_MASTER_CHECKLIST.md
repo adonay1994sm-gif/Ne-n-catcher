@@ -1,10 +1,27 @@
 # NEON CATCHER — Checklist maestra de producción
 
-Fecha del registro: **2026-10-17T08:52:02Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T10:22:53.757Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
 Estados: **PENDING**, **IN_PROGRESS**, **BLOCKED**, **IN_REVIEW**, **DONE**. DONE exige todos los criterios, SHA de implementación, pruebas ejecutadas y evidencia; la presencia de un archivo o dato no basta. Dependencias indican orden de producción, no certificación automática. SHA y pruebas vacíos significan que no existe cierre verificado en este registro.
+
+## Mandato rector vigente — campaña espacial 10 × 10
+
+Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el catálogo conservan evidencia histórica y backlog; las rutas N-7 no equivalen a las nuevas etapas. El registro anterior tenía 22/267 tareas cerradas: ese cociente no mide el nuevo juego. Los cambios de denominador quedan en production-tasks.json.
+
+| ID / puerta | Entrega | Estado de trabajo | Técnica | Artística | Física |
+| --- | --- | --- | --- | --- | --- |
+| P0-01 / P0 | Preservar continuidad y fijar mandato rector canónico | DONE | PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
+| P1-01 / P1 | Demostrar salida, pieza, servicio, mejora y frontera en el ciclo legacy | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-02 / P1 | Revisión estética del primer viaje antes de multiplicar contenido | BLOCKED | NOT_APPLICABLE | PENDING_OWNER | PENDING |
+| P2-01 / P2 | Consolidar dos configuraciones viables y economía breve segura | PENDING | PENDING | PENDING | PENDING |
+| PM-01 / M | Decisión técnica reservada sobre Motor V1 | BLOCKED | PENDING_OWNER | NOT_APPLICABLE | PENDING |
+| P3-01 / P3 | Completar diez etapas conectadas del capítulo Chronos-Gaia | PENDING | PENDING | PENDING | PENDING |
+| P4-01 / P4 | Expandir la campaña espacial a diez capítulos de diez etapas | PENDING | PENDING | PENDING | PENDING |
+| P5-01 / P5 | Certificar calidad móvil y preparar distribución autorizada | PENDING | PENDING | PENDING | PENDING |
+
+P1 es una demostración comprimida Chronos → C9 → Gaia con pieza, servicio y frontera; no un capítulo terminado ni un porcentaje comercial. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
 Este registro cubre los Bloques 03–10 del mandato. Los avances históricos permanecen en [CODEX_STATUS.md](CODEX_STATUS.md) y [continuity-100/](continuity-100/); no se convierten automáticamente en cierres de los criterios más amplios de esta etapa.
 
@@ -86,11 +103,11 @@ Este registro cubre los Bloques 03–10 del mandato. Los avances históricos per
 
 ## Resumen de estados
 
-PENDING: 206 · IN_PROGRESS: 3 · BLOCKED: 6 · IN_REVIEW: 30 · DONE: 22. Total: 267 tareas.
+PENDING: 209 · IN_PROGRESS: 3 · BLOCKED: 8 · IN_REVIEW: 32 · DONE: 23. Total: 275 tareas.
 
 ## Bloque 03 — Prueba integrada y cierre técnico
 
-PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 2 · DONE: 17.
+PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -114,6 +131,9 @@ PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 2 · DONE: 17.
 | B03-18 | Verificar despliegue aislado, URL y SHA remotos | CRITICAL | IN_REVIEW | B03-17 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[docs/production-reports/evidence/netlify-drop-20261016/neon-catcher-preview-5a2f916.zip](production-reports/evidence/netlify-drop-20261016/neon-catcher-preview-5a2f916.zip) | 5a2f91647f582ad117b18df58da3d1a77b6c08e0 | Netlify Drop HTTP: 200 selector, build-info, dos entradas y atlas; 4/6 recursos byte a byte, HTML reescrito por Netlify<br>Chromium remoto 390x844: 2/2, exit 0; controles, pausa, reanudación, reinicio y menú | [docs/production-reports/evidence/netlify-drop-20261016/deployment.json](production-reports/evidence/netlify-drop-20261016/deployment.json)<br>[docs/production-reports/evidence/netlify-drop-20261016/http-content.json](production-reports/evidence/netlify-drop-20261016/http-content.json)<br>[docs/production-reports/evidence/netlify-drop-20261016/browser-remote-02/results.json](production-reports/evidence/netlify-drop-20261016/browser-remote-02/results.json) | La URL Netlify Drop no reclamada expira aproximadamente una hora después de 2026-10-16 14:45 UTC; falta sitio de prueba duradero en la cuenta del propietario. |
 | B03-19 | Verificar entrada PWA y cabeceras del paquete | CRITICAL | IN_REVIEW | B03-03 | [scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[netlify.toml](../netlify.toml)<br>[preview/launcher.html](../preview/launcher.html)<br>[scripts/preview-offline-smoke.cjs](../scripts/preview-offline-smoke.cjs) | e1a7aa8498b1c5f9f5558425a61b748f4ab1f869 | Preview15/15 comprueba identidad/entrada de manifiesto; offline-02 resuelve start_url al selector y sirve cabeceras locales esperadas | [docs/production-reports/evidence/block-03/initial/preview-tests-02.txt](production-reports/evidence/block-03/initial/preview-tests-02.txt)<br>[docs/production-reports/evidence/block-03/offline-02/results.json](production-reports/evidence/block-03/offline-02/results.json) | El test abre start_url pero no instala una PWA; instalación real y cabeceras del despliegue Netlify siguen sin verificar. |
 | B03-20 | Conservar informe, evidencias, commits y estado remoto | CRITICAL | IN_PROGRESS | B03-04<br>B03-05 | [scripts/content-browser-smoke.cjs](../scripts/content-browser-smoke.cjs)<br>[scripts/build-preview.mjs](../scripts/build-preview.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs) | — | — | — | — |
+| P0-01 | Preservar continuidad y fijar mandato rector canónico | CRITICAL | DONE | — | [docs/PRODUCT_VISION.md](PRODUCT_VISION.md)<br>[AGENTS.md](../AGENTS.md)<br>[docs/production-tasks.json](production-tasks.json) | 398d1ca479de9aefe6bacc6f36900c3111ffa7d4 | HEAD/remoto bfc6683 y árbol preservados; mandato y guía publicados | [docs/PRODUCT_VISION.md](PRODUCT_VISION.md)<br>[docs/production-reports/evidence/journey-p1/certification-02/results.json](production-reports/evidence/journey-p1/certification-02/results.json) | — |
+| P1-01 | Demostrar salida, pieza, servicio, mejora y frontera en el ciclo legacy | CRITICAL | IN_REVIEW | P0-01 | [src/game/progression/journey-demo.js](../src/game/progression/journey-demo.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js)<br>[src/game/05-corridor-update.js](../src/game/05-corridor-update.js)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js)<br>[scripts/journey-browser-smoke.cjs](../scripts/journey-browser-smoke.cjs) | ce71b299cb0eea8cbb908dd4886319e4e859580e | Modelo13/13, integración legacy3/3; certificación final11/11 fases con contenido44/44<br>Chromium natural browser-04:5/5 grupos,exit0,72.367s,RAF máximo1,0 errores y solape0<br>Preview15/15,exit0 | [docs/production-reports/evidence/journey-p1/browser-04/results.json](production-reports/evidence/journey-p1/browser-04/results.json)<br>[docs/production-reports/evidence/journey-p1/certification-03/results.json](production-reports/evidence/journey-p1/certification-03/results.json)<br>[docs/production-reports/evidence/journey-p1/preview-final.txt](production-reports/evidence/journey-p1/preview-final.txt) | Aceptación artística pendiente del propietario; físico iPhone pendiente. Estación/operador y equipamiento reutilizan arte previo: no dirección definitiva ni capítulo completo. |
+| PM-01 | Decisión técnica reservada sobre Motor V1 | CRITICAL | BLOCKED | P1-01 | [src/engine/CampaignAdapter.js](../src/engine/CampaignAdapter.js)<br>[docs/PRODUCT_VISION.md](PRODUCT_VISION.md) |  | — | — | Requiere orden técnica expresa del propietario; mantener USE_ENGINE_V1=false. |
 
 ### Criterios verificables
 
@@ -137,10 +157,13 @@ PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 2 · DONE: 17.
 - **B03-18:** URL real sirve selector, ambos modos y build-info del paquete; producción/PR3 intactas..
 - **B03-19:** Instalación experimental abre selector; políticas y alcance no alteran el juego de producción..
 - **B03-20:** Informe A–M y SHA publicado verificables; limitaciones físicas explícitas..
+- **P0-01:** Visión 10x10 vigente y campañas previas preservadas con correspondencias históricas explícitas.
+- **P1-01:** Viaje visible gobernado por una sola fuente de progreso; Recogida física, instalación idempotente, efecto visible y combate anunciado; Checkpoint, controles, recompensa única y regresiones comprobados.
+- **PM-01:** Documentar decisión y alcance de integración sin activación automática.
 
 ## Bloque 04 — Jugabilidad procedural
 
-PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
+PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -161,6 +184,8 @@ PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 | B04-15 | Simular las 100 rutas y múltiples semillas | VERY_HIGH | PENDING | B04-05<br>B04-07<br>B04-12<br>B04-14 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
 | B04-16 | Validar niveles de referencia jugando | VERY_HIGH | PENDING | B04-15 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
 | B04-17 | Cerrar curvas de progreso y reintentos consistentes | VERY_HIGH | PENDING | B04-16 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
+| P3-01 | Completar diez etapas conectadas del capítulo Chronos-Gaia | CRITICAL | PENDING | P1-02<br>P2-01<br>PM-01 | — |  | — | — | La demo de tres tramos no son diez etapas terminadas. |
+| P4-01 | Expandir la campaña espacial a diez capítulos de diez etapas | CRITICAL | PENDING | P3-01 | — |  | — | — | Las cien rutas N-7 se conservan como variante histórica; no son la campaña espacial canónica. |
 
 ### Criterios verificables
 
@@ -181,10 +206,12 @@ PENDING: 17 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 - **B04-15:** Semilla, versión, fallos y coberturas guardados; la simulación no sustituye al jugador..
 - **B04-16:** Muestra de cada sector, cambios de patrón y niveles de jefe con registro visual..
 - **B04-17:** Curvas, desbloqueos y reintentos verificados sin alterar campaña clásica..
+- **P3-01:** Diez etapas con viaje, arte, encuentros, objetivo, frontera, recompensa y guardado integrados.
+- **P4-01:** Cien etapas distintas y conectadas por geografía y encuentros diseñados.
 
 ## Bloque 05 — Producción visual y 150 assets
 
-PENDING: 129 · IN_PROGRESS: 2 · BLOCKED: 0 · IN_REVIEW: 27 · DONE: 5.
+PENDING: 128 · IN_PROGRESS: 2 · BLOCKED: 1 · IN_REVIEW: 28 · DONE: 5.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -201,6 +228,7 @@ PENDING: 129 · IN_PROGRESS: 2 · BLOCKED: 0 · IN_REVIEW: 27 · DONE: 5.
 | B05-11 | Optimizar carga, transparencia y memoria de sprites | VERY_HIGH | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
 | B05-12 | Verificar fondos, profundidad, planetas y VFX por región | VERY_HIGH | IN_PROGRESS | B05-02 | [src/game/06-world-rendering.js](../src/game/06-world-rendering.js)<br>[assets/chronos_shockwave_atlas_v1.webp](../assets/chronos_shockwave_atlas_v1.webp)<br>[assets/atlas_perimeter_background_v1.webp](../assets/atlas_perimeter_background_v1.webp)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[assets/vulkar_descent_background_v1.webp](../assets/vulkar_descent_background_v1.webp)<br>[assets/vulkar_magma_tunnel_background_v1.webp](../assets/vulkar_magma_tunnel_background_v1.webp)<br>[assets/cryon_whiteout_background_v1.webp](../assets/cryon_whiteout_background_v1.webp)<br>[assets/cryon_leviathan_rift_background_v1.webp](../assets/cryon_leviathan_rift_background_v1.webp)<br>[assets/aether_echo_cemetery_background_v1.webp](../assets/aether_echo_cemetery_background_v1.webp)<br>[assets/aether_phantom_threshold_background_v1.webp](../assets/aether_phantom_threshold_background_v1.webp)<br>[assets/titan_omega_graveyard_background_v1.webp](../assets/titan_omega_graveyard_background_v1.webp)<br>[assets/chronos_collapse_background_v1.webp](../assets/chronos_collapse_background_v1.webp) | — | Local certification: 11/11 phases, exit 0<br>Preview: 15/15, exit 0<br>Chromium gallery: 10/10 baseline + 1/1 Gaia recapture<br>Chromium gameplay: classic and N-7 2/2, exit 0<br>Level 3: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2<br>Level 4: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2<br>Level 5: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2<br>Level 6: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2<br>Levels 7–8: local certification 11/11, preview 15/15, Chromium gallery 2/2, gameplay 2/2<br>Levels 9–10: local certification 11/11, preview 15/15, Chromium gallery 2/2, gameplay 2/2<br>Final ten-level Chromium gallery 10/10, exit 0; visual HUD artifact remains open<br>Clean preview: 15/15, exact SHA 8054088, dirty:false<br>Clean preview Chromium: classic/N-7 2/2, exit 0<br>Runtime inventory: 69 assets, 4,936,486 bytes, zero inconsistencies | [docs/visual-rebirth/evidence/level-01-02-certification-02/results.json](visual-rebirth/evidence/level-01-02-certification-02/results.json)<br>[docs/visual-rebirth/evidence/gallery-01/results.json](visual-rebirth/evidence/gallery-01/results.json)<br>[docs/visual-rebirth/evidence/gallery-02/results.json](visual-rebirth/evidence/gallery-02/results.json)<br>[docs/visual-rebirth/evidence/gameplay-browser-01/results.json](visual-rebirth/evidence/gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/gallery-03/results.json](visual-rebirth/evidence/gallery-03/results.json)<br>[docs/visual-rebirth/evidence/level-03-certification-01/results.json](visual-rebirth/evidence/level-03-certification-01/results.json)<br>[docs/visual-rebirth/evidence/level-03-gameplay-browser-01/results.json](visual-rebirth/evidence/level-03-gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/gallery-04/results.json](visual-rebirth/evidence/gallery-04/results.json)<br>[docs/visual-rebirth/evidence/level-04-gameplay-browser-01/results.json](visual-rebirth/evidence/level-04-gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/level-04-certification-01/results.json](visual-rebirth/evidence/level-04-certification-01/results.json)<br>[docs/visual-rebirth/evidence/gallery-05/results.json](visual-rebirth/evidence/gallery-05/results.json)<br>[docs/visual-rebirth/evidence/level-05-gameplay-browser-01/results.json](visual-rebirth/evidence/level-05-gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/level-05-certification-01/results.json](visual-rebirth/evidence/level-05-certification-01/results.json)<br>[docs/visual-rebirth/evidence/gallery-06/results.json](visual-rebirth/evidence/gallery-06/results.json)<br>[docs/visual-rebirth/evidence/level-06-gameplay-browser-01/results.json](visual-rebirth/evidence/level-06-gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/level-06-certification-01/results.json](visual-rebirth/evidence/level-06-certification-01/results.json)<br>[docs/visual-rebirth/evidence/gallery-07-08/results.json](visual-rebirth/evidence/gallery-07-08/results.json)<br>[docs/visual-rebirth/evidence/level-07-08-gameplay-browser-01/results.json](visual-rebirth/evidence/level-07-08-gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/level-07-08-certification-01/results.json](visual-rebirth/evidence/level-07-08-certification-01/results.json)<br>[docs/visual-rebirth/evidence/gallery-09-10/results.json](visual-rebirth/evidence/gallery-09-10/results.json)<br>[docs/visual-rebirth/evidence/gallery-final-01/results.json](visual-rebirth/evidence/gallery-final-01/results.json)<br>[docs/visual-rebirth/evidence/level-09-10-gameplay-browser-01/results.json](visual-rebirth/evidence/level-09-10-gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/visual-rebirth-final-certification-01/results.json](visual-rebirth/evidence/visual-rebirth-final-certification-01/results.json)<br>[docs/visual-rebirth/evidence/clean-preview-browser-01/results.json](visual-rebirth/evidence/clean-preview-browser-01/results.json)<br>[docs/visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip](visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip)<br>[docs/visual-rebirth/INFORME_FINAL_10_NIVELES.md](visual-rebirth/INFORME_FINAL_10_NIVELES.md) | All ten classic levels now have an illustration or (level 1) an existing illustration plus new shockwave, but dedicated enemies, layered parallax and iPhone QA are still pending.<br>Intermittent missing HUD/button glyph pixels in Chromium captures; DOM values intact. |
 | B05-13 | Verificar HUD, menús, transiciones y elementos narrativos | VERY_HIGH | PENDING | B05-02<br>B03-13 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json)<br>[ASSET_MANIFEST.json](../ASSET_MANIFEST.json)<br>[ASSET_PRODUCTION_MAP.md](../ASSET_PRODUCTION_MAP.md)<br>[src/game/animation/animation-map.js](../src/game/animation/animation-map.js) | — | — | — | — |
+| P1-02 | Revisión estética del primer viaje antes de multiplicar contenido | CRITICAL | BLOCKED | P1-01 | [docs/PRODUCT_VISION.md](PRODUCT_VISION.md)<br>[docs/visual-rebirth/ORGANIGRAMA_10_NIVELES.md](visual-rebirth/ORGANIGRAMA_10_NIVELES.md) |  | — | — | La aceptación estética corresponde al propietario; no equivale a aprobar código o autorizar Engine V1. |
 
 ### Criterios verificables
 
@@ -217,10 +245,11 @@ PENDING: 129 · IN_PROGRESS: 2 · BLOCKED: 0 · IN_REVIEW: 27 · DONE: 5.
 - **B05-11:** Carga por necesidad, dimensiones y bytes medidos; sin cargar todo el catálogo..
 - **B05-12:** Escenarios diferenciados por arquitectura/objetos, no solo paleta; efectos legibles..
 - **B05-13:** Lote G visible en juego con escalas, texto y contraste comprobados..
+- **P1-02:** Revisar capturas/partida del viaje y registrar dirección artística aceptada o correcciones.
 
 ### Entregas individuales de assets
 
-Catálogo real: **IN_REVIEW: 22; PLANNED: 125; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
+Catálogo real: **IN_REVIEW: 23; PLANNED: 124; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
 
 Todos los assets deben superar estos doce criterios: Identificador y nombre; Archivo maestro existente; Archivo optimizado existente; Fotogramas necesarios reales; Dimensiones verificadas; Escala documentada; Pivote documentado; Transparencia comprobada; Duración/FPS documentados; Integración real en el juego; Prueba visual registrada; Procedencia y derechos registrados.
 
@@ -256,7 +285,7 @@ Todos los assets deben superar estos doce criterios: Identificador y nombre; Arc
 | A028 | Halo del reactor (chronos-reactor-halo) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A029 | Módulo científico roto (chronos-science-module) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A030 | Cápsula de evacuación (chronos-escape-capsule) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A031 | Restos de estación grandes (chronos-debris-large) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A031 | Restos de estación grandes (chronos-debris-large) | P0 | IN_REVIEW | B05-02 | [art-source/immersive-rebirth/levels/01/chronos-detached-module-master.png](../art-source/immersive-rebirth/levels/01/chronos-detached-module-master.png)<br>[art-source/immersive-rebirth/levels/01/chronos-detached-module.json](../art-source/immersive-rebirth/levels/01/chronos-detached-module.json)<br>[assets/chronos_detached_module_v1.webp](../assets/chronos_detached_module_v1.webp)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js) | — | RuntimeWebP640x640alpha101668bytes,inventario70/70<br>Chromiumnaturalbrowser-04,exit0;certificación11/11 | [docs/production-reports/evidence/journey-p1/browser-04/01-chronos-departure.png](production-reports/evidence/journey-p1/browser-04/01-chronos-departure.png) | Owner artistic acceptance and physical iPhone pending; classic level1 integration not claimed. |
 | A032 | Restos rápidos foreground (chronos-debris-foreground) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A033 | Polvo temporal (chronos-dust-layer) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A034 | Nebulosa postimpacto (chronos-nebula-layer) | P0 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
@@ -449,7 +478,7 @@ PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 
 ## Bloque 08 — Audio y experiencia sensorial
 
-PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0.
+PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -466,6 +495,7 @@ PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0.
 | B08-11 | Corregir y probar reanudación de audio móvil | HIGH | IN_REVIEW | B08-10 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[tests/audio-lifecycle.test.mjs](../tests/audio-lifecycle.test.mjs) | e1a7aa8498b1c5f9f5558425a61b748f4ab1f869 | node --test tests/audio-lifecycle.test.mjs:3/3,exit0; efectos solos,música sola,silencio total,AudioContext ausente y rechazo autoplay | [docs/production-reports/evidence/block-03/certification-01/audio-lifecycle.txt](production-reports/evidence/block-03/certification-01/audio-lifecycle.txt)<br>[docs/production-reports/evidence/block-03/initial/audio-before-detailed.txt](production-reports/evidence/block-03/initial/audio-before-detailed.txt)<br>[docs/production-reports/evidence/block-03/initial/audio-after-detailed.txt](production-reports/evidence/block-03/initial/audio-after-detailed.txt) | Corrección y lógica probadas; desbloqueo por gesto y reanudación tras visibilidad con AudioContext real móvil todavía pendientes. |
 | B08-12 | Verificar Safari/iOS y restricciones de reproducción | HIGH | BLOCKED | B08-11 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | No hay evidencia de dispositivo iPhone/simulador apropiado disponible. |
 | B08-13 | Optimizar formatos, memoria, licencias y transiciones | HIGH | PENDING | B08-01<br>B08-02<br>B08-03 | [src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js) | — | — | — | — |
+| P2-01 | Consolidar dos configuraciones viables y economía breve segura | CRITICAL | PENDING | P1-01 | — |  | — | — | Sólo existe una pieza gratuita y reparación de demostración; no mercado/compra/venta ni segunda configuración. |
 
 ### Criterios verificables
 
@@ -482,6 +512,7 @@ PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0.
 - **B08-11:** AudioContext reanuda con música0/efectos>0 y tras visibilidad; desbloqueo por gesto..
 - **B08-12:** Evidencia en Safari/iPhone o simulador identificado, sin autoplay no autorizado..
 - **B08-13:** Archivos y procedencia documentados, carga por necesidad y memoria medida..
+- **P2-01:** Dos configuraciones resuelven el mismo encuentro; Transacciones, interrupciones, guardados y accesibilidad verificados.
 
 ## Bloque 09 — Rendimiento y estabilidad
 
@@ -527,7 +558,7 @@ PENDING: 15 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0.
 
 ## Bloque 10 — Preparación para lanzamiento
 
-PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0.
+PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -545,6 +576,7 @@ PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0.
 | B10-12 | Ejecutar pruebas físicas de candidato de lanzamiento | HIGH | BLOCKED | B10-03<br>B10-07 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | No hay evidencia de dispositivo iPhone/simulador apropiado disponible. |
 | B10-13 | Preparar clasificación y metadatos | HIGH | PENDING | B10-01<br>B10-07 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
 | B10-14 | Completar checklist App Store sin publicar | HIGH | PENDING | B10-10<br>B10-12<br>B10-13 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
+| P5-01 | Certificar calidad móvil y preparar distribución autorizada | CRITICAL | PENDING | P4-01 | — |  | — | — | Sin certificación física ni autorización de distribución. |
 
 ### Criterios verificables
 
@@ -562,6 +594,7 @@ PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0.
 - **B10-12:** Matriz de dispositivos y versión candidata con incidencias resueltas..
 - **B10-13:** Metadatos y clasificación reflejan contenido y monetización reales..
 - **B10-14:** Requisitos listos; envío/publicación permanecen pendientes de autorización..
+- **P5-01:** Rendimiento, memoria, accesibilidad y dispositivos reales; Distribución sólo con autorización específica.
 
 ## Cómo cerrar una tarea
 

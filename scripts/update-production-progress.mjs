@@ -81,8 +81,18 @@ const guide = [
   'Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.',
   'Estados: **PENDING**, **IN_PROGRESS**, **BLOCKED**, **IN_REVIEW**, **DONE**. DONE exige todos los criterios, SHA de implementación, pruebas ejecutadas y evidencia; la presencia de un archivo o dato no basta. Dependencias indican orden de producción, no certificación automática. SHA y pruebas vacíos significan que no existe cierre verificado en este registro.'
 ].join('\n\n');
+const canonical = ledger.tasks.filter(task => task.canonicalPhase);
+const canonicalOverview = canonical.length ? [
+  '## Mandato rector vigente — campaña espacial 10 × 10',
+  'Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el catálogo conservan evidencia histórica y backlog; las rutas N-7 no equivalen a las nuevas etapas. El registro anterior tenía 22/267 tareas cerradas: ese cociente no mide el nuevo juego. Los cambios de denominador quedan en production-tasks.json.',
+  [row(['ID / puerta', 'Entrega', 'Estado de trabajo', 'Técnica', 'Artística', 'Física']), row(Array(6).fill('---')),
+    ...canonical.map(task => row([task.id + ' / ' + task.canonicalPhase, safe(task.name), task.status,
+      safe(task.acceptanceStatus?.technical), safe(task.acceptanceStatus?.artistic), safe(task.acceptanceStatus?.physical)]))].join('\n'),
+  'P1 es una demostración comprimida Chronos → C9 → Gaia con pieza, servicio y frontera; no un capítulo terminado ni un porcentaje comercial. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.'
+].join('\n\n') : '';
 const checklist = [
   '# NEON CATCHER — Checklist maestra de producción', header, guide,
+  canonicalOverview,
   'Este registro cubre los Bloques 03–10 del mandato. Los avances históricos permanecen en [CODEX_STATUS.md](CODEX_STATUS.md) y [continuity-100/](continuity-100/); no se convierten automáticamente en cierres de los criterios más amplios de esta etapa.',
   '## Organigrama y responsabilidades',
   ...ledger.organization.map((division) => '### ' + division.division + '\n\n' + Object.entries(division.responsibilities).map(([name, refs]) => '- ' + name + ': ' + refs.join(', ') + '.').join('\n')),
@@ -118,6 +128,7 @@ const checklist = [
 ].join('\n\n') + '\n';
 const progress = [
   '# NEON CATCHER — Progreso verificable de producción', header, guide,
+  canonicalOverview,
   '## Método y alcance',
   '**' + ledger.measure + '** Cada porcentaje se refiere exclusivamente a criterios de esta checklist, no al porcentaje comercial, artístico o técnico del juego terminado. El denominador incluye trabajo futuro y queda visible; las áreas se solapan y no deben sumarse. Reorganizar el alcance cambia el denominador y debe documentarse.',
   'El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa ausencia de implementación: significa que ninguna tarea completa de este mandato ha sido cerrada todavía con todos sus criterios y evidencia en este registro. El código previo se detalla en el historial.',

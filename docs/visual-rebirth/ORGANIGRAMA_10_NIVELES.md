@@ -1,3 +1,5 @@
+> **Organigrama histórico de escenarios clásicos.** El registro principal reconciliado es [production-tasks.json](../production-tasks.json), bajo [PRODUCT_VISION.md](../PRODUCT_VISION.md). Nueva demo integrada: [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). No confundir nivel clásico, tramo de demostración y etapa canónica.
+
 # Reconstrucción visual de la campaña clásica — auditoría inicial
 
 Fecha: 2026-10-17. Rama: `continuity-assets-audit-20261013`. Estados: **EXISTE** = recurso en el ejecutable, **IN_REVIEW** = integrado pero pendiente de cierre visual, **PENDIENTE** = no satisface la nueva dirección artística. Una captura de la escena antigua no convierte el nivel en terminado.

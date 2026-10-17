@@ -2,7 +2,9 @@
 
 Versión de trabajo: **7.2.0**  
 Catálogo vinculante: `ASSET_PRODUCTION_150.json`  
-Alcance actual: diez niveles principales. Los diez subniveles y los jefes se producen después de cerrar la campaña principal.
+Referencia vigente: [mandato rector 10 capítulos × 10 etapas](docs/PRODUCT_VISION.md). Este catálogo conserva los 150 identificadores históricos para reutilización y trazabilidad; no define por sí solo el alcance de la campaña nueva. La demo Chronos-Gaia está en revisión, sin multiplicar todavía sus recursos por cien etapas.
+
+Actualización17/10/2026: `chronos-debris-large` cuenta con maestro y WebP transparente640×640 integrado como hito del viaje. Estado IN_REVIEW; [procedencia](art-source/immersive-rebirth/levels/01/chronos-detached-module.json), [partida y evidencia](docs/production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). Los demás cierres se consultan en `docs/production-tasks.json`.
 
 ## Estado real
 

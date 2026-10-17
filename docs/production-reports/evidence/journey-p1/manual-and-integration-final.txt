@@ -1,0 +1,16 @@
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ journey uses relative pointer movement and pause freezes its route without adding RAF owners (237.784483ms)
+✔ the real legacy pipeline can collect, dock, install, continue and resolve the border with isolated saves (834.710167ms)
+✔ invalid journey data is backed up before recovery and legacy progress remains untouched (23.573989ms)
+✔ manual basic fire remains available beyond three shots when automatic fire is disabled (70.74537ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1711.929175

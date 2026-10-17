@@ -85,3 +85,18 @@ test('invalid journey data is backed up before recovery and legacy progress rema
     assert.equal(h.window.localStorage.getItem('neon-unlocked-v2'),'8');
   }finally{h.close();}
 });
+
+test('manual basic fire remains available beyond three shots when automatic fire is disabled',()=>{
+  const h=harness();try{
+    h.window.document.getElementById('journeyAuto').click();
+    assert.equal(h.window.localStorage.getItem('neon-journey-demo-autofire-v1'),'false');
+    h.window.document.getElementById('play').click();
+    for(let i=0;i<60;i++)h.api.update(1/60);
+    for(let shot=0;shot<6;shot++){
+      assert.equal(h.api.fireManualShot(),true);
+      for(let frame=0;frame<20;frame++)h.api.update(1/60);
+    }
+    assert.equal(h.api.state().ammo,3,'special/legacy ammo is untouched by the basic weapon');
+    assert.equal(h.api.state().state,'playing');
+  }finally{h.close();}
+});

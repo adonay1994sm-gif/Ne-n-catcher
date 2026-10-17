@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T08:52:02Z",
+  "updatedAt": "2026-10-17T10:22:53.757Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -611,6 +611,25 @@
         "openErrors": [
           "Reactor y estructuras destruidas compuestos; pulso final animado, secuencia de estabilización y capas independientes pendientes. Physical iPhone QA pending.",
           "Some Chromium screenshots intermittently omit HUD/button glyph pixels while DOM text remains complete; Safari physical QA pending."
+        ]
+      },
+      "chronos-debris-large": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/immersive-rebirth/levels/01/chronos-detached-module-master.png",
+          "art-source/immersive-rebirth/levels/01/chronos-detached-module.json",
+          "assets/chronos_detached_module_v1.webp",
+          "src/game/06-world-rendering.js"
+        ],
+        "tests": [
+          "RuntimeWebP640x640alpha101668bytes,inventario70/70",
+          "Chromiumnaturalbrowser-04,exit0;certificación11/11"
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/journey-p1/browser-04/01-chronos-departure.png"
+        ],
+        "openErrors": [
+          "Owner artistic acceptance and physical iPhone pending; classic level1 integration not claimed."
         ]
       }
     },
@@ -1264,7 +1283,11 @@
       "openErrors": [],
       "acceptance": [
         "Defectos y parámetros efectivos registrados sobre la versión vigente."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-02",
@@ -1291,7 +1314,11 @@
       "openErrors": [],
       "acceptance": [
         "Planes históricos reproducibles por versión; guardados preservados."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-03",
@@ -1319,7 +1346,11 @@
       "openErrors": [],
       "acceptance": [
         "Corredores compatibles con ancho de nave, tiempo de reacción y desplazamiento."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-04",
@@ -1347,7 +1378,11 @@
       "openErrors": [],
       "acceptance": [
         "Simulación y juego de referencia requieren desplazamiento sin daño inevitable."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-05",
@@ -1376,7 +1411,11 @@
       "openErrors": [],
       "acceptance": [
         "Comprobación geométrica y temporal de corredores frente a obstáculos y ataques."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-06",
@@ -1405,7 +1444,11 @@
       "openErrors": [],
       "acceptance": [
         "Ritmos y composiciones por sector cambian más que color o números."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-07",
@@ -1433,7 +1476,11 @@
       "openErrors": [],
       "acceptance": [
         "spawnInterval o su sustituto versionado gobierna tiempos ejecutados."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-08",
@@ -1461,7 +1508,11 @@
       "openErrors": [],
       "acceptance": [
         "Rangos de velocidad probados con nave real y señales previas suficientes."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-09",
@@ -1489,7 +1540,11 @@
       "openErrors": [],
       "acceptance": [
         "Lineal, zigzag, perseguidor y tirador diferenciados y ejecutados."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-10",
@@ -1518,7 +1573,11 @@
       "openErrors": [],
       "acceptance": [
         "Ataques peligrosos precedidos de señales legibles con duración verificable."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-11",
@@ -1546,7 +1605,11 @@
       "openErrors": [],
       "acceptance": [
         "Proyectiles consistentes con señales, pausa, colisiones y espacio transitable."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-12",
@@ -1574,7 +1637,11 @@
       "openErrors": [],
       "acceptance": [
         "Ciclo disparar/impactar/destruir integrado y probado sin daño inevitable."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-13",
@@ -1602,7 +1669,11 @@
       "openErrors": [],
       "acceptance": [
         "Recursos y daño medidos por etapa; recompensa no trivializa el desafío."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-14",
@@ -1630,7 +1701,11 @@
       "openErrors": [],
       "acceptance": [
         "Objetivos jugables distintos y verificables, no solo nombres de rutas."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-15",
@@ -1661,7 +1736,11 @@
       "openErrors": [],
       "acceptance": [
         "Semilla, versión, fallos y coberturas guardados; la simulación no sustituye al jugador."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-16",
@@ -1690,7 +1769,11 @@
       "openErrors": [],
       "acceptance": [
         "Muestra de cada sector, cambios de patrón y niveles de jefe con registro visual."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B04-17",
@@ -1718,7 +1801,11 @@
       "openErrors": [],
       "acceptance": [
         "Curvas, desbloqueos y reintentos verificados sin alterar campaña clásica."
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 regression/backlog",
+        "replacedForCanonicalBy": "P4-01"
+      }
     },
     {
       "id": "B05-01",
@@ -3794,7 +3881,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-20",
@@ -3838,7 +3929,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-30",
@@ -3882,7 +3977,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-40",
@@ -3926,7 +4025,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-50",
@@ -3970,7 +4073,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-60",
@@ -4014,7 +4121,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-70",
@@ -4058,7 +4169,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-80",
@@ -4102,7 +4217,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-90",
@@ -4146,7 +4265,11 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
     },
     {
       "id": "B06-100",
@@ -4190,7 +4313,318 @@
         "Integración narrativa",
         "Balance y posibilidad de respuesta",
         "Pruebas de lógica y combate completo en navegador"
-      ]
+      ],
+      "canonicalRelationship": {
+        "role": "historical N-7 boss plan; redesign territorial frontier before reuse",
+        "replacedForCanonicalBy": "P3-01"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [],
+      "files": [
+        "docs/PRODUCT_VISION.md",
+        "AGENTS.md",
+        "docs/production-tasks.json"
+      ],
+      "commit": "398d1ca479de9aefe6bacc6f36900c3111ffa7d4",
+      "tests": [
+        "HEAD/remoto bfc6683 y árbol preservados; mandato y guía publicados"
+      ],
+      "evidence": [
+        "docs/PRODUCT_VISION.md",
+        "docs/production-reports/evidence/journey-p1/certification-02/results.json"
+      ],
+      "openErrors": [],
+      "acceptance": [
+        "Visión 10x10 vigente y campañas previas preservadas con correspondencias históricas explícitas"
+      ],
+      "id": "P0-01",
+      "block": "03",
+      "canonicalPhase": "P0",
+      "name": "Preservar continuidad y fijar mandato rector canónico",
+      "status": "DONE",
+      "areas": [
+        "QA",
+        "Campaña clásica",
+        "Campaña N-7"
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [
+        "P0-01"
+      ],
+      "files": [
+        "src/game/progression/journey-demo.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js",
+        "src/game/06-world-rendering.js",
+        "scripts/journey-browser-smoke.cjs"
+      ],
+      "commit": "ce71b299cb0eea8cbb908dd4886319e4e859580e",
+      "tests": [
+        "Modelo13/13, integración legacy3/3; certificación final11/11 fases con contenido44/44",
+        "Chromium natural browser-04:5/5 grupos,exit0,72.367s,RAF máximo1,0 errores y solape0",
+        "Preview15/15,exit0"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/journey-p1/browser-04/results.json",
+        "docs/production-reports/evidence/journey-p1/certification-03/results.json",
+        "docs/production-reports/evidence/journey-p1/preview-final.txt"
+      ],
+      "openErrors": [
+        "Aceptación artística pendiente del propietario; físico iPhone pendiente. Estación/operador y equipamiento reutilizan arte previo: no dirección definitiva ni capítulo completo."
+      ],
+      "acceptance": [
+        "Viaje visible gobernado por una sola fuente de progreso",
+        "Recogida física, instalación idempotente, efecto visible y combate anunciado",
+        "Checkpoint, controles, recompensa única y regresiones comprobados"
+      ],
+      "id": "P1-01",
+      "block": "03",
+      "canonicalPhase": "P1",
+      "name": "Demostrar salida, pieza, servicio, mejora y frontera en el ciclo legacy",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Enemigos",
+        "Interfaz",
+        "QA"
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [
+        "P1-01"
+      ],
+      "files": [
+        "docs/PRODUCT_VISION.md",
+        "docs/visual-rebirth/ORGANIGRAMA_10_NIVELES.md"
+      ],
+      "commit": "",
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "La aceptación estética corresponde al propietario; no equivale a aprobar código o autorizar Engine V1."
+      ],
+      "acceptance": [
+        "Revisar capturas/partida del viaje y registrar dirección artística aceptada o correcciones"
+      ],
+      "id": "P1-02",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Revisión estética del primer viaje antes de multiplicar contenido",
+      "status": "BLOCKED",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Interfaz"
+      ],
+      "acceptanceStatus": {
+        "technical": "NOT_APPLICABLE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [
+        "P1-01"
+      ],
+      "files": [],
+      "commit": "",
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Sólo existe una pieza gratuita y reparación de demostración; no mercado/compra/venta ni segunda configuración."
+      ],
+      "acceptance": [
+        "Dos configuraciones resuelven el mismo encuentro",
+        "Transacciones, interrupciones, guardados y accesibilidad verificados"
+      ],
+      "id": "P2-01",
+      "block": "08",
+      "canonicalPhase": "P2",
+      "name": "Consolidar dos configuraciones viables y economía breve segura",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "QA",
+        "Interfaz"
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING",
+        "artistic": "PENDING",
+        "physical": "PENDING"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [
+        "P1-01"
+      ],
+      "files": [
+        "src/engine/CampaignAdapter.js",
+        "docs/PRODUCT_VISION.md"
+      ],
+      "commit": "",
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Requiere orden técnica expresa del propietario; mantener USE_ENGINE_V1=false."
+      ],
+      "acceptance": [
+        "Documentar decisión y alcance de integración sin activación automática"
+      ],
+      "id": "PM-01",
+      "block": "03",
+      "canonicalPhase": "M",
+      "name": "Decisión técnica reservada sobre Motor V1",
+      "status": "BLOCKED",
+      "areas": [
+        "Motor"
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_OWNER",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "PENDING"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [
+        "P1-02",
+        "P2-01",
+        "PM-01"
+      ],
+      "files": [],
+      "commit": "",
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "La demo de tres tramos no son diez etapas terminadas."
+      ],
+      "acceptance": [
+        "Diez etapas con viaje, arte, encuentros, objetivo, frontera, recompensa y guardado integrados"
+      ],
+      "id": "P3-01",
+      "block": "04",
+      "canonicalPhase": "P3",
+      "name": "Completar diez etapas conectadas del capítulo Chronos-Gaia",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Narrativa"
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING",
+        "artistic": "PENDING",
+        "physical": "PENDING"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [
+        "P3-01"
+      ],
+      "files": [],
+      "commit": "",
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Las cien rutas N-7 se conservan como variante histórica; no son la campaña espacial canónica."
+      ],
+      "acceptance": [
+        "Cien etapas distintas y conectadas por geografía y encuentros diseñados"
+      ],
+      "id": "P4-01",
+      "block": "04",
+      "canonicalPhase": "P4",
+      "name": "Expandir la campaña espacial a diez capítulos de diez etapas",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Narrativa",
+        "Jefes"
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING",
+        "artistic": "PENDING",
+        "physical": "PENDING"
+      }
+    },
+    {
+      "priority": "CRITICAL",
+      "dependencies": [
+        "P4-01"
+      ],
+      "files": [],
+      "commit": "",
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Sin certificación física ni autorización de distribución."
+      ],
+      "acceptance": [
+        "Rendimiento, memoria, accesibilidad y dispositivos reales",
+        "Distribución sólo con autorización específica"
+      ],
+      "id": "P5-01",
+      "block": "10",
+      "canonicalPhase": "P5",
+      "name": "Certificar calidad móvil y preparar distribución autorizada",
+      "status": "PENDING",
+      "areas": [
+        "QA",
+        "Rendimiento",
+        "Preparación iOS"
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING",
+        "artistic": "PENDING",
+        "physical": "PENDING"
+      }
     }
-  ]
+  ],
+  "canonicalPlan": {
+    "vision": "docs/PRODUCT_VISION.md",
+    "version": "rector-v1.0-2026-10-17",
+    "historicalBaseline": {
+      "done": 22,
+      "total": 267,
+      "note": "Historical checklist before canonical 10x10 mandate; never a percentage of the new game."
+    },
+    "phases": [
+      "P0",
+      "P1",
+      "P2",
+      "M",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "demoMap": "Centro Chronos -> Baliza C9 -> aproximación Gaia -> acceso Atlas",
+    "decisions": [
+      "64-second compressed demonstration; final stages target 2-4 minutes only after playtesting",
+      "Configurable automatic basic fire with unlimited manual alternative",
+      "Shield and tractor as the two initial active abilities",
+      "Recovered vector fin: free installation and hull repair at Mira service relay C9",
+      "New campaign save key; old campaigns retained without numerical equivalence"
+    ],
+    "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion."
+  }
 }

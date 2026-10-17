@@ -1,3 +1,5 @@
+> Galería histórica de la campaña clásica. Capturas del viaje nuevo y cierre vigente: [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md); visión rectora: [PRODUCT_VISION.md](../PRODUCT_VISION.md).
+
 # Galería verificable · campaña clásica
 
 **Actualización inmersiva 17/10/2026:** el encuentro controlado CH-01 del nivel 2 tiene [ataque](../immersive-rebirth/evidence/classic-scout-06/gaia-scout-attack.png), [disparo](../immersive-rebirth/evidence/classic-scout-06/gaia-scout-fired.png) y [daño](../immersive-rebirth/evidence/classic-scout-06/gaia-scout-hurt.png) capturados en el Canvas real. El informe [Immersive Rebirth](../immersive-rebirth/IMMERSIVE_LATEST_REPORT.md) distingue esta prueba de una partida natural completa. El nivel 2 permanece IN_REVIEW.

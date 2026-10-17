@@ -1,3 +1,5 @@
+> **Histórico desde el mandato rector del 17/10/2026.** Referencia vigente de producto: [PRODUCT_VISION.md](../PRODUCT_VISION.md). Cierre más reciente: [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). Se conserva esta entrega como evidencia, sin imponer sus prioridades incompatibles a la campaña 10×10.
+
 # INFORME DE PRODUCCIÓN — IMMERSIVE REBIRTH
 
 Fecha: 17/10/2026 UTC

@@ -1,3 +1,5 @@
+> **Informe histórico de la base clásica.** La dirección vigente está en [PRODUCT_VISION.md](../PRODUCT_VISION.md) y el incremento más reciente en [P0/P1 Chronos-Gaia](../production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). Estos diez escenarios son materia prima y regresión; no equivalen a cien etapas terminadas del viaje canónico.
+
 # INFORME DE PRODUCCIÓN VISUAL — NEON CATCHER, campaña clásica
 
 Fecha: 2026-10-17 UTC

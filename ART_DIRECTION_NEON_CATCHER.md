@@ -1,3 +1,5 @@
+> **Referencia vigente:** [docs/PRODUCT_VISION.md](docs/PRODUCT_VISION.md), mandato rector v1.0 del 17/10/2026. Ciencia ficción arcade estilizada, siluetas claras y tecnología con personalidad. Las paletas y prioridades útiles siguientes se conservan; el antiguo alcance de niveles/expansión es histórico. Incremento actual: [demo Chronos-Gaia](docs/production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md), pendiente de aceptación estética.
+
 # NEON CATCHER — Dirección artística / Art Pass A
 
 Fecha: 2026-10-13. Alcance prioritario: **Capítulo I (niveles 1–10)**. La arquitectura debe admitir 100 niveles en fases posteriores sin sustituir la campaña actual.

@@ -1,3 +1,13 @@
+## Orden vigente — mandato rector espacial, 17/10/2026
+
+1. Comprobar remoto y leer [PRODUCT_VISION.md](PRODUCT_VISION.md) y [P0–P1 Chronos-Gaia](production-reports/P0_P1_CHRONOS_GAIA_2026-10-17.md). No reconstruir lo ya integrado ni convertir rutas N-7 en etapas canónicas por numeración. Conservar clásica/N-7, maestros y evidencias.
+2. Probar la demo `juego/index.html?campaign=journey` del paquete con build-info limpio. Revisión estética del propietario y decisión del motor siguen reservadas; no activar V1. No expandir masivamente antes de esas puertas.
+3. Tareas independientes desbloqueadas: QA 320×568/horizontal, partida natural con auto desactivado, interrupciones/checkpoints en dispositivo, opciones de reducción de destellos/sacudidas y arte específico de estación/Mira. El bucle básico y la pieza están integrados; no duplicarlos.
+4. Netlify: usar únicamente sitio experimental inequívoco y acceso autorizado; comprobar URL/SHA/entradas. Sin credenciales no declarar despliegue. iPhone físico y el bug histórico de glifos nivel 10 siguen pendientes.
+5. Mantener `production-tasks.json` como fuente, aceptaciones técnica/artística/física separadas y relaciones históricas explícitas. Congelar fuentes al certificar. Commit/push normales y evidencia después de cada corte. Las órdenes anteriores siguientes son historial cuando contradigan esta visión.
+
+---
+
 # Orden vigente 17/10/2026 — producción visual clásica
 
 1. Verificar rama `continuity-assets-audit-20261013`, SHA remoto, árbol de trabajo e informe [INFORME_FINAL_10_NIVELES.md](visual-rebirth/INFORME_FINAL_10_NIVELES.md). Código visual probado: `80540884b15c8936dbcea9f5131a142077b85a6e`; documentación posterior puede añadir un commit. No tocar main ni PR #3, no activar Engine V1.

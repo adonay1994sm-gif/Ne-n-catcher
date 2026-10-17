@@ -1,0 +1,154 @@
+{
+  "startedAt": "2026-10-17T10:20:08.914Z",
+  "node": "v24.19.0",
+  "branch": "continuity-assets-audit-20261013",
+  "head": "398d1ca479de9aefe6bacc6f36900c3111ffa7d4",
+  "workingTree": "M game.js\n M ios/App/App/public/game.js\n M ios/App/App/public/styles.css\n M src/game/02-storage-audio.js\n M styles.css\n M www/game.js\n M www/styles.css\n?? docs/production-reports/evidence/journey-p1/",
+  "results": [
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 726,
+      "log": "build.txt"
+    },
+    {
+      "name": "engine",
+      "command": "npm run test:engine",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 210,
+      "log": "engine.txt"
+    },
+    {
+      "name": "architecture",
+      "command": "npm run test:architecture",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 131,
+      "log": "architecture.txt"
+    },
+    {
+      "name": "content-integration-assets",
+      "command": "npm run test:content",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 44855,
+      "log": "content-integration-assets.txt"
+    },
+    {
+      "name": "static",
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 256,
+      "log": "static.txt"
+    },
+    {
+      "name": "regression",
+      "command": "npm test",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 2767,
+      "log": "regression.txt"
+    },
+    {
+      "name": "web",
+      "command": "node tests/run-v7-web-tests.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 1136,
+      "log": "web.txt"
+    },
+    {
+      "name": "experimental-render-adapter",
+      "command": "node --test tests/campaign-adapter.test.mjs tests/neon-render-engine.test.mjs tests/sprite-animator.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 305,
+      "log": "experimental-render-adapter.txt"
+    },
+    {
+      "name": "audio-lifecycle",
+      "command": "node --test tests/audio-lifecycle.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 148,
+      "log": "audio-lifecycle.txt"
+    },
+    {
+      "name": "visual-artpass",
+      "command": "node --test tests/visual-artpass.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 190,
+      "log": "visual-artpass.txt"
+    },
+    {
+      "name": "inventory",
+      "command": "node scripts/audit-asset-inventory.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 74,
+      "log": "inventory.txt"
+    }
+  ],
+  "artifacts": {
+    "game.js": [
+      {
+        "directory": ".",
+        "sha256": "86b0394f3319a4622bde72790275a8be4ec975dc18289f732399eac8cdb318b2"
+      },
+      {
+        "directory": "www",
+        "sha256": "86b0394f3319a4622bde72790275a8be4ec975dc18289f732399eac8cdb318b2"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "86b0394f3319a4622bde72790275a8be4ec975dc18289f732399eac8cdb318b2"
+      }
+    ],
+    "core-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "f39be54b8347e5b38c8a6d246d0aed95902bbd814b7ac24599106d5a9a244daf"
+      },
+      {
+        "directory": "www",
+        "sha256": "f39be54b8347e5b38c8a6d246d0aed95902bbd814b7ac24599106d5a9a244daf"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "f39be54b8347e5b38c8a6d246d0aed95902bbd814b7ac24599106d5a9a244daf"
+      }
+    ],
+    "content-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "0aa18050b9fd4ae7773c12df5c59ea1deae03af433a78e2d020f22348a74013e"
+      },
+      {
+        "directory": "www",
+        "sha256": "0aa18050b9fd4ae7773c12df5c59ea1deae03af433a78e2d020f22348a74013e"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "0aa18050b9fd4ae7773c12df5c59ea1deae03af433a78e2d020f22348a74013e"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-17T10:20:59.737Z",
+  "ok": true
+}

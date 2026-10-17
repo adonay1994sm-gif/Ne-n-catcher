@@ -1,0 +1,65 @@
+
+> neon-catcher@7.2.0 test:content
+> node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs tests/classic-scout.test.mjs tests/journey-demo.test.mjs tests/journey-legacy-integration.test.mjs
+
+✔ classic CH-01 pauses with a zero delta and fires only after a visible approach (2.301586ms)
+✔ classic CH-01 hit interrupts a charged shot without inventing a projectile (0.386199ms)
+✔ classic CH-01 stays inside the viewport and rejects invalid simulation deltas (0.728622ms)
+✔ every declared animation frame exists in the runtime inventory (13.552238ms)
+✔ banking mirrors the authored pose; impact cannot enter the idle loop (0.756573ms)
+✔ all iOS catalog image entries exist with the required PNG dimensions (5.241301ms)
+✔ 100 levels and five nonoverlapping sectors (0.947875ms)
+✔ deterministic waves for every level across independent calls (21.757561ms)
+✔ difficulty density and speed increase monotonically (0.355593ms)
+✔ bosses at every tenth level with two distinct phases (1.061071ms)
+✔ N-7 contextual triggers and animation metadata (0.185333ms)
+✔ invalid levels and wave counts rejected (0.454318ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ content is packaged before the campaign and adds no RAF owner or Engine V1 import (4.565728ms)
+✔ 100 routes run through the real legacy update and collision pipeline (39231.94139ms)
+✔ N-7 progression unlocks its own next route without overwriting original saves (801.079159ms)
+✔ pause freezes encounters; resume and restart do not duplicate scheduled waves (123.909421ms)
+✔ resume tolerates a queued RAF timestamp older than the resume handler (141.269262ms)
+✔ N-7 labels routes and shows wave progress independently of debris warnings (124.865807ms)
+✔ legacy shots damage and destroy CH-01 while rendering distinct atlas frames (177.478902ms)
+✔ three connected authored segments are versioned and isolated from old campaign saves (2.677218ms)
+✔ one bounded clock drives segment and whole-route progress, while invalid deltas are rejected (0.532183ms)
+✔ explicit pause freezes progress, events and combat/pickup actions (3.866498ms)
+✔ the station cannot be reached by waiting without physically collecting the available part (7.493045ms)
+✔ free recovered module installs once, persists at station and produces a visible/runtime propulsion modifier (0.919062ms)
+✔ station is a natural pause without consuming route time and explicit pause blocks service actions (1.946944ms)
+✔ checkpoints resume coherent beginnings rather than claiming an exact mid-combat save (2.104907ms)
+✔ authored events fire once even across held clocks and repeated tiny updates (2.330719ms)
+✔ border guardian must be active and resolved, and completion reward is idempotent after reload (6.435799ms)
+✔ snapshots and checkpoint exports cannot mutate the controller state (0.44172ms)
+✔ an early guardian defeat stays resolved while the ship finishes approaching the border (1.006421ms)
+✔ malformed, foreign-version and inconsistent saves recover safely without importing old progress (1.65822ms)
+✔ an event callback failure cannot duplicate the same authored spawn (0.444363ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ journey uses relative pointer movement and pause freezes its route without adding RAF owners (290.989396ms)
+✔ the real legacy pipeline can collect, dock, install, continue and resolve the border with isolated saves (1064.776747ms)
+✔ invalid journey data is backed up before recovery and legacy progress remains untouched (26.930591ms)
+✔ 100 authored routes have distinct names and explicit objectives and rhythms (1.138325ms)
+✔ wave generation never reads nondeterministic entropy (37.868964ms)
+✔ reproduction accepts explicit uint32 seed and rejects unknown generator version (0.876059ms)
+✔ level 37 retains its versioned reproduction fixture (0.854257ms)
+✔ 100 levels reserve a continuous corridor wider than the real ship (23.161767ms)
+✔ swept enemy movement and shooter projectiles preserve the refuge in every level (122.062458ms)
+✔ CH-01 shooter animation gates fire and a hit cancels the charged shot (0.663967ms)
+✔ director emits each entity once, replays after reset and bounds suspended deltas (1.965642ms)
+✔ 3200 level/seed combinations serialize reproducibly and preserve traversable corridors (909.064727ms)
+ℹ tests 44
+ℹ suites 0
+ℹ pass 44
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44707.908485
