@@ -1,0 +1,77 @@
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ Gaia keeps recovery meaningful and gates saved victory behind the real Atlas encounter (450.117065ms)
+✔ the actual legacy pause freezes Atlas and resume continues without a duplicate loop (416.741523ms)
+✔ the threshold capture can replace active items without crashing the real collision loop (103.776791ms)
+✔ Atlas deactivation completes before a single persisted victory and preserves N-7 saves (2269.663217ms)
+✔ death, a rewarded continuation and retry cannot bypass or prematurely save Atlas (179.995484ms)
+✔ Gaia and Chronos share three manual charges with played-time recharge instead of unlimited boss ammunition (326.827748ms)
+✔ Atlas receives the advertised ×1, ×2 and ×3 damage once and converts each trigger into beams without duplicate projectiles (380.92822ms)
+✔ leaving the encounter does not mutate saves and N-7 cannot start classic Atlas (152.098797ms)
+✔ slow time shares the real Atlas and projectile clock before announcing another corridor (1489.993555ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ three classic charges recharge from played time and freeze completely while paused (702.824955ms)
+✔ a classic projectile travels before impact and applies damage and destruction reward only once (291.902087ms)
+✔ the actual PointerEvent handlers anchor without jumping and move both axes without a second finger stealing control (135.629422ms)
+✔ the Safari touch fallback tracks the first finger and ignores a secondary finger ending (173.159306ms)
+✔ the first mission requires both recovered CRONIUM and a completed visible route (3231.953854ms)
+✔ the Chronos attack and reactor rupture occur once in route order and cannot advance during pause (504.304411ms)
+✔ the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station (805.434248ms)
+✔ pause and repeated real background renders freeze the Chronos pose, clock and event stream (391.282537ms)
+✔ a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback (296.640312ms)
+✔ recovering, installing and switching a real weapon preserve ammunition and separate campaign saves (383.030317ms)
+✔ invalid equipment is backed up once before replacement and a failed backup blocks destructive recovery (199.611492ms)
+✔ C9 calibrates the recovered twin into a persistent lance and cycling ×1/×2/×3 never grants ammunition (215.04696ms)
+✔ malformed lance unlocks are preserved as backups instead of granting uncalibrated weapons (459.139886ms)
+✔ Atlas locks its warning and actual projectile trajectory to the movable ship position (294.95543ms)
+✔ the route bar advances between collections without a stage, ammunition or recharge change (127.421505ms)
+✔ compact comms do not repeat the quota and expire only with played time without moving the flight bounds (301.493701ms)
+✔ measured compact bounds release the former top reserve and ignore side controls outside the Canvas (87.817396ms)
+✔ the compact HUD and weapon share menu, completion, death and Atlas visibility while switching preserves ammunition (290.520825ms)
+✔ power pickup and expiry update flight clearance only when chip visibility changes and leave N-7 bounds alone (429.218203ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16872.644544

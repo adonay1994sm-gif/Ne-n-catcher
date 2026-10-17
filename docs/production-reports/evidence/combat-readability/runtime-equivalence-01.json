@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-17T19:28:06.550Z",
+  "head": null,
+  "sourceCommit": "a787c8dcfa70064a65c07865ec1a119e29c4825d",
+  "previewGameSha256": "71014c334eaf37a8acc7af0a6cb503ba1b15807b0669548dc5e98e11689debbc",
+  "ordinaryGameSha256": "ff4fcab7b3805b9d14461577cc627bdc318ec53d0b01288196a152cb50aa968f",
+  "match": true,
+  "note": "Preview storage and ad-repair transforms only; identical gameplay source despite earlier dirty build provenance."
+}

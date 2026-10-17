@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T18:43:00.661472+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T19:23:35.697718+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -26,6 +26,12 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-FLIGHT-01 / P1 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-CHRONOS-02 / P1 | Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-HUD-01 / P1 | Integrar HUD compacto y recuperar espacio real de pilotaje clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-COMBAT-02 / P1 | Concentrar gemelo y añadir lanza con daño ×1/×2/×3 y batería común | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
+| P1-ATLAS-02 / P1 | Aumentar desafío de Atlas sin mostrar la solución de esquiva | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
+| P1-ORBS-01 / P1 | Reducir orbes clásicos al50% visual conservando recogida | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
+| P1-SHIELD-01 / P1 | Integrar campo de fuerza ilustrado con estados de activación y absorción | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
+| P1-VULKAR-01 / P1 | Llevar nivel3 al espacio con planeta y restos orbitales independientes | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
+| P1-TRANSITIONS-01 / P1 | Hacer legibles selector, briefing y victoria de los diez niveles | IN_REVIEW | IN_PROGRESS | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -40,27 +46,27 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 7/48 (14.6%) | 36 | 0 | 0 | 5 |
-| Campaña clásica | 4/15 (26.7%) | 4 | 1 | 0 | 6 |
+| Jugabilidad | 7/52 (13.5%) | 36 | 0 | 0 | 9 |
+| Campaña clásica | 4/19 (21.1%) | 4 | 1 | 0 | 10 |
 | Campaña N-7 | 3/39 (7.7%) | 35 | 1 | 0 | 0 |
-| Enemigos | 5/75 (6.7%) | 60 | 0 | 0 | 10 |
-| Jefes | 0/14 (0.0%) | 13 | 0 | 0 | 1 |
-| Assets | 2/172 (1.2%) | 126 | 3 | 1 | 40 |
-| Animaciones | 5/141 (3.5%) | 111 | 1 | 0 | 24 |
+| Enemigos | 5/76 (6.6%) | 60 | 0 | 0 | 11 |
+| Jefes | 0/15 (0.0%) | 13 | 0 | 0 | 2 |
+| Assets | 2/175 (1.1%) | 126 | 3 | 1 | 43 |
+| Animaciones | 5/142 (3.5%) | 111 | 1 | 0 | 25 |
 | Narrativa | 0/19 (0.0%) | 18 | 0 | 0 | 1 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/19 (21.1%) | 9 | 1 | 0 | 5 |
+| Interfaz | 4/22 (18.2%) | 9 | 1 | 0 | 8 |
 | Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 18/54 (33.3%) | 20 | 2 | 4 | 10 |
+| QA | 18/60 (30.0%) | 20 | 2 | 4 | 16 |
 | Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 18/25 (72.0%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 5 · DONE: 18 |
+| 03 · Prueba integrada y cierre técnico | 18/26 (69.2%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 6 · DONE: 18 |
 | 04 · Jugabilidad procedural | 0/20 (0.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 5/170 (2.9%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 39 · DONE: 5 |
+| 05 · Producción visual y 150 assets | 5/176 (2.8%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 45 · DONE: 5 |
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
@@ -69,7 +75,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 32; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**; 154 identificadores. Cierre de los doce requisitos: **0/154 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 33; PLANNED: 119; IMPLEMENTED_CODE: 2; READY: 1**; 155 identificadores. Cierre de los doce requisitos: **0/155 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 

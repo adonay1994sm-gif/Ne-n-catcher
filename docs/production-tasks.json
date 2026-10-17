@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T18:43:00.661472+00:00",
+  "updatedAt": "2026-10-17T19:23:35.697718+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -57,6 +57,16 @@
       "commit": "e1a7aa8498b1c5f9f5558425a61b748f4ab1f869",
       "evidence": "docs/production-reports/evidence/block-03/certification-01/results.json",
       "note": "11fases exit0. Preview15/15 registrado aparte. Chromium global permanece en curso al actualizar esta checklist."
+    },
+    {
+      "scope": "Referencia artística anterior de vulkar-planet",
+      "commit": null,
+      "evidence": [
+        "docs/visual-rebirth/evidence/gallery-03/results.json",
+        "docs/visual-rebirth/evidence/level-03-gameplay-browser-01/results.json",
+        "docs/visual-rebirth/evidence/level-03-certification-01/results.json"
+      ],
+      "note": "Historial preservado. La variante orbital actual se verifica con el lote combat-readability."
     }
   ],
   "organization": [
@@ -311,7 +321,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 154,
+    "expectedCount": 155,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -437,25 +447,27 @@
       },
       "vulkar-planet": {
         "status": "IN_REVIEW",
+        "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
         "files": [
-          "art-source/visual-rebirth/levels/03/vulkar-descent-master.png",
-          "assets/vulkar_descent_background_v1.webp",
-          "src/game/06-world-rendering.js"
+          "ASSET_MANIFEST.json",
+          "art-source/combat-readability/vulkar/"
         ],
         "tests": [
-          "Chromium classic level 3 1/1, exit 0",
-          "Chromium classic/N-7 gameplay 2/2, exit 0",
-          "Local certification 11/11 phases, exit 0",
-          "Preview 15/15, exit 0"
+          "Certificación02:11/11 fases y Chromium controlled8/9 más suplemento3/3; runtime80 assets inventariados."
         ],
         "evidence": [
-          "docs/visual-rebirth/evidence/gallery-03/results.json",
-          "docs/visual-rebirth/evidence/level-03-gameplay-browser-01/results.json",
-          "docs/visual-rebirth/evidence/level-03-certification-01/results.json"
+          "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+          "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+          "docs/production-reports/evidence/combat-readability/certificate-02/results.json"
         ],
         "openErrors": [
-          "Composite illustration is integrated, but independent depth layers, Lava Core/Plasma Mine animation, and physical iPhone QA remain pending."
-        ]
+          "Aceptación artística del propietario y prueba física pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "PASSED",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       },
       "vulkar-rock-field": {
         "status": "IN_REVIEW",
@@ -669,9 +681,57 @@
           "artistic": "PENDING_OWNER",
           "physical": "PENDING"
         }
+      },
+      "shared-shield": {
+        "status": "IN_REVIEW",
+        "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+        "files": [
+          "ASSET_MANIFEST.json",
+          "art-source/combat-readability/shield/"
+        ],
+        "tests": [
+          "Certificación02:11/11 fases y Chromium controlled8/9 más suplemento3/3; runtime80 assets inventariados."
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+          "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+          "docs/production-reports/evidence/combat-readability/certificate-02/results.json"
+        ],
+        "openErrors": [
+          "Aceptación artística del propietario y prueba física pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "PASSED",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
+      },
+      "vulkar-orbit-background-v1": {
+        "status": "IN_REVIEW",
+        "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+        "files": [
+          "ASSET_MANIFEST.json",
+          "art-source/combat-readability/vulkar/"
+        ],
+        "tests": [
+          "Certificación02:11/11 fases y Chromium controlled8/9 más suplemento3/3; runtime80 assets inventariados."
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+          "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+          "docs/production-reports/evidence/combat-readability/certificate-02/results.json"
+        ],
+        "openErrors": [
+          "Aceptación artística del propietario y prueba física pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "PASSED",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       }
     },
-    "note": "Se genera una tarea A001–A150 por sequence. Catálogo READY/IN_REVIEW/IMPLEMENTED_CODE pasa a IN_REVIEW por defecto; nunca a DONE. Un cambio se registra en overrides por asset.id, con commit, tests y evidence."
+    "note": "Se genera una tarea por sequence estable del catálogo (155 entradas tras el fondo orbital). READY/IN_REVIEW/IMPLEMENTED_CODE exige verificación técnica y aceptación artística separadas; no equivale a DONE."
   },
   "tasks": [
     {
@@ -5012,6 +5072,366 @@
         "note": "Petición actual: liberar el escenario y pilotaje, sin expandir niveles ni activar MotorV1."
       },
       "packageCommit": "6891f810c1fee09def8704729cf843e9926843c7"
+    },
+    {
+      "id": "P1-COMBAT-02",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Concentrar gemelo y añadir lanza con daño ×1/×2/×3 y batería común",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "src/game/combat/classic-weapons.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/classic-weapons.test.mjs",
+        "tests/unified-flight-legacy.test.mjs"
+      ],
+      "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
+        "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+      ],
+      "evidence": [
+        "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
+        "docs/production-reports/evidence/combat-readability/integration-fix-01.txt",
+        "docs/production-reports/evidence/combat-readability/certificate-01/results.json",
+        "docs/production-reports/evidence/combat-readability/certificate-02/results.json",
+        "docs/production-reports/evidence/combat-readability/compact-browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+        "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
+        "Rendimiento breve de software Chromium:24,99FPS; no certificación60FPS ni memoriaGPU.",
+        "Glifos intermitentes históricos siguen abiertos; este lote no demuestra su causa."
+      ],
+      "acceptance": [
+        "Dos trayectorias ±10 sin apertura; daño por carga1/2/3 igual en campo y Atlas.",
+        "Lanza perfora dos objetivos distintos; desbloqueo C9, guardado compatible y cambio sin recarga gratis."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
+      }
+    },
+    {
+      "id": "P1-ATLAS-02",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Aumentar desafío de Atlas sin mostrar la solución de esquiva",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jefes",
+        "Enemigos",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "src/game/combat/guardian-atlas.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/guardian-atlas.test.mjs",
+        "scripts/guardian-atlas-browser-smoke.cjs"
+      ],
+      "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
+        "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+      ],
+      "evidence": [
+        "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
+        "docs/production-reports/evidence/combat-readability/integration-fix-01.txt",
+        "docs/production-reports/evidence/combat-readability/certificate-01/results.json",
+        "docs/production-reports/evidence/combat-readability/certificate-02/results.json",
+        "docs/production-reports/evidence/combat-readability/compact-browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+        "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
+        "Rendimiento breve de software Chromium:24,99FPS; no certificación60FPS ni memoriaGPU.",
+        "Glifos intermitentes históricos siguen abiertos; este lote no demuestra su causa."
+      ],
+      "acceptance": [
+        "Cinco tiros iniciales y segunda fase con cortinas y fuego cruzado, todos anticipados.",
+        "No se dibuja safeGap ni retícula de posición futura; prueba natural por trayectorias observadas."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
+      }
+    },
+    {
+      "id": "P1-ORBS-01",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Reducir orbes clásicos al50% visual conservando recogida",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
+        "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+      ],
+      "evidence": [
+        "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
+        "docs/production-reports/evidence/combat-readability/integration-fix-01.txt",
+        "docs/production-reports/evidence/combat-readability/certificate-01/results.json",
+        "docs/production-reports/evidence/combat-readability/certificate-02/results.json",
+        "docs/production-reports/evidence/combat-readability/compact-browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+        "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
+        "Rendimiento breve de software Chromium:24,99FPS; no certificación60FPS ni memoriaGPU.",
+        "Glifos intermitentes históricos siguen abiertos; este lote no demuestra su causa."
+      ],
+      "acceptance": [
+        "Escala visual0.5 incluida aura y sombra.",
+        "CollisionCircles/tractor/cuota se conservan; N-7 conserva tamaño anterior."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
+      }
+    },
+    {
+      "id": "P1-SHIELD-01",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Integrar campo de fuerza ilustrado con estados de activación y absorción",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "assets/force_shield_atlas_v1.webp",
+        "art-source/combat-readability/shield/",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/05-corridor-update.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
+        "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+      ],
+      "evidence": [
+        "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
+        "docs/production-reports/evidence/combat-readability/integration-fix-01.txt",
+        "docs/production-reports/evidence/combat-readability/certificate-01/results.json",
+        "docs/production-reports/evidence/combat-readability/certificate-02/results.json",
+        "docs/production-reports/evidence/combat-readability/compact-browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+        "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
+        "Rendimiento breve de software Chromium:24,99FPS; no certificación60FPS ni memoriaGPU.",
+        "Glifos intermitentes históricos siguen abiertos; este lote no demuestra su causa."
+      ],
+      "acceptance": [
+        "Cuatro estados reales, interior transparente y pivote sobre el casco.",
+        "Reloj de gameplay pausado; impacto activaestado3 y absorbe sin doble recompensa."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
+      }
+    },
+    {
+      "id": "P1-VULKAR-01",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Llevar nivel3 al espacio con planeta y restos orbitales independientes",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "assets/vulkar_orbit_background_v1.webp",
+        "assets/vulkar_orbit_planet_v1.webp",
+        "art-source/combat-readability/vulkar/",
+        "src/game/06-world-rendering.js"
+      ],
+      "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
+        "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+      ],
+      "evidence": [
+        "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
+        "docs/production-reports/evidence/combat-readability/integration-fix-01.txt",
+        "docs/production-reports/evidence/combat-readability/certificate-01/results.json",
+        "docs/production-reports/evidence/combat-readability/certificate-02/results.json",
+        "docs/production-reports/evidence/combat-readability/compact-browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+        "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
+        "Rendimiento breve de software Chromium:24,99FPS; no certificación60FPS ni memoriaGPU.",
+        "Glifos intermitentes históricos siguen abiertos; este lote no demuestra su causa."
+      ],
+      "acceptance": [
+        "Espacio exterior, planeta transparente independiente y corredor legible.",
+        "Deriva/rotación usan elapsed y recogida real; pausa congela capas."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
+      }
+    },
+    {
+      "id": "P1-TRANSITIONS-01",
+      "block": "03",
+      "canonicalPhase": "P1",
+      "name": "Hacer legibles selector, briefing y victoria de los diez niveles",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Interfaz",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01",
+        "P1-HUD-01"
+      ],
+      "files": [
+        "styles.css",
+        "index.html",
+        "src/game/00-bootstrap-config.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "commit": "be8e613cc65f9f3b75ca545c9d411c0afe6334c1",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-01:10/11fases;content178/179, aserción histórica3→5 corregida",
+        "node --test tests/unified-flight-legacy.test.mjs tests/guardian-atlas-legacy.test.mjs:28/28 exit0",
+        "node scripts/certify-local.mjs docs/production-reports/evidence/combat-readability/certificate-02:11/11 fases exit0;content179/179",
+        "Chromium HUD26/26, controlled8/9 + supplement3/3, Atlas natural4/4, N-7una sesión6pasos;salidas finales0 salvo primer harness8/9 conservado"
+      ],
+      "evidence": [
+        "docs/production-reports/COMBAT_READABILITY_2026-10-17.md",
+        "docs/production-reports/evidence/combat-readability/integration-fix-01.txt",
+        "docs/production-reports/evidence/combat-readability/certificate-01/results.json",
+        "docs/production-reports/evidence/combat-readability/certificate-02/results.json",
+        "docs/production-reports/evidence/combat-readability/compact-browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-01/results.json",
+        "docs/production-reports/evidence/combat-readability/browser-supplement-02/results.json",
+        "docs/production-reports/evidence/combat-readability/atlas-natural-01/results.json",
+        "docs/production-reports/evidence/combat-readability/n7-01/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística del propietario y Safari/iPhone físico pendientes.",
+        "Rendimiento breve de software Chromium:24,99FPS; no certificación60FPS ni memoriaGPU.",
+        "Glifos intermitentes históricos siguen abiertos; este lote no demuestra su causa."
+      ],
+      "acceptance": [
+        "Vista ilustrada170–220px, nombres24–30px y botones44px; panel desplazable sin reducir escala.",
+        "Diez escenarios referenciados y victoria usa escena actual;320px yhorizontal accesibles."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
+      }
     }
   ],
   "canonicalPlan": {
