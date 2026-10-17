@@ -33,6 +33,25 @@ async function capture(name){
   const file=`${name}.png`;await page.screenshot({path:path.join(output,file)});
   result.screenshots.push({file,snapshot:await inspect()});await saveEvidence(output,result);
 }
+async function shipControlLayout(){
+  const layout=await page.evaluate(()=>{
+    const q=window.__JOURNEY_QA__(),canvas=document.querySelector('#canvas').getBoundingClientRect();
+    const ship={left:canvas.left+(q.playerX-110)*canvas.width/q.W,
+      right:canvas.left+(q.playerX+110)*canvas.width/q.W,
+      top:canvas.top+(q.playerY-150)*canvas.height/q.H,
+      bottom:canvas.top+(q.playerY+110)*canvas.height/q.H};
+    const controls={},intersections=[];
+    for(const selector of ['#fire','#journeySkills','#storyTransmission.show']){
+      const element=document.querySelector(selector);if(!element)continue;
+      const rect=element.getBoundingClientRect();if(!rect.width||!rect.height)continue;
+      controls[selector]={left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom};
+      if(ship.left<rect.right&&ship.right>rect.left&&ship.top<rect.bottom&&ship.bottom>rect.top)intersections.push(selector);
+    }
+    return {ship,controls,intersections};
+  });
+  assert.deepEqual(layout.intersections,[],'Conservative ship drawing bounds overlap a control or visible transmission');
+  return layout;
+}
 async function dragTo(target){
   const q=await inspect(),box=await page.locator('#canvas').boundingBox();
   const delta=(Math.max(80,Math.min(q.W-80,target))-q.target)*box.width/q.W;
@@ -154,7 +173,8 @@ function assertClean(q){
         }
       }
       if(stationDone&&q.journey.segmentId==='transit'&&q.journey.elapsed>1&&!propulsionCaptured){
-        assert.equal(q.journey.engineBoost,true);await capture('03-upgraded-propulsion');propulsionCaptured=true;
+        assert.equal(q.journey.engineBoost,true);result.upgradedShipLayout=await shipControlLayout();
+        await capture('03-upgraded-propulsion');propulsionCaptured=true;
       }
       await page.waitForTimeout(140);
     }

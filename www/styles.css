@@ -184,3 +184,6 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .journey-mode #hudLevel{font-size:18px}.journey-mode #goal{font-size:18px}.journey-mode .fire-control small{font-size:11px}.journey-mode #powerHud{display:none}
 @media (max-height:500px){.journey-route{top:60px;left:28%;width:44%;padding:6px 10px}.journey-route small{display:none}.journey-route span{font-size:9px}.journey-route b{font-size:11px}.journey-skills{flex-direction:row}.journey-skills button{width:85px;min-height:43px}.journey-service{max-height:88dvh}.journey-service>img{width:55px;height:55px}}
 .journey-service button.link{background:transparent;border:1px solid #45647c;border-radius:11px;min-height:40px;color:#a9d6e4;font:inherit;font-size:12px;cursor:pointer}
+/* Keep the full ship above the thumb controls; transmissions use the upper band. */
+.journey-mode .story-transmission{top:calc(env(safe-area-inset-top,0px) + 190px);bottom:auto;max-width:82%}
+@media (max-height:500px){.journey-mode .story-transmission{top:124px;width:48%;padding:6px 10px}.journey-mode .story-transmission b{font-size:10px}}

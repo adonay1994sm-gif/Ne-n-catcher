@@ -534,7 +534,7 @@
     H = Math.max(1180, Math.round(W * rect.height / rect.width));
     canvas.width = W;
     canvas.height = H;
-    player.y = H - 135;
+    player.y = H - (JOURNEY_DEMO ? 360 : 135);
     player.x = clamp(player.x, 80, W - 80);
     player.target = clamp(player.target, 80, W - 80);
     for (const star of stars) {
