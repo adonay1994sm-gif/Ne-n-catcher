@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T20:54:36.903717+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T21:03:11.890547+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -47,6 +47,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P3-CH1-08 / P3 | Etapa 1.8 · Gaia en la distancia | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
 | P3-CH1-09 / P3 | Etapa 1.9 · Señales de Atlas | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
 | P3-CH1-10 / P3 | Etapa 1.10 · Llegada a Gaia | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
+| P1-BRAND-01 / P1 | Nombre activo NEON CRONIUM en juego, distribución y splash | IN_REVIEW | IN_REVIEW_BROWSER_PACKAGE | PENDING_OWNER_SPLASH | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -66,20 +67,20 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Campaña N-7 | 3/41 (7.3%) | 35 | 1 | 0 | 2 |
 | Enemigos | 5/76 (6.6%) | 60 | 0 | 0 | 11 |
 | Jefes | 0/15 (0.0%) | 13 | 0 | 0 | 2 |
-| Assets | 2/177 (1.1%) | 126 | 3 | 1 | 45 |
+| Assets | 2/178 (1.1%) | 126 | 3 | 1 | 46 |
 | Animaciones | 5/144 (3.5%) | 111 | 1 | 0 | 27 |
 | Narrativa | 0/19 (0.0%) | 17 | 1 | 0 | 1 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/24 (16.7%) | 9 | 1 | 0 | 10 |
+| Interfaz | 4/25 (16.0%) | 9 | 1 | 0 | 11 |
 | Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 19/75 (25.3%) | 20 | 2 | 4 | 30 |
-| Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
+| QA | 19/76 (25.0%) | 20 | 2 | 4 | 31 |
+| Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 19/28 (67.9%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 7 · DONE: 19 |
+| 03 · Prueba integrada y cierre técnico | 19/29 (65.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 8 · DONE: 19 |
 | 04 · Jugabilidad procedural | 0/31 (0.0%) | PENDING: 18 · IN_PROGRESS: 1 · BLOCKED: 0 · IN_REVIEW: 12 · DONE: 0 |
 | 05 · Producción visual y 150 assets | 5/178 (2.8%) | PENDING: 123 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 47 · DONE: 5 |
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
