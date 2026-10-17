@@ -1,9 +1,9 @@
 <!-- compact-hud-current -->
-## HUD compacto — 17/10/2026
+## Vigente — HUD integrado,17/10/2026
 
-Integrado sobre legacy: HUD/ruta estables82px en vertical, arma inferior, mensajes temporales y límites de movimiento medidos. Pausa, derrota/continuación y cambios de poder actualizan la interfaz. Certificación03:11/11 fases, contenido168/168; Chromium after04:26/26 grupos, cinco tamaños y diez escenas. N-7 real1sesión/6pasos aprobada. Cierre de poderes/paquete/publicación en curso; la URL previa todavía no acredita esta revisión.
+[Informe, capturas y límites](production-reports/COMPACT_HUD_2026-10-17.md). Código/paquete limpio6891f810c1fee09def8704729cf843e9926843c7. Sitio privado versión7:succeeded18:44:38UTC. https://neon-catcher-pruebas.chictide18.chatgpt.site .
 
-Aceptación artística y Safari/iPhone físico pendientes. MotorV1=false. [Informe vigente](production-reports/COMPACT_HUD_2026-10-17.md). El contenido siguiente es histórico.
+Franja fija180→82px en390×844;60px más de pilotaje superior. Arma inferior, avisos en ruta, poderes con límites medidos. Certificación03:11/11 fases,168content; preview23/23; Chromium HUD26/26 yCSS de avisos12/12; N-7:6pasos. FULL powers04 conserva timeout con recogidas normales; smoke CSS no ejecuta expiración. Arte/físico pendientes; V1=false. Historial siguiente conservado.
 <!-- /compact-hud-current -->
 
 ---

@@ -1,0 +1,475 @@
+{
+  "commit": "6891f810c1fee09def8704729cf843e9926843c7",
+  "dirty": false,
+  "revision": "6613f3f758d508dedaddffebbfbd316cf1b4c4516ad7be09debbc50ca277cd71",
+  "archive": "neon-catcher-hud-6891f81.zip",
+  "bytes": 7384168,
+  "sha256": "1320201fbf34a88d00499a6fc407a37abae9cd652eefa84d4152fb831b88d6fd",
+  "entries": 113,
+  "crc": "passed",
+  "exactPackageFileComparison": "passed",
+  "approvedRuntimeComparison": [
+    "after-05",
+    "powers-layout-01"
+  ],
+  "engineV1": false,
+  "entryPoints": [
+    "index.html",
+    "juego/index.html",
+    "juego/index.html?campaign=n7"
+  ],
+  "files": {
+    "_headers": {
+      "bytes": 456,
+      "sha256": "07807b07a06aece4327c6804d946bb5dfbb73f51e993a75f30fa9098f6839cb3"
+    },
+    "build-info.json": {
+      "bytes": 29650,
+      "sha256": "bfe7ac72ba839fb328b41347df024a9e919933742a91a1075038aa359d2117ad"
+    },
+    "index.html": {
+      "bytes": 5846,
+      "sha256": "06233830101fdcb3426d9895a024522963f974a9bbb8d0d80a9cf219d30b9345"
+    },
+    "juego/_headers": {
+      "bytes": 482,
+      "sha256": "6c31f778897af493f486ac6ac64561e971e3e59994fa62e57a7d62b0648c8279"
+    },
+    "juego/ad-bridge.js": {
+      "bytes": 3349,
+      "sha256": "d7ae7c2047a47f0be2cabbcbcd50b00c12328050e07e8c88d96da906584f753d"
+    },
+    "juego/ads-config.js": {
+      "bytes": 218,
+      "sha256": "b15a05a179f77b4581995db7df7e1f3948818ba03cde6e9263893be283543c96"
+    },
+    "juego/analytics-manager.js": {
+      "bytes": 1731,
+      "sha256": "14edf4964f0758eb083dd3079909db5b1ef31de8de3762b2125635b8c4a18f49"
+    },
+    "juego/assets/.gitkeep": {
+      "bytes": 5,
+      "sha256": "f660a7996deacfbc7560e4240054a8ad82eb02fe25a95064257e07084bcacb85"
+    },
+    "juego/assets/aether_echo_cemetery_background_v1.webp": {
+      "bytes": 307626,
+      "sha256": "d919e927e6b0eb66d9f675bfca7f0609aa2537667cfe19b7dc623a8a72674152"
+    },
+    "juego/assets/aether_phantom_threshold_background_v1.webp": {
+      "bytes": 297302,
+      "sha256": "b6406b98aa03eb05be0a03ad535b22767be315becbda630b33e75ca7420be693"
+    },
+    "juego/assets/atlas_combat_vfx_v1.webp": {
+      "bytes": 135832,
+      "sha256": "7a8b38c29c2f4fcb21840046865d0961cafd2fcd3d03a8c48649c54a954ef050"
+    },
+    "juego/assets/atlas_perimeter_background_v1.webp": {
+      "bytes": 229456,
+      "sha256": "f494b546bfbd03d452307760f2c85dbd817409cb24c62e22f177e5db35d7b3c4"
+    },
+    "juego/assets/ch01_atlas_v1.webp": {
+      "bytes": 484814,
+      "sha256": "ec2d3c48e3715450b4aefd6757dd0b49236437f699ac719c07e03c45360be430"
+    },
+    "juego/assets/chronos_collapse_background_v1.webp": {
+      "bytes": 359816,
+      "sha256": "bf2a96291e4ea1b3eedeff2d2fb34daf05262463ab1e8da7b4d012ab392a856a"
+    },
+    "juego/assets/chronos_destruction_atlas_v1.webp": {
+      "bytes": 438658,
+      "sha256": "c4e6f8f9c866ef075fcef4ac3565004420603d04e246a46f324acb2455d89f2d"
+    },
+    "juego/assets/chronos_detached_module_v1.webp": {
+      "bytes": 101668,
+      "sha256": "32a505bfd551a5468a162b51793db729dcfbb98860cd76933c9b7db42ed2c188"
+    },
+    "juego/assets/chronos_flight_atlas_v1.webp": {
+      "bytes": 314136,
+      "sha256": "7cb2bc69b582fbca961972443d20380ad73294483f111bc451a3ffbab17349d1"
+    },
+    "juego/assets/chronos_flight_space_v1.webp": {
+      "bytes": 109484,
+      "sha256": "243362aac0c6815c667f3f7d7354407cda513259d30be6c0ae195ac1262cded3"
+    },
+    "juego/assets/chronos_flight_weapons_v1.webp": {
+      "bytes": 84948,
+      "sha256": "f0f4b3bbdeed03cd25301ef6e1699e2d1c28d1659b7f08bc1ed53bebaffe9c71"
+    },
+    "juego/assets/chronos_shockwave_atlas_v1.webp": {
+      "bytes": 622232,
+      "sha256": "7aeab51af66890cfec1f4f1da2d60c37db142075feb7dd3249fc9e06a46a0e89"
+    },
+    "juego/assets/comet_animation_sheet_v1.webp": {
+      "bytes": 116846,
+      "sha256": "5dff714055386bd58cd5d8a3d9a0bebb79263de4a78d6c617ba8054f8a8a3feb"
+    },
+    "juego/assets/comet_fire.webp": {
+      "bytes": 21650,
+      "sha256": "bae313a48a12cff61b5aec04ec7a3ec70a5fef997d633598171ad554c27eefd2"
+    },
+    "juego/assets/core_frame_00.webp": {
+      "bytes": 14050,
+      "sha256": "328485a75acbe14613301bf960a0ba601dacf453a5e6feec137fe996934ea98e"
+    },
+    "juego/assets/core_frame_01.webp": {
+      "bytes": 13108,
+      "sha256": "0305f662a7240427e4ace86ffd9cc6d6d8f5822d5d9e8cfc279ee51cdf13ca6e"
+    },
+    "juego/assets/core_frame_02.webp": {
+      "bytes": 14128,
+      "sha256": "e2651274c46363f852a11a2a28936459752d37a773e5abe53d9595d15f1ec622"
+    },
+    "juego/assets/core_frame_03.webp": {
+      "bytes": 14086,
+      "sha256": "f8b4a44312c460461c6efde8a01be56d955da603bb4edfcb4bb8713412b63b35"
+    },
+    "juego/assets/core_frame_04.webp": {
+      "bytes": 13256,
+      "sha256": "2e4740fe564c18ddd36c5cbf784ed7ce210526bf8eb4e9f931829757a7c723e1"
+    },
+    "juego/assets/core_frame_05.webp": {
+      "bytes": 14042,
+      "sha256": "732de3954d057762247a24b34d3ca61acdcfefbe19d446535c753d28f09d2fff"
+    },
+    "juego/assets/cronium_fragment_v1.webp": {
+      "bytes": 9570,
+      "sha256": "3fa0fb8ae876ece6f8a91f89f008e1ad563d429676069b69d922a02f3148fc85"
+    },
+    "juego/assets/cronos_level1_background.webp": {
+      "bytes": 143486,
+      "sha256": "39120b4d99dd1c01e58c87034c020b8a9daeb54d98618b6d80c8abcade3e3765"
+    },
+    "juego/assets/cryon_leviathan_rift_background_v1.webp": {
+      "bytes": 282296,
+      "sha256": "a1c38800cb13385c0e75a5a16892a9fb0e537fa5fa2bdd4c0e61f0da75794a92"
+    },
+    "juego/assets/cryon_whiteout_background_v1.webp": {
+      "bytes": 300000,
+      "sha256": "f1785061e8e71a504eef6e0c8181022894d13732573ae1acc89bcce70fad2147"
+    },
+    "juego/assets/debris_hot_00.webp": {
+      "bytes": 22306,
+      "sha256": "f9a5eacb1be07fe90e4e5d168e53de3e0368d7d8dd3d31c8a3181132566f5ec9"
+    },
+    "juego/assets/debris_hot_01.webp": {
+      "bytes": 18328,
+      "sha256": "70dfe12f70ead47b496ba59af9ebc28b3a307b089e546202922abef6c75a3fad"
+    },
+    "juego/assets/debris_metal.webp": {
+      "bytes": 14622,
+      "sha256": "4c5f0401497622a22bcd556d49f707a7431b5112fa7dc6b9846bbf0732b99ca7"
+    },
+    "juego/assets/debris_panel.webp": {
+      "bytes": 14584,
+      "sha256": "8186f8acfdd6e71ff4edd1ebaf3d0efbd188bfd992a8934579cbaa60fb554d21"
+    },
+    "juego/assets/explosion_frame_00.webp": {
+      "bytes": 18600,
+      "sha256": "772f02c0d353001bd0e8eedab98b86fb10bfa8274ab2e9976edea2c9bec4644d"
+    },
+    "juego/assets/explosion_frame_01.webp": {
+      "bytes": 21748,
+      "sha256": "be5bb691eba63f43499c36423fd593821c64d6279455ac4d0b96f9c93538b35a"
+    },
+    "juego/assets/explosion_frame_02.webp": {
+      "bytes": 21690,
+      "sha256": "07c096bfc4d480d070a2e42ab2639f3c25c2284083f24ba395e8efb3b5e3c765"
+    },
+    "juego/assets/explosion_frame_03.webp": {
+      "bytes": 21354,
+      "sha256": "30d9461685f04515b8050143a771bd08ecdefcb5f17afa5c122907ac1190e63b"
+    },
+    "juego/assets/explosion_frame_04.webp": {
+      "bytes": 18870,
+      "sha256": "6e479b186060257b6b8c3e5796a8ce47446b3fddba4cb2ac8a381f8e08d576e7"
+    },
+    "juego/assets/explosion_frame_05.webp": {
+      "bytes": 18598,
+      "sha256": "d31ae6a3f9bbc65e0ba84c47b9e6d20ab850674a97f84d5e505d80613ec42d56"
+    },
+    "juego/assets/explosion_frame_06.webp": {
+      "bytes": 17680,
+      "sha256": "e1b35913b6b42365485a5d2022b4623bb050c127f4c2043d57ddbfc03fb3f726"
+    },
+    "juego/assets/explosion_frame_07.webp": {
+      "bytes": 18574,
+      "sha256": "c6cfe3d5e86cf2762390f3709be91a4cd76fc6fc774ed065d320100af0be9016"
+    },
+    "juego/assets/explosion_small.webp": {
+      "bytes": 18328,
+      "sha256": "402ef8b404e96472c5348472fa1d0e997dfe2a34c394ecc33debc48ed8f95c7a"
+    },
+    "juego/assets/guardian_atlas_states_v1.webp": {
+      "bytes": 801340,
+      "sha256": "f8a0184f5979b2914837523e44b251108c30a92b7d30364d62e68190ee85724c"
+    },
+    "juego/assets/icon-192.png": {
+      "bytes": 4856,
+      "sha256": "59581e5830b9bf67f5767791d3f34b5e0984bd3bcd6f25c0b2695c3540cfdf5d"
+    },
+    "juego/assets/icon-512.png": {
+      "bytes": 16092,
+      "sha256": "2ac49693bc78ef0696d9a50396a9cfab82fb4a6df9d62c87e02a34f36ab03e5a"
+    },
+    "juego/assets/impact_frame_00.webp": {
+      "bytes": 7940,
+      "sha256": "07327e3dc79a9e1ace7b0deb8088438d9fefef6f32187665f526ffdd9af89408"
+    },
+    "juego/assets/impact_frame_01.webp": {
+      "bytes": 7716,
+      "sha256": "652f9437c883bc4ed284c1ddf66cf2cc356f0d92fad0d8300fed724056b5bade"
+    },
+    "juego/assets/impact_frame_02.webp": {
+      "bytes": 7798,
+      "sha256": "83fd4eb8870a10365a80fec51a76475d1adb37225d9003312b3c0e3836c1ffd6"
+    },
+    "juego/assets/impact_frame_03.webp": {
+      "bytes": 7600,
+      "sha256": "5f9b5480836db63e4e33b1ff1bb3844f623ddf9ae993f019f6b3d677a82be2de"
+    },
+    "juego/assets/meteor_large.webp": {
+      "bytes": 24926,
+      "sha256": "c99072ae2673f06d80d235017e162ff4093bde09305a4ec3c62a324902926764"
+    },
+    "juego/assets/meteor_medium.webp": {
+      "bytes": 15022,
+      "sha256": "ed05eb801da55a8875e6e07772955bc571260c900c074aff44fcf778ff729688"
+    },
+    "juego/assets/meteor_medium_alt.webp": {
+      "bytes": 12782,
+      "sha256": "7351a66df10566c744dcaa306aa04d689b9cfc81ad895ed49b339315212576cb"
+    },
+    "juego/assets/meteor_small.webp": {
+      "bytes": 8258,
+      "sha256": "3df9a1741ae73ab416eda863af7ffdb944cf654c70bdd823f220b07f5249ef6e"
+    },
+    "juego/assets/meteor_small_alt.webp": {
+      "bytes": 7762,
+      "sha256": "6f95c9b7f7da725758a94c203b2cd011cfb3cb46dd1f8ddcfb61be0abed76f70"
+    },
+    "juego/assets/phaser_frame_00.webp": {
+      "bytes": 7538,
+      "sha256": "7355cde51c7ae1dcd2e9f64847eebb4d68f5069bea39fb2b38213d1c4bf6d0a5"
+    },
+    "juego/assets/phaser_frame_01.webp": {
+      "bytes": 7440,
+      "sha256": "fa2ea28b91337c7aa7f2355074794c3877d3e733b255a8452c3943ce3758fd45"
+    },
+    "juego/assets/phaser_frame_02.webp": {
+      "bytes": 7188,
+      "sha256": "93cc05a0b1bbacc8b48813c489597bd38347cd7f7442f01d2b0d32801fad267d"
+    },
+    "juego/assets/phaser_frame_03.webp": {
+      "bytes": 6836,
+      "sha256": "232190d0ae7a73ba464b697f407aa934c5d4da20e2ba9196a799952a777bc2b1"
+    },
+    "juego/assets/phaser_frame_04.webp": {
+      "bytes": 6528,
+      "sha256": "644d1105b8d97abf1db369dd7a68603374fe82c2136ff8ffee79cfb7beb885da"
+    },
+    "juego/assets/phaser_frame_05.webp": {
+      "bytes": 7170,
+      "sha256": "e4b8ff5a2e0bd8250c57e636bd297b5f1e4e2f9f1f10a4b658d64d634fd7d905"
+    },
+    "juego/assets/repair_drone.webp": {
+      "bytes": 11456,
+      "sha256": "b83f3b16e9f8e9983e7c949bfd8a8bc036ba8d5ef7c7e769b147b1672bce606c"
+    },
+    "juego/assets/satellite_old.webp": {
+      "bytes": 14962,
+      "sha256": "232860b32b7b444a0a6f0bd35797ac4d313e21cb671fcfe3f0cb4e13bbe7bf01"
+    },
+    "juego/assets/shield_effect.webp": {
+      "bytes": 21916,
+      "sha256": "64cc23ea69e1447b5e99fb37d7924fa9aa7433e8f53d3f98e63588b8abff2a3c"
+    },
+    "juego/assets/shield_idle.webp": {
+      "bytes": 22078,
+      "sha256": "cfd3ce06a92f0e8a8478c57c250c952692fe3dd0557840aff6c308c04200d1a2"
+    },
+    "juego/assets/ship_frame_00.webp": {
+      "bytes": 44286,
+      "sha256": "fc8c3610f2fc0f1140f5fc80956d40a5c4365586625e248266f085e666e70e7a"
+    },
+    "juego/assets/ship_frame_01.webp": {
+      "bytes": 41462,
+      "sha256": "174972406d85fa52346ead1143d10d3404e33c000afe87214fd0e5369ce6504a"
+    },
+    "juego/assets/ship_frame_02.webp": {
+      "bytes": 42808,
+      "sha256": "3d5974af98a519f09d17ee70d06ba538cadc6e077cee7a3a8af63bd8dc7b8d82"
+    },
+    "juego/assets/ship_frame_03.webp": {
+      "bytes": 46238,
+      "sha256": "5eee5f546a33d51ddccdfddaae0c8b2e9ee370e621295e53caf7474ccdf49fa9"
+    },
+    "juego/assets/ship_frame_04.webp": {
+      "bytes": 49460,
+      "sha256": "8da52ab8b3efd30ad374ee86e7020500a6505fb068d23ad3788a2976cf8b48b2"
+    },
+    "juego/assets/ship_frame_05.webp": {
+      "bytes": 51082,
+      "sha256": "41441a6d3d31322c27cb679a79301d52449c9539d6ed2318969485a9250f05a6"
+    },
+    "juego/assets/ship_modular_atlas_v1.webp": {
+      "bytes": 263716,
+      "sha256": "71c050bdf64044fdfe6f009136d352afdb1873fdd00020e165c7141d8bb5fbac"
+    },
+    "juego/assets/smoke_frame_00.webp": {
+      "bytes": 11554,
+      "sha256": "fa8ed1fa19fc11099836b5f2d540d82194c2d53cea2d70d4804323969191f61c"
+    },
+    "juego/assets/smoke_frame_01.webp": {
+      "bytes": 11968,
+      "sha256": "0d123636d7547a81e7da9dece40d4198a4953d35c3f6ab34278954bbcd10fd6c"
+    },
+    "juego/assets/smoke_frame_02.webp": {
+      "bytes": 11778,
+      "sha256": "f2ce4003e104ed6cbcb3bb77e9c0e67cf011eb325683311302d742cdb504fe80"
+    },
+    "juego/assets/titan_omega_graveyard_background_v1.webp": {
+      "bytes": 320978,
+      "sha256": "ec2002b6bab77747a277ae42db9c1fb22fe23f0d39a1e750c6ad2b78271bf2b7"
+    },
+    "juego/assets/tractor_frame_00.webp": {
+      "bytes": 10534,
+      "sha256": "d13fa0487eac7ca008caaf63862b9529562ca73d05ab1086418473f1806d6fbf"
+    },
+    "juego/assets/tractor_frame_01.webp": {
+      "bytes": 10946,
+      "sha256": "ee5426acf04e26ab4fabdbd8ed6fa57fe2394e2017b96f157f826a1ab9cf903f"
+    },
+    "juego/assets/tractor_frame_02.webp": {
+      "bytes": 12036,
+      "sha256": "325d5fcefe953e66b68a3bf71c2134c9dde45569535bef559f0ddb0b5b965984"
+    },
+    "juego/assets/tractor_frame_03.webp": {
+      "bytes": 12272,
+      "sha256": "d353c8c16130982dfa37a92173c8254c9bffec3988522415c43ba6c371f30076"
+    },
+    "juego/assets/tractor_frame_04.webp": {
+      "bytes": 10278,
+      "sha256": "a4a386a731b6aae62b569bdd24b19f9f4806d0106742fd85499e35e4947e8f78"
+    },
+    "juego/assets/tractor_frame_05.webp": {
+      "bytes": 10670,
+      "sha256": "78615ff7270ed9ff151ffdda3a733eb20827d7ccb4d3f94703acca5798f77e9d"
+    },
+    "juego/assets/vulkar_descent_background_v1.webp": {
+      "bytes": 240122,
+      "sha256": "86da27d2945167d98d4bc50a4ecfa99eede5398eb4619bc09243c43b7b1cff36"
+    },
+    "juego/assets/vulkar_magma_tunnel_background_v1.webp": {
+      "bytes": 282754,
+      "sha256": "018be134d8d0b33e7f1dc2e8febe7d75168a0cfebac7feab459add1e41f3693d"
+    },
+    "juego/content-runtime.js": {
+      "bytes": 87214,
+      "sha256": "a37fd29f790800ff7243823a8e75d8147b266858d1e894f1070bfea723d36ca7"
+    },
+    "juego/content-runtime.js.map": {
+      "bytes": 149232,
+      "sha256": "9b1a7a6ff5b092d5e37c592b7c4d11f4d22b1308fd37043e4be8ebfee4ac349b"
+    },
+    "juego/core-runtime.js": {
+      "bytes": 3762,
+      "sha256": "f39be54b8347e5b38c8a6d246d0aed95902bbd814b7ac24599106d5a9a244daf"
+    },
+    "juego/core-runtime.js.map": {
+      "bytes": 232,
+      "sha256": "28854457ea42bd20b671d4b5f8b2196cf781b2328f243f824690e8d706da6466"
+    },
+    "juego/engine/audio.mjs": {
+      "bytes": 1452,
+      "sha256": "2001f80231a4c98c52e9874ac9ddd28e910d9e5773e7cb735a8ee6a13ad77886"
+    },
+    "juego/engine/canvas-viewport.mjs": {
+      "bytes": 950,
+      "sha256": "70c86d4277e4c0a55be92fe69f219e9318dccb467d266b706f6be89c6a0c4cd0"
+    },
+    "juego/engine/demo.mjs": {
+      "bytes": 3676,
+      "sha256": "07f67051a51ab784ee3f6e4cf3629667eb995502a61a1604fd06ce484aeb42e6"
+    },
+    "juego/engine/entities.mjs": {
+      "bytes": 485,
+      "sha256": "3540ab375acfe4974d36c99c9cba6379f61dc7d4d681bbb7c272300c382cf212"
+    },
+    "juego/engine/game-loop.mjs": {
+      "bytes": 835,
+      "sha256": "30b8ae4181bec6f3829cb7046998cea28ccd98e833698eaaa4a290f61b87d129"
+    },
+    "juego/engine/procedural-waves.mjs": {
+      "bytes": 1095,
+      "sha256": "27787885313683ade9b7b60df1c7f6806b11ad8f0b1721f7bc65110629403b57"
+    },
+    "juego/engine-preview.html": {
+      "bytes": 1180,
+      "sha256": "0ff6a34a3e228b40b32921b346f2e05694200dceff701ef614110a32080f2e38"
+    },
+    "juego/game.js": {
+      "bytes": 218296,
+      "sha256": "a509a208c2837d2db7e47bf647ed7af97103bf61eda91a730b9f23e04f06a139"
+    },
+    "juego/index.html": {
+      "bytes": 13898,
+      "sha256": "874e80789929b6701dfad2be2afe00a68954817d45a60782628d90d37a75185f"
+    },
+    "juego/js/engine/CampaignAdapter.js": {
+      "bytes": 2383,
+      "sha256": "e14d0732c204692679c816ed20c74f5ae217bd0a4b1da85a568a122db79a85c2"
+    },
+    "juego/js/engine/EngineCore.js": {
+      "bytes": 1386,
+      "sha256": "b32e5f4b27cb39483a7e0ef5b836485beb02a434858335a59172fe5af25b3ddd"
+    },
+    "juego/js/engine/ParticleSystem.js": {
+      "bytes": 1606,
+      "sha256": "87a3fee583869ea3c48ab0ba4f88460152ca8520033ce0af7e21423f2f11a015"
+    },
+    "juego/js/engine/Renderer.js": {
+      "bytes": 1704,
+      "sha256": "b4142cdc93cc6770c99a09f08f7ba1d13a3ff748e19ab010d24835e8203dadfd"
+    },
+    "juego/manifest.webmanifest": {
+      "bytes": 648,
+      "sha256": "9edcbfa98a7d4c4dc2a1f1f3fb5ade596a1207069fc2c71077ce0d0288c803ed"
+    },
+    "juego/native-admob.js": {
+      "bytes": 66,
+      "sha256": "d903f00c433c560d0194566ef063895eb1b4333a6398b8099854cda55d91dbe9"
+    },
+    "juego/preview-config.js": {
+      "bytes": 871,
+      "sha256": "25ce68dadaa63ceda6fb62c3cb9ca917dfc64afb4ae54edc6c9c5e4e8386f80e"
+    },
+    "juego/privacy.html": {
+      "bytes": 2397,
+      "sha256": "f8c27acac8bd06a2a8562cea29d9414d584033057d2e66151d384f2674a4effc"
+    },
+    "juego/render/neon-render-engine.mjs": {
+      "bytes": 4512,
+      "sha256": "83a295c23206279859489974f575e7df8e20df9706b710bb4af078b976477e36"
+    },
+    "juego/styles.css": {
+      "bytes": 46617,
+      "sha256": "cf38f7a3877593c58f45e3756682a127767a22c52e99bfcbb4b02b3a0e4c5229"
+    },
+    "juego/sw.js": {
+      "bytes": 5063,
+      "sha256": "be2b16411e266189fbec1ee1db29ba7671d7d66173ebf0dd50bfb93b6cfe0e90"
+    },
+    "juego/terms.html": {
+      "bytes": 1577,
+      "sha256": "2a0550c6a80d36b1071afbf1356b7a006ad710523a51b340a9c8930ab67ba125"
+    },
+    "launcher-sw.js": {
+      "bytes": 1489,
+      "sha256": "fd8b03e92c09ab0ddae9d37fad40f012f4548e1b4ffecf9ed62a903a8f952113"
+    },
+    "manifest.webmanifest": {
+      "bytes": 657,
+      "sha256": "acb0f766cbeaba8a1c6fd5bdaf9d6980c4e584ef49bf8d055c3c43796405d674"
+    }
+  }
+}

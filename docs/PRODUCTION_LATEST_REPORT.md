@@ -1,9 +1,11 @@
 <!-- compact-hud-current -->
-## Cierre local vigente — HUD compacto,17/10/2026
+## DIAGNÓSTICO Y CIERRE VIGENTE — HUD,17/10/2026
 
-[Diagnóstico e informe técnico](production-reports/COMPACT_HUD_2026-10-17.md). La franja fija pasa de180a82px en390×844 y se recuperan60px superiores de pilotaje. Estadísticas reunidas, arma abajo y mensajes breves. Fuentes y tests regenerados; se conserva el arte y las campañas. Certificación03:11/11 fases,168content. Chromium after04:26/26 en cinco tamaños, N-7:6pasos.
+[Informe, capturas y límites](production-reports/COMPACT_HUD_2026-10-17.md). Código/paquete limpio6891f810c1fee09def8704729cf843e9926843c7. Sitio privado versión7:succeeded18:44:38UTC. https://neon-catcher-pruebas.chictide18.chatgpt.site .
 
-Paquete y publicación nuevos pendientes de cierre; no se atribuye la versión6 al HUD nuevo. Revisión artística/física pendiente; EngineV1=false. El historial siguiente conserva sus evidencias sin certificar revisiones posteriores.
+Dos bloques invasivos pasan a una banda compacta y ruta fina. Cinco tamaños, diez escenas, controles reales; estadísticas y arma permanecen funcionales. HUD26/26; CSSavisos12/12; contenido168/168; preview23/23 y11fases locales. FULL powers04fallido conservado:espera de todos0noaísla nuevas recogidas. No se declara una nueva partida natural completa ni certificación física.
+
+P1-HUD-01 IN_REVIEW:técnico aprobado para esta interfaz, arte/físico pendientes. Ningún nivel se da por terminado. V1false; main,PR3 yNetlify intactos. El contenido siguiente es histórico.
 <!-- /compact-hud-current -->
 
 ---

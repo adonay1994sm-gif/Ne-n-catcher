@@ -4964,7 +4964,7 @@
         "scripts/compact-hud-browser-smoke.cjs",
         "scripts/compact-hud-powers-smoke.cjs"
       ],
-      "commit": "ad4f82911f7c661f7762f84f202d7ba6099e49e2",
+      "commit": "6891f810c1fee09def8704729cf843e9926843c7",
       "tests": [
         "node scripts/certify-local.mjs docs/production-reports/evidence/compact-hud/certification-03:11/11 exit0; contenido168/168",
         "node scripts/compact-hud-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/after-04:26/26 exit0; antes del ajuste final del toast",
@@ -4972,7 +4972,9 @@
         "node scripts/content-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/n7-01 --profile 390x844 --mode n7:1 sesión/6pasos exit0",
         "node scripts/compact-hud-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/after-05:26/26 exit0; CSS final y cinco tamaños",
         "node scripts/compact-hud-powers-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/powers-layout-01 --layout-only:12/12 exit0; CSS final, expiración no ejecutada en este smoke",
-        "npm run test:architecture; npm run test:static:6/6 y13/13 exit0 después del último ajuste CSS"
+        "npm run test:architecture; npm run test:static:6/6 y13/13 exit0 después del último ajuste CSS",
+        "npm run build:preview:6891f81 dirty:false; npm run test:preview:23/23 exit0",
+        "Sites versión7 succeeded18:44:38UTC;113archivos idénticos al paquete; no prueba física"
       ],
       "evidence": [
         "docs/production-reports/COMPACT_HUD_2026-10-17.md",
@@ -4982,7 +4984,10 @@
         "docs/production-reports/evidence/compact-hud/powers-layout-01/results.json",
         "docs/production-reports/evidence/compact-hud/powers-raf-diagnosis-01/results.json",
         "docs/production-reports/evidence/compact-hud/n7-01/results.json",
-        "docs/production-reports/evidence/compact-hud/powers-04/results.json"
+        "docs/production-reports/evidence/compact-hud/powers-04/results.json",
+        "docs/production-reports/evidence/compact-hud/package-6891f81/package.json",
+        "docs/production-reports/evidence/compact-hud/package-6891f81/site-deployment.json",
+        "docs/production-reports/evidence/compact-hud/package-6891f81/preview-tests.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario pendiente.",
@@ -5005,7 +5010,8 @@
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual: liberar el escenario y pilotaje, sin expandir niveles ni activar MotorV1."
-      }
+      },
+      "packageCommit": "6891f810c1fee09def8704729cf843e9926843c7"
     }
   ],
   "canonicalPlan": {

@@ -2,16 +2,16 @@
 
 La captura del propietario mostraba dos bloques superpuestos al escenario: cuatro tarjetas de estadísticas y una tarjeta de misión que repetía la cuota de CRONIUM, incluía el selector de arma y reservaba texto permanente. En Chromium, el extremo inferior de esos bloques llegaba a **180 px en 390×844** y a **176 px en 320×568**. La adaptación del movimiento imponía además un mínimo superior fijo de182 px, incluso si la interfaz podía ocupar menos. Reducir solamente el aspecto de las tarjetas no recuperaba ese espacio de pilotaje.
 
-Se retoma la rama autorizada sin sustituir el juego, el arte o las campañas. La petición actual es integrar el HUD para ver y jugar mejor. El ajuste se limita al viaje clásico unificado; los modos históricos conservan su presentación.
+Se verificó HEAD local/remoto96f75672a63940e58158806f367b06a74cbac20d con árbol inicial limpio y se leyó el cierre anterior de Chronos. Se retoma la rama autorizada sin sustituir el juego, el arte o las campañas. La petición actual es integrar el HUD para ver y jugar mejor. El ajuste se limita al viaje clásico unificado; los modos históricos conservan su presentación.
 
 # INFORME DE PRODUCCIÓN — NEON CATCHER / HUD COMPACTO
 
 - **Fecha:** 17/10/2026 UTC.
 - **Rama:** continuity-assets-audit-20261013.
 - **SHA inicial observado:**96f75672a63940e58158806f367b06a74cbac20d.
-- **SHA funcional probado y publicado:**pendiente de cierre por integración.
-- **SHA de cierre documental:**pendiente de cierre por integración.
-- **Paquete y publicación:**pendientes de cierre; el sitio previo no acredita esta revisión.
+- **SHA funcional probado y publicado:**6891f810c1fee09def8704729cf843e9926843c7; paquete limpio, huellas iguales a las pruebas finales.
+- **Cierre documental:**commit de esta edición, separado del ejecutable; [historial verificable](https://github.com/adonay1994sm-gif/Ne-n-catcher/commits/continuity-assets-audit-20261013/docs/production-reports/COMPACT_HUD_2026-10-17.md).
+- **Paquete y publicación:**ZIP verificado6891f81; Sites versión7, succeeded18:44:38UTC, URL y hashes en H.
 - **Alcance:**presentación, límites de movimiento derivados del HUD y regresión de su ciclo de visibilidad. No se declaran niveles visualmente completos.
 - **Aceptación técnica:**PASSED para este incremento HUD; límite de harness temporal documentado en E.1. **Artística:**pendiente del propietario. **Física:**Safari/iPhone pendientes.
 
@@ -48,7 +48,7 @@ No cambian los diez niveles, cuotas de victoria, los90 s mínimos del primer via
 
 ## D. Comparación medida de interfaz — revisión intermedia
 
-Fuente previa:[baseline-01/results.json](evidence/compact-hud/baseline-01/results.json). Fuente posterior **intermedia**, no cierre final:[after-02/results.json](evidence/compact-hud/after-02/results.json). Debe sustituirse por after-03 al terminar las correcciones de tablet y continuación. Las capturas son del ejecutable real; no son conceptos. Chromium usa DPR1, áreas seguras por defecto0 y controles táctiles emulados.
+Fuente previa:[baseline-01/results.json](evidence/compact-hud/baseline-01/results.json). Fuente final:[after-05/results.json](evidence/compact-hud/after-05/results.json),26/26. Las capturas son del ejecutable real; no conceptos. Chromium usa DPR1, áreas seguras por defecto0 y controles táctiles emulados.
 
 La altura se mide desde la parte superior del viewport hasta el borde inferior de HUD+ruta estables. El porcentaje de área suma sus rectángulos; **no representa píxeles opacos reales ni incluye la comunicación temporal**. El presupuesto técnico es≤100 px, o≤90 px en320 px de ancho.
 
@@ -65,7 +65,7 @@ La altura se mide desde la parte superior del viewport hasta el borde inferior d
 
 ## E. Pruebas, intentos y correcciones
 
-Los registros guardan comando, SHA, árbol con cambios, hashes y duración. El baseline usa el paquete limpio73e117b anterior. La certificación de fuentes y los navegadores nuevos corresponden al árbol de trabajo indicado en sus propios JSON; no se atribuyen al SHA futuro antes de crear el commit.
+Los registros guardan comando, SHA, árbol con cambios, hashes y duración. El baseline usa el paquete limpio73e117b anterior. La certificación de fuentes y los navegadores corresponden al árbol de trabajo indicado en sus JSON. Tras guardarlo en6891f81, se regeneró la preview con dirty:false. game.js, CSS, index.html y content-runtime.js coinciden byte a byte con after-05 y powers-layout-01. No se cambiaron fuentes de juego después de esa verificación.
 
 |Comando/sesión|Resultado real|Salida|
 | --- | --- | ---: |
@@ -99,7 +99,7 @@ La revisión detectó además una anomalía inferior preexistente: recoger poder
 
 Los contratos nuevos comprueban que alternar armas no duplica proyectiles ni repone cargas, y que un mensaje nuevo no modifica los límites de pilotaje. El navegador no escribe relojes, entidades, vida, munición ni progreso: utiliza el checkbox QA existente y navegación/clics/toques reales. Sus hooks solamente leen estado y observan RAF. No añade un ciclo de animación.
 
-No se ejecutó una partida natural completa de90 s dentro de este smoke: apertura de diez escenas y pruebas breves de controles no equivalen a terminar las diez misiones. No se atribuyen estas pruebas a Safari, iPhone físico, compilación Xcode ni AppStore. N-7 conserva sus suites de regresión; cualquier sesión de navegador adicional se documentará por separado.
+No se ejecutó una partida natural completa de90 s para esta revisión de HUD: apertura de diez escenas y pruebas breves de controles no equivalen a terminar las diez misiones. No se atribuyen estas pruebas a Safari, iPhone físico, compilación Xcode ni AppStore. N-7 conserva sus suites de regresión; cualquier sesión de navegador adicional se documentará por separado.
 
 Evidencia:[fallo horizontal conservado](evidence/compact-hud/after-01/results.json), [certificación intermedia de fuentes](evidence/compact-hud/certification-01/results.json), [navegador intermedio](evidence/compact-hud/after-02/results.json), [defecto tablet](evidence/compact-hud/tablet-01/results.json).
 
@@ -133,14 +133,43 @@ Los fotogramas se toman durante arranques separados, no en el mismo instante de 
 
 ## G. Rendimiento y limitaciones
 
-No se añaden texturas ni memoria de atlas. El cambio reduce superficies de tarjetas y retira backdrop-filter de sus celdas clásicas. **No se ha medido una mejora de FPS** ni se atribuye causalmente el rendimiento a estos cambios. El smoke guarda duración de comandos y huellas de recursos, no un benchmark de GPU, heap, batería o fugas. Las duraciones finales se podrán leer en los JSON al terminar.
+No se añaden texturas ni memoria de atlas. El cambio reduce superficies de tarjetas y retira backdrop-filter de sus celdas clásicas. **No se ha medido una mejora de FPS** ni se atribuye causalmente el rendimiento a estos cambios. El smoke guarda duración de comandos y huellas de recursos, no un benchmark de GPU, heap, batería o fugas. Duraciones medidas:after-05 246,376s; smoke CSS de poderes39,710s; certificación03 92,837s. Incluyen coste de herramientas/host, no tiempo de carga aislado ni FPS del dispositivo.
 
 Siguen abiertos el rendimiento de la destrucción de Chronos y los glifos intermitentes documentados en capturas anteriores. No se considera resuelto ese defecto porque el DOM conserve sus etiquetas o porque una captura nueva muestre todos los textos. La aceptación en una pantalla física con notch y barras de navegador queda pendiente.
 
-## H. Seguimiento, paquete y próxima tarea
+## H. Paquete, GitHub y publicación
 
-El integrador debe completar SHA funcional, SHA documental, estado de pruebas y paquete antes de publicar este cierre como final. No se inventa URL ni se reutiliza la revisión anterior como prueba del nuevo HUD. El destino permitido es una preview privada aislada; producción permanece fuera de alcance.
+ZIP:[neon-catcher-hud-6891f81.zip](evidence/compact-hud/package-6891f81/neon-catcher-hud-6891f81.zip). **7384168 B,113 entradas**, CRC y comparación byte a byte aprobados. SHA-256 **1320201fbf34a88d00499a6fc407a37abae9cd652eefa84d4152fb831b88d6fd**. [Inventario y113 hashes](evidence/compact-hud/package-6891f81/package.json).
 
-Estado del lote:implementación y verificación local del HUD integradas; aceptación artística/física pendientes. Paquete y publicación se cierran en el siguiente paso. No se transforma en porcentaje de terminación comercial. El registro principal continúa siendo docs/production-tasks.json; este informe no crea otro organigrama.
+- Código/paquete limpio:6891f810c1fee09def8704729cf843e9926843c7.
+- Revisión:6613f3f758d508dedaddffebbfbd316cf1b4c4516ad7be09debbc50ca277cd71.
+- SHA-256 game.js de preview:a509a208c2837d2db7e47bf647ed7af97103bf61eda91a730b9f23e04f06a139.
+- SHA-256 CSS:cf38f7a3877593c58f45e3756682a127767a22c52e99bfcbb4b02b3a0e4c5229.
+- `npm run build:preview`:salida0, HEAD6891f81, dirty:false. `npm run test:preview`:23/23,salida0. [Acta](evidence/compact-hud/package-6891f81/preview-tests.json), [salida original](evidence/compact-hud/package-6891f81/preview-tests.txt).
 
-Próxima prioridad:cerrar el smoke CSS de avisos, verificar paquete y publicar la misma revisión para que el propietario juegue con el HUD compacto. Después recoger su valoración de legibilidad/espacio y continuar las tareas visuales de Chronos sin expandir niveles ni activar Motor V1.
+**Sitio privado actualizado:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Sites confirmó succeeded el17/10/2026 a18:44:38UTC y get_site confirmó **versión7**, activo y propietario. Audiencia privada conservada. Fuente de distribución018741a2eb3c89e77a59f4c62f2b675df5d39cc1, subida normal,113archivos idénticos al paquete. [Acta nativa, IDs y procedencia](evidence/compact-hud/package-6891f81/site-deployment.json).
+
+Entrar en CONTINUAR VIAJE. Para revisar Vulkar desde el selector:ARCHIVO DE PRUEBAS→desbloqueo clásico QA→CONTINUAR VIAJE→NIVELES→Descenso Ígneo. El desbloqueo es de la preview aislada; no modifica guardados normales. El ZIP también se puede descomprimir y servir por HTTP con index.html en raíz, o usar en un destino Netlify de pruebas inequívoco. **No se desplegó Netlify.** No se jugó remotamente con la cuenta del propietario ni se certificó Safari/iPhone.
+
+La guía Sites se aplicó a este sitio existente. El helper oficial de source workflow no estaba disponible localmente; se reutilizó el fallback del entorno con credencial efímera solo en memoria. Se verificó el HEAD remoto antes de editar/publicar, se hizo push normal y se publicó un archivo construido del estado exacto subido. No se persistieron tokens ni se cambió el acceso.
+
+GitHub, rama continuity-assets-audit-20261013:
+
+1. Inicial96f75672a63940e58158806f367b06a74cbac20d; se conservaron los avances posteriores al mandato histórico.
+2. [ad4f82911f7c661f7762f84f202d7ba6099e49e2](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/ad4f82911f7c661f7762f84f202d7ba6099e49e2):HUD compacto, límites y regresiones.
+3. [6891f810c1fee09def8704729cf843e9926843c7](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/6891f810c1fee09def8704729cf843e9926843c7):poderes/avisos y evidencia; SHA del ejecutable limpio publicado.
+4. El commit que contiene este cierre añade solo documentación y paquete, sin otro ejecutable. Consultar su historial enlazado arriba para obtener su SHA sin autorreferencias de hash.
+
+Ambos commits funcionales fueron publicados y el SHA remoto se comprobó. El cierre documental se sincroniza después. Compilación local aprobada; no se atribuye a este código un workflow GitHub Actions antiguo ni un estado de CI remoto no consultado. [Relación completa de rutas del lote](evidence/compact-hud/modified-files-complete.txt).
+
+## I. Organigrama y próxima prioridad
+
+Registro principal:docs/production-tasks.json; checklist/progreso regenerados y comprobados. **285 tareas:23DONE,47IN_REVIEW,4IN_PROGRESS,204PENDING,7BLOCKED**. Son estados de un catálogo histórico, no porcentaje comercial. Nuevo incrementoP1-HUD-01:IN_REVIEW; técnicoPASSED para el HUD, artísticoPENDING_OWNER, físicoPENDING. Assets:154registros editoriales,77runtime; cero nuevos recursos en este lote.
+
+Hecho y verificado:franja compacta, mensajes temporales, selector inferior, nave fuera del HUD, poderes con límites actualizados, navegación/pausa/reinicio, restauración tras derrota, control de arma sin recargar gratis, cinco tamaños, diez escenas, regresión N-7 y publicación del paquete exacto. No se declara terminado ninguno de los diez niveles por esta entrega.
+
+Pendientes concretos:valoración del propietario sobre legibilidad; Safari/iPhone con notch, rotación y barras reales; perfil de rendimiento de Chronos; defecto intermitente de glifos; aislar renovaciones en el harness FULL powers. El último smoke de CSS12/12 **no ejecuta expiración**; la integración simulada17 y el navegador previo powers02 con mismoJS mantienen esa cobertura, con sus límites explícitos. Se conserva el fallo full04, no se maquilla como aprobado.
+
+Próxima tarea:revisar en dispositivo el nuevo HUD y reproducir la prueba de caducidad registrando recogidas posteriores antes de volver a ampliar el contrato. Continuar QA/perfil y producción visual pendiente sin expandir cien etapas ni activar MotorV1. El propietario conserva la aceptación estética y la decisión del motor.
+
+No se ejecutó npm ci:lockfile y dependencias no cambiaron; se usó el entorno ya instalado. No se ejecutaron Safari físico, Xcode, TestFlight, AppStore ni otro despliegue remoto. No se atribuyen horas de trabajo no medidas; los JSON conservan timestamps y duración real de cada comando.

@@ -1,7 +1,11 @@
 <!-- compact-hud-current -->
-## HUD compacto — publicación pendiente,17/10/2026
+## Publicación vigente — HUD compacto,17/10/2026
 
-Implementación verificada localmente; falta cerrar el paquete y publicación. El sitio anterior sigue en versión6: no acredita todavía este HUD. [Informe del incremento](production-reports/COMPACT_HUD_2026-10-17.md). No se ha modificado producción Netlify. El contenido siguiente es histórico.
+[Informe, capturas y límites](production-reports/COMPACT_HUD_2026-10-17.md). Código/paquete limpio6891f810c1fee09def8704729cf843e9926843c7. Sitio privado versión7:succeeded18:44:38UTC. https://neon-catcher-pruebas.chictide18.chatgpt.site .
+
+Revisión6613f3f758d508dedaddffebbfbd316cf1b4c4516ad7be09debbc50ca277cd71. Fuente Sites018741a2eb3c89e77a59f4c62f2b675df5d39cc1;113archivos idénticos, owner-private conservado. CONTINUAR VIAJE; selector QA para revisar los diez niveles.
+
+[ZIP, SHA-256 y acta nativa](production-reports/evidence/compact-hud/package-6891f81/site-deployment.json). No se certificó Safari/iPhone ni una partida remota autenticada. Netlify no se modificó. Las versiones siguientes son históricas.
 <!-- /compact-hud-current -->
 
 ---

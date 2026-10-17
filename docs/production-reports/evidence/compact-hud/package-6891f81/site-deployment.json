@@ -1,0 +1,31 @@
+{
+  "gameCommit": "6891f810c1fee09def8704729cf843e9926843c7",
+  "packageSha256": "1320201fbf34a88d00499a6fc407a37abae9cd652eefa84d4152fb831b88d6fd",
+  "revision": "6613f3f758d508dedaddffebbfbd316cf1b4c4516ad7be09debbc50ca277cd71",
+  "sourceCommit": "018741a2eb3c89e77a59f4c62f2b675df5d39cc1",
+  "version": 7,
+  "project_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21",
+  "version_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_4410e444ce0881919b0157c1bc80ae2e",
+  "deployment_id": "appgdep_6ad3c20782188191a329942100592a5b",
+  "status": "succeeded",
+  "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "updated_at": "2026-10-17T18:44:38.768916+00:00",
+  "audience": "owner-private; enforced by private publication operation",
+  "exactDistributionComparison": {
+    "files": 113,
+    "status": "passed; byte-identical to verified preview"
+  },
+  "gameSha256": "a509a208c2837d2db7e47bf647ed7af97103bf61eda91a730b9f23e04f06a139",
+  "cssSha256": "cf38f7a3877593c58f45e3756682a127767a22c52e99bfcbb4b02b3a0e4c5229",
+  "localQA": [
+    "after-05:26/26; real UI and touch, five viewports",
+    "powers-layout-01:12/12; controlled handler fixture, expiry not executed",
+    "certification-03:11/11 phases; content168/168",
+    "preview23/23"
+  ],
+  "limits": [
+    "No owner-authenticated remote browser play or Safari/iPhone physical certification.",
+    "Full powers-04 timeout is preserved; does not isolate subsequent power collection.",
+    "No Netlify production, main, PR3, V1 activation, ads or payments changed."
+  ]
+}

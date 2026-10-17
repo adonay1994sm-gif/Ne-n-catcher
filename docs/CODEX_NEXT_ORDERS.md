@@ -1,9 +1,14 @@
 <!-- compact-hud-current -->
-## Continuación vigente — HUD compacto,17/10/2026
+## Continuación vigente — HUD publicado,17/10/2026
 
-Cerrar powers-02, crear paquete limpio cuyo game.js/CSS coincidan con after04 y powers02, comprobar preview23tests y publicar el mismo sitio privado con su fuente exacta. Actualizar [informe](production-reports/COMPACT_HUD_2026-10-17.md) y acta de publicación.
+[Informe, capturas y límites](production-reports/COMPACT_HUD_2026-10-17.md). Código/paquete limpio6891f810c1fee09def8704729cf843e9926843c7. Sitio privado versión7:succeeded18:44:38UTC. https://neon-catcher-pruebas.chictide18.chatgpt.site .
 
-Después: revisión del propietario sobre legibilidad y espacio; prueba física con notch/orientación, perfil de rendimiento de Chronos y reproducción del defecto de glifos. No activar MotorV1 ni expandir cien etapas. Preservar campañas/guardados. Las órdenes siguientes son históricas.
+1. Revisar con el propietario legibilidad/espacio en su dispositivo; no interpretar publicación como aceptación estética.
+2. Probar notch, barras, orientación y controles en Safari/iPhone físico.
+3. Aislar la prueba FULL powers o registrar las renovaciones naturales:04conserva timeout; no aumentar tiempos a ciegas ni modificar el juego para silenciarlo.
+4. Perfil de rendimiento de Chronos y reproducción de glifos. Preservar código, arte, guardados y campañas; V1=false. No expandir cien etapas ni tocar producción.
+
+El paquete exacto y URL ya están publicados; no rehacer integración. Órdenes siguientes históricas.
 <!-- /compact-hud-current -->
 
 ---

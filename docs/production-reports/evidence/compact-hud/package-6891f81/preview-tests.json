@@ -1,0 +1,12 @@
+{
+  "command": "npm run test:preview > docs/production-reports/evidence/compact-hud/package-6891f81/preview-tests.txt",
+  "exitCode": 0,
+  "tests": 23,
+  "pass": 23,
+  "fail": 0,
+  "sourceCommit": "6891f810c1fee09def8704729cf843e9926843c7",
+  "buildDirty": false,
+  "workingTreeDuringTests": "Only newly generated package evidence untracked; runtime files unchanged.",
+  "log": "preview-tests.txt",
+  "revision": "6613f3f758d508dedaddffebbfbd316cf1b4c4516ad7be09debbc50ca277cd71"
+}
