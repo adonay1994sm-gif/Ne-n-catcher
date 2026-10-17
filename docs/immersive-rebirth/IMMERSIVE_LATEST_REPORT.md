@@ -1,3 +1,5 @@
+> Evaluación posterior de publicación,17/10/2026: [auditoría, metas y fuentes](../production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md). Versión11 apta para playtest privado; contenido comercial todavía pendiente. El historial siguiente conserva su evidencia.
+
 > Nombre vigente **NEON CRONIUM**,17/10/2026: [rebranding y versión11](../production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md). Los informes anteriores conservan su marca/procedencia histórica.
 
 > Cierre vigente posterior — 17/10/2026: [diez etapas de tránsito Chronos → Gaia, versión10, capturas reales y certificación](../production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md). El contenido siguiente se conserva como historial de sus entregas; estas etapas no certifican los diez territorios visualmente completos.

@@ -1,3 +1,19 @@
+## DIAGNÓSTICO E INFORME DE PREPARACIÓN PARA PUBLICAR ·17/10/2026
+
+**Valoración vigente: apto para pruebas privadas, todavía no listo para lanzamiento comercial.** [Auditoría completa, fuentes y doce metas medibles](production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md). Se revisaron código, contenido, renderizado, audio, distribución, capturas y tres comparables oficiales, además de requisitos Apple.
+
+Nueva comprobación sobre el paquete v11 limpio207a94e: Chromium **26/26**, cinco tamaños y diez escenas clásicas, salida0, paquete intacto. Diagnóstico adicional **19muestras** de inicio/reanudación/reinicio online/offline no reproduce la superposición persistente sospechada; no se presenta como un bug arreglado. No equivale a diez misiones completas, cien etapas terminadas, benchmark o iPhone físico.
+
+Avance externo `de10d46` de cámara/compositor opcionales inspeccionado y conservado por fast-forward. Nueva suite de motor **60/60**, salida0; sigue desactivado y no convierte los escenarios en multicapa automáticamente.
+
+Deudas principales: campaña espacial canónica completa, familias enemigas/guardianes, integración/animación de mundos, argumento con final jugable, audio final y prueba humana/física. Atlas tiene combate integrado; los datos de jefe N-7 no están conectados a un combate real. Las diez etapas del tránsito inicial, nave modular, tres armas, controles, guardados y herramientas QA se conservan como base.
+
+Prioridad propuesta: validar Chronos–Gaia y Atlas con diez jugadores externos, medir comprensión/ritmo/causas de fallo y cerrar ese lote antes de expandir. Las metas son recomendaciones de revisión; no se modifica el juego ni se promueve ninguna tarea por documentarla. El registro único sigue siendo production-tasks.json, con aceptación técnica/artística/física separadas.
+
+La web privada mantiene **NEON CRONIUM versión11** y su paquete207a94e; esta auditoría no despliega cambios. MotorV1=false, main/PR3/producción Netlify intactos. Los informes siguientes conservan su alcance e historial.
+
+---
+
 ## DIAGNÓSTICO — nombre vigente NEON CRONIUM · 17/10/2026
 
 El propietario cambia la marca. Se conserva el recorrido Chronos–Gaia, su progreso y el resto del juego; las menciones anteriores de marca/versiones que aparecen debajo son históricas.

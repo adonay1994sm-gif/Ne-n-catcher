@@ -1,3 +1,17 @@
+## Prioridades propuestas tras auditoría de lanzamiento ·17/10/2026
+
+[Lista de metas, comparación y evidencia](production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md). Dictamen: continuar playtest privado; no candidato comercial aún. Esta entrega no añadió funcionalidades ni cambió la web v11.
+
+1. Preparar prueba con diez jugadores ajenos al desarrollo: comprensión en el primer minuto, objetivos, control/recarga, espacio sin decisión, daños, abandono y voluntad espontánea de continuar. Umbrales iniciales propuestos:8/10comprenden y7/10terminan introducción sin ayuda; muestra orientativa, no retención de mercado.
+2. Cerrar el lote Chronos–Gaia/Atlas: ritmo, claridad del daño, dos configuraciones viables, llegada/encuadre de Gaia, interacción de C9 y audio/animación. No volver a contar cien rutas N-7 como campaña canónica completa.
+3. Desarrollar capítulos completos por dependencias: familias enemigas, guardianes reales, mundos con profundidad y argumento con final. No producir recursos aislados masivamente antes de integrar/probar un lote.
+4. Validación física, sesiones largas y fallos de guardado acompañan producción. Para distribución: legales/contacto/privacidad/SDK reales, Archive y beta autorizada. La decisión de monetizar y el envío AppStore/TestFlight siguen reservados.
+5. Conservar evidencia vigente:26checksChromium/5tamaños/10escenas,19muestrasoverlaylimpias. No afirmar que el fallo histórico intermitente de glifos o iPhone están certificados. No activar MotorV1 ni cambiar main/PR3/producción.
+
+Seguimiento: production-tasks.json; la auditoría añade sólo una referencia de preparación y no cambia estados/porcentajes de tareas. Las órdenes siguientes conservan el historial.
+
+---
+
 ## Continuación vigente — NEON CRONIUM, versión11 ·17/10/2026
 
 [Informe de rebranding y capturas](production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md), [web privada](https://neon-catcher-pruebas.chictide18.chatgpt.site). Nombre actual NEON CRONIUM; guías activas y nuevos paquetes usan esta marca. El nombre antiguo sólo identifica compatibilidad/historial; no rehacer el cambio ni renombrar claves de partidas o el bundle ID.

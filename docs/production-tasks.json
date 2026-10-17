@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T21:08:54.638090+00:00",
+  "updatedAt": "2026-10-17T21:25:59.219351+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -6408,6 +6408,24 @@
       "source": "Explicit owner instruction",
       "report": "docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md",
       "compatibility": "Preserve existing save keys, application/campaign IDs, repository and test-site origin. Historical evidence remains unmodified."
+    },
+    "latestReadinessAudit": {
+      "date": "2026-10-17",
+      "report": "docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md",
+      "reviewedHead": "de10d46431210e2691df1fcdd2f2fc72fd27a9a4",
+      "testedPackage": "207a94edf01eb26f5f4210429cf51a4497b1b6d7",
+      "decision": "PRIVATE_PLAYTEST_ONLY_NOT_COMMERCIAL_READY",
+      "technicalEvidence": "docs/production-reports/evidence/release-audit-20261017/browser-01/results.json",
+      "newChecks": {
+        "chromium": 26,
+        "profiles": 5,
+        "classicSceneOpenings": 10,
+        "overlaySamples": 19,
+        "engine": 60
+      },
+      "scope": "Audit and proposed measurable publication goals. No implementation tasks promoted or percentages of commercial completion inferred; original tracking and acceptance states retained.",
+      "initialReviewedHead": "97220c8bd7f81e7108b6950b1402809ba4d0c9a9",
+      "concurrentChanges": "External opt-in camera/compositor/HUD commit inspected and preserved by fast-forward; disabled V1 and published game unchanged. Audit commit must not overwrite this work."
     }
   }
 }

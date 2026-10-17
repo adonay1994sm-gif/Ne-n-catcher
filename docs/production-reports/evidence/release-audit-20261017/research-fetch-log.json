@@ -1,0 +1,84 @@
+[
+  {
+    "name": "skyforce-official",
+    "url": "https://www.idreams.pl/en/our-products/sky-force-reloaded/",
+    "status": 404
+  },
+  {
+    "name": "skyforce-steam",
+    "url": "https://store.steampowered.com/app/667600/Sky_Force_Reloaded/?l=english",
+    "finalUrl": "https://store.steampowered.com/app/667600/Sky_Force_Reloaded/?l=english",
+    "status": 200,
+    "bytes": 130399
+  },
+  {
+    "name": "phoenix-official",
+    "url": "https://www.firigames.com/phoenix2",
+    "finalUrl": "https://firigames.com/phoenix2",
+    "status": 200,
+    "bytes": 9236
+  },
+  {
+    "name": "phoenix-appstore",
+    "url": "https://apps.apple.com/us/app/phoenix-2/id1134895689",
+    "finalUrl": "https://apps.apple.com/us/app/phoenix-2/id1134895689",
+    "status": 200,
+    "bytes": 706518
+  },
+  {
+    "name": "steredenn-official",
+    "url": "https://steredenn.pixelnest.io/",
+    "finalUrl": "https://steredenn.pixelnest.io/",
+    "status": 200,
+    "bytes": 36628
+  },
+  {
+    "name": "steredenn-steam",
+    "url": "https://store.steampowered.com/app/347160/Steredenn/?l=english",
+    "finalUrl": "https://store.steampowered.com/app/347160/Steredenn/?l=english",
+    "status": 200,
+    "bytes": 155624
+  },
+  {
+    "name": "apple-guidelines",
+    "url": "https://developer.apple.com/app-store/review/guidelines/",
+    "finalUrl": "https://developer.apple.com/app-store/review/guidelines/",
+    "status": 200,
+    "bytes": 240818
+  },
+  {
+    "name": "apple-requirements",
+    "url": "https://developer.apple.com/news/upcoming-requirements/",
+    "finalUrl": "https://developer.apple.com/news/upcoming-requirements/",
+    "status": 200,
+    "bytes": 137188
+  },
+  {
+    "name": "skyforce-official-correct",
+    "url": "https://www.idreams.pl/en/our-products/show/product/77-Sky-Force-Reloaded",
+    "finalUrl": "https://www.idreams.pl/en/our-products/show/product/77-Sky-Force-Reloaded",
+    "status": 200,
+    "bytes": 9489
+  },
+  {
+    "name": "phoenix-support",
+    "url": "https://firigames.com/phoenix2/support",
+    "finalUrl": "https://firigames.com/phoenix2/support",
+    "status": 200,
+    "bytes": 4601
+  },
+  {
+    "name": "skyforce-publisher-launch",
+    "url": "https://news.xbox.com/en-us/2017/12/14/sky-force-reloaded-xbox-one/amp/",
+    "finalUrl": "https://news.xbox.com/en-us/2017/12/14/sky-force-reloaded-xbox-one/amp/",
+    "status": 200,
+    "bytes": 30092
+  },
+  {
+    "name": "steredenn-steam-canonical",
+    "url": "https://store.steampowered.com/app/347160/Steredenn_Binary_Stars/",
+    "finalUrl": "https://store.steampowered.com/app/347160/Steredenn_Binary_Stars/",
+    "status": 200,
+    "bytes": 155622
+  }
+]

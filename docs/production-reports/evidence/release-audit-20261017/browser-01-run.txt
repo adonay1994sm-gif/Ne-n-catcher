@@ -1,0 +1,27 @@
+[compact HUD 390x844] actual preview unlock and level selector launch Chronos
+[compact HUD 390x844] Vulkar has a readable HUD and unobstructed ship
+[compact HUD 390x844] real relative touch can reach the newly exposed upper playfield
+[compact HUD 390x844] fire, pause and resume preserve clocks and active controls
+[compact HUD 390x844] restart resets charges and returning to menu hides all flight chrome
+[compact HUD 390x844] all ten classic scenes launch through real level selection
+[compact HUD 320x568] actual preview unlock and level selector launch Chronos
+[compact HUD 320x568] Vulkar has a readable HUD and unobstructed ship
+[compact HUD 320x568] real relative touch can reach the newly exposed upper playfield
+[compact HUD 320x568] fire, pause and resume preserve clocks and active controls
+[compact HUD 320x568] restart resets charges and returning to menu hides all flight chrome
+[compact HUD 390x714] actual preview unlock and level selector launch Chronos
+[compact HUD 390x714] Vulkar has a readable HUD and unobstructed ship
+[compact HUD 390x714] real relative touch can reach the newly exposed upper playfield
+[compact HUD 390x714] fire, pause and resume preserve clocks and active controls
+[compact HUD 390x714] restart resets charges and returning to menu hides all flight chrome
+[compact HUD 844x390] actual preview unlock and level selector launch Chronos
+[compact HUD 844x390] Vulkar has a readable HUD and unobstructed ship
+[compact HUD 844x390] real relative touch can reach the newly exposed upper playfield
+[compact HUD 844x390] fire, pause and resume preserve clocks and active controls
+[compact HUD 844x390] restart resets charges and returning to menu hides all flight chrome
+[compact HUD 1024x768] actual preview unlock and level selector launch Chronos
+[compact HUD 1024x768] Vulkar has a readable HUD and unobstructed ship
+[compact HUD 1024x768] real relative touch can reach the newly exposed upper playfield
+[compact HUD 1024x768] fire, pause and resume preserve clocks and active controls
+[compact HUD 1024x768] restart resets charges and returning to menu hides all flight chrome
+{"status":"passed","exitCode":0,"profiles":[{"id":"390x844","status":"passed","checks":6},{"id":"320x568","status":"passed","checks":5},{"id":"390x714","status":"passed","checks":5},{"id":"844x390","status":"passed","checks":5},{"id":"1024x768","status":"passed","checks":5}],"output":"/tmp/neon-cronium-release-audit/browser-01","durationMs":155172}
