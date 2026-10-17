@@ -1,0 +1,147 @@
+
+> neon-catcher@7.2.0 test:content
+> node --test tests/content-expansion.test.mjs tests/content-assets.test.mjs tests/procedural-runtime.test.mjs tests/content-legacy-integration.test.mjs tests/classic-scout.test.mjs tests/journey-demo.test.mjs tests/journey-legacy-integration.test.mjs tests/modular-ship.test.mjs tests/ship-hangar.test.mjs
+
+✔ classic CH-01 pauses with a zero delta and fires only after a visible approach (2.848761ms)
+✔ classic CH-01 hit interrupts a charged shot without inventing a projectile (0.349626ms)
+✔ classic CH-01 stays inside the viewport and rejects invalid simulation deltas (0.772549ms)
+✔ every declared animation frame exists in the runtime inventory (18.305424ms)
+✔ banking mirrors the authored pose; impact cannot enter the idle loop (0.892897ms)
+✔ all iOS catalog image entries exist with the required PNG dimensions (6.744116ms)
+✔ 100 levels and five nonoverlapping sectors (1.130838ms)
+✔ deterministic waves for every level across independent calls (26.138826ms)
+✔ difficulty density and speed increase monotonically (0.485677ms)
+✔ bosses at every tenth level with two distinct phases (0.839938ms)
+✔ N-7 contextual triggers and animation metadata (0.193936ms)
+✔ invalid levels and wave counts rejected (0.421181ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ content is packaged before the campaign and adds no RAF owner or Engine V1 import (4.442721ms)
+✔ 100 routes run through the real legacy update and collision pipeline (42632.842808ms)
+✔ N-7 progression unlocks its own next route without overwriting original saves (781.640272ms)
+✔ pause freezes encounters; resume and restart do not duplicate scheduled waves (139.28072ms)
+✔ resume tolerates a queued RAF timestamp older than the resume handler (108.654852ms)
+✔ N-7 labels routes and shows wave progress independently of debris warnings (92.859942ms)
+✔ legacy shots damage and destroy CH-01 while rendering distinct atlas frames (98.802857ms)
+✔ three connected authored segments are versioned and isolated from old campaign saves (2.925704ms)
+✔ one bounded clock drives segment and whole-route progress, while invalid deltas are rejected (0.658799ms)
+✔ explicit pause freezes progress, events and combat/pickup actions (3.07901ms)
+✔ the station cannot be reached by waiting without physically collecting the available part (4.646126ms)
+✔ free recovered module installs once, persists at station and produces a visible/runtime propulsion modifier (1.294985ms)
+✔ station is a natural pause without consuming route time and explicit pause blocks service actions (2.281166ms)
+✔ checkpoints resume coherent beginnings rather than claiming an exact mid-combat save (2.863774ms)
+✔ authored events fire once even across held clocks and repeated tiny updates (2.192115ms)
+✔ border guardian must be active and resolved, and completion reward is idempotent after reload (15.266091ms)
+✔ snapshots and checkpoint exports cannot mutate the controller state (0.382082ms)
+✔ an early guardian defeat stays resolved while the ship finishes approaching the border (1.206846ms)
+✔ malformed, foreign-version and inconsistent saves recover safely without importing old progress (1.669616ms)
+✔ an event callback failure cannot duplicate the same authored spawn (0.477202ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ journey uses relative pointer movement and pause freezes its route without adding RAF owners (254.405269ms)
+✔ the real legacy pipeline can collect, dock, install, continue and resolve the border with isolated saves (1502.590545ms)
+✔ invalid journey data is backed up before recovery and legacy progress remains untouched (76.700108ms)
+✔ manual basic fire remains available beyond three shots when automatic fire is disabled (116.281589ms)
+✔ two immutable cosmetic presets have a separate stable save key and no collision or combat modifiers (1.575659ms)
+✔ normalization preserves mixed assemblies while independently repairing invalid slots (0.430143ms)
+✔ corrupt data and inherited values cannot equip parts, and accessors are never executed (1.409094ms)
+✖ all eight combinations resolve to reviewed crops inside the real atlas and a shared destination artboard (1.037657ms)
+✖ explicit source crops exclude neighboring parts and destinations preserve the reviewed mechanical joints (0.894667ms)
+✔ exhaust always follows the equipped engine and invalid part names cannot alias prototype properties (0.187526ms)
+✔ paused assembly poses are deterministic, finite and cannot mutate their inputs (0.792736ms)
+✔ steering produces a smooth mirrored common bank and continuous wing motion (0.171412ms)
+✔ extreme and malformed pose inputs remain bounded without changing cosmetic assembly into physics (0.340571ms)
+✔ 100 authored routes have distinct names and explicit objectives and rhythms (0.99194ms)
+✔ wave generation never reads nondeterministic entropy (67.543925ms)
+✔ reproduction accepts explicit uint32 seed and rejects unknown generator version (1.012219ms)
+✔ level 37 retains its versioned reproduction fixture (0.692789ms)
+✔ 100 levels reserve a continuous corridor wider than the real ship (11.664813ms)
+✔ swept enemy movement and shooter projectiles preserve the refuge in every level (113.982891ms)
+✔ CH-01 shooter animation gates fire and a hit cancels the charged shot (0.748651ms)
+✔ director emits each entity once, replays after reset and bounds suspended deltas (2.832989ms)
+✔ 3200 level/seed combinations serialize reproducibly and preserve traversable corridors (983.684186ms)
+✔ hangar setup is idempotent and creates an accessible draft preview in the existing menu (171.542788ms)
+✔ presets and mixed components remain a draft; returning discards them without saving (56.387151ms)
+✔ applying saves one normalized selection and then updates presentation without changing campaign state (56.903591ms)
+✔ a failed save preserves the applied ship and keeps the draft available for a coherent retry (36.998969ms)
+✔ the original ship remains recoverable and legacy mode persists only after apply (26.704636ms)
+✔ the hangar cannot open during a run or behind an unrelated overlay (40.654277ms)
+✔ keyboard focus stays in the dialog; Escape cancels without saving or owning a new RAF (36.282276ms)
+ℹ tests 61
+ℹ suites 0
+ℹ pass 59
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49736.198759
+
+✖ failing tests:
+
+test at tests/modular-ship.test.mjs:42:1
+✖ all eight combinations resolve to reviewed crops inside the real atlas and a shared destination artboard (1.037657ms)
+  AssertionError [ERR_ASSERTION]: parts share the ship center axis
+  
+  12 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/modular-ship.test.mjs:57:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 12,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/modular-ship.test.mjs:65:1
+✖ explicit source crops exclude neighboring parts and destinations preserve the reviewed mechanical joints (0.894667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      1455,
+      143,
+      210,
+      300,
+  +   -135,
+  -   -125,
+      173,
+  +   294,
+  -   250,
+      145
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/modular-ship.test.mjs:79:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [
+      1455,  143, 210,
+       300, -135, 173,
+       294,  145
+    ],
+    expected: [
+      1455,  143, 210,
+       300, -125, 173,
+       250,  145
+    ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

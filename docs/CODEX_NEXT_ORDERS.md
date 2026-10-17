@@ -1,3 +1,15 @@
+## Siguiente trabajo — integración del juego original, 17/10/2026
+
+1. Leer el [cierre modular](production-reports/NAVES_MODULARES_2026-10-17.md) y feedback vigente. Base funcional 0c056bf431aa65994c9716297c4e59a6ad6ca0ce; conservar avances posteriores. No convertir la demo de 64s en el producto final ni repetir su expansión.
+2. Probar campaña clásica → HANGAR: dos modelos y mezcla de piezas. La aceptación estética sigue pendiente; no marcar DONE el arte ni atribuirle nuevas estadísticas. Conservar guardados y nave anterior.
+3. Próximo lote jugable: nivel 1 completo, recuperar CRONIUM y ritmo natural, cometas con trayectoria/duración, amenazas anticipadas y cierre; verificar una partida completa. Combatir la integración débil, no crear otra lista de cien niveles.
+4. Completar estados reales de daño/destrucción y puntos de armas de la nueva nave; después un enemigo plenamente integrado. Revisar papel de jefes y transiciones con ese flujo, sin convertir cada tramo en un jefe repetido.
+5. El sitio de prueba es el existente de Sites, conservar identidad/audiencia. Consultar PLAYTEST_SITE y acta más reciente antes de anunciar revisión. No producción Netlify, main, PR #3 ni V1. Mantener un RAF y evidencias separadas entre simulación/Chromium/Safari físico.
+
+---
+
+Historial conservado a continuación; las instrucciones incompatibles quedan sustituidas por este cierre.
+
 ## Orden vigente — mandato rector espacial, 17/10/2026
 
 Sitio privado de pruebas publicado y confirmado: https://neon-catcher-pruebas.chictide18.chatgpt.site . Revisión del juego `24b591c`; actualizaciones posteriores deben reutilizar el mismo Site. Datos de continuidad y publicación: [PLAYTEST_SITE.md](PLAYTEST_SITE.md). No es Netlify ni producción del juego.

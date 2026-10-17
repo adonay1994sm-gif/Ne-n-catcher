@@ -1,0 +1,6 @@
+[journey] open journey and start with the real Continue Journey button
+[journey] relative pointerdown preserves target; dragging steers without teleportation
+[journey] pause freezes the shared route clock and Resume continues it
+[journey] natural departure, pickup, service, upgraded transit and border combat
+[journey] arrival checkpoint survives reload and old campaign sentinel saves remain unchanged
+{"status":"passed","exitCode":0,"durationMs":87789,"checks":[{"name":"open journey and start with the real Continue Journey button","status":"passed"},{"name":"relative pointerdown preserves target; dragging steers without teleportation","status":"passed"},{"name":"pause freezes the shared route clock and Resume continues it","status":"passed"},{"name":"natural departure, pickup, service, upgraded transit and border combat","status":"passed"},{"name":"arrival checkpoint survives reload and old campaign sentinel saves remain unchanged","status":"passed"}]}

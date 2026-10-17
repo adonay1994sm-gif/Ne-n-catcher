@@ -88,7 +88,7 @@ const canonicalOverview = canonical.length ? [
   [row(['ID / puerta', 'Entrega', 'Estado de trabajo', 'Técnica', 'Artística', 'Física']), row(Array(6).fill('---')),
     ...canonical.map(task => row([task.id + ' / ' + task.canonicalPhase, safe(task.name), task.status,
       safe(task.acceptanceStatus?.technical), safe(task.acceptanceStatus?.artistic), safe(task.acceptanceStatus?.physical)]))].join('\n'),
-  'P1 es una demostración comprimida Chronos → C9 → Gaia con pieza, servicio y frontera; no un capítulo terminado ni un porcentaje comercial. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.'
+  'La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.'
 ].join('\n\n') : '';
 const checklist = [
   '# NEON CATCHER — Checklist maestra de producción', header, guide,

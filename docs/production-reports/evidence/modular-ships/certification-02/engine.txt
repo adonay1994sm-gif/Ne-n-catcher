@@ -1,0 +1,52 @@
+
+> neon-catcher@7.2.0 test:engine
+> node --test tests/engine-lifecycle.test.mjs
+
+✔ 01 default particle capacity (1.334824ms)
+✔ 02 pool allocated once (0.222187ms)
+✔ 03 emit increases count (0.970362ms)
+✔ 04 pool saturation rejects (0.154166ms)
+✔ 05 pool reuse (1.092948ms)
+✔ 06 invalid emit rejected (0.342955ms)
+✔ 07 burst bounded (0.317978ms)
+✔ 08 clear resets (0.443733ms)
+✔ 09 draw balanced (0.502489ms)
+✔ 10 invalid capacity rejected (0.457923ms)
+✔ 11 retina backing dimensions (0.759397ms)
+✔ 12 logical dimensions preserved (0.19025ms)
+✔ 13 pointer mapping (0.250879ms)
+✔ 14 zero-size resize ignored (0.164362ms)
+✔ 15 beginFrame sets DPR transform (0.187466ms)
+✔ 16 shake expires (0.190701ms)
+✔ 17 start schedules exactly one frame (0.173215ms)
+✔ 18 repeated start idempotent (0.201787ms)
+✔ 19 stop cancels RAF (0.172184ms)
+✔ 20 stopped stale callback ignored (0.165684ms)
+✔ 21 pause cancels RAF (0.182678ms)
+✔ 22 resume schedules once (0.135499ms)
+✔ 23 paused stale callback ignored (0.105925ms)
+✔ 24 resume resets delta (0.237459ms)
+✔ 25 update failure stops engine (0.167827ms)
+✔ 26 adapter rejects missing handoff (0.189609ms)
+✔ 27 adapter synchronous handoff and cleanup (0.347261ms)
+✔ 28 disabled adapter does not stop legacy or allocate core (0.702564ms)
+✔ 29 experimental start failure restarts legacy exactly once (0.284459ms)
+✔ 30 flag defaults off and bridge is not touched (0.144072ms)
+✔ 31 handoff and normal restoration maintain exactly one RAF (0.204501ms)
+✔ 32 frame error falls back with a single legacy RAF (0.28524ms)
+✔ 33 normal stop without restoration does not misreport legacy as active (0.192573ms)
+✔ 34 RAF scheduling failure after first frame triggers fallback once (0.420819ms)
+✔ 35 failed recovery keeps explicit error state (0.444674ms)
+✔ 36 recovery callback returning false does not claim legacy active (0.301274ms)
+✔ 37 noninteger DPR uses exact physical backing scale (0.19756ms)
+✔ 38 touch edges map to logical canvas without overshoot (0.253162ms)
+✔ 39 zero sized canvas does not produce invalid input (0.181497ms)
+✔ 40 visibility pauses RAF and resumes only visibility-owned pause (0.234384ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.983014

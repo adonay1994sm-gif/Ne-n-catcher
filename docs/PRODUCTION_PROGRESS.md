@@ -1,6 +1,6 @@
 # NEON CATCHER — Progreso verificable de producción
 
-Fecha del registro: **2026-10-17T10:22:53.757Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T11:08:08.331Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -13,15 +13,16 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | ID / puerta | Entrega | Estado de trabajo | Técnica | Artística | Física |
 | --- | --- | --- | --- | --- | --- |
 | P0-01 / P0 | Preservar continuidad y fijar mandato rector canónico | DONE | PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
-| P1-01 / P1 | Demostrar salida, pieza, servicio, mejora y frontera en el ciclo legacy | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
-| P1-02 / P1 | Revisión estética del primer viaje antes de multiplicar contenido | BLOCKED | NOT_APPLICABLE | PENDING_OWNER | PENDING |
+| P1-01 / P1 | Demostrar salida, pieza, servicio, mejora y frontera en el ciclo legacy | IN_REVIEW | PASSED | CHANGES_REQUESTED | PENDING |
+| P1-02 / P1 | Revisión estética del primer viaje antes de multiplicar contenido | IN_PROGRESS | NOT_APPLICABLE | CHANGES_REQUESTED | PENDING |
 | P2-01 / P2 | Consolidar dos configuraciones viables y economía breve segura | PENDING | PENDING | PENDING | PENDING |
 | PM-01 / M | Decisión técnica reservada sobre Motor V1 | BLOCKED | PENDING_OWNER | NOT_APPLICABLE | PENDING |
 | P3-01 / P3 | Completar diez etapas conectadas del capítulo Chronos-Gaia | PENDING | PENDING | PENDING | PENDING |
 | P4-01 / P4 | Expandir la campaña espacial a diez capítulos de diez etapas | PENDING | PENDING | PENDING | PENDING |
 | P5-01 / P5 | Certificar calidad móvil y preparar distribución autorizada | PENDING | PENDING | PENDING | PENDING |
+| P1-SHIP-01 / P1 | Nave ensamblada, dos configuraciones y hangar dentro del clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 
-P1 es una demostración comprimida Chronos → C9 → Gaia con pieza, servicio y frontera; no un capítulo terminado ni un porcentaje comercial. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
+La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
 ## Método y alcance
 
@@ -34,18 +35,18 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 7/44 (15.9%) | 36 | 0 | 0 | 1 |
-| Campaña clásica | 4/10 (40.0%) | 4 | 1 | 0 | 1 |
+| Jugabilidad | 7/45 (15.6%) | 36 | 0 | 0 | 2 |
+| Campaña clásica | 4/11 (36.4%) | 4 | 1 | 0 | 2 |
 | Campaña N-7 | 3/39 (7.7%) | 35 | 1 | 0 | 0 |
 | Enemigos | 5/73 (6.8%) | 63 | 0 | 0 | 5 |
 | Jefes | 0/13 (0.0%) | 13 | 0 | 0 | 0 |
-| Assets | 2/164 (1.2%) | 131 | 2 | 2 | 27 |
-| Animaciones | 5/137 (3.6%) | 115 | 0 | 1 | 16 |
+| Assets | 2/165 (1.2%) | 130 | 3 | 1 | 29 |
+| Animaciones | 5/138 (3.6%) | 114 | 1 | 0 | 18 |
 | Narrativa | 0/18 (0.0%) | 18 | 0 | 0 | 0 |
 | Audio | 0/14 (0.0%) | 12 | 0 | 1 | 1 |
-| Interfaz | 4/16 (25.0%) | 9 | 0 | 1 | 2 |
+| Interfaz | 4/17 (23.5%) | 9 | 1 | 0 | 3 |
 | Rendimiento | 1/13 (7.7%) | 12 | 0 | 0 | 0 |
-| QA | 18/49 (36.7%) | 20 | 2 | 4 | 5 |
+| QA | 18/50 (36.0%) | 20 | 2 | 4 | 6 |
 | Preparación iOS | 0/20 (0.0%) | 14 | 0 | 6 | 0 |
 
 ## Indicadores por bloque
@@ -54,7 +55,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | --- | --- | --- |
 | 03 · Prueba integrada y cierre técnico | 18/23 (78.3%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18 |
 | 04 · Jugabilidad procedural | 0/19 (0.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
-| 05 · Producción visual y 150 assets | 5/164 (3.0%) | PENDING: 128 · IN_PROGRESS: 2 · BLOCKED: 1 · IN_REVIEW: 28 · DONE: 5 |
+| 05 · Producción visual y 150 assets | 5/165 (3.0%) | PENDING: 127 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 30 · DONE: 5 |
 | 06 · Diez jefes | 0/10 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
@@ -63,7 +64,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 23; PLANNED: 124; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 24; PLANNED: 123; IMPLEMENTED_CODE: 2; READY: 1**; 150 identificadores. Cierre de los doce requisitos: **0/150 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 
@@ -81,7 +82,6 @@ Catálogo: **IN_REVIEW: 23; PLANNED: 124; IMPLEMENTED_CODE: 2; READY: 1**; 150 i
 - **B10-09 — Verificar icono y splash en aplicación nativa:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
 - **B10-11 — Preparar TestFlight; distribución requiere autorización:** Requiere credenciales o autorización específica del propietario.
 - **B10-12 — Ejecutar pruebas físicas de candidato de lanzamiento:** No hay evidencia de dispositivo iPhone/simulador apropiado disponible.
-- **P1-02 — Revisión estética del primer viaje antes de multiplicar contenido:** La aceptación estética corresponde al propietario; no equivale a aprobar código o autorizar Engine V1.
 - **PM-01 — Decisión técnica reservada sobre Motor V1:** Requiere orden técnica expresa del propietario; mantener USE_ENGINE_V1=false.
 
 ## Orden de continuidad

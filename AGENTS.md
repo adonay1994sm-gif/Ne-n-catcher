@@ -1,3 +1,11 @@
+## Prioridad posterior a revisión del propietario — 17/10/2026
+
+Se rechazaron la integración visual y el ritmo comprimido. Priorizar el juego clásico, sus diez niveles, nave modular coherente y jugabilidad natural. La demo P1 anterior es recuperable, no una dirección artística aprobada. No expandir cien etapas antes de cerrar el flujo del clásico. Leer docs/production-reports/NAVES_MODULARES_2026-10-17.md. Los límites técnicos y de conservación siguientes continúan vigentes.
+
+---
+
+Historial conservado a continuación; las instrucciones incompatibles quedan sustituidas por este cierre.
+
 # NEON CATCHER — Guía de trabajo
 
 ## Referencia vigente

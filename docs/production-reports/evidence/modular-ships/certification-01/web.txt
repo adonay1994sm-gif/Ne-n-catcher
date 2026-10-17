@@ -1,0 +1,18 @@
+PASS 01 · JavaScript principal, runtime y service worker tienen sintaxis válida
+PASS 02 · V7.2.0 pre-release está alineada en pantalla, juego y caché
+PASS 03 · HTML conserva todas sus referencias locales
+PASS 04 · PWA precarga código, legales, sprites y fondo de Cronos
+PASS 05 · parallax V7 reemplaza la antigua rejilla
+PASS 06 · núcleo, tractor, phaser, pulso, motores y HUD tienen respuesta multietapa
+<anonymous_script>:216
+  const savedShipFleet = storage.getJSON(NeonCampaign.SHIP_FLEET_SAVE_KEY, null);
+                                         ^
+
+ReferenceError: NeonCampaign is not defined
+    at eval (eval at loadHarness (file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:131:10), <anonymous>:216:42)
+    at eval (eval at loadHarness (file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:131:10), <anonymous>:3935:3)
+    at eval (<anonymous>)
+    at loadHarness (file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:131:10)
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:135:23
+
+Node.js v24.19.0

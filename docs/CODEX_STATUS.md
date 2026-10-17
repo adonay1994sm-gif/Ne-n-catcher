@@ -1,3 +1,15 @@
+## Vigente — corrección de integración y vuelta al clásico, 17/10/2026
+
+El propietario pidió corregir la integración y rechazó la demo comprimida como referencia de calidad/ritmo. Nueva prioridad: recuperar la experiencia del primer juego, integrar arte y mejorar los diez niveles antes de expandir contenido. No se interpreta el silencio como aceptación artística.
+
+Publicado: 0c056bf431aa65994c9716297c4e59a6ad6ca0ce. Hangar con dos naves y ocho combinaciones, nave antigua recuperable, piezas montadas y animadas juntas, selección persistente aislada. Nave clásica libre de botones/transmisión en los tres tamaños probados. Cambios de hangar visuales, mismas reglas; no hay jefes ni diez niveles terminados. Motor V1 false.
+
+Once fases locales finales aprobadas; fallback gráfico 5/5 y Chromium con recurso bloqueado 3/3; contenido 66/66, motor40/40, arquitectura6/6, regresión33/33. Chromium21/21 y Journey natural5/5. Pruebas físicas y revisión artística pendientes. Informe/evidencias: [Naves modulares](production-reports/NAVES_MODULARES_2026-10-17.md). Sitio privado se actualizará únicamente tras verificar el paquete; estado exacto en [PLAYTEST_SITE.md](PLAYTEST_SITE.md).
+
+---
+
+Historial conservado a continuación; las instrucciones incompatibles quedan sustituidas por este cierre.
+
 ## Vigente — mandato rector 10×10 y primera unidad de viaje, 17/10/2026
 
 Sitio privado de pruebas publicado y confirmado: https://neon-catcher-pruebas.chictide18.chatgpt.site . Revisión del juego `24b591c`; actualizaciones posteriores deben reutilizar el mismo Site. Datos de continuidad y publicación: [PLAYTEST_SITE.md](PLAYTEST_SITE.md). No es Netlify ni producción del juego.

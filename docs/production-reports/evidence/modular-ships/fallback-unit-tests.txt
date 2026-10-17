@@ -1,0 +1,13 @@
+✔ legacy menu and briefing presentation update even when the modular atlas is unavailable (147.40998ms)
+✔ an unavailable modular atlas does not stamp a successful signature or replace menu images with a blank export (38.27837ms)
+✔ the hangar shows the original ship and an explicit notice while unavailable modular selection cannot be applied (59.866741ms)
+✔ switching to the original ship clears the notice and allows applying without a modular atlas (37.586452ms)
+✔ a recovered atlas replaces fallback with the authored assembly, updates presentation and needs no second RAF (22.740156ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1062.866053

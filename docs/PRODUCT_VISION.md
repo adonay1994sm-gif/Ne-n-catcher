@@ -1,3 +1,11 @@
+## Aplicación vigente tras revisión del propietario — 17/10/2026
+
+El propietario rechaza la integración actual, el ritmo de la demo comprimida y las piezas superpuestas. Pide conservar el esquema del primer juego, construir una nave coherente por piezas y mejorar la experiencia natural de los diez niveles. Esta corrección precede a expansión de capítulos/etapas. La demo Chronos→Gaia queda recuperable como experimento, sin aceptación artística. El mandato de producto que sigue es el marco histórico vigente donde no contradiga esta corrección; no obliga a seguir multiplicando un prototipo rechazado. Informe verificable: docs/production-reports/NAVES_MODULARES_2026-10-17.md.
+
+---
+
+Historial conservado a continuación; las instrucciones incompatibles quedan sustituidas por este cierre.
+
 # NEON CATCHER — Mandato rector de diseño y producción
 
 Versión de dirección: **1.0 · 17 de octubre de 2026**. Referencia vigente de producto, dictada por el propietario. Repositorio: `adonay1994sm-gif/Ne-n-catcher`. Única rama autorizada de integración: `continuity-assets-audit-20261013`.

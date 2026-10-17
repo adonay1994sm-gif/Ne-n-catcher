@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T10:22:53.757Z",
+  "updatedAt": "2026-10-17T11:08:08.331Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -4379,7 +4379,8 @@
         "docs/production-reports/evidence/journey-p1/preview-final.txt"
       ],
       "openErrors": [
-        "Aceptación artística pendiente del propietario; físico iPhone pendiente. Estación/operador y equipamiento reutilizan arte previo: no dirección definitiva ni capítulo completo."
+        "Aceptación artística pendiente del propietario; físico iPhone pendiente. Estación/operador y equipamiento reutilizan arte previo: no dirección definitiva ni capítulo completo.",
+        "El propietario rechaza el ritmo comprimido y la integración visual; priorizar el clásico y piezas coherentes."
       ],
       "acceptance": [
         "Viaje visible gobernado por una sola fuente de progreso",
@@ -4400,9 +4401,12 @@
       ],
       "acceptanceStatus": {
         "technical": "PASSED",
-        "artistic": "PENDING_OWNER",
+        "artistic": "CHANGES_REQUESTED",
         "physical": "PENDING"
-      }
+      },
+      "feedbackEvidence": [
+        "docs/production-reports/NAVES_MODULARES_2026-10-17.md"
+      ]
     },
     {
       "priority": "CRITICAL",
@@ -4417,7 +4421,8 @@
       "tests": [],
       "evidence": [],
       "openErrors": [
-        "La aceptación estética corresponde al propietario; no equivale a aprobar código o autorizar Engine V1."
+        "La aceptación estética corresponde al propietario; no equivale a aprobar código o autorizar Engine V1.",
+        "El propietario rechaza el ritmo comprimido y la integración visual; priorizar el clásico y piezas coherentes."
       ],
       "acceptance": [
         "Revisar capturas/partida del viaje y registrar dirección artística aceptada o correcciones"
@@ -4426,7 +4431,7 @@
       "block": "05",
       "canonicalPhase": "P1",
       "name": "Revisión estética del primer viaje antes de multiplicar contenido",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "areas": [
         "Assets",
         "Animaciones",
@@ -4434,9 +4439,12 @@
       ],
       "acceptanceStatus": {
         "technical": "NOT_APPLICABLE",
-        "artistic": "PENDING_OWNER",
+        "artistic": "CHANGES_REQUESTED",
         "physical": "PENDING"
-      }
+      },
+      "feedbackEvidence": [
+        "docs/production-reports/NAVES_MODULARES_2026-10-17.md"
+      ]
     },
     {
       "priority": "CRITICAL",
@@ -4598,6 +4606,58 @@
         "artistic": "PENDING",
         "physical": "PENDING"
       }
+    },
+    {
+      "id": "P1-SHIP-01",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Nave ensamblada, dos configuraciones y hangar dentro del clásico",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P0-01"
+      ],
+      "files": [
+        "src/game/ship/modular-ship.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/07-player-item-rendering.js",
+        "assets/ship_modular_atlas_v1.webp"
+      ],
+      "commit": "0c056bf431aa65994c9716297c4e59a6ad6ca0ce",
+      "tests": [
+        "node scripts/certify-local.mjs docs/production-reports/evidence/modular-ships/certification-04",
+        "node scripts/modular-ship-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/modular-ships/browser-03",
+        "node scripts/ship-fallback-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/modular-ships/fallback-browser-01"
+      ],
+      "evidence": [
+        "docs/production-reports/NAVES_MODULARES_2026-10-17.md",
+        "docs/production-reports/evidence/modular-ships/certification-04/results.json",
+        "docs/production-reports/evidence/modular-ships/browser-03/results.json",
+        "docs/production-reports/evidence/modular-ships/fallback-browser-01/results.json"
+      ],
+      "openErrors": [
+        "Aceptación artística pendiente; pruebas físicas Safari/iPhone pendientes.",
+        "Daño y destrucción dedicados por piezas y balance completo aún pendientes."
+      ],
+      "acceptance": [
+        "Piezas unidas y coherentes en hangar, menú, briefing y partida",
+        "Guardar/cancelar sin tocar campañas y recuperar nave anterior",
+        "Colisión conservada, un RAF y controles sin cubrir la nave",
+        "Revisión artística del propietario y prueba móvil"
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      }
     }
   ],
   "canonicalPlan": {
@@ -4625,6 +4685,12 @@
       "Recovered vector fin: free installation and hull repair at Mira service relay C9",
       "New campaign save key; old campaigns retained without numerical equivalence"
     ],
-    "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion."
+    "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion.",
+    "latestFeedback": {
+      "date": "2026-10-17",
+      "status": "CHANGES_REQUESTED",
+      "report": "docs/production-reports/NAVES_MODULARES_2026-10-17.md",
+      "priority": "Recuperar ritmo clásico e integración; no expandir el prototipo corto."
+    }
   }
 }
