@@ -170,7 +170,8 @@
     cronosBackground: loadSprite("assets/cronos_level1_background.webp", true),
     chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
     atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false),
-    vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false)
+    vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false),
+    magmaTunnelBackground: loadSprite("assets/vulkar_magma_tunnel_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {

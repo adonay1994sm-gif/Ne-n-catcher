@@ -456,6 +456,28 @@
         "openErrors": [
           "Composite illustration is integrated, but independent depth layers, Lava Core/Plasma Mine animation, and physical iPhone QA remain pending."
         ]
+      },
+      "vulkar-rock-field": {
+        "status": "IN_REVIEW",
+        "files": [
+          "art-source/visual-rebirth/levels/04/vulkar-magma-tunnel-master.png",
+          "assets/vulkar_magma_tunnel_background_v1.webp",
+          "src/game/06-world-rendering.js"
+        ],
+        "tests": [
+          "Chromium classic level 4 1/1, exit 0",
+          "Chromium classic/N-7 gameplay 2/2, exit 0",
+          "Local certification 11/11 phases, exit 0",
+          "Preview 15/15, exit 0"
+        ],
+        "evidence": [
+          "docs/visual-rebirth/evidence/gallery-04/results.json",
+          "docs/visual-rebirth/evidence/level-04-gameplay-browser-01/results.json",
+          "docs/visual-rebirth/evidence/level-04-certification-01/results.json"
+        ],
+        "openErrors": [
+          "Composite art integrated; serpent enemy, independent depth layers and physical iPhone QA remain pending."
+        ]
       }
     },
     "note": "Se genera una tarea A001–A150 por sequence. Catálogo READY/IN_REVIEW/IMPLEMENTED_CODE pasa a IN_REVIEW por defecto; nunca a DONE. Un cambio se registra en overrides por asset.id, con commit, tests y evidence."
@@ -1957,7 +1979,8 @@
         "assets/atlas_perimeter_background_v1.webp",
         "ASSET_MANIFEST.json",
         "ASSET_PRODUCTION_150.json",
-        "assets/vulkar_descent_background_v1.webp"
+        "assets/vulkar_descent_background_v1.webp",
+        "assets/vulkar_magma_tunnel_background_v1.webp"
       ],
       "commit": null,
       "tests": [
@@ -1965,7 +1988,8 @@
         "Preview: 15/15, exit 0",
         "Chromium gallery: 10/10 baseline + 1/1 Gaia recapture",
         "Chromium gameplay: classic and N-7 2/2, exit 0",
-        "Level 3: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2"
+        "Level 3: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2",
+        "Level 4: local certification 11/11, preview 15/15, Chromium gallery 1/1, gameplay 2/2"
       ],
       "evidence": [
         "docs/visual-rebirth/evidence/level-01-02-certification-02/results.json",
@@ -1974,10 +1998,13 @@
         "docs/visual-rebirth/evidence/gameplay-browser-01/results.json",
         "docs/visual-rebirth/evidence/gallery-03/results.json",
         "docs/visual-rebirth/evidence/level-03-certification-01/results.json",
-        "docs/visual-rebirth/evidence/level-03-gameplay-browser-01/results.json"
+        "docs/visual-rebirth/evidence/level-03-gameplay-browser-01/results.json",
+        "docs/visual-rebirth/evidence/gallery-04/results.json",
+        "docs/visual-rebirth/evidence/level-04-gameplay-browser-01/results.json",
+        "docs/visual-rebirth/evidence/level-04-certification-01/results.json"
       ],
       "openErrors": [
-        "Classic levels 4–10 still lack dedicated illustrated scenes; levels 1–3 lack enemy-specific art and full layered parallax."
+        "Classic levels 5–10 still lack dedicated illustrated scenes; levels 1–4 lack enemy-specific art and full layered parallax."
       ],
       "acceptance": [
         "Escenarios diferenciados por arquitectura/objetos, no solo paleta; efectos legibles."

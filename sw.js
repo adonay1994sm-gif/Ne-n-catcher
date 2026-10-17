@@ -1,4 +1,4 @@
-const CACHE = "neon-catcher-pre-release-7-2-0-visual-rebirth-03";
+const CACHE = "neon-catcher-pre-release-7-2-0-visual-rebirth-04";
 const CORE = [
   "./",
   "index.html",
@@ -74,7 +74,8 @@ const CORE = [
   "assets/cronos_level1_background.webp",
   "assets/chronos_shockwave_atlas_v1.webp",
   "assets/atlas_perimeter_background_v1.webp",
-  "assets/vulkar_descent_background_v1.webp"
+  "assets/vulkar_descent_background_v1.webp",
+  "assets/vulkar_magma_tunnel_background_v1.webp"
 ];
 
 self.addEventListener("install", (event) => {

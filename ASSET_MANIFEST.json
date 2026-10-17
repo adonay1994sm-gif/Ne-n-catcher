@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 62,
-  "runtimeBytes": 2785714,
+  "assetCount": 63,
+  "runtimeBytes": 3068468,
   "audit": {
-    "reviewed": 62,
+    "reviewed": 63,
     "READY": 58,
-    "IN_REVIEW": 4,
+    "IN_REVIEW": 5,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -428,6 +428,20 @@
       "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
       "version": "visual-rebirth-v1",
       "size": 240122
+    },
+    {
+      "id": "vulkar-magma-tunnel-background-v1",
+      "path": "assets/vulkar_magma_tunnel_background_v1.webp",
+      "master": "art-source/visual-rebirth/levels/04/vulkar-magma-tunnel-master.png",
+      "dimensions": "852x1846",
+      "format": "webp-opaque",
+      "use": "Classic level 4 Vulkar magma tunnel, industrial wreckage and open serpent corridor",
+      "level": 4,
+      "animation": "subtle drift with game dust and embers",
+      "status": "IN_REVIEW",
+      "origin": "original image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "version": "visual-rebirth-v1",
+      "size": 282754
     }
   ]
 }

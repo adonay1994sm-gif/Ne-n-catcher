@@ -60,6 +60,15 @@ test('Vulkar descent uses a real background in classic level 3 only', async () =
   assert.ok(master.byteLength > runtime.byteLength);
 });
 
+test('Vulkar magma tunnel has a separate level 4 illustration and no purple ion overlay', async () => {
+  const src = await text('src/game/06-world-rendering.js');
+  assert.match(src, /!N7_CAMPAIGN && currentLevel === 3 && spriteReady\(SPRITES\.magmaTunnelBackground\)/);
+  assert.match(src, /lv\.scene === "ion" && \(N7_CAMPAIGN \|\| currentLevel !== 3\)/);
+  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/04/vulkar-magma-tunnel-master.png'));
+  const runtime = await readFile(join(root, 'assets/vulkar_magma_tunnel_background_v1.webp'));
+  assert.ok(master.byteLength > runtime.byteLength);
+});
+
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');
