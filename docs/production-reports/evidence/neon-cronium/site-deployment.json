@@ -1,0 +1,22 @@
+{
+  "product": "NEON CRONIUM",
+  "project_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21",
+  "title": "NEON CRONIUM — Laboratorio de pruebas",
+  "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "version": 11,
+  "sourceCommit": "411df1de941f7c787d334e4f7fd3860963d3e0b7",
+  "packageGameCommit": "207a94edf01eb26f5f4210429cf51a4497b1b6d7",
+  "deployment_id": "appgdep_6ad3e3d80a84819180127b19f64d5979",
+  "version_id": "appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_66740a3664b08191b03f1a971689c764",
+  "status": "succeeded",
+  "updated_at": "2026-10-17T21:08:54.053939+00:00",
+  "access": {
+    "mode": "custom",
+    "users": 1,
+    "externalVisitors": 0,
+    "currentUserRole": "owner"
+  },
+  "verification": "Native deployment succeeded; get_site confirms version11, new title and preserved owner-only audience. All118distfile hashes match tested preview package. Chromium upgrade/offline tested locally on exact package, not authenticated remote gameplay.",
+  "netlify": "No deployment; production unchanged",
+  "urlCompatibility": "Existing origin preserved to keep installed PWA and local saved games."
+}

@@ -102,7 +102,7 @@ const workerState = page => page.evaluate(async () => ({
 }));
 const observer = page => page.evaluate(() => {
   const q = window.__REBRAND_OBSERVER__;
-  return {draw: JSON.parse(JSON.stringify(q.draw)), raf: {frames: q.raf.frames, maximum: q.raf.maximum, errors: [...q.raf.errors]}};
+  return {draw: JSON.parse(JSON.stringify(q.draw)), raf: {frames: q.raf.frames, maximum: q.raf.maximum, errors: [...q.raf.errors], overlaps: q.raf.overlaps}};
 });
 async function capture(page, name) {
   const file = `${String(report.screenshots.length + 1).padStart(2, '0')}-${name}.png`;
@@ -196,7 +196,7 @@ async function gameBrandAndSave(page, fixture) {
   context = await browser.newContext({viewport: {width: 390, height: 844}, deviceScaleFactor: 1,
     isMobile: true, hasTouch: true, serviceWorkers: 'allow'});
   await context.addInitScript(() => {
-    const q = window.__REBRAND_OBSERVER__ = {draw: {}, raf: {frames: 0, maximum: 0, pending: new Set(), errors: []}};
+    const q = window.__REBRAND_OBSERVER__ = {draw: {}, raf: {frames: 0, maximum: 0, pending: new Set(), details: new Map(), overlaps: [], errors: []}};
     const draw = CanvasRenderingContext2D.prototype.drawImage;
     CanvasRenderingContext2D.prototype.drawImage = function(image, ...args) {
       const answer = Reflect.apply(draw, this, [image, ...args]);
@@ -206,19 +206,22 @@ async function gameBrandAndSave(page, fixture) {
     };
     const request = window.requestAnimationFrame.bind(window), cancel = window.cancelAnimationFrame.bind(window);
     window.requestAnimationFrame = callback => {
-      const id = request(time => { q.raf.pending.delete(id); q.raf.frames++;
+      const id = request(time => { q.raf.pending.delete(id); q.raf.details.delete(id); q.raf.frames++;
         try { callback(time); } catch (error) { q.raf.errors.push(error.stack || String(error)); throw error; } });
-      q.raf.pending.add(id); q.raf.maximum = Math.max(q.raf.maximum, q.raf.pending.size); return id;
+      q.raf.pending.add(id); q.raf.details.set(id, {name: callback.name, source: String(callback).slice(0, 250), stack: new Error().stack});
+      q.raf.maximum = Math.max(q.raf.maximum, q.raf.pending.size);
+      if (q.raf.pending.size > 1 && q.raf.overlaps.length < 10) q.raf.overlaps.push([...q.raf.details.values()]);
+      return id;
     };
-    window.cancelAnimationFrame = id => { q.raf.pending.delete(id); return cancel(id); };
+    window.cancelAnimationFrame = id => { q.raf.pending.delete(id); q.raf.details.delete(id); return cancel(id); };
   });
   await step('install the actual previous launcher/game workers and seed declared prior-save fixtures', async () => {
     const page = await newPage(); await page.goto(server.url, {waitUntil: 'load'});
     assert.match(await page.title(), /NEON\s*CATCHER/i);
-    await page.waitForFunction(() => navigator.serviceWorker.controller?.scriptURL.endsWith('/launcher-sw.js'));
+    await waitAsync(page, () => navigator.serviceWorker.controller?.scriptURL.endsWith('/launcher-sw.js'));
     await capture(page, 'previous-launcher');
     await page.locator('#classiclink').click();
-    await page.waitForFunction(() => navigator.serviceWorker.controller?.scriptURL.endsWith('/juego/sw.js'));
+    await waitAsync(page, () => navigator.serviceWorker.controller?.scriptURL.endsWith('/juego/sw.js'));
     await waitAsync(page, async revision => {
       const own = (await caches.keys()).filter(key => key.startsWith('neon-preview-v1:') || key.startsWith('neon-preview-launcher-v1:'));
       return own.length === 2 && own.every(key => key.endsWith(revision));
@@ -284,7 +287,7 @@ async function gameBrandAndSave(page, fixture) {
     assert.equal(await page.locator('[data-voyage-stage]:disabled').count(), 7);
     await capture(page, 'current-offline-checkpoint-briefing');
     await page.locator('#launch').click();
-    await page.waitForFunction(() => window.__REBRAND_OBSERVER__.draw['ship_modular_atlas_v1.webp'] >= 24 && !document.querySelector('#fire').disabled);
+    await waitAsync(page, () => window.__REBRAND_OBSERVER__.draw['ship_modular_atlas_v1.webp'] >= 24 && !document.querySelector('#fire').disabled);
     assert.equal((await page.locator('#hudLevel').innerText()).trim(), '1.3');
     assert.equal((await page.locator('#goal').innerText()).trim(), '8/36');
     assert.equal((await page.locator('#hull').innerText()).trim(), '74%');
@@ -292,6 +295,11 @@ async function gameBrandAndSave(page, fixture) {
     const running = await observer(page); assert.equal(running.raf.maximum, 1); assert.deepEqual(running.raf.errors, []);
     assert.ok(report.assetResponses.some(item => item.offline && item.fromServiceWorker && item.url.endsWith('/ship_modular_atlas_v1.webp')));
     await capture(page, 'current-offline-continuation-playing');
+    // The existing HUD counts up to the restored score across render frames.
+    // Wait for its known checkpoint target before measuring a paused HUD;
+    // otherwise the presentation tween (159 -> 160) is mistaken for simulation.
+    // Poll via evaluate/timer: Playwright waitForFunction adds its own RAF.
+    await waitAsync(page, () => document.getElementById('score').textContent.trim() === '160');
     await page.locator('#pause').click(); await page.locator('#paused.show').waitFor();
     const hud = () => page.evaluate(() => Object.fromEntries(['score', 'goal', 'hull', 'ammo'].map(id => [id, document.getElementById(id)?.textContent?.trim()])));
     const frozen = await hud(); await page.waitForTimeout(600); assert.deepEqual(await hud(), frozen);
@@ -315,6 +323,7 @@ async function gameBrandAndSave(page, fixture) {
   report.status = 'failed'; report.exitCode = 1; report.error = errorText(error); process.exitCode = 1;
   const page = context?.pages().at(-1);
   if (page) { report.failureWorkerState = await workerState(page).catch(error => ({error: errorText(error)}));
+    report.failureObserver = await observer(page).catch(error => ({error: errorText(error)}));
     if (evidenceReady) await page.screenshot({path: path.join(output, 'failure.png')}).catch(() => {}); }
 }).finally(async () => {
   if (evidenceReady && report.currentPackageBefore && report.previousPackageBefore) {

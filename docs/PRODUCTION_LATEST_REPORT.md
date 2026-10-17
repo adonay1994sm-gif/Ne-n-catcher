@@ -1,3 +1,19 @@
+## DIAGNÓSTICO — nombre vigente NEON CRONIUM · 17/10/2026
+
+El propietario cambia la marca. Se conserva el recorrido Chronos–Gaia, su progreso y el resto del juego; las menciones anteriores de marca/versiones que aparecen debajo son históricas.
+
+## INFORME DE PRODUCCIÓN — rebranding publicado, versión11
+
+[Informe completo y comparativa real](production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md). **[Web privada NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)**, despliegue nativo succeeded y audiencia conservada. Funcional `e096a3b`; paquete limpio `207a94e`; fuente del sitio `411df1d`. Portada, juego, legales, PWA, paquete npm, appName iOS, splash, guías y nuevos archivos de entrega actualizados. La dirección existente mantiene el origen/guardados.
+
+Certificación local11/11: contenido223, motor40, arquitectura6, estáticos13, regresión34, web13; preview23/23. Chromium real actualización v10→actual/offline **5/5**,8capturas,0errores; bytes de saves previos conservados, continuación1.3 y RAFmáximo1. Los tres intentos fallidos del arnés y su causa/corrección están conservados. [Actions39069397503 completed/success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39069397503), todos los pasos y empaquetado. [ZIP y SHA-256](production-reports/evidence/neon-cronium/package.json).
+
+Claves `neonCatcher.*`, bundle ID, IDs de contenido, URL de repositorio y pruebas permanecen compatibles. Guía activa renombrada a ART_DIRECTION_NEON_CRONIUM.md; paquetes/evidencias/maestros históricos mantienen procedencia original. P1-BRAND-01 IN_REVIEW, técnica aprobada; rótulo de splash/artística y iPhone físico pendientes. No se cambia jugabilidad, main, PR3, producción Netlify ni MotorV1=false.
+
+El contenido siguiente conserva el historial. Para probar desde una partida avanzada, CONTINUAR VIAJE → NIVELES → La Onda de Choque →1.1; CONTINUAR reanuda el checkpoint existente.
+
+---
+
 ## DIAGNÓSTICO — transición Chronos → Gaia · 17/10/2026
 
 La orden vigente reanuda el desarrollo con alcance concreto: diez etapas conectadas del primer territorio a Gaia, mostrando el espacio vacío y el viaje. Sustituye la pausa histórica tras la incidencia CI, ya resuelta; preserva el resto del proyecto.

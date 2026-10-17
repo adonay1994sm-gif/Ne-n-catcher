@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T21:03:11.890547+00:00",
+  "updatedAt": "2026-10-17T21:08:54.638090+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -6328,18 +6328,22 @@
       ],
       "commit": "e096a3bc638762445e20ba8a8eb7d3635e169db8",
       "tests": [
-        "Certificación local 11/11 fases, contenido223/223 incluidas4pruebas de marca/compatibilidad; preview23/23; todos salida0."
+        "Certificación local 11/11 fases, contenido223/223 incluidas4pruebas de marca/compatibilidad; preview23/23; todos salida0.",
+        "Chromium mismo origen: actualización v10→NEON CRONIUM, 5/5 grupos,8 capturas,0 errores; guardados previos conservados, continuación1.3offline y RAFmáximo1. Actions funcional39069229533 y paquete39069397503 completed/success."
       ],
       "evidence": [
         "docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md",
         "docs/production-reports/evidence/neon-cronium/certificate-01/results.json",
-        "docs/production-reports/evidence/neon-cronium/native-splash.json"
+        "docs/production-reports/evidence/neon-cronium/native-splash.json",
+        "docs/production-reports/evidence/neon-cronium/browser-04/results.json",
+        "docs/production-reports/evidence/neon-cronium/package.json",
+        "docs/production-reports/evidence/neon-cronium/github-package-run.json"
       ],
       "openErrors": [
-        "Revisión visual del nuevo rótulo nativo y prueba física iPhone pendientes; actualización real de navegador/publicación en comprobación."
+        "Revisión artística del rótulo de arranque y prueba física iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "IN_REVIEW_BROWSER_PACKAGE",
+        "technical": "PASSED_CHROMIUM_UPGRADE_OFFLINE",
         "artistic": "PENDING_OWNER_SPLASH",
         "physical": "PENDING"
       },
@@ -6348,7 +6352,8 @@
         "Rótulo nativo actualizado con maestro anterior recuperable y PNG iOS válidos.",
         "Guardados, IDs de aplicación/campaña y scope de instalación conservados; caché actualiza la marca.",
         "Paquete, navegador y publicación privada comprobados; historial previo conserva su procedencia."
-      ]
+      ],
+      "packageCommit": "207a94edf01eb26f5f4210429cf51a4497b1b6d7"
     }
   ],
   "canonicalPlan": {
@@ -6390,12 +6395,11 @@
     },
     "latestVerification": {
       "date": "2026-10-17",
-      "report": "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
-      "commit": "bdf13bdfc88f0765b21551d36c0cf44a779ce42f",
-      "workflowRun": 39068219262,
+      "report": "docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md",
+      "commit": "207a94edf01eb26f5f4210429cf51a4497b1b6d7",
+      "workflowRun": 39069397503,
       "conclusion": "success",
-      "siteVersion": 10,
-      "scope": "Ten transit stages Chronos–Gaia, natural Chromium full route and clean final11phase certification, native offline4/4, N-7 regression; owner artistic and physical acceptance pending."
+      "scope": "NEON CRONIUM active brand, native splash, same-origin native workers upgrade/offline5/5 and save compatibility. No gameplay changes or physical device certification."
     },
     "productName": "NEON CRONIUM",
     "brandChange": {

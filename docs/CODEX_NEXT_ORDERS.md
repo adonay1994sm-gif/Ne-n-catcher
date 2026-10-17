@@ -1,3 +1,16 @@
+## Continuación vigente — NEON CRONIUM, versión11 ·17/10/2026
+
+[Informe de rebranding y capturas](production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md), [web privada](https://neon-catcher-pruebas.chictide18.chatgpt.site). Nombre actual NEON CRONIUM; guías activas y nuevos paquetes usan esta marca. El nombre antiguo sólo identifica compatibilidad/historial; no rehacer el cambio ni renombrar claves de partidas o el bundle ID.
+
+1. Revisar el rótulo del splash nativo editado y la marca con el propietario. Comprobar en Safari/iPhone físico nombre instalado, dos dedos, interrupción y recuperación; Chromium actualización/offline5/5 y CI ya pasaron.
+2. Continuar revisión de las diez etapas Chronos–Gaia: espacio vacío, duración y aproximación/encuadre de Gaia. No se añadieron mecánicas en el rebranding ni se certificó el capítulo comercial entero.
+3. Mantener la misma web privada/origen para conservar los guardados. Guía actual ART_DIRECTION_NEON_CRONIUM.md; no renombrar ZIP históricos como si fueran builds nuevos. Paquete limpio207a94e y fuente de Site411df1d recuperables.
+4. Preservar MotorV1=false y un RAF; no main/PR3/producción Netlify/AppStore/TestFlight. Los fallos de sampling de QA están documentados y corregidos, sin cambios runtime.
+
+Registro único production-tasks.json: P1-BRAND-01 técnica PASSED, revisión artística/dispositivo pendiente. Los siguientes cierres se conservan como historial.
+
+---
+
 ## Continuación vigente — diez etapas Chronos → Gaia · 17/10/2026
 
 [Informe y galería de la versión 10](production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md), [web privada](https://neon-catcher-pruebas.chictide18.chatgpt.site). Orden actual satisfecha técnicamente: diez etapas de tránsito enlazadas, checkpoint, C9, mejora y llegada. La pausa por CI que aparece después es histórica y quedó superada por esta petición.
