@@ -431,6 +431,82 @@ test('invalid equipment is backed up once before replacement and a failed backup
   assert.equal(blocked.stored('neon-n7-unlocked-v1'), '37');
 });
 
+test('C9 calibrates the recovered twin into a persistent lance and cycling ×1/×2/×3 never grants ammunition', t => {
+  const h = harness(t); h.api.prepare();
+  assert.equal(h.node('flightWeaponDamage').textContent, 'DAÑO ×1');
+  h.api.fireManualShot(); h.advance(.3);
+  h.api.collectModule(); h.api.goHome(); h.node('openFlightDock').click();
+  assert.equal(h.node('flightCalibrateLance').disabled, true,
+    'Recovering a piece alone must not skip its installation');
+  h.node('flightCalibrateLance').click();
+  assert.deepEqual(h.equipment().unlocked, ['pulse']);
+  const beforeInstallation = h.snapshot().weapons;
+  h.node('flightInstallTwin').click();
+  assert.equal(h.node('flightCalibrateLance').disabled, false);
+  assert.equal(h.equipment().lanceCalibrated, undefined,
+    'The optional extension must not rewrite an old v1 profile before calibration');
+  h.node('flightCalibrateLance').click();
+  const calibrated = h.snapshot();
+  assert.deepEqual(h.equipment(), {version: 1, recoveredTwin: true,
+    unlocked: ['pulse', 'twin', 'lance'], selected: 'lance', lanceCalibrated: true});
+  assert.equal(calibrated.weapons.charges, beforeInstallation.charges);
+  assert.equal(calibrated.weapons.recharge, beforeInstallation.recharge);
+  assert.equal(calibrated.weapons.cooldown, beforeInstallation.cooldown);
+  assert.equal(h.node('flightCalibrateLance').disabled, true);
+  const saved = h.stored(EQUIPMENT_KEY);
+  h.node('flightCalibrateLance').click();
+  assert.equal(h.stored(EQUIPMENT_KEY), saved, 'Repeating calibration cannot duplicate an unlock');
+
+  h.api.prepare(1);
+  assert.equal(h.node('flightWeaponName').textContent, 'LANZA');
+  assert.equal(h.node('flightWeaponDamage').textContent, 'DAÑO ×3');
+  assert.equal(h.api.fireManualShot(), true);
+  const fired = h.snapshot().weapons;
+  assert.equal(fired.charges, 2); assert.equal(fired.projectiles.length, 1);
+  assert.equal(fired.projectiles[0].damage, 3); assert.equal(fired.projectiles[0].pierce, 2);
+  for (const [selected, multiplier] of [['pulse', 1], ['twin', 2], ['lance', 3]]) {
+    h.node('flightWeapon').click(); const switched = h.snapshot().weapons;
+    assert.equal(switched.selected, selected);
+    assert.equal(h.node('flightWeaponDamage').textContent, `DAÑO ×${multiplier}`);
+    assert.match(h.node('flightWeapon').getAttribute('aria-label'), new RegExp(`Daño ×${multiplier}`));
+    assert.equal(switched.charges, fired.charges);
+    assert.equal(switched.recharge, fired.recharge);
+    assert.equal(switched.cooldown, fired.cooldown);
+    assert.equal(switched.shotSequence, fired.shotSequence);
+    assert.deepEqual(switched.projectiles, fired.projectiles);
+    assert.equal(h.api.fireManualShot(), false, 'Switching cannot bypass the lance cooldown');
+  }
+  const restored = harness(t, {saved: h.stored(EQUIPMENT_KEY)}); restored.api.prepare();
+  assert.equal(restored.snapshot().equipment.lanceCalibrated, true);
+  assert.equal(restored.snapshot().weapons.selected, 'lance');
+  assert.equal(restored.node('flightWeaponDamage').textContent, 'DAÑO ×3');
+  assert.equal(h.stored('neon-n7-unlocked-v1'), '37');
+  assert.equal(h.stored('neon-n7-best-v1'), '2037');
+  assert.equal(h.pending.size, 1); assert.equal(restored.pending.size, 1);
+});
+
+test('malformed lance unlocks are preserved as backups instead of granting uncalibrated weapons', t => {
+  for (const profile of [
+    {version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin', 'lance'], selected: 'lance'},
+    {version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin', 'lance'], selected: 'lance', lanceCalibrated: false},
+    {version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin', 'lance'], selected: 'lance', lanceCalibrated: 'true'},
+    {version: 1, recoveredTwin: true, unlocked: ['pulse', 'lance'], selected: 'lance', lanceCalibrated: true},
+    {version: 1, recoveredTwin: false, unlocked: ['pulse', 'twin', 'lance'], selected: 'lance', lanceCalibrated: true}
+  ]) {
+    const raw = JSON.stringify(profile), h = harness(t, {saved: raw});
+    assert.equal(h.stored(EQUIPMENT_KEY), raw, 'Invalid data must remain recoverable before a successful replacement');
+    assert.deepEqual(JSON.parse(h.stored(EQUIPMENT_KEY + ':invalid-backups')), [raw]);
+    assert.deepEqual(h.snapshot().equipment,
+      {version: 1, recoveredTwin: false, unlocked: ['pulse'], selected: 'pulse'});
+    h.api.prepare();
+    assert.equal(h.snapshot().weapons.selected, 'pulse');
+    assert.deepEqual(h.snapshot().weapons.unlocked, ['pulse']);
+    assert.equal(h.stored('neon-unlocked-v2'), '2');
+    assert.equal(h.stored('neon-n7-unlocked-v1'), '37');
+    assert.equal(h.pending.size, 1);
+  }
+});
+
 test('Atlas locks its warning and actual projectile trajectory to the movable ship position', t => {
   const h = harness(t); h.api.prepare(1);
   for (let fragment = 0; fragment < 45; fragment++) h.api.collectEnergy();
@@ -454,9 +530,9 @@ test('Atlas locks its warning and actual projectile trajectory to the movable sh
   }
   const fired = h.snapshot(); assert.equal(fired.boss.state, 'fire');
   closeTo(fired.boss.telegraph.targetY, locked.targetY);
-  assert.equal(fired.projectiles.length, 3);
-  const middle = fired.projectiles.find(projectile => projectile.id.endsWith(':1'));
-  assert.ok(middle, 'The real emitted three-way volley must contain its central projectile');
+  assert.equal(fired.projectiles.length, 5);
+  const middle = fired.projectiles.find(projectile => projectile.id.endsWith(':2'));
+  assert.ok(middle, 'The real emitted five-way volley must contain its central projectile');
   closeTo(middle.targetY, locked.targetY, 'Projectile metadata preserves the actual warning line');
   const crossingX = middle.x + middle.vx * (locked.targetY - middle.y) / middle.vy;
   closeTo(crossingX, locked.targetX, 'The emitted projectile must cross the announced location');
@@ -563,7 +639,8 @@ test('the compact HUD and weapon share menu, completion, death and Atlas visibil
     assert.equal(switched.recharge, fired.recharge);
     assert.equal(switched.cooldown, fired.cooldown);
     assert.equal(switched.projectiles.length, fired.projectiles.length);
-    assert.equal(h.node('flightWeapon').getAttribute('aria-pressed'), String(selected === 'twin'));
+    assert.equal(h.node('flightWeaponName').textContent, selected === 'twin' ? 'GEMELO' : 'PULSO');
+    assert.equal(h.node('flightWeaponDamage').textContent, selected === 'twin' ? 'DAÑO ×2' : 'DAÑO ×1');
   }
   const normalBounds = h.snapshot().bounds;
   h.api.finishGame('hull');
@@ -583,13 +660,20 @@ test('the compact HUD and weapon share menu, completion, death and Atlas visibil
   h.api.goHome(); assert.equal(h.snapshot().state, 'menu'); hidden();
   h.api.prepare(1);
   for (let fragment = 0; fragment < 45; fragment++) h.api.collectEnergy();
-  assert.ok(h.snapshot().boss, 'The actual Gaia quota must enter Atlas'); hidden();
+  assert.ok(h.snapshot().boss, 'The actual Gaia quota must enter Atlas');
+  assert.equal(h.node('flightHud').classList.contains('hidden'), false,
+    'Atlas must retain the same weapon selector and damage explanation');
+  assert.equal(h.node('flightRoute').classList.contains('hidden'), true,
+    'The ordinary travel line must stay hidden behind the combat interface');
+  assert.equal(h.node('flightWeapon').closest('#flightHud.hidden'), null);
   assert.equal(h.snapshot().state, 'playing');
   h.api.finishGame('hull');
   assert.equal(h.snapshot().state, 'gameover'); hidden();
   assert.equal(h.api.resumeReward(), true);
   assert.equal(h.snapshot().state, 'playing');
-  assert.ok(h.snapshot().boss); hidden();
+  assert.ok(h.snapshot().boss);
+  assert.equal(h.node('flightHud').classList.contains('hidden'), false);
+  assert.equal(h.node('flightRoute').classList.contains('hidden'), true);
   assert.equal(h.node('atlasEncounter').classList.contains('hidden'), false,
     'Continuing Atlas restores its combat interface without leaking the ordinary route controls');
   assert.equal(h.pending.size, 1);

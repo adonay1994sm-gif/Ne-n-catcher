@@ -88,6 +88,8 @@
   const classicFlightInput = NeonCampaign.createRelativeFlightInput();
   let classicEquipment = {version:1, recoveredTwin:false, unlocked:['pulse'], selected:'pulse'};
   let classicEquipmentWritable = true;
+  let classicShieldAge = 0;
+  let classicShieldImpact = 0;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
   let classicCometSequence = 0;
@@ -213,6 +215,7 @@
     satellite: loadSprite("assets/satellite_old.webp"),
     repairDrone: loadSprite("assets/repair_drone.webp"),
     shieldEffect: loadSprite("assets/shield_effect.webp"),
+    forceShieldAtlas: loadSprite("assets/force_shield_atlas_v1.webp", false),
     shieldIdle: loadSprite("assets/shield_idle.webp"),
     explosionSmall: loadSprite("assets/explosion_small.webp"),
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
@@ -220,6 +223,8 @@
     chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
     atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false),
     vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false),
+    vulkarOrbitBackground: loadSprite("assets/vulkar_orbit_background_v1.webp", false),
+    vulkarOrbitPlanet: loadSprite("assets/vulkar_orbit_planet_v1.webp", false),
     magmaTunnelBackground: loadSprite("assets/vulkar_magma_tunnel_background_v1.webp", false),
     cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false),
     cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false),

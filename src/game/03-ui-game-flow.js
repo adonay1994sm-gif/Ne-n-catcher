@@ -9,9 +9,14 @@
       try {
         const value = JSON.parse(raw);
         if (value?.version !== 1 || typeof value.recoveredTwin !== "boolean" || !Array.isArray(value.unlocked) ||
-          !value.unlocked.includes("pulse") || value.unlocked.some(type => !["pulse", "twin"].includes(type)) ||
-          !value.unlocked.includes(value.selected) || (value.unlocked.includes("twin") && !value.recoveredTwin)) throw new Error("Invalid equipment");
-        classicEquipment = {version:1,recoveredTwin:value.recoveredTwin,unlocked:[...new Set(value.unlocked)],selected:value.selected};
+          !value.unlocked.includes("pulse") || value.unlocked.some(type => !["pulse", "twin", "lance"].includes(type)) ||
+          !value.unlocked.includes(value.selected) || (value.unlocked.includes("twin") && !value.recoveredTwin) ||
+          (value.lanceCalibrated !== undefined && typeof value.lanceCalibrated !== "boolean") ||
+          (value.unlocked.includes("lance") && (!value.lanceCalibrated || !value.unlocked.includes("twin")))) throw new Error("Invalid equipment");
+        // Optional extension: old v1 profiles retain their original shape. No
+        // campaign progress is mapped or overwritten to unlock a new weapon.
+        classicEquipment = {version:1,recoveredTwin:value.recoveredTwin,unlocked:[...new Set(value.unlocked)],selected:value.selected,
+          ...(value.lanceCalibrated !== undefined ? {lanceCalibrated:value.lanceCalibrated} : {})};
       } catch {
         const backupKey = CLASSIC_EQUIPMENT_KEY + ":invalid-backups";
         const previous = storage.getJSON(backupKey, []);
@@ -24,20 +29,28 @@
     mount.innerHTML = `<div id="flightHud" class="flight-hud hidden">
       <section id="flightRoute" class="flight-route hidden" aria-label="Trayecto espacial"><div><small id="flightDestination">CHRONOS → GAIA NOVA</small><b id="flightStage">Recupera el CRONIUM</b></div><progress id="flightDistance" max="1" value="0" aria-label="Recorrido hasta el destino"></progress></section>
       <p id="flightObjective" class="flight-comms" role="status" aria-live="polite" data-active="false"></p>
-      <button id="flightWeapon" class="flight-weapon" type="button"><small>ARMA</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
+      <button id="flightWeapon" class="flight-weapon" type="button"><small id="flightWeaponDamage">DAÑO ×1</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
       </div>
       <div id="flightDock" class="overlay"><section class="panel flight-dock"><small>TALLER C9 · MIRA</small><h2>Que la pieza vuelva a volar.</h2><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p><button id="flightInstallTwin" class="primary" type="button">INSTALAR EMISOR GEMELO</button><button id="flightDockContinue" class="secondary" type="button">CONTINUAR HACIA GAIA</button><button id="flightDockHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
     canvas.parentElement.append(mount);
-    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
+    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
+    const calibrate=document.createElement("button");calibrate.id="flightCalibrateLance";calibrate.className="secondary";calibrate.type="button";
+    ui.flightInstallTwin.after(calibrate);ui.flightCalibrateLance=calibrate;
     ui.flightWeapon.onclick = () => {
       if (classicEquipment.unlocked.length < 2) { toast("Rescata el emisor gemelo de Chronos y móntalo en C9"); return; }
-      const selected = classicEquipment.selected === "pulse" ? "twin" : "pulse";
+      const selected = classicEquipment.unlocked[(classicEquipment.unlocked.indexOf(classicEquipment.selected)+1)%classicEquipment.unlocked.length];
       if (persistClassicEquipment({...classicEquipment, selected})) { tone(selected === "twin" ? 860 : 650, .12, "triangle", .045); syncClassicFlightHud(); }
     };
     ui.flightInstallTwin.onclick = () => {
       if (!classicEquipment.recoveredTwin || classicEquipment.unlocked.includes("twin")) return;
-      if (persistClassicEquipment({...classicEquipment,unlocked:["pulse","twin"],selected:"twin"})) {
-        toast("Emisor gemelo montado · dos cañones, una carga"); updateClassicDock();
+      if (persistClassicEquipment({...classicEquipment,unlocked:[...new Set([...classicEquipment.unlocked,"twin"])],selected:"twin"})) {
+        toast("Gemelo ×2 · dos pulsos centrados por carga"); updateClassicDock();
+      }
+    };
+    calibrate.onclick=()=>{
+      if(!classicEquipment.unlocked.includes("twin") || classicEquipment.unlocked.includes("lance"))return;
+      if(persistClassicEquipment({...classicEquipment,lanceCalibrated:true,unlocked:[...classicEquipment.unlocked,"lance"],selected:"lance"})) {
+        toast("Lanza ×3 calibrada · perfora dos objetivos");updateClassicDock();
       }
     };
     $("flightDockContinue").onclick = () => { if (flightDockReturn === "complete") prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete"); else goHome(); };
@@ -55,7 +68,8 @@
       for (const type of next.unlocked) NeonCampaign.unlockClassicWeapon(classicWeapons,type);
       NeonCampaign.selectClassicWeapon(classicWeapons,next.selected);
     }
-    if (next.selected === "twin") ensureSprite(SPRITES.flightWeapons);
+    if (["twin","lance"].includes(next.selected)) ensureSprite(SPRITES.flightWeapons);
+    if (next.selected === "lance") SPRITE_GROUPS.phaser.forEach(ensureSprite);
     shipPresentationSignature="";
     $("openFlightDock")?.classList.toggle("hidden",!next.recoveredTwin);
     return true;
@@ -68,9 +82,11 @@
 
   function updateClassicDock() {
     const installed=classicEquipment.unlocked.includes("twin");
-    ui.flightDockStatus.textContent=installed ? "Dos emisores montados en las raíces de las alas. Doble pulso: dos trayectorias por una carga; puedes alternarlo con el pulso central." : classicEquipment.recoveredTwin ? "Recuperaste un emisor del laboratorio. Lo adaptamos a las alas: más cobertura, tres cargas y recarga de una cada 3,6 segundos de vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Puedes recuperarlo al repetir el primer tramo. Tu pulso central ya se recarga en vuelo.";
+    ui.flightDockStatus.textContent=installed ? "Pulso ×1: 1 de daño. Gemelo ×2: dos tiros centrados de 1. Calibra la misma pieza como lanza ×3: 3 de daño y hasta dos objetivos perforados. Todos comparten tres cargas; recuperas una cada 3,6 segundos de vuelo. Sin coste." : classicEquipment.recoveredTwin ? "Recuperaste un emisor del laboratorio. Lo montamos en las alas y concentramos sus dos tiros delante de la proa. Tres cargas con recarga en vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Puedes recuperarlo al repetir el primer tramo. Tu pulso central ya se recarga en vuelo.";
     ui.flightInstallTwin.disabled=installed || !classicEquipment.recoveredTwin;
     ui.flightInstallTwin.textContent=installed ? "EMISOR GEMELO INSTALADO" : "INSTALAR EMISOR GEMELO";
+    ui.flightCalibrateLance.disabled=!installed || classicEquipment.unlocked.includes("lance");
+    ui.flightCalibrateLance.textContent=classicEquipment.unlocked.includes("lance") ? "LANZA ×3 CALIBRADA" : "CALIBRAR LANZA ×3";
     $("flightDockContinue").textContent=flightDockReturn==="complete" ? "CONTINUAR HACIA GAIA" : "VOLVER AL VIAJE";
   }
 
@@ -92,16 +108,18 @@
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
     ui.flightDistance.setAttribute("aria-valuetext",view ? `${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
-    ui.flightWeaponName.textContent=classicEquipment.selected==="twin" ? "GEMELO" : "PULSO";
+    const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
+    ui.flightWeaponName.textContent=weapon.label.toUpperCase();
+    ui.flightWeaponDamage.textContent=`DAÑO ×${weapon.damageMultiplier}`;
+    ui.flightWeapon.title=weapon.description;
     ui.flightWeapon.dataset.switchable=String(classicEquipment.unlocked.length>1);
-    ui.flightWeapon.setAttribute("aria-pressed",String(classicEquipment.selected==="twin"));
-    ui.flightWeapon.setAttribute("aria-label",`Cambiar arma. ${classicEquipment.selected==="twin"?"Doble pulso":"Pulso central"}`);
+    ui.flightWeapon.setAttribute("aria-label",`Cambiar arma. ${weapon.label}. ${weapon.description}`);
     updateAmmoHud();
   }
 
   function setClassicFlightHudVisible(visible) {
     ui.flightHud?.classList.toggle("hidden",!visible);
-    ui.flightRoute?.classList.toggle("hidden",!visible);
+    ui.flightRoute?.classList.toggle("hidden",!visible || Boolean(atlasBoss));
   }
 
   function classicFlightEvent(event) {
@@ -163,7 +181,7 @@
 
   function fireClassicWeapon() {
     if(!classicWeapons || !spriteReady(SPRITES.atlasVfx))return false;
-    const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-(classicWeapons.selected==="twin"?55-SHIP_VISUAL.centerYOffset:114)});
+    const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-125});
     if(!result.accepted)return false;
     ammo=classicWeapons.charges;manualShotCooldown=classicWeapons.cooldown;
     tone(classicWeapons.selected==="twin"?820:670,.065,"triangle",.04);
@@ -171,7 +189,7 @@
   }
 
   function advanceClassicWeaponField(dt) {
-    if(!classicWeapons || atlasBoss)return;
+    if(!classicWeapons)return;
     for(const shot of classicWeapons.projectiles){shot.previousX=shot.x;shot.previousY=shot.y;}
     const events=NeonCampaign.advanceClassicWeapons(classicWeapons,dt);
     ammo=classicWeapons.charges;
@@ -247,7 +265,7 @@
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
-    setClassicFlightHudVisible(false);
+    setClassicFlightHudVisible(isUnifiedClassic());
     ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
     hideWarning(); hideStoryTransmission(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
@@ -277,8 +295,7 @@
     else if (atlasBoss.state === "entry") status = "Tu carga activa la contención. Desactiva el núcleo para abrir el paso.";
     else if (atlasBoss.state === "disabled") status = "Atlas: «Identidad confirmada. Gaia autoriza el acceso».";
     else if (atlasBoss.state === "phaseBreak") status = "N-7: «Es un bucle de contención. Rompe el enlace, salva al guardián».";
-    else if (atlasBoss.telegraph?.safeGap) status = "DOBLE CORTINA · atraviesa la franja iluminada.";
-    else if (atlasBoss.state === "charge") status = "SALVA FIJADA · cambia de posición antes del disparo.";
+    else if (atlasBoss.state === "charge") status = "ARMAS CARGANDO";
     else status = "NÚCLEO EXPUESTO · alinea la nave y abre fuego.";
     if (status !== atlasLastStatus) { ui.atlasStatus.textContent = status; atlasLastStatus = status; layoutChanged = true; }
     if (layoutChanged) positionAtlasArena();
@@ -313,14 +330,24 @@
 
   function fireAtlasPulse(kind) {
     if (!atlasBoss || atlasBoss.disabled || !spriteReady(SPRITES.guardianAtlas) || Math.abs(atlasBoss.x - player.x) >= 115) return false;
-    if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-    const twin=isUnifiedClassic() && classicEquipment.selected==="twin";
-    for(const offset of twin?[-42,42]:[0]) {
+    // The same battery, damage and cooldown apply in the field and at the
+    // frontier. Automatic phaser power remains a separate timed ability.
+    let bolts=[{x:player.x,y:player.y-125,damage:1,weapon:kind}];
+    if(isUnifiedClassic() && kind!=="phaser") {
+      if(!classicWeapons)return false;
+      const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-125});
+      if(!result.accepted)return false;
+      bolts=result.projectiles;
+      const converted=new Set(bolts.map(shot=>shot.id));
+      classicWeapons.projectiles=classicWeapons.projectiles.filter(shot=>!converted.has(shot.id));
+      ammo=classicWeapons.charges;manualShotCooldown=classicWeapons.cooldown;
+    }
+    for(const bolt of bolts) {
       if(shots.length>=EFFECT_LIMITS.shots)shots.shift();
-      shots.push({x1:player.x+offset,y1:player.y-(twin?55-SHIP_VISUAL.centerYOffset:114),
-        x2:atlasBoss.x+offset*.25,y2:atlasBoss.y,life:.24,duration:.24,
+      shots.push({x1:bolt.x,y1:bolt.y,
+        x2:atlasBoss.x+(bolt.x-player.x),y2:atlasBoss.y,life:.24,duration:.24,
         hit:false,destroyed:false,impactX:atlasBoss.x,impactY:atlasBoss.y,
-        impactScale:.7,kind,atlasPulse:true,atlasTarget:atlasBoss,damage:twin?.7:1});
+        impactScale:.7,kind:bolt.weapon,atlasPulse:true,atlasTarget:atlasBoss,damage:bolt.damage});
     }
     tone(740, .04, "triangle", .025);
     return true;
@@ -670,13 +697,14 @@
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
-    if(isUnifiedClassic() && classicWeapons && !atlasBoss) {
+    if(isUnifiedClassic() && classicWeapons) {
       ammo=classicWeapons.charges;
       const remaining=Math.max(0,NeonCampaign.CLASSIC_WEAPON_RULES.rechargeSeconds-classicWeapons.recharge);
       ui.ammo.textContent=ammo<MAX_AMMO ? `${ammo}/${MAX_AMMO} · ${remaining.toFixed(1)}s` : `${ammo}/${MAX_AMMO}`;
       ui.fire.disabled=state!=="playing" || ammo<=0 || manualShotCooldown>0 || warpTimer>0;
       ui.fire.classList.toggle("empty",ammo<=0);
-      ui.fire.setAttribute("aria-label",`Disparar ${classicEquipment.selected==="twin"?"doble pulso":"pulso"}. ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
+      const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
+      ui.fire.setAttribute("aria-label",`Disparar ${weapon.label}. ${weapon.description} ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
       return;
     }
     if (JOURNEY_DEMO || atlasBoss) {
@@ -797,6 +825,7 @@
 
   function resetPowers() {
     for (const key in powers) powers[key] = 0;
+    classicShieldAge=0;classicShieldImpact=0;
     tractorTarget = null;
     updatePowerHud();
   }
@@ -867,7 +896,8 @@
     classicPatrolTimer=0;classicPatrolSequence=0;classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
-      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);
+      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
+      if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
         ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
@@ -1061,6 +1091,7 @@
     progressSaved = saveScore() && progressSaved;
     registerRun();
     ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
+    if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
       ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
       : `${level().name} completado`;
@@ -1172,7 +1203,7 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
-    setClassicFlightHudVisible(isUnifiedClassic() && !atlasBoss);
+    setClassicFlightHudVisible(isUnifiedClassic());
     hud();
     updatePowerHud();
     refreshClassicFlightBounds();

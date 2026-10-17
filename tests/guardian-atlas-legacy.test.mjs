@@ -16,7 +16,7 @@ const plain = value => JSON.parse(JSON.stringify(value));
  * obstacles and pilots the ship in memory to isolate boss lifecycle/save rules.
  * The separate Chromium test never uses these mutations.
  */
-function harness(t, campaign = '') {
+function harness(t, campaign = '', {saved} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   t.after(() => dom.window.close());
@@ -43,6 +43,7 @@ function harness(t, campaign = '') {
   window.localStorage.setItem('neon-stars-v2', '{"1":2}');
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
+  if (saved !== undefined) window.localStorage.setItem('neonCatcher.flightEquipment.v1', saved);
   window.eval(core); window.eval(content);
   const marker = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
   assert.equal(game.split(marker).length, 2, 'Legacy bootstrap marker changed');
@@ -81,6 +82,8 @@ function harness(t, campaign = '') {
       elapsed,unlocked:getUnlocked(),stars:getStars(),continued,atlasAutoFire,slow:powers.slow,
       player:{x:player.x,y:player.y},
       weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
+      shots:shots.map(shot=>({kind:shot.kind,damage:shot.damage,atlasPulse:shot.atlasPulse,
+        x1:shot.x1,x2:shot.x2,life:shot.life})),
       projectiles:items.filter(item=>item.guardianProjectile).map(item=>({
         id:item.projectileId,attackId:item.attackId,volley:item.volley,
         x:item.x,y:item.y,vx:item.vx,vy:item.vy,r:item.r,life:item.life})),
@@ -93,7 +96,10 @@ function harness(t, campaign = '') {
     for (let index = 0; index < 45; index++) api.collectEnergy();
     return snapshot();
   }
-  function until(predicate, maximum = 60 * 90) {
+  // Shared three-charge batteries intentionally replace the former unlimited
+  // boss pulse. Allow its real 3.6-second recharge while retaining a finite
+  // failure bound; this lifecycle fixture does not certify natural balance.
+  function until(predicate, maximum = 60 * 240) {
     for (let frame = 0; frame < maximum; frame++) {
       const q = snapshot(); if (predicate(q)) return q;
       assert.ok(q.state === 'playing' || q.state === 'destroying', `Unexpected fixture state ${q.state}`);
@@ -130,6 +136,8 @@ test('the actual legacy pause freezes Atlas and resume continues without a dupli
   const after = h.snapshot();
   assert.equal(after.state, 'paused'); assert.equal(after.elapsed, before.elapsed);
   assert.deepEqual(after.boss, before.boss); assert.equal(after.unlocked, 2);
+  assert.deepEqual(after.weapons, before.weapons);
+  assert.deepEqual(after.shots, before.shots);
   h.api.resumeGame(); h.api.isolatedFrame(1 / 60);
   assert.ok(h.snapshot().boss.age > before.boss.age);
   assert.equal(h.pending.size, 1);
@@ -185,17 +193,38 @@ test('death, a rewarded continuation and retry cannot bypass or prematurely save
   assert.equal(h.pending.size, 1);
 });
 
-test('Gaia keeps its manual pulse and Chronos begins with three charges before recharging through played time', t => {
+test('Gaia and Chronos share three manual charges with played-time recharge instead of unlimited boss ammunition', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal();
   const toggle = h.window.document.getElementById('atlasAutoFire');
   assert.ok(toggle, 'The encounter must expose the automatic/manual fire choice');
   if (h.snapshot().atlasAutoFire) toggle.click();
   assert.equal(h.snapshot().atlasAutoFire, false);
-  for (let shot = 0; shot < 6; shot++) {
+  for (let shot = 0; shot < 3; shot++) {
     assert.equal(h.api.fireManualShot(), true, `Manual pulse ${shot + 1} was unavailable`);
     for (let frame = 0; frame < 20; frame++) h.api.isolatedFrame(1 / 60);
   }
   assert.equal(h.snapshot().state, 'playing');
+  assert.equal(h.snapshot().ammo, 0);
+  assert.equal(h.api.fireManualShot(), false, 'Entering a boss must not turn the battery into unlimited shots');
+  assert.equal(h.snapshot().weapons.shotSequence, 3);
+  const depleted = h.snapshot();
+  h.api.pauseGame();
+  for (let frame = 0; frame < 600; frame++) h.api.update(1 / 60);
+  assert.deepEqual(h.snapshot().weapons, depleted.weapons,
+    'A paused Atlas encounter cannot refill its shared battery');
+  h.api.resumeGame();
+  while (h.snapshot().weapons.recharge + 1 / 60 < 3.6 - 1e-8) h.api.isolatedFrame(1 / 60);
+  assert.equal(h.snapshot().ammo, 0); assert.equal(h.api.fireManualShot(), false);
+  h.api.isolatedFrame(1 / 60);
+  assert.equal(h.snapshot().ammo, 1);
+  assert.equal(h.snapshot().weapons.shotSequence, 3);
+  assert.equal(h.api.fireManualShot(), true);
+  assert.equal(h.snapshot().ammo, 0); assert.equal(h.snapshot().weapons.shotSequence, 4);
+  for (let shot = 5; shot <= 6; shot++) {
+    while (h.snapshot().ammo === 0) h.api.isolatedFrame(1 / 60);
+    assert.equal(h.api.fireManualShot(), true, `Recharged boss pulse ${shot} was unavailable`);
+    assert.equal(h.snapshot().weapons.shotSequence, shot);
+  }
   h.api.prepare(0);
   assert.equal(h.snapshot().ammo, 3); assert.equal(h.snapshot().boss, null);
   for (let shot = 0; shot < 3; shot++) {
@@ -216,6 +245,40 @@ test('Gaia keeps its manual pulse and Chronos begins with three charges before r
   assert.equal(recharged.weapons.shotSequence, 3, 'Recharging cannot silently emit a shot');
   assert.equal(h.api.fireManualShot(), true);
   assert.equal(h.snapshot().ammo, 0); assert.equal(h.snapshot().weapons.shotSequence, 4);
+});
+
+test('Atlas receives the advertised ×1, ×2 and ×3 damage once and converts each trigger into beams without duplicate projectiles', t => {
+  for (const [selected, multiplier, bolts] of [['pulse', 1, 1], ['twin', 2, 2], ['lance', 3, 1]]) {
+    const saved = JSON.stringify({version: 1, recoveredTwin: selected !== 'pulse',
+      unlocked: selected === 'pulse' ? ['pulse'] : selected === 'twin' ? ['pulse', 'twin'] : ['pulse', 'twin', 'lance'],
+      selected, ...(selected === 'lance' ? {lanceCalibrated: true} : {})});
+    const h = harness(t, '', {saved}); h.api.prepare(); h.collectGoal();
+    if (h.snapshot().atlasAutoFire) h.window.document.getElementById('atlasAutoFire').click();
+    h.until(q => q.boss.state === 'idle');
+    const before = h.snapshot();
+    assert.equal(before.weapons.damageMultiplier, multiplier);
+    assert.equal(h.window.document.getElementById('flightWeaponDamage').textContent, `DAÑO ×${multiplier}`);
+    assert.equal(h.window.document.getElementById('flightHud').classList.contains('hidden'), false);
+    assert.equal(h.window.document.getElementById('flightRoute').classList.contains('hidden'), true);
+    assert.equal(h.api.fireManualShot(), true);
+    const fired = h.snapshot();
+    assert.equal(fired.boss.hp, before.boss.hp, 'Damage must wait for the actual beam impact');
+    assert.equal(fired.shots.filter(shot => shot.atlasPulse).length, bolts);
+    assert.equal(fired.shots.reduce((total, shot) => total + shot.damage, 0), multiplier);
+    assert.equal(fired.weapons.charges, before.weapons.charges - 1);
+    assert.equal(fired.weapons.shotSequence, before.weapons.shotSequence + 1);
+    assert.equal(fired.weapons.projectiles.length, 0,
+      'Converted beams must not retain a second physical projectile representation');
+    assert.equal(h.api.fireManualShot(), false, 'A second same-frame trigger cannot duplicate the volley');
+    const impact = h.until(q => q.boss.hp < before.boss.hp, 120);
+    assert.equal(impact.boss.hp, before.boss.hp - multiplier);
+    assert.equal(impact.shots.length, 0);
+    assert.equal(impact.weapons.projectiles.length, 0);
+    for (let frame = 0; frame < 30; frame++) h.api.isolatedFrame(1 / 60);
+    assert.equal(h.snapshot().boss.hp, impact.boss.hp, 'A completed beam cannot apply its damage again');
+    assert.equal(h.snapshot().weapons.shotSequence, fired.weapons.shotSequence);
+    assert.equal(h.pending.size, 1);
+  }
 });
 
 test('leaving the encounter does not mutate saves and N-7 cannot start classic Atlas', t => {

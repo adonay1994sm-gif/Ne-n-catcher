@@ -50,11 +50,18 @@ test('Atlas perimeter draws its own illustrated Gaia Nova environment', async ()
   assert.ok(master.byteLength > runtime.byteLength);
 });
 
-test('Vulkar descent uses a real background in classic level 3 only', async () => {
+test('Vulkar level 3 uses separate illustrated space and planet layers with the played clock', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 2 && spriteReady\(SPRITES\.vulkarBackground\)/);
+  assert.match(src, /isUnifiedClassic\(\) && currentLevel===2.*drawVulkarOrbitBackground/);
+  const orbit=src.slice(src.indexOf('function drawVulkarOrbitBackground'),src.indexOf('function background(t)'));
+  assert.match(orbit,/SPRITES\.vulkarOrbitBackground,planet=SPRITES\.vulkarOrbitPlanet/);
+  assert.match(orbit,/ctx\.drawImage\(planet/);
+  assert.match(orbit,/elapsed\*/);
+  assert.doesNotMatch(orbit,/Date\.now|performance\.now|requestAnimationFrame/);
   const assets = await text('src/game/01-runtime-assets.js');
-  assert.match(assets, /assets\/vulkar_descent_background_v1\.webp/);
+  assert.match(assets, /assets\/vulkar_orbit_background_v1\.webp/);
+  assert.match(assets, /assets\/vulkar_orbit_planet_v1\.webp/);
+  // The previous illustration remains recoverable, not silently deleted.
   const master = await readFile(join(root, 'art-source/visual-rebirth/levels/03/vulkar-descent-master.png'));
   const runtime = await readFile(join(root, 'assets/vulkar_descent_background_v1.webp'));
   assert.ok(master.byteLength > runtime.byteLength);

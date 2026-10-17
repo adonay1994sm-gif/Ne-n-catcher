@@ -78,6 +78,7 @@
     storySpeaker: $("storySpeaker"),
     storyText: $("storyText"),
     completeLabel: $("completeLabel"),
+    completeVisual: $("completeVisual"),
     completeTitle: $("completeTitle"),
     starsAwarded: $("starsAwarded"),
     levelScore: $("levelScore"),
@@ -121,8 +122,8 @@
       name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
       accent: "#ffb35c", top: "#3b2437", mid: "#17101f", hazard: "wave", scene: "belt",
       world: "VULKAR", enemyCue: "Lava Core / Plasma Mine",
-      zone: "Caldera orbital de Vulkar", desc: "CRONIUM sobrecalentado",
-      mission: "Sigue los fragmentos incandescentes entre núcleos de lava y minas de plasma antes de que se desintegren.",
+      zone: "Órbita exterior de Vulkar", desc: "CRONIUM sobrecalentado",
+      mission: "Recupera el CRONIUM entre los restos de la refinería orbital. Mantente en el espacio: Vulkar queda bajo la ruta.",
       threatLabel: "Lava Core y chatarra", threatPool: ["meteor", "meteor", "debris", "debris"], gate: 0
     },
     {
@@ -290,6 +291,8 @@
   const classicFlightInput = NeonCampaign.createRelativeFlightInput();
   let classicEquipment = {version:1, recoveredTwin:false, unlocked:['pulse'], selected:'pulse'};
   let classicEquipmentWritable = true;
+  let classicShieldAge = 0;
+  let classicShieldImpact = 0;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
   let classicCometSequence = 0;
@@ -415,6 +418,7 @@
     satellite: loadSprite("assets/satellite_old.webp"),
     repairDrone: loadSprite("assets/repair_drone.webp"),
     shieldEffect: loadSprite("assets/shield_effect.webp"),
+    forceShieldAtlas: loadSprite("assets/force_shield_atlas_v1.webp", false),
     shieldIdle: loadSprite("assets/shield_idle.webp"),
     explosionSmall: loadSprite("assets/explosion_small.webp"),
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
@@ -422,6 +426,8 @@
     chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
     atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false),
     vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false),
+    vulkarOrbitBackground: loadSprite("assets/vulkar_orbit_background_v1.webp", false),
+    vulkarOrbitPlanet: loadSprite("assets/vulkar_orbit_planet_v1.webp", false),
     magmaTunnelBackground: loadSprite("assets/vulkar_magma_tunnel_background_v1.webp", false),
     cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false),
     cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false),
@@ -770,9 +776,14 @@
       try {
         const value = JSON.parse(raw);
         if (value?.version !== 1 || typeof value.recoveredTwin !== "boolean" || !Array.isArray(value.unlocked) ||
-          !value.unlocked.includes("pulse") || value.unlocked.some(type => !["pulse", "twin"].includes(type)) ||
-          !value.unlocked.includes(value.selected) || (value.unlocked.includes("twin") && !value.recoveredTwin)) throw new Error("Invalid equipment");
-        classicEquipment = {version:1,recoveredTwin:value.recoveredTwin,unlocked:[...new Set(value.unlocked)],selected:value.selected};
+          !value.unlocked.includes("pulse") || value.unlocked.some(type => !["pulse", "twin", "lance"].includes(type)) ||
+          !value.unlocked.includes(value.selected) || (value.unlocked.includes("twin") && !value.recoveredTwin) ||
+          (value.lanceCalibrated !== undefined && typeof value.lanceCalibrated !== "boolean") ||
+          (value.unlocked.includes("lance") && (!value.lanceCalibrated || !value.unlocked.includes("twin")))) throw new Error("Invalid equipment");
+        // Optional extension: old v1 profiles retain their original shape. No
+        // campaign progress is mapped or overwritten to unlock a new weapon.
+        classicEquipment = {version:1,recoveredTwin:value.recoveredTwin,unlocked:[...new Set(value.unlocked)],selected:value.selected,
+          ...(value.lanceCalibrated !== undefined ? {lanceCalibrated:value.lanceCalibrated} : {})};
       } catch {
         const backupKey = CLASSIC_EQUIPMENT_KEY + ":invalid-backups";
         const previous = storage.getJSON(backupKey, []);
@@ -785,20 +796,28 @@
     mount.innerHTML = `<div id="flightHud" class="flight-hud hidden">
       <section id="flightRoute" class="flight-route hidden" aria-label="Trayecto espacial"><div><small id="flightDestination">CHRONOS → GAIA NOVA</small><b id="flightStage">Recupera el CRONIUM</b></div><progress id="flightDistance" max="1" value="0" aria-label="Recorrido hasta el destino"></progress></section>
       <p id="flightObjective" class="flight-comms" role="status" aria-live="polite" data-active="false"></p>
-      <button id="flightWeapon" class="flight-weapon" type="button"><small>ARMA</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
+      <button id="flightWeapon" class="flight-weapon" type="button"><small id="flightWeaponDamage">DAÑO ×1</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
       </div>
       <div id="flightDock" class="overlay"><section class="panel flight-dock"><small>TALLER C9 · MIRA</small><h2>Que la pieza vuelva a volar.</h2><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p><button id="flightInstallTwin" class="primary" type="button">INSTALAR EMISOR GEMELO</button><button id="flightDockContinue" class="secondary" type="button">CONTINUAR HACIA GAIA</button><button id="flightDockHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
     canvas.parentElement.append(mount);
-    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
+    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
+    const calibrate=document.createElement("button");calibrate.id="flightCalibrateLance";calibrate.className="secondary";calibrate.type="button";
+    ui.flightInstallTwin.after(calibrate);ui.flightCalibrateLance=calibrate;
     ui.flightWeapon.onclick = () => {
       if (classicEquipment.unlocked.length < 2) { toast("Rescata el emisor gemelo de Chronos y móntalo en C9"); return; }
-      const selected = classicEquipment.selected === "pulse" ? "twin" : "pulse";
+      const selected = classicEquipment.unlocked[(classicEquipment.unlocked.indexOf(classicEquipment.selected)+1)%classicEquipment.unlocked.length];
       if (persistClassicEquipment({...classicEquipment, selected})) { tone(selected === "twin" ? 860 : 650, .12, "triangle", .045); syncClassicFlightHud(); }
     };
     ui.flightInstallTwin.onclick = () => {
       if (!classicEquipment.recoveredTwin || classicEquipment.unlocked.includes("twin")) return;
-      if (persistClassicEquipment({...classicEquipment,unlocked:["pulse","twin"],selected:"twin"})) {
-        toast("Emisor gemelo montado · dos cañones, una carga"); updateClassicDock();
+      if (persistClassicEquipment({...classicEquipment,unlocked:[...new Set([...classicEquipment.unlocked,"twin"])],selected:"twin"})) {
+        toast("Gemelo ×2 · dos pulsos centrados por carga"); updateClassicDock();
+      }
+    };
+    calibrate.onclick=()=>{
+      if(!classicEquipment.unlocked.includes("twin") || classicEquipment.unlocked.includes("lance"))return;
+      if(persistClassicEquipment({...classicEquipment,lanceCalibrated:true,unlocked:[...classicEquipment.unlocked,"lance"],selected:"lance"})) {
+        toast("Lanza ×3 calibrada · perfora dos objetivos");updateClassicDock();
       }
     };
     $("flightDockContinue").onclick = () => { if (flightDockReturn === "complete") prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete"); else goHome(); };
@@ -816,7 +835,8 @@
       for (const type of next.unlocked) NeonCampaign.unlockClassicWeapon(classicWeapons,type);
       NeonCampaign.selectClassicWeapon(classicWeapons,next.selected);
     }
-    if (next.selected === "twin") ensureSprite(SPRITES.flightWeapons);
+    if (["twin","lance"].includes(next.selected)) ensureSprite(SPRITES.flightWeapons);
+    if (next.selected === "lance") SPRITE_GROUPS.phaser.forEach(ensureSprite);
     shipPresentationSignature="";
     $("openFlightDock")?.classList.toggle("hidden",!next.recoveredTwin);
     return true;
@@ -829,9 +849,11 @@
 
   function updateClassicDock() {
     const installed=classicEquipment.unlocked.includes("twin");
-    ui.flightDockStatus.textContent=installed ? "Dos emisores montados en las raíces de las alas. Doble pulso: dos trayectorias por una carga; puedes alternarlo con el pulso central." : classicEquipment.recoveredTwin ? "Recuperaste un emisor del laboratorio. Lo adaptamos a las alas: más cobertura, tres cargas y recarga de una cada 3,6 segundos de vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Puedes recuperarlo al repetir el primer tramo. Tu pulso central ya se recarga en vuelo.";
+    ui.flightDockStatus.textContent=installed ? "Pulso ×1: 1 de daño. Gemelo ×2: dos tiros centrados de 1. Calibra la misma pieza como lanza ×3: 3 de daño y hasta dos objetivos perforados. Todos comparten tres cargas; recuperas una cada 3,6 segundos de vuelo. Sin coste." : classicEquipment.recoveredTwin ? "Recuperaste un emisor del laboratorio. Lo montamos en las alas y concentramos sus dos tiros delante de la proa. Tres cargas con recarga en vuelo. Sin coste." : "El emisor gemelo sigue entre los restos de Chronos. Puedes recuperarlo al repetir el primer tramo. Tu pulso central ya se recarga en vuelo.";
     ui.flightInstallTwin.disabled=installed || !classicEquipment.recoveredTwin;
     ui.flightInstallTwin.textContent=installed ? "EMISOR GEMELO INSTALADO" : "INSTALAR EMISOR GEMELO";
+    ui.flightCalibrateLance.disabled=!installed || classicEquipment.unlocked.includes("lance");
+    ui.flightCalibrateLance.textContent=classicEquipment.unlocked.includes("lance") ? "LANZA ×3 CALIBRADA" : "CALIBRAR LANZA ×3";
     $("flightDockContinue").textContent=flightDockReturn==="complete" ? "CONTINUAR HACIA GAIA" : "VOLVER AL VIAJE";
   }
 
@@ -853,16 +875,18 @@
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
     ui.flightDistance.setAttribute("aria-valuetext",view ? `${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
-    ui.flightWeaponName.textContent=classicEquipment.selected==="twin" ? "GEMELO" : "PULSO";
+    const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
+    ui.flightWeaponName.textContent=weapon.label.toUpperCase();
+    ui.flightWeaponDamage.textContent=`DAÑO ×${weapon.damageMultiplier}`;
+    ui.flightWeapon.title=weapon.description;
     ui.flightWeapon.dataset.switchable=String(classicEquipment.unlocked.length>1);
-    ui.flightWeapon.setAttribute("aria-pressed",String(classicEquipment.selected==="twin"));
-    ui.flightWeapon.setAttribute("aria-label",`Cambiar arma. ${classicEquipment.selected==="twin"?"Doble pulso":"Pulso central"}`);
+    ui.flightWeapon.setAttribute("aria-label",`Cambiar arma. ${weapon.label}. ${weapon.description}`);
     updateAmmoHud();
   }
 
   function setClassicFlightHudVisible(visible) {
     ui.flightHud?.classList.toggle("hidden",!visible);
-    ui.flightRoute?.classList.toggle("hidden",!visible);
+    ui.flightRoute?.classList.toggle("hidden",!visible || Boolean(atlasBoss));
   }
 
   function classicFlightEvent(event) {
@@ -924,7 +948,7 @@
 
   function fireClassicWeapon() {
     if(!classicWeapons || !spriteReady(SPRITES.atlasVfx))return false;
-    const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-(classicWeapons.selected==="twin"?55-SHIP_VISUAL.centerYOffset:114)});
+    const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-125});
     if(!result.accepted)return false;
     ammo=classicWeapons.charges;manualShotCooldown=classicWeapons.cooldown;
     tone(classicWeapons.selected==="twin"?820:670,.065,"triangle",.04);
@@ -932,7 +956,7 @@
   }
 
   function advanceClassicWeaponField(dt) {
-    if(!classicWeapons || atlasBoss)return;
+    if(!classicWeapons)return;
     for(const shot of classicWeapons.projectiles){shot.previousX=shot.x;shot.previousY=shot.y;}
     const events=NeonCampaign.advanceClassicWeapons(classicWeapons,dt);
     ammo=classicWeapons.charges;
@@ -1008,7 +1032,7 @@
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
-    setClassicFlightHudVisible(false);
+    setClassicFlightHudVisible(isUnifiedClassic());
     ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
     hideWarning(); hideStoryTransmission(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
@@ -1038,8 +1062,7 @@
     else if (atlasBoss.state === "entry") status = "Tu carga activa la contención. Desactiva el núcleo para abrir el paso.";
     else if (atlasBoss.state === "disabled") status = "Atlas: «Identidad confirmada. Gaia autoriza el acceso».";
     else if (atlasBoss.state === "phaseBreak") status = "N-7: «Es un bucle de contención. Rompe el enlace, salva al guardián».";
-    else if (atlasBoss.telegraph?.safeGap) status = "DOBLE CORTINA · atraviesa la franja iluminada.";
-    else if (atlasBoss.state === "charge") status = "SALVA FIJADA · cambia de posición antes del disparo.";
+    else if (atlasBoss.state === "charge") status = "ARMAS CARGANDO";
     else status = "NÚCLEO EXPUESTO · alinea la nave y abre fuego.";
     if (status !== atlasLastStatus) { ui.atlasStatus.textContent = status; atlasLastStatus = status; layoutChanged = true; }
     if (layoutChanged) positionAtlasArena();
@@ -1074,14 +1097,24 @@
 
   function fireAtlasPulse(kind) {
     if (!atlasBoss || atlasBoss.disabled || !spriteReady(SPRITES.guardianAtlas) || Math.abs(atlasBoss.x - player.x) >= 115) return false;
-    if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-    const twin=isUnifiedClassic() && classicEquipment.selected==="twin";
-    for(const offset of twin?[-42,42]:[0]) {
+    // The same battery, damage and cooldown apply in the field and at the
+    // frontier. Automatic phaser power remains a separate timed ability.
+    let bolts=[{x:player.x,y:player.y-125,damage:1,weapon:kind}];
+    if(isUnifiedClassic() && kind!=="phaser") {
+      if(!classicWeapons)return false;
+      const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-125});
+      if(!result.accepted)return false;
+      bolts=result.projectiles;
+      const converted=new Set(bolts.map(shot=>shot.id));
+      classicWeapons.projectiles=classicWeapons.projectiles.filter(shot=>!converted.has(shot.id));
+      ammo=classicWeapons.charges;manualShotCooldown=classicWeapons.cooldown;
+    }
+    for(const bolt of bolts) {
       if(shots.length>=EFFECT_LIMITS.shots)shots.shift();
-      shots.push({x1:player.x+offset,y1:player.y-(twin?55-SHIP_VISUAL.centerYOffset:114),
-        x2:atlasBoss.x+offset*.25,y2:atlasBoss.y,life:.24,duration:.24,
+      shots.push({x1:bolt.x,y1:bolt.y,
+        x2:atlasBoss.x+(bolt.x-player.x),y2:atlasBoss.y,life:.24,duration:.24,
         hit:false,destroyed:false,impactX:atlasBoss.x,impactY:atlasBoss.y,
-        impactScale:.7,kind,atlasPulse:true,atlasTarget:atlasBoss,damage:twin?.7:1});
+        impactScale:.7,kind:bolt.weapon,atlasPulse:true,atlasTarget:atlasBoss,damage:bolt.damage});
     }
     tone(740, .04, "triangle", .025);
     return true;
@@ -1431,13 +1464,14 @@
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
-    if(isUnifiedClassic() && classicWeapons && !atlasBoss) {
+    if(isUnifiedClassic() && classicWeapons) {
       ammo=classicWeapons.charges;
       const remaining=Math.max(0,NeonCampaign.CLASSIC_WEAPON_RULES.rechargeSeconds-classicWeapons.recharge);
       ui.ammo.textContent=ammo<MAX_AMMO ? `${ammo}/${MAX_AMMO} · ${remaining.toFixed(1)}s` : `${ammo}/${MAX_AMMO}`;
       ui.fire.disabled=state!=="playing" || ammo<=0 || manualShotCooldown>0 || warpTimer>0;
       ui.fire.classList.toggle("empty",ammo<=0);
-      ui.fire.setAttribute("aria-label",`Disparar ${classicEquipment.selected==="twin"?"doble pulso":"pulso"}. ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
+      const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
+      ui.fire.setAttribute("aria-label",`Disparar ${weapon.label}. ${weapon.description} ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
       return;
     }
     if (JOURNEY_DEMO || atlasBoss) {
@@ -1558,6 +1592,7 @@
 
   function resetPowers() {
     for (const key in powers) powers[key] = 0;
+    classicShieldAge=0;classicShieldImpact=0;
     tractorTarget = null;
     updatePowerHud();
   }
@@ -1628,7 +1663,8 @@
     classicPatrolTimer=0;classicPatrolSequence=0;classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
-      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);
+      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
+      if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
         ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
@@ -1822,6 +1858,7 @@
     progressSaved = saveScore() && progressSaved;
     registerRun();
     ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
+    if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
       ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
       : `${level().name} completado`;
@@ -1933,7 +1970,7 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
-    setClassicFlightHudVisible(isUnifiedClassic() && !atlasBoss);
+    setClassicFlightHudVisible(isUnifiedClassic());
     hud();
     updatePowerHud();
     refreshClassicFlightBounds();
@@ -2300,8 +2337,11 @@
     }
 
     powers[type] = Math.max(powers[type], durations[type]);
-    const effectKind = type === "double" ? "gold" : type === "phaser" ? "green" : "violet";
-    const effectColor = type === "double" ? "#ffe66c" : type === "phaser" ? "#78ff9c" : "#c58aff";
+    if(type==="shield" && isUnifiedClassic()) {
+      classicShieldAge=0;classicShieldImpact=0;ensureSprite(SPRITES.forceShieldAtlas);
+    }
+    const effectKind = type === "double" ? "gold" : type === "phaser" ? "green" : type === "shield" ? "cyan" : "violet";
+    const effectColor = type === "double" ? "#ffe66c" : type === "phaser" ? "#78ff9c" : type === "shield" ? "#62efff" : "#c58aff";
     burst(item.x, item.y, 20, effectKind);
     pulseRing(item.x, item.y, effectColor, 105, 0.58);
     const names = {
@@ -2323,6 +2363,7 @@
     const impactAngle = Math.atan2(y - player.y, x - player.x);
     const damageResult = NeonCore.resolveDamage({ hull, amount, shieldActive: powers.shield > 0 });
     if (damageResult.absorbed) {
+      if(isUnifiedClassic())classicShieldImpact=.18;
       score += 10;
       burst(x, y, 18, "cyan");
       pulseRing(x, y, "#62fff1", 90, 0.42);
@@ -2516,8 +2557,9 @@
   }
 
   function fireManualShot() {
-    if(isUnifiedClassic() && !atlasBoss) {
+    if(isUnifiedClassic()) {
       if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
+      if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
       return fireClassicWeapon();
     }
     if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
@@ -2903,6 +2945,10 @@
 
     for (const key in powers) {
       if (powers[key] > 0) powers[key] = Math.max(0, powers[key] - dt);
+    }
+    if(isUnifiedClassic()) {
+      if(powers.shield>0)classicShieldAge+=dt;
+      classicShieldImpact=Math.max(0,classicShieldImpact-dt);
     }
     if (powers.tractor <= 0) tractorTarget = null;
     updatePowerHud();
@@ -3301,9 +3347,42 @@
     ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
 
+  function drawVulkarOrbitBackground() {
+    const plate=SPRITES.vulkarOrbitBackground,planet=SPRITES.vulkarOrbitPlanet;
+    ensureSprite(plate);ensureSprite(planet);
+    ctx.fillStyle="#020710";ctx.fillRect(0,0,W,H);
+    const progress=clamp(collected/level().goal,0,1);
+    // Both layers use played time: pause and backgrounding freeze this view.
+    // The refinery is in the plate; the transparent planet is a separate asset.
+    if(spriteReady(plate)) {
+      const scale=Math.max(W/plate.naturalWidth,H/plate.naturalHeight)*1.08;
+      const width=plate.naturalWidth*scale,height=plate.naturalHeight*scale;
+      const x=(W-width)/2+Math.sin(elapsed*.025)*12;
+      const y=(H-height)/2+Math.cos(elapsed*.018)*20;
+      ctx.drawImage(plate,x,y,width,height);
+    }
+    if(spriteReady(planet)) {
+      const size=W*(.88+progress*.22);
+      const x=W*(.89-progress*.06)+Math.sin(elapsed*.035)*6;
+      const y=H*(.17+progress*.04)+Math.sin(elapsed*.021)*10;
+      ctx.save();ctx.translate(x,y);ctx.rotate(-.14+elapsed*.0015);
+      ctx.drawImage(planet,-size/2,-size/2,size,size);ctx.restore();
+    }
+    // Illustrated orbital fragments cross at a nearer depth. They are scenery,
+    // do not share the threat list and cannot inflict invisible collision damage.
+    const fragment=SPRITES.meteorSmall || frameFrom("meteor",0);
+    if(fragment && spriteReady(fragment))for(let i=0;i<4;i++) {
+      const cycle=(elapsed*(9+i*2)+i*371)%(H+160);
+      const size=18+i*10,x=(i%2?W*.91:W*.07)+Math.sin(i*2.3+elapsed*.04)*18;
+      ctx.save();ctx.globalAlpha=.5;ctx.translate(x,cycle-80);ctx.rotate(i+elapsed*(.03+i*.008));
+      ctx.drawImage(fragment,-size/2,-size/2,size,size);ctx.restore();
+    }
+  }
+
   function background(t) {
     if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
     if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
+    if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
     gradient.addColorStop(0, lv.top);
@@ -3790,7 +3869,10 @@
     for (const shot of classicWeapons.projectiles) {
       ctx.save(); ctx.translate(shot.x, shot.y);
       ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
-      drawAtlasVfx(1, shot.weapon === "twin" ? 16 : 23,
+      if(shot.weapon === "lance") {
+        // Existing authored six-pose energy sequence, not a recoloured line.
+        drawImageCentered(frameFrom("phaser",Math.floor(elapsed*18)),30,105,0,1);
+      } else drawAtlasVfx(1, shot.weapon === "twin" ? 16 : 23,
         shot.weapon === "twin" ? 58 : 68, 1, .10);
       ctx.restore();
     }
@@ -3815,7 +3897,7 @@
   function hasClassicTwinMounts() {
     // Some isolated render fixtures deliberately do not install campaign UI.
     return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
-      typeof classicEquipment !== "undefined" && classicEquipment.selected === "twin";
+      typeof classicEquipment !== "undefined" && ["twin","lance"].includes(classicEquipment.selected);
   }
 
   function classicTwinFrame() {
@@ -3839,22 +3921,13 @@
   function drawGuardianAtlas() {
     if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
     const boss = atlasBoss;
-    const activeGap = boss.telegraph?.safeGap || items.find(item => item.guardianProjectile && item.safeGap && item.y < player.y + 140)?.safeGap;
-    if (activeGap && !boss.disabled) {
-      ctx.save();
-      ctx.fillStyle = "rgba(105,255,219,.045)";
-      ctx.fillRect(activeGap.left, boss.y + 100, activeGap.right - activeGap.left, Math.max(0, player.y + 100 - boss.y - 100));
-      ctx.strokeStyle = "rgba(145,255,221,.70)"; ctx.lineWidth = 2; ctx.setLineDash([8,12]);
-      for (const x of [activeGap.left, activeGap.right]) {
-        ctx.beginPath(); ctx.moveTo(x,boss.y + 100); ctx.lineTo(x,player.y + 100); ctx.stroke();
+    if (boss.state === "charge" && boss.telegraph) {
+      // Charge belongs to the barrels. Do not reveal a solved escape lane or
+      // paint the player's future safe position onto the arena.
+      for(const side of [-1,1]) {
+        ctx.save();ctx.translate(boss.x+side*(boss.visualSize||350)*.24,boss.y+55);
+        drawAtlasVfx(3,48,48,.45+boss.telegraph.progress*.5);ctx.restore();
       }
-      ctx.setLineDash([]); ctx.font = "bold 18px sans-serif"; ctx.textAlign = "center";
-      ctx.fillStyle = "#beffe6"; ctx.fillText("RUTA LIBRE", activeGap.center, player.y - 180);
-      ctx.restore();
-    } else if (boss.state === "charge" && boss.telegraph) {
-      ctx.save(); ctx.translate(boss.telegraph.targetX, boss.telegraph.targetY);
-      drawAtlasVfx(3, 85, 85, .65 + boss.telegraph.progress * .30);
-      ctx.restore();
     }
     const animation = NeonCampaign.guardianAtlasAnimation(boss);
     const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
@@ -4023,6 +4096,18 @@
     const { frameIndex, flipX } = playerFrameState(t);
 
     if (powers.shield > 0) {
+      if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && spriteReady(SPRITES.forceShieldAtlas)) {
+        const atlas=SPRITES.forceShieldAtlas,cell=atlas.naturalWidth/4;
+        const size=435; // illustrated rim 190/384 -> 215 logical px around hull
+        const paint=(frame,alpha)=>{
+          ctx.save();ctx.globalAlpha*=alpha;
+          ctx.drawImage(atlas,frame*cell,0,cell,atlas.naturalHeight,-size/2,SHIP_VISUAL.centerYOffset-size/2,size,size);
+          ctx.restore();
+        };
+        if(classicShieldImpact>0)paint(3,.95);
+        else if(classicShieldAge<.20)paint(0,.70+classicShieldAge);
+        else {const mix=.5-.5*Math.cos((classicShieldAge-.2)*Math.PI*2/1.2);paint(1,1-mix);paint(2,mix);}
+      } else {
       const shieldFrame = Math.sin(t * 0.012) > 0.45 ? SPRITES.shieldEffect : SPRITES.shieldIdle;
       ctx.save();
       ctx.translate(0, -26 * SHIP_VISUAL.scale + bob);
@@ -4031,6 +4116,7 @@
       ctx.shadowColor = "#4cffe9";
       drawImageCentered(shieldFrame, SHIP_VISUAL.shieldSize, SHIP_VISUAL.shieldSize, elapsed * 0.08, 0.42);
       ctx.restore();
+      }
     }
 
     const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
@@ -4094,6 +4180,18 @@
 
     }
 
+    if(hasClassicTwinMounts() && (classicWeapons?.cooldown||0)>.12) {
+      // Two physical wing emitters converge ahead of the nose. The projectiles
+      // then travel parallel through the centre, rather than missing a target
+      // sitting directly in front of the ship.
+      for(const side of [-1,1]) {
+        const x1=side*42,y1=-55+SHIP_VISUAL.centerYOffset,x2=side*10,y2=-125;
+        ctx.save();ctx.translate((x1+x2)/2,(y1+y2)/2);
+        ctx.rotate(Math.atan2(y2-y1,x2-x1)+Math.PI/2);
+        drawAtlasVfx(1,12,Math.hypot(x2-x1,y2-y1),.75);ctx.restore();
+      }
+    }
+
     if (hull < 67 && state !== "destroying") {
       // Los tres fotogramas comparten anclaje y estilo. El daño progresa mediante
       // tamaño/opacidad y una animación lenta que no cambia de motor.
@@ -4135,6 +4233,9 @@
     ctx.save();
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
+    // Visual scale only: the proven collection radius and tractor stay intact.
+    const orbVisualScale=typeof isUnifiedClassic==="function" && isUnifiedClassic() ? .5 : 1;
+    ctx.scale(orbVisualScale,orbVisualScale);
     const distanceToShip = Math.hypot(player.x - item.x, player.y - item.y);
     const proximity = state === "playing" ? clamp(1 - distanceToShip / 330, 0, 1) : 0;
     const pulseSequence = [0,1,2,3,4,5,4,3,2,1];
@@ -4143,7 +4244,7 @@
     const pulse = 1 + breath * 0.055 + proximity * 0.08;
     ctx.scale(pulse, pulse);
     ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = 24 + proximity * 24;
+    ctx.shadowBlur = (24 + proximity * 24)*orbVisualScale;
     ctx.shadowColor = "#33f4ff";
 
     const halo = ctx.createRadialGradient(0, 0, item.r * 0.15, 0, 0, item.r * (2.35 + proximity * 0.45));
@@ -4174,7 +4275,7 @@
       ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(0, 0, item.r, 0, Math.PI * 2); ctx.fill();
     }
     ctx.fillStyle = "rgba(255,255,255,.96)";
-    ctx.shadowBlur = 18 + proximity * 16;
+    ctx.shadowBlur = (18 + proximity * 16)*orbVisualScale;
     ctx.beginPath(); ctx.arc(0, 0, Math.max(3, item.r * 0.22), 0, Math.PI * 2); ctx.fill();
 
     if (proximity > 0.05 && settings.effects) {
@@ -4448,7 +4549,8 @@
         ctx.save();
         ctx.translate(shot.x1 + (shot.x2 - shot.x1) * progress, shot.y1 + (shot.y2 - shot.y1) * progress);
         ctx.rotate(Math.atan2(shot.y2 - shot.y1, shot.x2 - shot.x1) + Math.PI / 2);
-        drawAtlasVfx(1, 22, 60, 1, .10);
+        if(shot.kind==="lance" || shot.kind==="phaser")drawImageCentered(frameFrom("phaser",Math.floor(elapsed*18)),30,105,0,1);
+        else drawAtlasVfx(1, shot.kind==="twin"?16:22, shot.kind==="twin"?58:68, 1, .10);
         ctx.restore();
         continue;
       }

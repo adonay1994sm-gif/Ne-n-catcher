@@ -1345,7 +1345,7 @@ var NeonCampaign = (() => {
     return value;
   };
   var GUARDIAN_ATLAS_RULES = Object.freeze({
-    version: "guardian-atlas-v1",
+    version: "guardian-atlas-v2",
     maxHp: 36,
     maxDelta: 0.05,
     entrySeconds: 2.2,
@@ -1354,18 +1354,18 @@ var NeonCampaign = (() => {
     shutdownSeconds: 1.55,
     hurtSeconds: 0.16,
     phaseOne: Object.freeze({
-      chargeSeconds: 1.15,
+      chargeSeconds: 1.05,
       fireSeconds: 0.28,
-      recoverySeconds: 2.05,
-      projectileSpeed: 280,
+      recoverySeconds: 1.25,
+      projectileSpeed: 340,
       projectileDamage: 14
     }),
     phaseTwo: Object.freeze({
-      chargeSeconds: 1.4,
-      fireSeconds: 0.62,
-      secondVolleyAt: 0.34,
-      recoverySeconds: 2.25,
-      projectileSpeed: 255,
+      chargeSeconds: 1.2,
+      fireSeconds: 0.64,
+      secondVolleyAt: 0.36,
+      recoverySeconds: 1.45,
+      projectileSpeed: 315,
       projectileDamage: 12
     })
   });
@@ -1412,6 +1412,8 @@ var NeonCampaign = (() => {
       attackId: 0,
       volley: 0,
       lastGapIndex: -1,
+      phaseTwoAttacks: 0,
+      attackClearanceSeconds: 0,
       flash: 0,
       resumeState: null,
       resumeTime: 0
@@ -1437,14 +1439,17 @@ var NeonCampaign = (() => {
   function beginCharge(boss, player, events) {
     boss.attackId++;
     boss.volley = 0;
+    boss.attackClearanceSeconds = 0;
     const timing = rules(boss);
     const originY = boss.y + boss.r * 0.7;
+    if (boss.phase === 2) boss.phaseTwoAttacks++;
+    const curtain = boss.phase === 2 && (boss.width < 600 || boss.phaseTwoAttacks % 2 === 1);
     let safeGap = null;
-    if (boss.phase === 2) {
+    if (curtain) {
       let index = Math.floor(nextRandom(boss) * 3);
       if (index === boss.lastGapIndex) index = (index + 1) % 3;
       boss.lastGapIndex = index;
-      const halfWidth = Math.min(Math.max(125, boss.width * 0.17), boss.width / 2 - 14);
+      const halfWidth = Math.min(Math.max(135, boss.width * 0.17), boss.width / 2 - 14);
       const center = clamp4(
         boss.width * [0.28, 0.5, 0.72][index],
         halfWidth + 14,
@@ -1453,7 +1458,8 @@ var NeonCampaign = (() => {
       safeGap = { left: center - halfWidth, right: center + halfWidth, center };
     }
     boss.telegraph = {
-      kind: boss.phase === 1 ? "aimedSalvo" : "openCorridor",
+      kind: curtain ? "openCorridor" : "aimedSalvo",
+      pattern: curtain ? "curtain" : boss.phase === 2 ? "crossfire" : "focusedSalvo",
       progress: 0,
       targetX: clamp4(player.x, 24, boss.width - 24),
       targetY: clamp4(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 24),
@@ -1508,27 +1514,37 @@ var NeonCampaign = (() => {
   function fireVolley(boss, events) {
     const timing = rules(boss);
     const aim = boss.telegraph;
-    if (boss.phase === 1) {
-      const direction = Math.atan2(aim.targetY - aim.originY, aim.targetX - aim.originX);
-      for (const [index, offset] of [-0.115, 0, 0.115].entries()) {
+    const shots = [];
+    if (aim.kind === "aimedSalvo") {
+      const originX = aim.originX + (boss.phase === 2 ? (boss.volley === 0 ? -1 : 1) * boss.r * 0.72 : 0);
+      const direction = Math.atan2(aim.targetY - aim.originY, aim.targetX - originX);
+      const spread = boss.phase === 1 ? 0.085 : 0.075;
+      for (const [index, offset] of [-spread, -spread / 2, 0, spread / 2, spread].entries()) {
         const angle = direction + offset;
         const shot = projectile(
           boss,
-          aim.originX,
+          originX,
           aim.originY,
           Math.cos(angle) * timing.projectileSpeed,
           Math.sin(angle) * timing.projectileSpeed,
           index
         );
-        events.push({ type: "projectile", projectile: shot });
+        shots.push(shot);
       }
     } else {
       for (let index = 0; index < 9; index++) {
-        const x = 14 + (boss.width - 28) * index / 8;
-        if (x >= aim.safeGap.left - 15 && x <= aim.safeGap.right + 15) continue;
+        const x = 12 + (boss.width - 24) * index / 8;
+        if (x >= aim.safeGap.left - 12 && x <= aim.safeGap.right + 12) continue;
         const shot = projectile(boss, x, aim.originY, 0, timing.projectileSpeed, index);
-        events.push({ type: "projectile", projectile: shot });
+        shots.push(shot);
       }
+    }
+    for (const shot of shots) {
+      boss.attackClearanceSeconds = Math.max(
+        boss.attackClearanceSeconds,
+        boss.stateTime + (boss.playerY + 104 + shot.r - shot.y) / shot.vy
+      );
+      events.push({ type: "projectile", projectile: shot });
     }
     events.push({ type: "volley", attackId: boss.attackId, phase: boss.phase, volley: boss.volley });
     boss.volley++;
@@ -1542,11 +1558,9 @@ var NeonCampaign = (() => {
     if (boss.state === "fire") return rules(boss).fireSeconds;
     if (boss.attackId === 0) return GUARDIAN_ATLAS_RULES.arrivalSeconds;
     const timing = rules(boss);
-    const flightToPlayer = (boss.playerY - (boss.y + boss.r * 0.7)) / timing.projectileSpeed;
-    const lastVolleyAt = boss.phase === 2 ? timing.secondVolleyAt : 0;
     return Math.max(
       timing.recoverySeconds,
-      flightToPlayer + lastVolleyAt + 0.45 - timing.fireSeconds
+      boss.attackClearanceSeconds + 0.3 - timing.fireSeconds
     );
   }
   function finishState(boss, player, events) {
@@ -1978,6 +1992,8 @@ var NeonCampaign = (() => {
       pulse: weapon({
         id: "pulse",
         label: "Pulso",
+        damageMultiplier: 1,
+        description: "Da\xF1o \xD71: un pulso de 1 de da\xF1o por carga.",
         cooldown: 0.24,
         speed: 920,
         damage: 1,
@@ -1987,13 +2003,28 @@ var NeonCampaign = (() => {
       }),
       twin: weapon({
         id: "twin",
-        label: "Doble pulso",
+        label: "Gemelo",
+        damageMultiplier: 2,
+        description: "Da\xF1o \xD72: dos pulsos centrados de 1 de da\xF1o por carga.",
         cooldown: 0.3,
         speed: 900,
-        damage: 0.7,
+        damage: 1,
         radius: 7,
         duration: 2.4,
-        barrels: [{ offset: -42, spread: -0.025 }, { offset: 42, spread: 0.025 }]
+        barrels: [{ offset: -10, spread: 0 }, { offset: 10, spread: 0 }]
+      }),
+      lance: weapon({
+        id: "lance",
+        label: "Lanza",
+        damageMultiplier: 3,
+        description: "Da\xF1o \xD73: una lanza de 3 de da\xF1o que atraviesa hasta dos objetivos distintos.",
+        cooldown: 0.48,
+        speed: 1280,
+        damage: 3,
+        radius: 6,
+        duration: 1.8,
+        pierce: 2,
+        barrels: [{ offset: 0, spread: 0 }]
       })
     })
   });
@@ -2084,7 +2115,7 @@ var NeonCampaign = (() => {
         vy: Math.sin(direction) * definition.speed,
         damage: definition.damage,
         radius: definition.radius,
-        pierce: 1,
+        pierce: definition.pierce || 1,
         duration: definition.duration,
         life: definition.duration,
         hitTargets: []
@@ -2159,9 +2190,13 @@ var NeonCampaign = (() => {
     };
   }
   function classicWeaponSnapshot(state) {
+    const definition = CLASSIC_WEAPON_RULES.types[state.selected];
     return {
       ...state,
       unlocked: [...state.unlocked],
+      label: definition.label,
+      description: definition.description,
+      damageMultiplier: definition.damageMultiplier,
       rechargeProgress: state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 : Math.min(1, state.recharge / CLASSIC_WEAPON_RULES.rechargeSeconds),
       projectiles: state.projectiles.map((projectile2) => ({
         ...projectile2,

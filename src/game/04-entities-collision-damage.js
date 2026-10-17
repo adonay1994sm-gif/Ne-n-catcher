@@ -357,8 +357,11 @@
     }
 
     powers[type] = Math.max(powers[type], durations[type]);
-    const effectKind = type === "double" ? "gold" : type === "phaser" ? "green" : "violet";
-    const effectColor = type === "double" ? "#ffe66c" : type === "phaser" ? "#78ff9c" : "#c58aff";
+    if(type==="shield" && isUnifiedClassic()) {
+      classicShieldAge=0;classicShieldImpact=0;ensureSprite(SPRITES.forceShieldAtlas);
+    }
+    const effectKind = type === "double" ? "gold" : type === "phaser" ? "green" : type === "shield" ? "cyan" : "violet";
+    const effectColor = type === "double" ? "#ffe66c" : type === "phaser" ? "#78ff9c" : type === "shield" ? "#62efff" : "#c58aff";
     burst(item.x, item.y, 20, effectKind);
     pulseRing(item.x, item.y, effectColor, 105, 0.58);
     const names = {
@@ -380,6 +383,7 @@
     const impactAngle = Math.atan2(y - player.y, x - player.x);
     const damageResult = NeonCore.resolveDamage({ hull, amount, shieldActive: powers.shield > 0 });
     if (damageResult.absorbed) {
+      if(isUnifiedClassic())classicShieldImpact=.18;
       score += 10;
       burst(x, y, 18, "cyan");
       pulseRing(x, y, "#62fff1", 90, 0.42);
@@ -573,8 +577,9 @@
   }
 
   function fireManualShot() {
-    if(isUnifiedClassic() && !atlasBoss) {
+    if(isUnifiedClassic()) {
       if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
+      if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
       return fireClassicWeapon();
     }
     if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;

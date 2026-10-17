@@ -1,4 +1,4 @@
-const CACHE = "neon-catcher-pre-release-7-2-0-chronos-destruction-1";
+const CACHE = "neon-catcher-pre-release-7-2-0-combat-readability-1";
 const CORE = [
   "./",
   "index.html",
@@ -20,6 +20,9 @@ const CORE = [
   "assets/chronos_destruction_atlas_v1.webp",
   "assets/chronos_flight_weapons_v1.webp",
   "assets/chronos_flight_space_v1.webp",
+  "assets/vulkar_orbit_background_v1.webp",
+  "assets/vulkar_orbit_planet_v1.webp",
+  "assets/force_shield_atlas_v1.webp",
   "assets/ship_frame_00.webp",
   "assets/ship_frame_01.webp",
   "assets/ship_frame_02.webp",

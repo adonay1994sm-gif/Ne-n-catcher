@@ -23,7 +23,10 @@
     for (const shot of classicWeapons.projectiles) {
       ctx.save(); ctx.translate(shot.x, shot.y);
       ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
-      drawAtlasVfx(1, shot.weapon === "twin" ? 16 : 23,
+      if(shot.weapon === "lance") {
+        // Existing authored six-pose energy sequence, not a recoloured line.
+        drawImageCentered(frameFrom("phaser",Math.floor(elapsed*18)),30,105,0,1);
+      } else drawAtlasVfx(1, shot.weapon === "twin" ? 16 : 23,
         shot.weapon === "twin" ? 58 : 68, 1, .10);
       ctx.restore();
     }
@@ -48,7 +51,7 @@
   function hasClassicTwinMounts() {
     // Some isolated render fixtures deliberately do not install campaign UI.
     return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
-      typeof classicEquipment !== "undefined" && classicEquipment.selected === "twin";
+      typeof classicEquipment !== "undefined" && ["twin","lance"].includes(classicEquipment.selected);
   }
 
   function classicTwinFrame() {
@@ -72,22 +75,13 @@
   function drawGuardianAtlas() {
     if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
     const boss = atlasBoss;
-    const activeGap = boss.telegraph?.safeGap || items.find(item => item.guardianProjectile && item.safeGap && item.y < player.y + 140)?.safeGap;
-    if (activeGap && !boss.disabled) {
-      ctx.save();
-      ctx.fillStyle = "rgba(105,255,219,.045)";
-      ctx.fillRect(activeGap.left, boss.y + 100, activeGap.right - activeGap.left, Math.max(0, player.y + 100 - boss.y - 100));
-      ctx.strokeStyle = "rgba(145,255,221,.70)"; ctx.lineWidth = 2; ctx.setLineDash([8,12]);
-      for (const x of [activeGap.left, activeGap.right]) {
-        ctx.beginPath(); ctx.moveTo(x,boss.y + 100); ctx.lineTo(x,player.y + 100); ctx.stroke();
+    if (boss.state === "charge" && boss.telegraph) {
+      // Charge belongs to the barrels. Do not reveal a solved escape lane or
+      // paint the player's future safe position onto the arena.
+      for(const side of [-1,1]) {
+        ctx.save();ctx.translate(boss.x+side*(boss.visualSize||350)*.24,boss.y+55);
+        drawAtlasVfx(3,48,48,.45+boss.telegraph.progress*.5);ctx.restore();
       }
-      ctx.setLineDash([]); ctx.font = "bold 18px sans-serif"; ctx.textAlign = "center";
-      ctx.fillStyle = "#beffe6"; ctx.fillText("RUTA LIBRE", activeGap.center, player.y - 180);
-      ctx.restore();
-    } else if (boss.state === "charge" && boss.telegraph) {
-      ctx.save(); ctx.translate(boss.telegraph.targetX, boss.telegraph.targetY);
-      drawAtlasVfx(3, 85, 85, .65 + boss.telegraph.progress * .30);
-      ctx.restore();
     }
     const animation = NeonCampaign.guardianAtlasAnimation(boss);
     const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
@@ -256,6 +250,18 @@
     const { frameIndex, flipX } = playerFrameState(t);
 
     if (powers.shield > 0) {
+      if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && spriteReady(SPRITES.forceShieldAtlas)) {
+        const atlas=SPRITES.forceShieldAtlas,cell=atlas.naturalWidth/4;
+        const size=435; // illustrated rim 190/384 -> 215 logical px around hull
+        const paint=(frame,alpha)=>{
+          ctx.save();ctx.globalAlpha*=alpha;
+          ctx.drawImage(atlas,frame*cell,0,cell,atlas.naturalHeight,-size/2,SHIP_VISUAL.centerYOffset-size/2,size,size);
+          ctx.restore();
+        };
+        if(classicShieldImpact>0)paint(3,.95);
+        else if(classicShieldAge<.20)paint(0,.70+classicShieldAge);
+        else {const mix=.5-.5*Math.cos((classicShieldAge-.2)*Math.PI*2/1.2);paint(1,1-mix);paint(2,mix);}
+      } else {
       const shieldFrame = Math.sin(t * 0.012) > 0.45 ? SPRITES.shieldEffect : SPRITES.shieldIdle;
       ctx.save();
       ctx.translate(0, -26 * SHIP_VISUAL.scale + bob);
@@ -264,6 +270,7 @@
       ctx.shadowColor = "#4cffe9";
       drawImageCentered(shieldFrame, SHIP_VISUAL.shieldSize, SHIP_VISUAL.shieldSize, elapsed * 0.08, 0.42);
       ctx.restore();
+      }
     }
 
     const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
@@ -327,6 +334,18 @@
 
     }
 
+    if(hasClassicTwinMounts() && (classicWeapons?.cooldown||0)>.12) {
+      // Two physical wing emitters converge ahead of the nose. The projectiles
+      // then travel parallel through the centre, rather than missing a target
+      // sitting directly in front of the ship.
+      for(const side of [-1,1]) {
+        const x1=side*42,y1=-55+SHIP_VISUAL.centerYOffset,x2=side*10,y2=-125;
+        ctx.save();ctx.translate((x1+x2)/2,(y1+y2)/2);
+        ctx.rotate(Math.atan2(y2-y1,x2-x1)+Math.PI/2);
+        drawAtlasVfx(1,12,Math.hypot(x2-x1,y2-y1),.75);ctx.restore();
+      }
+    }
+
     if (hull < 67 && state !== "destroying") {
       // Los tres fotogramas comparten anclaje y estilo. El daño progresa mediante
       // tamaño/opacidad y una animación lenta que no cambia de motor.
@@ -368,6 +387,9 @@
     ctx.save();
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
+    // Visual scale only: the proven collection radius and tractor stay intact.
+    const orbVisualScale=typeof isUnifiedClassic==="function" && isUnifiedClassic() ? .5 : 1;
+    ctx.scale(orbVisualScale,orbVisualScale);
     const distanceToShip = Math.hypot(player.x - item.x, player.y - item.y);
     const proximity = state === "playing" ? clamp(1 - distanceToShip / 330, 0, 1) : 0;
     const pulseSequence = [0,1,2,3,4,5,4,3,2,1];
@@ -376,7 +398,7 @@
     const pulse = 1 + breath * 0.055 + proximity * 0.08;
     ctx.scale(pulse, pulse);
     ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = 24 + proximity * 24;
+    ctx.shadowBlur = (24 + proximity * 24)*orbVisualScale;
     ctx.shadowColor = "#33f4ff";
 
     const halo = ctx.createRadialGradient(0, 0, item.r * 0.15, 0, 0, item.r * (2.35 + proximity * 0.45));
@@ -407,7 +429,7 @@
       ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(0, 0, item.r, 0, Math.PI * 2); ctx.fill();
     }
     ctx.fillStyle = "rgba(255,255,255,.96)";
-    ctx.shadowBlur = 18 + proximity * 16;
+    ctx.shadowBlur = (18 + proximity * 16)*orbVisualScale;
     ctx.beginPath(); ctx.arc(0, 0, Math.max(3, item.r * 0.22), 0, Math.PI * 2); ctx.fill();
 
     if (proximity > 0.05 && settings.effects) {
@@ -681,7 +703,8 @@
         ctx.save();
         ctx.translate(shot.x1 + (shot.x2 - shot.x1) * progress, shot.y1 + (shot.y2 - shot.y1) * progress);
         ctx.rotate(Math.atan2(shot.y2 - shot.y1, shot.x2 - shot.x1) + Math.PI / 2);
-        drawAtlasVfx(1, 22, 60, 1, .10);
+        if(shot.kind==="lance" || shot.kind==="phaser")drawImageCentered(frameFrom("phaser",Math.floor(elapsed*18)),30,105,0,1);
+        else drawAtlasVfx(1, shot.kind==="twin"?16:22, shot.kind==="twin"?58:68, 1, .10);
         ctx.restore();
         continue;
       }

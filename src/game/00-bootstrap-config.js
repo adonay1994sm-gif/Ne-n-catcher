@@ -78,6 +78,7 @@
     storySpeaker: $("storySpeaker"),
     storyText: $("storyText"),
     completeLabel: $("completeLabel"),
+    completeVisual: $("completeVisual"),
     completeTitle: $("completeTitle"),
     starsAwarded: $("starsAwarded"),
     levelScore: $("levelScore"),
@@ -121,8 +122,8 @@
       name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
       accent: "#ffb35c", top: "#3b2437", mid: "#17101f", hazard: "wave", scene: "belt",
       world: "VULKAR", enemyCue: "Lava Core / Plasma Mine",
-      zone: "Caldera orbital de Vulkar", desc: "CRONIUM sobrecalentado",
-      mission: "Sigue los fragmentos incandescentes entre núcleos de lava y minas de plasma antes de que se desintegren.",
+      zone: "Órbita exterior de Vulkar", desc: "CRONIUM sobrecalentado",
+      mission: "Recupera el CRONIUM entre los restos de la refinería orbital. Mantente en el espacio: Vulkar queda bajo la ruta.",
       threatLabel: "Lava Core y chatarra", threatPool: ["meteor", "meteor", "debris", "debris"], gate: 0
     },
     {

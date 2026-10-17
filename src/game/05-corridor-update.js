@@ -312,6 +312,10 @@
     for (const key in powers) {
       if (powers[key] > 0) powers[key] = Math.max(0, powers[key] - dt);
     }
+    if(isUnifiedClassic()) {
+      if(powers.shield>0)classicShieldAge+=dt;
+      classicShieldImpact=Math.max(0,classicShieldImpact-dt);
+    }
     if (powers.tractor <= 0) tractorTarget = null;
     updatePowerHud();
 

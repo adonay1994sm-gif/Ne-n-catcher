@@ -10,11 +10,17 @@ export const CLASSIC_WEAPON_RULES = Object.freeze({
   version: 'classic-weapons-v1', maxCharges: 3, rechargeSeconds: 3.6,
   maxDelta: .05, maxProjectiles: 32, boundsMargin: 80,
   types: Object.freeze({
-    pulse: weapon({id: 'pulse', label: 'Pulso', cooldown: .24, speed: 920,
+    pulse: weapon({id: 'pulse', label: 'Pulso', damageMultiplier: 1,
+      description: 'Daño ×1: un pulso de 1 de daño por carga.', cooldown: .24, speed: 920,
       damage: 1, radius: 9, duration: 2.4, barrels: [{offset: 0, spread: 0}]}),
-    twin: weapon({id: 'twin', label: 'Doble pulso', cooldown: .30, speed: 900,
-      damage: .7, radius: 7, duration: 2.4,
-      barrels: [{offset: -42, spread: -.025}, {offset: 42, spread: .025}]})
+    twin: weapon({id: 'twin', label: 'Gemelo', damageMultiplier: 2,
+      description: 'Daño ×2: dos pulsos centrados de 1 de daño por carga.', cooldown: .30, speed: 900,
+      damage: 1, radius: 7, duration: 2.4,
+      barrels: [{offset: -10, spread: 0}, {offset: 10, spread: 0}]}),
+    lance: weapon({id: 'lance', label: 'Lanza', damageMultiplier: 3,
+      description: 'Daño ×3: una lanza de 3 de daño que atraviesa hasta dos objetivos distintos.',
+      cooldown: .48, speed: 1280, damage: 3, radius: 6, duration: 1.8, pierce: 2,
+      barrels: [{offset: 0, spread: 0}]})
   })
 });
 
@@ -100,7 +106,7 @@ export function triggerClassicWeapon(state, {x, y, angle = -Math.PI / 2} = {}) {
       y: y + Math.cos(angle) * barrel.offset,
       vx: Math.cos(direction) * definition.speed,
       vy: Math.sin(direction) * definition.speed,
-      damage: definition.damage, radius: definition.radius, pierce: 1,
+      damage: definition.damage, radius: definition.radius, pierce: definition.pierce || 1,
       duration: definition.duration, life: definition.duration,
       hitTargets: []
     };
@@ -179,7 +185,10 @@ export function hitClassicProjectile(state, projectileId, targetId) {
 
 /** Deep copies of mutable arrays prevent HUD/diagnostics from changing combat. */
 export function classicWeaponSnapshot(state) {
+  const definition = CLASSIC_WEAPON_RULES.types[state.selected];
   return {...state, unlocked: [...state.unlocked],
+    label: definition.label, description: definition.description,
+    damageMultiplier: definition.damageMultiplier,
     rechargeProgress: state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 :
       Math.min(1, state.recharge / CLASSIC_WEAPON_RULES.rechargeSeconds),
     projectiles: state.projectiles.map(projectile => ({...projectile,

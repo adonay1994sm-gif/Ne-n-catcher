@@ -290,9 +290,42 @@
     ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
 
+  function drawVulkarOrbitBackground() {
+    const plate=SPRITES.vulkarOrbitBackground,planet=SPRITES.vulkarOrbitPlanet;
+    ensureSprite(plate);ensureSprite(planet);
+    ctx.fillStyle="#020710";ctx.fillRect(0,0,W,H);
+    const progress=clamp(collected/level().goal,0,1);
+    // Both layers use played time: pause and backgrounding freeze this view.
+    // The refinery is in the plate; the transparent planet is a separate asset.
+    if(spriteReady(plate)) {
+      const scale=Math.max(W/plate.naturalWidth,H/plate.naturalHeight)*1.08;
+      const width=plate.naturalWidth*scale,height=plate.naturalHeight*scale;
+      const x=(W-width)/2+Math.sin(elapsed*.025)*12;
+      const y=(H-height)/2+Math.cos(elapsed*.018)*20;
+      ctx.drawImage(plate,x,y,width,height);
+    }
+    if(spriteReady(planet)) {
+      const size=W*(.88+progress*.22);
+      const x=W*(.89-progress*.06)+Math.sin(elapsed*.035)*6;
+      const y=H*(.17+progress*.04)+Math.sin(elapsed*.021)*10;
+      ctx.save();ctx.translate(x,y);ctx.rotate(-.14+elapsed*.0015);
+      ctx.drawImage(planet,-size/2,-size/2,size,size);ctx.restore();
+    }
+    // Illustrated orbital fragments cross at a nearer depth. They are scenery,
+    // do not share the threat list and cannot inflict invisible collision damage.
+    const fragment=SPRITES.meteorSmall || frameFrom("meteor",0);
+    if(fragment && spriteReady(fragment))for(let i=0;i<4;i++) {
+      const cycle=(elapsed*(9+i*2)+i*371)%(H+160);
+      const size=18+i*10,x=(i%2?W*.91:W*.07)+Math.sin(i*2.3+elapsed*.04)*18;
+      ctx.save();ctx.globalAlpha=.5;ctx.translate(x,cycle-80);ctx.rotate(i+elapsed*(.03+i*.008));
+      ctx.drawImage(fragment,-size/2,-size/2,size,size);ctx.restore();
+    }
+  }
+
   function background(t) {
     if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
     if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
+    if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
     gradient.addColorStop(0, lv.top);

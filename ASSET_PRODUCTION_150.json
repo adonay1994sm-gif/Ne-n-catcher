@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "project": "NEON CATCHER",
   "build": "7.2.0",
-  "totalAssets": 154,
-  "scope": "Historical 150-asset inventory retained with four traceable Chronos flight/destruction additions; ten classic missions retained. Planned entries are not finished runtime art.",
+  "totalAssets": 155,
+  "scope": "Historical 150-asset inventory retained with five traceable additions: four Chronos flight/destruction assets and one Vulkar orbital space plate. Shared shield and Vulkar planet reuse existing production IDs; old illustrations remain recoverable. Planned entries are not finished runtime art.",
   "statusLegend": {
     "READY": "integrated and runtime-ready",
     "IN_REVIEW": "existing asset under visual/runtime review",
@@ -14,7 +14,7 @@
     "shared": 26,
     "chronos": 15,
     "gaia": 20,
-    "vulkar": 20,
+    "vulkar": 21,
     "cryon": 20,
     "aether": 20,
     "titanOmega": 20,
@@ -199,16 +199,38 @@
       "id": "shared-shield",
       "category": "shared",
       "world": "shared",
-      "name": "Escudo",
-      "type": "sprite-sheet",
-      "masterSize": "1536x256",
-      "runtimeSize": "6x256x256",
-      "frames": 6,
-      "pivot": "0.5,0.5",
+      "name": "Escudo · campo de fuerza envolvente",
+      "type": "state-atlas",
+      "masterSize": "2048x512",
+      "runtimeSize": "1536x384",
+      "frames": 4,
+      "pivot": "192,192 in each 384x384 cell",
       "level": "1-10",
       "priority": "P1",
       "status": "IN_REVIEW",
-      "reference": "existing/game design"
+      "reference": "art-source/combat-readability/shield/force_shield_atlas_v1.json",
+      "legacyVersions": [
+        {
+          "runtimePaths": [
+            "assets/shield_idle.webp",
+            "assets/shield_effect.webp"
+          ],
+          "frames": "Two original retained resources; previous six-frame production target was a plan",
+          "notes": "Original images remain in the runtime manifest and repository; the new force-field atlas does not delete them."
+        }
+      ],
+      "runtimePath": "assets/force_shield_atlas_v1.webp",
+      "masterPath": "art-source/combat-readability/shield/force_shield_atlas_master.png",
+      "animationMetadata": "art-source/combat-readability/shield/force_shield_atlas_v1.json",
+      "bytes": 319358,
+      "sha256": "2be20a0f6f8c17035f88bafde15d5607571a9e216d75b1415737ca683c86b5dc",
+      "decodedRGBABytes": 2359296,
+      "animation": "Activation cell0 .20s; stable/pulse cells1 and2 blend over 1.2s; impact cell3 .18s. Existing legacy clock; no new RAF.",
+      "integration": "Presentation asset exported and registered; renderer integration and browser verification pending",
+      "technicalAcceptance": "EXPORT_VERIFIED_GAME_QA_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "notes": "Four genuinely different illustrated states. Stable/pulse center keeps real transparency; hull collision shape remains independent."
     },
     {
       "sequence": 12,
@@ -1025,18 +1047,36 @@
       "id": "vulkar-planet",
       "category": "environment",
       "world": "vulkar",
-      "name": "Vulkar · descenso ígneo compuesto",
+      "name": "Vulkar · planeta volcánico en órbita",
       "type": "background-layer",
-      "masterSize": "852x1846",
-      "runtimeSize": "852x1846",
+      "masterSize": "1254x1254",
+      "runtimeSize": "640x640",
       "frames": 1,
       "pivot": "0.5,0.5",
       "level": "3",
       "priority": "P1",
       "status": "IN_REVIEW",
-      "reference": "art-source/visual-rebirth/levels/03/vulkar-descent-master.png",
-      "runtimeCandidate": "assets/vulkar_descent_background_v1.webp",
-      "notes": "Planeta, nubes y refinería compuestos en un fondo integrado. Capas planetarias independientes, animación ambiental y nivel 4 siguen pendientes."
+      "reference": "art-source/combat-readability/vulkar/metadata.json",
+      "notes": "Battlefield is outside the atmosphere. Former caldera/descent composite and its master remain recoverable; this entry retains its stable production ID.",
+      "legacyVersions": [
+        {
+          "name": "Vulkar · descenso ígneo compuesto",
+          "runtimeCandidate": "assets/vulkar_descent_background_v1.webp",
+          "reference": "art-source/visual-rebirth/levels/03/vulkar-descent-master.png",
+          "notes": "Planeta, nubes y refinería compuestos en un fondo integrado. Capas planetarias independientes, animación ambiental y nivel 4 siguen pendientes. Original composed descent artwork is retained; do not reuse it as a fake independent planet layer."
+        }
+      ],
+      "runtimePath": "assets/vulkar_orbit_planet_v1.webp",
+      "masterPath": "art-source/combat-readability/vulkar/planet-master.png",
+      "animationMetadata": "art-source/combat-readability/vulkar/metadata.json",
+      "bytes": 147122,
+      "sha256": "a9ffc6ec2e860f281dea3557bda3f1b54c5f91a9beb623fd57b6b6014742bd67",
+      "decodedRGBABytes": 1638400,
+      "integration": "Independent transparent planet exported and registered; route-clock composition and browser verification pending",
+      "animation": "One illustrated planet, route-driven scale and drift; not a spritesheet. Independent space plate contains no duplicate planet.",
+      "technicalAcceptance": "EXPORT_VERIFIED_GAME_QA_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING"
     },
     {
       "sequence": 59,
@@ -2626,6 +2666,34 @@
       "physicalAcceptance": "PENDING",
       "notes": "Six illustrated changes to station structure, not high-FPS fluid animation; other nine classic levels unchanged.",
       "technicalAcceptance": "PASSED"
+    },
+    {
+      "sequence": 155,
+      "id": "vulkar-orbit-background-v1",
+      "category": "environment",
+      "world": "vulkar",
+      "name": "Vulkar · espacio y restos orbitales de refinería",
+      "type": "background-layer",
+      "masterSize": "1024x1536",
+      "runtimeSize": "768x1152",
+      "frames": 1,
+      "pivot": "0.5,0.5",
+      "level": "3",
+      "priority": "P0",
+      "status": "IN_REVIEW",
+      "reference": "art-source/combat-readability/vulkar/generation-prompts.json",
+      "runtimePath": "assets/vulkar_orbit_background_v1.webp",
+      "masterPath": "art-source/combat-readability/vulkar/background-master.png",
+      "animationMetadata": "art-source/combat-readability/vulkar/metadata.json",
+      "bytes": 84274,
+      "sha256": "1d927708973b8b53b091f4e23e28e3f5bc51192b53336074124d0387dde8b1ed",
+      "decodedRGBABytes": 3538944,
+      "integration": "Space plate exported and registered; legacy renderer and browser verification pending",
+      "animation": "One original plate with subdued edge wreckage; continuous route-clock drift, separate transparent Vulkar planet and dynamic gameplay debris.",
+      "technicalAcceptance": "EXPORT_VERIFIED_GAME_QA_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "notes": "New stable ID is necessary: this is neither the planned foreground nor clouds; it does not falsely complete those distinct assets."
     }
   ]
 }

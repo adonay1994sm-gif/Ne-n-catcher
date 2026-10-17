@@ -24,6 +24,14 @@ const emitterAtlas = cell => define(['assets/chronos_flight_weapons_v1.webp'], {
   integrationStatus: 'IN_REVIEW', artisticAcceptance: 'PENDING_OWNER',
   physicalAcceptance: 'PENDING'
 });
+const forceShieldAtlas = (cells, options = {}) => define(['assets/force_shield_atlas_v1.webp'], {
+  loop: false, atlasColumns: 4, atlasRows: 1,
+  atlasCells: Object.freeze(cells), cellWidth: 384, cellHeight: 384,
+  pivot: Object.freeze({x: 192, y: 192}), layer: 'shield',
+  status: 'IN_REVIEW', integrationStatus: 'IN_REVIEW',
+  artisticAcceptance: 'PENDING_OWNER', physicalAcceptance: 'PENDING',
+  frameEvents: Object.freeze([]), ...options
+});
 
 export const ANIMATION_MAP = Object.freeze({
   player: Object.freeze({
@@ -69,6 +77,15 @@ export const ANIMATION_MAP = Object.freeze({
     idle: emitterAtlas(0),
     charge: emitterAtlas(1),
     fire: emitterAtlas(2)
+  }),
+  forceShield: Object.freeze({
+    activation: forceShieldAtlas([0], {frameMs: 200, durationMs: 200}),
+    stable: forceShieldAtlas([1, 2], {
+      loop: true, frameMs: 600, cycleMs: 1200, interpolation: 'crossfade',
+      timing: 'Existing legacy game clock; blend only stable and pulse cells 1/2'
+    }),
+    pulse: forceShieldAtlas([2], {frameMs: 600}),
+    impact: forceShieldAtlas([3], {frameMs: 180, durationMs: 180})
   })
 });
 export const VFX_PRESETS=Object.freeze({

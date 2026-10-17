@@ -5,13 +5,13 @@ const finite = (value, name) => {
 };
 
 export const GUARDIAN_ATLAS_RULES = Object.freeze({
-  version: 'guardian-atlas-v1', maxHp: 36, maxDelta: .05,
+  version: 'guardian-atlas-v2', maxHp: 36, maxDelta: .05,
   entrySeconds: 2.2, arrivalSeconds: 1.35, phaseBreakSeconds: 1.65,
   shutdownSeconds: 1.55, hurtSeconds: .16,
-  phaseOne: Object.freeze({chargeSeconds: 1.15, fireSeconds: .28, recoverySeconds: 2.05,
-    projectileSpeed: 280, projectileDamage: 14}),
-  phaseTwo: Object.freeze({chargeSeconds: 1.4, fireSeconds: .62, secondVolleyAt: .34,
-    recoverySeconds: 2.25, projectileSpeed: 255, projectileDamage: 12})
+  phaseOne: Object.freeze({chargeSeconds: 1.05, fireSeconds: .28, recoverySeconds: 1.25,
+    projectileSpeed: 340, projectileDamage: 14}),
+  phaseTwo: Object.freeze({chargeSeconds: 1.2, fireSeconds: .64, secondVolleyAt: .36,
+    recoverySeconds: 1.45, projectileSpeed: 315, projectileDamage: 12})
 });
 
 /**
@@ -36,7 +36,8 @@ export function createGuardianAtlas({width = 720, height = 1280,
     hp: GUARDIAN_ATLAS_RULES.maxHp, maxHp: GUARDIAN_ATLAS_RULES.maxHp,
     age: 0, state: 'entry', stateTime: 0, phase: 1,
     vulnerability: false, telegraph: null, disabled: false, resolved: false,
-    attackId: 0, volley: 0, lastGapIndex: -1, flash: 0,
+    attackId: 0, volley: 0, lastGapIndex: -1, phaseTwoAttacks: 0,
+    attackClearanceSeconds: 0, flash: 0,
     resumeState: null, resumeTime: 0
   };
 }
@@ -62,25 +63,33 @@ function transition(boss, next, events) {
 function beginCharge(boss, player, events) {
   boss.attackId++;
   boss.volley = 0;
+  boss.attackClearanceSeconds = 0;
   const timing = rules(boss);
   const originY = boss.y + boss.r * .7;
+  // Alternate readable weapon behaviours rather than showing a destination
+  // marker. Small fixture arenas retain the curtain: the unchanged full-size
+  // wings need enough room to evade a concentrated aimed attack laterally.
+  if (boss.phase === 2) boss.phaseTwoAttacks++;
+  const curtain = boss.phase === 2 &&
+    (boss.width < 600 || boss.phaseTwoAttacks % 2 === 1);
   let safeGap = null;
-  if (boss.phase === 2) {
+  if (curtain) {
     // The second volley repeats the SAME corridor. Changing it while bullets
     // remain in flight would force a crossing through a curtain of fire.
     let index = Math.floor(nextRandom(boss) * 3);
     if (index === boss.lastGapIndex) index = (index + 1) % 3;
     boss.lastGapIndex = index;
-    // Preserve the established ship outline (wings reach +/-109 logical
+    // Preserve the established ship outline (wings reach +/-119 logical
     // pixels), plus an 11px projectile radius and 5px clearance. Do not shrink
     // gameplay collisions to fit a visually narrow warning strip.
-    const halfWidth = Math.min(Math.max(125, boss.width * .17), boss.width / 2 - 14);
+    const halfWidth = Math.min(Math.max(135, boss.width * .17), boss.width / 2 - 14);
     const center = clamp(boss.width * [.28, .5, .72][index],
       halfWidth + 14, boss.width - halfWidth - 14);
     safeGap = {left: center - halfWidth, right: center + halfWidth, center};
   }
   boss.telegraph = {
-    kind: boss.phase === 1 ? 'aimedSalvo' : 'openCorridor',
+    kind: curtain ? 'openCorridor' : 'aimedSalvo',
+    pattern: curtain ? 'curtain' : boss.phase === 2 ? 'crossfire' : 'focusedSalvo',
     progress: 0, targetX: clamp(player.x, 24, boss.width - 24), targetY: clamp(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height-24),
     originX: boss.x, originY, seconds: timing.chargeSeconds,
     safeGap, attackId: boss.attackId
@@ -109,21 +118,34 @@ function projectile(boss, x, y, vx, vy, ordinal) {
 function fireVolley(boss, events) {
   const timing = rules(boss);
   const aim = boss.telegraph;
-  if (boss.phase === 1) {
-    const direction = Math.atan2(aim.targetY - aim.originY, aim.targetX - aim.originX);
-    for (const [index, offset] of [-.115, 0, .115].entries()) {
+  const shots = [];
+  if (aim.kind === 'aimedSalvo') {
+    // Crossfire alternates physical weapon origins while retaining the target
+    // fixed during the warning. It never follows a last-second dodge.
+    const originX = aim.originX + (boss.phase === 2 ?
+      (boss.volley === 0 ? -1 : 1) * boss.r * .72 : 0);
+    const direction = Math.atan2(aim.targetY - aim.originY, aim.targetX - originX);
+    const spread = boss.phase === 1 ? .085 : .075;
+    for (const [index, offset] of [-spread, -spread / 2, 0, spread / 2, spread].entries()) {
       const angle = direction + offset;
-      const shot = projectile(boss, aim.originX, aim.originY,
+      const shot = projectile(boss, originX, aim.originY,
         Math.cos(angle) * timing.projectileSpeed, Math.sin(angle) * timing.projectileSpeed, index);
-      events.push({type: 'projectile', projectile: shot});
+      shots.push(shot);
     }
   } else {
     for (let index = 0; index < 9; index++) {
-      const x = 14 + (boss.width - 28) * index / 8;
-      if (x >= aim.safeGap.left - 15 && x <= aim.safeGap.right + 15) continue;
+      const x = 12 + (boss.width - 24) * index / 8;
+      if (x >= aim.safeGap.left - 12 && x <= aim.safeGap.right + 12) continue;
       const shot = projectile(boss, x, aim.originY, 0, timing.projectileSpeed, index);
-      events.push({type: 'projectile', projectile: shot});
+      shots.push(shot);
     }
+  }
+  for (const shot of shots) {
+    // Wait until the tail, not only the ship centre, is clear before preparing
+    // another attack. Use the actual vertical speed, including oblique fans.
+    boss.attackClearanceSeconds = Math.max(boss.attackClearanceSeconds,
+      boss.stateTime + (boss.playerY + 104 + shot.r - shot.y) / shot.vy);
+    events.push({type: 'projectile', projectile: shot});
   }
   events.push({type: 'volley', attackId: boss.attackId, phase: boss.phase, volley: boss.volley});
   boss.volley++;
@@ -138,12 +160,10 @@ function stateDuration(boss) {
   if (boss.state === 'fire') return rules(boss).fireSeconds;
   if (boss.attackId === 0) return GUARDIAN_ATLAS_RULES.arrivalSeconds;
   const timing = rules(boss);
-  const flightToPlayer = (boss.playerY - (boss.y + boss.r * .7)) / timing.projectileSpeed;
-  const lastVolleyAt = boss.phase === 2 ? timing.secondVolleyAt : 0;
-  // Do not announce a DIFFERENT escape corridor while an earlier curtain is
-  // still crossing the player line. This scales with tall mobile viewports.
+  // A newly aimed pattern must not force the pilot across an earlier curtain.
+  // This scales with the actual projectile trajectories and tall viewports.
   return Math.max(timing.recoverySeconds,
-    flightToPlayer + lastVolleyAt + .45 - timing.fireSeconds);
+    boss.attackClearanceSeconds + .3 - timing.fireSeconds);
 }
 
 function finishState(boss, player, events) {

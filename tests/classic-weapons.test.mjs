@@ -74,20 +74,33 @@ test('a suspended-frame delta cannot refill ammunition or jump projectiles acros
   assert.ok(Math.abs(state.projectiles[0].y - beforeY + 920 * .05) < 1e-8);
 });
 
-test('twin is a distinct two-muzzle spread but spends one shared charge', () => {
+test('twin keeps two centered, parallel muzzles and spends one shared charge', () => {
   const state = createClassicWeapons({type: 'twin', unlocked: ['pulse', 'twin']});
   const result = triggerClassicWeapon(state, origin);
   assert.equal(result.projectiles.length, 2);
   assert.equal(state.charges, 2);
   const [left, right] = result.projectiles;
-  assert.equal(left.x, 318); assert.equal(right.x, 402);
-  assert.ok(left.vx < 0 && right.vx > 0);
-  assert.ok(left.vy < 0 && right.vy < 0);
-  assert.equal(left.damage + right.damage, 1.4);
+  assert.equal(left.x, 350); assert.equal(right.x, 370);
+  assert.ok(Math.abs(left.vx) < 1e-9 && Math.abs(right.vx) < 1e-9);
+  assert.equal(left.vy, -900); assert.equal(right.vy, -900);
+  assert.equal(left.damage + right.damage, 2);
   assert.equal(left.shotId, right.shotId);
   assert.notEqual(left.id, right.id);
   assert.equal(result.events.filter(event => event.type === 'fired').length, 1);
   assert.equal(result.events.filter(event => event.type === 'projectile').length, 2);
+  // Both pulses overlap a small target on the ship's centerline. At each
+  // distance the paths stay narrow rather than separating toward the edges.
+  for (const targetY of [925, 700, 250]) {
+    const stateAtDistance = createClassicWeapons({type: 'twin', unlocked: ['pulse', 'twin']});
+    const shot = triggerClassicWeapon(stateAtDistance, origin);
+    run(stateAtDistance, (origin.y - targetY) / 900);
+    for (const projectile of shot.projectiles) {
+      assert.ok(Math.abs(projectile.x - origin.x) <= 10 + 1e-9);
+      assert.ok(Math.hypot(projectile.x - origin.x, projectile.y - targetY) <= projectile.radius + 4,
+        `each twin path must intersect a centered four-pixel target at y=${targetY}`);
+      assert.equal(hitClassicProjectile(stateAtDistance, projectile.id, `center-${targetY}`).damage, 1);
+    }
+  }
 });
 
 test('muzzles rotate with the direction and selecting a weapon never refills or bypasses cooldown', () => {
@@ -101,8 +114,8 @@ test('muzzles rotate with the direction and selecting a weapon never refills or 
   run(state, .2);
   const result = triggerClassicWeapon(state, {x: 100, y: 200, angle: 0});
   assert.equal(result.projectiles[0].x, 100);
-  assert.equal(result.projectiles[0].y, 158);
-  assert.equal(result.projectiles[1].y, 242);
+  assert.equal(result.projectiles[0].y, 190);
+  assert.equal(result.projectiles[1].y, 210);
   assert.ok(result.projectiles.every(projectile => projectile.vx > 0));
 });
 
@@ -138,7 +151,7 @@ test('collision damage is delivered once per projectile and twin barrels remain 
   const [left, right] = result.projectiles;
   const first = hitClassicProjectile(state, left.id, 'enemy-7');
   assert.equal(first.accepted, true);
-  assert.equal(first.damage, .7);
+  assert.equal(first.damage, 1);
   assert.equal(first.events.filter(event => event.type === 'hit').length, 1);
   for (let index = 0; index < 12; index++) {
     const repeat = hitClassicProjectile(state, left.id, 'enemy-7');
@@ -148,6 +161,106 @@ test('collision damage is delivered once per projectile and twin barrels remain 
   }
   assert.equal(hitClassicProjectile(state, right.id, 'enemy-7').accepted, true);
   assert.equal(state.projectiles.length, 0);
+});
+
+test('weapon metadata explains exact damage per charge with multipliers 1, 2 and 3', () => {
+  for (const [type, multiplier] of [['pulse', 1], ['twin', 2], ['lance', 3]]) {
+    const state = createClassicWeapons({type, unlocked: ['pulse', 'twin', 'lance']});
+    const definition = CLASSIC_WEAPON_RULES.types[type];
+    const snapshot = classicWeaponSnapshot(state);
+    assert.equal(snapshot.damageMultiplier, multiplier);
+    assert.equal(snapshot.label, definition.label);
+    assert.equal(snapshot.description, definition.description);
+    assert.match(snapshot.description, new RegExp(`Daño ×${multiplier}`));
+    const shot = triggerClassicWeapon(state, origin);
+    const damage = shot.projectiles.reduce((total, projectile) =>
+      total + hitClassicProjectile(state, projectile.id, 'centered-target').damage, 0);
+    assert.equal(damage, multiplier, `${type} must deliver its advertised damage to one centered target`);
+    assert.equal(state.charges, 2, 'every weapon spends exactly one shared charge');
+  }
+});
+
+test('lance is a faster, narrower shot with its own cooldown and bounded lifetime', () => {
+  const state = createClassicWeapons({type: 'lance', unlocked: ['pulse', 'lance'],
+    width: 100000, height: 100000});
+  const result = triggerClassicWeapon(state, {x: 50000, y: 50000});
+  assert.equal(result.projectiles.length, 1);
+  const projectile = result.projectiles[0];
+  assert.equal(projectile.x, 50000);
+  assert.equal(projectile.vy, -1280);
+  assert.equal(projectile.radius, 6);
+  assert.equal(projectile.life, 1.8);
+  assert.equal(projectile.pierce, 2);
+  assert.equal(state.cooldown, .48);
+  run(state, .47);
+  assert.equal(triggerClassicWeapon(state, origin).reason, 'cooldown');
+  run(state, .01);
+  assert.ok(state.cooldown <= 1e-9, 'the cooldown accepts a new trigger at .48 played seconds');
+  const events = run(state, 1.32);
+  assert.equal(state.projectiles.length, 0);
+  assert.equal(events.filter(event => event.type === 'expired' && event.projectileId === projectile.id).length, 1);
+});
+
+test('lance hits two distinct targets once each and never delivers duplicate damage or reward events', () => {
+  const state = createClassicWeapons({type: 'lance', unlocked: ['pulse', 'lance']});
+  const projectile = triggerClassicWeapon(state, origin).projectiles[0];
+  const first = hitClassicProjectile(state, projectile.id, 'armored-drone');
+  assert.equal(first.accepted, true);
+  assert.equal(first.damage, 3);
+  assert.equal(first.events.length, 1);
+  assert.equal(state.projectiles.length, 1, 'the lance remains active after its first target');
+  assert.equal(projectile.pierce, 1);
+  for (let index = 0; index < 12; index++) {
+    const repeated = hitClassicProjectile(state, projectile.id, 'armored-drone');
+    assert.equal(repeated.accepted, false);
+    assert.equal(repeated.reason, 'duplicate');
+    assert.equal(repeated.damage, 0);
+    assert.equal(repeated.events.length, 0, 'rendering an impact again cannot dispatch another reward');
+    assert.equal(projectile.pierce, 1, 'repeat collisions must not spend penetration');
+  }
+  const second = hitClassicProjectile(state, projectile.id, 'rear-drone');
+  assert.equal(second.accepted, true);
+  assert.equal(second.damage, 3);
+  assert.equal(second.events.length, 1);
+  assert.notEqual(first.events[0].id, second.events[0].id);
+  assert.equal(state.projectiles.length, 0);
+  for (const targetId of ['armored-drone', 'rear-drone', 'third-drone']) {
+    const exhausted = hitClassicProjectile(state, projectile.id, targetId);
+    assert.equal(exhausted.accepted, false);
+    assert.equal(exhausted.damage, 0);
+    assert.equal(exhausted.events.length, 0);
+  }
+});
+
+test('switching through all three types cannot refill, reset recharge or bypass the lance cooldown', () => {
+  const state = createClassicWeapons({type: 'lance', unlocked: ['pulse', 'twin', 'lance']});
+  triggerClassicWeapon(state, origin);
+  run(state, .1);
+  const timing = {charges: state.charges, cooldown: state.cooldown, recharge: state.recharge};
+  for (const type of ['twin', 'pulse', 'lance']) {
+    assert.equal(selectClassicWeapon(state, type).accepted, true);
+    assert.deepEqual({charges: state.charges, cooldown: state.cooldown, recharge: state.recharge}, timing);
+    assert.equal(triggerClassicWeapon(state, origin).reason, 'cooldown');
+  }
+  run(state, .38);
+  assert.equal(triggerClassicWeapon(state, origin).accepted, true);
+  assert.equal(state.charges, 1);
+  assert.ok(Math.abs(state.recharge - .48) < 1e-9);
+});
+
+test('v1 saved type identifiers remain accepted and the additive lance type round-trips', () => {
+  for (const saved of [
+    {version: 'classic-weapons-v1', selected: 'pulse', unlocked: ['pulse']},
+    {version: 'classic-weapons-v1', selected: 'twin', unlocked: ['pulse', 'twin']},
+    {version: 'classic-weapons-v1', selected: 'lance', unlocked: ['pulse', 'twin', 'lance']}
+  ]) {
+    const restored = JSON.parse(JSON.stringify(saved));
+    const state = createClassicWeapons({type: restored.selected, unlocked: restored.unlocked});
+    assert.equal(state.version, restored.version);
+    assert.equal(state.selected, restored.selected);
+    assert.deepEqual(state.unlocked, restored.unlocked);
+    assert.equal(triggerClassicWeapon(state, origin).accepted, true);
+  }
 });
 
 test('projectiles have bounded lifetime/space, never exceed capacity and expire only once', () => {

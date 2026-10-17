@@ -75,9 +75,9 @@ test('phase-one aim is announced, then fixed, with one salvo and no homing', () 
   assert.equal(hitGuardianAtlas(boss, 1).reason, 'armored');
   const shots = until(boss, unit => unit.state === 'fire', {x: 600});
   const emitted = shots.filter(event => event.type === 'projectile');
-  assert.equal(emitted.length, 3);
-  assert.equal(emitted[1].projectile.targetX, 170);
-  const middle = emitted[1].projectile;
+  assert.equal(emitted.length, 5);
+  assert.equal(emitted[2].projectile.targetX, 170);
+  const middle = emitted[2].projectile;
   const crossingX = middle.x + middle.vx * ((middle.targetY - middle.y) / middle.vy);
   assert.ok(Math.abs(crossingX - 170) < .00001);
   assert.ok(middle.vy > 0);
@@ -86,7 +86,7 @@ test('phase-one aim is announced, then fixed, with one salvo and no homing', () 
   const attackId = middle.attackId;
   runFor(boss, .7, {x: 600}, shots);
   assert.equal(shots.filter(event => event.type === 'projectile' &&
-    event.projectile.attackId === attackId).length, 3);
+    event.projectile.attackId === attackId).length, 5);
 });
 
 test('half-health causes a protected phase transition and a different attack pattern', () => {
@@ -101,7 +101,7 @@ test('half-health causes a protected phase transition and a different attack pat
   const events = until(boss, unit => unit.state === 'charge');
   const warning = events.find(event => event.type === 'warning');
   assert.equal(warning.kind, 'openCorridor');
-  assert.ok(warning.safeGap.right - warning.safeGap.left >= 250);
+  assert.ok(warning.safeGap.right - warning.safeGap.left >= 270);
   until(boss, unit => unit.state === 'fire', player, events);
   runFor(boss, .64, player, events);
   const volleys = events.filter(event => event.type === 'volley');
@@ -109,6 +109,87 @@ test('half-health causes a protected phase transition and a different attack pat
   assert.deepEqual(volleys.map(event => event.volley), [0, 1]);
   assert.equal(boss.state, 'idle');
   assert.equal(boss.vulnerability, true);
+});
+
+test('phase two alternates curtains and fixed-target crossfire from distinct weapon origins', () => {
+  const boss = readyBoss();
+  hitGuardianAtlas(boss, 18);
+  const events = runFor(boss, 30, {x: 360, y: 1145});
+  const warnings = events.filter(event => event.type === 'warning');
+  assert.ok(warnings.length >= 4);
+  for (const [index, warning] of warnings.entries()) {
+    assert.equal(warning.pattern, index % 2 ? 'crossfire' : 'curtain');
+    assert.equal(warning.kind, index % 2 ? 'aimedSalvo' : 'openCorridor');
+    assert.ok(warning.seconds >= .8);
+    if (warning.pattern !== 'crossfire') continue;
+    assert.equal(warning.safeGap, null, 'an aimed fan must not promise a safety marker');
+    const shots = events.filter(event => event.type === 'projectile' &&
+      event.projectile.attackId === warning.attackId).map(event => event.projectile);
+    if (shots.length === 0) continue; // The final warning may still be charging.
+    assert.equal(shots.length, 10);
+    assert.equal(new Set(shots.map(shot => shot.projectileId)).size, 10);
+    const central = [shots[2], shots[7]];
+    assert.ok(central[0].x < warning.originX && central[1].x > warning.originX);
+    assert.ok(central[0].vx > 0 && central[1].vx < 0);
+    for (const shot of central) {
+      const crossingX = shot.x + shot.vx * ((shot.targetY - shot.y) / shot.vy);
+      assert.ok(Math.abs(crossingX - warning.targetX) < .00001);
+    }
+  }
+});
+
+test('faster concentrated fans still permit a full-wing escape, without consulting safeGap', () => {
+  // Check actual trajectories over the entire vertical ship outline, rather
+  // than piloting automatically toward an internal safe-corridor property.
+  for (const height of [568, 1280, 1560]) {
+    const playerY = height === 568 ? 450 : height - 135;
+    for (const targetX of [145, 360, 575]) {
+      for (const phase of [1, 2]) {
+        const boss = readyBoss({width: 720, height, playerY});
+        if (phase === 2) {
+          hitGuardianAtlas(boss, 18);
+          until(boss, unit => unit.state === 'charge'); // First curtain.
+          until(boss, unit => unit.state === 'idle');
+        }
+        const events = until(boss, unit => unit.state === 'charge', {x: targetX, y: playerY});
+        const warning = events.findLast(event => event.type === 'warning');
+        assert.equal(warning.kind, 'aimedSalvo');
+        until(boss, unit => unit.state === 'fire', {x: 720 - targetX, y: playerY}, events);
+        runFor(boss, .65, {x: 720 - targetX, y: playerY}, events);
+        const shots = events.filter(event => event.type === 'projectile').map(event => event.projectile);
+        assert.equal(shots.length, phase === 1 ? 5 : 10);
+        for (const shot of shots) {
+          assert.ok(Math.abs(Math.hypot(shot.vx, shot.vy) -
+            (phase === 1 ? 340 : 315)) < .00001);
+          assert.ok(shot.duration > (playerY + 104 - shot.y) / shot.vy);
+        }
+        const escapeX = targetX < 360 ? 601 : 119;
+        assert.ok(Math.abs(escapeX - 360) / 720 < warning.seconds,
+          'a responsive lateral dodge can finish before the announced shot');
+        for (const shot of shots) {
+          for (const y of [playerY - 158 - shot.r, playerY + 104 + shot.r]) {
+            const x = shot.x + shot.vx * ((y - shot.y) / shot.vy);
+            assert.ok(Math.abs(x - escapeX) > 119 + shot.r,
+              `height ${height}, target ${targetX}, phase ${phase}: full-wing dodge remains open`);
+          }
+        }
+      }
+    }
+  }
+});
+
+test('standing on the announced aim takes fire while moving avoids the fixed target', () => {
+  const boss = readyBoss();
+  until(boss, unit => unit.state === 'charge', player);
+  const events = until(boss, unit => unit.state === 'fire', {x: 119, y: player.y});
+  const shots = events.filter(event => event.type === 'projectile').map(event => event.projectile);
+  const middle = shots[2];
+  assert.equal(middle.targetX, 360);
+  const middleCrossing = middle.x + middle.vx * ((player.y - middle.y) / middle.vy);
+  assert.ok(Math.abs(middleCrossing - 360) < .00001);
+  assert.ok(Math.abs(middleCrossing - 119) > 119 + middle.r);
+  assert.equal(GUARDIAN_ATLAS_RULES.maxHp, 36,
+    'challenge comes from attacks rather than inflating the damage sponge');
 });
 
 test('both phase-two curtains preserve one announced traversable corridor at three viewport widths', () => {
@@ -121,21 +202,21 @@ test('both phase-two curtains preserve one announced traversable corridor at thr
       until(boss, unit => unit.state === 'fire', {x: width - 30}, events);
       runFor(boss, .65, {x: 30}, events);
       const shots = events.filter(event => event.type === 'projectile').map(event => event.projectile);
-      // A 250px full-wing corridor can leave just one firing side in a 320px
+      // A 270px full-wing corridor can leave just one firing side in a 320px
       // fixture. Keep both real volleys rather than narrowing the ship's gap.
       assert.ok(shots.length >= 2 && shots.length <= 14);
       assert.deepEqual([...new Set(shots.map(shot => shot.volley))], [0, 1]);
       assert.equal(new Set(shots.map(shot => shot.projectileId)).size, shots.length);
       assert.ok(gap.left >= 14 && gap.right <= width - 14);
-      assert.ok(gap.right - gap.left >= 250);
+      assert.ok(gap.right - gap.left >= 270);
       for (const shot of shots) {
         assert.equal(shot.vx, 0, 'curtain must not drift into the promised corridor');
         assert.ok(shot.x + shot.r < gap.left || shot.x - shot.r > gap.right);
-        assert.ok(Math.abs(shot.x - gap.center) > 109 + shot.r + 5,
+        assert.ok(Math.abs(shot.x - gap.center) > 119 + shot.r + 5,
           'the established full wing outline plus projectile radius and clearance fits');
         const crossingSeconds = (1045 - shot.y) / shot.vy;
         const crossingX = shot.x + shot.vx * crossingSeconds;
-        assert.ok(Math.abs(crossingX - gap.center) > 109 + shot.r + 5,
+        assert.ok(Math.abs(crossingX - gap.center) > 119 + shot.r + 5,
           'the same full-width clearance must remain where the bullets reach the ship');
         assert.deepEqual(shot.safeGap, gap);
         assert.ok(shot.duration > (1045 - shot.y) / shot.vy);
@@ -158,12 +239,12 @@ test('repeat hits play one hurt response without permanently resetting recovery 
   assert.equal(boss.state, 'idle');
   assert.ok(boss.stateTime >= priorTime);
   const events = until(boss, unit => unit.state === 'fire');
-  assert.equal(events.filter(event => event.type === 'projectile').length, 3);
+  assert.equal(events.filter(event => event.type === 'projectile').length, 5);
   const id = boss.attackId;
   hitGuardianAtlas(boss, 1);
   runFor(boss, .8, player, events);
   assert.equal(events.filter(event => event.type === 'projectile' &&
-    event.projectile.attackId === id).length, 3);
+    event.projectile.attackId === id).length, 5);
 });
 
 test('the next corridor warning waits until the previous curtain has passed the player on tall screens', () => {
@@ -226,9 +307,9 @@ test('same seed and inputs reproduce warnings, transitions and projectile trajec
   }
   const first = trace();
   assert.deepEqual(trace(), first);
-  const warningGaps = first.events.filter(event => event.type === 'warning')
+  const warningGaps = first.events.filter(event => event.type === 'warning' && event.safeGap)
     .map(event => event.safeGap.center);
-  assert.ok(warningGaps.length > 3);
+  assert.ok(warningGaps.length >= 3);
   for (let index = 1; index < warningGaps.length; index++) {
     assert.notEqual(warningGaps[index], warningGaps[index - 1]);
   }
@@ -241,7 +322,7 @@ test('callback delivery preserves returned-event order and does not duplicate em
   const callbacks = [];
   const events = advanceGuardianAtlas(boss, .05, player, event => callbacks.push(event));
   assert.deepEqual(callbacks, events);
-  assert.equal(events.filter(event => event.type === 'projectile').length, 3);
+  assert.equal(events.filter(event => event.type === 'projectile').length, 5);
   assert.deepEqual(advanceGuardianAtlas(boss, .01, player), []);
 });
 
