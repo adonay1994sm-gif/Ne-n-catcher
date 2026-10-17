@@ -1,0 +1,114 @@
+{
+  "version": "guardian-atlas-v1",
+  "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg",
+  "generated": "2026-10-17",
+  "status": "IN_REVIEW",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "files": [
+    {
+      "master": "art-source/enemies/guardian-atlas/guardian-atlas-states-master.png",
+      "runtime": "assets/guardian_atlas_states_v1.webp",
+      "dimensions": "1774x887",
+      "bytes": 801340,
+      "sha256": "f8a0184f5979b2914837523e44b251108c30a92b7d30364d62e68190ee85724c",
+      "masterSha256": "e30dc9e49eb48c16c61a583685892279f156ab63036d02f13251ef7b3ca7271a"
+    },
+    {
+      "master": "art-source/enemies/guardian-atlas/atlas-combat-vfx-master.png",
+      "runtime": "assets/atlas_combat_vfx_v1.webp",
+      "dimensions": "1085x363",
+      "bytes": 135832,
+      "sha256": "7a8b38c29c2f4fcb21840046865d0961cafd2fcd3d03a8c48649c54a954ef050",
+      "masterSha256": "08e93f23c32c335a9ccc4932a73b6d0ea2f72675472dd811403c51d4db67a97a"
+    }
+  ],
+  "atlas": {
+    "columns": 4,
+    "rows": 2,
+    "frames": [
+      "arrival-closed",
+      "idle-open",
+      "attack-windup",
+      "fire",
+      "hurt",
+      "phase-break-open-ring",
+      "phase-two-fire",
+      "disabled-restored"
+    ],
+    "reactorPivotsPixels": [
+      [
+        222,
+        226
+      ],
+      [
+        221,
+        241
+      ],
+      [
+        224,
+        226
+      ],
+      [
+        223,
+        239
+      ],
+      [
+        221,
+        235
+      ],
+      [
+        223,
+        218
+      ],
+      [
+        224,
+        219
+      ],
+      [
+        222,
+        232
+      ]
+    ],
+    "baseCell": 443.5
+  },
+  "vfx": {
+    "sourceDimensions": [
+      2170,
+      725
+    ],
+    "runtimeDimensions": [
+      1085,
+      363
+    ],
+    "crops": [
+      [
+        120,
+        0,
+        280,
+        680
+      ],
+      [
+        546,
+        0,
+        298,
+        725
+      ],
+      [
+        837,
+        65,
+        700,
+        600
+      ],
+      [
+        1540,
+        0,
+        630,
+        635
+      ]
+    ],
+    "note": "Explicit crops replace the generator layout; four effects, not an animation sequence."
+  },
+  "decodedRgbaBytes": 7869572,
+  "rights": "Original built-in generated artwork; no external licensed resources or purchases. Reference supplied by owner and already retained in project."
+}

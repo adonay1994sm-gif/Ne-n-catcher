@@ -1,6 +1,6 @@
 # NEON CATCHER — Checklist maestra de producción
 
-Fecha del registro: **2026-10-17T11:08:08.331Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-17T11:55:24.859258+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -21,6 +21,8 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P4-01 / P4 | Expandir la campaña espacial a diez capítulos de diez etapas | PENDING | PENDING | PENDING | PENDING |
 | P5-01 / P5 | Certificar calidad móvil y preparar distribución autorizada | PENDING | PENDING | PENDING | PENDING |
 | P1-SHIP-01 / P1 | Nave ensamblada, dos configuraciones y hangar dentro del clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
+| P1-ATLAS-01 / P1 | Guardian Atlas ilustrado y combate integrado a recuperación clásica Gaia | IN_REVIEW | IN_REVIEW | PENDING_OWNER | PENDING |
+| P0-DESIGN-100 / P0 | Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime | IN_REVIEW | PASSED_EDITORIAL_SCHEMA | PENDING_OWNER | NOT_APPLICABLE |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -104,7 +106,7 @@ Este registro cubre los Bloques 03–10 del mandato. Los avances históricos per
 
 ## Resumen de estados
 
-PENDING: 208 · IN_PROGRESS: 4 · BLOCKED: 7 · IN_REVIEW: 34 · DONE: 23. Total: 276 tareas.
+PENDING: 205 · IN_PROGRESS: 4 · BLOCKED: 7 · IN_REVIEW: 39 · DONE: 23. Total: 278 tareas.
 
 ## Bloque 03 — Prueba integrada y cierre técnico
 
@@ -164,7 +166,7 @@ PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 3 · DONE: 18.
 
 ## Bloque 04 — Jugabilidad procedural
 
-PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
+PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -187,6 +189,7 @@ PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 | B04-17 | Cerrar curvas de progreso y reintentos consistentes | VERY_HIGH | PENDING | B04-16 | [src/game/progression/generator.js](../src/game/progression/generator.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[tests/procedural-runtime.test.mjs](../tests/procedural-runtime.test.mjs)<br>[tests/content-legacy-integration.test.mjs](../tests/content-legacy-integration.test.mjs) | — | — | — | — |
 | P3-01 | Completar diez etapas conectadas del capítulo Chronos-Gaia | CRITICAL | PENDING | P1-02<br>P2-01<br>PM-01 | — |  | — | — | La demo de tres tramos no son diez etapas terminadas. |
 | P4-01 | Expandir la campaña espacial a diez capítulos de diez etapas | CRITICAL | PENDING | P3-01 | — |  | — | — | Las cien rutas N-7 se conservan como variante histórica; no son la campaña espacial canónica. |
+| P0-DESIGN-100 | Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime | HIGH | IN_REVIEW | P0-01 | [design/campaign-space-v1.json](../design/campaign-space-v1.json)<br>[docs/design/CAMPAIGN_100_STAGES.md](design/CAMPAIGN_100_STAGES.md)<br>[tests/campaign-space-design.test.mjs](../tests/campaign-space-design.test.mjs) |  | node --test tests/campaign-space-design.test.mjs | [docs/design/CAMPAIGN_100_STAGES.md](design/CAMPAIGN_100_STAGES.md) | Todas las etapas nuevas siguen PENDING de integración y aceptación; números de dificultad son objetivos. |
 
 ### Criterios verificables
 
@@ -209,10 +212,11 @@ PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 - **B04-17:** Curvas, desbloqueos y reintentos verificados sin alterar campaña clásica..
 - **P3-01:** Diez etapas con viaje, arte, encuentros, objetivo, frontera, recompensa y guardado integrados.
 - **P4-01:** Cien etapas distintas y conectadas por geografía y encuentros diseñados.
+- **P0-DESIGN-100:** 100IDs estables, continuidad geográfica y consecuencias; Versiones/recompensas/estados separados comprobados; Diez capítulos con ritmo y cierres diferenciados.
 
 ## Bloque 05 — Producción visual y 150 assets
 
-PENDING: 127 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 30 · DONE: 5.
+PENDING: 124 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 33 · DONE: 5.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -252,7 +256,7 @@ PENDING: 127 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 30 · DONE: 5.
 
 ### Entregas individuales de assets
 
-Catálogo real: **IN_REVIEW: 24; PLANNED: 123; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
+Catálogo real: **IN_REVIEW: 27; PLANNED: 120; IMPLEMENTED_CODE: 2; READY: 1**. Los tamaños/fotogramas del catálogo son objetivos hasta verificarlos en archivos reales. A001–A150 son seguimiento, no archivos gráficos producidos. Los lotes cubren jugador/combate, Gaia, Vulkar, Cryon, Aether, Titan Omega, interfaz/VFX y recursos adicionales ya definidos en el catálogo.
 
 Todos los assets deben superar estos doce criterios: Identificador y nombre; Archivo maestro existente; Archivo optimizado existente; Fotogramas necesarios reales; Dimensiones verificadas; Escala documentada; Pivote documentado; Transparencia comprobada; Duración/FPS documentados; Integración real en el juego; Prueba visual registrada; Procedencia y derechos registrados.
 
@@ -310,9 +314,9 @@ Todos los assets deben superar estos doce criterios: Identificador y nombre; Arc
 | A050 | CH-03 Defense Satellite · movimiento (gaia-ch03-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A051 | CH-03 · ataque (gaia-ch03-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A052 | CH-03 · destrucción (gaia-ch03-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A053 | Guardian Atlas · movimiento (gaia-guardian-atlas-move) | P1 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A054 | Guardian Atlas · ataque (gaia-guardian-atlas-attack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
-| A055 | Guardian Atlas · destrucción (gaia-guardian-atlas-destroy) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
+| A053 | Guardian Atlas · movimiento (gaia-guardian-atlas-move) | P1 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A054 | Guardian Atlas · ataque (gaia-guardian-atlas-attack) | P2 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
+| A055 | Guardian Atlas · destrucción (gaia-guardian-atlas-destroy) | P2 | IN_REVIEW | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Estado IN_REVIEW del catálogo pendiente de los doce criterios de entrega. |
 | A056 | Campo de energía Gaia (gaia-energy-field) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A057 | Proyectiles Gaia (gaia-projectile-pack) | P2 | PENDING | B05-02 | [ASSET_PRODUCTION_150.json](../ASSET_PRODUCTION_150.json) | — | — | — | Maestro, exportación, integración y prueba visual final pendientes. |
 | A058 | Vulkar · descenso ígneo compuesto (vulkar-planet) | P1 | IN_REVIEW | B05-02 | [art-source/visual-rebirth/levels/03/vulkar-descent-master.png](../art-source/visual-rebirth/levels/03/vulkar-descent-master.png)<br>[assets/vulkar_descent_background_v1.webp](../assets/vulkar_descent_background_v1.webp)<br>[src/game/06-world-rendering.js](../src/game/06-world-rendering.js) | — | Chromium classic level 3 1/1, exit 0<br>Chromium classic/N-7 gameplay 2/2, exit 0<br>Local certification 11/11 phases, exit 0<br>Preview 15/15, exit 0 | [docs/visual-rebirth/evidence/gallery-03/results.json](visual-rebirth/evidence/gallery-03/results.json)<br>[docs/visual-rebirth/evidence/level-03-gameplay-browser-01/results.json](visual-rebirth/evidence/level-03-gameplay-browser-01/results.json)<br>[docs/visual-rebirth/evidence/level-03-certification-01/results.json](visual-rebirth/evidence/level-03-certification-01/results.json) | Composite illustration is integrated, but independent depth layers, Lava Core/Plasma Mine animation, and physical iPhone QA remain pending. |
@@ -413,7 +417,7 @@ Actualizar un recurso en **assetTasks.overrides[asset.id]** con estado, archivos
 
 ## Bloque 06 — Diez jefes
 
-PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
+PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -427,6 +431,7 @@ PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 | B06-80 | Encuentro completo de jefe N-7 nivel 80 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
 | B06-90 | Encuentro completo de jefe N-7 nivel 90 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
 | B06-100 | Encuentro completo de jefe N-7 nivel 100 | HIGH | PENDING | B04-12<br>B05-09 | [src/game/progression/level-designs.js](../src/game/progression/level-designs.js)<br>[src/game/progression/encounter-director.js](../src/game/progression/encounter-director.js)<br>[src/game/07-player-item-rendering.js](../src/game/07-player-item-rendering.js) | — | — | — | Las definiciones actuales de jefe no equivalen a un combate implementado. |
+| P1-ATLAS-01 | Guardian Atlas ilustrado y combate integrado a recuperación clásica Gaia | CRITICAL | IN_REVIEW | P1-SHIP-01 | [src/game/combat/guardian-atlas.js](../src/game/combat/guardian-atlas.js)<br>[src/game/animation/guardian-atlas-animator.js](../src/game/animation/guardian-atlas-animator.js)<br>[assets/guardian_atlas_states_v1.webp](../assets/guardian_atlas_states_v1.webp)<br>[assets/atlas_combat_vfx_v1.webp](../assets/atlas_combat_vfx_v1.webp) |  | npm run test:content<br>npm run test:preview<br>node scripts/guardian-atlas-browser-smoke.cjs --root preview-dist | [docs/production-reports/GUARDIAN_ATLAS_2026-10-17.md](production-reports/GUARDIAN_ATLAS_2026-10-17.md) | Partida natural completa pendiente; intento01 murió recuperando CRONIUM.<br>Revisión de arte/pivotes/gutters y Safari físico pendientes. |
 
 ### Criterios verificables
 
@@ -440,6 +445,7 @@ PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0.
 - **B06-80:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
 - **B06-90:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
 - **B06-100:** Diseño individual y mecánica diferenciada; Modelo visual integrado; Animaciones de entrada, ataque, daño y destrucción; Inteligencia artificial ejecutable; Patrón de entrada cinematográfico breve; Ataques distintivos; Varias fases con transiciones reales cuando corresponda; Señales previas legibles; Ventanas de vulnerabilidad; Daño y destrucción completos; Recompensa y progresión; Integración narrativa; Balance y posibilidad de respuesta; Pruebas de lógica y combate completo en navegador.
+- **P1-ATLAS-01:** Recuperación, fases, avisos, corredor transitable, daño y desactivación naturales; Victoria/recompensa guardadas una vez y campañas preservadas; Arte visible y revisado en tres tamaños.
 
 ## Bloque 07 — Narrativa completa
 

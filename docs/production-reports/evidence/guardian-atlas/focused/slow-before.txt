@@ -1,0 +1,45 @@
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ Gaia keeps recovery meaningful and gates saved victory behind the real Atlas encounter (216.852577ms)
+✔ the actual legacy pause freezes Atlas and resume continues without a duplicate loop (168.322297ms)
+✔ the threshold capture can replace active items without crashing the real collision loop (43.952807ms)
+✔ Atlas deactivation completes before a single persisted victory and preserves N-7 saves (362.028773ms)
+✔ death, a rewarded continuation and retry cannot bypass or prematurely save Atlas (84.418525ms)
+✔ Gaia exposes a usable manual basic pulse beyond three shots while the original first mission keeps its contract (67.477725ms)
+✔ leaving the encounter does not mutate saves and N-7 cannot start classic Atlas (94.165171ms)
+✖ slow time shares the real Atlas and projectile clock before announcing another corridor (200.526763ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1831.83342
+
+✖ failing tests:
+
+test at tests/guardian-atlas-legacy.test.mjs:215:1
+✖ slow time shares the real Atlas and projectile clock before announcing another corridor (200.526763ms)
+  AssertionError [ERR_ASSERTION]: The existing slow ability must slow the encounter clock as well as its bullets
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/guardian-atlas-legacy.test.mjs:224:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

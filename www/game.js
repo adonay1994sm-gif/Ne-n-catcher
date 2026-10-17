@@ -233,6 +233,11 @@
   let spawnTimer = 0;
   let classicScoutTimer = 0;
   let classicScoutAnnounced = false;
+  let atlasBoss = null;
+  let atlasAutoFire = storage.getJSON("neonCatcher.atlasAutoFire.v1", true) !== false;
+  let atlasFireTimer = 0;
+  let atlasReentryGrace = 0;
+  let atlasLastStatus = "";
   let warpTimer = 0;
   let score = 0;
   let hull = 100;
@@ -376,6 +381,8 @@
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
+    guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
+    atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
     comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
@@ -548,6 +555,7 @@
     player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
     player.x = clamp(player.x, 80, W - 80);
     player.target = clamp(player.target, 80, W - 80);
+    positionAtlasArena();
     for (const star of stars) {
       star.x = clamp(star.x, 0, W);
       star.y = clamp(star.y, 0, H);
@@ -650,6 +658,131 @@
     updateAudioVolumes();
     overlay(settingsReturn === "paused" ? ui.paused : ui.menu);
   }
+  function isAtlasMission() {
+    return !N7_CAMPAIGN && !JOURNEY_DEMO && currentLevel === 1;
+  }
+
+  function setupAtlasEncounter() {
+    const mount = document.createElement("section");
+    mount.id = "atlasEncounter"; mount.className = "atlas-encounter hidden";
+    mount.setAttribute("aria-label", "Encuentro Guardian Atlas");
+    mount.innerHTML = `<div class="atlas-identity"><b>GUARDIAN ATLAS</b><span id="atlasPhase">CONTENCIÓN ORBITAL</span><progress id="atlasHealth" max="1" value="1" aria-label="Integridad de Guardian Atlas"></progress></div><button id="atlasAutoFire" type="button" aria-pressed="true">PULSO AUTO · SÍ</button><p id="atlasStatus" role="status">Recupera el CRONIUM antes de cruzar el perímetro.</p>`;
+    canvas.parentElement.append(mount);
+    for (const id of ["atlasEncounter", "atlasHealth", "atlasPhase", "atlasStatus", "atlasAutoFire"]) ui[id] = $(id);
+    ui.atlasAutoFire.onclick = () => {
+      const next = !atlasAutoFire;
+      if (!storage.setJSON("neonCatcher.atlasAutoFire.v1", next)) { toast("No se pudo guardar el modo de disparo"); return; }
+      atlasAutoFire = next; syncAtlasHud();
+    };
+    syncAtlasHud();
+  }
+
+  function positionAtlasArena() {
+    if (!atlasBoss) return;
+    const rect = canvas.getBoundingClientRect();
+    const horizontal = rect.height < 500;
+    atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = player.y;
+    atlasBoss.visualSize = horizontal ? 300 : 350;
+    const headerClearance = (horizontal ? 104 : 144) * H / Math.max(1, rect.height);
+    atlasBoss.targetY = Math.min(player.y - 360, Math.max(H * .30, headerClearance + atlasBoss.visualSize / 2));
+    if (atlasBoss.state !== "entry") atlasBoss.y = atlasBoss.targetY;
+  }
+
+  function beginAtlasEncounter() {
+    if (!isAtlasMission() || atlasBoss || collected < level().goal || state !== "playing") return false;
+    cancelSupplyFailureTimer();
+    atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
+    positionAtlasArena();
+    atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
+    items = []; gates = []; shots = []; tractorTarget = null;
+    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
+    hideWarning(); hideStoryTransmission(); ui.banner.classList.remove("show");
+    document.body.classList.add("atlas-combat");
+    ui.atlasEncounter.classList.remove("hidden");
+    ui.goal.previousElementSibling.textContent = "CRONIUM A SALVO";
+    ui.goal.textContent = `${collected}/${level().goal}`;
+    syncAtlasHud(); updateAmmoHud();
+    tone(135, .28, "triangle", .065);
+    return true;
+  }
+
+  function syncAtlasHud() {
+    if (!ui.atlasEncounter) return;
+    const pressed = String(atlasAutoFire);
+    const autoLabel = `PULSO AUTO · ${atlasAutoFire ? "SÍ" : "NO"}`;
+    if (ui.atlasAutoFire.getAttribute("aria-pressed") !== pressed) ui.atlasAutoFire.setAttribute("aria-pressed", pressed);
+    if (ui.atlasAutoFire.textContent !== autoLabel) ui.atlasAutoFire.textContent = autoLabel;
+    if (!atlasBoss) return;
+    const health = atlasBoss.hp / atlasBoss.maxHp;
+    const phaseLabel = atlasBoss.disabled ? "PROTOCOLO RESTAURADO" : `FASE ${atlasBoss.phase} · ${atlasBoss.vulnerability ? "NÚCLEO EXPUESTO" : "BLINDAJE CERRADO"}`;
+    if (ui.atlasHealth.value !== health) ui.atlasHealth.value = health;
+    if (ui.atlasPhase.textContent !== phaseLabel) ui.atlasPhase.textContent = phaseLabel;
+    let status;
+    if (!spriteReady(SPRITES.guardianAtlas) || !spriteReady(SPRITES.atlasVfx)) status = "Atlas no se ha cargado. Pausa y vuelve al menú para reintentar.";
+    else if (atlasReentryGrace > 0) status = "Enlace recuperado. Retoma el control.";
+    else if (atlasBoss.state === "entry") status = "Tu carga activa la contención. Desactiva el núcleo para abrir el paso.";
+    else if (atlasBoss.state === "disabled") status = "Atlas: «Identidad confirmada. Gaia autoriza el acceso».";
+    else if (atlasBoss.state === "phaseBreak") status = "N-7: «Es un bucle de contención. Rompe el enlace, salva al guardián».";
+    else if (atlasBoss.telegraph?.safeGap) status = "DOBLE CORTINA · atraviesa la franja iluminada.";
+    else if (atlasBoss.state === "charge") status = "SALVA FIJADA · cambia de posición antes del disparo.";
+    else status = "NÚCLEO EXPUESTO · alinea la nave y abre fuego.";
+    if (status !== atlasLastStatus) { ui.atlasStatus.textContent = status; atlasLastStatus = status; }
+  }
+
+  function consumeAtlasEvent(event) {
+    if (event.type === "projectile") items.push(event.projectile);
+    if (event.clearProjectiles || event.type === "shutdown") {
+      items = items.filter(item => !item.guardianProjectile);
+    }
+    if (event.type === "warning") tone(event.phase === 1 ? 290 : 380, .16, "triangle", .045);
+    if (event.type === "volley") tone(95, .12, "sawtooth", .045);
+    if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
+    if (event.type === "shutdown") { score += 250; tone(640, .28, "sine", .06); }
+    if (event.type === "disabled") completeLevel();
+  }
+
+  function updateAtlasEncounter(dt) {
+    if (!atlasBoss || dt <= 0) return;
+    if (!spriteReady(SPRITES.guardianAtlas) || !spriteReady(SPRITES.atlasVfx)) { syncAtlasHud(); return; }
+    if (atlasReentryGrace > 0) { atlasReentryGrace = Math.max(0, atlasReentryGrace - dt); syncAtlasHud(); return; }
+    // Slow affects both the guardian's warning/recovery clock and its bullets.
+    // A different clock could announce a new corridor over an older curtain.
+    NeonCampaign.advanceGuardianAtlas(atlasBoss, dt * (powers.slow > 0 ? .5 : 1), player, consumeAtlasEvent);
+    if (state !== "playing") return;
+    atlasFireTimer = Math.max(0, atlasFireTimer - dt);
+    if (atlasAutoFire && atlasFireTimer === 0 && atlasBoss.vulnerability && Math.abs(atlasBoss.x - player.x) < 115) {
+      if (fireManualShot()) atlasFireTimer = .42;
+    }
+    syncAtlasHud();
+  }
+
+  function fireAtlasPulse(kind) {
+    if (!atlasBoss || atlasBoss.disabled || !spriteReady(SPRITES.guardianAtlas) || Math.abs(atlasBoss.x - player.x) >= 115) return false;
+    if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+    shots.push({x1: player.x, y1: player.y - (shipRenderMode === "modular" ? 114 : SHIP_VISUAL.phaserMuzzleOffset),
+      x2: atlasBoss.x, y2: atlasBoss.y, life: .24, duration: .24,
+      hit: false, destroyed: false, impactX: atlasBoss.x, impactY: atlasBoss.y,
+      impactScale: .7, kind, atlasPulse: true, atlasTarget: atlasBoss});
+    tone(740, .04, "triangle", .025);
+    return true;
+  }
+
+  function resolveAtlasPulse(shot) {
+    if (state !== "playing" || shot.atlasTarget !== atlasBoss || atlasBoss.disabled) return;
+    const result = NeonCampaign.hitGuardianAtlas(atlasBoss, 1);
+    for (const event of result.events) consumeAtlasEvent(event);
+    if (result.accepted) {
+      score += 3;
+      if (settings.effects) {
+        if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+        impactEffects.push({x: atlasBoss.x, y: atlasBoss.y, angle: 0, scale: 1,
+          life: .24, duration: .24, atlasImpact: true});
+      }
+      tone(620, .055, "triangle", .035);
+    } else tone(180, .04, "square", .025);
+    syncAtlasHud();
+  }
+
   function setupShipHangar() {
     if ($("shipHangar")) return;
     const menuActions = ui.menu.querySelector(".menu-actions");
@@ -976,7 +1109,8 @@
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
-    if (JOURNEY_DEMO) {
+    if (JOURNEY_DEMO || atlasBoss) {
+      ui.fire.classList.remove("empty");
       ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
       ui.fire.disabled = state !== "playing" || manualShotCooldown > 0 || warpTimer > 0;
       ui.fire.setAttribute("aria-label", "Disparar pulso básico sin munición limitada");
@@ -1144,6 +1278,13 @@
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
+    atlasBoss = null;
+    atlasFireTimer = atlasReentryGrace = 0;
+    atlasLastStatus = "";
+    ui.goal.previousElementSibling.textContent = "NÚCLEOS";
+    document.body.classList.remove("atlas-combat");
+    ui.atlasEncounter?.classList.add("hidden");
+    if (isAtlasMission()) { ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); }
     encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
     encounterWave = 0;
     setState("playing");
@@ -1242,6 +1383,9 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("menu");
+    atlasBoss = null;
+    ui.atlasEncounter?.classList.add("hidden");
+    document.body.classList.remove("atlas-combat");
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
     ui.fire.classList.add("hidden");
@@ -1279,10 +1423,16 @@
   function completeLevel() {
     if (JOURNEY_DEMO) return;
     if (state !== "playing") return;
+    if (isAtlasMission() && collected >= level().goal) {
+      if (!atlasBoss) { beginAtlasEncounter(); return; }
+      if (!atlasBoss.resolved) return;
+    }
     if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
+    ui.atlasEncounter?.classList.add("hidden");
+    document.body.classList.remove("atlas-combat");
     hideWarning();
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
@@ -1309,6 +1459,7 @@
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
       ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
       : `${level().name} completado`;
+    if (isAtlasMission() && atlasBoss?.resolved) ui.completeTitle.textContent = "Atlas ha abierto el paso";
     ui.starsAwarded.innerHTML = [1, 2, 3]
       .map((value) => `<span class="${value <= earned ? "" : "off"}">★</span>`)
       .join("");
@@ -1338,6 +1489,7 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("gameover");
+    ui.atlasEncounter?.classList.add("hidden");
     supplyFailed = reason === "supply";
     hideWarning();
     ui.hud.classList.add("hidden");
@@ -1372,6 +1524,10 @@
     hull = Math.max(hull, 35);
     continued = true;
     setState("playing");
+    if (atlasBoss) {
+      atlasReentryGrace = 1.25;
+      ui.atlasEncounter?.classList.remove("hidden");
+    }
     last = performance.now();
     playerVisible = true;
     destructionTimer = 0;
@@ -1892,6 +2048,14 @@
     }
     for (let index = shots.length - 1; index >= 0; index--) {
       const shot = shots[index];
+      // Illustrated Atlas pulses arrive before applying damage. Pause freezes
+      // both their flight and the boss, rather than damaging an inert target.
+      if (shot.atlasPulse) {
+        if (state !== "playing") continue;
+        shot.life -= dt;
+        if (shot.life <= 0) { resolveAtlasPulse(shot); shots.splice(index, 1); }
+        continue;
+      }
       shot.life -= dt;
       if (shot.life <= 0) {
         if (shot.hit) {
@@ -1944,6 +2108,7 @@
     phaserCooldown = 0.34;
     cameraKickY = Math.max(cameraKickY, 3.5);
     shake = Math.max(shake, 2.2);
+    if (fireAtlasPulse("phaser")) return;
     const candidates = items
       .filter(isThreat)
       .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 95)
@@ -1974,12 +2139,13 @@
   }
 
   function fireManualShot() {
-    if (state !== "playing" || (!JOURNEY_DEMO && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
+    if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
-    if (!JOURNEY_DEMO) ammo -= 1;
+    if (!JOURNEY_DEMO && !atlasBoss) ammo -= 1;
     manualShotCooldown = 0.28;
     cameraKickY = Math.max(cameraKickY, 5);
     shake = Math.max(shake, 3.2);
+    if (fireAtlasPulse("pulse")) { updateAmmoHud(); return true; }
 
     const candidates = items
       .filter(isThreat)
@@ -2304,6 +2470,7 @@
         updateEncounterHud();
       }
     } else {
+      if (!atlasBoss) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -2325,6 +2492,12 @@
           classicScoutTimer = 6.2 + Math.random() * 1.5;
         }
       }
+      }
+    }
+
+    if (atlasBoss) {
+      updateAtlasEncounter(dt);
+      if (state !== "playing") { updateEffects(dt); return; }
     }
 
     if (comboTimer > 0) {
@@ -2351,11 +2524,19 @@
     if (powers.tractor > 0 && (!tractorTarget || !items.includes(tractorTarget))) selectTractorTarget();
 
     const scale = powers.slow > 0 ? 0.50 : 1;
-    updateGateSystem(dt, scale);
+    if (!atlasBoss) updateGateSystem(dt, scale);
 
     for (let index = items.length - 1; index >= 0; index--) {
       const item = items[index];
-      item.y += item.s * dt * scale;
+      // Recovering the final fragment can replace the field with the Atlas
+      // arena synchronously. The old loop indexes must not read that old field.
+      if (!item) continue;
+      if (item.guardianProjectile) {
+        item.x += item.vx * dt * scale;
+        item.y += item.vy * dt * scale;
+        item.life -= dt * scale;
+        if (item.life <= 0 || item.x < -60 || item.x > W + 60) { items.splice(index, 1); continue; }
+      } else item.y += item.s * dt * scale;
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
@@ -3033,6 +3214,63 @@
     veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");
     ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
+  // Image-backed artwork. The simulation, not the render clock, selects poses.
+  const ATLAS_FRAME_PIVOTS = [[222,226],[221,241],[224,226],[223,239],[221,235],[223,218],[224,219],[222,232]];
+  const ATLAS_VFX_CROPS = [[120,0,280,680],[546,0,298,725],[837,65,700,600],[1540,0,630,635]];
+
+  function drawAtlasVfx(index, width, height, alpha = 1, head = .5) {
+    if (!spriteReady(SPRITES.atlasVfx)) return false;
+    const source = ATLAS_VFX_CROPS[index];
+    const sx = SPRITES.atlasVfx.naturalWidth / 2170;
+    const sy = SPRITES.atlasVfx.naturalHeight / 725;
+    ctx.save(); ctx.globalAlpha *= alpha;
+    ctx.drawImage(SPRITES.atlasVfx, source[0] * sx, source[1] * sy, source[2] * sx, source[3] * sy, -width / 2, -height * head, width, height);
+    ctx.restore(); return true;
+  }
+
+  function drawAtlasProjectile(item) {
+    ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.rot);
+    drawAtlasVfx(0, 27, 68, 1, .90);
+    ctx.restore();
+  }
+
+  function drawGuardianAtlas() {
+    if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
+    const boss = atlasBoss;
+    const activeGap = boss.telegraph?.safeGap || items.find(item => item.guardianProjectile && item.safeGap && item.y < player.y + 140)?.safeGap;
+    if (activeGap && !boss.disabled) {
+      ctx.save();
+      ctx.fillStyle = "rgba(105,255,219,.045)";
+      ctx.fillRect(activeGap.left, boss.y + 100, activeGap.right - activeGap.left, Math.max(0, player.y + 100 - boss.y - 100));
+      ctx.strokeStyle = "rgba(145,255,221,.70)"; ctx.lineWidth = 2; ctx.setLineDash([8,12]);
+      for (const x of [activeGap.left, activeGap.right]) {
+        ctx.beginPath(); ctx.moveTo(x,boss.y + 100); ctx.lineTo(x,player.y + 100); ctx.stroke();
+      }
+      ctx.setLineDash([]); ctx.font = "bold 18px sans-serif"; ctx.textAlign = "center";
+      ctx.fillStyle = "#beffe6"; ctx.fillText("RUTA LIBRE", activeGap.center, player.y - 180);
+      ctx.restore();
+    } else if (boss.state === "charge" && boss.telegraph) {
+      ctx.save(); ctx.translate(boss.telegraph.targetX, player.y);
+      drawAtlasVfx(3, 85, 85, .65 + boss.telegraph.progress * .30);
+      ctx.restore();
+    }
+    const animation = NeonCampaign.guardianAtlasAnimation(boss);
+    const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
+    const frameHeight = SPRITES.guardianAtlas.naturalHeight / 2;
+    const size = boss.visualSize || 350;
+    const paint = (frame, alpha) => {
+      if (alpha <= 0) return;
+      const pivot = ATLAS_FRAME_PIVOTS[frame];
+      ctx.save(); ctx.globalAlpha *= alpha;
+      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth, Math.floor(frame / 4) * frameHeight,
+        frameWidth, frameHeight,
+        boss.x - size * pivot[0] / 443.5, boss.y - size * pivot[1] / 443.5, size, size);
+      ctx.restore();
+    };
+    if (animation.previousFrame !== null) paint(animation.previousFrame, 1 - animation.blend);
+    paint(animation.frame, animation.blend);
+  }
+
   // Authored component crops share explicit mounting coordinates, not icon offsets.
   function drawShipComponent(target, loadout, part) {
     const atlas = SPRITES.modularShip;
@@ -3567,6 +3805,14 @@
     ctx.globalCompositeOperation = "screen";
     for (const shot of shots) {
       const progress = 1 - shot.life / shot.duration;
+      if (shot.atlasPulse) {
+        ctx.save();
+        ctx.translate(shot.x1 + (shot.x2 - shot.x1) * progress, shot.y1 + (shot.y2 - shot.y1) * progress);
+        ctx.rotate(Math.atan2(shot.y2 - shot.y1, shot.x2 - shot.x1) + Math.PI / 2);
+        drawAtlasVfx(1, 22, 60, 1, .10);
+        ctx.restore();
+        continue;
+      }
       const dx = shot.x2 - shot.x1;
       const dy = shot.y2 - shot.y1;
       const distance = Math.hypot(dx, dy);
@@ -3641,6 +3887,11 @@
   function drawImpactEffects() {
     for (const effect of impactEffects) {
       const progress = 1 - effect.life / effect.duration;
+      if (effect.atlasImpact) {
+        ctx.save(); ctx.translate(effect.x, effect.y);
+        drawAtlasVfx(2, 58 + progress * 45, 52 + progress * 40, 1 - progress);
+        ctx.restore(); continue;
+      }
       const frame = frameFrom("impact", effect.variant);
       const size = (36 + progress * 28) * effect.scale;
       ctx.save();
@@ -3692,13 +3943,15 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.type === "journeyPart") drawJourneyPart(item);
+      if (item.guardianProjectile) drawAtlasProjectile(item);
+      else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
       else if (item.type === "debris") drawDebris(item);
       else if (item.type === "satellite") drawSatellite(item);
       else drawPower(item);
     }
+    drawGuardianAtlas();
     drawPlayer(t);
     drawShots();
     drawExplosions();
@@ -3920,6 +4173,7 @@
   console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
   setupJourneyUI();
   setupShipHangar();
+  setupAtlasEncounter();
   updateMenu();
   hud();
   resetPowers();

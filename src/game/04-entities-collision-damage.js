@@ -475,6 +475,14 @@
     }
     for (let index = shots.length - 1; index >= 0; index--) {
       const shot = shots[index];
+      // Illustrated Atlas pulses arrive before applying damage. Pause freezes
+      // both their flight and the boss, rather than damaging an inert target.
+      if (shot.atlasPulse) {
+        if (state !== "playing") continue;
+        shot.life -= dt;
+        if (shot.life <= 0) { resolveAtlasPulse(shot); shots.splice(index, 1); }
+        continue;
+      }
       shot.life -= dt;
       if (shot.life <= 0) {
         if (shot.hit) {
@@ -527,6 +535,7 @@
     phaserCooldown = 0.34;
     cameraKickY = Math.max(cameraKickY, 3.5);
     shake = Math.max(shake, 2.2);
+    if (fireAtlasPulse("phaser")) return;
     const candidates = items
       .filter(isThreat)
       .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 95)
@@ -557,12 +566,13 @@
   }
 
   function fireManualShot() {
-    if (state !== "playing" || (!JOURNEY_DEMO && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
+    if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
-    if (!JOURNEY_DEMO) ammo -= 1;
+    if (!JOURNEY_DEMO && !atlasBoss) ammo -= 1;
     manualShotCooldown = 0.28;
     cameraKickY = Math.max(cameraKickY, 5);
     shake = Math.max(shake, 3.2);
+    if (fireAtlasPulse("pulse")) { updateAmmoHud(); return true; }
 
     const candidates = items
       .filter(isThreat)

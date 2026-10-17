@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 71,
-  "runtimeBytes": 5301870,
+  "assetCount": 73,
+  "runtimeBytes": 6239042,
   "audit": {
-    "reviewed": 71,
+    "reviewed": 73,
     "READY": 58,
-    "IN_REVIEW": 13,
+    "IN_REVIEW": 15,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -555,6 +555,32 @@
       "status": "IN_REVIEW",
       "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; master retained",
       "version": "modular-ships-v1"
+    },
+    {
+      "id": "guardian-atlas-states-v1",
+      "path": "assets/guardian_atlas_states_v1.webp",
+      "master": "art-source/enemies/guardian-atlas/guardian-atlas-states-master.png",
+      "dimensions": "1774x887",
+      "use": "Guardian Atlas encounter after CRONIUM recovery in classic Gaia",
+      "animation": "Eight authored poses; shared reactor pivots; closed/open armour, charge, fire, hurt, phase break, second-phase fire, disabled",
+      "format": "webp-alpha",
+      "size": 801340,
+      "status": "IN_REVIEW",
+      "origin": "Original built-in image generation 2026-10-17, matching user-supplied Gaia direction; masters retained",
+      "version": "guardian-atlas-v1"
+    },
+    {
+      "id": "atlas-combat-vfx-v1",
+      "path": "assets/atlas_combat_vfx_v1.webp",
+      "master": "art-source/enemies/guardian-atlas/atlas-combat-vfx-master.png",
+      "dimensions": "1085x363",
+      "use": "Illustrated enemy/projectile pulses and attack-warning lens; preserved impact sprite",
+      "animation": "Four distinct effect designs, not four frames; flight follows simulation and damage occurs on impact",
+      "format": "webp-alpha",
+      "size": 135832,
+      "status": "IN_REVIEW",
+      "origin": "Original built-in image generation 2026-10-17, matching user-supplied Gaia direction; masters retained",
+      "version": "guardian-atlas-v1"
     }
   ]
 }

@@ -22,6 +22,7 @@ var NeonCampaign = (() => {
   __export(legacy_content_entry_exports, {
     EncounterDirector: () => EncounterDirector,
     GENERATOR_VERSION: () => GENERATOR_VERSION,
+    GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     JOURNEY_DEMO_SAVE_KEY: () => JOURNEY_DEMO_SAVE_KEY,
     JOURNEY_DEMO_VERSION: () => JOURNEY_DEMO_VERSION,
     LEVELS: () => LEVELS,
@@ -29,8 +30,12 @@ var NeonCampaign = (() => {
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     advanceClassicScout: () => advanceClassicScout,
     advanceEnemy: () => advanceEnemy,
+    advanceGuardianAtlas: () => advanceGuardianAtlas,
     createClassicScout: () => createClassicScout,
+    createGuardianAtlas: () => createGuardianAtlas,
     createJourneyDemo: () => createJourneyDemo,
+    guardianAtlasAnimation: () => guardianAtlasAnimation,
+    hitGuardianAtlas: () => hitGuardianAtlas,
     n7Dialogue: () => n7Dialogue,
     normalizeShipLoadout: () => normalizeShipLoadout,
     shipAssemblyPose: () => shipAssemblyPose,
@@ -1314,6 +1319,348 @@ var NeonCampaign = (() => {
         return true;
       }
     });
+  }
+
+  // src/game/combat/guardian-atlas.js
+  var clamp4 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var finite2 = (value, name) => {
+    if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
+    return value;
+  };
+  var GUARDIAN_ATLAS_RULES = Object.freeze({
+    version: "guardian-atlas-v1",
+    maxHp: 36,
+    maxDelta: 0.05,
+    entrySeconds: 2.2,
+    arrivalSeconds: 1.35,
+    phaseBreakSeconds: 1.65,
+    shutdownSeconds: 1.55,
+    hurtSeconds: 0.16,
+    phaseOne: Object.freeze({
+      chargeSeconds: 1.15,
+      fireSeconds: 0.28,
+      recoverySeconds: 2.05,
+      projectileSpeed: 280,
+      projectileDamage: 14
+    }),
+    phaseTwo: Object.freeze({
+      chargeSeconds: 1.4,
+      fireSeconds: 0.62,
+      secondVolleyAt: 0.34,
+      recoverySeconds: 2.25,
+      projectileSpeed: 255,
+      projectileDamage: 12
+    })
+  });
+  function createGuardianAtlas({
+    width = 720,
+    height = 1280,
+    playerY = height - 135,
+    seed = 1096043585
+  } = {}) {
+    finite2(width, "width");
+    finite2(height, "height");
+    finite2(playerY, "playerY");
+    if (width < 280 || height < 540 || playerY < 430 || playerY > height - 24 || !Number.isInteger(seed)) throw new RangeError("Invalid Guardian Atlas arena");
+    const radius = Math.min(104, width * 0.19);
+    const targetY = Math.min(height * 0.22, playerY - 360);
+    return {
+      type: "guardianAtlas",
+      version: GUARDIAN_ATLAS_RULES.version,
+      width,
+      height,
+      playerY,
+      seed: seed >>> 0 || 1,
+      x: width / 2,
+      y: -radius * 1.6,
+      baseX: width / 2,
+      targetY,
+      r: radius,
+      s: 0,
+      rot: 0,
+      rs: 0,
+      p: 0,
+      amp: 0,
+      alpha: 1,
+      hp: GUARDIAN_ATLAS_RULES.maxHp,
+      maxHp: GUARDIAN_ATLAS_RULES.maxHp,
+      age: 0,
+      state: "entry",
+      stateTime: 0,
+      phase: 1,
+      vulnerability: false,
+      telegraph: null,
+      disabled: false,
+      resolved: false,
+      attackId: 0,
+      volley: 0,
+      lastGapIndex: -1,
+      flash: 0,
+      resumeState: null,
+      resumeTime: 0
+    };
+  }
+  function nextRandom(boss) {
+    let value = boss.seed;
+    value ^= value << 13;
+    value ^= value >>> 17;
+    value ^= value << 5;
+    boss.seed = value >>> 0;
+    return boss.seed / 4294967296;
+  }
+  function rules(boss) {
+    return boss.phase === 1 ? GUARDIAN_ATLAS_RULES.phaseOne : GUARDIAN_ATLAS_RULES.phaseTwo;
+  }
+  function transition(boss, next, events) {
+    boss.state = next;
+    boss.stateTime = 0;
+    boss.vulnerability = next === "idle" || next === "fire" || next === "hurt";
+    events.push({ type: "state", state: next, phase: boss.phase, attackId: boss.attackId });
+  }
+  function beginCharge(boss, player, events) {
+    boss.attackId++;
+    boss.volley = 0;
+    const timing = rules(boss);
+    const originY = boss.y + boss.r * 0.7;
+    let safeGap = null;
+    if (boss.phase === 2) {
+      let index = Math.floor(nextRandom(boss) * 3);
+      if (index === boss.lastGapIndex) index = (index + 1) % 3;
+      boss.lastGapIndex = index;
+      const halfWidth = Math.min(Math.max(125, boss.width * 0.17), boss.width / 2 - 14);
+      const center = clamp4(
+        boss.width * [0.28, 0.5, 0.72][index],
+        halfWidth + 14,
+        boss.width - halfWidth - 14
+      );
+      safeGap = { left: center - halfWidth, right: center + halfWidth, center };
+    }
+    boss.telegraph = {
+      kind: boss.phase === 1 ? "aimedSalvo" : "openCorridor",
+      progress: 0,
+      targetX: clamp4(player.x, 24, boss.width - 24),
+      targetY: boss.playerY,
+      originX: boss.x,
+      originY,
+      seconds: timing.chargeSeconds,
+      safeGap,
+      attackId: boss.attackId
+    };
+    transition(boss, "charge", events);
+    events.push({
+      type: "warning",
+      phase: boss.phase,
+      ...boss.telegraph,
+      safeGap: safeGap && { ...safeGap }
+    });
+  }
+  function projectile(boss, x, y, vx, vy, ordinal) {
+    const timing = rules(boss);
+    return {
+      type: "meteor",
+      guardianProjectile: true,
+      pattern: boss.telegraph.kind,
+      attackId: boss.attackId,
+      volley: boss.volley,
+      projectileId: `${boss.attackId}:${boss.volley}:${ordinal}`,
+      x,
+      baseX: x,
+      y,
+      vx,
+      vy,
+      s: vy,
+      r: boss.phase === 1 ? 10 : 11,
+      damage: timing.projectileDamage,
+      duration: 7,
+      life: 7,
+      telegraphSeconds: timing.chargeSeconds,
+      safeGap: boss.telegraph.safeGap && { ...boss.telegraph.safeGap },
+      targetX: boss.telegraph.targetX,
+      targetY: boss.playerY,
+      rot: Math.atan2(vy, vx) - Math.PI / 2,
+      rs: 0,
+      p: 0,
+      phase: 0,
+      amp: 0,
+      special: "",
+      alpha: 1,
+      hp: 1,
+      maxHp: 1
+    };
+  }
+  function fireVolley(boss, events) {
+    const timing = rules(boss);
+    const aim = boss.telegraph;
+    if (boss.phase === 1) {
+      const direction = Math.atan2(aim.targetY - aim.originY, aim.targetX - aim.originX);
+      for (const [index, offset] of [-0.115, 0, 0.115].entries()) {
+        const angle = direction + offset;
+        const shot = projectile(
+          boss,
+          aim.originX,
+          aim.originY,
+          Math.cos(angle) * timing.projectileSpeed,
+          Math.sin(angle) * timing.projectileSpeed,
+          index
+        );
+        events.push({ type: "projectile", projectile: shot });
+      }
+    } else {
+      for (let index = 0; index < 9; index++) {
+        const x = 14 + (boss.width - 28) * index / 8;
+        if (x >= aim.safeGap.left - 15 && x <= aim.safeGap.right + 15) continue;
+        const shot = projectile(boss, x, aim.originY, 0, timing.projectileSpeed, index);
+        events.push({ type: "projectile", projectile: shot });
+      }
+    }
+    events.push({ type: "volley", attackId: boss.attackId, phase: boss.phase, volley: boss.volley });
+    boss.volley++;
+  }
+  function stateDuration(boss) {
+    if (boss.state === "entry") return GUARDIAN_ATLAS_RULES.entrySeconds;
+    if (boss.state === "phaseBreak") return GUARDIAN_ATLAS_RULES.phaseBreakSeconds;
+    if (boss.state === "disabled") return GUARDIAN_ATLAS_RULES.shutdownSeconds;
+    if (boss.state === "hurt") return GUARDIAN_ATLAS_RULES.hurtSeconds;
+    if (boss.state === "charge") return rules(boss).chargeSeconds;
+    if (boss.state === "fire") return rules(boss).fireSeconds;
+    if (boss.attackId === 0) return GUARDIAN_ATLAS_RULES.arrivalSeconds;
+    const timing = rules(boss);
+    const flightToPlayer = (boss.playerY - (boss.y + boss.r * 0.7)) / timing.projectileSpeed;
+    const lastVolleyAt = boss.phase === 2 ? timing.secondVolleyAt : 0;
+    return Math.max(
+      timing.recoverySeconds,
+      flightToPlayer + lastVolleyAt + 0.45 - timing.fireSeconds
+    );
+  }
+  function finishState(boss, player, events) {
+    if (boss.state === "entry") {
+      boss.y = boss.targetY;
+      transition(boss, "idle", events);
+      events.push({ type: "arrival", phase: 1 });
+    } else if (boss.state === "idle") {
+      beginCharge(boss, player, events);
+    } else if (boss.state === "charge") {
+      transition(boss, "fire", events);
+      boss.telegraph.progress = 1;
+      fireVolley(boss, events);
+    } else if (boss.state === "fire") {
+      boss.telegraph = null;
+      transition(boss, "idle", events);
+    } else if (boss.state === "phaseBreak") {
+      transition(boss, "idle", events);
+    } else if (boss.state === "hurt") {
+      transition(boss, boss.resumeState || "idle", events);
+      boss.stateTime = boss.resumeTime;
+      boss.resumeState = null;
+      boss.resumeTime = 0;
+    } else if (boss.state === "disabled" && !boss.resolved) {
+      boss.resolved = true;
+      events.push({ type: "disabled", phase: boss.phase, rewardId: "guardian-atlas-access" });
+    }
+  }
+  function advanceGuardianAtlas(boss, dt, player, emit = () => {
+  }) {
+    finite2(dt, "delta");
+    if (dt < 0) throw new RangeError("Finite nonnegative delta required");
+    if (typeof emit !== "function") throw new TypeError("Event callback required");
+    if (!player || !Number.isFinite(player.x)) throw new TypeError("Player x must be finite");
+    if (dt === 0 || boss.resolved) return [];
+    const events = [];
+    let remaining = Math.min(dt, GUARDIAN_ATLAS_RULES.maxDelta);
+    boss.age += remaining;
+    boss.flash = Math.max(0, boss.flash - remaining);
+    while (remaining > 1e-10 && !boss.resolved) {
+      const duration = stateDuration(boss);
+      const step = Math.min(remaining, Math.max(0, duration - boss.stateTime));
+      const before = boss.stateTime;
+      boss.stateTime += step;
+      remaining -= step;
+      if (boss.state === "entry") {
+        const progress = clamp4(boss.stateTime / duration, 0, 1);
+        boss.y = -boss.r * 1.6 + (boss.targetY + boss.r * 1.6) * (1 - (1 - progress) ** 3);
+      } else if (boss.state === "idle" || boss.state === "hurt") {
+        boss.x = clamp4(
+          boss.width / 2 + Math.sin(boss.age * 0.64) * boss.width * 0.11,
+          boss.r + 12,
+          boss.width - boss.r - 12
+        );
+      } else if (boss.state === "charge") {
+        boss.telegraph.progress = clamp4(boss.stateTime / duration, 0, 1);
+      } else if (boss.state === "fire" && boss.phase === 2 && boss.volley === 1 && before < rules(boss).secondVolleyAt && boss.stateTime >= rules(boss).secondVolleyAt) {
+        fireVolley(boss, events);
+      }
+      if (boss.stateTime + 1e-10 >= duration) finishState(boss, player, events);
+      else break;
+    }
+    for (const event of events) emit(event);
+    return events;
+  }
+  function hitGuardianAtlas(boss, damage = 1) {
+    finite2(damage, "damage");
+    if (damage <= 0) throw new RangeError("Damage must be positive");
+    if (boss.disabled || !boss.vulnerability) return {
+      accepted: false,
+      damage: 0,
+      events: [],
+      reason: boss.disabled ? "disabled" : "armored"
+    };
+    const lost = Math.min(boss.hp, damage);
+    boss.hp -= lost;
+    boss.flash = 0.14;
+    const events = [{ type: "hit", damage: lost, hp: boss.hp, maxHp: boss.maxHp }];
+    if (boss.hp === 0) {
+      boss.disabled = true;
+      boss.telegraph = null;
+      boss.resumeState = null;
+      transition(boss, "disabled", events);
+      events.push({ type: "shutdown", rewardId: "guardian-atlas-access" });
+    } else if (boss.phase === 1 && boss.hp <= boss.maxHp / 2) {
+      boss.phase = 2;
+      boss.telegraph = null;
+      boss.resumeState = null;
+      transition(boss, "phaseBreak", events);
+      events.push({ type: "phase", phase: 2, clearProjectiles: true });
+    } else if (boss.state !== "hurt") {
+      boss.resumeState = boss.state;
+      boss.resumeTime = boss.stateTime;
+      transition(boss, "hurt", events);
+    }
+    return { accepted: true, damage: lost, events };
+  }
+
+  // src/game/animation/guardian-atlas-animator.js
+  var states = /* @__PURE__ */ new Set(["entry", "idle", "charge", "fire", "hurt", "phaseBreak", "disabled"]);
+  var clamp5 = (value) => Math.max(0, Math.min(1, value));
+  function pose(frame, previousFrame = null, blend = 1) {
+    const opacity = clamp5(blend);
+    return {
+      frame,
+      previousFrame: opacity < 1 ? previousFrame : null,
+      blend: opacity,
+      columns: 4,
+      rows: 2
+    };
+  }
+  function guardianAtlasAnimation(boss) {
+    if (!boss || !states.has(boss.state)) throw new RangeError("Unknown Guardian Atlas animation state");
+    if (!Number.isFinite(boss.stateTime) || boss.stateTime < 0) {
+      throw new RangeError("Guardian Atlas animation time must be finite and nonnegative");
+    }
+    if (boss.phase !== 1 && boss.phase !== 2) throw new RangeError("Unknown Guardian Atlas animation phase");
+    const { state, stateTime, phase } = boss;
+    if (state === "entry") {
+      const revealAt = GUARDIAN_ATLAS_RULES.entrySeconds - 0.25;
+      return stateTime < revealAt ? pose(0) : pose(1, 0, (stateTime - revealAt) / 0.25);
+    }
+    if (state === "phaseBreak") return pose(5, 4, stateTime / 0.5);
+    if (state === "disabled") return pose(7, phase === 2 ? 5 : 4, stateTime / 0.6);
+    if (phase === 2) {
+      return pose(state === "fire" ? 6 : 5);
+    }
+    if (state === "hurt") return pose(4);
+    if (state === "charge") return pose(2, 1, stateTime / 0.18);
+    if (state === "fire") return pose(3);
+    return pose(1);
   }
 
   // src/game/ship/modular-ship.js

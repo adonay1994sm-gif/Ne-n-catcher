@@ -31,6 +31,11 @@
   let spawnTimer = 0;
   let classicScoutTimer = 0;
   let classicScoutAnnounced = false;
+  let atlasBoss = null;
+  let atlasAutoFire = storage.getJSON("neonCatcher.atlasAutoFire.v1", true) !== false;
+  let atlasFireTimer = 0;
+  let atlasReentryGrace = 0;
+  let atlasLastStatus = "";
   let warpTimer = 0;
   let score = 0;
   let hull = 100;
@@ -174,6 +179,8 @@
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
+    guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
+    atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
     comet: loadSprite("assets/comet_animation_sheet_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),

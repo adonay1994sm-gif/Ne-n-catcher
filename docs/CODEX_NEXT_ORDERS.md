@@ -1,3 +1,13 @@
+## Continuación Guardian Atlas —17/10/2026
+
+1. Leer [informe actual](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Conservar fuentes/maestros y el intento Chromium fallido.
+2. Cerrar certificación del fix de ralentización, ejecutar el piloto natural desde selector→Gaia→45CRONIUM→Atlas→victoria. No inyectar casco/tiempo/recogidas.
+3. Revisar capturas de ambas fases, señales y desactivación en tres tamaños. Corregir causas reales.
+4. Empaquetar con SHA limpio y actualizar únicamente el sitio privado existente; comprobar resultado antes de afirmar publicado.
+5. Revisar estilo/balance con el propietario antes de multiplicar arte. Las cien etapas de design/campaign-space-v1.json son diseño, todas PENDING.
+
+---
+
 ## Punto de reanudación comprobado — 17/10/2026
 
 Sitio privado actualizado: https://neon-catcher-pruebas.chictide18.chatgpt.site. Paquete limpio2cfb5d4 y juego con hash cd64ffaa… idéntico a Chromium21/21. Ver [entrega](production-reports/PAQUETE_NAVES_MODULARES_2026-10-17.md). El siguiente bloque es jugabilidad natural del nivel1clásico y respuesta visual a daño/armas; no volver a generar el hangar ni expandir el prototipo corto. Mantener restricciones y evidencias.

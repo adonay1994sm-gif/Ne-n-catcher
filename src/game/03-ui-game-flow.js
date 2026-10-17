@@ -1,3 +1,128 @@
+  function isAtlasMission() {
+    return !N7_CAMPAIGN && !JOURNEY_DEMO && currentLevel === 1;
+  }
+
+  function setupAtlasEncounter() {
+    const mount = document.createElement("section");
+    mount.id = "atlasEncounter"; mount.className = "atlas-encounter hidden";
+    mount.setAttribute("aria-label", "Encuentro Guardian Atlas");
+    mount.innerHTML = `<div class="atlas-identity"><b>GUARDIAN ATLAS</b><span id="atlasPhase">CONTENCIÓN ORBITAL</span><progress id="atlasHealth" max="1" value="1" aria-label="Integridad de Guardian Atlas"></progress></div><button id="atlasAutoFire" type="button" aria-pressed="true">PULSO AUTO · SÍ</button><p id="atlasStatus" role="status">Recupera el CRONIUM antes de cruzar el perímetro.</p>`;
+    canvas.parentElement.append(mount);
+    for (const id of ["atlasEncounter", "atlasHealth", "atlasPhase", "atlasStatus", "atlasAutoFire"]) ui[id] = $(id);
+    ui.atlasAutoFire.onclick = () => {
+      const next = !atlasAutoFire;
+      if (!storage.setJSON("neonCatcher.atlasAutoFire.v1", next)) { toast("No se pudo guardar el modo de disparo"); return; }
+      atlasAutoFire = next; syncAtlasHud();
+    };
+    syncAtlasHud();
+  }
+
+  function positionAtlasArena() {
+    if (!atlasBoss) return;
+    const rect = canvas.getBoundingClientRect();
+    const horizontal = rect.height < 500;
+    atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = player.y;
+    atlasBoss.visualSize = horizontal ? 300 : 350;
+    const headerClearance = (horizontal ? 104 : 144) * H / Math.max(1, rect.height);
+    atlasBoss.targetY = Math.min(player.y - 360, Math.max(H * .30, headerClearance + atlasBoss.visualSize / 2));
+    if (atlasBoss.state !== "entry") atlasBoss.y = atlasBoss.targetY;
+  }
+
+  function beginAtlasEncounter() {
+    if (!isAtlasMission() || atlasBoss || collected < level().goal || state !== "playing") return false;
+    cancelSupplyFailureTimer();
+    atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
+    positionAtlasArena();
+    atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
+    items = []; gates = []; shots = []; tractorTarget = null;
+    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
+    hideWarning(); hideStoryTransmission(); ui.banner.classList.remove("show");
+    document.body.classList.add("atlas-combat");
+    ui.atlasEncounter.classList.remove("hidden");
+    ui.goal.previousElementSibling.textContent = "CRONIUM A SALVO";
+    ui.goal.textContent = `${collected}/${level().goal}`;
+    syncAtlasHud(); updateAmmoHud();
+    tone(135, .28, "triangle", .065);
+    return true;
+  }
+
+  function syncAtlasHud() {
+    if (!ui.atlasEncounter) return;
+    const pressed = String(atlasAutoFire);
+    const autoLabel = `PULSO AUTO · ${atlasAutoFire ? "SÍ" : "NO"}`;
+    if (ui.atlasAutoFire.getAttribute("aria-pressed") !== pressed) ui.atlasAutoFire.setAttribute("aria-pressed", pressed);
+    if (ui.atlasAutoFire.textContent !== autoLabel) ui.atlasAutoFire.textContent = autoLabel;
+    if (!atlasBoss) return;
+    const health = atlasBoss.hp / atlasBoss.maxHp;
+    const phaseLabel = atlasBoss.disabled ? "PROTOCOLO RESTAURADO" : `FASE ${atlasBoss.phase} · ${atlasBoss.vulnerability ? "NÚCLEO EXPUESTO" : "BLINDAJE CERRADO"}`;
+    if (ui.atlasHealth.value !== health) ui.atlasHealth.value = health;
+    if (ui.atlasPhase.textContent !== phaseLabel) ui.atlasPhase.textContent = phaseLabel;
+    let status;
+    if (!spriteReady(SPRITES.guardianAtlas) || !spriteReady(SPRITES.atlasVfx)) status = "Atlas no se ha cargado. Pausa y vuelve al menú para reintentar.";
+    else if (atlasReentryGrace > 0) status = "Enlace recuperado. Retoma el control.";
+    else if (atlasBoss.state === "entry") status = "Tu carga activa la contención. Desactiva el núcleo para abrir el paso.";
+    else if (atlasBoss.state === "disabled") status = "Atlas: «Identidad confirmada. Gaia autoriza el acceso».";
+    else if (atlasBoss.state === "phaseBreak") status = "N-7: «Es un bucle de contención. Rompe el enlace, salva al guardián».";
+    else if (atlasBoss.telegraph?.safeGap) status = "DOBLE CORTINA · atraviesa la franja iluminada.";
+    else if (atlasBoss.state === "charge") status = "SALVA FIJADA · cambia de posición antes del disparo.";
+    else status = "NÚCLEO EXPUESTO · alinea la nave y abre fuego.";
+    if (status !== atlasLastStatus) { ui.atlasStatus.textContent = status; atlasLastStatus = status; }
+  }
+
+  function consumeAtlasEvent(event) {
+    if (event.type === "projectile") items.push(event.projectile);
+    if (event.clearProjectiles || event.type === "shutdown") {
+      items = items.filter(item => !item.guardianProjectile);
+    }
+    if (event.type === "warning") tone(event.phase === 1 ? 290 : 380, .16, "triangle", .045);
+    if (event.type === "volley") tone(95, .12, "sawtooth", .045);
+    if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
+    if (event.type === "shutdown") { score += 250; tone(640, .28, "sine", .06); }
+    if (event.type === "disabled") completeLevel();
+  }
+
+  function updateAtlasEncounter(dt) {
+    if (!atlasBoss || dt <= 0) return;
+    if (!spriteReady(SPRITES.guardianAtlas) || !spriteReady(SPRITES.atlasVfx)) { syncAtlasHud(); return; }
+    if (atlasReentryGrace > 0) { atlasReentryGrace = Math.max(0, atlasReentryGrace - dt); syncAtlasHud(); return; }
+    // Slow affects both the guardian's warning/recovery clock and its bullets.
+    // A different clock could announce a new corridor over an older curtain.
+    NeonCampaign.advanceGuardianAtlas(atlasBoss, dt * (powers.slow > 0 ? .5 : 1), player, consumeAtlasEvent);
+    if (state !== "playing") return;
+    atlasFireTimer = Math.max(0, atlasFireTimer - dt);
+    if (atlasAutoFire && atlasFireTimer === 0 && atlasBoss.vulnerability && Math.abs(atlasBoss.x - player.x) < 115) {
+      if (fireManualShot()) atlasFireTimer = .42;
+    }
+    syncAtlasHud();
+  }
+
+  function fireAtlasPulse(kind) {
+    if (!atlasBoss || atlasBoss.disabled || !spriteReady(SPRITES.guardianAtlas) || Math.abs(atlasBoss.x - player.x) >= 115) return false;
+    if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
+    shots.push({x1: player.x, y1: player.y - (shipRenderMode === "modular" ? 114 : SHIP_VISUAL.phaserMuzzleOffset),
+      x2: atlasBoss.x, y2: atlasBoss.y, life: .24, duration: .24,
+      hit: false, destroyed: false, impactX: atlasBoss.x, impactY: atlasBoss.y,
+      impactScale: .7, kind, atlasPulse: true, atlasTarget: atlasBoss});
+    tone(740, .04, "triangle", .025);
+    return true;
+  }
+
+  function resolveAtlasPulse(shot) {
+    if (state !== "playing" || shot.atlasTarget !== atlasBoss || atlasBoss.disabled) return;
+    const result = NeonCampaign.hitGuardianAtlas(atlasBoss, 1);
+    for (const event of result.events) consumeAtlasEvent(event);
+    if (result.accepted) {
+      score += 3;
+      if (settings.effects) {
+        if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+        impactEffects.push({x: atlasBoss.x, y: atlasBoss.y, angle: 0, scale: 1,
+          life: .24, duration: .24, atlasImpact: true});
+      }
+      tone(620, .055, "triangle", .035);
+    } else tone(180, .04, "square", .025);
+    syncAtlasHud();
+  }
+
   function setupShipHangar() {
     if ($("shipHangar")) return;
     const menuActions = ui.menu.querySelector(".menu-actions");
@@ -324,7 +449,8 @@
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
-    if (JOURNEY_DEMO) {
+    if (JOURNEY_DEMO || atlasBoss) {
+      ui.fire.classList.remove("empty");
       ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
       ui.fire.disabled = state !== "playing" || manualShotCooldown > 0 || warpTimer > 0;
       ui.fire.setAttribute("aria-label", "Disparar pulso básico sin munición limitada");
@@ -492,6 +618,13 @@
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
+    atlasBoss = null;
+    atlasFireTimer = atlasReentryGrace = 0;
+    atlasLastStatus = "";
+    ui.goal.previousElementSibling.textContent = "NÚCLEOS";
+    document.body.classList.remove("atlas-combat");
+    ui.atlasEncounter?.classList.add("hidden");
+    if (isAtlasMission()) { ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); }
     encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
     encounterWave = 0;
     setState("playing");
@@ -590,6 +723,9 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("menu");
+    atlasBoss = null;
+    ui.atlasEncounter?.classList.add("hidden");
+    document.body.classList.remove("atlas-combat");
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
     ui.fire.classList.add("hidden");
@@ -627,10 +763,16 @@
   function completeLevel() {
     if (JOURNEY_DEMO) return;
     if (state !== "playing") return;
+    if (isAtlasMission() && collected >= level().goal) {
+      if (!atlasBoss) { beginAtlasEncounter(); return; }
+      if (!atlasBoss.resolved) return;
+    }
     if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("complete");
+    ui.atlasEncounter?.classList.add("hidden");
+    document.body.classList.remove("atlas-combat");
     hideWarning();
     ui.hud.classList.add("hidden");
     ui.powerHud.classList.add("hidden");
@@ -657,6 +799,7 @@
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
       ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
       : `${level().name} completado`;
+    if (isAtlasMission() && atlasBoss?.resolved) ui.completeTitle.textContent = "Atlas ha abierto el paso";
     ui.starsAwarded.innerHTML = [1, 2, 3]
       .map((value) => `<span class="${value <= earned ? "" : "off"}">★</span>`)
       .join("");
@@ -686,6 +829,7 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("gameover");
+    ui.atlasEncounter?.classList.add("hidden");
     supplyFailed = reason === "supply";
     hideWarning();
     ui.hud.classList.add("hidden");
@@ -720,6 +864,10 @@
     hull = Math.max(hull, 35);
     continued = true;
     setState("playing");
+    if (atlasBoss) {
+      atlasReentryGrace = 1.25;
+      ui.atlasEncounter?.classList.remove("hidden");
+    }
     last = performance.now();
     playerVisible = true;
     destructionTimer = 0;

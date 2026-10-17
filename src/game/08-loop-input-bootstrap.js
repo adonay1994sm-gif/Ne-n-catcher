@@ -9,13 +9,15 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.type === "journeyPart") drawJourneyPart(item);
+      if (item.guardianProjectile) drawAtlasProjectile(item);
+      else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
       else if (item.type === "debris") drawDebris(item);
       else if (item.type === "satellite") drawSatellite(item);
       else drawPower(item);
     }
+    drawGuardianAtlas();
     drawPlayer(t);
     drawShots();
     drawExplosions();
@@ -237,6 +239,7 @@
   console.info(`[Neon Catcher] build ${BUILD_VERSION}`);
   setupJourneyUI();
   setupShipHangar();
+  setupAtlasEncounter();
   updateMenu();
   hud();
   resetPowers();

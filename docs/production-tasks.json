@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T11:08:08.331Z",
+  "updatedAt": "2026-10-17T11:55:24.859258+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -4657,6 +4657,94 @@
         "technical": "PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
+      }
+    },
+    {
+      "id": "P1-ATLAS-01",
+      "block": "06",
+      "canonicalPhase": "P1",
+      "name": "Guardian Atlas ilustrado y combate integrado a recuperación clásica Gaia",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jefes",
+        "Enemigos",
+        "Assets",
+        "Animaciones",
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-SHIP-01"
+      ],
+      "files": [
+        "src/game/combat/guardian-atlas.js",
+        "src/game/animation/guardian-atlas-animator.js",
+        "assets/guardian_atlas_states_v1.webp",
+        "assets/atlas_combat_vfx_v1.webp"
+      ],
+      "commit": "",
+      "tests": [
+        "npm run test:content",
+        "npm run test:preview",
+        "node scripts/guardian-atlas-browser-smoke.cjs --root preview-dist"
+      ],
+      "evidence": [
+        "docs/production-reports/GUARDIAN_ATLAS_2026-10-17.md"
+      ],
+      "openErrors": [
+        "Partida natural completa pendiente; intento01 murió recuperando CRONIUM.",
+        "Revisión de arte/pivotes/gutters y Safari físico pendientes."
+      ],
+      "acceptance": [
+        "Recuperación, fases, avisos, corredor transitable, daño y desactivación naturales",
+        "Victoria/recompensa guardadas una vez y campañas preservadas",
+        "Arte visible y revisado en tres tamaños"
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_REVIEW",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      }
+    },
+    {
+      "id": "P0-DESIGN-100",
+      "block": "04",
+      "canonicalPhase": "P0",
+      "name": "Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Narrativa"
+      ],
+      "dependencies": [
+        "P0-01"
+      ],
+      "files": [
+        "design/campaign-space-v1.json",
+        "docs/design/CAMPAIGN_100_STAGES.md",
+        "tests/campaign-space-design.test.mjs"
+      ],
+      "commit": "",
+      "tests": [
+        "node --test tests/campaign-space-design.test.mjs"
+      ],
+      "evidence": [
+        "docs/design/CAMPAIGN_100_STAGES.md"
+      ],
+      "openErrors": [
+        "Todas las etapas nuevas siguen PENDING de integración y aceptación; números de dificultad son objetivos."
+      ],
+      "acceptance": [
+        "100IDs estables, continuidad geográfica y consecuencias",
+        "Versiones/recompensas/estados separados comprobados",
+        "Diez capítulos con ritmo y cierres diferenciados"
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED_EDITORIAL_SCHEMA",
+        "artistic": "PENDING_OWNER",
+        "physical": "NOT_APPLICABLE"
       }
     }
   ],

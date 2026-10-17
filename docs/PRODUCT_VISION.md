@@ -1,3 +1,9 @@
+## Actualización vigente del propietario —17/10/2026
+
+Se solicitan jefes vivos mediante arte y animaciones reales siguiendo las referencias aportadas, y cien etapas progresivas con argumento. Primer incremento: Guardian Atlas dentro del rescate CRONIUM del clásico; no otra demo abreviada. El [diseño editorial](design/CAMPAIGN_100_STAGES.md) es una propuesta de producción, no cien niveles disponibles. [Informe de integración](production-reports/GUARDIAN_ATLAS_2026-10-17.md). Se preservan campañas, guardados y límites técnicos; Motor V1 reservado/desactivado.
+
+---
+
 ## Aplicación vigente tras revisión del propietario — 17/10/2026
 
 El propietario rechaza la integración actual, el ritmo de la demo comprimida y las piezas superpuestas. Pide conservar el esquema del primer juego, construir una nave coherente por piezas y mejorar la experiencia natural de los diez niveles. Esta corrección precede a expansión de capítulos/etapas. La demo Chronos→Gaia queda recuperable como experimento, sin aceptación artística. El mandato de producto que sigue es el marco histórico vigente donde no contradiga esta corrección; no obliga a seguir multiplicando un prototipo rechazado. Informe verificable: docs/production-reports/NAVES_MODULARES_2026-10-17.md.

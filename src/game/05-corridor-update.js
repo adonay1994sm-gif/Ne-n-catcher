@@ -259,6 +259,7 @@
         updateEncounterHud();
       }
     } else {
+      if (!atlasBoss) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -280,6 +281,12 @@
           classicScoutTimer = 6.2 + Math.random() * 1.5;
         }
       }
+      }
+    }
+
+    if (atlasBoss) {
+      updateAtlasEncounter(dt);
+      if (state !== "playing") { updateEffects(dt); return; }
     }
 
     if (comboTimer > 0) {
@@ -306,11 +313,19 @@
     if (powers.tractor > 0 && (!tractorTarget || !items.includes(tractorTarget))) selectTractorTarget();
 
     const scale = powers.slow > 0 ? 0.50 : 1;
-    updateGateSystem(dt, scale);
+    if (!atlasBoss) updateGateSystem(dt, scale);
 
     for (let index = items.length - 1; index >= 0; index--) {
       const item = items[index];
-      item.y += item.s * dt * scale;
+      // Recovering the final fragment can replace the field with the Atlas
+      // arena synchronously. The old loop indexes must not read that old field.
+      if (!item) continue;
+      if (item.guardianProjectile) {
+        item.x += item.vx * dt * scale;
+        item.y += item.vy * dt * scale;
+        item.life -= dt * scale;
+        if (item.life <= 0 || item.x < -60 || item.x > W + 60) { items.splice(index, 1); continue; }
+      } else item.y += item.s * dt * scale;
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));

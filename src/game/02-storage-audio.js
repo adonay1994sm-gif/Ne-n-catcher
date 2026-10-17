@@ -99,6 +99,7 @@
     player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
     player.x = clamp(player.x, 80, W - 80);
     player.target = clamp(player.target, 80, W - 80);
+    positionAtlasArena();
     for (const star of stars) {
       star.x = clamp(star.x, 0, W);
       star.y = clamp(star.y, 0, H);

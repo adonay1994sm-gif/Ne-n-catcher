@@ -3,6 +3,8 @@ export {EncounterDirector, advanceEnemy} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createJourneyDemo, JOURNEY_DEMO_SAVE_KEY, JOURNEY_DEMO_VERSION} from './journey-demo.js';
 export {GENERATOR_VERSION} from './generator.js';
+export {createGuardianAtlas, advanceGuardianAtlas, hitGuardianAtlas, GUARDIAN_ATLAS_RULES} from '../combat/guardian-atlas.js';
+export {guardianAtlasAnimation} from '../animation/guardian-atlas-animator.js';
 export {SHIP_FLEET, SHIP_FLEET_SAVE_KEY, normalizeShipLoadout, shipPartFrame, shipAssemblyPose} from '../ship/modular-ship.js';
 export {n7Dialogue} from '../narrative/n7-dialogues.js';
 

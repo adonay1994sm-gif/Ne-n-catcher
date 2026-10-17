@@ -908,8 +908,11 @@
       "pivot": "0.5,0.5",
       "level": "1-2",
       "priority": "P1",
-      "status": "PLANNED",
-      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg"
+      "status": "IN_REVIEW",
+      "reference": "art-source/enemies/guardian-atlas/guardian-atlas-states-master.png",
+      "runtimeCandidate": "assets/guardian_atlas_states_v1.webp",
+      "animationMetadata": "art-source/enemies/guardian-atlas/metadata.json",
+      "integration": "Recovery in classic Gaia followed by a two-phase, nonlethal frontier encounter; review pending"
     },
     {
       "sequence": 54,
@@ -924,8 +927,11 @@
       "pivot": "0.5,0.5",
       "level": "1-2",
       "priority": "P2",
-      "status": "PLANNED",
-      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg"
+      "status": "IN_REVIEW",
+      "reference": "art-source/enemies/guardian-atlas/guardian-atlas-states-master.png",
+      "runtimeCandidate": "assets/guardian_atlas_states_v1.webp",
+      "animationMetadata": "art-source/enemies/guardian-atlas/metadata.json",
+      "integration": "Recovery in classic Gaia followed by a two-phase, nonlethal frontier encounter; review pending"
     },
     {
       "sequence": 55,
@@ -940,8 +946,11 @@
       "pivot": "0.5,0.5",
       "level": "1-2",
       "priority": "P2",
-      "status": "PLANNED",
-      "reference": "art-source/references/gaia_enemy_dossier_v1.jpeg"
+      "status": "IN_REVIEW",
+      "reference": "art-source/enemies/guardian-atlas/guardian-atlas-states-master.png",
+      "runtimeCandidate": "assets/guardian_atlas_states_v1.webp",
+      "animationMetadata": "art-source/enemies/guardian-atlas/metadata.json",
+      "integration": "Recovery in classic Gaia followed by a two-phase, nonlethal frontier encounter; review pending"
     },
     {
       "sequence": 56,

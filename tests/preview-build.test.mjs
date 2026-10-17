@@ -70,6 +70,28 @@ test('unit: launcher unlock affects only preview N-7 and reports blocked storage
   } finally {dom.window.close();}
 });
 
+test('unit: classic QA unlock preserves achievements, ordinary saves and N-7', async () => {
+  const dom = new JSDOM(await text('preview/launcher.html'), {url: 'https://preview.test/', runScripts: 'dangerously'});
+  try {
+    const {window} = dom;
+    const saved = {'neon-unlocked-v2':'7', [`${STORAGE_PREFIX}neon-stars-v2`]:'{"1":2}',
+      [`${STORAGE_PREFIX}neon-n7-unlocked-v1`]:'37'};
+    for (const [key,value] of Object.entries(saved)) window.localStorage.setItem(key,value);
+    const click = () => window.document.getElementById('classiclink').dispatchEvent(new window.Event('click', {cancelable:true}));
+    assert.equal(click(), true);
+    assert.equal(window.localStorage.getItem(`${STORAGE_PREFIX}neon-unlocked-v2`), null);
+    window.document.getElementById('unlockClassic').checked = true;
+    assert.equal(click(), true);
+    assert.equal(window.localStorage.getItem(`${STORAGE_PREFIX}neon-unlocked-v2`), '10');
+    for (const [key,value] of Object.entries(saved)) assert.equal(window.localStorage.getItem(key), value);
+    assert.equal(click(), true);
+    assert.equal(window.localStorage.getItem(`${STORAGE_PREFIX}neon-unlocked-v2`), '10');
+    Object.defineProperty(window, 'localStorage', {get() {throw new Error('blocked');}});
+    assert.equal(click(), false);
+    assert.match(window.document.getElementById('storageStatus').textContent, /bloquea el guardado/);
+  } finally {dom.window.close();}
+});
+
 test('unit: preview installation opens the selector with one identity from either entry point', async () => {
   const source = await text('manifest.webmanifest');
   const base = 'https://preview.test/prueba/';

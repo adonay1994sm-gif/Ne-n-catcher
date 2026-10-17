@@ -1,0 +1,44 @@
+✔ authored poses map combat states into one 4 by 2 atlas (1.704103ms)
+✔ entry retains closed shutters until the last 250 milliseconds (0.66686ms)
+✔ charge deploys illustrated barrels during 180 milliseconds without looping a shot (0.196258ms)
+✔ phase transition opens the ring and subsequent damage cannot restore intact geometry (0.230709ms)
+✔ shutdown fades from an opened ring to the cyan deactivated core and never loops (0.17718ms)
+✔ repeated rendering is read-only, emits no combat events, and stays frozen during pause (3.354478ms)
+✔ real encounter transitions select phase-two hurt geometry and terminal art consistently (3.848053ms)
+✔ invalid presentation inputs fail clearly instead of sampling an unrelated atlas cell (0.348842ms)
+✔ presentation does not own clocks, random sources, combat calls or event emitters (8.235489ms)
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+[Neon Catcher] build 7.2.0
+✔ Gaia keeps recovery meaningful and gates saved victory behind the real Atlas encounter (250.686439ms)
+✔ the actual legacy pause freezes Atlas and resume continues without a duplicate loop (183.347935ms)
+✔ the threshold capture can replace active items without crashing the real collision loop (45.948646ms)
+✔ Atlas deactivation completes before a single persisted victory and preserves N-7 saves (439.390063ms)
+✔ death, a rewarded continuation and retry cannot bypass or prematurely save Atlas (102.067374ms)
+✔ Gaia exposes a usable manual basic pulse beyond three shots while the original first mission keeps its contract (75.645949ms)
+✔ leaving the encounter does not mutate saves and N-7 cannot start classic Atlas (109.076898ms)
+✔ Guardian arrives visibly before fighting and does not accept damage during entry (5.650946ms)
+✔ zero delta freezes entry, warnings, hurt, fire and terminal animation exactly (2.461388ms)
+✔ phase-one aim is announced, then fixed, with one salvo and no homing (1.185943ms)
+✔ half-health causes a protected phase transition and a different attack pattern (0.716834ms)
+✔ both phase-two curtains preserve one announced traversable corridor at three viewport widths (3.147818ms)
+✔ repeat hits play one hurt response without permanently resetting recovery or duplicating fire (0.583378ms)
+✔ the next corridor warning waits until the previous curtain has passed the player on tall screens (1.248225ms)
+✔ deactivation has a visible duration and emits its progression event exactly once (0.4282ms)
+✔ same seed and inputs reproduce warnings, transitions and projectile trajectories (2.347912ms)
+✔ callback delivery preserves returned-event order and does not duplicate emission (0.331547ms)
+✔ long deltas are bounded and invalid state inputs fail without advancing combat (0.53694ms)
+✔ encounter has no independent animation loop, wall clock, random source or save owner (6.641112ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1882.70921

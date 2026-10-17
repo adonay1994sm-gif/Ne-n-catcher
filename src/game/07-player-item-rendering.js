@@ -1,3 +1,60 @@
+  // Image-backed artwork. The simulation, not the render clock, selects poses.
+  const ATLAS_FRAME_PIVOTS = [[222,226],[221,241],[224,226],[223,239],[221,235],[223,218],[224,219],[222,232]];
+  const ATLAS_VFX_CROPS = [[120,0,280,680],[546,0,298,725],[837,65,700,600],[1540,0,630,635]];
+
+  function drawAtlasVfx(index, width, height, alpha = 1, head = .5) {
+    if (!spriteReady(SPRITES.atlasVfx)) return false;
+    const source = ATLAS_VFX_CROPS[index];
+    const sx = SPRITES.atlasVfx.naturalWidth / 2170;
+    const sy = SPRITES.atlasVfx.naturalHeight / 725;
+    ctx.save(); ctx.globalAlpha *= alpha;
+    ctx.drawImage(SPRITES.atlasVfx, source[0] * sx, source[1] * sy, source[2] * sx, source[3] * sy, -width / 2, -height * head, width, height);
+    ctx.restore(); return true;
+  }
+
+  function drawAtlasProjectile(item) {
+    ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.rot);
+    drawAtlasVfx(0, 27, 68, 1, .90);
+    ctx.restore();
+  }
+
+  function drawGuardianAtlas() {
+    if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
+    const boss = atlasBoss;
+    const activeGap = boss.telegraph?.safeGap || items.find(item => item.guardianProjectile && item.safeGap && item.y < player.y + 140)?.safeGap;
+    if (activeGap && !boss.disabled) {
+      ctx.save();
+      ctx.fillStyle = "rgba(105,255,219,.045)";
+      ctx.fillRect(activeGap.left, boss.y + 100, activeGap.right - activeGap.left, Math.max(0, player.y + 100 - boss.y - 100));
+      ctx.strokeStyle = "rgba(145,255,221,.70)"; ctx.lineWidth = 2; ctx.setLineDash([8,12]);
+      for (const x of [activeGap.left, activeGap.right]) {
+        ctx.beginPath(); ctx.moveTo(x,boss.y + 100); ctx.lineTo(x,player.y + 100); ctx.stroke();
+      }
+      ctx.setLineDash([]); ctx.font = "bold 18px sans-serif"; ctx.textAlign = "center";
+      ctx.fillStyle = "#beffe6"; ctx.fillText("RUTA LIBRE", activeGap.center, player.y - 180);
+      ctx.restore();
+    } else if (boss.state === "charge" && boss.telegraph) {
+      ctx.save(); ctx.translate(boss.telegraph.targetX, player.y);
+      drawAtlasVfx(3, 85, 85, .65 + boss.telegraph.progress * .30);
+      ctx.restore();
+    }
+    const animation = NeonCampaign.guardianAtlasAnimation(boss);
+    const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
+    const frameHeight = SPRITES.guardianAtlas.naturalHeight / 2;
+    const size = boss.visualSize || 350;
+    const paint = (frame, alpha) => {
+      if (alpha <= 0) return;
+      const pivot = ATLAS_FRAME_PIVOTS[frame];
+      ctx.save(); ctx.globalAlpha *= alpha;
+      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth, Math.floor(frame / 4) * frameHeight,
+        frameWidth, frameHeight,
+        boss.x - size * pivot[0] / 443.5, boss.y - size * pivot[1] / 443.5, size, size);
+      ctx.restore();
+    };
+    if (animation.previousFrame !== null) paint(animation.previousFrame, 1 - animation.blend);
+    paint(animation.frame, animation.blend);
+  }
+
   // Authored component crops share explicit mounting coordinates, not icon offsets.
   function drawShipComponent(target, loadout, part) {
     const atlas = SPRITES.modularShip;
@@ -532,6 +589,14 @@
     ctx.globalCompositeOperation = "screen";
     for (const shot of shots) {
       const progress = 1 - shot.life / shot.duration;
+      if (shot.atlasPulse) {
+        ctx.save();
+        ctx.translate(shot.x1 + (shot.x2 - shot.x1) * progress, shot.y1 + (shot.y2 - shot.y1) * progress);
+        ctx.rotate(Math.atan2(shot.y2 - shot.y1, shot.x2 - shot.x1) + Math.PI / 2);
+        drawAtlasVfx(1, 22, 60, 1, .10);
+        ctx.restore();
+        continue;
+      }
       const dx = shot.x2 - shot.x1;
       const dy = shot.y2 - shot.y1;
       const distance = Math.hypot(dx, dy);
@@ -606,6 +671,11 @@
   function drawImpactEffects() {
     for (const effect of impactEffects) {
       const progress = 1 - effect.life / effect.duration;
+      if (effect.atlasImpact) {
+        ctx.save(); ctx.translate(effect.x, effect.y);
+        drawAtlasVfx(2, 58 + progress * 45, 52 + progress * 40, 1 - progress);
+        ctx.restore(); continue;
+      }
       const frame = frameFrom("impact", effect.variant);
       const size = (36 + progress * 28) * effect.scale;
       ctx.save();
