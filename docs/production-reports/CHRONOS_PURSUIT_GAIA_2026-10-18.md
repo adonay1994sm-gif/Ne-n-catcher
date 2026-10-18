@@ -1,3 +1,5 @@
+> Actualización de trabajo posterior a la versión15: CH-02 ya fue destruido naturalmente en el intento05 sobre33263c5:4/4,16celdas dibujadas,recompensa10única. Los fallos01–04 se conservan. Se detectó y corrigió además el refresco tardío de puntuación de combate con hudScoreTarget=score; nueva compilación en preparación. El CI documental39104552902 falló porque un piloto inmóvil murió por peligros aleatorios antes de la segunda patrulla (reproducido con semilla34); se corrige el aislamiento de esa prueba, no la dificultad del juego. El cierre definitivo se añadirá antes de terminar la sesión. La web15 sigue sirviendo el paquete33263c5 verificado.
+
 # DIAGNÓSTICO
 
 El propietario considera el primer territorio casi terminado y pide mejorar sus cambios de etapa, elevar ligeramente la presión tras el ataque a Chronos y dar comportamientos reconocibles a los enemigos antes de continuar Gaia. Se partió de HEAD remoto/local limpio **51d56295aa07ff60f961c63c078be5ba17a83de1**, conservando los avances posteriores al mandato histórico. La versión privada anterior era la 14, paquete f39082f.
@@ -7,6 +9,7 @@ El cambio de etapa eliminaba los objetos y proyectiles presentes: rompía la con
 # INFORME DE PRODUCCIÓN — NEON CRONIUM
 
 - Fecha: **18/10/2026, UTC**.
+- Tiempo registrado: no se cronometraron horas de trabajo; la partida natural completa registró457.500ms y cada prueba conserva sus tiempos propios.
 - Rama: **continuity-assets-audit-20261013**.
 - SHA inicial: **51d56295aa07ff60f961c63c078be5ba17a83de1**.
 - SHA de integración natural: **612a3f34b99cc1e5197ebf066432a43fb848667f**.

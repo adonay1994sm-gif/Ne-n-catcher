@@ -23,10 +23,21 @@ const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expec
  * gameplay, a visual acceptance test or a physical iPhone certification.
  */
 function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false,
-  destructionAsset = 'loaded', rects = {}, unlocked = 2, savedVoyage} = {}) {
+  destructionAsset = 'loaded', rects = {}, unlocked = 2, savedVoyage, randomSeed} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   const {window} = dom; t.after(() => window.close());
+  if (randomSeed !== undefined) {
+    // A fixture-owned generator makes the exact ambient-hazard failure
+    // reproducible without changing global Node randomness or the game code.
+    let randomState = randomSeed >>> 0;
+    window.Math.random = () => {
+      randomState = (randomState + 0x6d2b79f5) | 0;
+      let value = Math.imul(randomState ^ (randomState >>> 15), 1 | randomState);
+      value ^= value + Math.imul(value ^ (value >>> 7), 61 | value);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+    };
+  }
   const gradient = {addColorStop() {}};
   const drawCalls = [];
   const context = new Proxy({}, {get(target, key) {
@@ -118,6 +129,13 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       finishGame,resumeReward,
       refreshClassicFlightBounds,showStoryTransmission,hideStoryTransmission,syncClassicFlightHud,
       prepare(index=0){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];},
+      patrolFrame(dt=1/60){
+        // Isolate actual patrol scheduling from unrelated random meteors and
+        // debris formations. Enemy timers, HP, collision, shots and animation
+        // remain real; this fixture is not a natural full-session playtest.
+        spawnTimer=999;gateCountdown=999;gates=[];
+        update(dt);
+      },
       frame(dt=1/60,quiet=false){
         spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;
         if(quiet){items=[];gates=[];}
@@ -133,7 +151,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       },
       seedTransitFixture(){items=[{id:'boundary-live-debris',type:'debris',x:W*.2,baseX:W*.2,y:H*.35,
         r:26,s:0,rot:0,rs:0,p:0,phase:0,amp:0,alpha:1,special:'',spriteKey:'debrisMetal',hp:2,maxHp:2,damage:16}];},
-      snapshot:()=>({state,elapsed,score,hull,ammo,collected,currentLevel,W,H,unlocked:getUnlocked(),
+      snapshot:()=>({state,elapsed,score,hudScoreTarget,displayedScore,hull,ammo,collected,currentLevel,W,H,unlocked:getUnlocked(),
         player:{...player},bounds:classicFlightBounds?{...classicFlightBounds}:null,input:{...classicFlightInput},
         weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
         route:classicFlight?.snapshot()||null,equipment:{...classicEquipment,unlocked:[...classicEquipment.unlocked]},
@@ -240,12 +258,19 @@ test('a classic projectile travels before impact and applies damage and destruct
   assert.ok(travelling.weapons.projectiles[0].y < fired.weapons.projectiles[0].y - 80);
   h.advance(.30, false); const hit = h.snapshot();
   assert.equal(hit.targets[0].hp, 1); assert.equal(hit.score, 3);
+  assert.equal(hit.hudScoreTarget, 3, 'A genuine nonlethal impact must update the animated HUD target');
+  assert.ok(hit.displayedScore >= 0 && hit.displayedScore <= 3);
+  assert.equal(hit.collected, 0, 'No collected orb may incidentally refresh the score HUD');
   assert.equal(hit.weapons.projectiles.length, 0);
   h.advance(.8, false);
   assert.equal(h.snapshot().targets[0].hp, 1); assert.equal(h.snapshot().score, 3);
+  assert.equal(h.node('score').textContent, '3', 'The real HUD animation must settle after the first hit');
   assert.equal(h.api.fireManualShot(), true); h.advance(.5, false);
   assert.equal(h.snapshot().targets.length, 0); assert.equal(h.snapshot().score, 13);
+  assert.equal(h.snapshot().hudScoreTarget, 13, 'The lethal hit must publish its reward to the HUD once');
   h.advance(1, false); assert.equal(h.snapshot().score, 13);
+  assert.equal(h.node('score').textContent, '13');
+  assert.equal(h.snapshot().collected, 0);
   assert.equal(h.pending.size, 1);
 });
 
@@ -983,14 +1008,32 @@ test('actual Chronos runtime introduces an announced pursuer after rupture witho
   assert.equal(h.pending.size,1);
 });
 
-test('Gaia introduces a genuine CH-02 animator in a natural patrol sequence after CH-01',t=>{
-  const h=harness(t,{unlocked:2});h.api.startLevel(1);
-  for(let n=0;n<Math.ceil(17/.034);n++)h.api.update(.034);
-  const q=h.snapshot(),interceptors=q.targets.filter(item=>item.role==='interceptor');
-  assert.ok(interceptors.length>=1);
-  assert.equal(interceptors[0].hp,3);
-  assert.equal(interceptors[0].frame.image,'assets/ch02_interceptor_atlas_v1.webp');
-  assert.equal(q.currentLevel,1);assert.equal(q.route,null);assert.equal(h.pending.size,1);
+test('Gaia schedules CH-01 then a genuine CH-02 through the actual patrol update', t => {
+  // Seed 34 killed the stationary fixture pilot at 10.710 seconds before the
+  // second patrol could spawn. Observe the scheduling contract with unrelated
+  // ambient spawns disabled, rather than interpreting that death as no CH-02.
+  for (const randomSeed of [34, 0, 1, 11, 99]) {
+    const h = harness(t, {unlocked: 2, randomSeed}); h.api.startLevel(1);
+    const observed = new Map();
+    let q = h.snapshot(), interceptors = [];
+    for (let frame = 0; frame < Math.ceil(17 / .034) && interceptors.length === 0; frame++) {
+      h.api.patrolFrame(.034);
+      q = h.snapshot();
+      for (const item of q.targets.filter(item => item.tactics === 'classic-pursuit-v1')) {
+        if (!observed.has(item.id)) observed.set(item.id, {...item, firstSeenAt: q.elapsed});
+      }
+      interceptors = q.targets.filter(item => item.role === 'interceptor');
+    }
+    assert.ok(interceptors.length >= 1, `No scheduled CH-02 for seed ${randomSeed}: ${JSON.stringify(q)}`);
+    const sequence = [...observed.values()];
+    assert.deepEqual(sequence.slice(0, 2).map(item => item.role), ['scout', 'interceptor']);
+    assert.equal(sequence[0].frame.image, 'assets/ch01_atlas_v1.webp');
+    assert.ok(sequence[1].firstSeenAt > sequence[0].firstSeenAt, 'CH-01 precedes CH-02 in played time');
+    assert.equal(interceptors[0].hp, 3);
+    assert.equal(interceptors[0].frame.image, 'assets/ch02_interceptor_atlas_v1.webp');
+    assert.equal(q.state, 'playing'); assert.ok(q.hull > 0, 'The fixture must actually reach its scheduling assertion');
+    assert.equal(q.currentLevel, 1); assert.equal(q.route, null); assert.equal(h.pending.size, 1);
+  }
 });
 
 test('Chronos arrival enters Gaia through the actual next control without a duplicate briefing',t=>{

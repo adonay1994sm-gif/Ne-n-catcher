@@ -1247,6 +1247,7 @@
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);addImpactEffect(item.x,item.y,.8);
       score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);tone(destroyed?920:620,.05,"triangle",.04);
+      hudScoreTarget=score;
       if(destroyed){
         if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
         return true;

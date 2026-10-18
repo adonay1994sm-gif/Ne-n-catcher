@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-18T06:33:47.621Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-18T06:40:42.214Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -54,7 +54,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P2-SAVE-01 / P2 | Recuperar finalización interrumpida sin dividir desbloqueo y checkpoint | DONE | PASSED | NOT_APPLICABLE | PENDING |
 | P2-PLAYTEST-01 / P2 | Preparar y ejecutar diez pruebas humanas de Chronos–Gaia | BLOCKED | PREPARED_NOT_EXECUTED | NOT_APPLICABLE | PENDING |
 | P3-PURSUIT-01 / P3 | Conectar las etapas Chronos–Gaia con transiciones continuas y persecución posterior a la ruptura | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
-| P1-GAIA-02 / P1 | Integrar CH-02 animado con ataque anunciado en una Gaia orbital multicapa | IN_REVIEW | PARTIAL_RUNTIME_DESTRUCTION_PENDING | PENDING_OWNER | PENDING |
+| P1-GAIA-02 / P1 | Integrar CH-02 animado con ataque anunciado en una Gaia orbital multicapa | IN_REVIEW | PASSED_INTEGRATED_CHROMIUM | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 

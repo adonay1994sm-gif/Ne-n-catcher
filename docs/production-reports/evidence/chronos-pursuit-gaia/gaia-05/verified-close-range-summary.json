@@ -1,0 +1,115 @@
+{
+  "packageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/Ne-n-catcher/scripts/gaia-interceptor-browser-smoke.cjs",
+    "--combat",
+    "--equip-twin",
+    "--close-range",
+    "--root",
+    "preview-dist",
+    "--output",
+    "/tmp/neon-pursuit-gaia-05",
+    "--expected-commit",
+    "33263c5219240b5fb119f23b430f9c6698191e0c",
+    "--timeout",
+    "180000"
+  ],
+  "status": "passed",
+  "exitCode": 0,
+  "casesPassed": 4,
+  "durationMs": 43283,
+  "sourceAtlasCellCount": 16,
+  "actuallyDrawnCellCount": 16,
+  "singleRAFMaximum": 1,
+  "errors": 0,
+  "consoleErrors": 0,
+  "failedRequests": 0,
+  "actualKeyboardFireInputs": 2,
+  "verticalKeyInputs": 12,
+  "upInputs": 8,
+  "downInputs": 4,
+  "separationAtLiveTargetLock": 309.65504070255884,
+  "separationAtObservedDestruction": 386.3559552384604,
+  "hpHitSequence": [
+    3,
+    2,
+    1,
+    0
+  ],
+  "uniqueDeathReward": {
+    "targetId": "classic-pursuit-v1:1:0:1",
+    "deaths": [
+      {
+        "targetId": "classic-pursuit-v1:1:0:1",
+        "shotId": "classic-weapons-v1:projectile:3",
+        "projectileId": "classic-weapons-v1:projectile:3",
+        "at": 18.222900000000042,
+        "damage": 1,
+        "hp": 0,
+        "maxHp": 3,
+        "destroyed": true,
+        "reward": 10,
+        "score": 416
+      }
+    ],
+    "hits": [
+      {
+        "targetId": "classic-pursuit-v1:1:0:1",
+        "shotId": "classic-weapons-v1:projectile:1",
+        "projectileId": "classic-weapons-v1:projectile:1",
+        "at": 17.440900000000067,
+        "damage": 1,
+        "hp": 2,
+        "maxHp": 3,
+        "destroyed": false,
+        "reward": 3,
+        "score": 403
+      },
+      {
+        "targetId": "classic-pursuit-v1:1:0:1",
+        "shotId": "classic-weapons-v1:projectile:2",
+        "projectileId": "classic-weapons-v1:projectile:2",
+        "at": 17.440900000000067,
+        "damage": 1,
+        "hp": 1,
+        "maxHp": 3,
+        "destroyed": false,
+        "reward": 3,
+        "score": 406
+      },
+      {
+        "targetId": "classic-pursuit-v1:1:0:1",
+        "shotId": "classic-weapons-v1:projectile:3",
+        "projectileId": "classic-weapons-v1:projectile:3",
+        "at": 18.222900000000042,
+        "damage": 1,
+        "hp": 0,
+        "maxHp": 3,
+        "destroyed": true,
+        "reward": 10,
+        "score": 416
+      }
+    ],
+    "duplicateAfterAnimation": false
+  },
+  "finalHull": 88,
+  "finalCollected": 15,
+  "packageFiles": {
+    "juego/game.js": {
+      "bytes": 257415,
+      "sha256": "edce8aa6a57e0448598618feb42cfb95f0965adf6c833825eaa162ee482d0543"
+    },
+    "juego/content-runtime.js": {
+      "bytes": 153023,
+      "sha256": "9f753ab0538233f24c73eab7e6e8176a9a8039a2206b304bcc8a9ba33ca09664"
+    },
+    "juego/assets/ch02_interceptor_atlas_v1.webp": {
+      "bytes": 252886,
+      "sha256": "0b1b84b7a14edbc315136339f6f423989d685c7ea4c6122a7a7b88939be78729"
+    }
+  },
+  "resultsSha256": "b1ccae88351df89322df793cac9fd0a368ec282c88dbdb004b58255a9e0cce82",
+  "harnessSha256": "b34250e9c8eb216d05bda0519f8a0428c6019d97c60e5d91ae157bf6b9eb4c7b",
+  "scope": "Focused first CH-02 natural patrol lifecycle with real two-axis pilotage and real UI-selected owned Twin. Does not certify all Gaia or human/iPhone playtests."
+}

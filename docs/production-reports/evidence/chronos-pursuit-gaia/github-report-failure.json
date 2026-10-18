@@ -1,0 +1,116 @@
+{
+  "run": {
+    "id": 39104552902,
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902",
+    "head_sha": "8720d775afe481e3ef32799eac5f590fdbaa1803",
+    "updated_at": "2026-10-18T06:36:36Z"
+  },
+  "jobs": [
+    {
+      "id": 117607503706,
+      "name": "Verify and package Netlify Drop preview",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-18T06:35:06Z",
+          "completed_at": "2026-10-18T06:35:07Z"
+        },
+        {
+          "name": "Checkout authorized continuity branch",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-18T06:35:07Z",
+          "completed_at": "2026-10-18T06:35:24Z"
+        },
+        {
+          "name": "Set up Node 22",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-18T06:35:24Z",
+          "completed_at": "2026-10-18T06:35:34Z"
+        },
+        {
+          "name": "Install locked dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-18T06:35:34Z",
+          "completed_at": "2026-10-18T06:35:36Z"
+        },
+        {
+          "name": "Build isolated test site",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-18T06:35:36Z",
+          "completed_at": "2026-10-18T06:35:40Z"
+        },
+        {
+          "name": "Verify original and procedural architecture",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6,
+          "started_at": "2026-10-18T06:35:40Z",
+          "completed_at": "2026-10-18T06:36:33Z"
+        },
+        {
+          "name": "Verify visual integration and preview isolation",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-18T06:36:33Z",
+          "completed_at": "2026-10-18T06:36:33Z"
+        },
+        {
+          "name": "Verify preview entry and published artifact location",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-18T06:36:33Z",
+          "completed_at": "2026-10-18T06:36:33Z"
+        },
+        {
+          "name": "Package verified preview for manual Netlify Drop",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-18T06:36:33Z",
+          "completed_at": "2026-10-18T06:36:33Z"
+        },
+        {
+          "name": "Post Set up Node 22",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-18T06:36:33Z",
+          "completed_at": "2026-10-18T06:36:33Z"
+        },
+        {
+          "name": "Post Checkout authorized continuity branch",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-18T06:36:33Z",
+          "completed_at": "2026-10-18T06:36:33Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-18T06:36:33Z",
+          "completed_at": "2026-10-18T06:36:33Z"
+        }
+      ]
+    }
+  ]
+}

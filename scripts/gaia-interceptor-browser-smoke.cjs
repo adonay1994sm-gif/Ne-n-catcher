@@ -11,7 +11,7 @@ const {startStaticServer, prepareEvidence, saveEvidence, sha256, errorText} = re
 
 const {values} = parseArgs({options: {root: {type: 'string'}, output: {type: 'string'},
   timeout: {type: 'string'}, 'expected-commit': {type: 'string'}, combat: {type: 'boolean', default: false},
-  'equip-twin': {type: 'boolean', default: false}}});
+  'equip-twin': {type: 'boolean', default: false}, 'close-range': {type: 'boolean', default: false}}});
 const root = path.resolve(values.root || 'preview-dist');
 const output = path.resolve(values.output || `/tmp/gaia-interceptor-${Date.now()}`);
 const timeout = Number(values.timeout || 300000);
@@ -20,9 +20,11 @@ const equipment = {version: 1, selected: 'pulse', unlocked: ['pulse', 'twin'], r
   assembly: {hull: 'striker', wings: 'delta', engines: 'ion'}};
 const report = {status: 'running', exitCode: null, startedAt: new Date().toISOString(), command: process.argv,
   sourceRoot: root, browser: 'Real Chromium, 390x844, DPR 1',
-  pilotVersion: 'natural-gaia-ch02-bait-align-v2', cases: [], errors: [], consoleErrors: [], failedRequests: [],
+  pilotVersion: values['close-range']?'natural-gaia-ch02-close-range-v3':'natural-gaia-ch02-bait-align-v2',
+  cases: [], errors: [], consoleErrors: [], failedRequests: [],
   screenshots: [], samples: [], interceptors: [], actions: [],
   fixtures: {unlocked: 2, equipment}, combatRequired: values.combat, equipTwinViaUI:values['equip-twin'],
+  closeRange:values['close-range'], verticalActions:[],hudSnapshots:[],
   limits: ['Only level 2 unlock and owned Pulse/Twin equipment are seeded in a fresh preview profile.',
     'Patrol scheduling, enemy health, spawning, elapsed time, weapon projectiles and collisions are never changed.',
     'The automatic QA pilot uses real pointer and keyboard controls; this is not a human playtest.',
@@ -46,6 +48,16 @@ function healthy(q) {
   assert.ok(!['destroying', 'gameover'].includes(q.state),
     `Natural QA run ended: state=${q.state}, reason=${q.supplyFailed?'supply':q.hull<=0?'hull':'see result'}, `+
     `hull=${q.hull}, CRONIUM=${q.collected}/${q.goal}. ${q.resultText||''}`);
+}
+function checkHudScoreTarget(q,reason) {
+  // This closure snapshot runs between browser tasks, after the original hit
+  // handler returned. The bounded award observer itself does not assert HUD
+  // state halfway through that handler.
+  assert.equal(q.hudScoreTarget,q.score,`HUD target must include the latest score after ${reason}`);
+  const snapshot={reason,elapsed:q.elapsed,score:q.score,hudScoreTarget:q.hudScoreTarget,
+    displayedScore:q.displayedScore,text:q.hudScoreText,damageEventCount:q.damageEvents.length};
+  report.hudSnapshots.push(snapshot);
+  return snapshot;
 }
 async function step(name, action) {
   const entry = {name, status: 'running', startedAt: new Date().toISOString()};
@@ -192,6 +204,8 @@ function pilotTarget(q, enemy, collecting = false) {
     assert.equal(source.split(marker).length, 2, 'Legacy bootstrap marker changed');
     const hook = `window.__INTERCEPTOR_QA__ = () => ({state,currentLevel,elapsed,hull,score,collected,W,H,
       goal:level().goal,supplyFailed,resultText:ui.result?.textContent,supplyStatus:ui.supplyStatus?.textContent,
+      atlasActive:Boolean(atlasBoss),damageEvents:[...window.__INTERCEPTOR_HITS_QA__],
+      hudScoreTarget,displayedScore,hudScoreText:ui.score?.textContent,
       legacyRunning,legacyFrameId,follow:9+settings.sensitivity/100*8,outline:SHIP_COLLISION_OUTLINE,
       player:{x:player.x,y:player.y,target:player.target,targetY:player.targetY},
       bounds:classicFlightBounds?{...classicFlightBounds}:null,
@@ -210,7 +224,17 @@ function pilotTarget(q, enemy, collecting = false) {
       destruction:explosions.filter(effect=>effect.ch01Animator).map(effect=>({x:effect.x,y:effect.y,life:effect.life,
         frame:effect.ch01Animator.getFrame()})),
       unlocked:getUnlocked(),keys:{...KEYS}});\n`;
-    await route.fulfill({response, body: source.replace(marker, hook + marker)});
+    const rewardMarker='score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);';
+    assert.equal(source.split(rewardMarker).length,2,'Classic projectile reward observation marker changed');
+    const observeReward=`if(item.classicScout?.role==='interceptor'&&window.__INTERCEPTOR_HITS_QA__.length<200)
+      window.__INTERCEPTOR_HITS_QA__.push({targetId:item.id,shotId:shot.id,projectileId:shot.id,
+        at:elapsed,damage:impact.damage,hp:item.hp,maxHp:item.maxHp,destroyed,
+        reward:(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3),score});`;
+    // Add a bounded observation immediately after the original reward statement;
+    // the statement, collision result, HP and scoring execution stay untouched.
+    const observed=source.replace(rewardMarker,rewardMarker+observeReward);
+    await route.fulfill({response, body: observed.replace(marker,
+      'window.__INTERCEPTOR_HITS_QA__=[];\n'+hook+marker)});
   });
   await step('open Gaia via the actual selector with declared unlock/equipment fixtures', async () => {
     await page.goto(server.url, {waitUntil: 'load'});
@@ -261,13 +285,20 @@ function pilotTarget(q, enemy, collecting = false) {
   });
   let targetId, pauseChecked = false, firstFireSeen = false, damaged = false, destroyed = false;
   const enemies = new Map(), shotSerials = new Set(), firedAt = new Map();
-  let previousSample = 0, box = await page.locator('#canvas').boundingBox();
+  let previousSample = 0, lastVerticalAt=-Infinity, observedHudDamageEvents=0,
+    box = await page.locator('#canvas').boundingBox();
   await step(values.combat
     ? 'a natural interceptor flanks, announces an attack, freezes on pause and can be shot down'
     : 'a natural interceptor flanks, announces an attack, fires a real projectile and freezes on pause', async () => {
     const began = Date.now();
     while (Date.now() - began < timeout) {
       const q = await inspect(); healthy(q);
+      if(q.damageEvents.length>observedHudDamageEvents) {
+        checkHudScoreTarget(q,q.damageEvents.at(-1).destroyed?'natural CH-02 destruction':'natural CH-02 damage');
+        observedHudDamageEvents=q.damageEvents.length;
+      }
+      if(values.combat&&!destroyed)assert.equal(q.atlasActive,false,
+        'Focused combat scope ended: Atlas replaced the patrol before natural CH-02 destruction was observed');
       const interceptors = q.items.filter(item => item.classicScout?.role === 'interceptor');
       for (const enemy of interceptors) {
         let record = enemies.get(enemy.id);
@@ -316,13 +347,31 @@ function pilotTarget(q, enemy, collecting = false) {
       }
       if (Date.now() - previousSample >= 250) {
         report.samples.push({wallMs: Date.now() - began, elapsed: q.elapsed, hull: q.hull, collected: q.collected,
-          score: q.score, weapons: q.weapons, target, destruction: q.destruction,
+          score: q.score,hudScoreTarget:q.hudScoreTarget,displayedScore:q.displayedScore,hudScoreText:q.hudScoreText,
+          weapons: q.weapons, target, destruction: q.destruction,
           hostileProjectiles: q.items.filter(item => item.classicScoutProjectile), draws: q.observer.draws});
         previousSample = Date.now();
         if(report.samples.length%8===0)await save();
       }
       if (destroyed || (!values.combat && firstFireSeen && shotSerials.size > 0 && pauseChecked &&
           report.interceptors.some(enemy => enemy.maximumX - enemy.minimumX > 35))) break;
+      if(values['close-range']&&target&&target.y>=90&&q.elapsed-lastVerticalAt>=.08) {
+        const desiredY=Math.max(q.bounds.minY,Math.min(q.bounds.maxY,target.y+375));
+        const delta=desiredY-q.player.targetY;
+        if(Math.abs(delta)>42.5) {
+          const key=delta<0?'ArrowUp':'ArrowDown';
+          const expected=Math.max(q.bounds.minY,Math.min(q.bounds.maxY,q.player.targetY+(delta<0?-85:85)));
+          await page.keyboard.press(key);const after=await inspect();
+          assert.ok(Math.abs(after.player.targetY-expected)<1e-6,'Each real vertical keydown must move targetY by its shipped 85-pixel step');
+          report.verticalActions.push({key,at:q.elapsed,targetId:target.id,enemyY:target.y,desiredY,
+            beforeTargetY:q.player.targetY,afterTargetY:after.player.targetY,shipY:q.player.y,
+            separation:q.player.y-target.y});
+          lastVerticalAt=q.elapsed;
+          // Obtain a fresh position after this actual input instead of aiming
+          // with the pre-key snapshot. No key is held as a velocity control.
+          await page.waitForTimeout(35);continue;
+        }
+      }
       const committedTarget=target&&(target.classicScout.state==='charge'||target.classicScout.fired>0||target.hp<target.maxHp)
         ?target:null;
       const destination = pilotTarget(q, committedTarget, !target);
@@ -352,7 +401,9 @@ function pilotTarget(q, enemy, collecting = false) {
     }
     report.naturalCombat = {destroyed, damaged, firstFireSeen, pauseChecked, realFireInputs: report.actions.length,
       elapsed: (await inspect()).elapsed, hostileProjectileSamples: shotSerials.size,
-      enemyShotsEmitted:report.interceptors.reduce((sum,enemy)=>sum+enemy.fired,0)};
+      enemyShotsEmitted:report.interceptors.reduce((sum,enemy)=>sum+enemy.fired,0),
+      verticalInputs:report.verticalActions.length};
+    if(values['close-range'])assert.ok(report.verticalActions.length>0,'Close-range scope must exercise actual vertical control');
     return report.naturalCombat;
   });
   await step(values.combat
@@ -360,10 +411,29 @@ function pilotTarget(q, enemy, collecting = false) {
     : 'actual gameplay uses distinct CH-02 animation cells and unlocked Twin still works', async () => {
     const before = await inspect(), destroyedId = targetId;
     await page.waitForTimeout(1200); const after = await inspect();
+    const hudBefore=checkHudScoreTarget(before,'entry to the post-combat live window');
+    const hudAfter=checkHudScoreTarget(after,'1200 ms of unpaused post-combat play');
+    report.hudConvergence={waitWallMs:1200,paused:false,simulationSeconds:after.elapsed-before.elapsed,
+      scoreStable:after.score===before.score,before:hudBefore,after:hudAfter,
+      textConverged:Number(after.hudScoreText)===after.score};
+    if(after.score===before.score) {
+      assert.equal(Number(after.hudScoreText),after.score,'HUD text must converge during a stable-score live window');
+      report.hudConvergence.verified=true;
+    } else {
+      report.hudConvergence.verified=false;
+      report.hudConvergence.limit='Natural score changed during the live window; target equality was checked, stable-score text convergence was not claimed.';
+    }
     if(values.combat) {
       assert.equal(after.items.some(item => item.id === destroyedId), false, 'Dead interceptor still has a gameplay hitbox');
       assert.equal(after.destruction.some(effect => effect.frame.image === 'assets/ch02_interceptor_atlas_v1.webp'), false,
         'Completed destruction visual leaked');
+      const beforeHits=before.damageEvents.filter(event=>event.targetId===destroyedId);
+      const afterHits=after.damageEvents.filter(event=>event.targetId===destroyedId);
+      assert.deepEqual(afterHits,beforeHits,'Repeating destruction frames duplicated a hit or reward');
+      const deaths=afterHits.filter(event=>event.destroyed);
+      assert.equal(deaths.length,1,'Destroyed CH-02 must award exactly one death reward');
+      assert.equal(deaths[0].reward,10,'CH-02 death reward must match the shipped ten-point rule');
+      report.uniqueDeathReward={targetId:destroyedId,deaths,hits:afterHits,duplicateAfterAnimation:false};
     }
     // Read the actual score but do not assert a total which unrelated natural
     // pickups/impacts can legitimately change during these real-time frames.
