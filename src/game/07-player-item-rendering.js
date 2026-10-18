@@ -121,6 +121,20 @@
   function drawGuardianAtlas() {
     if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
     const boss = atlasBoss;
+    // Gaia's illuminated cloud deck can erase the white outer armour. A soft,
+    // bounded shadow separates that silhouette while retaining the moving
+    // landscape; the reactor remains exactly on the simulation's x/y pivot.
+    const separationRadius = (boss.visualSize || 350) * .65;
+    ctx.save();
+    const separation = ctx.createRadialGradient(boss.x, boss.y, 0,
+      boss.x, boss.y, separationRadius);
+    separation.addColorStop(0, "rgba(2,8,22,.66)");
+    separation.addColorStop(.62, "rgba(2,8,22,.50)");
+    separation.addColorStop(1, "rgba(2,8,22,0)");
+    ctx.fillStyle = separation;
+    ctx.fillRect(boss.x - separationRadius, boss.y - separationRadius,
+      separationRadius * 2, separationRadius * 2);
+    ctx.restore();
     if (boss.state === "charge" && boss.telegraph) {
       // Charge belongs to the barrels. Do not reveal a solved escape lane or
       // paint the player's future safe position onto the arena.
@@ -853,7 +867,14 @@
       if(effect.missileImpact&&spriteReady(SPRITES.chapterMissile)) {
         const age=effect.duration-effect.life,atlas=SPRITES.chapterMissile,cell=atlas.naturalWidth/4;
         const row=age<.25?2:3,frame=Math.min(3,Math.floor((age-(row===3?.25:0))*(row===2?16:10)));
-        const size=row===2?94:108;
+        // The payload has a materially larger blast than a Phaser spark. Four
+        // authored detonation poses expand from the actual collision point;
+        // the following four poses carry hot fragments outwards and fade.
+        // Only presentation changes here: damage and the one-shot receipt are
+        // owned by collision dispatch, never by repeated animation frames.
+        const expansion = 1-Math.pow(1-Math.min(1,Math.max(0,age)/.19),2);
+        const debrisProgress = Math.max(0,Math.min(1,(age-.25)/.4));
+        const size = row===2 ? 128+80*expansion : 208+44*debrisProgress;
         ctx.save();ctx.translate(effect.x,effect.y);ctx.globalAlpha*=row===3?Math.max(0,1-(age-.25)/.4):1;
         ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
         ctx.restore();continue;

@@ -91,6 +91,56 @@
       "license": "Apache-2.0",
       "sha256": "b0dcf4918935b795f4eda9821579b9902119235ff4447f687a30286e7d0925fd",
       "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/LICENSE",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "LICENSE",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/LICENSE",
+      "license": "MIT",
+      "sha256": "f89abb55d9f073f38f1703e4518f0613c788c6174be7f13b8dfe48a1c076c746",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/interaction-design/SKILL.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/interaction-design/SKILL.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/interaction-design/SKILL.md",
+      "license": "MIT",
+      "sha256": "87f2765ed1deeef3f1c06f9e4338ff103c391c6c4adcdffc885f3516b7c34ff2",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/accessibility-compliance/SKILL.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/accessibility-compliance/SKILL.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/accessibility-compliance/SKILL.md",
+      "license": "MIT",
+      "sha256": "3ad0fbcb0a69b69e70652641a8eeb59f168cceb4bc9d9b9c8b47154072b9e1a2",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/accessibility-compliance/references/details.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/accessibility-compliance/references/details.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/accessibility-compliance/references/details.md",
+      "license": "MIT",
+      "sha256": "1789504a4268186e62126059da48d8deb95d36631fac6263b368e715df2ca2fb",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/accessibility-compliance/references/aria-patterns.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/accessibility-compliance/references/aria-patterns.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/accessibility-compliance/references/aria-patterns.md",
+      "license": "MIT",
+      "sha256": "72e2f2cb2d168bb5d82260b703be863a6371284ba3cf4ac22da28a309728c14a",
+      "modified": false
     }
   ]
 }

@@ -12,7 +12,8 @@
   const JOURNEY_DEMO = new URLSearchParams(location.search).get("campaign") === "journey";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
-  const CLASSIC_SHIP_SCALE = !N7_CAMPAIGN && !JOURNEY_DEMO ? 0.4 : 1;
+  // Owner revision: 30% larger than the previous 40% ship, not 30% of it.
+  const CLASSIC_SHIP_SCALE = !N7_CAMPAIGN && !JOURNEY_DEMO ? 0.52 : 1;
   const SHIP_VISUAL_SCALE = 0.8 * CLASSIC_SHIP_SCALE;
   const SHIP_VISUAL = Object.freeze({
     classicScale: CLASSIC_SHIP_SCALE,

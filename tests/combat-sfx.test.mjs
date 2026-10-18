@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {createCombatSfx, COMBAT_SFX_CUES, COMBAT_SFX_SRC, COMBAT_SFX_VOICE_LIMIT,
-  COMBAT_SFX_GAIN_BUDGET} from '../src/game/audio/combat-sfx.js';
+  COMBAT_SFX_GAIN_BUDGET, COMBAT_SFX_DURATION} from '../src/game/audio/combat-sfx.js';
 
 const tick = async () => { await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); };
 const deferred = () => { let resolve, reject; const promise = new Promise((yes, no) => {resolve = yes; reject = no;}); return {promise, resolve, reject}; };
@@ -32,7 +32,7 @@ function harness({fetchAsset, decode, panner = true, sourceStartError = false} =
     },
     async decodeAudioData(bytes) {
       calls.decode++; assert.ok(bytes instanceof ArrayBuffer);
-      return decode ? decode(bytes) : {duration: 13.68, length: 656640, numberOfChannels: 1};
+      return decode ? decode(bytes) : {duration: COMBAT_SFX_DURATION, length: 766080, numberOfChannels: 1};
     }
   };
   if (panner) context.createStereoPanner = () => {
@@ -50,16 +50,17 @@ async function ready(options) {
   const h = harness(options); assert.equal(await h.sfx.load(), true); h.sfx.setPaused(false); return h;
 }
 
-test('authoring manifest matches exact runtime offsets, and all 16 performances are original distinct PCM', () => {
-  const manifest = JSON.parse(fs.readFileSync(new URL('assets/combat_sfx_atlas_v1.json', base)));
+test('authoring manifest matches exact runtime offsets, and all 20 performances are original distinct PCM', () => {
+  const manifest = JSON.parse(fs.readFileSync(new URL('assets/combat_sfx_atlas_v2.json', base)));
   assert.equal(manifest.src, COMBAT_SFX_SRC);
+  assert.equal(manifest.duration, COMBAT_SFX_DURATION);
   assert.deepEqual(manifest.cues, COMBAT_SFX_CUES);
-  const measurements = JSON.parse(fs.readFileSync(new URL('art-source/audio/combat-sfx-v1/measurements.json', base)));
-  assert.equal(measurements.stems.length, 16);
-  assert.equal(new Set(measurements.stems.map(item => item.sha256)).size, 16);
-  assert.ok(measurements.estimatedDecodedFloat32Bytes < 3 * 1024 * 1024);
-  assert.ok(measurements.runtimeBytes < 300000);
-  const sourceRoot = new URL('art-source/audio/combat-sfx-v1/', base);
+  const measurements = JSON.parse(fs.readFileSync(new URL('art-source/audio/combat-sfx-v2/measurements.json', base)));
+  assert.equal(measurements.stems.length, 20);
+  assert.equal(new Set(measurements.stems.map(item => item.sha256)).size, 20);
+  assert.ok(measurements.estimatedDecodedFloat32Bytes < 3.1 * 1024 * 1024);
+  assert.ok(measurements.runtimeBytes < 350000);
+  const sourceRoot = new URL('art-source/audio/combat-sfx-v2/', base);
   for (const stem of measurements.stems) {
     const bytes = fs.readFileSync(new URL(stem.path, sourceRoot));
     assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), stem.sha256);
@@ -70,10 +71,23 @@ test('authoring manifest matches exact runtime offsets, and all 16 performances 
   assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), measurements.runtimeSha256);
 });
 
+test('v2 preserves all existing original PCM performances and adds weapon launches distinct from impacts', () => {
+  const oldMeasurements = JSON.parse(fs.readFileSync(new URL('art-source/audio/combat-sfx-v1/measurements.json', base)));
+  const newMeasurements = JSON.parse(fs.readFileSync(new URL('art-source/audio/combat-sfx-v2/measurements.json', base)));
+  for (const original of oldMeasurements.stems) {
+    const retained = newMeasurements.stems.find(item => item.cue === original.cue && item.variant === original.variant);
+    assert.equal(retained.sha256, original.sha256);
+  }
+  const weapons = newMeasurements.stems.filter(item => ['enemy-phaser', 'enemy-heavy'].includes(item.cue));
+  assert.equal(weapons.length, 4);
+  assert.equal(new Set(weapons.map(item => item.sha256)).size, 4);
+  for (const weapon of weapons) assert.ok(!oldMeasurements.stems.some(item => item.sha256 === weapon.sha256));
+});
+
 test('cue boundaries have silence guards and cannot leak into a neighboring event', () => {
   const segments = Object.values(COMBAT_SFX_CUES).flatMap(item => item.variants).sort((a,b) => a.offset - b.offset);
   for (let i = 1; i < segments.length; i++) assert.ok(segments[i].offset - (segments[i-1].offset + segments[i-1].duration) >= .1199);
-  assert.ok(segments.at(-1).offset + segments.at(-1).duration <= 13.68);
+  assert.ok(segments.at(-1).offset + segments.at(-1).duration <= COMBAT_SFX_DURATION);
 });
 
 test('unsupported boundaries use legacy fallback without constructing another AudioContext', () => {
@@ -100,7 +114,7 @@ test('concurrent loads share one network request and decoder allocation, includi
   assert.equal(await first, true); assert.equal(await second, true);
   assert.equal(await h.sfx.load(), true);
   assert.equal(h.calls.fetch.length, 1); assert.equal(h.calls.decode, 1);
-  assert.equal(h.sfx.snapshot().decodedBytes, 2626560);
+  assert.equal(h.sfx.snapshot().decodedBytes, 3064320);
 });
 
 test('a real playback uses exactly one bounded segment and alternates distinct performances', async () => {
@@ -114,6 +128,51 @@ test('a real playback uses exactly one bounded segment and alternates distinct p
   assert.equal(h.calls.panners[1].pan.value, .75);
   h.context.currentTime += .21; h.sfx.play('phaser', {eventId: 'shot-c'});
   assert.equal(h.calls.sources[2].starts[0][1], 0);
+});
+
+test('enemy firing uses its own emission slices, alternates variants, and never borrows an impact', async () => {
+  const h = await ready();
+  assert.equal(h.sfx.play('enemy-phaser', {eventId: 'patrol-1:shot-1', pan: -.35}), true);
+  assert.deepEqual(h.calls.sources.at(-1).starts, [[0, 13.68, .28]]);
+  h.context.currentTime = .3;
+  assert.equal(h.sfx.play('enemy-phaser', {eventId: 'patrol-1:shot-2'}), true);
+  assert.deepEqual(h.calls.sources.at(-1).starts, [[.3, 14.08, .28]]);
+  h.context.currentTime = .6;
+  assert.equal(h.sfx.play('enemy-heavy', {eventId: 'atlas-1:attack-1:volley-1', pan: .4}), true);
+  assert.deepEqual(h.calls.sources.at(-1).starts, [[.6, 14.48, .62]]);
+  h.context.currentTime = 1.25;
+  assert.equal(h.sfx.play('enemy-heavy', {eventId: 'atlas-1:attack-1:volley-2'}), true);
+  assert.deepEqual(h.calls.sources.at(-1).starts, [[1.25, 15.22, .62]]);
+  assert.deepEqual(h.sfx.snapshot().playedByCue, {'enemy-phaser': 2, 'enemy-heavy': 2});
+  assert.equal(h.sfx.snapshot().playedByCue['impact-plasma'], undefined);
+  assert.throws(() => {h.sfx.snapshot().playedByCue['enemy-heavy'] = 99;}, TypeError);
+});
+
+test('a repeated enemy emission event remains silent but a new physical volley can play', async () => {
+  const h = await ready();
+  assert.equal(h.sfx.play('enemy-heavy', {eventId: 'atlas-session-9:2:0'}), true);
+  h.context.currentTime = .7;
+  assert.equal(h.sfx.play('enemy-heavy', {eventId: 'atlas-session-9:2:0'}), false);
+  assert.equal(h.sfx.play('enemy-heavy', {eventId: 'atlas-session-9:2:1'}), true);
+  assert.equal(h.calls.sources.length, 2);
+});
+
+test('loading or retrying does not queue obsolete enemy shots or bypass mute once decoding finishes', async () => {
+  const decoder = deferred();
+  const h = harness({decode: () => decoder.promise});
+  const pending = h.sfx.load();
+  h.sfx.setPaused(false);
+  await tick(); await tick();
+  assert.equal(h.sfx.play('enemy-phaser', {eventId: 'old-enemy-shot'}), false);
+  h.sfx.setVolume(0);
+  decoder.resolve({duration: COMBAT_SFX_DURATION, length: 766080, numberOfChannels: 1});
+  assert.equal(await pending, true);
+  assert.equal(h.sfx.play('enemy-heavy'), false);
+  assert.equal(h.calls.sources.length, 0);
+  h.sfx.setVolume(.6);
+  assert.equal(h.calls.sources.length, 0, 'no replay of the missed shot after load or unmute');
+  assert.equal(h.sfx.play('enemy-phaser', {eventId: 'new-enemy-shot'}), true);
+  assert.equal(h.calls.sources.length, 1);
 });
 
 test('missing stereo panner still plays through the shared gain graph without creating spatial polyfills', async () => {
@@ -174,6 +233,8 @@ for (const policy of ['pause', 'mute', 'zero-volume', 'suspended-context']) {
     if (policy === 'zero-volume') h.sfx.setVolume(0);
     if (policy === 'suspended-context') h.context.state = 'suspended';
     assert.equal(h.sfx.play('phaser'), false);
+    assert.equal(h.sfx.play('enemy-phaser'), false);
+    assert.equal(h.sfx.play('enemy-heavy'), false);
     if (policy !== 'suspended-context') {
       assert.equal(h.sfx.snapshot().activeVoices, 0);
       assert.equal(h.calls.sources[0].stops.length, 1);
@@ -182,6 +243,7 @@ for (const policy of ['pause', 'mute', 'zero-volume', 'suspended-context']) {
     assert.equal(h.calls.sources.length, 1);
     h.context.currentTime += 2;
     assert.equal(h.sfx.play('phaser'), true);
+    assert.equal(h.sfx.play('enemy-phaser'), true);
   });
 }
 
@@ -192,13 +254,24 @@ test('volume clamps to the supported range and uses smoothing on the existing lo
   assert.deepEqual(h.calls.gains[0].gain.targets.at(-1), [.3, 0, .02]);
 });
 
-for (const failure of ['http', 'empty', 'oversized', 'decoder', 'short', 'long']) {
+test('a heavy enemy launch can displace player pulses while respecting the existing mix budget', async () => {
+  const h = await ready();
+  for (let index = 0; index < 3; index++) {h.sfx.play('phaser'); h.context.currentTime += .05;}
+  h.sfx.play('enemy-phaser'); h.context.currentTime += .06;
+  h.sfx.play('impact-metal');
+  assert.equal(h.sfx.play('enemy-heavy'), true);
+  assert.ok(h.sfx.snapshot().stolen >= 1);
+  assert.ok(h.sfx.snapshot().activeGain <= COMBAT_SFX_GAIN_BUDGET + Number.EPSILON);
+  assert.ok(h.sfx.snapshot().activeVoices <= COMBAT_SFX_VOICE_LIMIT);
+});
+
+for (const failure of ['http', 'empty', 'oversized', 'decoder', 'short', 'old-bank', 'long']) {
   test(`${failure} load failure is contained and exposes fallback without scheduling a retry loop`, async () => {
     const h = harness({fetchAsset: async () => ({ok: failure !== 'http', arrayBuffer: async () =>
       new ArrayBuffer(failure === 'empty' ? 0 : failure === 'oversized' ? 4 * 1024 * 1024 + 1 : 100)}),
       decode: async () => {
         if (failure === 'decoder') throw new Error('unsupported codec');
-        return {duration: failure === 'short' ? 4 : failure === 'long' ? 200 : 13.68};
+        return {duration: failure === 'short' ? 4 : failure === 'old-bank' ? 13.68 : failure === 'long' ? 200 : COMBAT_SFX_DURATION};
       }});
     assert.equal(await h.sfx.load(), false);
     assert.equal(h.sfx.snapshot().failed, true); assert.equal(h.sfx.snapshot().ready, false);
@@ -237,7 +310,7 @@ test('disposing during decoding cannot revive the graph or retain decoded memory
   const h = harness({decode: () => decoded.promise});
   const pending = h.sfx.load(); await tick(); await tick();
   h.sfx.dispose(); h.sfx.dispose();
-  decoded.resolve({duration: 13.68, length: 656640, numberOfChannels: 1});
+  decoded.resolve({duration: COMBAT_SFX_DURATION, length: 766080, numberOfChannels: 1});
   assert.equal(await pending, false); assert.equal(await h.sfx.load(), false);
   assert.equal(h.sfx.snapshot().disposed, true); assert.equal(h.sfx.snapshot().decodedBytes, 0);
   assert.equal(h.calls.gains[0].disconnects, 1);

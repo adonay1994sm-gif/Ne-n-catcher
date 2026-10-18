@@ -218,6 +218,7 @@
   }
 
   function drawChronosServiceRelay(view) {
+    if(typeof isUnifiedClassic==="function"&&isUnifiedClassic())return; // C9 is now the onboard HUD workshop.
     const relay = view.relay || view.service;
     if (!relay?.visible) return;
     const station = SPRITES.c9Station;

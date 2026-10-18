@@ -250,3 +250,19 @@ test('narrative policy has no engine, storage, rewards or second time source', a
   assert.doesNotMatch(source, /localStorage|sessionStorage|document\.|window\.|\.damage\s*=|\.balance\s*=|\.hp\s*=/);
   assert.doesNotMatch(source, /import .*engine|USE_ENGINE_V1/);
 });
+
+// The historical cinematic remains reproducible; the live entry uses the same
+// route/story events over the actual station without a slideshow or input lock.
+test('in-world presentation keeps the sabotage story and checkpoints without cinematic input locks',()=>{
+  const story=createChronosChapterStory({presentation:'in-world'}),events=[];
+  for(const elapsed of [0,3,6.3,9,13.2,19.2,26]){
+    const view=step(story,elapsed,cue=>events.push(cue));
+    assert.equal(view.opening.active,false);assert.equal(view.opening.controlsLocked,false);
+    assert.equal(view.opening.backgroundAlpha,0);assert.equal(view.opening.canSkip,false);
+  }
+  assert.deepEqual(events.map(cue=>cue.id),CHRONOS_CHAPTER_OPENING.map(cue=>cue.id));
+  const saved=story.checkpoint();assert.ok(normalizeChronosChapterCheckpoint(saved));
+  const restored=createChronosChapterStory({presentation:'in-world',checkpoint:saved});
+  assert.equal(restored.snapshot().carriesRecord,true);assert.equal(restored.snapshot().opening.controlsLocked,false);
+  assert.throws(()=>createChronosChapterStory({presentation:'invalid'}),RangeError);
+});

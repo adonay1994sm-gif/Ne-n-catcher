@@ -53,7 +53,7 @@ const swContext = {
 vm.runInNewContext(`${serviceWorkerSource}\nglobalThis.__SW_TEST__ = { CACHE, CORE };`, swContext);
 
 await test("PWA precarga código, legales, sprites y fondo de Cronos", async () => {
-  assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-specialist-polish-1");
+  assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-level-one-dynamic-1");
   const paths = new Set(swContext.__SW_TEST__.CORE.map(withoutQuery));
   const manifest = JSON.parse(await text("ASSET_MANIFEST.json"));
   for (const path of [
@@ -62,7 +62,7 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
     "assets/cronium_fragment_v1.webp", "assets/cronos_level1_background.webp",
     "assets/chronos_shockwave_atlas_v1.webp", "assets/atlas_perimeter_background_v1.webp",
     "assets/ch02_interceptor_atlas_v1.webp", "assets/guardian_atlas_states_v2.webp", "assets/cronium_energy_atlas_v2.webp",
-    "assets/combat_sfx_atlas_v1.m4a", "assets/combat_sfx_atlas_v1.json",
+    "assets/combat_sfx_atlas_v2.m4a", "assets/combat_sfx_atlas_v2.json", "assets/c9_upgrade_icons_v1.webp",
     "assets/vulkar_descent_background_v1.webp", "assets/vulkar_magma_tunnel_background_v1.webp",
     "assets/cryon_whiteout_background_v1.webp", "assets/cryon_leviathan_rift_background_v1.webp",
     "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp",
@@ -189,13 +189,13 @@ await test("campaña, guardados, balance y tamaño visual permanecen compatibles
   assert.match(gameSource, /SHIP_VISUAL_SCALE = 0\.8/);
 });
 
-await test("hitbox clásica al 40 % con ajuste interior conserva extremos visibles y variantes históricas", async () => {
+await test("hitbox clásica al 52 % con ajuste interior conserva extremos visibles y variantes históricas", async () => {
   const outline=Array.from(api.collisionOutline,point=>Array.from(point));
   assert.equal(outline.length,30);
-  assert.equal(sha256(JSON.stringify(outline)), "e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865");
-  assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+47.36)<1e-9);
-  assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-39.24)<1e-9);
-  assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-30.08)<1e-9);
+  assert.equal(sha256(JSON.stringify(outline)), "a40789b028be6be21f4e38897310e205ff2008bc05c4c6cdef03712215077622");
+  assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+61.568)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-51.012)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-39.104)<1e-9);
   for(const campaign of ['n7','journey']){
     const archived=await loadHarness(campaign);
     try {

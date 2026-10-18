@@ -1,23 +1,26 @@
 import {createCh01Animator} from '../animation/ch01-animator.js';
 
-export const CLASSIC_PURSUIT_VERSION = 'classic-pursuit-v3';
+export const CLASSIC_PURSUIT_VERSION = 'classic-pursuit-v4';
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 const approach = (value, target, amount) => value + clamp(target - value, -amount, amount);
 const profiles = Object.freeze({
   raider: Object.freeze({warning: .32, recovery: 1.25, maxAttacks: 8, holdSeconds: 20,
     depth: .30, lateralSpeed: 140, acceleration: 265, sampleInterval: .24,
+    orbitRate: .96, lateralSweep: .68, depthSweep: 25,
     projectileSpeed: 360, leadSeconds: .32, damage: 14}),
   scout: Object.freeze({warning: .38, recovery: 1.6, maxAttacks: 7, holdSeconds: 22,
     depth: .29, lateralSpeed: 104, acceleration: 190, sampleInterval: .32,
+    orbitRate: .76, lateralSweep: .72, depthSweep: 32,
     projectileSpeed: 335, leadSeconds: .22, damage: 12}),
   interceptor: Object.freeze({warning: .30, recovery: 1.15, maxAttacks: 10, holdSeconds: 24,
     depth: .27, lateralSpeed: 176, acceleration: 315, sampleInterval: .2,
+    orbitRate: 1.23, lateralSweep: .9, depthSweep: 40,
     projectileSpeed: 390, leadSeconds: .38, damage: 15})
 });
 
 // Only already observed positions can influence a lead. Sampling limits both
 // reaction speed and velocity; neither current input nor a launched shot is read.
-function observePlayer(enemy, player) {
+function observePlayer(enemy, player, interval) {
   if (enemy.age + 1e-9 < enemy.nextObservationAt) return;
   const prior = enemy.observation, elapsed = prior ? enemy.age - prior.at : 0;
   const vx = elapsed > 0 ? clamp((player.x - prior.x) / elapsed, -720, 720) : 0;
@@ -25,7 +28,13 @@ function observePlayer(enemy, player) {
   enemy.observation = {x: player.x, y: player.y, at: enemy.age,
     vx: prior ? prior.vx * .35 + vx * .65 : 0,
     vy: prior ? prior.vy * .35 + vy * .65 : 0};
-  enemy.nextObservationAt = enemy.age + .2;
+  enemy.nextObservationAt = enemy.age + interval;
+}
+
+function variationFor(seed) {
+  let value = Math.imul((Math.trunc(seed) >>> 0) ^ 0x9E3779B9, 0x85EBCA6B);
+  value = Math.imul(value ^ value >>> 16, 0xC2B2AE35);
+  return ((value ^ value >>> 13) >>> 0) / 4294967296;
 }
 
 
@@ -47,6 +56,11 @@ export function createClassicPursuer({x, width = 720, height = 1280,
   return {
     tacticsVersion: CLASSIC_PURSUIT_VERSION, role, width, height, minAttackY,
     seed, side, phase: (Math.abs(seed) * .61803398875 % 1) * Math.PI * 2,
+    // Stable individual flight signatures, rather than changing random numbers
+    // every frame. They change intent targets, never teleport the physical body.
+    manoeuvreRate: .84 + variationFor(seed) * .32,
+    sweepScale: .82 + variationFor(seed + 107) * .36,
+    manoeuvre: role === 'scout' ? 'survey-orbit' : role === 'interceptor' ? 'flank-arc' : 'attack-strafe',
     age: 0, state: 'entry', stage: 'entry', stateAge: 0,
     baseX: clamp(x, combatMargin, width - combatMargin),
     targetX: clamp(x, combatMargin + entryInset, width - combatMargin - entryInset), vx: 0,
@@ -75,7 +89,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   enemy.baseSpeed ??= Math.max(1, item.s);
   enemy.age += step;
   enemy.stateAge += step;
-  observePlayer(enemy, player);
+  observePlayer(enemy, player, profile.sampleInterval);
   const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
   enemy.previousHp = hp;
   const enter = state => {
@@ -85,7 +99,12 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   const combatX = value => clamp(value, enemy.combatMinX, enemy.combatMaxX);
   const minimumHoldY = enemy.minAttackY + 52;
   const maximumHoldY = Math.max(minimumHoldY, Math.min(enemy.height * .52, player.y - 350));
-  enemy.holdY = clamp(enemy.height * profile.depth + Math.sin(enemy.phase + enemy.fired * .8) * 25,
+  const flightPhase = enemy.phase + enemy.age * profile.orbitRate * enemy.manoeuvreRate;
+  // Correlated lateral/depth targets create a physical arc. A firing opponent
+  // briefly steadies its weapon, while recovery is its largest manoeuvre.
+  const depthArc = Math.cos(flightPhase) * profile.depthSweep *
+    (['charge', 'fire'].includes(enemy.state) ? .35 : 1);
+  enemy.holdY = clamp(enemy.height * profile.depth + depthArc + Math.sin(enemy.phase) * 12,
     minimumHoldY, maximumHoldY);
   const canAttack = () => hp > 0 && enemy.state !== 'retreat' &&
     item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 &&
@@ -98,10 +117,11 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   const laneTarget = () => {
     const sample = enemy.observation;
     const observedX = combatX(sample.x + clamp(sample.vx * .18, -64, 64));
-    const span = Math.min(enemy.width * .22, 128);
-    return combatX(enemy.role === 'interceptor' ? observedX + enemy.side * span :
-      enemy.role === 'scout' ? enemy.baseX * .5 + observedX * .5 + enemy.side * span * .32 :
-        observedX + enemy.side * span * .48);
+    const span = Math.min(enemy.width * .24, 140);
+    const sweep = Math.sin(flightPhase) * span * profile.lateralSweep * enemy.sweepScale;
+    return combatX(enemy.role === 'interceptor' ? observedX + enemy.side * span * .68 + sweep :
+      enemy.role === 'scout' ? enemy.baseX * .45 + observedX * .55 + enemy.side * span * .2 + sweep :
+        observedX + enemy.side * span * .42 + sweep);
   };
   const reposition = () => {
     clearCharge();
@@ -149,6 +169,13 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     else reposition();
   }
   if (enemy.state === 'reposition' && enemy.age >= enemy.nextFire) enter('track');
+
+  // Continue the curved manoeuvre between shots instead of travelling to one
+  // fixed X and waiting there. Observations remain rate-limited by role.
+  if (enemy.state === 'reposition' && enemy.age >= enemy.nextTargetAt) {
+    enemy.targetX = laneTarget();
+    enemy.nextTargetAt = enemy.age + profile.sampleInterval;
+  }
 
   if (enemy.state === 'track') {
     if (enemy.age >= enemy.nextTargetAt) {

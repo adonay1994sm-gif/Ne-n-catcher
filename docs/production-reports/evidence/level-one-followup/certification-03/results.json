@@ -1,0 +1,154 @@
+{
+  "startedAt": "2026-10-18T13:14:40.209Z",
+  "node": "v24.19.0",
+  "branch": "continuity-assets-audit-20261013",
+  "head": "d4b08dcb2f22268944aa73fc4b71bca5f3496c7e",
+  "workingTree": "M .gitignore\n M AGENTS.md\n M ASSET_MANIFEST.json\n M ASSET_PRODUCTION_150.json\n M README.md\n M content-runtime.js\n M content-runtime.js.map\n M docs/PRODUCTION_MASTER_CHECKLIST.md\n M docs/PRODUCTION_PROGRESS.md\n M docs/agents/OPEN_SOURCE_REVIEW.md\n M docs/production-tasks.json\n M game.js\nD  ios/App/App/public/assets/atlas_combat_vfx_v1.webp\nD  ios/App/App/public/assets/chronos_destruction_atlas_v1.webp\nD  ios/App/App/public/assets/chronos_flight_atlas_v1.webp\nD  ios/App/App/public/assets/chronos_flight_space_v1.webp\nD  ios/App/App/public/assets/chronos_flight_weapons_v1.webp\nD  ios/App/App/public/assets/comet_animation_sheet_v1.webp\nD  ios/App/App/public/assets/guardian_atlas_states_v1.webp\nD  ios/App/App/public/assets/ship_modular_atlas_v1.webp\nD  ios/App/App/public/content-runtime.js\nD  ios/App/App/public/content-runtime.js.map\nD  ios/App/App/public/game.js\nD  ios/App/App/public/index.html\nD  ios/App/App/public/styles.css\nD  ios/App/App/public/sw.js\n M package.json\n M scripts/chapter-one-browser-smoke.cjs\n M scripts/chapter-one-offline-smoke.cjs\n M scripts/gaia-interceptor-browser-smoke.cjs\n M src/game/00-bootstrap-config.js\n M src/game/01-runtime-assets.js\n M src/game/02-storage-audio.js\n M src/game/03-ui-game-flow.js\n M src/game/04-entities-collision-damage.js\n M src/game/05-corridor-update.js\n M src/game/06-world-rendering.js\n M src/game/07-player-item-rendering.js\n M src/game/audio/combat-sfx.js\n M src/game/combat/classic-pursuit.js\n M src/game/combat/classic-weapons.js\n M src/game/combat/guardian-atlas.js\n M src/game/narrative/chronos-chapter.js\n M src/game/progression/chronos-flight.js\n M src/game/progression/comet-shower.js\n M src/game/progression/legacy-content-entry.js\n M styles.css\n M sw.js\n M tests/chronos-chapter.test.mjs\n M tests/chronos-voyage.test.mjs\n M tests/classic-pursuit.test.mjs\n M tests/classic-ship-collision-fit.test.mjs\n M tests/classic-weapons.test.mjs\n M tests/combat-sfx-legacy.test.mjs\n M tests/combat-sfx.test.mjs\n M tests/comet-shower.test.mjs\n M tests/guardian-atlas-legacy.test.mjs\n M tests/guardian-atlas.test.mjs\n M tests/product-brand.test.mjs\n M tests/run-static-tests.mjs\n M tests/run-tests.mjs\n M tests/run-v7-web-tests.mjs\n M tests/ship-scale-energy.test.mjs\n M tests/unified-flight-legacy.test.mjs\n M tools/third-party/skills/SOURCES.json\nD  www/assets/atlas_combat_vfx_v1.webp\nD  www/assets/chronos_destruction_atlas_v1.webp\nD  www/assets/chronos_flight_atlas_v1.webp\nD  www/assets/chronos_flight_space_v1.webp\nD  www/assets/chronos_flight_weapons_v1.webp\nD  www/assets/comet_animation_sheet_v1.webp\nD  www/assets/guardian_atlas_states_v1.webp\nD  www/assets/ship_modular_atlas_v1.webp\nD  www/content-runtime.js\nD  www/content-runtime.js.map\nD  www/game.js\nD  www/index.html\nD  www/styles.css\nD  www/sw.js\n?? .agents/skills/neon-interface-review/\n?? art-source/audio/combat-sfx-v2/\n?? art-source/c9-hud-v1/\n?? assets/c9_upgrade_icons_v1.webp\n?? assets/combat_sfx_atlas_v2.json\n?? assets/combat_sfx_atlas_v2.m4a\n?? docs/agents/NETLIFY_TEST_SETUP.md\n?? docs/production-reports/evidence/level-one-followup/\n?? scripts/current-level-visual-smoke.cjs\n?? scripts/repository-hygiene.mjs\n?? src/game/narrative/flight-tutorial.js\n?? tests/flight-tutorial.test.mjs\n?? tests/missile-feedback.test.mjs\n?? tests/onboard-c9.test.mjs\n?? tests/repository-hygiene.test.mjs\n?? tools/third-party/skills/wshobson-ui-design/",
+  "results": [
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 809,
+      "log": "build.txt"
+    },
+    {
+      "name": "engine",
+      "command": "npm run test:engine",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 278,
+      "log": "engine.txt"
+    },
+    {
+      "name": "architecture",
+      "command": "npm run test:architecture",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 136,
+      "log": "architecture.txt"
+    },
+    {
+      "name": "content-integration-assets",
+      "command": "npm run test:content",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 95413,
+      "log": "content-integration-assets.txt"
+    },
+    {
+      "name": "static",
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 200,
+      "log": "static.txt"
+    },
+    {
+      "name": "regression",
+      "command": "npm test",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "durationMs": 1119,
+      "log": "regression.txt"
+    },
+    {
+      "name": "web",
+      "command": "node tests/run-v7-web-tests.mjs",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "durationMs": 820,
+      "log": "web.txt"
+    },
+    {
+      "name": "experimental-render-adapter",
+      "command": "node --test tests/campaign-adapter.test.mjs tests/neon-render-engine.test.mjs tests/sprite-animator.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 198,
+      "log": "experimental-render-adapter.txt"
+    },
+    {
+      "name": "audio-lifecycle",
+      "command": "node --test tests/audio-lifecycle.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 94,
+      "log": "audio-lifecycle.txt"
+    },
+    {
+      "name": "visual-artpass",
+      "command": "node --test tests/visual-artpass.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 130,
+      "log": "visual-artpass.txt"
+    },
+    {
+      "name": "inventory",
+      "command": "node scripts/audit-asset-inventory.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 63,
+      "log": "inventory.txt"
+    }
+  ],
+  "artifacts": {
+    "game.js": [
+      {
+        "directory": ".",
+        "sha256": "794664aa329c261844eb388c651f11bde83267a22260e9db806681002c231428"
+      },
+      {
+        "directory": "www",
+        "sha256": "794664aa329c261844eb388c651f11bde83267a22260e9db806681002c231428"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "794664aa329c261844eb388c651f11bde83267a22260e9db806681002c231428"
+      }
+    ],
+    "core-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "www",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      }
+    ],
+    "content-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "a00d2dafce44adaae8f31391151ae3cb41b092b7b9fdbe285bebd478c4478596"
+      },
+      {
+        "directory": "www",
+        "sha256": "a00d2dafce44adaae8f31391151ae3cb41b092b7b9fdbe285bebd478c4478596"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "a00d2dafce44adaae8f31391151ae3cb41b092b7b9fdbe285bebd478c4478596"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-18T13:16:19.496Z",
+  "ok": false
+}

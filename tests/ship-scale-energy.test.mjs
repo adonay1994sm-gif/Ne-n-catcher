@@ -13,12 +13,12 @@ function visualContract(search='') {
     '\nglobalThis.contract=SHIP_VISUAL;',context);
   return JSON.parse(JSON.stringify(context.contract));
 }
-function harness({classic=true,reserve=0}={}) {
+function harness({classic=true,reserve=0,atlasGradient=false}={}) {
   const calls=[],draws=[],properties={globalAlpha:1},stats={halos:0,gradients:0,blurWrites:[]};
   const image=(name,width=192,height=192)=>({name,naturalWidth:width,naturalHeight:height,complete:true});
   const ctx=new Proxy({}, {get(_target,key){
     if(key==='drawImage')return (image,...args)=>draws.push({name:image.name,args,alpha:properties.globalAlpha});
-    if(key==='createRadialGradient')return()=>{throw new Error('No per-pickup gradients');};
+    if(key==='createRadialGradient')return()=>{if(!atlasGradient)throw new Error('No per-pickup gradients');return{addColorStop(){}};};
     return key in properties?properties[key]:(...args)=>calls.push({method:key,args});
   },set(_target,key,value){properties[key]=value;if(key==='shadowBlur')stats.blurWrites.push(value);return true;}});
   const sandbox=vm.createContext({Math,ctx,SHIP_VISUAL:visualContract(classic?'':'?campaign=n7'),
@@ -41,21 +41,21 @@ function harness({classic=true,reserve=0}={}) {
   return {sandbox,calls,draws,stats,properties};
 }
 
-test('both classic hull families share the40% render contract while N7 and Journey retain historical scale',()=>{
-  const classic=visualContract();assert.equal(classic.classicScale,.4);
-  assert.equal(classic.assemblySize,83.2);assert.equal(classic.muzzleOffset,50);
+test('both classic hull families share the52% render contract while N7 and Journey retain historical scale',()=>{
+  const classic=visualContract();assert.equal(classic.classicScale,.52);
+  assert.equal(classic.assemblySize,108.16);assert.equal(classic.muzzleOffset,65);
   for(const campaign of ['n7','journey']) {
     const historical=visualContract(`?campaign=${campaign}`);
     assert.equal(historical.classicScale,1);assert.equal(historical.assemblySize,208);
     assert.ok(Math.abs(historical.centerYOffset+19.2)<1e-9);assert.equal(historical.bankStrength,1);
-    assert.ok(Math.abs(classic.centerYOffset-historical.centerYOffset*.4)<1e-9);
+    assert.ok(Math.abs(classic.centerYOffset-historical.centerYOffset*.52)<1e-9);
   }
 });
 
 test('actual player rendering uses the smoothed visual bank and integrated armor plating without a classic shield bubble',()=>{
   const h=harness({reserve:30});h.sandbox.drawPlayer(2500);
   const assembly=h.calls.find(call=>call.method==='assembly');
-  assert.equal(assembly.args[2],83.2);assert.equal(assembly.args[4],.6);
+  assert.equal(assembly.args[2],108.16);assert.equal(assembly.args[4],.6);
   assert.equal(assembly.args[8],1.8);assert.ok(assembly.args[9]>0);
   assert.equal(h.draws.some(draw=>draw.name==='force-field'),false);
   assert.equal(h.calls.some(call=>call.method==='centered'&&call.args[0].name==='legacy-shield'),false);
@@ -121,7 +121,7 @@ test('missile impacts play their own blast row for.25s followed by.4s of fading 
     assert.equal(draw.name,'chapter-missile');assert.equal(draw.args[1],row*256);
     assert.equal(draw.args[0],Math.min(3,Math.floor((actualAge-(row===3?.25:0))*(row===2?16:10)))*256);
     assert.deepEqual(draw.args.slice(2,4),[256,256]);
-    assert.deepEqual(draw.args.slice(4),row===2?[-47,-47,94,94]:[-54,-54,108,108]);
+    assert.deepEqual(draw.args.slice(4),(()=>{const size=row===2?128+80*(1-Math.pow(1-Math.min(1,Math.max(0,actualAge)/.19),2)):208+44*Math.min(1,(actualAge-.25)/.4);return[-size/2,-size/2,size,size];})());
     if(row===3)remainingAlpha.push(draw.alpha);else assert.equal(draw.alpha,1);
     assert.equal(JSON.stringify(effect),before,'presentation never reapplies damage or changes effect lifetime');
   }
@@ -130,7 +130,7 @@ test('missile impacts play their own blast row for.25s followed by.4s of fading 
 });
 
 function guardianHarness(){
-  const h=harness(),animation={frame:3,previousFrame:null,blend:1};
+  const h=harness({atlasGradient:true}),animation={frame:3,previousFrame:null,blend:1};
   h.sandbox.SPRITES.guardianAtlas={name:'guardian-atlas',naturalWidth:2048,naturalHeight:1024};
   h.sandbox.atlasBoss={state:'fire',x:360,y:400,visualSize:350,phase:1,vulnerability:false,collisionRadius:42};
   h.sandbox.NeonCampaign={guardianAtlasAnimation:()=>animation};

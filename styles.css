@@ -492,3 +492,57 @@ body.flight-mode.atlas-combat #flightObjective{top:calc(max(6px,env(safe-area-in
    The fire label's intrinsic width must not expand into the missile target. */
 @media(max-width:360px){body.flight-mode .fire-control{right:max(12px,env(safe-area-inset-right));width:106px;min-width:106px;max-width:106px;box-sizing:border-box}body.flight-mode .fire-reticle{width:24px;height:24px;flex:0 0 24px}body.flight-mode .fire-control b{font-size:9px;letter-spacing:.08em}}
 @media(prefers-reduced-motion:reduce){.classic-missile,.chapter-skip{transition:none}}
+
+/* C9 is an on-board service console. Its illustrated components belong to
+   purchases, while the HUD keeps one small, separate 44px service target. */
+body.flight-mode #classicC9{position:absolute;z-index:7;left:max(12px,env(safe-area-inset-left));bottom:calc(max(20px,env(safe-area-inset-bottom)) + 56px);width:66px;min-height:44px;padding:5px 9px;border:1px solid #718d9c;border-radius:10px;background:rgba(8,22,35,.94);color:#d9eff6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;font-weight:850;letter-spacing:.03em;touch-action:manipulation;pointer-events:auto;cursor:pointer}
+body.flight-mode #classicC9 b{font-size:12px;line-height:1.15}
+body.flight-mode #classicC9 span,body.flight-mode #classicC9 small{font-size:8px;line-height:1.2;color:#b3cbd5;letter-spacing:.03em}
+body.flight-mode #classicC9 svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;flex:0 0 18px}
+body.flight-mode #classicC9:active:not(:disabled){background:#20465a}
+body.flight-mode #classicC9:disabled{opacity:.42;cursor:default}
+body.flight-mode #classicC9:focus-visible{outline:2px solid #c4f7ff;outline-offset:3px}
+body.flight-mode #flightDock{padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:rgba(2,8,19,.96)}
+body.flight-mode #flightDock .flight-dock{display:block;width:min(100%,460px);max-height:100%;padding:18px 16px 0;border:1px solid #506b7b;border-radius:20px;background:#0a1523;text-align:left;scrollbar-width:thin;scrollbar-color:#466472 #0a1523;scroll-padding-bottom:80px}
+body.flight-mode #flightDock .c9-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+body.flight-mode #flightDock .c9-header .chapter-face{flex-basis:40px;width:40px;height:40px;background-size:120px 40px;background-position:-40px 0;border-radius:10px}
+body.flight-mode #flightDock .c9-header small{display:block;color:#8dbaca;font-size:9px;letter-spacing:.12em}
+body.flight-mode #flightDock .c9-header h2{font-size:23px;line-height:1.1;margin:4px 0 0;color:#f2fbff}
+body.flight-mode #flightDock .c9-preview{display:grid;grid-template-columns:112px minmax(0,1fr);align-items:center;gap:12px;margin:0 0 10px}
+body.flight-mode #flightDockCanvas{width:min(100%,190px);aspect-ratio:384/300;margin:0 auto;border:1px solid #2b465a;border-radius:12px;background:#081422}
+body.flight-mode #flightDock .c9-preview #flightDockCanvas{width:112px}
+body.flight-mode #flightDockStatus{margin:8px 0;font-size:11px;line-height:1.45;color:#c2d7e2}
+body.flight-mode #flightDock .c9-preview #flightDockStatus{margin:0}
+body.flight-mode #flightDock .flight-loadout-choices{margin:10px 0;gap:6px}
+body.flight-mode #flightDock .flight-loadout-choices button{min-height:48px;padding:7px 4px;font-size:10px;line-height:1.25;border-radius:9px}
+body.flight-mode #flightDock .flight-loadout-choices small{font-size:9px;line-height:1.25}
+body.flight-mode #flightDock .c9-wallet{justify-content:space-between;margin:12px 0 8px;padding:8px 10px;border:1px solid #6e5b3b;border-radius:9px;background:#251e14;color:#f5d9a6;font-size:12px;line-height:1.35;font-variant-numeric:tabular-nums}
+body.flight-mode #flightDock .c9-upgrades{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 10px}
+body.flight-mode #flightDock .c9-upgrades button{display:flex;grid-column:auto;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:1px;min-width:0;min-height:132px;margin:0;padding:7px 10px 10px;border:1px solid #3f6173;border-radius:12px;background:#101f2c;color:#eef8fc;box-shadow:none;letter-spacing:0;text-align:left;overflow-wrap:anywhere}
+body.flight-mode #flightDock .c9-upgrades button:nth-child(2){border-color:#687581;background:#1b232c}
+body.flight-mode #flightDock .c9-upgrades button:nth-child(3){border-color:#856844;background:#2a2117}
+body.flight-mode #flightDock .c9-upgrades button:nth-child(4){border-color:#577980;background:#10272e}
+body.flight-mode #flightDock .c9-upgrades button:disabled{opacity:.68;color:#bed0da}
+body.flight-mode #flightDock .c9-upgrades button:disabled .c9-upgrade-art{opacity:.72}
+body.flight-mode #flightDock .c9-upgrades button:active:not(:disabled){border-color:#bcefff;background:#254254}
+body.flight-mode #flightDock .c9-upgrades #flightCalibrateLance{grid-column:1/-1;min-height:44px;justify-content:center;align-items:center;text-align:center;padding:10px}
+body.flight-mode #flightDock .c9-upgrade-art{display:block;align-self:center;flex:0 0 64px;width:64px;height:64px;margin:-2px 0 1px;background-image:url('assets/c9_upgrade_icons_v1.webp');background-size:200% 200%;background-repeat:no-repeat;background-position:0 0;pointer-events:none}
+body.flight-mode #flightDock .c9-upgrade-art[data-upgrade="hull"]{background-position:100% 0}
+body.flight-mode #flightDock .c9-upgrade-art[data-upgrade="missiles"]{background-position:0 100%}
+body.flight-mode #flightDock .c9-upgrade-art[data-upgrade="coolant"]{background-position:100% 100%}
+body.flight-mode #flightDock .c9-upgrade-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+body.flight-mode #flightDock .c9-upgrade-copy b{font-size:10px;line-height:1.3;font-weight:800}
+body.flight-mode #flightDock .c9-upgrade-copy small{font-size:10px;line-height:1.35;font-weight:450;color:#b9ccd8}
+body.flight-mode #flightDock .c9-purchase-status{min-height:1.4em;margin:7px 0 10px;font-size:11px;line-height:1.4;color:#c7ecdf}
+body.flight-mode #flightDock .c9-actions{position:sticky;z-index:1;bottom:0;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px;margin:0 -16px;padding:11px 16px 14px;border-top:1px solid #334d5e;background:#0a1523}
+body.flight-mode #flightDock .c9-actions button{grid-column:auto;min-height:46px;margin:0;padding:9px 8px;border-radius:10px;font-size:10px;line-height:1.35;letter-spacing:0}
+body.flight-mode #flightDock .c9-actions button:first-child{border:1px solid #7edfe1;background:#17424c;color:#e7ffff}
+body.flight-mode .flight-salvage{left:calc(max(12px,env(safe-area-inset-left)) + 76px);bottom:calc(max(20px,env(safe-area-inset-bottom)) + 71px);font-size:10px;line-height:14px;letter-spacing:0}
+/* During Atlas the compact transmission stays within the tactical strip,
+   rather than covering the guardian's upper silhouette with a portrait. */
+body.flight-mode.atlas-combat #flightObjective{top:calc(max(6px,env(safe-area-inset-top)) + 85px);height:26px;min-height:0;padding:2px 5px;border-left-width:1px;background:rgba(3,10,20,.72);font-size:10px;line-height:12px}
+body.flight-mode.atlas-combat #flightObjective .chapter-face{display:none}
+body.flight-mode.atlas-combat #flightObjective>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+@media(max-width:350px){body.flight-mode #flightDock .flight-dock{padding:14px 12px 0;border-radius:16px}body.flight-mode #flightDock .c9-header{gap:8px;margin-bottom:9px}body.flight-mode #flightDock .c9-header h2{font-size:20px}body.flight-mode #flightDock .c9-preview{grid-template-columns:88px minmax(0,1fr);gap:9px}body.flight-mode #flightDock .c9-preview #flightDockCanvas{width:88px}body.flight-mode #flightDockStatus{font-size:10px;line-height:1.4}body.flight-mode #flightDock .c9-upgrades{gap:7px}body.flight-mode #flightDock .c9-upgrades button{min-height:125px;padding:7px 8px 9px}body.flight-mode #flightDock .c9-upgrade-art{flex-basis:54px;width:54px;height:54px}body.flight-mode #flightDock .c9-upgrade-copy small{font-size:9px}body.flight-mode #flightDock .c9-actions{margin:0 -12px;padding:9px 12px 12px}body.flight-mode #flightDock .flight-loadout-choices small{font-size:8px}}
+@media(orientation:landscape) and (max-height:500px){body.flight-mode #flightDock .flight-dock{width:min(100%,680px);padding:12px 16px 0}body.flight-mode #flightDock .c9-header{margin-bottom:6px}body.flight-mode #flightDock .c9-preview{grid-template-columns:84px minmax(0,1fr)}body.flight-mode #flightDock .c9-preview #flightDockCanvas{width:84px}body.flight-mode #flightDock .c9-upgrades{grid-template-columns:repeat(4,minmax(0,1fr))}body.flight-mode #flightDock .c9-upgrades button{min-height:120px}body.flight-mode #flightDock .c9-upgrade-art{flex-basis:48px;width:48px;height:48px}body.flight-mode #flightDock .c9-actions{padding-top:8px;padding-bottom:10px}body.flight-mode #classicC9{left:max(14px,env(safe-area-inset-left))}}
+@media(prefers-reduced-motion:reduce){body.flight-mode #classicC9{transition:none}}

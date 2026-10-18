@@ -1,3 +1,4 @@
+export {createFlightTutorial, FLIGHT_TUTORIAL_VERSION, FLIGHT_TUTORIAL_CUES} from '../narrative/flight-tutorial.js';
 import {AUTHORED_LEVELS} from './level-designs.js';
 export {createVoyageScore} from '../audio/voyage-score.js';
 export {createChapterScore} from '../audio/chapter-score.js';

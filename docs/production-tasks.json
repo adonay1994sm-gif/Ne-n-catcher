@@ -321,7 +321,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 168,
+    "expectedCount": 171,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -1256,6 +1256,13 @@
           "combat-sfx-map-v1"
         ],
         "reason": "Padded Atlas/CRONIUM and original combat bank with cue metadata; masters and previous assets retained. IN_REVIEW until integration and owner/device acceptance."
+      },
+      {
+        "date": "2026-10-18",
+        "from": 168,
+        "to": 171,
+        "batch": "LEVEL_ONE_DYNAMIC",
+        "reason": "C9 illustrated upgrades, hostile-emission original AAC and cue metadata; historical assets retained."
       }
     ]
   },
@@ -9063,6 +9070,293 @@
       ],
       "packageStatus": "CLEAN_SHA_99BF90B_BUILT",
       "privateSiteStatus": "PRIVATE_SITE21_HTTP16_PASSED"
+    },
+    {
+      "id": "P1-DYNAMIC-INTRO",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Abrir sobre Chronos vivo y enseñar acciones breves",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Narrativa",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/narrative/flight-tutorial.js",
+        "src/game/narrative/chronos-chapter.js"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
+    },
+    {
+      "id": "P1-DYNAMIC-IA",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Maniobras procedurales y mayor presencia enemiga",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Enemigos",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/combat/classic-pursuit.js"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
+    },
+    {
+      "id": "P1-DYNAMIC-ATLAS",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Atlas móvil y exigente con decisiones y ventanas",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jefes",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/combat/guardian-atlas.js"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
+    },
+    {
+      "id": "P1-DYNAMIC-MISSILE",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Misil18 y explosión ilustrada visible al contacto",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/combat/classic-weapons.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
+    },
+    {
+      "id": "P1-DYNAMIC-C9",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Taller C9 ilustrado desde HUD sin estación orbital",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "styles.css",
+        "src/game/03-ui-game-flow.js",
+        "assets/c9_upgrade_icons_v1.webp"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
+    },
+    {
+      "id": "P1-DYNAMIC-AUDIO",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Emisiones enemigas con sonidos originales y pausa/mute",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Audio",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/audio/combat-sfx.js",
+        "src/game/05-corridor-update.js"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
+    },
+    {
+      "id": "P1-DYNAMIC-FLIGHT",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Nave30% mayor y cometas con trayectorias variadas transitables",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/00-bootstrap-config.js",
+        "src/game/progression/comet-shower.js"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
+    },
+    {
+      "id": "P1-DYNAMIC-TOOLS",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Skills útiles, higiene recuperable y Netlify QA preparado",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        ".agents/skills/neon-interface-review/SKILL.md",
+        "scripts/repository-hygiene.mjs",
+        "docs/agents/NETLIFY_TEST_SETUP.md"
+      ],
+      "commit": null,
+      "tests": [
+        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+      ],
+      "openErrors": [
+        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
+      ]
     }
   ],
   "canonicalPlan": {
@@ -9314,6 +9608,13 @@
         "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
         "batch": "CHAPTER_ONE_LIVING_JOURNEY",
         "scope": "Usuario autoriza implementar historia viva, arte integrado, naves40%, reserva30, misiles y Atlas como cierre del nivel1. Propietario revisa antes de expandir."
+      },
+      {
+        "date": "2026-10-18",
+        "batch": "LEVEL_ONE_DYNAMIC",
+        "status": "CHANGES_REQUESTED",
+        "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
+        "priority": "Chronos jugable sin láminas, tutorial, más enemigos con movimiento, Atlas móvil más difícil, audio enemigo, misil con impacto, C9HUD, cometas variables, nave30%mayor y Netlifypruebas."
       }
     ],
     "verificationHistory": [
@@ -9415,6 +9716,17 @@
         ],
         "supersededBy": "docs/PRODUCT_VISION.md",
         "note": "Conservar entrada única, chatarra, recarga base y cometas. El capítulo vivo sustituye sólo escudo temporizado,36HP,Atlas separado del segundo territorio y consumo básico limitado durante el jefe."
+      },
+      {
+        "date": "2026-10-18",
+        "batch": "LEVEL_ONE_DYNAMIC",
+        "decisions": [
+          "Aumento relativo30%: .4→.52; probar collider real.",
+          "C9enHUD pausa sinhealgratis porabrir; reparación única del hito1.6 siguecompatible con checkpoints v2.",
+          "Misil18como decisión reversible; Atlas96HP y3misiles conrecibos antes deemisión.",
+          "Guardar cinemáticas anteriores como historial y usar diálogo breve sobreChronos real."
+        ],
+        "supersedesCreativeConstraintsFrom": "CHAPTER_ONE_LIVING_JOURNEY; SPECIALIST_POLISH; historical orbital C9 and cinematic-lock contract"
       }
     ],
     "currentBatch": "CHAPTER_ONE_LIVING_JOURNEY"

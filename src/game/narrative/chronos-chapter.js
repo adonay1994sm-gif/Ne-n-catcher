@@ -34,7 +34,7 @@ function dialogue(id, speakerId, text, duration, extra = {}) {
 
 /** Six shots share the existing rupture at 9 s and its 9–16.2 s wave. */
 export const CHRONOS_CHAPTER_OPENING = freeze([
-  dialogue('routine', 'lira', 'Turno tranquilo, piloto. Mantén libre el corredor.', 3,
+  dialogue('routine', 'lira', 'Piloto, desliza el dedo para maniobrar. Chronos te recibe.', 3,
     {at: 0, shotIndex: 0, phase: 'opening', visualCue: 'chronos-routine', audioCue: 'chronos-room-tone'}),
   dialogue('convoy-clearance', 'lira', 'Convoy C-17: acceso autorizado. Traigan el suministro.', 3.3,
     {at: 3, shotIndex: 1, phase: 'opening', visualCue: 'convoy-clearance', audioCue: 'radio-valid'}),
@@ -55,7 +55,7 @@ const ROUTE_DIALOGUES = freeze([
     {at: 76, phase: 'route', visualCue: 'cronium-trail', audioCue: 'navigation-confirm'}),
   dialogue('chronos-astern', 'n7', 'Chronos queda atrás. Conservo el registro y la ruta hacia Gaia.', 5,
     {at: 112, phase: 'route', visualCue: 'chronos-astern', audioCue: 'navigation-confirm'}),
-  dialogue('c9-contact', 'mira', 'Aquí C9. He recibido tu emergencia. El muelle sigue abierto.', 5.2,
+  dialogue('c9-contact', 'mira', 'Enlace C9 disponible en tu panel. Puedo configurar tu nave sin desviar la ruta.', 5.2,
     {at: 177, phase: 'route', visualCue: 'c9-contact', audioCue: 'c9-radio'}),
   dialogue('gaia-visible', 'n7', 'Gaia Nova al frente. Su red defensiva sigue activa.', 4.8,
     {at: 256, phase: 'route', visualCue: 'gaia-reveal', audioCue: 'gaia-beacon'}),
@@ -66,9 +66,9 @@ const ROUTE_DIALOGUES = freeze([
 ]);
 
 const SIGNAL_DIALOGUES = freeze({
-  'module-recovered': dialogue('module-recovered', 'mira', 'Ese emisor puede salvarte. Tráelo a C9 y prepararé sus anclajes.', 5.2,
+  'module-recovered': dialogue('module-recovered', 'mira', 'Emisor a bordo. Abre C9 en tu panel y prepararé sus anclajes.', 5.2,
     {phase: 'event', visualCue: 'recovered-emitter', audioCue: 'salvage-identified'}),
-  'c9-arrival': dialogue('c9-arrival', 'mira', 'Ponte a cubierto. Reparo el casco; las mejoras van por tu cuenta.', 5.2,
+  'c9-arrival': dialogue('c9-arrival', 'mira', 'Enlace estable. Reparación de emergencia completada; mejoras disponibles en C9.', 5.2,
     {phase: 'event', visualCue: 'c9-docking', audioCue: 'c9-dock'}),
   'c9-departure': dialogue('c9-departure', 'mira', 'Sigue las balizas hasta Gaia. Que ese registro llegue entero.', 4.8,
     {phase: 'event', visualCue: 'c9-departure', audioCue: 'c9-release'}),
@@ -133,9 +133,10 @@ export function normalizeChronosChapterCheckpoint(value) {
  * actual Atlas resolution. No delta, timers or route fast-forward live here.
  */
 export function createChronosChapterStory({checkpoint = null, routeElapsed = checkpoint?.routeElapsed ?? 0,
-  introEnabled = true, replayIntro = false} = {}) {
+  introEnabled = true, replayIntro = false, presentation = 'cinematic'} = {}) {
   if (!finiteTime(routeElapsed) || routeElapsed > CHRONOS_CHAPTER_ROUTE_SECONDS ||
-      typeof introEnabled !== 'boolean' || typeof replayIntro !== 'boolean') throw new RangeError('Invalid chapter story options');
+      typeof introEnabled !== 'boolean' || typeof replayIntro !== 'boolean' ||
+      !['cinematic','in-world'].includes(presentation)) throw new RangeError('Invalid chapter story options');
   const restored = checkpoint === null ? null : normalizeChronosChapterCheckpoint(checkpoint);
   if (checkpoint !== null && !restored) throw new RangeError('Invalid chapter story checkpoint');
   let elapsed = routeElapsed, aftermathElapsed = 0;
@@ -167,13 +168,14 @@ export function createChronosChapterStory({checkpoint = null, routeElapsed = che
     const aftermathActive = signals.has('atlas-disabled') && aftermathElapsed < CHRONOS_CHAPTER_AFTERMATH_SECONDS;
     const line = aftermathActive ? [...CHRONOS_CHAPTER_AFTERMATH].reverse().find(cue => aftermathElapsed >= cue.at) : null;
     return freeze({version: CHRONOS_CHAPTER_VERSION, routeId: ROUTE_ID, routeElapsed: elapsed,
-      introSeen, opening: freeze({active, controlsLocked: active && elapsed < 9,
-        canSkip: active, shotIndex: shot.shotIndex, visualCue: shot.visualCue,
+      introSeen, opening: freeze({active: active && presentation === 'cinematic',
+        controlsLocked: active && presentation === 'cinematic' && elapsed < 9,
+        canSkip: active && presentation === 'cinematic', shotIndex: shot.shotIndex, visualCue: shot.visualCue,
         progress: clamp(elapsed / CHRONOS_CHAPTER_OPENING_SECONDS, 0, 1),
         shotProgress: clamp((elapsed - shot.at) / shot.duration, 0, 1),
         // The new opening illustration reveals the existing station and its
         // one authored wave; it never draws another reactor destruction.
-        backgroundAlpha: active ? 1 - clamp((elapsed - 9) / 2.4, 0, 1) : 0,
+        backgroundAlpha: active && presentation === 'cinematic' ? 1 - clamp((elapsed - 9) / 2.4, 0, 1) : 0,
         dialogue: active ? shot : null}),
       aftermath: freeze({active: aftermathActive, elapsed: aftermathElapsed, dialogue: line}),
       aftermathReady: signals.has('atlas-disabled') && aftermathElapsed >= CHRONOS_CHAPTER_AFTERMATH_SECONDS,

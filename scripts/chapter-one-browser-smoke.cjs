@@ -12,11 +12,11 @@ assert.ok(values.output&&/^[a-f0-9]{40}$/.test(values['expected-commit']||''),'P
 const root=path.resolve(values.root||'preview-dist'),output=path.resolve(values.output),timeout=Number(values.timeout||900000);
 assert.ok(Number.isFinite(timeout)&&timeout>=120000&&timeout<=1200000,'Timeout must be 120000–1200000 ms');
 const started=Date.now(),report={status:'running',exitCode:null,command:process.argv,sourceRoot:root,
-  startedAt:new Date().toISOString(),pilotVersion:'chapter-one-fresh-manual-missiles-v1',skipIntro:values['skip-intro'],
+  startedAt:new Date().toISOString(),pilotVersion:'chapter-one-fresh-hud-c9-moving-atlas-v2',skipIntro:values['skip-intro'],
   checks:[],errors:[],consoleErrors:[],failedRequests:[],samples:[],screenshots:[],manualShots:[],missiles:[],
-  enemies:[],physicalDrops:[],claims:[],damage:[],limits:[
+  enemies:[],physicalDrops:[],claims:[],damage:[],mobility:[],limits:[
     'Fresh Chromium context with no saved progress, currency, equipment or health fixtures.',
-    'Complete natural 360-second Chronos-to-Gaia route plus C9, frontier combat and story conclusion; wall time may exceed nine minutes.',
+    'Complete natural 360-second Chronos-to-Gaia route with the onboard HUD workshop, moving frontier guardian and story conclusion; wall time may exceed nine minutes.',
     'QA pilot adapted from salvage-journey-browser-smoke.cjs and guardian-atlas-browser-smoke.cjs; current visible positions, velocities, collision outline and observed combat states inform actual input choices.',
     'Read-only diagnostics and draw/RAF observation are inserted into a local response; no production file, simulation time, entity or inventory is changed.',
     'Short two-contact exercise uses actual Chromium CDP input; the rest of the pilot uses mouse movement and real keyboard/button actions.',
@@ -102,7 +102,9 @@ function choosePilotTarget(q,attackObserved){
 }
 
 function combatTarget(q) {
-  const ship = q.player, aim = q.boss.x ?? q.W / 2;
+  const ship = q.player;
+  const flightTime=Math.max(0,(ship.y-q.shipVisual.muzzleOffset-q.boss.y)/920);
+  const aim=(q.boss.x??q.W/2)+clamp((q.boss.motionVx||0)*flightTime*.8,-85,85);
   const minimum = q.bounds?.minX ?? 119, maximum = q.bounds?.maxX ?? q.W - 119;
   const clampX = x => Math.max(minimum, Math.min(maximum, x));
   const outlineLeft = Math.min(...q.outline.map(point => point[0]));
@@ -174,14 +176,21 @@ function combatTarget(q) {
   page.on('response',response=>{if(response.status()>=400)report.failedRequests.push({url:response.url(),status:response.status()});});
   await page.addInitScript(()=>{
     const request=window.requestAnimationFrame.bind(window),cancel=window.cancelAnimationFrame.bind(window);
-    const q=window.__CHAPTER_ONE_OBSERVER__={pending:new Set(),maximum:0,frames:0,errors:[],draw:{}};
+    const q=window.__CHAPTER_ONE_OBSERVER__={pending:new Set(),maximum:0,frames:0,errors:[],draw:{},missileRows:{},missileSamples:[]};
     window.requestAnimationFrame=callback=>{const id=request(now=>{q.pending.delete(id);q.frames++;
       try{callback(now);}catch(error){q.errors.push(error.stack||String(error));throw error;}});
       q.pending.add(id);q.maximum=Math.max(q.maximum,q.pending.size);return id;};
     window.cancelAnimationFrame=id=>{q.pending.delete(id);cancel(id);};
     const draw=CanvasRenderingContext2D.prototype.drawImage;
     CanvasRenderingContext2D.prototype.drawImage=function(image,...args){const result=Reflect.apply(draw,this,[image,...args]);
-      const file=image?.src?.split('/').at(-1)?.split('?')[0];if(file&&this.canvas?.id==='canvas')q.draw[file]=(q.draw[file]||0)+1;return result;};
+      const file=image?.src?.split('/').at(-1)?.split('?')[0];if(file&&this.canvas?.id==='canvas'){
+        q.draw[file]=(q.draw[file]||0)+1;
+        if(file==='chapter1_missile_atlas_v1.webp'&&args.length===8){
+          const row=Math.round(args[1]/(image.naturalWidth/4));q.missileRows[row]=(q.missileRows[row]||0)+1;
+          if(row>=2&&q.missileSamples.length<40){const matrix=this.getTransform();q.missileSamples.push({row,source:args.slice(0,4),
+            size:args[6],alpha:this.globalAlpha,contact:{x:matrix.e,y:matrix.f},wall:performance.now()});}
+        }
+      }return result;};
   });
   await page.route(/\/game\.js(?:\?.*)?$/,async route=>{
     const response=await route.fetch(),body=await response.body(),source=body.toString('utf8');
@@ -189,6 +198,8 @@ function combatTarget(q) {
     const marker='  legacyFrameId = requestAnimationFrame(frame);\n})();';assert.equal(source.split(marker).length,2);
     const hook=`window.__CHAPTER_ONE_QA__=()=>({state,currentLevel,elapsed,hull,score,collected,W,H,legacyRunning,
       settingsAutoFire:settings.autoFire,warpTimer,manualShotCooldown,reserve:classicHullReserve,reserveCapacity:classicHullReserveCapacity,
+      combat:combatSfx?.snapshot()||null,impactEffects:impactEffects.map(effect=>({...effect})),
+      ordnanceDraw:{rows:{...window.__CHAPTER_ONE_OBSERVER__.missileRows},samples:[...window.__CHAPTER_ONE_OBSERVER__.missileSamples]},
       shipVisual:{...SHIP_VISUAL},player:{x:player.x,y:player.y,target:player.target,targetY:player.targetY},
       input:{...classicFlightInput},fireInput:typeof fireInput==='undefined'?null:fireInput?{...fireInput}:null,
       bounds:classicFlightBounds?{...classicFlightBounds}:null,outline:SHIP_COLLISION_OUTLINE,
@@ -201,6 +212,7 @@ function combatTarget(q) {
       boss:atlasBoss?{x:atlasBoss.x,y:atlasBoss.y,r:atlasBoss.r,coreRadius:atlasBoss.coreRadius,state:atlasBoss.state,
         stateTime:atlasBoss.stateTime,age:atlasBoss.age,version:atlasBoss.version,hp:atlasBoss.hp,maxHp:atlasBoss.maxHp,
         vulnerability:atlasBoss.vulnerability,phase:atlasBoss.phase,attackTier:atlasBoss.attackTier,
+        motionVx:atlasBoss.motionVx,motionVy:atlasBoss.motionVy,motionDecision:atlasBoss.motionDecision,
         disabled:atlasBoss.disabled,resolved:atlasBoss.resolved}:null,
       unlocked:getUnlocked(),saves:Object.fromEntries(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)])),
       items:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,vx:item.vx,vy:item.vy,
@@ -220,14 +232,14 @@ function combatTarget(q) {
     assert.equal(menu.salvage.missileAmmo,3);assert.deepEqual(menu.equipment.unlocked,['pulse']);
     await capture('main-menu-before',menu);await page.locator('#play').click();await page.locator('#launch').click();
     await wait(()=>__CHAPTER_ONE_QA__().state==='playing'&&__CHAPTER_ONE_QA__().warpTimer===0);
-    await wait(()=>__CHAPTER_ONE_QA__().chapter?.opening?.active);
-    await wait(()=>window.__CHAPTER_ONE_OBSERVER__.draw['chapter1_intro_atlas_v1.webp']>0);
     const opening=await inspect();assert.equal(opening.flight.stageId,'1.1');assert.equal(opening.reserve,30);
-    assert.equal(opening.weapons.charges,20);assert.equal(opening.shipVisual.assemblySize,83.2);
-    await capture('chronos-cinematic-opening',opening);
-    assert.ok(opening.draw['chapter1_intro_atlas_v1.webp']>0,'The actual opening must draw its registered illustration');
-    if(values['skip-intro']){await page.locator('#chapterSkip').click();report.introSkippedUsingControl=true;}
-    await wait(()=>!__CHAPTER_ONE_QA__().chapter.opening.controlsLocked,undefined,40000);
+    assert.equal(opening.weapons.charges,20);assert.equal(opening.shipVisual.assemblySize,108.16);
+    assert.equal(opening.chapter.opening.active,false);assert.equal(opening.chapter.opening.controlsLocked,false);
+    assert.equal(opening.chapter.opening.backgroundAlpha,0);
+    assert.equal(opening.draw['chapter1_intro_atlas_v1.webp']||0,0,'Cinematic illustration is retired from the playable opening');
+    await capture('chronos-in-world-opening',opening);
+    if(values['skip-intro'])report.introSkipNotNeeded='Current in-world opening does not lock controls or show a skip action';
+    await wait(()=>window.__CHAPTER_ONE_OBSERVER__.draw['chronos_destruction_atlas_v1.webp']>0);
     assert.equal(await page.locator('#ammo').isVisible(),false);
   });
   await check('pilot and shoot with two actual contacts without jumping or transferring ownership',async()=>{
@@ -266,19 +278,32 @@ function combatTarget(q) {
       }
       for(const receipt of q.salvage.activeRun?.claimed||[])if(!claims.has(receipt.id)){
         const record={...receipt,routeElapsed:q.flight.elapsed};claims.set(receipt.id,record);report.claims.push(record);}
+      if(q.impactEffects.some(effect=>effect.missileImpact))await capture('missile-contact-authored-explosion',q);
       if(Date.now()-lastSample>2000){report.samples.push({wallMs:Date.now()-started,elapsed:q.elapsed,
         routeElapsed:q.flight?.elapsed,stage:q.flight?.stageId,state:q.state,hull:q.hull,reserve:q.reserve,
-        balance:q.salvage.balance,missileAmmo:q.salvage.missileAmmo,collected:q.collected,boss:q.boss});lastSample=Date.now();await save();}
+        balance:q.salvage.balance,missileAmmo:q.salvage.missileAmmo,collected:q.collected,boss:q.boss,
+        combat:q.combat,ordnanceRows:q.ordnanceDraw.rows});
+        report.mobility.push({wallMs:Date.now()-started,boss:q.boss&&{x:q.boss.x,y:q.boss.y,state:q.boss.state,phase:q.boss.phase},
+          enemies:q.items.filter(item=>item.isPursuer).map(item=>({id:item.id,x:item.x,y:item.y,vx:item.observedVx,pose:item.pose}))});
+        lastSample=Date.now();await save();}
       if(Date.now()-lastProgress>30000){console.log('[Chapter one] '+JSON.stringify({stage:q.flight?.stageId,route:q.flight?.elapsed,
         hull:q.hull,reserve:q.reserve,balance:q.salvage.balance,boss:q.boss&&{hp:q.boss.hp,state:q.boss.state}}));lastProgress=Date.now();}
       if(q.state==='complete'){report.final= q;await capture('chapter-one-complete',q);completed=true;break;}
       if(q.chapter?.aftermath?.active){await capture('gaia-iria-vulkar-aftermath',q);await page.waitForTimeout(75);continue;}
-      if(q.flight?.waitingFor==='service'){
-        assert.equal(service,false,'C9 cannot repeat in the same run');assert.equal(q.state,'paused');
+      if(!service&&!q.boss&&q.equipment.recoveredTwin&&q.salvage.balance>=24){
+        assert.equal(q.state,'playing');
         assert.ok(q.equipment.recoveredTwin,'The actual emitter must have been recovered');
         assert.ok(q.salvage.balance>=24,'Natural loot must finance C9; no money injection is allowed');
         assert.ok(report.physicalDrops.length>0&&report.claims.length>0);
-        await capture('c9-before-natural-purchase',q);const before=q;
+        await page.locator('#classicC9').click();
+        const before=await inspect();assert.equal(before.state,'paused');
+        assert.equal(await page.locator('#flightDock').getAttribute('aria-modal'),'true');
+        assert.equal(await page.evaluate(()=>document.activeElement?.id),'flightDockContinue');
+        await page.waitForTimeout(250);const frozen=await inspect();
+        assert.equal(frozen.flight.elapsed,before.flight.elapsed);assert.equal(frozen.hull,before.hull);
+        assert.deepEqual(frozen.items,before.items,'Opening C9 cannot remove or advance current enemies and pickups');
+        assert.deepEqual(frozen.weapons,before.weapons);assert.equal(frozen.reserve,before.reserve);
+        await capture('c9-hud-before-natural-purchase',before);
         await page.locator('#flightInstallTwin').click();const after=await inspect();
         assert.equal(after.salvage.balance,before.salvage.balance-24);assert.equal(after.salvage.spent,before.salvage.spent+24);
         assert.equal(after.equipment.twinPrepared,true);assert.deepEqual(after.equipment.unlocked,['pulse']);
@@ -286,13 +311,15 @@ function combatTarget(q) {
         const button=await page.locator('#flightInstallTwin').boundingBox();
         await page.mouse.click(button.x+button.width/2,button.y+button.height/2);
         assert.deepEqual((await inspect()).salvage,after.salvage,'Repeated disabled purchase cannot debit money');
-        report.c9={before,after,receipt};await capture('c9-after-paid-preparation',after);
+        report.c9={before,after,receipt,pausedSnapshot:frozen};await capture('c9-after-paid-preparation',after);
         await page.locator('#flightDockContinue').click();service=true;lastMove=null;
-        await wait(()=>__CHAPTER_ONE_QA__().state==='playing');continue;
+        await wait(()=>__CHAPTER_ONE_QA__().state==='playing');
+        const resumed=await inspect();assert.ok(resumed.flight.elapsed>=before.flight.elapsed&&resumed.flight.elapsed-before.flight.elapsed<.5);
+        report.c9.resumed=resumed;continue;
       }
       assert.equal(q.state,'playing');
       if(q.boss){
-        assert.equal(q.currentLevel,0);assert.equal(q.boss.version,'guardian-atlas-v5');assert.equal(q.boss.maxHp,96);
+        assert.equal(q.currentLevel,0);assert.equal(q.boss.version,'guardian-atlas-v6');assert.equal(q.boss.maxHp,96);
         assert.ok(q.flight.canFinish);assert.equal(q.flight.stageNumber,10);assert.ok(q.flight.elapsed>=360);
         if(!initialBossBattery)initialBossBattery={charges:q.weapons.charges,recharge:q.weapons.recharge};
         if(!q.boss.disabled){assert.equal(q.weapons.unlimitedFire,true);
@@ -310,7 +337,9 @@ function combatTarget(q) {
         }
         const destination=combatTarget(q),box=await page.locator('#canvas').boundingBox();
         if(lastMove===null||Math.abs(lastMove-destination)>2){await page.mouse.move(box.x+destination*box.width/q.W,box.y+box.height*.7);lastMove=destination;}
-        const aligned=Math.abs(q.player.x-q.boss.x)<Math.max(12,q.boss.coreRadius*.65);
+        const flightTime=Math.max(0,(q.player.y-q.shipVisual.muzzleOffset-q.boss.y)/760);
+        const predictedCore=q.boss.x+clamp((q.boss.motionVx||0)*flightTime*.8,-85,85);
+        const aligned=Math.abs(q.player.x-predictedCore)<Math.max(12,q.boss.coreRadius*.65);
         if(report.missiles.length===0&&q.boss.state==='closed'&&q.boss.stateTime<.35&&aligned&&q.salvage.missileAmmo>0){
           const before=await inspect();await page.locator('#classicMissile').click();const after=await inspect();
           assert.equal(after.salvage.missileAmmo,before.salvage.missileAmmo-1);
@@ -323,8 +352,7 @@ function combatTarget(q) {
           assert.equal(q.boss.hp,blockedMissile.hp,'Closed armour must reject the first physical missile');
           blockedMissile=null;
         }
-        const flightTime=Math.max(0,(q.player.y-50-q.boss.y)/760);
-        const exposureRemaining=4.2-q.boss.stateTime;
+        const exposureRemaining=3.8-q.boss.stateTime;
         if(q.boss.vulnerability&&aligned&&exposureRemaining>flightTime+.25){
           if(q.salvage.missileAmmo>0&&report.missiles.length<3&&q.weapons.missileCooldown<=1e-8){
             const before=await inspect();await page.locator('#classicMissile').click();const after=await inspect();
@@ -359,6 +387,11 @@ function combatTarget(q) {
     assert.ok(report.final.equipment.unlocked.includes('twin'));assert.equal(report.final.equipment.unlocked.includes('lance'),false);
     assert.equal(report.final.salvage.missileAmmo,0);
     assert.ok(report.final.draw['chapter1_missile_atlas_v1.webp']>0,'The special projectile must draw its actual asset');
+    assert.ok(report.final.ordnanceDraw.rows[2]>0&&report.final.ordnanceDraw.rows[3]>0,'Real physical missile impact must render both blast and aftermath rows');
+    assert.ok(report.final.combat?.playedByCue['enemy-phaser']>0,'Actual enemy firing must emit its sampled sound');
+    assert.ok(report.final.combat?.playedByCue['enemy-heavy']>0,'Actual Atlas heavy attack must emit its sampled sound');
+    const bossPositions=report.mobility.filter(sample=>sample.boss&&!['entry','disabled'].includes(sample.boss.state)).map(sample=>sample.boss.x);
+    assert.ok(Math.max(...bossPositions)-Math.min(...bossPositions)>50,'Atlas must visibly reposition during its living combat states');
     report.route={stages:[...stages],bossStates:[...bossStates],attackTiers:[...bossTiers],physicalClaims:report.claims.length};
   });
   await check('victory and story arrival persist exactly once across a normal reload',async()=>{

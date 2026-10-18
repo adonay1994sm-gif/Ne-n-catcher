@@ -39,7 +39,7 @@ function harness({classic = true, ready = true, fx = 70, music = 50} = {}) {
       calls.oscillators.push(oscillator); return oscillator;
     }
     async decodeAudioData() {calls.decode++; if (!ready) throw new Error('fixture: codec unavailable');
-      return {duration: 13.68, length: 656640, numberOfChannels: 1};}
+      return {duration: 15.96, length: 766080, numberOfChannels: 1};}
     async suspend() {this.state = 'suspended';}
     async resume() {this.state = 'running';}
   }
@@ -73,7 +73,7 @@ function harness({classic = true, ready = true, fx = 70, music = 50} = {}) {
     classicChapterStory: null, classicChapterView: null, classicFlightView: null,
     classicWeapons: weapons.createClassicWeapons(), classicSalvageLedger: createScrapLedger({storage}),
     classicSalvageState: null, warpTimer: 0, atlasBoss: null, atlasReentryGrace: 0, atlasFireTimer: 0,
-    SPRITES: {atlasVfx: {}, guardianAtlas: {}}, spriteReady: () => true, SHIP_VISUAL: {classicScale: .4},
+    SPRITES: {atlasVfx: {}, guardianAtlas: {}}, spriteReady: () => true, SHIP_VISUAL: {classicScale: .52},
     cameraKickY: 0, ammo: 20, manualShotCooldown: 0, ui: {}, powers: {slow: 0, shield: 0}, items: [],
     impactEffects: [], EFFECT_LIMITS: {impacts: 32}, elapsed: 0, classicChapterOutroStartedAt: null,
     score: 0, hudScoreTarget: 0, hull: 100, classicHullReserve: 30, classicHullReserveCapacity: 30,

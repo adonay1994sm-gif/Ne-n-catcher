@@ -7,8 +7,10 @@ import {
 
 const DT = 1 / 60;
 function run({width = 720, height = 1280, seed = 0, stageId = '1.5', elapsed = 0,
-  seconds = 34, player = {x: width / 2, y: height * .72}} = {}) {
-  const state = createCometShower({width, height, seed, stageId, elapsed});
+  seconds = 34, shipWidth = COMET_SHOWER_RULES.shipWidth,
+  shipSideClearance = COMET_SHOWER_RULES.shipSideClearance,
+  player = {x: width / 2, y: height * .72}} = {}) {
+  const state = createCometShower({width, height, seed, stageId, elapsed, shipWidth, shipSideClearance});
   const items = [], events = [], seen = new Set(), trajectories = new Map();
   let peak = 0;
   for (let frame = 0; frame < seconds / DT; frame++) {
@@ -39,7 +41,7 @@ function run({width = 720, height = 1280, seed = 0, stageId = '1.5', elapsed = 0
 }
 
 test('new shower is isolated from route content/checkpoints and rejects impossible input', () => {
-  assert.equal(COMET_SHOWER_VERSION, 'comet-shower-v2');
+  assert.equal(COMET_SHOWER_VERSION, 'comet-shower-v3');
   const state = createCometShower();
   assert.equal(state.stageId, '1.5');
   assert.equal(state.elapsed, 0);
@@ -47,6 +49,9 @@ test('new shower is isolated from route content/checkpoints and rejects impossib
   assert.throws(() => createCometShower({width: 200}), RangeError);
   assert.throws(() => createCometShower({seed: Infinity}), RangeError);
   assert.throws(() => createCometShower({elapsed: -1}), RangeError);
+  assert.throws(() => createCometShower({shipWidth: 0}), RangeError);
+  assert.throws(() => createCometShower({shipWidth: 140, shipSideClearance: 60}), RangeError);
+  assert.throws(() => createCometShower({shipSideClearance: NaN}), RangeError);
   assert.throws(() => advanceCometShower(state, -.01, {x: 1, y: 2}, () => {}), RangeError);
   assert.throws(() => advanceCometShower(state, DT, {x: NaN, y: 2}, () => {}), TypeError);
 });
@@ -74,8 +79,8 @@ test('three distinct trains are preceded by two played seconds of warning and bo
   assert.equal(cometShowerSnapshot(result.state).done, true);
 });
 
-test('100 seeds across narrow, phone, medium and wide arenas retain an attainable full-hull passage', () => {
-  const profiles = [[250, 300], [390, 844], [540, 960], [720, 1280]];
+test('100 seeds across six viewports retain a reachable whole-hull passage for the 30% larger ship', () => {
+  const profiles = [[250, 300], [320, 568], [390, 844], [540, 960], [720, 1280], [720, 1558]];
   for (const [width, height] of profiles) for (let seed = 0; seed < 100; seed++) {
     const result = run({width, height, seed});
     assert.equal(result.events.filter(event => event.type === 'warning').length, 3);
@@ -83,7 +88,9 @@ test('100 seeds across narrow, phone, medium and wide arenas retain an attainabl
     assert.ok(result.peak <= 5);
     for (const corridor of result.state.corridors) {
       assert.ok(corridor.width >= COMET_SHOWER_RULES.shipWidth + 40);
-      assert.ok(corridor.center >= 119 && corridor.center <= width - 119);
+      assert.ok(corridor.center >= COMET_SHOWER_RULES.shipSideClearance &&
+        corridor.center <= width - COMET_SHOWER_RULES.shipSideClearance);
+      assert.ok(corridor.left >= 0 && corridor.right <= width);
     }
     // The largest lane change is reachable at 180 logical px/s during the
     // guaranteed quiet gap, even before the next two-second warning begins.
@@ -112,36 +119,64 @@ test('wide-field danger reaches a stationary central hull instead of leaving a p
   // hull. Crossing even this smaller body is sufficient to disprove immunity;
   // exact polygon/contact integration has its own legacy-loop regression.
   const width=720,height=1558,player={x:360,y:1262},state=createCometShower({width,height,seed:4055});
-  const items=[],contacts=new Set();
+  const items=[],contacts=new Set(),modes=new Set();
   for(let frame=0;frame<34/DT;frame++) {
     advanceCometShower(state,DT,player,event=>{if(event.type==='spawn')items.push(event.item);});
     for(let index=items.length-1;index>=0;index--) {
       const item=items[index],alive=advanceShowerComet(item,DT);
-      if(showerCometIntersectsCircle(item,{...player,r:32}))contacts.add(item.id);
+      if(showerCometIntersectsCircle(item,{...player,r:32})){contacts.add(item.id);modes.add(item.crossingMode);}
       if(!alive){releaseCometShowerItem(state,item);items.splice(index,1);}
     }
   }
   assert.ok(contacts.size>0,'A stationary center must not be immune throughout the vacuum');
-  assert.ok([...contacts].some(id=>id.endsWith(':1:0')),'Descending rain reaches the central hull');
-  assert.ok([...contacts].some(id=>id.includes(':2:')),'An overtaking train also requires a response');
+  assert.ok(modes.has(1),'Descending rain reaches the central hull regardless of its new seeded burst position');
+  assert.ok(modes.has(2),'An overtaking train also requires a response');
 });
 
-test('wide-field warnings announce the actual entrance side and bottom approach two seconds before its first nucleus', () => {
-  for(let seed=0;seed<100;seed++) {
-    const result=run({width:720,height:1558,seed});
+test('environmental warnings describe the actual seeded entrance two seconds before its first nucleus at every viewport', () => {
+  const labels={left:'desde la izquierda',right:'desde la derecha',top:'desde arriba',bottom:'desde abajo'};
+  for(const [width,height] of [[320,568],[390,844],[720,1558]]) for(let seed=0;seed<30;seed++) {
+    const result=run({width,height,seed});
     for(const warning of result.events.filter(event=>event.type==='warning')) {
       const first=result.events.find(event=>event.type==='spawn'&&event.burst===warning.burst);
       assert.equal(first.at-warning.at,2);
-      if(warning.burst===0){assert.equal(warning.text,'Se aproxima lluvia de cometas');continue;}
+      assert.equal(warning.text,`Se aproxima lluvia de cometas · ${labels[first.item.entryEdge]}`);
       const trace=result.trajectories.get(first.item.id).positions[0];
-      const direction=trace.x<360?'izquierda':'derecha';
-      assert.ok(warning.text.endsWith(direction));
-      assert.equal(warning.text.includes('desde abajo'),warning.burst===2);
+      if(first.item.entryEdge==='left')assert.ok(trace.x<0);
+      if(first.item.entryEdge==='right')assert.ok(trace.x>width);
+      if(first.item.entryEdge==='top')assert.ok(trace.y<0);
+      if(first.item.entryEdge==='bottom')assert.ok(trace.y>height);
     }
   }
-  const narrow=run({width:390,height:844});
-  assert.ok(narrow.events.filter(event=>event.type==='warning').every(event=>event.text==='Se aproxima lluvia de cometas'),
-    'The original narrow-profile policy remains unchanged');
+});
+
+test('seeded crossing order, entrance pitch, passage and curvature do not repeat one fixed choreography', () => {
+  const orders=new Set(),centers=new Set(),angles=new Set(),signatures=new Set();
+  for(let seed=0;seed<48;seed++) {
+    const result=run({seed});
+    orders.add(result.state.burstModes.join(','));
+    const firstCorridor=result.state.corridors[0];centers.add(firstCorridor.center.toFixed(2));
+    const spawns=result.events.filter(event=>event.type==='spawn');
+    signatures.add(spawns.map(event=>{const p=result.trajectories.get(event.item.id).positions[0];
+      angles.add(Math.atan2(p.vy,p.vx).toFixed(2));return`${event.item.entryEdge}:${p.x.toFixed(1)}:${p.vx.toFixed(1)}`;}).join('|'));
+    assert.deepEqual([...result.state.burstModes].sort(),[0,1,2],'all three arrival families remain represented');
+    const replay=run({seed});
+    assert.deepEqual(result.trajectories,replay.trajectories,'same version/seed reproduces exact ballistic paths');
+    assert.deepEqual(result.state.corridors,replay.state.corridors);
+  }
+  assert.equal(orders.size,6,'the burst order is not always lateral, rain, then overtaking');
+  assert.ok(centers.size>=40,'the passage has continuous seeded placement');
+  assert.ok(angles.size>35,'entry angles differ visibly instead of only recolouring a vertical train');
+  assert.equal(signatures.size,48);
+});
+
+test('explicit hull widths preserve the full safety contract and never shrink the ship to fit a dangerous lane', () => {
+  for(const [width,height,shipWidth,shipSideClearance] of [[320,568,208,119],[390,844,270.4,154.7],[720,1280,108.16,61.88]]) {
+    const result=run({width,height,shipWidth,shipSideClearance,seed:17});
+    assert.equal(result.state.shipWidth,shipWidth);
+    assert.equal(result.state.spawned,10);
+    assert.ok(result.state.corridors.every(corridor=>corridor.width===shipWidth+40));
+  }
 });
 
 test('zero delta freezes scheduling and positions, while oversized deltas cannot bypass an approach', () => {
@@ -206,17 +241,19 @@ test('both lateral edges, upper exit, lower exit and lifetime retire bodies with
   assert.equal(state.active.length, 0);
 });
 
-test('slow or externally held comets cannot be forgotten by the scheduling clock to evade the active cap', () => {
+test('slow or externally held comets retain their safe corridor and cannot be forgotten to evade the active cap', () => {
   const state = createCometShower(), items = [];
   for (let frame = 0; frame < 34 / DT; frame++) {
     advanceCometShower(state, DT, {x: 360, y: 900}, event => {
       if (event.type === 'spawn') items.push(event.item);
     });
     assert.ok(state.active.length <= 5);
+    assert.ok(new Set(state.active.map(entry=>entry.item.showerBurst)).size<=1,
+      'two different passage reservations never close each other during slow motion');
   }
-  assert.equal(items.length, 5);
-  assert.equal(state.skipped, 5);
-  assert.equal(state.active.length, 5);
+  assert.equal(items.length, 3, 'only the first physical train exists while its bodies are externally held');
+  assert.equal(state.skipped, 7, 'later incompatible trains are skipped rather than filling the safe lane');
+  assert.equal(state.active.length, 3);
   for (const item of items) releaseCometShowerItem(state, item);
   assert.equal(state.active.length, 0);
 });

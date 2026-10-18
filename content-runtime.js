@@ -34,6 +34,8 @@ var NeonCampaign = (() => {
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
     COMET_SHOWER_VERSION: () => COMET_SHOWER_VERSION,
     EncounterDirector: () => EncounterDirector,
+    FLIGHT_TUTORIAL_CUES: () => FLIGHT_TUTORIAL_CUES,
+    FLIGHT_TUTORIAL_VERSION: () => FLIGHT_TUTORIAL_VERSION,
     GENERATOR_VERSION: () => GENERATOR_VERSION,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     HULL_REINFORCEMENT_RULES: () => HULL_REINFORCEMENT_RULES,
@@ -74,6 +76,7 @@ var NeonCampaign = (() => {
     createCombatSfx: () => createCombatSfx,
     createCometShower: () => createCometShower,
     createCompletionJournal: () => createCompletionJournal,
+    createFlightTutorial: () => createFlightTutorial,
     createGuardianAtlas: () => createGuardianAtlas,
     createJourneyDemo: () => createJourneyDemo,
     createRelativeFlightInput: () => createRelativeFlightInput,
@@ -109,6 +112,86 @@ var NeonCampaign = (() => {
     triggerClassicWeapon: () => triggerClassicWeapon,
     unlockClassicWeapon: () => unlockClassicWeapon
   });
+
+  // src/game/narrative/flight-tutorial.js
+  var FLIGHT_TUTORIAL_VERSION = "flight-tutorial-v1";
+  var FLIGHT_TUTORIAL_CUES = Object.freeze([
+    Object.freeze({
+      id: `${FLIGHT_TUTORIAL_VERSION}:fire`,
+      at: 27,
+      seconds: 4,
+      text: "Un dedo pilota. Con otro, mant\xE9n DISPARAR para sostener el Phaser."
+    }),
+    Object.freeze({
+      id: `${FLIGHT_TUTORIAL_VERSION}:recovery`,
+      at: 52,
+      seconds: 4,
+      text: "Recoge el CRONIUM brillante: es energ\xEDa. La chatarra paga tus mejoras."
+    }),
+    Object.freeze({
+      id: `${FLIGHT_TUTORIAL_VERSION}:workshop`,
+      at: 65,
+      seconds: 4,
+      text: "C9, en el HUD: abre el taller para pausar y configurar la nave."
+    })
+  ]);
+  var WINDOW_SECONDS = 12;
+  var validTime = (value) => Number.isFinite(value) && value >= 0;
+  var validCount = (value) => Number.isSafeInteger(value) && value >= 0;
+  var NOOP = () => {
+  };
+  function createFlightTutorial({ routeElapsed = 0 } = {}) {
+    if (!validTime(routeElapsed)) throw new RangeError("Finite nonnegative tutorial route time required");
+    let elapsed = routeElapsed;
+    const emitted = /* @__PURE__ */ new Set(), skipped = /* @__PURE__ */ new Set();
+    for (const cue2 of FLIGHT_TUTORIAL_CUES) if (cue2.at <= routeElapsed) skipped.add(cue2.id);
+    function snapshot() {
+      return Object.freeze({
+        version: FLIGHT_TUTORIAL_VERSION,
+        elapsed,
+        emitted: Object.freeze([...emitted]),
+        skipped: Object.freeze([...skipped]),
+        pending: Object.freeze(FLIGHT_TUTORIAL_CUES.filter((cue2) => !emitted.has(cue2.id) && !skipped.has(cue2.id)).map((cue2) => cue2.id))
+      });
+    }
+    function advance({
+      elapsed: next,
+      playing = true,
+      shots = 0,
+      collected = 0,
+      workshopOpened = false,
+      channelBusy = false
+    } = {}, emit = NOOP) {
+      if (!validTime(next) || typeof playing !== "boolean" || !validCount(shots) || !validCount(collected) || typeof workshopOpened !== "boolean" || typeof channelBusy !== "boolean" || typeof emit !== "function") {
+        throw new TypeError("Valid tutorial route view and event callback required");
+      }
+      if (!playing) return [];
+      if (next < elapsed) throw new RangeError("Create a new tutorial when restoring an earlier route checkpoint");
+      if (next === elapsed) return [];
+      elapsed = next;
+      const events = [];
+      for (const cue2 of FLIGHT_TUTORIAL_CUES) {
+        if (emitted.has(cue2.id) || skipped.has(cue2.id) || elapsed < cue2.at) continue;
+        if (elapsed >= cue2.at + WINDOW_SECONDS || cue2.id === `${FLIGHT_TUTORIAL_VERSION}:workshop` && workshopOpened) {
+          skipped.add(cue2.id);
+          continue;
+        }
+        if (channelBusy) continue;
+        const event2 = Object.freeze({
+          type: "tutorial",
+          ...cue2,
+          expiresAt: cue2.at + WINDOW_SECONDS,
+          routeElapsed: elapsed
+        });
+        emitted.add(cue2.id);
+        events.push(event2);
+        emit(event2);
+        break;
+      }
+      return events;
+    }
+    return Object.freeze({ advance, snapshot });
+  }
 
   // src/game/progression/sectors.js
   var SECTOR_DEFINITIONS = Object.freeze([
@@ -444,7 +527,7 @@ var NeonCampaign = (() => {
   var CHRONOS_CHAPTER_AFTERMATH_SECONDS = 8;
   var CHRONOS_CHAPTER_ROUTE_SECONDS = 360;
   var ROUTE_ID = "chronos-to-gaia";
-  var NOOP = () => {
+  var NOOP2 = () => {
   };
   var clamp = (value, low, high) => Math.max(low, Math.min(high, value));
   var finiteTime = (value) => Number.isFinite(value) && value >= 0;
@@ -496,7 +579,7 @@ var NeonCampaign = (() => {
     dialogue(
       "routine",
       "lira",
-      "Turno tranquilo, piloto. Mant\xE9n libre el corredor.",
+      "Piloto, desliza el dedo para maniobrar. Chronos te recibe.",
       3,
       { at: 0, shotIndex: 0, phase: "opening", visualCue: "chronos-routine", audioCue: "chronos-room-tone" }
     ),
@@ -561,7 +644,7 @@ var NeonCampaign = (() => {
     dialogue(
       "c9-contact",
       "mira",
-      "Aqu\xED C9. He recibido tu emergencia. El muelle sigue abierto.",
+      "Enlace C9 disponible en tu panel. Puedo configurar tu nave sin desviar la ruta.",
       5.2,
       { at: 177, phase: "route", visualCue: "c9-contact", audioCue: "c9-radio" }
     ),
@@ -591,14 +674,14 @@ var NeonCampaign = (() => {
     "module-recovered": dialogue(
       "module-recovered",
       "mira",
-      "Ese emisor puede salvarte. Tr\xE1elo a C9 y preparar\xE9 sus anclajes.",
+      "Emisor a bordo. Abre C9 en tu panel y preparar\xE9 sus anclajes.",
       5.2,
       { phase: "event", visualCue: "recovered-emitter", audioCue: "salvage-identified" }
     ),
     "c9-arrival": dialogue(
       "c9-arrival",
       "mira",
-      "Ponte a cubierto. Reparo el casco; las mejoras van por tu cuenta.",
+      "Enlace estable. Reparaci\xF3n de emergencia completada; mejoras disponibles en C9.",
       5.2,
       { phase: "event", visualCue: "c9-docking", audioCue: "c9-dock" }
     ),
@@ -692,9 +775,10 @@ var NeonCampaign = (() => {
     checkpoint = null,
     routeElapsed = checkpoint?.routeElapsed ?? 0,
     introEnabled = true,
-    replayIntro = false
+    replayIntro = false,
+    presentation = "cinematic"
   } = {}) {
-    if (!finiteTime(routeElapsed) || routeElapsed > CHRONOS_CHAPTER_ROUTE_SECONDS || typeof introEnabled !== "boolean" || typeof replayIntro !== "boolean") throw new RangeError("Invalid chapter story options");
+    if (!finiteTime(routeElapsed) || routeElapsed > CHRONOS_CHAPTER_ROUTE_SECONDS || typeof introEnabled !== "boolean" || typeof replayIntro !== "boolean" || !["cinematic", "in-world"].includes(presentation)) throw new RangeError("Invalid chapter story options");
     const restored = checkpoint === null ? null : normalizeChronosChapterCheckpoint(checkpoint);
     if (checkpoint !== null && !restored) throw new RangeError("Invalid chapter story checkpoint");
     let elapsed = routeElapsed, aftermathElapsed = 0;
@@ -731,16 +815,16 @@ var NeonCampaign = (() => {
         routeElapsed: elapsed,
         introSeen,
         opening: freeze({
-          active,
-          controlsLocked: active && elapsed < 9,
-          canSkip: active,
+          active: active && presentation === "cinematic",
+          controlsLocked: active && presentation === "cinematic" && elapsed < 9,
+          canSkip: active && presentation === "cinematic",
           shotIndex: shot.shotIndex,
           visualCue: shot.visualCue,
           progress: clamp(elapsed / CHRONOS_CHAPTER_OPENING_SECONDS, 0, 1),
           shotProgress: clamp((elapsed - shot.at) / shot.duration, 0, 1),
           // The new opening illustration reveals the existing station and its
           // one authored wave; it never draws another reactor destruction.
-          backgroundAlpha: active ? 1 - clamp((elapsed - 9) / 2.4, 0, 1) : 0,
+          backgroundAlpha: active && presentation === "cinematic" ? 1 - clamp((elapsed - 9) / 2.4, 0, 1) : 0,
           dialogue: active ? shot : null
         }),
         aftermath: freeze({ active: aftermathActive, elapsed: aftermathElapsed, dialogue: line }),
@@ -762,7 +846,7 @@ var NeonCampaign = (() => {
       }));
       return true;
     }
-    function advance(view, emit = NOOP) {
+    function advance(view, emit = NOOP2) {
       if (!view || !finiteTime(view.elapsed) || typeof emit !== "function" || view.playing !== void 0 && typeof view.playing !== "boolean" || view.aftermathElapsed !== void 0 && !finiteTime(view.aftermathElapsed)) throw new RangeError("Invalid chapter story view");
       if (view.playing === false) return snapshot();
       const next = Math.min(view.elapsed, CHRONOS_CHAPTER_ROUTE_SECONDS);
@@ -789,7 +873,7 @@ var NeonCampaign = (() => {
       }
       return snapshot();
     }
-    function signal(name, emit = NOOP) {
+    function signal(name, emit = NOOP2) {
       if (!signalNames.has(name) || typeof emit !== "function") throw new RangeError("Unknown chapter story signal");
       if (signals.has(name) || minimumRouteTime[name] > elapsed + 0.05 || name === "c9-departure" && !signals.has("c9-arrival") || ["atlas-phase-two", "atlas-disabled"].includes(name) && !signals.has("atlas-entry")) return false;
       signals.add(name);
@@ -1538,13 +1622,14 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/comet-shower.js
-  var COMET_SHOWER_VERSION = "comet-shower-v2";
+  var COMET_SHOWER_VERSION = "comet-shower-v3";
   var COMET_SHOWER_RULES = Object.freeze({
     maxActive: 5,
     warningSeconds: 2,
     resumeGraceSeconds: 7,
     maxDelta: 0.05,
-    shipWidth: 208,
+    shipWidth: 208 * 0.52,
+    shipSideClearance: 119 * 0.52,
     corridorClearance: 40,
     minSpeed: 700,
     maxSpeed: 950,
@@ -1574,11 +1659,13 @@ var NeonCampaign = (() => {
     x: item.x + item.vx * seconds + item.ax * seconds * seconds / 2,
     y: item.y + item.vy * seconds + item.ay * seconds * seconds / 2
   });
-  function corridorFor(width, height, seed, burst) {
-    const minimum = Math.min(119, width / 2), maximum = width - minimum;
-    const side = (Math.abs(Math.trunc(seed)) + burst) % 2 ? 1 : -1;
-    const center = clamp2(width * (side < 0 ? 0.3 : 0.7), minimum, maximum);
-    const corridorWidth = COMET_SHOWER_RULES.shipWidth + COMET_SHOWER_RULES.corridorClearance;
+  function corridorFor(width, height, seed, burst, shipWidth, shipSideClearance) {
+    const corridorWidth = shipWidth + COMET_SHOWER_RULES.corridorClearance;
+    const minimum = Math.min(Math.max(shipSideClearance, corridorWidth / 2), width / 2);
+    const maximum = width - minimum;
+    const random = randomFor(seed ^ Math.imul(burst + 3, 2654435769));
+    const side = random() < 0.5 ? -1 : 1;
+    const center = clamp2(width * (side < 0 ? 0.22 + random() * 0.15 : 0.63 + random() * 0.15), minimum, maximum);
     return Object.freeze({
       center,
       width: corridorWidth,
@@ -1590,40 +1677,69 @@ var NeonCampaign = (() => {
       burst
     });
   }
+  function boundaryTimes(position, velocity, acceleration, boundary, lifetime) {
+    const a = acceleration / 2, b = velocity, c = position - boundary;
+    if (Math.abs(a) < 1e-10) {
+      const time = Math.abs(b) < 1e-10 ? -1 : -c / b;
+      return time > 0 && time < lifetime ? [time] : [];
+    }
+    const discriminant = b * b - 4 * a * c;
+    if (discriminant < 0) return [];
+    const root = Math.sqrt(discriminant);
+    return [(-b - root) / (2 * a), (-b + root) / (2 * a)].filter((time) => time > 0 && time < lifetime);
+  }
   function staysOutsideCorridor(item, corridor) {
     const clearance = item.r + 12;
-    for (let seconds = 0; seconds <= item.life; seconds += 8e-3) {
+    const left = corridor.left - clearance, right = corridor.right + clearance;
+    const top = corridor.top - clearance, bottom = corridor.bottom + clearance;
+    const times = [
+      0,
+      item.life,
+      ...boundaryTimes(item.x, item.vx, item.ax, left, item.life),
+      ...boundaryTimes(item.x, item.vx, item.ax, right, item.life),
+      ...boundaryTimes(item.y, item.vy, item.ay, top, item.life),
+      ...boundaryTimes(item.y, item.vy, item.ay, bottom, item.life)
+    ].sort((a, b) => a - b);
+    const inside = (seconds) => {
       const point = positionAt(item, seconds);
-      if (point.y + clearance < corridor.top || point.y - clearance > corridor.bottom) continue;
-      if (point.x + clearance >= corridor.left && point.x - clearance <= corridor.right) return false;
+      return point.y >= top - 1e-8 && point.y <= bottom + 1e-8 && point.x >= left - 1e-8 && point.x <= right + 1e-8;
+    };
+    for (let index = 0; index < times.length; index++) {
+      if (inside(times[index]) || index > 0 && inside((times[index] + times[index - 1]) / 2)) return false;
     }
     return true;
   }
-  function makeCandidate(state, burst, ordinal, mode) {
+  function makeCandidate(state, burst, ordinal, mode, attempt = 0) {
     const { width, height } = state, corridor = state.corridors[burst];
-    const random = randomFor(state.seed + burst * 1013 + ordinal * 7919 + mode * 211);
+    const random = randomFor(state.seed + burst * 1013 + ordinal * 7919 + mode * 211 + attempt * 65537);
     const speed = COMET_SHOWER_RULES.minSpeed + random() * (COMET_SHOWER_RULES.maxSpeed - COMET_SHOWER_RULES.minSpeed);
     const margin = 96, dangerSide = -corridor.side;
-    let x, y, vx, vy, ax, ay;
+    let x, y, vx, vy, ax, ay, entryEdge;
     if (mode === 0) {
-      const direction = burst + ordinal + state.seed & 1 ? -1 : 1;
+      const direction = random() < 0.5 ? -1 : 1;
       x = direction > 0 ? -margin : width + margin;
-      y = height * (0.12 + random() * 0.035);
-      vy = speed * Math.min(0.14, height * 0.19 / (width + margin * 2));
+      entryEdge = direction > 0 ? "left" : "right";
+      y = height * (0.09 + random() * 0.13);
+      vy = speed * (random() * 2 - 1) * Math.min(0.15, height * 0.1 / (width + margin * 2));
       vx = direction * Math.sqrt(speed * speed - vy * vy);
-      ax = -direction * (12 + random() * 12);
-      ay = Math.min(10 + random() * 6, height * 0.012);
+      ax = -direction * (15 + random() * 35);
+      ay = (random() * 2 - 1) * Math.min(28, height * 0.025);
     } else {
-      const laneMinimum = dangerSide < 0 ? 32 : corridor.right + 44;
-      const laneMaximum = dangerSide < 0 ? corridor.left - 44 : width - 32;
-      const fraction = width >= 500 ? dangerSide < 0 ? 0.46 : 0.54 : dangerSide < 0 ? 0.25 : 0.75;
-      const preferredX = width * fraction + (random() - 0.5) * 30;
-      x = laneMinimum <= laneMaximum ? clamp2(preferredX, laneMinimum, laneMaximum) : preferredX;
+      const laneMinimum = dangerSide < 0 ? 24 : corridor.right + 42;
+      const laneMaximum = dangerSide < 0 ? corridor.left - 42 : width - 24;
+      const referenceX = laneMinimum <= laneMaximum ? clamp2(width * (0.4 + random() * 0.2), laneMinimum, laneMaximum) : width / 2;
       y = mode === 1 ? -margin : height + margin;
-      vx = dangerSide * (15 + random() * 15);
-      vy = (mode === 1 ? 1 : -1) * speed;
-      ax = -dangerSide * (8 + random() * 5);
-      ay = (mode === 1 ? 1 : -1) * (12 + random() * 10);
+      entryEdge = mode === 1 ? "top" : "bottom";
+      const verticalDirection = mode === 1 ? 1 : -1;
+      ax = dangerSide * (16 + random() * 65) * (random() < 0.32 ? -1 : 1);
+      ay = verticalDirection * (10 + random() * 20);
+      const referenceY = height * (0.6 + random() * 0.24);
+      const referenceTime = Math.abs(referenceY - y) / speed;
+      vx = dangerSide * (18 + random() * 130) - ax * referenceTime;
+      vx = clamp2(vx, -speed * 0.32, speed * 0.32);
+      vy = verticalDirection * Math.sqrt(speed * speed - vx * vx);
+      const time = (-Math.abs(vy) + Math.sqrt(vy * vy + 2 * Math.abs(ay) * Math.abs(referenceY - y))) / Math.abs(ay);
+      x = referenceX - vx * time - ax * time * time / 2;
     }
     const id = `${COMET_SHOWER_VERSION}:${state.stageId}:${state.seed}:${burst}:${ordinal}`;
     const radius = 15 + random() * 4;
@@ -1638,6 +1754,8 @@ var NeonCampaign = (() => {
       showerBurst: burst,
       showerWidth: width,
       showerHeight: height,
+      entryEdge,
+      crossingMode: mode,
       x,
       y,
       previousX: x,
@@ -1665,24 +1783,35 @@ var NeonCampaign = (() => {
     };
   }
   function makeComet(state, burst, ordinal) {
-    const mode = burst;
-    let item = makeCandidate(state, burst, ordinal, mode);
-    if (staysOutsideCorridor(item, state.corridors[burst])) return item;
-    item = makeCandidate(state, burst, ordinal, 0);
-    return staysOutsideCorridor(item, state.corridors[burst]) ? item : null;
+    const primaryMode = state.burstModes[burst];
+    const mode = ordinal > 0 && randomFor(state.seed + burst * 211 + ordinal * 2017)() < 0.25 ? 0 : primaryMode;
+    for (let attempt = 0; attempt < 18; attempt++) {
+      const item = makeCandidate(state, burst, ordinal, mode, attempt);
+      if (item.x < -128 || item.x > state.width + 128) continue;
+      if (staysOutsideCorridor(item, state.corridors[burst])) return item;
+    }
+    const fallback = makeCandidate(state, burst, ordinal, 0);
+    return staysOutsideCorridor(fallback, state.corridors[burst]) ? fallback : null;
   }
   function createCometShower({
     width = 720,
     height = 1280,
     seed = 0,
     stageId = "1.5",
-    elapsed = 0
+    elapsed = 0,
+    shipWidth = COMET_SHOWER_RULES.shipWidth,
+    shipSideClearance = COMET_SHOWER_RULES.shipSideClearance
   } = {}) {
-    for (const [label, value] of Object.entries({ width, height, seed, elapsed })) finite2(value, label);
-    if (width < 250 || height < 300 || elapsed < 0 || !["1.5", "1.9"].includes(stageId)) {
+    for (const [label, value] of Object.entries({ width, height, seed, elapsed, shipWidth, shipSideClearance })) finite2(value, label);
+    if (width < 250 || height < 300 || elapsed < 0 || shipWidth <= 0 || shipSideClearance < shipWidth / 2 || !["1.5", "1.9"].includes(stageId)) {
       throw new RangeError("Invalid comet shower route or viewport");
     }
     const normalizedSeed = Math.trunc(seed) >>> 0;
+    const random = randomFor(normalizedSeed ^ 2230561051), burstModes = [0, 1, 2];
+    for (let index = burstModes.length - 1; index > 0; index--) {
+      const swap = Math.floor(random() * (index + 1));
+      [burstModes[index], burstModes[swap]] = [burstModes[swap], burstModes[index]];
+    }
     const graceUntil = elapsed > 0 ? elapsed + COMET_SHOWER_RULES.resumeGraceSeconds : 0;
     const schedule = [];
     for (let burst = 0; burst < COMET_SHOWER_RULES.burstStarts.length; burst++) {
@@ -1703,6 +1832,9 @@ var NeonCampaign = (() => {
       height,
       seed: normalizedSeed,
       stageId,
+      shipWidth,
+      shipSideClearance,
+      burstModes: Object.freeze(burstModes),
       elapsed,
       initialElapsed: elapsed,
       schedule,
@@ -1712,7 +1844,7 @@ var NeonCampaign = (() => {
       skipped: 0,
       spawned: 0,
       warnings: 0,
-      corridors: [0, 1, 2].map((burst) => corridorFor(width, height, normalizedSeed, burst))
+      corridors: [0, 1, 2].map((burst) => corridorFor(width, height, normalizedSeed, burst, shipWidth, shipSideClearance))
     };
   }
   function advanceCometShower(state, delta, player, emit) {
@@ -1730,7 +1862,13 @@ var NeonCampaign = (() => {
       state.emittedIds.add(id);
       if (scheduled.kind === "warning") {
         state.warnings++;
-        const entrance = state.width >= 500 && scheduled.burst > 0 ? `${scheduled.burst === 2 ? "desde abajo, " : ""}${state.corridors[scheduled.burst].side < 0 ? "derecha" : "izquierda"}` : null;
+        const first = makeComet(state, scheduled.burst, 0);
+        const entrance = first && {
+          left: "desde la izquierda",
+          right: "desde la derecha",
+          top: "desde arriba",
+          bottom: "desde abajo"
+        }[first.entryEdge];
         emit(Object.freeze({
           id,
           type: "warning",
@@ -1744,6 +1882,10 @@ var NeonCampaign = (() => {
         continue;
       }
       if (state.active.length >= COMET_SHOWER_RULES.maxActive) {
+        state.skipped++;
+        continue;
+      }
+      if (state.active.some((entry) => entry.item.showerBurst !== scheduled.burst)) {
         state.skipped++;
         continue;
       }
@@ -2851,7 +2993,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/combat/classic-pursuit.js
-  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v3";
+  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v4";
   var clamp6 = (value, low, high) => Math.max(low, Math.min(high, value));
   var approach = (value, target, amount) => value + clamp6(target - value, -amount, amount);
   var profiles = Object.freeze({
@@ -2864,6 +3006,9 @@ var NeonCampaign = (() => {
       lateralSpeed: 140,
       acceleration: 265,
       sampleInterval: 0.24,
+      orbitRate: 0.96,
+      lateralSweep: 0.68,
+      depthSweep: 25,
       projectileSpeed: 360,
       leadSeconds: 0.32,
       damage: 14
@@ -2877,6 +3022,9 @@ var NeonCampaign = (() => {
       lateralSpeed: 104,
       acceleration: 190,
       sampleInterval: 0.32,
+      orbitRate: 0.76,
+      lateralSweep: 0.72,
+      depthSweep: 32,
       projectileSpeed: 335,
       leadSeconds: 0.22,
       damage: 12
@@ -2890,12 +3038,15 @@ var NeonCampaign = (() => {
       lateralSpeed: 176,
       acceleration: 315,
       sampleInterval: 0.2,
+      orbitRate: 1.23,
+      lateralSweep: 0.9,
+      depthSweep: 40,
       projectileSpeed: 390,
       leadSeconds: 0.38,
       damage: 15
     })
   });
-  function observePlayer(enemy, player) {
+  function observePlayer(enemy, player, interval) {
     if (enemy.age + 1e-9 < enemy.nextObservationAt) return;
     const prior = enemy.observation, elapsed = prior ? enemy.age - prior.at : 0;
     const vx = elapsed > 0 ? clamp6((player.x - prior.x) / elapsed, -720, 720) : 0;
@@ -2907,7 +3058,12 @@ var NeonCampaign = (() => {
       vx: prior ? prior.vx * 0.35 + vx * 0.65 : 0,
       vy: prior ? prior.vy * 0.35 + vy * 0.65 : 0
     };
-    enemy.nextObservationAt = enemy.age + 0.2;
+    enemy.nextObservationAt = enemy.age + interval;
+  }
+  function variationFor(seed) {
+    let value = Math.imul(Math.trunc(seed) >>> 0 ^ 2654435769, 2246822507);
+    value = Math.imul(value ^ value >>> 16, 3266489909);
+    return ((value ^ value >>> 13) >>> 0) / 4294967296;
   }
   function createClassicPursuer({
     x,
@@ -2933,6 +3089,11 @@ var NeonCampaign = (() => {
       seed,
       side,
       phase: Math.abs(seed) * 0.61803398875 % 1 * Math.PI * 2,
+      // Stable individual flight signatures, rather than changing random numbers
+      // every frame. They change intent targets, never teleport the physical body.
+      manoeuvreRate: 0.84 + variationFor(seed) * 0.32,
+      sweepScale: 0.82 + variationFor(seed + 107) * 0.36,
+      manoeuvre: role === "scout" ? "survey-orbit" : role === "interceptor" ? "flank-arc" : "attack-strafe",
       age: 0,
       state: "entry",
       stage: "entry",
@@ -2977,7 +3138,7 @@ var NeonCampaign = (() => {
     enemy.baseSpeed ??= Math.max(1, item.s);
     enemy.age += step;
     enemy.stateAge += step;
-    observePlayer(enemy, player);
+    observePlayer(enemy, player, profile.sampleInterval);
     const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
     enemy.previousHp = hp;
     const enter = (state) => {
@@ -2987,8 +3148,10 @@ var NeonCampaign = (() => {
     const combatX = (value) => clamp6(value, enemy.combatMinX, enemy.combatMaxX);
     const minimumHoldY = enemy.minAttackY + 52;
     const maximumHoldY = Math.max(minimumHoldY, Math.min(enemy.height * 0.52, player.y - 350));
+    const flightPhase = enemy.phase + enemy.age * profile.orbitRate * enemy.manoeuvreRate;
+    const depthArc = Math.cos(flightPhase) * profile.depthSweep * (["charge", "fire"].includes(enemy.state) ? 0.35 : 1);
     enemy.holdY = clamp6(
-      enemy.height * profile.depth + Math.sin(enemy.phase + enemy.fired * 0.8) * 25,
+      enemy.height * profile.depth + depthArc + Math.sin(enemy.phase) * 12,
       minimumHoldY,
       maximumHoldY
     );
@@ -3001,8 +3164,9 @@ var NeonCampaign = (() => {
     const laneTarget = () => {
       const sample = enemy.observation;
       const observedX = combatX(sample.x + clamp6(sample.vx * 0.18, -64, 64));
-      const span = Math.min(enemy.width * 0.22, 128);
-      return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span : enemy.role === "scout" ? enemy.baseX * 0.5 + observedX * 0.5 + enemy.side * span * 0.32 : observedX + enemy.side * span * 0.48);
+      const span = Math.min(enemy.width * 0.24, 140);
+      const sweep = Math.sin(flightPhase) * span * profile.lateralSweep * enemy.sweepScale;
+      return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span * 0.68 + sweep : enemy.role === "scout" ? enemy.baseX * 0.45 + observedX * 0.55 + enemy.side * span * 0.2 + sweep : observedX + enemy.side * span * 0.42 + sweep);
     };
     const reposition = () => {
       clearCharge();
@@ -3044,6 +3208,10 @@ var NeonCampaign = (() => {
       else reposition();
     }
     if (enemy.state === "reposition" && enemy.age >= enemy.nextFire) enter("track");
+    if (enemy.state === "reposition" && enemy.age >= enemy.nextTargetAt) {
+      enemy.targetX = laneTarget();
+      enemy.nextTargetAt = enemy.age + profile.sampleInterval;
+    }
     if (enemy.state === "track") {
       if (enemy.age >= enemy.nextTargetAt) {
         enemy.targetX = laneTarget();
@@ -3931,7 +4099,7 @@ var NeonCampaign = (() => {
     return t * t * (3 - 2 * t);
   };
   var immutable = (object2) => Object.freeze(object2);
-  var NOOP2 = () => {
+  var NOOP3 = () => {
   };
   var CHRONOS_FLIGHT_EVENTS = immutable([
     immutable({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
@@ -4031,7 +4199,7 @@ var NeonCampaign = (() => {
         distance: immutable({ unit: "tramo", covered: p, total: 1 })
       });
     }
-    function advance(dt, collectionCount = collected, emit = NOOP2) {
+    function advance(dt, collectionCount = collected, emit = NOOP3) {
       if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
       if (!Number.isFinite(collectionCount) || collectionCount < 0) throw new RangeError("collectionCount must be nonnegative");
       if (typeof emit !== "function") throw new TypeError("emit must be a function");
@@ -4060,9 +4228,9 @@ var NeonCampaign = (() => {
     ["Per\xEDmetro destruido", 36, 8, "Cruza los restos y recupera el rastro de CRONIUM", "Per\xEDmetro destruido", "Campo de restos", "wreckage-crossing", 0.15, 0.8, 0.48],
     ["Campo de restos", 36, 12, "Sigue el rastro y rescata el emisor si lo encuentras", "Campo de restos", "Salida orbital", "recoverable-module", 0.12, 0.72, 0.56],
     ["Salida orbital", 36, 16, "Abandona la \xF3rbita de Chronos sin perder la se\xF1al", "Salida orbital", "Corredor exterior", "origin-retreat", 0.08, 0.52, 0.42],
-    ["El gran vac\xEDo", 38, 18, "Atraviesa el vac\xEDo; observa el cometa anunciado", "Corredor exterior", "Baliza C9", "comet-crossing", 0.025, 0.26, 0.22],
-    ["Refugio C9", 32, 18, "Llega al taller y decide qu\xE9 instalar antes de seguir", "Baliza C9", "Taller C9", "service-stop", 0.035, 0.34, 0.12],
-    ["Estela de regreso", 38, 24, "Prueba tu nave y recupera la se\xF1al en espacio abierto", "Taller C9", "Ruta de Gaia", "equipment-trial", 0.025, 0.28, 0.44],
+    ["El gran vac\xEDo", 38, 18, "Atraviesa el vac\xEDo; observa el cometa anunciado", "Corredor exterior", "Corredor de enlace", "comet-crossing", 0.025, 0.26, 0.22],
+    ["Enlace C9", 32, 18, "Configura la nave desde C9 en el HUD mientras sigues el corredor", "Corredor de enlace", "Ruta exterior de Gaia", "service-stop", 0.035, 0.34, 0.12],
+    ["Estela de regreso", 38, 24, "Prueba tu nave y recupera la se\xF1al en espacio abierto", "Ruta exterior de Gaia", "Ruta de Gaia", "equipment-trial", 0.025, 0.28, 0.44],
     ["Gaia en la distancia", 36, 28, "Mant\xE9n la ruta hacia el planeta que crece al frente", "Ruta de Gaia", "Baliza exterior de Gaia", "destination-reveal", 0.06, 0.4, 0.52],
     ["Se\xF1ales de Atlas", 36, 32, "Cruza la patrulla y localiza el acceso orbital", "Baliza exterior de Gaia", "Acceso orbital de Gaia", "atlas-identification", 0.12, 0.52, 0.72],
     ["Llegada a Gaia", 36, 36, "Completa el rastro y alcanza la baliza de llegada", "Acceso orbital de Gaia", "Baliza de acceso a Gaia Nova", "persistent-arrival", 0.18, 0.62, 0.82]
@@ -4211,12 +4379,12 @@ var NeonCampaign = (() => {
         phase,
         stageId: stage.id,
         stageNumber: stage.number,
-        stageName: stageIndex === 5 && serviceCompleted ? "Salida de C9" : stage.name,
+        stageName: stageIndex === 5 && serviceCompleted ? "Corredor de Gaia" : stage.name,
         stageProgress,
         stageElapsed,
         stageDuration: stage.duration,
         stageGoal,
-        stageObjective: stageIndex === 5 && serviceCompleted ? "Abandona el atraque y prueba tu nave en el corredor de salida" : stage.objective,
+        stageObjective: stageIndex === 5 && serviceCompleted ? "Prueba tu nave en el corredor; C9 contin\xFAa disponible en el panel" : stage.objective,
         stageOrigin: stage.origin,
         stageDestination: stage.destination,
         stageEvent: stage.event,
@@ -4320,7 +4488,7 @@ var NeonCampaign = (() => {
       entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
       ensureEntryEvents(emit);
     }
-    function resolveService(emit = NOOP2) {
+    function resolveService(emit = NOOP3) {
       if (typeof emit !== "function") throw new TypeError("emit must be a function");
       if (!serviceWaiting) return snapshot();
       serviceWaiting = false;
@@ -4328,7 +4496,7 @@ var NeonCampaign = (() => {
       if (stageElapsed === CHRONOS_VOYAGE_STAGES[stageIndex].duration) enterNextStage(emit);
       return snapshot();
     }
-    function advance(dt, collectionCount = collected, emit = NOOP2) {
+    function advance(dt, collectionCount = collected, emit = NOOP3) {
       if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
       if (!Number.isFinite(collectionCount) || collectionCount < 0) throw new RangeError("collectionCount must be nonnegative");
       if (typeof emit !== "function") throw new TypeError("emit must be a function");
@@ -4457,7 +4625,7 @@ var NeonCampaign = (() => {
     })
   ]);
   var TOTAL_DURATION = JOURNEY_DEMO_SEGMENTS.reduce((sum, segment) => sum + segment.duration, 0);
-  var NOOP3 = () => {
+  var NOOP4 = () => {
   };
   var CHECKPOINT_IDS = Object.freeze(["chronos-departure", "relay-station", "relay-transit", "atlas-border", "gaia-arrival"]);
   function makeSave(checkpointId, partInstalled = false, collectedAtDeparture = false) {
@@ -4552,7 +4720,7 @@ var NeonCampaign = (() => {
       fired.add(event2.id);
       emit(Object.freeze({ ...event2, segmentId: JOURNEY_DEMO_SEGMENTS[segmentIndex].id, version: JOURNEY_DEMO_VERSION }));
     }
-    function advance(dt, emit = NOOP3) {
+    function advance(dt, emit = NOOP4) {
       if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
       if (typeof emit !== "function") throw new TypeError("emit must be a function");
       if (paused || phase !== "travel") return snapshot();
@@ -4629,23 +4797,30 @@ var NeonCampaign = (() => {
     return value;
   };
   var GUARDIAN_ATLAS_RULES = Object.freeze({
-    version: "guardian-atlas-v5",
+    version: "guardian-atlas-v6",
     maxHp: 96,
     maxDelta: 0.05,
     entrySeconds: 2.2,
-    closedSeconds: 1.05,
-    repositionSeconds: 0.7,
+    closedSeconds: 0.85,
     openingSeconds: 0.65,
-    exposedSeconds: 4.2,
+    exposedSeconds: 3.8,
     closingSeconds: 0.55,
     phaseBreakSeconds: 1.25,
     shutdownSeconds: 1.55,
     hurtSeconds: 0.16,
     coreRadius: 42,
     maxProjectilesPerAttack: 10,
-    tailClearance: 42,
-    phaseOne: Object.freeze({ projectileSpeed: 380, projectileDamage: 13 }),
-    phaseTwo: Object.freeze({ projectileSpeed: 420, projectileDamage: 15 }),
+    tailClearance: 56,
+    phaseOne: Object.freeze({ projectileSpeed: 460, projectileDamage: 13 }),
+    phaseTwo: Object.freeze({ projectileSpeed: 520, projectileDamage: 15 }),
+    motion: Object.freeze({
+      acceleration: 200,
+      maxSpeed: 132,
+      maxVerticalSpeed: 26,
+      exposedSpeed: 32,
+      exposedPhaseTwoSpeed: 38,
+      observationSeconds: 0.22
+    }),
     attacks: Object.freeze({
       basic: Object.freeze({ chargeSeconds: 0.36, volleyTimes: Object.freeze([0]), damage: 13 }),
       medium: Object.freeze({ chargeSeconds: 0.52, volleyTimes: Object.freeze([0, 0.34]), damage: 15 }),
@@ -4703,10 +4878,17 @@ var NeonCampaign = (() => {
       observation: null,
       nextObservationAt: 0,
       lastPattern: null,
+      attackDecision: null,
+      attacksSinceSuperpower: 0,
+      motionDecision: 0,
+      nextMotionAt: 0,
+      motionX: width / 2,
+      motionY: targetY,
+      motionVx: 0,
+      motionVy: 0,
+      motionSide: seed % 2 ? -1 : 1,
       flash: 0,
       lastHitAt: null,
-      patrolFromX: width / 2,
-      patrolToX: width / 2,
       protocol: "falsified-identification",
       recordId: "chronos-sabotage-atlas-log"
     };
@@ -4733,23 +4915,60 @@ var NeonCampaign = (() => {
     const y = clamp10(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 16);
     const vx = elapsed > 0 ? clamp10((x - previous.x) / elapsed, -720, 720) : 0;
     boss.observation = { x, y, at: boss.age, vx: previous ? previous.vx * 0.4 + vx * 0.6 : 0 };
-    boss.nextObservationAt = boss.age + 0.22;
+    boss.nextObservationAt = boss.age + GUARDIAN_ATLAS_RULES.motion.observationSeconds;
+  }
+  function motionBounds(boss) {
+    const margin = Math.min(boss.width * 0.42, Math.max(
+      boss.r + Math.min(18, boss.width * 0.025),
+      Number.isFinite(boss.presentationHalfWidth) ? boss.presentationHalfWidth + 8 : 0
+    ));
+    const top = Math.max(64, boss.targetY - 16);
+    return {
+      left: margin,
+      right: boss.width - margin,
+      top,
+      bottom: Math.max(top, Math.min(boss.playerY - 210, boss.targetY + 24))
+    };
+  }
+  function planMotion(boss) {
+    const bounds = motionBounds(boss), sample = boss.observation || { x: boss.width / 2, vx: 0 };
+    const exposed = boss.state === "exposed";
+    const underFire = boss.lastHitAt !== null && boss.age - boss.lastHitAt < 0.55;
+    const space = bounds.right - bounds.left;
+    if (boss.x > bounds.right - Math.min(40, space * 0.2)) boss.motionSide = -1;
+    else if (boss.x < bounds.left + Math.min(40, space * 0.2)) boss.motionSide = 1;
+    else if (!exposed && (underFire || Math.abs(boss.x - boss.motionX) < Math.min(26, space * 0.12))) {
+      boss.motionSide = -boss.motionSide;
+    }
+    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom(boss) * 0.17);
+    const lead = clamp10(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
+    const target = exposed ? boss.x + boss.motionSide * flank : sample.x + lead + boss.motionSide * flank;
+    boss.motionX = clamp10(target, bounds.left, bounds.right);
+    const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
+    boss.motionY = clamp10(boss.targetY + Math.sin(verticalPhase) * 18, bounds.top, bounds.bottom);
+    boss.nextMotionAt = boss.age + (exposed ? 1.15 : 1.25 + nextRandom(boss) * 0.5);
+    boss.motionDecision++;
+  }
+  function moveAtlas(boss, dt) {
+    if (!dt || boss.disabled || boss.state === "entry") return;
+    if (boss.age + 1e-9 >= boss.nextMotionAt) planMotion(boss);
+    const rules = GUARDIAN_ATLAS_RULES.motion, bounds = motionBounds(boss);
+    const exposed = boss.state === "exposed";
+    const maxSpeed = exposed ? boss.phase === 2 ? rules.exposedPhaseTwoSpeed : rules.exposedSpeed : boss.state === "opening" ? 68 : boss.phase === 2 ? rules.maxSpeed : 108;
+    const desiredVx = clamp10((boss.motionX - boss.x) * 2.4, -maxSpeed, maxSpeed);
+    const desiredVy = clamp10((boss.motionY - boss.y) * 2, -rules.maxVerticalSpeed, rules.maxVerticalSpeed);
+    boss.motionVx += clamp10(desiredVx - boss.motionVx, -rules.acceleration * dt, rules.acceleration * dt);
+    boss.motionVy += clamp10(desiredVy - boss.motionVy, -rules.acceleration * dt, rules.acceleration * dt);
+    const x = boss.x + boss.motionVx * dt, y = boss.y + boss.motionVy * dt;
+    boss.x = clamp10(x, bounds.left, bounds.right);
+    boss.y = clamp10(y, bounds.top, bounds.bottom);
+    if (boss.x !== x) boss.motionVx = 0;
+    if (boss.y !== y) boss.motionVy = 0;
   }
   function transition(boss, next, events) {
     boss.state = next;
     boss.stateTime = 0;
-    if (next === "closed") {
-      boss.patrolFromX = boss.x;
-      const sample = boss.observation || { x: boss.width / 2, vx: 0 };
-      const distance = Math.max(0, boss.playerY - boss.targetY - boss.r * 0.7);
-      const offset = Math.min(boss.width * 0.21, distance * 0.18);
-      const side = Math.abs(sample.vx) > 50 ? Math.sign(sample.vx) : sample.x === boss.width / 2 ? nextRandom(boss) < 0.5 ? -1 : 1 : Math.sign(sample.x - boss.width / 2);
-      boss.patrolToX = clamp10(
-        sample.x + side * offset * 0.45 + clamp10(sample.vx * 0.16, -48, 48),
-        Math.max(boss.r + 12, boss.width / 2 - offset),
-        Math.min(boss.width - boss.r - 12, boss.width / 2 + offset)
-      );
-    }
+    if (next === "closed" || next === "opening" || next === "exposed") boss.nextMotionAt = boss.age;
     updateCore(boss);
     events.push({ type: "state", state: next, phase: boss.phase, attackId: boss.attackId });
     if (next === "opening") events.push({ type: "opening", phase: boss.phase });
@@ -4767,8 +4986,21 @@ var NeonCampaign = (() => {
     boss.volley = 0;
     boss.attackClearanceSeconds = 0;
     const tiers = boss.phase === 1 ? ["basic", "medium", "superpower"] : ["medium", "basic", "superpower"];
-    boss.attackTier = tiers[(boss.phaseAttacks - 1) % tiers.length];
     const sample = boss.observation || { x: player.x, y: boss.playerY, vx: 0, at: boss.age };
+    if (boss.phaseAttacks <= 3) {
+      boss.attackTier = tiers[boss.phaseAttacks - 1];
+      boss.attackDecision = "introduce-routine";
+    } else if (boss.attacksSinceSuperpower >= 3) {
+      boss.attackTier = "superpower";
+      boss.attackDecision = "reactor-recharged";
+    } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * 0.27) {
+      boss.attackTier = "medium";
+      boss.attackDecision = "intercept-flank";
+    } else {
+      boss.attackTier = boss.attackTier === "basic" ? "medium" : "basic";
+      boss.attackDecision = "pressure-observed-lane";
+    }
+    boss.attacksSinceSuperpower = boss.attackTier === "superpower" ? 0 : boss.attacksSinceSuperpower + 1;
     const tier = boss.attackTier;
     const pattern = tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
     const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp10(sample.vx * 0.28, -100, 100);
@@ -4791,7 +5023,8 @@ var NeonCampaign = (() => {
       originY,
       seconds: attackRules(boss).chargeSeconds,
       safeGap: null,
-      attackId: boss.attackId
+      attackId: boss.attackId,
+      decision: boss.attackDecision
     };
     transition(boss, "charge", events);
     events.push({ type: "warning", phase: boss.phase, ...boss.telegraph });
@@ -4839,10 +5072,12 @@ var NeonCampaign = (() => {
   function fireVolley(boss, events, fireTime = boss.stateTime) {
     const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === "superpower";
     const crossfire = aim.pattern === "crossfire";
-    const originX = aim.originX + (crossfire ? (boss.volley === 0 ? -1 : 1) * boss.r * 0.72 : 0);
-    const rake = Math.min(44, (aim.targetY - aim.originY) * 0.09);
+    const originX = boss.x + (crossfire ? (boss.volley === 0 ? -1 : 1) * boss.r * 0.72 : 0);
+    const originY = boss.y + boss.r * 0.7;
+    const targetY = Math.max(originY + 180, aim.targetY);
+    const rake = Math.min(44, (targetY - originY) * 0.09);
     const targetX = clamp10(aim.targetX + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
-    const distance = aim.targetY - aim.originY;
+    const distance = targetY - originY;
     const direction = Math.atan2(distance, targetX - originX);
     const spread = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : 0.24), distance) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
     const offsets = heavy || tier === "medium" && boss.phase === 2 ? [-spread, -spread / 2, 0, spread / 2, spread] : [-spread, 0, spread];
@@ -4852,12 +5087,13 @@ var NeonCampaign = (() => {
       const shot = projectile(
         boss,
         originX,
-        aim.originY,
+        originY,
         Math.cos(angle) * speed,
         Math.sin(angle) * speed,
         index,
         targetX
       );
+      shot.targetY = targetY;
       boss.attackClearanceSeconds = Math.max(
         boss.attackClearanceSeconds,
         fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy
@@ -4869,7 +5105,9 @@ var NeonCampaign = (() => {
       attackId: boss.attackId,
       phase: boss.phase,
       attackTier: tier,
-      volley: boss.volley
+      volley: boss.volley,
+      x: originX,
+      y: originY
     });
     boss.volley++;
   }
@@ -4943,11 +5181,8 @@ var NeonCampaign = (() => {
       if (boss.state === "entry") {
         const progress = clamp10(boss.stateTime / duration, 0, 1);
         boss.y = -boss.r * 1.6 + (boss.targetY + boss.r * 1.6) * (1 - (1 - progress) ** 3);
-      } else if (boss.state === "closed") {
-        const progress = clamp10(boss.stateTime / GUARDIAN_ATLAS_RULES.repositionSeconds, 0, 1);
-        const smooth3 = progress * progress * (3 - 2 * progress);
-        boss.x = boss.patrolFromX + (boss.patrolToX - boss.patrolFromX) * smooth3;
-      } else if (boss.state === "charge") boss.telegraph.progress = clamp10(boss.stateTime / duration, 0, 1);
+      } else moveAtlas(boss, step);
+      if (boss.state === "charge") boss.telegraph.progress = clamp10(boss.stateTime / duration, 0, 1);
       else if (boss.state === "fire") {
         const schedule = attackRules(boss).volleyTimes;
         while (boss.volley < schedule.length && before < schedule[boss.volley] + 1e-9 && boss.stateTime + 1e-9 >= schedule[boss.volley]) fireVolley(boss, events, schedule[boss.volley]);
@@ -5035,8 +5270,9 @@ var NeonCampaign = (() => {
   }
 
   // src/game/audio/combat-sfx.js
-  var COMBAT_SFX_VERSION = 1;
-  var COMBAT_SFX_SRC = "assets/combat_sfx_atlas_v1.m4a";
+  var COMBAT_SFX_VERSION = 2;
+  var COMBAT_SFX_SRC = "assets/combat_sfx_atlas_v2.m4a";
+  var COMBAT_SFX_DURATION = 15.96;
   var COMBAT_SFX_VOICE_LIMIT = 8;
   var COMBAT_SFX_GAIN_BUDGET = 0.95;
   var cue = (offsets, duration, gain, priority3, cooldown, polyphony) => Object.freeze({
@@ -5054,7 +5290,9 @@ var NeonCampaign = (() => {
     "hull-hit": cue([4.2, 4.9], 0.58, 0.29, 6, 0.12, 2),
     "enemy-break": cue([5.6, 6.67], 0.95, 0.31, 5, 0.1, 2),
     "atlas-charge": cue([7.74, 8.74], 0.88, 0.28, 7, 0.3, 1),
-    "atlas-collapse": cue([9.74, 11.71], 1.85, 0.4, 9, 1, 1)
+    "atlas-collapse": cue([9.74, 11.71], 1.85, 0.4, 9, 1, 1),
+    "enemy-phaser": cue([13.68, 14.08], 0.28, 0.19, 2, 0.055, 3),
+    "enemy-heavy": cue([14.48, 15.22], 0.62, 0.28, 5, 0.16, 2)
   });
   var disconnect = (node) => {
     try {
@@ -5068,7 +5306,7 @@ var NeonCampaign = (() => {
     const bus = context.createGain();
     bus.gain.value = 1;
     bus.connect(output);
-    const active = /* @__PURE__ */ new Set(), lastPlayed = /* @__PURE__ */ new Map(), variants = /* @__PURE__ */ new Map(), recentIds = /* @__PURE__ */ new Set();
+    const active = /* @__PURE__ */ new Set(), lastPlayed = /* @__PURE__ */ new Map(), variants = /* @__PURE__ */ new Map(), recentIds = /* @__PURE__ */ new Set(), playedByCue = /* @__PURE__ */ new Map();
     let buffer = null, loading = null, disposed = false, paused = true, enabled = true;
     let generation = 0, volume = 1, played = 0, dropped = 0, stolen = 0, failed = false;
     function release(record) {
@@ -5115,7 +5353,7 @@ var NeonCampaign = (() => {
           }
           const decoded = await context.decodeAudioData(bytes);
           if (disposed || generation !== attempt) return false;
-          if (!Number.isFinite(decoded?.duration) || decoded.duration < 13.56 || decoded.duration > 15) {
+          if (!Number.isFinite(decoded?.duration) || decoded.duration < COMBAT_SFX_DURATION - 0.12 || decoded.duration > COMBAT_SFX_DURATION + 0.4) {
             throw new Error("combat-sfx atlas duration invalid");
           }
           buffer = decoded;
@@ -5205,6 +5443,7 @@ var NeonCampaign = (() => {
       lastPlayed.set(name, now);
       remember(id);
       played++;
+      playedByCue.set(name, (playedByCue.get(name) || 0) + 1);
       return true;
     }
     return Object.freeze({
@@ -5238,6 +5477,7 @@ var NeonCampaign = (() => {
         activeVoices: active.size,
         activeGain: [...active].reduce((sum, record) => sum + record.level, 0),
         played,
+        playedByCue: Object.freeze(Object.fromEntries(playedByCue)),
         dropped,
         stolen,
         decodedBytes: buffer ? buffer.length * buffer.numberOfChannels * 4 : 0
@@ -5252,6 +5492,7 @@ var NeonCampaign = (() => {
         lastPlayed.clear();
         variants.clear();
         recentIds.clear();
+        playedByCue.clear();
         disconnect(bus);
       }
     });
@@ -5460,13 +5701,13 @@ var NeonCampaign = (() => {
     barrels: Object.freeze(definition.barrels.map((barrel) => Object.freeze({ ...barrel })))
   });
   var CLASSIC_WEAPON_RULES = Object.freeze({
-    version: "classic-weapons-v3",
+    version: "classic-weapons-v4",
     maxCharges: 20,
     rechargeSeconds: 2,
     maxDelta: 0.05,
     maxProjectiles: 32,
     boundsMargin: 80,
-    missile: Object.freeze({ damage: 6, speed: 760, radius: 10, duration: 3.2, cooldown: 0.7 }),
+    missile: Object.freeze({ damage: 18, speed: 760, radius: 10, duration: 3.2, cooldown: 0.7 }),
     types: Object.freeze({
       pulse: weapon({
         id: "pulse",

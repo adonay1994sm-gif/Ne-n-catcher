@@ -1,0 +1,20 @@
+PASS 01 · JavaScript principal, runtime y service worker tienen sintaxis válida
+PASS 02 · versión interna y caché conservan compatibilidad sin insignia técnica en portada
+PASS 03 · HTML conserva todas sus referencias locales
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: assets/combat_sfx_atlas_v2.m4a
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:70:13
+    at async test (file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:16:3)
+    at async file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:55:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

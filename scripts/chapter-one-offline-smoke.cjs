@@ -28,7 +28,7 @@ const report = {status: 'running', exitCode: null, command: process.argv, starte
     'Upgrade scenario seeds declared compatibility saves, including an authentic old-schema empty salvage ledger: zero money, zero purchases. These are fixtures, not progress earned in play. A separate fresh context launches the naturally unlocked chapter without any seeded save.',
     'No source hooks, request interception, entity insertion, clock acceleration or in-flight counter changes.',
     'RAF and drawImage observers call the original functions unchanged and do not create another animation loop.',
-    'Checks native worker upgrade/offline restart, saved progress/economy migration, three new atlases and two AAC scores, current ship/projectiles, and N7 regression. Fresh chapter launch is natural UI operation; this is not a full chapter/boss balance certification or aesthetic/device acceptance.']};
+    'Checks native worker upgrade/offline restart, saved progress/economy migration, current atlases/C9 upgrade artwork, the v2 combat bank and two AAC scores, current ship/projectiles, and N7 regression. Fresh in-world chapter launch is natural UI operation; this is not a full chapter/boss balance certification or aesthetic/device acceptance.']};
 let browser, context, server, temp, evidenceReady = false, offline = false;
 const save = () => saveEvidence(output, report);
 const bounded = (promise, milliseconds, label) => {
@@ -91,7 +91,7 @@ async function newPage() {
       if (/\/favicon\.ico(?:\?|$)/.test(entry.url)) report.incidentalBrowserRequests.push(entry);
       else report.failedRequests.push(entry);
     }
-    if (/\/assets\/(?:(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2|gaia_pulse_atlas_v3|hostile_ordnance_atlas_v1|chapter1_intro_atlas_v1|chapter1_portraits_v1|chapter1_missile_atlas_v1|guardian_atlas_states_v2|cronium_energy_atlas_v2)\.webp|chapter1_(?:opening|voyage)_score_v1\.m4a|combat_sfx_atlas_v1\.(?:m4a|json))(?:\?|$)/.test(response.url()))
+    if (/\/assets\/(?:(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2|gaia_pulse_atlas_v3|hostile_ordnance_atlas_v1|c9_upgrade_icons_v1|chapter1_portraits_v1|chapter1_missile_atlas_v1|guardian_atlas_states_v2|cronium_energy_atlas_v2)\.webp|chapter1_(?:opening|voyage)_score_v1\.m4a|combat_sfx_atlas_v2\.(?:m4a|json))(?:\?|$)/.test(response.url()))
       report.assetResponses.push({url: response.url(), status: response.status(), offline, fromServiceWorker: response.fromServiceWorker()});
   });
   return page;
@@ -129,9 +129,9 @@ function savedBytesEqual(actual, fixture, allowEconomyMigration=false) {
   }
 }
 
-const chapterAssets=['chapter1_intro_atlas_v1.webp','chapter1_portraits_v1.webp',
+const chapterAssets=['c9_upgrade_icons_v1.webp','chapter1_portraits_v1.webp',
   'chapter1_missile_atlas_v1.webp','chapter1_opening_score_v1.m4a','chapter1_voyage_score_v1.m4a',
-  'guardian_atlas_states_v2.webp','cronium_energy_atlas_v2.webp','combat_sfx_atlas_v1.m4a','combat_sfx_atlas_v1.json'];
+  'guardian_atlas_states_v2.webp','cronium_energy_atlas_v2.webp','combat_sfx_atlas_v2.m4a','combat_sfx_atlas_v2.json'];
 async function verifyChapterAssetsOffline(page) {
   const results=[];
   for(const file of chapterAssets) {
@@ -160,13 +160,13 @@ async function verifyChapterAssetsOffline(page) {
     assert.equal(item.online,false);assert.equal(item.status,200);
     assert.equal(item.bytes,disk.length);assert.equal(item.sha256,sha256(disk));
     if(file.endsWith('.webp')) {
-      const dimensions={'chapter1_intro_atlas_v1.webp':[1024,1536],
+      const dimensions={'c9_upgrade_icons_v1.webp':[1024,1024],
         'chapter1_portraits_v1.webp':[768,256],'chapter1_missile_atlas_v1.webp':[1024,1024],
         'guardian_atlas_states_v2.webp':[2048,1024],'cronium_energy_atlas_v2.webp':[512,512]};
       assert.deepEqual([item.width,item.height],dimensions[file],`${file} must decode at its actual registered dimensions`);
     }
     else if(file.endsWith('.json')) assert.ok(item.metadata&&typeof item.metadata==='object','Cue metadata decodes offline');
-    else if(file.startsWith('combat_')){assert.equal(item.channels,1);assert.ok(item.duration>=13.56&&item.duration<15);assert.ok(item.sampledPeak>.001);}
+    else if(file.startsWith('combat_')){assert.equal(item.channels,1);assert.ok(item.duration>=15.9&&item.duration<16.2);assert.ok(item.sampledPeak>.001);}
     else {assert.equal(item.channels,2);assert.equal(item.duration,file.includes('opening')?28:48);assert.ok(item.sampledPeak>.001);}
     assert.ok(report.assetResponses.some(response=>response.offline&&response.fromServiceWorker&&response.url.endsWith('/'+file)),
       file+' must be returned by its real current game service worker');
@@ -340,6 +340,16 @@ async function prepareContext() {
     const current = await workerState(page);
     assert.ok(!current.caches.some(key => key.endsWith(report.previousInfo.revision)));
     assert.ok(current.caches.includes('chapter-offline-unrelated-app'));
+    report.retiredIntroCache=await page.evaluate(async revision=>{
+      const name=(await caches.keys()).find(key=>key.startsWith('neon-preview-v1:')&&key.endsWith(revision));
+      if(!name)throw Error('Current game cache is missing');
+      const cache=await caches.open(name),requests=await cache.keys();
+      return{cache:name,retiredIntro:requests.some(request=>new URL(request.url).pathname.endsWith('/assets/chapter1_intro_atlas_v1.webp')),
+        c9UpgradeArt:requests.some(request=>new URL(request.url).pathname.endsWith('/assets/c9_upgrade_icons_v1.webp')),
+        combatBankV2:requests.some(request=>new URL(request.url).pathname.endsWith('/assets/combat_sfx_atlas_v2.m4a'))};
+    },report.currentInfo.revision);
+    assert.equal(report.retiredIntroCache.retiredIntro,false,'Retired cinematic art must not return to the current precache');
+    assert.equal(report.retiredIntroCache.c9UpgradeArt,true);assert.equal(report.retiredIntroCache.combatBankV2,true);
     const preservedPrior=Object.fromEntries(Object.keys(fixture).map(key=>[key,report.previousStorage[key]]));
     savedBytesEqual(await storage(page),preservedPrior);
     await page.close(); return current;
@@ -477,8 +487,12 @@ async function prepareContext() {
     assert.equal(await page.locator('[data-voyage-stage="1"]').getAttribute('aria-pressed'),'true');
     assert.equal(await page.locator('[data-voyage-stage]:disabled').count(),9);
     await page.locator('#launch').click();
-    await waitAsync(page,()=>window.__CHAPTER_OFFLINE_OBSERVER__.draw['chapter1_intro_atlas_v1.webp']>=1);
-    await capture(page,'fresh-offline-authored-opening');
+    await waitAsync(page,()=>window.__CHAPTER_OFFLINE_OBSERVER__.draw['chronos_destruction_atlas_v1.webp']>=1);
+    assert.equal(await page.locator('#chapterSkip').isVisible(),false);
+    assert.equal(await page.locator('body').evaluate(body=>body.classList.contains('chapter-opening')),false,
+      'The in-world opening cannot lock flight behind a cinematic overlay');
+    assert.equal((await observer(page)).draw['chapter1_intro_atlas_v1.webp']||0,0);
+    await capture(page,'fresh-offline-in-world-chronos-opening');
     await waitAsync(page,()=>window.__CHAPTER_OFFLINE_OBSERVER__.draw['ship_modular_atlas_v1.webp']>=24&&!document.querySelector('#fire').disabled);
     assert.equal((await page.locator('#hudLevel').innerText()).trim(),'1');
     assert.match((await page.locator('#flightStage').textContent()).trim(),/^1\.1\s*·/);
@@ -486,11 +500,18 @@ async function prepareContext() {
     const owned=JSON.parse((await storage(page))[prefix+economy.SCRAP_ECONOMY_KEY]);
     assert.equal(owned.balance,0);assert.equal(owned.earned,0);assert.equal(owned.spent,0);
     assert.equal(owned.missileAmmo,3);assert.deepEqual(owned.upgrades,[]);
+    assert.equal(await page.locator('#classicC9').isVisible(),true);
+    const hullBeforeC9=(await page.locator('#hull').innerText()).trim();
+    await page.locator('#classicC9').click();await page.locator('#flightDock.show').waitFor();
+    assert.equal(await page.evaluate(()=>document.activeElement?.id),'flightDockContinue');
+    assert.equal((await page.locator('#hull').innerText()).trim(),hullBeforeC9,'HUD workshop cannot heal on every open');
+    await capture(page,'fresh-offline-onboard-c9');
+    await page.locator('#flightDockContinue').click();await page.locator('#flightDock.show').waitFor({state:'hidden'});
     const audit=await observer(page);assert.equal(audit.raf.maximum,1);assert.deepEqual(audit.raf.errors,[]);
     await page.locator('#pause').click();await page.locator('#paused.show').waitFor();
     await capture(page,'fresh-offline-first-chapter-playing-paused');
     await page.close();return {fixtures:false,offline:true,stage:'1.1',wallet:owned,audit,
-      scope:'Natural first launch and authored opening only; no full level/boss balance claim'};
+      scope:'Natural first launch, in-world Chronos and optional HUD workshop only; no forced orbital stop or full level/boss balance claim'};
   });
   clean(); report.status = 'passed'; report.exitCode = 0;
 })().catch(async error => {

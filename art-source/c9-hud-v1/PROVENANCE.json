@@ -1,0 +1,14 @@
+{
+  "assetId": "c9-upgrade-icons-v1",
+  "createdAt": "2026-10-18",
+  "creator": "OpenAI image_gen, original generation commissioned for NEON CRONIUM",
+  "generatedImagePath": "/workspace/generated_images/exec-e81baee5-aa2e-4752-b3ba-7c88dcbb3266.png",
+  "master": "art-source/c9-hud-v1/c9-upgrades-generated-master.png",
+  "runtime": "assets/c9_upgrade_icons_v1.webp",
+  "references": [],
+  "prompt": "Create an original production game asset sprite atlas for NEON CRONIUM, a premium 2D arcade spaceship game. Deliver one square 1024 by 1024 RGBA image, transparent background. Strict two by two regular grid, four equal 512x512 cells, each object fully fits centered within its cell with at least 48px transparent padding from every cell edge. No text, no labels, no cell grid, no frames or UI panels. Four distinctly recognizable illustrated spaceship upgrade objects with cinematic hard-surface material detail, crisp readable silhouettes at 72px, consistent top-left cool illumination, modest cyan accents and warm metal highlights, matching a white titanium/graphite arcade starfighter. Top left: an advanced compact twin phaser emitter module with TWO parallel short barrels, cyan capacitor visible between, 3/4 view pointing upper right, substantial machined titanium housing. Top right: curved segmented titanium hull reinforcement plate assembly, three overlapping white silver protective panels with tiny brass fixings and a cyan seam, broad protective shape, absolutely no magical shield bubble. Bottom left: THREE physical slim silver missiles together in a compact reload rack, orange propellant rings and cyan glass tips, nose-up angled view, no flame trails and no smoke. Bottom right: distinctive propulsion cooling module, dark metallic radiator with copper serpentine heat pipes and two blue cylindrical coolant cartridges, clearly a different silhouette from the weapon. Each object is an original clean inventory illustration with realistic stylized volume, not a flat icon, not an emoji, not a photograph. No broad glows leaking between cells, no background shadows outside objects, no ground, no people, no logos. Match polished sci-fi arcade game upgrade art.",
+  "actualGeneratedDimensions": [1254, 1254],
+  "processing": "ImageMagick: regular 2x2 crop; trim transparent area; uniform resize to fit 416x416; center each cell in transparent 512x512 canvas; pack 2x2; WebP quality 90 with lossless alpha. No drawn replacements or downloaded third-party art.",
+  "technicalVerification": "verify-atlas.cjs reads exported WebP RGBA and confirms nonempty illustrations with at least 48px fully transparent gutters in all four cells.",
+  "acceptance": {"technicalAsset": "PASSED", "gameIntegration": "PENDING_ROOT_QA", "artistic": "OWNER_REVIEW_PENDING", "physicalIphone": "NOT_EXECUTED"}
+}

@@ -1,0 +1,191 @@
+{
+  "decoder": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "sampleRate": 48000,
+  "channels": 1,
+  "duration": 15.978666666666667,
+  "samples": 766976,
+  "peakDbfs": -2.552554130554199,
+  "clippedSamples": 0,
+  "cues": [
+    {
+      "cue": "phaser",
+      "variant": 1,
+      "duration": 0.2,
+      "rmsDbfs": -18.29592514038086,
+      "spectralCentroidHz": 1633.9191779522487,
+      "onsetSeconds": 2.0833333333333333e-05,
+      "peakDbfs": -2.552554130554199
+    },
+    {
+      "cue": "phaser",
+      "variant": 2,
+      "duration": 0.2,
+      "rmsDbfs": -19.02553367614746,
+      "spectralCentroidHz": 1691.9398816637133,
+      "onsetSeconds": 0.0005,
+      "peakDbfs": -3.0892679691314697
+    },
+    {
+      "cue": "missile-launch",
+      "variant": 1,
+      "duration": 0.58,
+      "rmsDbfs": -17.676513671875,
+      "spectralCentroidHz": 2012.2873152518537,
+      "onsetSeconds": 0.000375,
+      "peakDbfs": -2.9327597618103027
+    },
+    {
+      "cue": "missile-launch",
+      "variant": 2,
+      "duration": 0.58,
+      "rmsDbfs": -17.409814834594727,
+      "spectralCentroidHz": 2060.8540629621334,
+      "onsetSeconds": 0.0003333333333333333,
+      "peakDbfs": -3.0749547481536865
+    },
+    {
+      "cue": "impact-metal",
+      "variant": 1,
+      "duration": 0.44,
+      "rmsDbfs": -18.384578704833984,
+      "spectralCentroidHz": 780.65797338391,
+      "onsetSeconds": 0.00020833333333333335,
+      "peakDbfs": -2.9079203605651855
+    },
+    {
+      "cue": "impact-metal",
+      "variant": 2,
+      "duration": 0.44,
+      "rmsDbfs": -18.264013290405273,
+      "spectralCentroidHz": 803.4827496265615,
+      "onsetSeconds": 0.0003541666666666667,
+      "peakDbfs": -3.106217384338379
+    },
+    {
+      "cue": "impact-plasma",
+      "variant": 1,
+      "duration": 0.4,
+      "rmsDbfs": -19.630615234375,
+      "spectralCentroidHz": 3702.0089982848817,
+      "onsetSeconds": 0.0003958333333333333,
+      "peakDbfs": -2.981841564178467
+    },
+    {
+      "cue": "impact-plasma",
+      "variant": 2,
+      "duration": 0.4,
+      "rmsDbfs": -19.203779220581055,
+      "spectralCentroidHz": 3808.7223990967364,
+      "onsetSeconds": 0.0,
+      "peakDbfs": -2.7297186851501465
+    },
+    {
+      "cue": "hull-hit",
+      "variant": 1,
+      "duration": 0.58,
+      "rmsDbfs": -16.950180053710938,
+      "spectralCentroidHz": 643.2391184709601,
+      "onsetSeconds": 0.0004375,
+      "peakDbfs": -3.0932469367980957
+    },
+    {
+      "cue": "hull-hit",
+      "variant": 2,
+      "duration": 0.58,
+      "rmsDbfs": -16.899169921875,
+      "spectralCentroidHz": 661.6363888831592,
+      "onsetSeconds": 0.0005,
+      "peakDbfs": -3.111264228820801
+    },
+    {
+      "cue": "enemy-break",
+      "variant": 1,
+      "duration": 0.95,
+      "rmsDbfs": -18.034605026245117,
+      "spectralCentroidHz": 2698.47730417944,
+      "onsetSeconds": 6.25e-05,
+      "peakDbfs": -3.211432933807373
+    },
+    {
+      "cue": "enemy-break",
+      "variant": 2,
+      "duration": 0.95,
+      "rmsDbfs": -18.00020980834961,
+      "spectralCentroidHz": 2678.3575443908603,
+      "onsetSeconds": 0.0004375,
+      "peakDbfs": -2.6793508529663086
+    },
+    {
+      "cue": "atlas-charge",
+      "variant": 1,
+      "duration": 0.88,
+      "rmsDbfs": -13.831734657287598,
+      "spectralCentroidHz": 362.6255692194148,
+      "onsetSeconds": 0.0003333333333333333,
+      "peakDbfs": -3.068553924560547
+    },
+    {
+      "cue": "atlas-charge",
+      "variant": 2,
+      "duration": 0.88,
+      "rmsDbfs": -14.154764175415039,
+      "spectralCentroidHz": 377.96593627123053,
+      "onsetSeconds": 0.0004375,
+      "peakDbfs": -3.1221437454223633
+    },
+    {
+      "cue": "atlas-collapse",
+      "variant": 1,
+      "duration": 1.85,
+      "rmsDbfs": -17.347360610961914,
+      "spectralCentroidHz": 1380.733213770237,
+      "onsetSeconds": 0.0002916666666666667,
+      "peakDbfs": -2.8431060314178467
+    },
+    {
+      "cue": "atlas-collapse",
+      "variant": 2,
+      "duration": 1.85,
+      "rmsDbfs": -17.38984489440918,
+      "spectralCentroidHz": 1389.4764670267064,
+      "onsetSeconds": 0.0005,
+      "peakDbfs": -3.1277928352355957
+    },
+    {
+      "cue": "enemy-phaser",
+      "variant": 1,
+      "duration": 0.28,
+      "rmsDbfs": -19.74001693725586,
+      "spectralCentroidHz": 734.1901539305804,
+      "onsetSeconds": 0.0002916666666666667,
+      "peakDbfs": -3.147716760635376
+    },
+    {
+      "cue": "enemy-phaser",
+      "variant": 2,
+      "duration": 0.28,
+      "rmsDbfs": -20.1881046295166,
+      "spectralCentroidHz": 739.0169422196964,
+      "onsetSeconds": 0.0003333333333333333,
+      "peakDbfs": -3.112194538116455
+    },
+    {
+      "cue": "enemy-heavy",
+      "variant": 1,
+      "duration": 0.62,
+      "rmsDbfs": -18.6114444732666,
+      "spectralCentroidHz": 753.0982673650169,
+      "onsetSeconds": 0.0002916666666666667,
+      "peakDbfs": -3.0319995880126953
+    },
+    {
+      "cue": "enemy-heavy",
+      "variant": 2,
+      "duration": 0.62,
+      "rmsDbfs": -17.691213607788086,
+      "spectralCentroidHz": 736.5137682731548,
+      "onsetSeconds": 0.0003125,
+      "peakDbfs": -2.635875701904297
+    }
+  ]
+}

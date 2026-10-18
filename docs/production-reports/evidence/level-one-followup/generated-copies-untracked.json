@@ -1,0 +1,117 @@
+{
+  "action": "git rm --cached only; source assets and historical commits preserved",
+  "files": [
+    {
+      "path": "ios/App/App/public/assets/atlas_combat_vfx_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/assets/chronos_destruction_atlas_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/assets/chronos_flight_atlas_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/assets/chronos_flight_space_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/assets/chronos_flight_weapons_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/assets/comet_animation_sheet_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/assets/guardian_atlas_states_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/assets/ship_modular_atlas_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/content-runtime.js",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/content-runtime.js.map",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/game.js",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/index.html",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/styles.css",
+      "existsBefore": true
+    },
+    {
+      "path": "ios/App/App/public/sw.js",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/atlas_combat_vfx_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/chronos_destruction_atlas_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/chronos_flight_atlas_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/chronos_flight_space_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/chronos_flight_weapons_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/comet_animation_sheet_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/guardian_atlas_states_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/assets/ship_modular_atlas_v1.webp",
+      "existsBefore": true
+    },
+    {
+      "path": "www/content-runtime.js",
+      "existsBefore": true
+    },
+    {
+      "path": "www/content-runtime.js.map",
+      "existsBefore": true
+    },
+    {
+      "path": "www/game.js",
+      "existsBefore": true
+    },
+    {
+      "path": "www/index.html",
+      "existsBefore": true
+    },
+    {
+      "path": "www/styles.css",
+      "existsBefore": true
+    },
+    {
+      "path": "www/sw.js",
+      "existsBefore": true
+    }
+  ]
+}

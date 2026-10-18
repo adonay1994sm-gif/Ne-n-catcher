@@ -5,13 +5,15 @@ const finite = (value, name) => {
 };
 
 export const GUARDIAN_ATLAS_RULES = Object.freeze({
-  version: 'guardian-atlas-v5', maxHp: 96, maxDelta: .05,
-  entrySeconds: 2.2, closedSeconds: 1.05, repositionSeconds: .7,
-  openingSeconds: .65, exposedSeconds: 4.2, closingSeconds: .55,
+  version: 'guardian-atlas-v6', maxHp: 96, maxDelta: .05,
+  entrySeconds: 2.2, closedSeconds: .85,
+  openingSeconds: .65, exposedSeconds: 3.8, closingSeconds: .55,
   phaseBreakSeconds: 1.25, shutdownSeconds: 1.55, hurtSeconds: .16,
-  coreRadius: 42, maxProjectilesPerAttack: 10, tailClearance: 42,
-  phaseOne: Object.freeze({projectileSpeed: 380, projectileDamage: 13}),
-  phaseTwo: Object.freeze({projectileSpeed: 420, projectileDamage: 15}),
+  coreRadius: 42, maxProjectilesPerAttack: 10, tailClearance: 56,
+  phaseOne: Object.freeze({projectileSpeed: 460, projectileDamage: 13}),
+  phaseTwo: Object.freeze({projectileSpeed: 520, projectileDamage: 15}),
+  motion: Object.freeze({acceleration: 200, maxSpeed: 132, maxVerticalSpeed: 26,
+    exposedSpeed: 32, exposedPhaseTwoSpeed: 38, observationSeconds: .22}),
   attacks: Object.freeze({
     basic: Object.freeze({chargeSeconds: .36, volleyTimes: Object.freeze([0]), damage: 13}),
     medium: Object.freeze({chargeSeconds: .52, volleyTimes: Object.freeze([0, .34]), damage: 15}),
@@ -21,7 +23,9 @@ export const GUARDIAN_ATLAS_RULES = Object.freeze({
 
 /** One encounter driven by the existing update. It owns no clock, projectile
  * movement, rendering, save, money or reward. The core is damageable only in
- * EXPOSED, never while attacking, opening, closing or changing phase.
+ * EXPOSED, never while attacking, opening, closing or changing phase. Version 6
+ * moves the physical core in every living combat state; the renderer and
+ * collision integration both use the same x/y, never a decorative offset.
  */
 export function createGuardianAtlas({width = 720, height = 1280,
   playerY = height - 135, seed = 0x41544c41} = {}) {
@@ -41,8 +45,11 @@ export function createGuardianAtlas({width = 720, height = 1280,
     vulnerability: false, coreExposure: 0, armorClosed: true,
     telegraph: null, disabled: false, resolved: false,
     attackId: 0, attackTier: null, volley: 0, attackClearanceSeconds: 0,
-    observation: null, nextObservationAt: 0, lastPattern: null,
-    flash: 0, lastHitAt: null, patrolFromX: width / 2, patrolToX: width / 2,
+    observation: null, nextObservationAt: 0, lastPattern: null, attackDecision: null,
+    attacksSinceSuperpower: 0, motionDecision: 0, nextMotionAt: 0,
+    motionX: width / 2, motionY: targetY, motionVx: 0, motionVy: 0,
+    motionSide: seed % 2 ? -1 : 1,
+    flash: 0, lastHitAt: null,
     protocol: 'falsified-identification', recordId: 'chronos-sabotage-atlas-log'
   };
 }
@@ -70,21 +77,56 @@ function observePlayer(boss, player) {
   const y = clamp(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 16);
   const vx = elapsed > 0 ? clamp((x - previous.x) / elapsed, -720, 720) : 0;
   boss.observation = {x, y, at: boss.age, vx: previous ? previous.vx * .4 + vx * .6 : 0};
-  boss.nextObservationAt = boss.age + .22;
+  boss.nextObservationAt = boss.age + GUARDIAN_ATLAS_RULES.motion.observationSeconds;
+}
+function motionBounds(boss) {
+  const margin = Math.min(boss.width * .42,Math.max(boss.r + Math.min(18, boss.width * .025),
+    Number.isFinite(boss.presentationHalfWidth)?boss.presentationHalfWidth+8:0));
+  const top = Math.max(64, boss.targetY - 16);
+  return {left: margin, right: boss.width - margin,
+    top, bottom: Math.max(top, Math.min(boss.playerY - 210, boss.targetY + 24))};
+}
+function planMotion(boss) {
+  const bounds = motionBounds(boss), sample = boss.observation || {x: boss.width / 2, vx: 0};
+  const exposed = boss.state === 'exposed';
+  const underFire = boss.lastHitAt !== null && boss.age - boss.lastHitAt < .55;
+  const space = bounds.right - bounds.left;
+  // A target is chosen from observations, then approached with acceleration.
+  // No position snap or projectile homing is needed to flank an occupied lane.
+  if (boss.x > bounds.right - Math.min(40, space * .2)) boss.motionSide = -1;
+  else if (boss.x < bounds.left + Math.min(40, space * .2)) boss.motionSide = 1;
+  else if (!exposed && (underFire || Math.abs(boss.x - boss.motionX) < Math.min(26, space * .12))) {
+    boss.motionSide = -boss.motionSide;
+  }
+  const flank = exposed ? space * .24 : space * (.28 + nextRandom(boss) * .17);
+  const lead = clamp(sample.vx * .24, -boss.width * .10, boss.width * .10);
+  const target = exposed ? boss.x + boss.motionSide * flank
+    : sample.x + lead + boss.motionSide * flank;
+  boss.motionX = clamp(target, bounds.left, bounds.right);
+  const verticalPhase = boss.motionDecision * 1.7 + boss.phase * .9;
+  boss.motionY = clamp(boss.targetY + Math.sin(verticalPhase) * 18, bounds.top, bounds.bottom);
+  boss.nextMotionAt = boss.age + (exposed ? 1.15 : 1.25 + nextRandom(boss) * .5);
+  boss.motionDecision++;
+}
+function moveAtlas(boss, dt) {
+  if (!dt || boss.disabled || boss.state === 'entry') return;
+  if (boss.age + 1e-9 >= boss.nextMotionAt) planMotion(boss);
+  const rules = GUARDIAN_ATLAS_RULES.motion, bounds = motionBounds(boss);
+  const exposed = boss.state === 'exposed';
+  const maxSpeed = exposed ? (boss.phase === 2 ? rules.exposedPhaseTwoSpeed : rules.exposedSpeed)
+    : boss.state === 'opening' ? 68 : boss.phase === 2 ? rules.maxSpeed : 108;
+  const desiredVx = clamp((boss.motionX - boss.x) * 2.4, -maxSpeed, maxSpeed);
+  const desiredVy = clamp((boss.motionY - boss.y) * 2, -rules.maxVerticalSpeed, rules.maxVerticalSpeed);
+  boss.motionVx += clamp(desiredVx - boss.motionVx, -rules.acceleration * dt, rules.acceleration * dt);
+  boss.motionVy += clamp(desiredVy - boss.motionVy, -rules.acceleration * dt, rules.acceleration * dt);
+  const x = boss.x + boss.motionVx * dt, y = boss.y + boss.motionVy * dt;
+  boss.x = clamp(x, bounds.left, bounds.right); boss.y = clamp(y, bounds.top, bounds.bottom);
+  if (boss.x !== x) boss.motionVx = 0;
+  if (boss.y !== y) boss.motionVy = 0;
 }
 function transition(boss, next, events) {
   boss.state = next; boss.stateTime = 0;
-  if (next === 'closed') {
-    boss.patrolFromX = boss.x;
-    const sample = boss.observation || {x: boss.width / 2, vx: 0};
-    const distance = Math.max(0, boss.playerY - boss.targetY - boss.r * .7);
-    const offset = Math.min(boss.width * .21, distance * .18);
-    const side = Math.abs(sample.vx) > 50 ? Math.sign(sample.vx) :
-      sample.x === boss.width / 2 ? (nextRandom(boss) < .5 ? -1 : 1) : Math.sign(sample.x - boss.width / 2);
-    boss.patrolToX = clamp(sample.x + side * offset * .45 + clamp(sample.vx * .16, -48, 48),
-      Math.max(boss.r + 12, boss.width / 2 - offset),
-      Math.min(boss.width - boss.r - 12, boss.width / 2 + offset));
-  }
+  if (next === 'closed' || next === 'opening' || next === 'exposed') boss.nextMotionAt = boss.age;
   updateCore(boss);
   events.push({type: 'state', state: next, phase: boss.phase, attackId: boss.attackId});
   if (next === 'opening') events.push({type: 'opening', phase: boss.phase});
@@ -95,8 +137,19 @@ function transition(boss, next, events) {
 function beginCharge(boss, player, events) {
   boss.attackId++; boss.phaseAttacks++; boss.volley = 0; boss.attackClearanceSeconds = 0;
   const tiers = boss.phase === 1 ? ['basic', 'medium', 'superpower'] : ['medium', 'basic', 'superpower'];
-  boss.attackTier = tiers[(boss.phaseAttacks - 1) % tiers.length];
   const sample = boss.observation || {x: player.x, y: boss.playerY, vx: 0, at: boss.age};
+  // Teach all three routines once; later choices react to sampled movement,
+  // rather than repeating the same basic/medium/superpower turn forever.
+  if (boss.phaseAttacks <= 3) {
+    boss.attackTier = tiers[boss.phaseAttacks - 1]; boss.attackDecision = 'introduce-routine';
+  } else if (boss.attacksSinceSuperpower >= 3) {
+    boss.attackTier = 'superpower'; boss.attackDecision = 'reactor-recharged';
+  } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * .27) {
+    boss.attackTier = 'medium'; boss.attackDecision = 'intercept-flank';
+  } else {
+    boss.attackTier = boss.attackTier === 'basic' ? 'medium' : 'basic'; boss.attackDecision = 'pressure-observed-lane';
+  }
+  boss.attacksSinceSuperpower = boss.attackTier === 'superpower' ? 0 : boss.attacksSinceSuperpower + 1;
   const tier = boss.attackTier;
   const pattern = tier === 'superpower' ? 'reactorBarrage' : tier === 'medium'
     ? boss.phase === 1 ? 'crossfire' : 'rakingSalvo' : boss.phase === 1 ? 'focusedSalvo' : 'leadSalvo';
@@ -110,7 +163,7 @@ function beginCharge(boss, player, events) {
     targetY: Math.max(originY + 180, sample.y), observedX: sample.x,
     observedVx: sample.vx, observedAt: sample.at, leadOffset,
     originX: boss.x, originY, seconds: attackRules(boss).chargeSeconds,
-    safeGap: null, attackId: boss.attackId};
+    safeGap: null, attackId: boss.attackId, decision: boss.attackDecision};
   transition(boss, 'charge', events);
   // Animation-only compatibility event. Integration must not reveal aim or a
   // future safe lane through HUD warnings, reticles or helper lines.
@@ -131,11 +184,13 @@ function projectile(boss, x, y, vx, vy, ordinal, targetX) {
 function fireVolley(boss, events, fireTime = boss.stateTime) {
   const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === 'superpower';
   const crossfire = aim.pattern === 'crossfire';
-  const originX = aim.originX + (crossfire ? (boss.volley === 0 ? -1 : 1) * boss.r * .72 : 0);
-  const rake = Math.min(44, (aim.targetY - aim.originY) * .09);
+  const originX = boss.x + (crossfire ? (boss.volley === 0 ? -1 : 1) * boss.r * .72 : 0);
+  const originY = boss.y + boss.r * .7;
+  const targetY = Math.max(originY + 180, aim.targetY);
+  const rake = Math.min(44, (targetY - originY) * .09);
   const targetX = clamp(aim.targetX + (aim.pattern === 'rakingSalvo'
     ? (boss.volley === 0 ? -rake : rake) : 0), 24, boss.width - 24);
-  const distance = aim.targetY - aim.originY;
+  const distance = targetY - originY;
   const direction = Math.atan2(distance, targetX - originX);
   // The heavy barrage occupies a wider observed sector, but is slower and
   // retains an escape outside that sector. Small fixture arenas use a narrow
@@ -147,14 +202,15 @@ function fireVolley(boss, events, fireTime = boss.stateTime) {
   const speed = heavy ? (boss.phase === 1 ? 300 : 325) : phaseRules(boss).projectileSpeed;
   for (const [index, offset] of offsets.entries()) {
     const angle = direction + offset;
-    const shot = projectile(boss, originX, aim.originY,
+    const shot = projectile(boss, originX, originY,
       Math.cos(angle) * speed, Math.sin(angle) * speed, index, targetX);
+    shot.targetY = targetY;
     boss.attackClearanceSeconds = Math.max(boss.attackClearanceSeconds,
       fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy);
     events.push({type: 'projectile', projectile: shot});
   }
   events.push({type: 'volley', attackId: boss.attackId, phase: boss.phase,
-    attackTier: tier, volley: boss.volley});
+    attackTier: tier, volley: boss.volley, x: originX, y: originY});
   boss.volley++;
 }
 function stateDuration(boss) {
@@ -210,11 +266,8 @@ export function advanceGuardianAtlas(boss, dt, player, emit = () => {}) {
     if (boss.state === 'entry') {
       const progress = clamp(boss.stateTime / duration, 0, 1);
       boss.y = -boss.r * 1.6 + (boss.targetY + boss.r * 1.6) * (1 - (1 - progress) ** 3);
-    } else if (boss.state === 'closed') {
-      const progress = clamp(boss.stateTime / GUARDIAN_ATLAS_RULES.repositionSeconds, 0, 1);
-      const smooth = progress * progress * (3 - 2 * progress);
-      boss.x = boss.patrolFromX + (boss.patrolToX - boss.patrolFromX) * smooth;
-    } else if (boss.state === 'charge') boss.telegraph.progress = clamp(boss.stateTime / duration, 0, 1);
+    } else moveAtlas(boss, step);
+    if (boss.state === 'charge') boss.telegraph.progress = clamp(boss.stateTime / duration, 0, 1);
     else if (boss.state === 'fire') {
       const schedule = attackRules(boss).volleyTimes;
       while (boss.volley < schedule.length && before < schedule[boss.volley] + 1e-9 &&

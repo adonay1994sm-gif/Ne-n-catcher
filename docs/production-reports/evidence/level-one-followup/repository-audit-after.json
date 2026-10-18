@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-18T13:10:57.466Z",
+  "commit": "d4b08dcb2f22268944aa73fc4b71bca5f3496c7e",
+  "branch": "continuity-assets-audit-20261013",
+  "dirty": true,
+  "mode": "read-only",
+  "tracked": {
+    "paths": 3597,
+    "regularFiles": 3597,
+    "bytes": 892327698,
+    "missing": [],
+    "symlinks": []
+  },
+  "groups": {
+    "local-skills": {
+      "files": 4,
+      "bytes": 8711,
+      "largest": [
+        {
+          "path": ".agents/skills/neon-visual-qa/SKILL.md",
+          "bytes": 4320
+        },
+        {
+          "path": ".agents/skills/neon-production/SKILL.md",
+          "bytes": 3899
+        },
+        {
+          "path": ".agents/skills/neon-visual-qa/agents/openai.yaml",
+          "bytes": 247
+        },
+        {
+          "path": ".agents/skills/neon-production/agents/openai.yaml",
+          "bytes": 245
+        }
+      ]
+    },
+    "project-root": {
+      "files": 57,
+      "bytes": 2577607,
+      "largest": [
+        {
+          "path": "Neon_Catcher_V6_8_0_Netlify_Directo.zip",
+          "bytes": 1167292
+        },
+        {
+          "path": "design/campaign-space-v1.json",
+          "bytes": 514636
+        },
+        {
+          "path": "content-runtime.js.map",
+          "bytes": 422935
+        },
+        {
+          "path": "package-lock.json",
+          "bytes": 109459
+        },
+        {
+          "path": "ASSET_PRODUCTION_150.json",
+          "bytes": 105672
+        }
+      ]
+    },
+    "art-masters": {
+      "files": 308,
+      "bytes": 168907994,
+      "largest": [
+        {
+          "path": "art-source/audio/chapter1-score/chapter1_voyage_score_v1.wav",
+          "bytes": 12700902
+        },
+        {
+          "path": "art-source/audio/chapter1-score/chapter1_opening_score_v1.wav",
+          "bytes": 7408902
+        },
+        {
+          "path": "art-source/chapter1-rebirth/intro/chapter1-intro-generated-master.png",
+          "bytes": 3490690
+        },
+        {
+          "path": "art-source/chapter1-rebirth/intro/contact-dark.png",
+          "bytes": 3257594
+        },
+        {
+          "path": "art-source/chapter1-rebirth/intro/intro-packed-master.png",
+          "bytes": 3257444
+        }
+      ]
+    },
+    "runtime-assets": {
+      "files": 98,
+      "bytes": 12020069,
+      "largest": [
+        {
+          "path": "assets/guardian_atlas_states_v1.webp",
+          "bytes": 801340
+        },
+        {
+          "path": "assets/chapter1_voyage_score_v1.m4a",
+          "bytes": 683409
+        },
+        {
+          "path": "assets/guardian_atlas_states_v2.webp",
+          "bytes": 656550
+        },
+        {
+          "path": "assets/chronos_shockwave_atlas_v1.webp",
+          "bytes": 622232
+        },
+        {
+          "path": "assets/chapter1_intro_atlas_v1.webp",
+          "bytes": 490076
+        }
+      ]
+    },
+    "pipeline-generated-entry": {
+      "files": 4,
+      "bytes": 564678,
+      "largest": [
+        {
+          "path": "game.js",
+          "bytes": 297656
+        },
+        {
+          "path": "content-runtime.js",
+          "bytes": 249440
+        },
+        {
+          "path": "native-admob.js",
+          "bytes": 13551
+        },
+        {
+          "path": "core-runtime.js",
+          "bytes": 4031
+        }
+      ]
+    },
+    "documentation": {
+      "files": 366,
+      "bytes": 119377289,
+      "largest": [
+        {
+          "path": "docs/visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip",
+          "bytes": 5078663
+        },
+        {
+          "path": "docs/visual-rebirth/evidence/gallery-10-postfix-03/level-10-game.png",
+          "bytes": 1920728
+        },
+        {
+          "path": "docs/visual-rebirth/evidence/gallery-10-software-diagnostic/level-10-game.png",
+          "bytes": 1919983
+        },
+        {
+          "path": "docs/visual-rebirth/evidence/gallery-10-postfix-01/level-10-game.png",
+          "bytes": 1915617
+        },
+        {
+          "path": "docs/visual-rebirth/evidence/gallery-10-qa03/level-10-game.png",
+          "bytes": 1915507
+        }
+      ]
+    },
+    "historical-evidence": {
+      "files": 2558,
+      "bytes": 579344206,
+      "largest": [
+        {
+          "path": "docs/production-reports/evidence/arcade-polish/package-8d651b5/neon-cronium-arcade-polish-8d651b5.zip",
+          "bytes": 8906746
+        },
+        {
+          "path": "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/neon-cronium-chronos-gaia-pursuit-d39ed44.zip",
+          "bytes": 8777108
+        },
+        {
+          "path": "docs/production-reports/evidence/chronos-pursuit-gaia/final-package/neon-cronium-chronos-gaia-pursuit-33263c5.zip",
+          "bytes": 8777106
+        },
+        {
+          "path": "docs/production-reports/evidence/chronos-pursuit-gaia/natural-tested-package/neon-cronium-chronos-gaia-pursuit-612a3f3.zip",
+          "bytes": 8777008
+        },
+        {
+          "path": "docs/production-reports/evidence/voyage-polish/final-package/neon-cronium-voyage-polish-6cf67fc.zip",
+          "bytes": 8505663
+        }
+      ]
+    },
+    "native-project": {
+      "files": 23,
+      "bytes": 7364023,
+      "largest": [
+        {
+          "path": "ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png",
+          "bytes": 2284914
+        },
+        {
+          "path": "ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png",
+          "bytes": 2284914
+        },
+        {
+          "path": "ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png",
+          "bytes": 2284914
+        },
+        {
+          "path": "ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png",
+          "bytes": 482293
+        },
+        {
+          "path": "ios/App/App.xcodeproj/project.pbxproj",
+          "bytes": 14947
+        }
+      ]
+    },
+    "tests-tooling": {
+      "files": 113,
+      "bytes": 1491473,
+      "largest": [
+        {
+          "path": "tests/unified-flight-legacy.test.mjs",
+          "bytes": 78453
+        },
+        {
+          "path": "scripts/gaia-interceptor-browser-smoke.cjs",
+          "bytes": 42839
+        },
+        {
+          "path": "scripts/chapter-one-offline-smoke.cjs",
+          "bytes": 38422
+        },
+        {
+          "path": "scripts/combat-readability-smoke.cjs",
+          "bytes": 36536
+        },
+        {
+          "path": "tests/guardian-atlas-legacy.test.mjs",
+          "bytes": 34512
+        }
+      ]
+    },
+    "source": {
+      "files": 52,
+      "bytes": 561201,
+      "largest": [
+        {
+          "path": "src/game/03-ui-game-flow.js",
+          "bytes": 101655
+        },
+        {
+          "path": "src/game/06-world-rendering.js",
+          "bytes": 47046
+        },
+        {
+          "path": "src/game/07-player-item-rendering.js",
+          "bytes": 42929
+        },
+        {
+          "path": "src/game/04-entities-collision-damage.js",
+          "bytes": 29097
+        },
+        {
+          "path": "src/game/progression/chronos-flight.js",
+          "bytes": 23624
+        }
+      ]
+    },
+    "reviewed-third-party": {
+      "files": 14,
+      "bytes": 110447,
+      "largest": [
+        {
+          "path": "tools/third-party/pixelmatch/index.js",
+          "bytes": 24743
+        },
+        {
+          "path": "tools/third-party/skills/openai-skill-creator/SKILL.md",
+          "bytes": 18664
+        },
+        {
+          "path": "tools/third-party/skills/openai-skill-creator/scripts/init_skill.py",
+          "bytes": 14483
+        },
+        {
+          "path": "tools/third-party/skills/openai-skill-creator/LICENSE.txt",
+          "bytes": 11358
+        },
+        {
+          "path": "tools/third-party/skills/anthropic-webapp-testing/LICENSE.txt",
+          "bytes": 11345
+        }
+      ]
+    }
+  },
+  "largest": [
+    {
+      "path": "art-source/audio/chapter1-score/chapter1_voyage_score_v1.wav",
+      "bytes": 12700902,
+      "category": "art-masters"
+    },
+    {
+      "path": "docs/production-reports/evidence/arcade-polish/package-8d651b5/neon-cronium-arcade-polish-8d651b5.zip",
+      "bytes": 8906746,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/neon-cronium-chronos-gaia-pursuit-d39ed44.zip",
+      "bytes": 8777108,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/chronos-pursuit-gaia/final-package/neon-cronium-chronos-gaia-pursuit-33263c5.zip",
+      "bytes": 8777106,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/chronos-pursuit-gaia/natural-tested-package/neon-cronium-chronos-gaia-pursuit-612a3f3.zip",
+      "bytes": 8777008,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/voyage-polish/final-package/neon-cronium-voyage-polish-6cf67fc.zip",
+      "bytes": 8505663,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/score-read-guard/package/neon-cronium-score-guard-f39082f.zip",
+      "bytes": 8504676,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/chronos-voyage/final-package/neon-catcher-chronos-gaia-ten-stages.zip",
+      "bytes": 8173585,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/neon-cronium/neon-cronium-web-preview-207a94e.zip",
+      "bytes": 8173585,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/ship-controls/package-f543056/neon-catcher-ship-touch-comet.zip",
+      "bytes": 8160486,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "docs/production-reports/evidence/combat-readability/package-d93b135/neon-catcher-preview-d93b135.zip",
+      "bytes": 7940222,
+      "category": "historical-evidence"
+    },
+    {
+      "path": "art-source/audio/chapter1-score/chapter1_opening_score_v1.wav",
+      "bytes": 7408902,
+      "category": "art-masters"
+    }
+  ],
+  "localOutputs": [
+    {
+      "path": "node_modules",
+      "directory": true,
+      "symlink": false,
+      "ignored": true
+    },
+    {
+      "path": "www",
+      "directory": true,
+      "symlink": false,
+      "ignored": true
+    },
+    {
+      "path": "preview-dist",
+      "directory": true,
+      "symlink": false,
+      "ignored": true
+    },
+    {
+      "path": "ios/App/App/public",
+      "directory": true,
+      "symlink": false,
+      "ignored": true
+    }
+  ],
+  "untracked": {
+    "count": 72,
+    "paths": [
+      ".agents/skills/neon-interface-review/SKILL.md",
+      "art-source/audio/combat-sfx-v2/PROVENANCE.json",
+      "art-source/audio/combat-sfx-v2/README.md",
+      "art-source/audio/combat-sfx-v2/aac-decode-measurements.json",
+      "art-source/audio/combat-sfx-v2/audition.html",
+      "art-source/audio/combat-sfx-v2/combat_sfx_atlas_v2.wav",
+      "art-source/audio/combat-sfx-v2/masters/atlas-charge-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/atlas-charge-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/atlas-collapse-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/atlas-collapse-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/enemy-break-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/enemy-break-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/enemy-heavy-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/enemy-heavy-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/enemy-phaser-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/enemy-phaser-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/hull-hit-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/hull-hit-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/impact-metal-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/impact-metal-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/impact-plasma-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/impact-plasma-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/missile-launch-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/missile-launch-02.wav",
+      "art-source/audio/combat-sfx-v2/masters/phaser-01.wav",
+      "art-source/audio/combat-sfx-v2/masters/phaser-02.wav",
+      "art-source/audio/combat-sfx-v2/measurements.json",
+      "art-source/audio/combat-sfx-v2/render_bank.py",
+      "art-source/audio/combat-sfx-v2/unit-tests.txt",
+      "art-source/c9-hud-v1/PROVENANCE.json",
+      "art-source/c9-hud-v1/README.md",
+      "art-source/c9-hud-v1/alpha-qa.json",
+      "art-source/c9-hud-v1/c9-upgrades-generated-master.png",
+      "art-source/c9-hud-v1/c9-upgrades-packed-master.png",
+      "art-source/c9-hud-v1/export-atlas.cjs",
+      "art-source/c9-hud-v1/frames/0-emitter.png",
+      "art-source/c9-hud-v1/frames/1-hull.png",
+      "art-source/c9-hud-v1/frames/2-missiles.png",
+      "art-source/c9-hud-v1/frames/3-coolant.png",
+      "art-source/c9-hud-v1/metadata.json",
+      "art-source/c9-hud-v1/verify-atlas.cjs",
+      "assets/c9_upgrade_icons_v1.webp",
+      "assets/combat_sfx_atlas_v2.json",
+      "assets/combat_sfx_atlas_v2.m4a",
+      "docs/agents/NETLIFY_TEST_SETUP.md",
+      "docs/production-reports/evidence/level-one-followup/build-01.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/architecture.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/audio-lifecycle.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/build.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/content-integration-assets.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/engine.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/experimental-render-adapter.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/inventory.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/regression.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/results.json",
+      "docs/production-reports/evidence/level-one-followup/certification-01/static.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/visual-artpass.txt",
+      "docs/production-reports/evidence/level-one-followup/certification-01/web.txt",
+      "docs/production-reports/evidence/level-one-followup/contracts-corrections-02.txt",
+      "docs/production-reports/evidence/level-one-followup/generated-copies-untracked.json",
+      "docs/production-reports/evidence/level-one-followup/tracking-initial.txt",
+      "scripts/current-level-visual-smoke.cjs",
+      "scripts/repository-hygiene.mjs",
+      "src/game/narrative/flight-tutorial.js",
+      "tests/flight-tutorial.test.mjs",
+      "tests/missile-feedback.test.mjs",
+      "tests/repository-hygiene.test.mjs",
+      "tools/third-party/skills/wshobson-ui-design/LICENSE",
+      "tools/third-party/skills/wshobson-ui-design/accessibility-compliance/SKILL.md",
+      "tools/third-party/skills/wshobson-ui-design/accessibility-compliance/references/aria-patterns.md",
+      "tools/third-party/skills/wshobson-ui-design/accessibility-compliance/references/details.md",
+      "tools/third-party/skills/wshobson-ui-design/interaction-design/SKILL.md"
+    ]
+  },
+  "duplicateScan": {
+    "enabled": false,
+    "minimumBytes": 262144,
+    "groups": []
+  },
+  "trackedGeneratedOutputs": {
+    "files": 0,
+    "bytes": 0,
+    "paths": [],
+    "action": "review exact index entries; preserve disk, source assets and Git history"
+  },
+  "sensitivePathWarnings": [],
+  "policy": {
+    "deletions": 0,
+    "writes": 0,
+    "historicalEvidence": "preserve",
+    "masters": "preserve",
+    "generatedBundles": "regenerate through pipeline",
+    "gitHistory": "preserve; no reset, clean, rewrite or force push"
+  }
+}

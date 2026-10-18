@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 96,
-  "runtimeBytes": 11998414,
+  "assetCount": 99,
+  "runtimeBytes": 12444076,
   "audit": {
-    "reviewed": 96,
+    "reviewed": 99,
     "READY": 58,
-    "IN_REVIEW": 38,
+    "IN_REVIEW": 41,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -14,7 +14,7 @@
     "DUPLICATE": 0,
     "MISSING": 0,
     "method": "dimensions, channels, file size, runtime references and contact-sheet visual review; unified Chronos exports: metadata dimensions, alpha, byte counts and SHA-256 verified against disk; runtime/artistic review pending; combat-readability: three new exports decoded and their dimensions/alpha/bytes/SHA-256 checked against disk; gameplay and artistic review pending; ship identity and comet v2: hashes/dimensions/alpha reviewed; old ship/comet references excluded from active precache without deletion; hostile ordnance/salvage v1: preserved master and optimized atlas metadata, bytes and SHA-256 verified; sixteen distinct RGBA cells and Chromium decode evidence; live gameplay pending; Gaia pulse v3: master/export bytes and SHA-256, sixteen distinct RGBA cells, transparent16px gutters and Chromium asset decode verified; game review pending; specialist polish: versioned padded Atlas/energy and original AAC/JSON with hashes and retained masters; current browser review pending.",
-    "retainedOutsidePrecache": 8
+    "retainedOutsidePrecache": 12
   },
   "coordinateSystem": {
     "canvas": "720x1280 logical pixels, responsive without stretching",
@@ -22,13 +22,13 @@
     "shipAnchor": "player.x/player.y",
     "shipVisualOffset": {
       "x": 0,
-      "y": -7.68
+      "y": -9.984000000000002
     },
     "shipVisualSize": {
-      "width": 83.2,
-      "height": 83.2
+      "width": 108.16,
+      "height": 108.16
     },
-    "shipCollision": "Classic outline scaled to40%; N7 and archived Journey preserve historical geometry. Tests accompany the change."
+    "shipCollision": "Classic outlined hull scaled52%: owner requested30% growth over previous40%; N7/Journey unchanged. Specific silhouette/swept collision tests required."
   },
   "groups": [
     {
@@ -785,15 +785,16 @@
       "level": "1.6-1.7",
       "use": "Independent illustrated C9 orbital workshop, event-driven 2x2 atlas: closed, docking, service, departure",
       "animation": "Four genuine mechanical poses controlled by existing route/service state; no high-FPS articulated cycle claimed.",
-      "activeRuntime": true,
-      "precache": true,
+      "activeRuntime": false,
+      "precache": false,
       "status": "IN_REVIEW",
       "technicalAcceptance": "PASSED_CHROMIUM_NATURAL_SERVICE_OFFLINE",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "OpenAI image_gen tool; original generated image for this project",
       "version": "c9-station-v1",
-      "evidence": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json"
+      "evidence": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json",
+      "retainedReason": "Historical cinematic/orbital-station reference; current classic uses in-world Chronos and onboard C9."
     },
     {
       "id": "ch02-interceptor-v1",
@@ -911,15 +912,16 @@
         "type": "Four distinct authored story states; timed transitions belong to game presentation",
         "loop": false
       },
-      "activeRuntime": true,
-      "precache": true,
+      "activeRuntime": false,
+      "precache": false,
       "status": "IN_REVIEW",
       "technicalAcceptance": "IN_GAME_CHROMIUM_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
       "version": 1,
-      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+      "retainedReason": "Historical cinematic/orbital-station reference; current classic uses in-world Chronos and onboard C9."
     },
     {
       "id": "chapter1-portraits-v1",
@@ -1117,8 +1119,8 @@
       "use": "Combat foley · 8 cues × 2 variants",
       "level": "1",
       "status": "IN_REVIEW",
-      "activeRuntime": true,
-      "precache": true,
+      "activeRuntime": false,
+      "precache": false,
       "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
@@ -1126,7 +1128,8 @@
       "version": 1,
       "decodedPCMBytesAt48000": 2626560,
       "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json",
-      "decodedPCMBytesMeasuredChromium44100": 2413152
+      "decodedPCMBytesMeasuredChromium44100": 2413152,
+      "supersededBy": "combat-sfx-atlas-v2"
     },
     {
       "id": "combat-sfx-map-v1",
@@ -1140,14 +1143,74 @@
       "use": "Combat cue metadata",
       "level": "1",
       "status": "IN_REVIEW",
-      "activeRuntime": true,
-      "precache": true,
+      "activeRuntime": false,
+      "precache": false,
       "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original authored production; retained masters and precise tool/source provenance in metadata",
       "version": 1,
-      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json",
+      "supersededBy": "combat-sfx-map-v2"
+    },
+    {
+      "id": "c9-upgrade-icons-v1",
+      "path": "assets/c9_upgrade_icons_v1.webp",
+      "master": "art-source/c9-hud-v1/c9-upgrades-packed-master.png",
+      "metadata": "art-source/c9-hud-v1/metadata.json",
+      "dimensions": "1024x1024",
+      "format": "webp-alpha",
+      "use": "Four illustrated onboard workshop upgrade cards",
+      "decodedRGBABytes": 4194304,
+      "size": 165564,
+      "sha256": "c8f36054d70ab750aa2ffeef099e278959c214265953631e02e915734f8cd792",
+      "status": "IN_REVIEW",
+      "activeRuntime": true,
+      "precache": true,
+      "technicalAcceptance": "PENDING_CURRENT_BUILD_BROWSER",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original project illustration/synthesis; see retained metadata and masters",
+      "version": 1
+    },
+    {
+      "id": "combat-sfx-atlas-v2",
+      "path": "assets/combat_sfx_atlas_v2.m4a",
+      "master": "art-source/audio/combat-sfx-v2/combat_sfx_atlas_v2.wav",
+      "metadata": "art-source/audio/combat-sfx-v2/PROVENANCE.json",
+      "dimensions": "48000Hz mono AAC 15.96s",
+      "format": "aac-lc",
+      "use": "Combat foley including hostile weapon emissions: 10 cues x 2 variants",
+      "decodedPCMBytesAt48000": 3064320,
+      "size": 277049,
+      "sha256": "81a09c0979225d81357cc45b9f45e833a8b751f8c424a95233bcb9ab0a249c27",
+      "status": "IN_REVIEW",
+      "activeRuntime": true,
+      "precache": true,
+      "technicalAcceptance": "PENDING_CURRENT_BUILD_BROWSER",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original project illustration/synthesis; see retained metadata and masters",
+      "version": 2
+    },
+    {
+      "id": "combat-sfx-map-v2",
+      "path": "assets/combat_sfx_atlas_v2.json",
+      "master": "art-source/audio/combat-sfx-v2/PROVENANCE.json",
+      "metadata": "art-source/audio/combat-sfx-v2/PROVENANCE.json",
+      "dimensions": "JSON",
+      "format": "json",
+      "use": "Ten combat cue timing/variation metadata",
+      "size": 3049,
+      "sha256": "ef92c62219e511fb53b054f4c5cbdfdfd281d70e5c574204df8823ce1c504a57",
+      "status": "IN_REVIEW",
+      "activeRuntime": true,
+      "precache": true,
+      "technicalAcceptance": "PENDING_CURRENT_BUILD_BROWSER",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original project illustration/synthesis; see retained metadata and masters",
+      "version": 2
     }
   ],
   "project": "NEON CRONIUM"

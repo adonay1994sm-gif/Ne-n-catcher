@@ -112,6 +112,8 @@
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
   let classicHullReserveCapacity = 30;
+  let classicTutorial = null;
+  let classicWorkshopOpened = false;
   let classicChapterStory = null;
   let classicChapterView = null;
   let classicChapterOutroStartedAt = null;

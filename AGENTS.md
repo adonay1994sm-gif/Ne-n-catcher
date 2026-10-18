@@ -1,3 +1,13 @@
+## Prioridad vigente — nivel uno dinámico y C9 a bordo · 18/10/2026
+
+Última orden del propietario: continuar investigando e integrando skills útiles; retirar las láminas cinematográficas de apertura y conservar la destrucción animada de Chronos dentro de la partida. Añadir un tutorial breve y aumentar la presencia enemiga. Perseguidores y Atlas deben maniobrar con variación procedural reproducible, ataques físicos y respuesta posible; emisiones enemigas con sonido propio. Mejorar misiles con explosión visible y daño de trabajo18, conservando tres unidades, pago/recibos e inmunidad de placas cerradas. Atlas conserva96HP pero utiliza movimiento y decisiones más exigentes.
+
+C9 pasa a ser taller de a bordo abierto desde el HUD: pausa real, tarjetas ilustradas, compras explícitas, controles/foco y retorno al mismo vuelo. Retirar la estación de la órbita clásica. Conservar checkpoints v2 de1.6 y su reparación de emergencia única; resolver el hito sin forzar una modal ni repetir reparación al abrir el taller. Nave **30% mayor respecto a40% previo: escala52%**, con colisión comprobada y propulsión anclada. Es la interpretación de trabajo comunicada al propietario; no alterar campañas archivadas por accidente.
+
+Limpiar copias generadas del índice preservando fuentes, maestros, disco e historial; sin purga masiva de evidencia. Preparar Netlify exclusivamente de pruebas, opt-in de rama y paquete verificable; falta autenticación/destino aislado si no existe. Referencia de este lote: `docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md`. Esta orden sustituye las reglas creativas incompatibles de apertura cinematográfica, nave40% y parada orbital obligatoria de C9. Persisten rama autorizada, MotorV1false, RAF único, guardados y límites de producción/PR3/main/gastos.
+
+---
+
 ## Equipo especializado vigente · 18/10/2026
 
 El propietario autoriza especialistas coordinados, investigación de skills/código abierto y producción auditiva. Aplicar [.agents/skills/neon-production/SKILL.md](.agents/skills/neon-production/SKILL.md) y [.agents/skills/neon-visual-qa/SKILL.md](.agents/skills/neon-visual-qa/SKILL.md); responsabilidades en [docs/agents/SPECIALIST_TEAM.md](docs/agents/SPECIALIST_TEAM.md). Son instrucciones reutilizables y agentes de sesión, no reentrenamiento permanente. Máximo seis especialistas simultáneos y un integrador; un escritor por archivo y fuentes congeladas antes de compilar/certificar. Seguimiento único en `docs/production-tasks.json`.

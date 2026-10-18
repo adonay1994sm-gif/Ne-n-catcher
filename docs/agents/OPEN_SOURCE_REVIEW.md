@@ -46,3 +46,28 @@ No se encontró `develop-web-game/SKILL.md` en el árbol actual de `openai/skill
 ## Incorporación verificada en este lote
 
 Pixelmatch fijado está en `tools/third-party/pixelmatch/`, licencia ISC conservada y hash de origen. `tests/visual-polish-assets.test.mjs` y `scripts/specialist-visual-assets.mjs` lo ejecutan realmente: seis contratos Node y decodificación/composición Chromium de los12frames originales. Evidencia en `docs/production-reports/evidence/specialist-polish/asset-qa/results.json`. Comparar diferencias no concede aceptación estética. No se añadieron dependencias npm ni código runtime externo.
+
+## Ampliación acotada: interfaz de vuelo y C9 ·18/10/2026
+
+Se incorporan **dos guías adicionales** de [wshobson/agents](https://github.com/wshobson/agents/tree/0874a27b17a22e2b7c2e2bcd725768e0803cad06), commit `0874a27b17a22e2b7c2e2bcd725768e0803cad06`, licencia raíz **MIT**, copyright 2024 Seth Hobson. Se comprobó el árbol del directorio y no hay licencia local distinta en estas skills. Copias íntegras de las dos guías, dos referencias y licencia en `tools/third-party/skills/wshobson-ui-design/`; los cinco hashes se añaden al mismo `SOURCES.json`, que ahora registra 14 archivos.
+
+| Guía | Aplicación concreta en este lote | Adaptación necesaria |
+| --- | --- | --- |
+| [interaction-design](https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/interaction-design/SKILL.md) | Respuesta inmediata del acceso C9, apertura breve, contexto de vuelo preservado y animación reducible | Usar DOM/CSS existentes y opción de efectos reducidos; no importar React/Framer Motion ni sus timers de ejemplo |
+| [accessibility-compliance](https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/accessibility-compliance/SKILL.md) | Panel C9 con nombre, foco, Escape/retorno, tamaño táctil y estado accesible de compra | Reutilizar el contrato del hangar y el estado de pausa actual, sin Headless UI; distinguir 44px táctiles del proyecto de los 24px AA con excepciones de WCAG2.2 |
+
+La adaptación ejecutable como instrucciones de repositorio es [.agents/skills/neon-interface-review/SKILL.md](../../.agents/skills/neon-interface-review/SKILL.md). No se han ejecutado snippets externos ni instalado dependencias. Se revisaron completas ambas guías, `references/details.md` y `references/aria-patterns.md` antes de adaptar sus patrones. No se copia literalmente su ejemplo que vuelve a anunciar cada cambio con `setTimeout`, ni se considera necesaria ARIA redundante sobre botones nativos.
+
+**Aplicación observada, no sólo catálogo:** en HEAD documental `d4b08dcb2f22268944aa73fc4b71bca5f3496c7e`, `src/game/03-ui-game-flow.js` crea `flightDock` sin `role="dialog"`, `aria-modal` o contrato de foco; el hangar del mismo archivo sí dispone de foco y ciclo Tab. Esta discrepancia se identificó al revisar las fuentes y se trasladó al propietario de interfaz para que el nuevo C9 desde HUD incluya pausa, limpieza de contactos, foco/retorno y confirmación de compra. La skill define la comprobación; el informe del integrador registra si la implementación y pruebas posteriores la satisfacen. Su incorporación no se presenta como certificación WCAG ni VoiceOver físico.
+
+La nueva skill pasa `quick_validate.py` con salida0 y los14hashes fijados coinciden. Investigación adicional: `vercel-labs/agent-skills` no presentó licencia identificada en la respuesta de metadatos consultada; no se incorpora. Las skills de Stitch dependen de un servicio externo innecesario para este lote; Godot/Unity de wshobson suponen otro motor y se descartan. Se mantiene una ampliación pequeña dirigida a un defecto actual.
+
+## Higiene y distribución de pruebas
+
+`node scripts/repository-hygiene.mjs` inventaría sin borrar ni modificar archivos, guardados o Git; `--duplicates` compara hashes de binarios grandes. `--output <archivo-nuevo>` crea explícitamente un informe sin sobrescribir uno existente. Las seis pruebas de `tests/repository-hygiene.test.mjs` verifican conservación de bytes/índice, duplicados, copias generadas, enlaces no seguidos y rechazo de opciones destructivas o escritura dentro de `.git`, incluso mediante un enlace simbólico. Git usa `--no-optional-locks` para evitar actualizar el índice durante la lectura.
+
+La auditoría inicial sobre HEAD `d4b08dc` sucio por trabajo coordinado encontró3.625archivos tracked y898.802.115bytes de disco actuales. Incluye579.344.206bytes de evidencia de producción,119.356.650de otra documentación —con capturas/paquetes históricos— y168.907.994de maestros. Son materiales recuperables, no basura. Las17agrupaciones de binarios idénticos incluyen exportaciones maestras/runtime, evidencias de ejecuciones distintas y splashiOS; no son una autorización para borrarlas.
+
+Defecto concreto:28copias generadas seguían indexadas en `www/` e `ios/App/App/public/` aunque ambos directorios ya estaban ignorados. El integrador puede retirar **sólo esas entradas del índice**, conservando disco, `assets/`, fuentes y su historial; el pipeline las reconstruye. No se propone reescribir Git para reducir el histórico ni mover cientos de evidencias rompiendo enlaces. La cifra de bytes es una medida de checkout sucio, no tamaño del paquete de juego.
+
+Netlify conserva la puerta de rama/contexto y no está autenticado en este entorno. [Guía de sitio aislado](NETLIFY_TEST_SETUP.md). La prueba unitaria real `node --test --test-name-pattern='opt-in|gate|contexts' tests/preview-build.test.mjs` pasó1/1; no es evidencia de despliegue o URL accesible.

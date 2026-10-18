@@ -1,0 +1,61 @@
+✖ first-flight hints are brief, stable and tied to the designed route beats (1.973422ms)
+✔ advancing the real route emits each hint once without requiring elapsed wall time (1.397355ms)
+✔ pause and zero route advancement cannot emit or consume hints, even when a slot opens (0.546383ms)
+✔ story occupies the slot first; the hint waits only inside its route-time validity window (0.325809ms)
+✔ checkpoint reentry skips previously crossed lessons and never dumps them into comms (1.303377ms)
+✔ existing shots and recovered energy do not suppress the hold-fire and material lessons (0.281103ms)
+✔ opening C9 before its lesson skips redundant instruction without a new saved flag (0.155508ms)
+✔ callback delivery consumes the event first and remains idempotent after callback failure or reentry (0.583699ms)
+✔ snapshots expose immutable copies and identical route input reproduces delivery (0.652029ms)
+✔ invalid clocks, counters and views fail before mutating the current tutorial (0.972762ms)
+✔ tutorial owns no scheduler, browser clock, storage, reward or input operations (11.147838ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ fresh classic launch stays in the Chronos world with immediate controls and no cinematic image request (308.693839ms)
+✔ opening HUD C9 freezes current gameplay resources without repairing, charging or replacing live objects (119.491339ms)
+✔ HUD C9 releases both held pointer contacts and does not resume a stale trigger or pilot anchor (84.37281ms)
+✔ the C9 dialog establishes focus, wraps enabled controls and Escape returns focus without reopening pause (77.795004ms)
+✔ the actual onboard purchase commits price, entitlement and receipt once while the route stays paused (94.344208ms)
+✔ an interrupted onboard monetary write grants no upgrade and a retry charges one coherent transaction (109.77472ms)
+✔ stage 1.6 resolves emergency service in flight once without a forced orbital station or modal (2151.217534ms)
+✔ a preserved legacy service-waiting checkpoint resumes in flight and records the same once-only completion (48.496677ms)
+✔ Atlas blocks the onboard workshop instead of permitting combat avoidance by repeatedly opening C9 (45.212321ms)
+✔ archived N-7 and Journey cannot open the classic onboard workshop or touch its ledger (86.945635ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 20
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3802.809457
+
+✖ failing tests:
+
+test at tests/flight-tutorial.test.mjs:9:1
+✖ first-flight hints are brief, stable and tied to the designed route beats (1.973422ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /HUD.*pausar, reparar y mejorar/. Input:
+  
+  'C9, en el HUD: abre el taller para pausar y configurar la nave.'
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/flight-tutorial.test.mjs:18:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'C9, en el HUD: abre el taller para pausar y configurar la nave.',
+    expected: /HUD.*pausar, reparar y mejorar/,
+    operator: 'match',
+    diff: 'simple'
+  }

@@ -290,6 +290,7 @@
       combatSfx.play(cue,{pan:clamp(x/W*2-1,-.75,.75),eventId});return;
     }
     const fallback={phaser:[670,.065,"triangle",.04],"missile-launch":[145,.18,"triangle",.045],
+      "enemy-phaser":[280,.08,"triangle",.04],"enemy-heavy":[120,.16,"sawtooth",.045],
       "impact-metal":[620,.05,"triangle",.035],"impact-plasma":[180,.04,"square",.025],
       "hull-hit":[95,.22,"sawtooth",.08],"enemy-break":[920,.05,"triangle",.04],
       "atlas-charge":[135,.28,"triangle",.065],"atlas-collapse":[640,.28,"sine",.06]};

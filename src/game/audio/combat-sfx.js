@@ -4,8 +4,9 @@
  * The current game event owner calls play once; policy suppresses duplicates,
  * prioritises damage and heavy machinery, and immediately stops paused audio.
  */
-export const COMBAT_SFX_VERSION = 1;
-export const COMBAT_SFX_SRC = 'assets/combat_sfx_atlas_v1.m4a';
+export const COMBAT_SFX_VERSION = 2;
+export const COMBAT_SFX_SRC = 'assets/combat_sfx_atlas_v2.m4a';
+export const COMBAT_SFX_DURATION = 15.96;
 export const COMBAT_SFX_VOICE_LIMIT = 8;
 export const COMBAT_SFX_GAIN_BUDGET = .95;
 
@@ -15,7 +16,9 @@ const cue = (offsets, duration, gain, priority, cooldown, polyphony) => Object.f
 });
 
 // Exact seconds in the 48 kHz authoring master; 120 ms silent inter-cue guards.
-// assets/combat_sfx_atlas_v1.json is the traceable authoring/inventory equivalent.
+// assets/combat_sfx_atlas_v2.json is the traceable authoring/inventory equivalent.
+// Existing v1 performances retain their offsets; new weapon emissions are not
+// impacts and must be played by the real projectile/volley event owner.
 export const COMBAT_SFX_CUES = Object.freeze({
   'phaser': cue([0, .32], .20, .15, 1, .045, 3),
   'missile-launch': cue([.64, 1.34], .58, .31, 5, .25, 2),
@@ -24,7 +27,9 @@ export const COMBAT_SFX_CUES = Object.freeze({
   'hull-hit': cue([4.20, 4.90], .58, .29, 6, .12, 2),
   'enemy-break': cue([5.60, 6.67], .95, .31, 5, .10, 2),
   'atlas-charge': cue([7.74, 8.74], .88, .28, 7, .30, 1),
-  'atlas-collapse': cue([9.74, 11.71], 1.85, .40, 9, 1, 1)
+  'atlas-collapse': cue([9.74, 11.71], 1.85, .40, 9, 1, 1),
+  'enemy-phaser': cue([13.68, 14.08], .28, .19, 2, .055, 3),
+  'enemy-heavy': cue([14.48, 15.22], .62, .28, 5, .16, 2)
 });
 
 const disconnect = node => { try { node?.disconnect(); } catch { /* ended node */ } };
@@ -34,7 +39,7 @@ export function createCombatSfx({context, output, fetchAsset = (...args) => fetc
   if (!context?.createBufferSource || !context?.decodeAudioData || !context?.createGain || !output) return null;
   const bus = context.createGain();
   bus.gain.value = 1; bus.connect(output);
-  const active = new Set(), lastPlayed = new Map(), variants = new Map(), recentIds = new Set();
+  const active = new Set(), lastPlayed = new Map(), variants = new Map(), recentIds = new Set(), playedByCue = new Map();
   let buffer = null, loading = null, disposed = false, paused = true, enabled = true;
   let generation = 0, volume = 1, played = 0, dropped = 0, stolen = 0, failed = false;
 
@@ -83,7 +88,10 @@ export function createCombatSfx({context, output, fetchAsset = (...args) => fetc
         }
         const decoded = await context.decodeAudioData(bytes);
         if (disposed || generation !== attempt) return false;
-        if (!Number.isFinite(decoded?.duration) || decoded.duration < 13.56 || decoded.duration > 15) {
+        // Allow encoder padding, but never accept the old bank: otherwise an
+        // offline mismatch would silently cut off the appended enemy weapons.
+        if (!Number.isFinite(decoded?.duration) || decoded.duration < COMBAT_SFX_DURATION - .12 ||
+            decoded.duration > COMBAT_SFX_DURATION + .40) {
           throw new Error('combat-sfx atlas duration invalid');
         }
         buffer = decoded; failed = false;
@@ -142,6 +150,7 @@ export function createCombatSfx({context, output, fetchAsset = (...args) => fetc
       dropped++; return false;
     }
     variants.set(name, index + 1); lastPlayed.set(name, now); remember(id); played++;
+    playedByCue.set(name, (playedByCue.get(name) || 0) + 1);
     return true;
   }
 
@@ -158,11 +167,12 @@ export function createCombatSfx({context, output, fetchAsset = (...args) => fetc
     snapshot: () => Object.freeze({version: COMBAT_SFX_VERSION, ready: Boolean(buffer), loading: Boolean(loading),
       failed, disposed, paused, enabled, volume, activeVoices: active.size,
       activeGain: [...active].reduce((sum, record) => sum + record.level, 0),
-      played, dropped, stolen, decodedBytes: buffer ? buffer.length * buffer.numberOfChannels * 4 : 0}),
+      played, playedByCue: Object.freeze(Object.fromEntries(playedByCue)), dropped, stolen,
+      decodedBytes: buffer ? buffer.length * buffer.numberOfChannels * 4 : 0}),
     dispose() {
       if (disposed) return;
       disposed = true; generation++; loading = null; stopAll(); buffer = null;
-      lastPlayed.clear(); variants.clear(); recentIds.clear(); disconnect(bus);
+      lastPlayed.clear(); variants.clear(); recentIds.clear(); playedByCue.clear(); disconnect(bus);
     }
   });
 }

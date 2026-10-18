@@ -183,12 +183,37 @@ test('a surviving opponent brakes into a visible band and re-engages instead of 
     assert.ok(shots.length >= 3, `${role} completes repeated attacks with real animation events`);
     assert.ok(shots.at(-1).at - shots[0].at >= 6, 'multiple combat opportunities span several seconds');
     assert.ok(held.at(-1).age - held[0].age >= 7, 'the enemy persists as a fightable opponent');
-    assert.ok(Math.max(...held.map(q => q.y)) - Math.min(...held.map(q => q.y)) < 58,
-      'combat does not continue descending past the ship');
+    assert.ok(Math.max(...held.map(q => q.y)) - Math.min(...held.map(q => q.y)) < 110,
+      'the new physical depth arcs stay in a bounded combat band, never descending past the ship');
     assert.ok(held.some(q => Math.abs(q.speed) < 1), 'vertical velocity genuinely settles');
     assert.equal(item.hp, 2, 'persistence does not inflate HP');
     assert.ok(['attack-budget', 'time-limit'].includes(item.classicScout.retreatReason));
   }
+});
+
+test('procedural role manoeuvres trace two-dimensional arcs with individual seeded signatures', () => {
+  const signatures = new Set();
+  for (const role of ['raider', 'scout', 'interceptor']) for (const seed of [11, 42, 107]) {
+    const item = enemyAt({role, seed}), player = {x: 360, y: 1080}, shots = [], trace = [];
+    until(item, player, () => item.classicScout.combatStartedAt !== null, shots);
+    for (let frame = 0; frame < 600 && item.classicScout.state !== 'retreat'; frame++) {
+      const previousVelocity = item.classicScout.vx, previousSpeed = item.s;
+      step(item, player, shots);
+      const cap = {raider: 265, scout: 190, interceptor: 315}[role];
+      assert.ok(Math.abs(item.classicScout.vx - previousVelocity) <= cap * DT + 1e-8,
+        'all apparent bank/arc changes come from bounded physical acceleration');
+      assert.ok(Math.abs(item.s - previousSpeed) <= 150 * 1.8 * DT + 1e-8);
+      trace.push({x: item.x, y: item.y, vx: item.classicScout.vx, vy: item.s});
+    }
+    const spreadX = Math.max(...trace.map(q => q.x)) - Math.min(...trace.map(q => q.x));
+    const spreadY = Math.max(...trace.map(q => q.y)) - Math.min(...trace.map(q => q.y));
+    assert.ok(spreadX > 75, `${role}/${seed} changes its fighting lane`);
+    assert.ok(spreadY > 20, `${role}/${seed} has genuine depth movement`);
+    assert.ok(trace.some(q => q.vx > 25) && trace.some(q => q.vx < -25), 'the opponent reverses its strafe');
+    assert.ok(trace.some(q => q.vy > 6) && trace.some(q => q.vy < -6), 'the opponent curves in depth');
+    signatures.add(trace.filter((_, index) => index % 50 === 0).map(q => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join('|'));
+  }
+  assert.equal(signatures.size, 9, 'different roles/seeds cannot replay one identical trajectory');
 });
 
 test('height corrections use the existing speed field and never integrate Y twice', () => {

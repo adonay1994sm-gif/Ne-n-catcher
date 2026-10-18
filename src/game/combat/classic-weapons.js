@@ -9,9 +9,9 @@ const weapon = definition => Object.freeze({...definition,
 // Rules and ammunition are match-local. Saved equipment keeps the stable
 // pulse/twin/lance identifiers; a new run always adopts the current magazine.
 export const CLASSIC_WEAPON_RULES = Object.freeze({
-  version: 'classic-weapons-v3', maxCharges: 20, rechargeSeconds: 2,
+  version: 'classic-weapons-v4', maxCharges: 20, rechargeSeconds: 2,
   maxDelta: .05, maxProjectiles: 32, boundsMargin: 80,
-  missile: Object.freeze({damage:6,speed:760,radius:10,duration:3.2,cooldown:.7}),
+  missile: Object.freeze({damage:18,speed:760,radius:10,duration:3.2,cooldown:.7}),
   types: Object.freeze({
     pulse: weapon({id: 'pulse', label: 'Phaser', damageMultiplier: 1,
       description: 'Daño ×1: un pulso de 1 de daño por carga.', cooldown: .24, speed: 920,

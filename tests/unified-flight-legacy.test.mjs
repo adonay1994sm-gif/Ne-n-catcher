@@ -28,9 +28,9 @@ const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expec
  * handlers/models, with a mocked Canvas and loaded images. Explicit collection,
  * target insertion and quiet frames isolate contracts; this is not natural
  * gameplay, a visual acceptance test or a physical iPhone certification.
- * prepare() explicitly skips the opening through the story model so input and
- * weapon tests start unlocked without advancing the route clock. Tests of the
- * opening opt out. Boss fixtures use the actual route/model APIs to isolate
+ * prepare() may mark the retained historic opening as skipped without advancing
+ * the route clock. The current in-world presentation starts unlocked either
+ * way. Boss fixtures use the actual route/model APIs to isolate
  * chapter flow; injected model damage is never presented as a playable victory.
  */
 function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false,
@@ -267,18 +267,25 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     voyage: () => JSON.parse(window.localStorage.getItem(VOYAGE_KEY))};
 }
 
-test('the real opening locks pilot controls and fire for nine played seconds and freezes that lock during pause',t=>{
+test('the in-world Chronos opening immediately permits pilot control and fire while pause freezes story and route',t=>{
   const h=harness(t);h.api.prepare(0,{skipOpening:false});
-  assert.equal(h.snapshot().chapter.opening.controlsLocked,true);
-  assert.equal(h.api.fireManualShot(),false);
+  assert.equal(h.snapshot().chapter.opening.controlsLocked,false);
+  assert.equal(h.snapshot().chapter.opening.active,false,'Fullscreen illustration is absent from the live opening');
+  assert.equal(h.api.fireManualShot(),true,'The initial playable Chronos scene already permits a manual trigger');
   const before=h.snapshot().player;
   h.pointer('pointerdown',91,200,500);h.pointer('pointermove',91,240,460);
-  assert.equal(h.snapshot().input.active,false);assert.equal(h.snapshot().player.target,before.target);
-  h.advance(8.95);assert.equal(h.snapshot().chapter.opening.controlsLocked,true);
+  assert.equal(h.snapshot().input.active,true);assert.ok(h.snapshot().player.target>before.target);
+  h.pointer('pointerup',91,240,460);
+  h.advance(8.95);assert.equal(h.snapshot().chapter.opening.controlsLocked,false);
   h.api.pauseGame();const paused=h.snapshot();h.advance(5);
   assert.deepEqual(h.snapshot().chapter,paused.chapter);assert.deepEqual(h.snapshot().route,paused.route);
+  assert.deepEqual(h.snapshot().weapons,paused.weapons);assert.equal(h.api.fireManualShot(),false);
   h.api.resumeGame();h.advance(.1);
   assert.equal(h.snapshot().chapter.opening.controlsLocked,false);
+  assert.equal(h.snapshot().destructionPose.state,'impact','The original one rupture still occurs at nine route seconds');
+  h.clearDrawCalls();h.api.render();
+  assert.equal(h.drawCalls.some(call=>call.path==='assets/chapter1_intro_atlas_v1.webp'),false,
+    'The live opening keeps the original Chronos layers instead of another cinematic plate');
   assert.equal(h.api.fireManualShot(),true);
   assert.equal(h.pending.size,1);
 });
@@ -356,13 +363,20 @@ test('the opt-in general auto-fire uses the twenty-round magazine, survives a CR
   assert.ok(stillRecovering.weapons.shotSequence>waiting.weapons.shotSequence,
     'A missing recovery quota must not silently suspend the enabled weapon');
   h.reachStage(6);h.recoverStageQuota();h.advance(1.3);
+  assert.equal(h.snapshot().state,'playing');assert.equal(h.snapshot().route.waitingFor,null);
+  assert.equal(h.node('flightDock').classList.contains('show'),false,'A route milestone no longer forces the workshop');
+  h.node('classicC9').click();
   const docked=h.snapshot();
-  assert.equal(docked.state,'paused');assert.equal(docked.route.waitingFor,'service');
+  assert.equal(docked.state,'paused');assert.equal(docked.route.waitingFor,null);
   assert.equal(checkbox.checked,true,'Servicing does not overwrite the explicit accessibility preference');
   h.advance(8);
   assert.deepEqual(h.snapshot().weapons,docked.weapons);
   assert.deepEqual(h.snapshot().route,docked.route);
   assert.equal(h.node('ammo').textContent,'');
+  h.node('flightDockContinue').click();assert.equal(h.snapshot().state,'playing');
+  assert.equal(h.node('flightDock').classList.contains('show'),false);
+  h.advance(2.05);assert.ok(h.snapshot().weapons.shotSequence>docked.weapons.shotSequence,
+    'Closing the voluntary workshop resumes the already enabled automatic weapon');
   assert.equal(h.pending.size,1,'The accessibility preference never creates another update owner');
 });
 
@@ -438,7 +452,7 @@ test('the Safari touch fallback tracks the first finger and ignores a secondary 
   h.touches('touchcancel', [], [moved]); assert.equal(h.snapshot().input.active, false);
 });
 
-test('the first mission requires recovered CRONIUM, ten stages, C9, Atlas and its actual aftermath before Gaia unlocks', t => {
+test('the first mission crosses ten stages with optional onboard C9 and requires CRONIUM, Atlas and its actual aftermath before Gaia unlocks', t => {
   const h = harness(t, {unlocked: 1}); h.api.prepare();
   for (let fragment = 0; fragment < 36; fragment++) h.api.collectEnergy();
   let q = h.snapshot();
@@ -450,13 +464,18 @@ test('the first mission requires recovered CRONIUM, ten stages, C9, Atlas and it
   for (let number = 1; number <= 10; number++) {
     q = h.snapshot(); assert.equal(q.route.stageNumber, number);
     if(number===6) {
-      h.advance(1.25);const docked=h.snapshot();
-      assert.equal(docked.state,'paused');assert.equal(docked.route.waitingFor,'service');
-      assert.ok(h.node('flightDock').classList.contains('show'));
+      h.advance(1.25);const flying=h.snapshot();
+      assert.equal(flying.state,'playing');assert.equal(flying.route.waitingFor,null);
+      assert.equal(h.node('flightDock').classList.contains('show'),false);
+      h.node('classicC9').click();const docked=h.snapshot();
+      assert.equal(docked.state,'paused');assert.equal(docked.route.waitingFor,null);
+      assert.ok(h.node('flightDock').classList.contains('show'),'The player can choose C9 from its persistent HUD control');
       assert.equal(docked.route.canFinish,false);assert.equal(docked.unlocked,1);
+      h.advance(4);assert.deepEqual(h.snapshot().route,docked.route);
       h.node('flightDockContinue').click();q=h.snapshot();
       assert.equal(q.state,'playing');assert.equal(q.route.stageNumber,6,
-        'Fresh service completion resumes the physical departure leg instead of skipping to 1.7');
+        'Closing onboard C9 resumes the exact flight segment instead of skipping to 1.7');
+      assert.deepEqual(q.route,flying.route);
       assert.equal(q.route.waitingFor,null);
     }
     h.advance(q.route.stageDuration - q.route.stageElapsed - .05);
@@ -879,16 +898,16 @@ test('measured compact bounds release the former top reserve and ignore side con
   }});
   h.api.prepare(2); const first = h.snapshot(), scale = first.H / 844;
   assert.equal(first.bounds.fits, true);
-  closeTo((first.bounds.minY - 158*.4) / scale, 120,
+  closeTo((first.bounds.minY - 158*.52) / scale, 120,
     'The upper boundary follows the actual comms slot rather than a 182px minimum');
-  closeTo((first.bounds.maxY + 104*.4) / scale, 700,
+  closeTo((first.bounds.maxY + 104*.52) / scale, 700,
     'The complete ship tail must clear the measured weapon button');
   h.setRect('flightObjective', {left: 500, top: 400, width: 200, height: 34});
   h.setRect('flightWeapon', {left: 500, top: 200, width: 104, height: 48});
   h.api.refreshClassicFlightBounds(); const lateral = h.snapshot();
-  closeTo((lateral.bounds.minY - 158*.4) / scale, 82,
+  closeTo((lateral.bounds.minY - 158*.52) / scale, 82,
     'An off-Canvas transmission must not lower the playable ceiling');
-  closeTo((lateral.bounds.maxY + 104*.4) / scale, 740,
+  closeTo((lateral.bounds.maxY + 104*.52) / scale, 740,
     'An off-Canvas weapon must not constrain the lower boundary');
   assert.ok(lateral.bounds.minY < first.bounds.minY);
   assert.ok(lateral.bounds.maxY > first.bounds.maxY);
@@ -974,15 +993,15 @@ test('power pickup and expiry update flight clearance only when chip visibility 
   };
   const h = harness(t, {unlocked: 3, rects}); h.api.prepare(2);
   const before = h.snapshot(), scale = before.H / 844;
-  closeTo((before.bounds.maxY + 104*.4) / scale, 740);
+  closeTo((before.bounds.maxY + 104*.52) / scale, 740);
   const initialReads = h.rectReads('powerHud');
   h.api.collectPower('tractor'); const active = h.snapshot();
   assert.equal(h.node('powerTractor').classList.contains('active'), true);
   assert.ok(h.rectReads('powerHud') > initialReads,
     'A real pickup must resample the newly visible chip row');
-  closeTo((active.bounds.maxY + 104*.4) / scale, 712);
+  closeTo((active.bounds.maxY + 104*.52) / scale, 712);
   assert.ok(active.bounds.maxY < before.bounds.maxY);
-  assert.ok(active.player.y + 104*.4 <= 712 * scale,
+  assert.ok(active.player.y + 104*.52 <= 712 * scale,
     'The complete ship tail must remain above the newly visible power chip');
   const activeReads = h.rectReads('powerHud');
   h.advance(.5);
@@ -1080,22 +1099,30 @@ test('Chronos stage-entry checkpoints restore coherently after reload and retry 
   }
 });
 
-test('the in-route C9 stop prepares its recovered emitter and continues at stage 7 with Pulso and unchanged charges', t => {
+test('the voluntary onboard C9 workshop prepares its recovered emitter and resumes the exact route with Pulso and unchanged charges', t => {
   const h = harness(t, {unlocked: 1, savedSalvage: fundedSalvage(24)}); h.api.prepare(); h.api.collectModule(); h.reachStage(6);
   assert.equal(h.snapshot().route.stageNumber, 6);
   assert.equal(h.snapshot().equipment.recoveredTwin, true);
   h.recoverStageQuota();
   h.advance(.9); assert.equal(h.api.fireManualShot(), true);
-  h.advance(.35); const docked = h.snapshot();
-  assert.equal(docked.state, 'paused'); assert.equal(docked.route.waitingFor, 'service');
+  h.advance(.35); const flying = h.snapshot();
+  assert.equal(flying.state,'playing');assert.equal(flying.route.waitingFor,null);
+  assert.equal(h.node('flightDock').classList.contains('show'),false);
+  assert.equal(flying.events.filter(event=>event.type==='service').length,1);
+  assert.equal(flying.events.filter(event=>event.type==='service-complete').length,1);
+  h.node('classicC9').click(); const docked = h.snapshot();
+  assert.equal(docked.state, 'paused'); assert.equal(docked.route.waitingFor, null);
   assert.equal(docked.route.stageNumber, 6); assert.ok(h.node('flightDock').classList.contains('show'));
-  assert.equal(h.api.fireManualShot(), false, 'Docking cannot emit a combat projectile');
+  assert.equal(h.api.fireManualShot(), false, 'An open onboard workshop cannot emit a combat projectile');
   const route = docked.route, ammunition = docked.weapons;
   h.advance(30); assert.deepEqual(h.snapshot().route, route);
   assert.deepEqual(h.snapshot().weapons, ammunition);
   h.api.resumeGame();
-  assert.equal(h.snapshot().state, 'paused', 'The ordinary resume action must not bypass the service interaction');
+  assert.equal(h.snapshot().state, 'playing', 'Ordinary resume closes the voluntary workshop without a compulsory purchase');
+  assert.equal(h.node('flightDock').classList.contains('show'),false);
   assert.deepEqual(h.snapshot().route, route);
+  assert.deepEqual(h.snapshot().weapons,ammunition);
+  h.node('classicC9').click();assert.equal(h.snapshot().state,'paused');
   h.node('flightInstallTwin').click();
   assert.equal(h.equipment().selected, 'pulse');
   assert.equal(h.equipment().twinPrepared, true);
@@ -1108,7 +1135,8 @@ test('the in-route C9 stop prepares its recovered emitter and continues at stage
   assert.equal(equipped.cooldown, ammunition.cooldown);
   h.node('flightDockContinue').click(); const continued = h.snapshot();
   assert.equal(continued.state, 'playing'); assert.equal(continued.currentLevel, 0);
-  assert.equal(continued.route.stageNumber, 6); closeTo(continued.route.stageElapsed,1.2);
+  assert.equal(continued.route.stageNumber, 6); closeTo(continued.route.stageElapsed,flying.route.stageElapsed);
+  assert.deepEqual(continued.route,flying.route,'Purchasing a module cannot advance or rewind the actual journey');
   assert.equal(continued.route.waitingFor, null);
   assert.equal(h.node('flightDock').classList.contains('show'), false);
   assert.equal(continued.weapons.selected, 'pulse');
@@ -1141,25 +1169,36 @@ test('the archived N-7 mode neither loads nor modifies the new Chronos voyage re
   assert.equal(archived.pending.size, 1);
 });
 
-test('a historical C9 end-of-stage waiting checkpoint retains its old immediate departure without losing recovered equipment', t => {
+test('a historical C9 end-of-stage waiting checkpoint resolves once into the next stage without losing recovered equipment', t => {
   const original=harness(t,{unlocked:1});original.api.prepare();original.api.collectModule();original.reachStage(6);
   original.recoverStageQuota();original.advance(1.25);
-  assert.equal(original.snapshot().state,'paused');
+  assert.equal(original.snapshot().state,'playing');
   const record=original.voyage();
-  record.checkpoint.eventIds=[...new Set([...record.checkpoint.eventIds,'chronos-voyage:1.6:complete'])];
+  // Explicit historical fixture: the old station saved a completed sixth leg
+  // while still waiting for service. Current saves already auto-resolve that
+  // pair, so reconstruct the real old marker rather than treating a new save
+  // with service-complete as if it were waiting.
+  record.checkpoint.serviceWaiting=true;
+  record.checkpoint.eventIds=[...new Set([...record.checkpoint.eventIds.filter(id=>
+    id!=='chronos-voyage:1.6:service-complete'),'chronos-voyage:1.6:service','chronos-voyage:1.6:complete'])];
   const h=harness(t,{unlocked:1,savedVoyage:record,saved:original.stored(EQUIPMENT_KEY)});h.api.prepare();
-  assert.equal(h.snapshot().state,'paused');assert.equal(h.snapshot().route.stageNumber,6);
-  assert.equal(h.snapshot().route.stageElapsed,h.snapshot().route.stageDuration,
+  const oldRoute=h.window.NeonCampaign.createChronosVoyage({checkpoint:record.checkpoint}).snapshot();
+  assert.equal(oldRoute.stageElapsed,oldRoute.stageDuration,
     'The explicit historical completion milestone must not be moved backward to the new early dock');
-  assert.equal(h.snapshot().route.waitingFor,'service');
-  h.node('flightDockContinue').click();
+  assert.equal(oldRoute.waitingFor,'service');
   const departed=h.snapshot();
   assert.equal(departed.state,'playing');assert.equal(departed.route.stageNumber,7);
+  assert.equal(h.node('flightDock').classList.contains('show'),false,'Migration must not restore the removed compulsory orbital UI');
   assert.equal(departed.route.stageElapsed,0);assert.equal(departed.collected,18);
   assert.equal(departed.equipment.recoveredTwin,true);
   assert.deepEqual(departed.equipment.unlocked,['pulse']);
   assert.equal(departed.events.filter(event=>event.type==='service-complete').length,1);
   assert.equal(h.voyage().checkpoint.stageNumber,7);
+  h.advance(.1);assert.equal(h.snapshot().events.filter(event=>event.type==='service-complete').length,1);
+  const restored=harness(t,{unlocked:1,savedVoyage:h.stored(VOYAGE_KEY),saved:h.stored(EQUIPMENT_KEY)});restored.api.prepare();
+  assert.equal(restored.snapshot().route.stageNumber,7);assert.equal(restored.snapshot().route.stageElapsed,0);
+  assert.equal(restored.snapshot().events.filter(event=>event.type==='service-complete').length,0);
+  assert.equal(restored.snapshot().equipment.recoveredTwin,true);
   assert.equal(h.stored('neon-n7-unlocked-v1'),'37');assert.equal(h.pending.size,1);
 });
 

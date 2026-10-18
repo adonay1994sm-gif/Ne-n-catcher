@@ -19,7 +19,7 @@ const run = (state, seconds, events = []) => {
 
 test('a match starts with twenty pulses and a trigger cannot spend through cooldown', () => {
   const state = createClassicWeapons();
-  assert.equal(state.version, 'classic-weapons-v3');
+  assert.equal(state.version, 'classic-weapons-v4');
   assert.equal(CLASSIC_WEAPON_RULES.maxCharges, 20);
   assert.equal(state.charges, 20);
   const first = triggerClassicWeapon(state, origin);
@@ -374,7 +374,7 @@ test('v1 saved type identifiers remain accepted and the additive lance type roun
   ]) {
     const restored = JSON.parse(JSON.stringify(saved));
     const state = createClassicWeapons({type: restored.selected, unlocked: restored.unlocked});
-    assert.equal(state.version, 'classic-weapons-v3');
+    assert.equal(state.version, 'classic-weapons-v4');
     assert.notEqual(state.version, restored.version, 'a new match adopts current ephemeral rules');
     assert.equal(state.selected, restored.selected);
     assert.deepEqual(state.unlocked, restored.unlocked);
@@ -526,7 +526,7 @@ test('special missiles share physical movement but do not spend or recharge the 
   const fired=triggerClassicMissile(state,{...origin,shotId:'missile:7'});
   assert.equal(fired.accepted,true);assert.equal(fired.projectiles.length,1);
   const shot=fired.projectiles[0];
-  assert.equal(shot.weapon,'missile');assert.equal(shot.missile,true);assert.equal(shot.damage,6);
+  assert.equal(shot.weapon,'missile');assert.equal(shot.missile,true);assert.equal(shot.damage,18);
   assert.equal(shot.vy,-760);assert.ok(Math.abs(shot.vx)<1e-9);assert.equal(shot.pierce,1);
   assert.deepEqual({charges:state.charges,cooldown:state.cooldown,recharge:state.recharge},battery);
   assert.equal(canTriggerClassicMissile(state),false);
@@ -565,7 +565,7 @@ test('a physical missile hits exactly one target once and never creates repeated
   const state=createClassicWeapons();const shot=triggerClassicMissile(state,{...origin,shotId:'missile:1'}).projectiles[0];
   assert.equal(state.projectiles.length,1);
   const hit=hitClassicProjectile(state,shot.id,'atlas-core');
-  assert.equal(hit.accepted,true);assert.equal(hit.damage,6);assert.equal(hit.events.length,1);
+  assert.equal(hit.accepted,true);assert.equal(hit.damage,18);assert.equal(hit.events.length,1);
   assert.equal(state.projectiles.length,0);
   for(const target of ['atlas-core','next-enemy','atlas-core']) {
     const again=hitClassicProjectile(state,shot.id,target);

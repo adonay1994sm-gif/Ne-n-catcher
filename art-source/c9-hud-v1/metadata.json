@@ -1,0 +1,78 @@
+{
+  "id": "c9-upgrade-icons-v1",
+  "source": "OpenAI image_gen original generation",
+  "license": "Original project asset; no third-party images",
+  "master": "art-source/c9-hud-v1/c9-upgrades-generated-master.png",
+  "packedMaster": "art-source/c9-hud-v1/c9-upgrades-packed-master.png",
+  "runtime": "assets/c9_upgrade_icons_v1.webp",
+  "width": 1024,
+  "height": 1024,
+  "columns": 2,
+  "rows": 2,
+  "cellWidth": 512,
+  "cellHeight": 512,
+  "minimumGutter": 48,
+  "decodedRgbaBytes": 4194304,
+  "masterSha256": "bb79969c75fb8e4b69070643ce8fd50827e71133ba93f4cc73dbf5035541a8cc",
+  "packedSha256": "1287facd99faa45578660f2f705139ebdbbb39cf2a47c09706bb03a5dc3b09c1",
+  "runtimeSha256": "c8f36054d70ab750aa2ffeef099e278959c214265953631e02e915734f8cd792",
+  "runtimeBytes": 165564,
+  "frames": [
+    {
+      "name": "emitter",
+      "index": 0,
+      "source": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "cssPosition": [
+        "0%",
+        "0%"
+      ]
+    },
+    {
+      "name": "hull",
+      "index": 1,
+      "source": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "cssPosition": [
+        "100%",
+        "0%"
+      ]
+    },
+    {
+      "name": "missiles",
+      "index": 2,
+      "source": [
+        0,
+        512,
+        512,
+        512
+      ],
+      "cssPosition": [
+        "0%",
+        "100%"
+      ]
+    },
+    {
+      "name": "coolant",
+      "index": 3,
+      "source": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "cssPosition": [
+        "100%",
+        "100%"
+      ]
+    }
+  ]
+}

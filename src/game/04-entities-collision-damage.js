@@ -493,7 +493,7 @@
     if(item.type==="flightModule") {
       if(!classicEquipment.recoveredTwin) {
         if(!persistClassicEquipment({...classicEquipment,recoveredTwin:true}))return false;
-        toast("Emisor gemelo recuperado · taller C9 al llegar");tone(900,.18,"triangle",.06);
+        toast("Emisor gemelo recuperado · C9 disponible en el panel");tone(900,.18,"triangle",.06);
         pulseRing(item.x,item.y,"#ffc874",90,.45);
         if(classicChapterStory)signalClassicChapter("module-recovered");
         else showStoryTransmission("MIRA · C9","Pieza asegurada. La montamos antes de entrar en la red Atlas.",4.5);

@@ -8,3 +8,6 @@ xcuserdata/
 
 # Generated test site; not a repository source artifact
 preview-dist/
+
+# Netlify CLI connection/cache is machine-local and may contain deployment identity.
+.netlify/

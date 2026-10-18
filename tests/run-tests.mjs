@@ -161,7 +161,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-specialist-polish-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-level-one-dynamic-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -433,13 +433,13 @@ await test("guardados corruptos se normalizan sin romper el menú ni el control"
   gameWindow.localStorage.setItem(api.keys.unlocked, "10");
 });
 
-await test("silueta clásica al 40 % ajustada al material visible conserva treinta puntos y extremos probados", async () => {
+await test("silueta clásica al 52 % ajustada al material visible conserva treinta puntos y extremos probados", async () => {
   const outline = Array.from(api.collisionOutline, (point) => Array.from(point));
   assert.equal(outline.length, 30);
-  assert.equal(sha256(JSON.stringify(outline)), "e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865");
-  assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+47.36)<1e-9);
-  assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-39.24)<1e-9);
-  assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-30.08)<1e-9);
+  assert.equal(sha256(JSON.stringify(outline)), "a40789b028be6be21f4e38897310e205ff2008bc05c4c6cdef03712215077622");
+  assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+61.568)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-51.012)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-39.104)<1e-9);
 });
 
 function seededRandom(seed) {

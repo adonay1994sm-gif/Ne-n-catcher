@@ -62,7 +62,18 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
   window.eval(core); window.eval(content);
   const marker = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
   assert.equal(game.split(marker).length, 2, 'Legacy bootstrap marker changed');
-  const hook = `window.__ATLAS_LEGACY_TEST__ = {
+  const hook = `let atlasContactFixturePosition=null;
+  function holdAtlasContactFixturePosition(){
+    if(!atlasContactFixturePosition||!atlasBoss)return;
+    // This one controlled contact fixture pins only the physical boss pose.
+    // It isolates weapon/armor collision math, not moving-target accuracy or
+    // difficulty; v6 movement is checked by the unpinned model tests.
+    atlasBoss.x=atlasContactFixturePosition.x;atlasBoss.y=atlasContactFixturePosition.y;
+    atlasBoss.targetY=atlasContactFixturePosition.y;
+    atlasBoss.motionX=atlasBoss.x;atlasBoss.motionY=atlasBoss.y;
+    atlasBoss.motionVx=0;atlasBoss.motionVy=0;atlasBoss.nextMotionAt=Infinity;
+  }
+  window.__ATLAS_LEGACY_TEST__ = {
     update, startLevel, pauseGame, resumeGame, goHome, completeLevel, damageShip, resumeReward,
     fireManualShot, firePhaser, fireAtlasPulse, fireClassicMissile,
     prepare(index=0) {
@@ -87,8 +98,13 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
     isolatedFrame(dt=1/60) {
       // This fixture isolates progression, not projectile avoidance or balance.
       items=[];gates=[];spawnTimer=999;classicScoutTimer=999;
+      holdAtlasContactFixturePosition();
       if(atlasBoss){player.x=player.target=atlasBoss.x;}
       update(dt);
+    },
+    pinAtlasContactFixture(){
+      if(!atlasBoss)throw new Error('Atlas must exist before isolating its physical pose');
+      atlasContactFixturePosition={x:atlasBoss.x,y:atlasBoss.y};holdAtlasContactFixturePosition();
     },
     manualAtlasFrame(dt=1/60) {
       // Deliberately instrumented lifecycle fixture: suppress unrelated
@@ -314,6 +330,7 @@ test('Atlas receives the advertised ×1, ×2 and ×3 damage only when physical p
     const h = harness(t, '', {saved}); h.api.prepare(); h.collectGoal();
     assert.equal(h.snapshot().autoFire, false);
     h.until(q => q.boss.state === 'exposed' && q.boss.vulnerability);
+    h.api.pinAtlasContactFixture();
     const before = h.snapshot();
     assert.equal(before.weapons.damageMultiplier, multiplier);
     assert.equal(h.window.document.getElementById('flightWeaponDamage').textContent, `DAÑO ×${multiplier}`);
@@ -351,6 +368,7 @@ test('Atlas receives the advertised ×1, ×2 and ×3 damage only when physical p
 test('closed armor rejects physical fire and an exposed small core does not accept a wing hit', t => {
   const h=harness(t);h.api.prepare();h.collectGoal();
   h.until(q=>q.boss.state==='closed');
+  h.api.pinAtlasContactFixture();
   const armored=h.snapshot();
   assert.equal(armored.boss.vulnerability,false);assert.equal(armored.boss.armorClosed,true);
   assert.ok(armored.boss.coreRadius<=42&&armored.boss.coreRadius<armored.boss.r);
@@ -370,7 +388,7 @@ test('closed armor rejects physical fire and an exposed small core does not acce
   assert.equal(h.pending.size,1);
 });
 
-test('three persistent special missiles deal six damage and a failed debit cannot emit one', t => {
+test('three persistent special missiles deal eighteen damage and a failed debit cannot emit one', t => {
   const h=harness(t);h.api.prepare();
   assert.equal(h.snapshot().salvage.missileAmmo,3);
   const magazine=h.snapshot().weapons.charges;
@@ -382,7 +400,7 @@ test('three persistent special missiles deal six damage and a failed debit canno
   for(let shot=0;shot<3;shot++){
     assert.equal(h.api.fireClassicMissile(),true);
     const q=h.snapshot(),latest=q.weapons.projectiles.filter(value=>value.missile).at(-1);
-    assert.ok(latest);assert.equal(latest.damage,6);assert.ok(latest.vy<0);assert.ok(Math.abs(latest.vx)<1e-6);
+    assert.ok(latest);assert.equal(latest.damage,18);assert.ok(latest.vy<0);assert.ok(Math.abs(latest.vx)<1e-6);
     assert.equal(q.salvage.missileAmmo,2-shot);assert.equal(q.weapons.charges,magazine);
     assert.equal(h.api.fireClassicMissile(),false,'A same-frame trigger cannot debit or emit twice');
     for(let frame=0;frame<45;frame++)h.api.isolatedFrame(1/60);

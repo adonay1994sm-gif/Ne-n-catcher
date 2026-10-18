@@ -143,7 +143,7 @@ test('a saved early service boundary remains docked and confirmation resumes the
   restored.resolveService(event=>events.push(event));assert.deepEqual(restored.snapshot(),after);
   assert.equal(after.stageId,'1.6');assert.equal(after.elapsed,before.elapsed);
   assert.equal(after.stageElapsed,1.2);assert.equal(after.relay.state,'departing');
-  assert.equal(after.stageName,'Salida de C9');
+  assert.equal(after.stageName,'Corredor de Gaia');
   assert.equal(events.filter(event=>event.type==='service-complete').length,1);
   const departedCheckpoint=restored.exportCheckpoint();
   assert.ok(departedCheckpoint.eventIds.includes('chronos-voyage:1.6:service-complete'));

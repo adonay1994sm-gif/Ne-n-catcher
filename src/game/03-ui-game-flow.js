@@ -143,6 +143,7 @@
     const view=classicFlightView;
     if(!view||!["1.5","1.9"].includes(view.stageId))return;
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
+      shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
   }
 
@@ -188,11 +189,12 @@
       <p id="flightObjective" class="flight-comms" role="status" aria-live="polite" data-active="false"></p>
       <button id="flightWeapon" class="flight-weapon" type="button"><small id="flightWeaponDamage">DAÑO ×1</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
       </div>
-      <div id="flightDock" class="overlay"><section class="panel flight-dock"><small><span class="chapter-face" data-actor="mira" aria-hidden="true"></span> TALLER C9 · MIRA</small><h2>Preparados para la frontera.</h2><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p><p id="c9Balance" class="c9-wallet" aria-label="Chatarra disponible">0 chatarra</p><button id="flightInstallTwin" class="primary" type="button">PREPARAR EMISOR · 24 CHATARRA</button><button id="c9BuyShield" class="secondary" type="button">REFUERZO DE CASCO · 30 CHATARRA</button><button id="c9BuyMissiles" class="secondary" type="button">REPONER MISILES</button><button id="c9BuyCoolant" class="secondary" type="button">REFRIGERACIÓN · 45 CHATARRA</button><p id="c9PurchaseStatus" class="c9-purchase-status" role="status"></p><button id="flightDockContinue" class="secondary" type="button">CONTINUAR HACIA GAIA</button><button id="flightDockHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
+      <div id="flightDock" class="overlay" role="dialog" aria-modal="true" aria-labelledby="c9Title"><section class="panel flight-dock"><header class="c9-header"><span class="chapter-face" data-actor="mira" aria-hidden="true"></span><div><small>C9 · MIRA</small><h2 id="c9Title">Taller de a bordo</h2></div></header><div class="c9-preview"><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p></div><p id="c9Balance" class="c9-wallet" aria-label="Chatarra disponible">0 chatarra</p><div class="c9-upgrades"><button id="flightInstallTwin" class="primary" type="button"><span class="c9-upgrade-art" data-upgrade="emitter" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>PREPARAR EMISOR · 24 CHATARRA</b><small>Segundo cañón · autorización tras Atlas</small></span></button><button id="c9BuyShield" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="hull" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFUERZO DE CASCO · 30 CHATARRA</b><small>15 puntos de blindaje adicionales</small></span></button><button id="c9BuyMissiles" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="missiles" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REPONER MISILES</b><small>18 de daño · 6 de chatarra por unidad</small></span></button><button id="c9BuyCoolant" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="coolant" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFRIGERACIÓN · 45 CHATARRA</b><small>Recuperación de energía un 25 % más rápida</small></span></button></div><p id="c9PurchaseStatus" class="c9-purchase-status" role="status"></p><div class="c9-actions"><button id="flightDockContinue" class="secondary" type="button">VOLVER A PILOTAR</button><button id="flightDockHome" class="secondary" type="button">GUARDAR Y VOLVER AL MENÚ</button></div></section></div>`;
     canvas.parentElement.append(mount);
     const chapterControls=document.createElement("div");
-    chapterControls.innerHTML=`<button id="chapterSkip" class="chapter-skip hidden" type="button">OMITIR INTRODUCCIÓN →</button><button id="classicMissile" class="classic-missile hidden" type="button" aria-label="Lanzar misil"><span class="missile-symbol" aria-hidden="true"></span><span>MISIL <b id="classicMissileCount">3</b></span></button>`;
+    chapterControls.innerHTML=`<button id="classicC9" class="classic-c9 hidden" type="button" aria-label="Abrir taller C9; pausa el viaje"><b>C9</b><span>TALLER</span></button><button id="chapterSkip" class="chapter-skip hidden" type="button">OMITIR INTRODUCCIÓN →</button><button id="classicMissile" class="classic-missile hidden" type="button" aria-label="Lanzar misil"><span class="missile-symbol" aria-hidden="true"></span><span>MISIL <b id="classicMissileCount">3</b></span></button>`;
     canvas.parentElement.append(chapterControls);
+    ui.classicC9=$("classicC9");ui.classicC9.onclick=()=>openClassicDock("hud");
     ui.chapterSkip=$("chapterSkip");ui.classicMissile=$("classicMissile");ui.classicMissileCount=$("classicMissileCount");
     ui.chapterSkip.onclick=()=>{classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot();syncClassicChapterPresentation();};
     ui.classicMissile.onclick=()=>fireClassicMissile();
@@ -202,7 +204,7 @@
     const loadout = document.createElement("div");
     loadout.id="flightLoadoutChoices";loadout.className="flight-loadout-choices";
     loadout.setAttribute("role","group");loadout.setAttribute("aria-label","Arma al salir de C9");
-    ui.flightDockStatus.after(loadout);
+    ui.flightDockStatus.closest('.c9-preview').after(loadout);
     for(const [type,weapon] of Object.entries(NeonCampaign.CLASSIC_WEAPON_RULES.types)) {
       const button=document.createElement("button");button.type="button";button.dataset.flightLoadout=type;
       button.innerHTML=`<b>${weapon.label} ×${weapon.damageMultiplier}</b><small>${type==="pulse"?"Ágil · un pulso":type==="twin"?"Dos pulsos centrados":"Perfora dos objetivos"}</small>`;
@@ -229,10 +231,16 @@
       if (!classicEquipment.unlocked.includes("lance")) return;
       if (persistClassicEquipment({...classicEquipment,selected:"lance"})) updateClassicDock();
     };
-    $("flightDockContinue").onclick = () => {
-      if (flightDockReturn === "voyage") { resumeClassicVoyageService(); return; }
-      if (flightDockReturn === "complete") prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete"); else goHome();
-    };
+    $("flightDockContinue").onclick = closeClassicDock;
+    ui.flightDock.addEventListener("keydown",event=>{
+      if(!ui.flightDock.classList.contains("show"))return;
+      if(event.key==="Escape"){event.preventDefault();event.stopPropagation();closeClassicDock();return;}
+      if(event.key!=="Tab")return;
+      const controls=[...ui.flightDock.querySelectorAll("button:not(:disabled)")].filter(node=>!node.classList.contains("hidden")&&node.getClientRects().length);
+      const first=controls[0],lastControl=controls.at(-1);
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();lastControl?.focus();}
+      else if(!event.shiftKey&&document.activeElement===lastControl){event.preventDefault();first?.focus();}
+    });
     $("flightDockHome").onclick = goHome;
     const workshop = document.createElement("button"); workshop.id="openFlightDock"; workshop.className="secondary hidden";
     workshop.type="button"; workshop.textContent="TALLER C9"; workshop.onclick=()=>openClassicDock("menu");
@@ -311,19 +319,20 @@
     ui.briefingSector.textContent=`ETAPA 1.${selected} · CHRONOS → GAIA`;
     ui.briefingName.textContent=stage.name;
     ui.briefingZone.textContent=`${stage.origin} → ${stage.destination}`;
-    ui.briefingGoal.textContent=stage.goal===18&&selected===6?"Parada en C9":`${stage.goal}/36 CRONIUM`;
+    ui.briefingGoal.textContent=`${stage.goal}/36 CRONIUM`;
     ui.briefingSupply.textContent="Rastro recuperable";
     ui.briefingMission.textContent=stage.objective+". La ruta continúa desde el último punto de etapa guardado.";
   }
 
   function beginClassicVoyageService() {
     if(state!=="playing"||classicFlightView?.waitingFor!=="service")return;
-    if(typeof resetGameInput==="function")resetGameInput();
-    items=[];classicWeapons.projectiles.length=0;
-    saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint());
+    // Preserve the v2 route checkpoint and one emergency repair, without
+    // inserting an orbital station or forcing a workshop/modal interruption.
     signalClassicChapter("c9-arrival");
-    setState("paused");flightDockReturn="voyage";hull=100;hud();
-    updateClassicDock();overlay(ui.flightDock);
+    hull=100;
+    classicFlight.resolveService(classicFlightEvent);classicFlightView=classicFlight.snapshot();
+    signalClassicChapter("c9-departure");
+    saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint());hud();
   }
 
   function resumeClassicVoyageService() {
@@ -352,8 +361,32 @@
   }
 
   function openClassicDock(from="menu") {
-    if (!isUnifiedClassic() || !["menu","complete"].includes(state)) return;
+    if (!isUnifiedClassic()) return false;
+    if(from==="hud") {
+      if(state!=="playing"||atlasBoss||classicChapterControlsLocked())return false;
+      if(typeof resetGameInput==="function")resetGameInput();
+      NeonCampaign.endFlightInput(classicFlightInput);
+      setState("paused");classicWorkshopOpened=true;
+    } else if(!["menu","complete"].includes(state))return false;
     flightDockReturn=from; updateClassicDock(); overlay(ui.flightDock);
+    $("flightDockContinue").focus({preventScroll:true});
+    ui.flightDock.querySelector(".flight-dock").scrollTop=0;return true;
+  }
+
+  function closeClassicDock() {
+    if(flightDockReturn==="hud"&&state==="paused") {
+      if(typeof resetGameInput==="function")resetGameInput();
+      setState("playing");overlay();last=performance.now();resumeAudio();
+      syncClassicFlightHud();ui.classicC9?.focus({preventScroll:true});return;
+    }
+    if(flightDockReturn==="voyage"){resumeClassicVoyageService();return;}
+    if(flightDockReturn==="complete")prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete");
+    else {goHome();$("openFlightDock")?.focus();}
+  }
+
+  function setC9Label(button,text) {
+    const label=button.querySelector("[data-c9-label]");
+    if(label)label.textContent=text;else button.textContent=text;
   }
 
   function updateClassicDock() {
@@ -362,9 +395,9 @@
     const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
     ui.flightDockStatus.textContent=installed
       ? `${weapon.label} equipado. ${weapon.description} La energía del arma se recupera durante el vuelo. Tus armas anteriores se conservan.`
-      : classicEquipment.twinPrepared ? "Emisor preparado y casco reparado. Conservas Pulso hasta vencer a Atlas: su autorización desbloquea el segundo cañón."
-      : classicEquipment.recoveredTwin ? "Emisor rescatado. Mira prepara sus anclajes por 24 de chatarra; necesitarás superar a Atlas para activar el segundo cañón. La reparación de emergencia sigue siendo gratuita."
-      : "Casco reparado. Tu pulso central se recarga en vuelo. Recupera la pieza de Chronos; Atlas custodia el segundo cañón.";
+      : classicEquipment.twinPrepared ? "Emisor preparado. Conservas Pulso hasta vencer a Atlas: su autorización desbloquea el segundo cañón."
+      : classicEquipment.recoveredTwin ? "Emisor rescatado. Mira prepara sus anclajes por 24 de chatarra; necesitarás superar a Atlas para activar el segundo cañón. La reparación de emergencia se efectúa una vez al alcanzar el enlace del corredor."
+      : "Taller conectado. Tu pulso central se recarga en vuelo. Recupera la pieza de Chronos; Atlas custodia el segundo cañón.";
     for(const button of $("flightLoadoutChoices").querySelectorAll("button")) {
       const type=button.dataset.flightLoadout,unlocked=classicEquipment.unlocked.includes(type);
       button.disabled=!unlocked;button.setAttribute("aria-pressed",String(type===classicEquipment.selected));
@@ -374,27 +407,28 @@
     ui.c9Balance.textContent=classicSalvageState ? NeonCampaign.formatDenominations(balance).label : "Bodega no disponible · compras protegidas";
     ui.c9Balance.title="100.000 chatarra = 1 plata · 100 plata = 1 oro · 10 oro = 1 estelar";
     ui.flightInstallTwin.disabled=!classicSalvageState || !classicEquipmentWritable || balance<24 || installed || !classicEquipment.recoveredTwin || Boolean(classicEquipment.twinPrepared);
-    ui.flightInstallTwin.textContent=installed ? "SEGUNDO CAÑÓN AUTORIZADO" : classicEquipment.twinPrepared ? "EMISOR PREPARADO · FALTA ATLAS" : "PREPARAR EMISOR · 24 CHATARRA";
+    setC9Label(ui.flightInstallTwin,installed ? "SEGUNDO CAÑÓN AUTORIZADO" : classicEquipment.twinPrepared ? "EMISOR PREPARADO · FALTA ATLAS" : "PREPARAR EMISOR · 24 CHATARRA");
     ui.c9BuyShield.disabled=!classicSalvageState||balance<30||upgrades.includes("hull-reinforcement");
-    ui.c9BuyShield.textContent=upgrades.includes("hull-reinforcement")?"REFUERZO DE 45 INSTALADO":"AMPLIAR REFUERZO A 45 · 30 CHATARRA";
+    setC9Label(ui.c9BuyShield,upgrades.includes("hull-reinforcement")?"REFUERZO DE 45 INSTALADO":"AMPLIAR REFUERZO A 45 · 30 CHATARRA");
     ui.c9BuyShield.title="Añade 15 puntos de placas de casco. El refuerzo se consume por impactos, sin temporizador.";
     const missingMissiles=Math.max(0,3-(classicSalvageState?.missileAmmo??0)),missilePrice=missingMissiles*6;
     ui.c9BuyMissiles.disabled=!classicSalvageState||!missingMissiles||balance<missilePrice;
-    ui.c9BuyMissiles.textContent=missingMissiles?`REPONER ${missingMissiles} MISIL${missingMissiles>1?"ES":""} · ${missilePrice} CHATARRA`:"TRES MISILES CARGADOS";
+    setC9Label(ui.c9BuyMissiles,missingMissiles?`REPONER ${missingMissiles} MISIL${missingMissiles>1?"ES":""} · ${missilePrice} CHATARRA`:"TRES MISILES CARGADOS");
     ui.c9BuyMissiles.title="Cada misil repuesto cuesta 6 de chatarra. No se cobra una carga que ya tienes.";
     ui.c9BuyCoolant.disabled=!classicSalvageState||balance<45||upgrades.includes("coolant-feed");
-    ui.c9BuyCoolant.textContent=upgrades.includes("coolant-feed")?"REFRIGERACIÓN INSTALADA":"REFRIGERACIÓN · 45 CHATARRA";
+    setC9Label(ui.c9BuyCoolant,upgrades.includes("coolant-feed")?"REFRIGERACIÓN INSTALADA":"REFRIGERACIÓN · 45 CHATARRA");
     ui.c9BuyCoolant.title="Recupera un proyectil cada 1,5 segundos; no cambia el daño ni la cadencia.";
     ui.flightCalibrateLance.classList.toggle("hidden",!classicEquipment.unlocked.includes("lance"));
     ui.flightCalibrateLance.disabled=classicEquipment.selected==="lance";
     ui.flightCalibrateLance.textContent="EQUIPAR LANZA ×3 CONSERVADA";
-    $("flightDockContinue").textContent=flightDockReturn==="voyage" ? "DESACOPLAR Y CONTINUAR →" : flightDockReturn==="complete" ? "CONTINUAR VIAJE" : "VOLVER AL VIAJE";
+    $("flightDockContinue").textContent=["voyage","hud"].includes(flightDockReturn) ? "VOLVER A PILOTAR →" : flightDockReturn==="complete" ? "CONTINUAR VIAJE" : "VOLVER AL VIAJE";
   }
 
   function syncClassicFlightHud() {
     if (!isUnifiedClassic() || !ui.flightRoute) return;
     $("openFlightDock")?.classList.toggle("hidden",!classicEquipment.recoveredTwin);
     const view=classicFlightView;
+    if(ui.classicC9){ui.classicC9.disabled=state!=="playing"||Boolean(atlasBoss);ui.classicC9.title=atlasBoss?"C9 no está disponible durante el bloqueo de Atlas":"Taller C9 · pausa el viaje para configurar tu nave";}
     const stage=atlasBoss ? "ACCESO ATLAS" : view?.stageNumber ? `${view.stageId} · ${view.stageName}` : view?.stageName || level().name;
     // The primary HUD already shows the quota. This reserved, transparent slot
     // is used only for brief contextual comms; it never repeats the counters.
@@ -428,6 +462,7 @@
   function setClassicFlightHudVisible(visible) {
     ui.flightHud?.classList.toggle("hidden",!visible);
     ui.classicMissile?.classList.toggle("hidden",!visible);
+    ui.classicC9?.classList.toggle("hidden",!visible);
     if(!visible)ui.chapterSkip?.classList.add("hidden");
     ui.flightRoute?.classList.toggle("hidden",!visible || Boolean(atlasBoss));
   }
@@ -474,6 +509,12 @@
       classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
         aftermathElapsed:classicChapterOutroStartedAt===null?0:elapsed-classicChapterOutroStartedAt},classicChapterEvent);
       classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
+      classicTutorial?.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
+        shots:classicWeapons?.shotSequence||0,collected,workshopOpened:classicWorkshopOpened,
+        channelBusy:Boolean(flightTransmission)},cue=>{
+        flightTransmission={speaker:"N-7 · AYUDA",text:cue.text,remaining:cue.seconds};
+        flightHudSignature="";syncClassicFlightHud();
+      });
     }
     if(classicFlightView?.stageNumber) {
       if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
@@ -520,8 +561,8 @@
     if(![5,6].includes(n)) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
-        if(items.filter(item=>item.flightPatrol).length<(n>=9?2:1))spawnClassicFlightPatrol(n<7?"raider":"scout");
-        classicPatrolTimer=n<5?17:n>=9?14:18;
+        if(items.filter(item=>item.flightPatrol).length<(n===1?1:2))spawnClassicFlightPatrol(n<7?"raider":n>=9&&classicPatrolSequence%2?"interceptor":"scout");
+        classicPatrolTimer=n<3?12:n>=9?8:n===7?13:10;
       }
     }
     if([2,4,8].includes(n)) {
@@ -611,7 +652,11 @@
         const contact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,"guardian-atlas");
         if(!contact.accepted)continue;
         // Shield contact consumes a shot too; vulnerability is checked on arrival.
-        resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage,weapon:shot.weapon});
+        const dx=shot.x-(shot.previousX??shot.x),dy=shot.y-(shot.previousY??shot.y);
+        const length=dx*dx+dy*dy;
+        const t=length?clamp(((atlasBoss.x-(shot.previousX??shot.x))*dx+(atlasBoss.y-(shot.previousY??shot.y))*dy)/length,0,1):0;
+        resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage,weapon:shot.weapon,
+          impactX:(shot.previousX??shot.x)+dx*t,impactY:(shot.previousY??shot.y)+dy*t});
       }
     }
     if(events.some(event=>event.type==="recharged")){tone(520,.035,"sine",.025);updateAmmoHud();}
@@ -665,7 +710,8 @@
     const anchorY = isUnifiedClassic() ? (classicFlightAnchorY || player.y) : player.y;
     atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = anchorY;
     const hudBottom = Math.max($('hud').getBoundingClientRect().bottom,
-      ui.atlasEncounter?.getBoundingClientRect().bottom || 0);
+      ui.atlasEncounter?.getBoundingClientRect().bottom || 0,
+      ui.flightObjective?.getBoundingClientRect().bottom || 0);
     const headerClearance = (Math.max(0, hudBottom - rect.top) + 8) * H / Math.max(1, rect.height);
     const shipTop = anchorY - 145*SHIP_VISUAL.classicScale;
     // Poses have distinct reactor pivots. Reserve the complete authored cell,
@@ -675,7 +721,9 @@
     atlasBoss.targetY = clamp(H * .30,
       headerClearance + atlasBoss.visualSize * .55,
       shipTop - atlasBoss.visualSize * .52);
-    if (atlasBoss.state !== "entry") atlasBoss.y = atlasBoss.targetY;
+    // Reflow the presentation envelope, never reset a moving boss to its anchor
+    // whenever a status line changes. The model moves the real core/collider.
+    atlasBoss.presentationHalfWidth=atlasBoss.visualSize*.58;
   }
 
   function beginAtlasEncounter() {
@@ -684,6 +732,7 @@
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
     NeonCampaign.setClassicUnlimitedFire(classicWeapons,true);
+    document.body.classList.add("atlas-combat");ui.atlasEncounter.classList.remove("hidden");
     signalClassicChapter("atlas-entry");
     positionAtlasArena();
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
@@ -726,7 +775,7 @@
     if (event.clearProjectiles || event.type === "shutdown") {
       items = items.filter(item => !item.guardianProjectile);
     }
-    if (event.type === "volley") combatSound("impact-plasma",atlasBoss.x);
+    if (event.type === "volley") combatSound(event.attackTier==="basic"?"enemy-phaser":"enemy-heavy",event.x??atlasBoss.x);
     if (event.type === "phase") { signalClassicChapter("atlas-phase-two"); cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
@@ -777,14 +826,14 @@
     for (const event of result.events) consumeAtlasEvent(event);
     if (result.accepted) {
       score += 3;
-      if (settings.effects&&shot.weapon==="missile")addMissileImpact(atlasBoss.x,atlasBoss.y);
+      if (shot.weapon==="missile")addMissileImpact(shot.impactX??atlasBoss.x,shot.impactY??atlasBoss.y);
       else if (settings.effects) {
         if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
         impactEffects.push({x: atlasBoss.x, y: atlasBoss.y, angle: 0, scale: 1,
           life: .24, duration: .24, atlasImpact: true});
       }
       combatSound("impact-metal",atlasBoss.x);
-    } else combatSound("impact-plasma",atlasBoss.x);
+    } else {if(shot.weapon==="missile")addMissileImpact(shot.impactX??atlasBoss.x,shot.impactY??atlasBoss.y);combatSound("impact-plasma",atlasBoss.x);}
     syncAtlasHud();
   }
 
@@ -1293,6 +1342,12 @@
       classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
         aftermathElapsed:classicChapterOutroStartedAt===null?0:elapsed-classicChapterOutroStartedAt},classicChapterEvent);
       classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
+      classicTutorial?.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
+        shots:classicWeapons?.shotSequence||0,collected,workshopOpened:classicWorkshopOpened,
+        channelBusy:Boolean(flightTransmission)},cue=>{
+        flightTransmission={speaker:"N-7 · AYUDA",text:cue.text,remaining:cue.seconds};
+        flightHudSignature="";syncClassicFlightHud();
+      });
       if(atlasBoss?.resolved&&classicChapterView.aftermathReady)completeLevel();
     }
     if (classicFlight || N7_CAMPAIGN || JOURNEY_DEMO || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
@@ -1330,8 +1385,9 @@
     classicVoyageRequestedStage=null;
     classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
-    classicChapterStory=classicFlight?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed}):null;
+    classicChapterStory=classicFlight?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;classicChapterOutroStartedAt=null;
+    classicTutorial=classicFlight?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed}):null;classicWorkshopOpened=false;
     classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
     if(isUnifiedClassic())beginClassicSalvageRun(Boolean(voyageEntry));
     resetClassicCometShower();
@@ -1343,13 +1399,12 @@
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
       ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
-      if(classicFlightView?.stageNumber===1)ensureSprite(SPRITES.chapterIntro);
       ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
         ensureSprite(SPRITES.ch01);
-        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);ensureSprite(SPRITES.c9Station);ensureSprite(SPRITES.guardianAtlas);
+        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);ensureSprite(SPRITES.guardianAtlas);
       }
     }
 
@@ -1461,7 +1516,7 @@
 
   function resumeGame() {
     if (state !== "paused") return;
-    if(classicFlightView?.waitingFor==="service"){flightDockReturn="voyage";updateClassicDock();overlay(ui.flightDock);return;}
+    if(ui.flightDock?.classList.contains("show")&&flightDockReturn==="hud"){closeClassicDock();return;}
     if (JOURNEY_DEMO && journey?.snapshot().phase === "station") { showJourneyStation(); return; }
     journey?.setPaused(false);
     setState("playing");
@@ -1472,7 +1527,7 @@
 
   function goHome() {
     if (typeof resetGameInput === "function") resetGameInput();
-    classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;classicChapterOutroStartedAt=null;
+    classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;classicChapterOutroStartedAt=null;
     syncClassicChapterPresentation();
     if(classicWeapons)classicWeapons.projectiles.length=0;
     NeonCampaign.endFlightInput(classicFlightInput);

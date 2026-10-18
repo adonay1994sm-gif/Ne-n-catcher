@@ -19,13 +19,14 @@ function until(boss,predicate,pilot=player,events=[]){
 function ready(options){const boss=createGuardianAtlas(options);until(boss,b=>b.state==='closed');return boss;}
 function expose(boss=ready()){until(boss,b=>b.state==='exposed');return boss;}
 
-// Deliberately conservative 40%-scaled old control envelope, slightly larger
-// than the actual new physical outline. These values do not change collisions.
-const HULL={half:47.6,top:63.2,bottom:41.6};
+// The owner now requests a 30% enlargement relative to the forty-percent ship.
+// Keep a deliberately conservative complete outline for escape checks. These
+// values do not change the actual collision geometry owned by integration.
+const HULL={half:47.6*1.3,top:63.2*1.3,bottom:41.6*1.3};
 
 test('entry arrives closed, identifies the falsified ID and exposes no free initial damage',()=>{
   const boss=createGuardianAtlas(),initial=boss.y;
-  assert.equal(boss.version,'guardian-atlas-v5');assert.equal(boss.hp,96);
+  assert.equal(boss.version,'guardian-atlas-v6');assert.equal(boss.hp,96);
   assert.equal(hitGuardianAtlas(boss,10).reason,'armored');
   const events=runFor(boss,1);assert.ok(boss.y>initial&&boss.y<boss.targetY);
   assert.equal(events.some(e=>e.type==='projectile'),false);
@@ -135,7 +136,7 @@ test('the first opening waits until every previous projectile clears the complet
   }
 });
 
-test('all routines preserve a ballistic full-outline escape with the real forty-percent ship envelope',()=>{
+test('all routines preserve a ballistic full-outline escape with the enlarged ship envelope',()=>{
   for(const height of [568,1280,1560])for(const targetX of [145,360,575])for(const phase of [1,2]){
     const playerY=height===568?450:height-135,pilot={x:targetX,y:playerY};
     const boss=ready({height,playerY});if(phase===2){expose(boss);hitGuardianAtlas(boss,boss.maxHp/2);}
@@ -144,13 +145,16 @@ test('all routines preserve a ballistic full-outline escape with the real forty-
     for(const attack of attacks){
       const shots=events.filter(e=>e.type==='projectile'&&e.projectile.attackId===attack.attackId).map(e=>e.projectile);
       const candidates=[];for(let x=HULL.half;x<=720-HULL.half;x+=4)candidates.push(x);
+      // Pick the closest genuinely clear lane, rather than the first lane
+      // enumerated at the far left, when checking the reaction distance.
+      candidates.sort((a,b)=>Math.abs(a-targetX)-Math.abs(b-targetX));
       const safe=candidates.find(x=>shots.every(s=>[playerY-HULL.top-s.r,playerY+HULL.bottom+s.r].every(y=>{
         const crossing=s.x+s.vx*((y-s.y)/s.vy);return Math.abs(crossing-x)>HULL.half+s.r+2;
       })));
       assert.notEqual(safe,undefined,`${height}/${targetX}/${phase}/${attack.attackTier}: no unavoidable complete wall`);
       const firstContact=Math.min(...shots.map(s=>(playerY-HULL.top-s.r-s.y)/s.vy));
       assert.ok(Math.abs(safe-targetX)/720<attack.seconds+firstContact,
-        'Movement at the real input speed can reach the available escape before contact');
+        `${height}/${targetX}/${phase}/${attack.attackTier}: movement can reach the nearest complete escape before contact`);
     }
   }
 });
@@ -195,12 +199,80 @@ test('half health changes phase once, clears prior fire and protects the full tr
   until(boss,b=>b.state==='charge');assert.equal(boss.attackTier,'medium');
 });
 
-test('patrol moves toward observed flanks while closed and freezes for cannon emission and the exposed counter',()=>{
-  const boss=ready(),origin=boss.x;
-  runFor(boss,.35,{x:575,y:1145});assert.ok(Math.abs(boss.x-origin)>1);
-  until(boss,b=>b.state==='charge',{x:575,y:1145});const x=boss.x;
-  until(boss,b=>b.state==='exposed',{x:119,y:1145});assert.equal(boss.x,x);
-  runFor(boss,1,{x:601,y:1145});assert.equal(boss.x,x);assert.equal(boss.vulnerability,true);
+test('Atlas physically flanks and keeps moving while charging, firing, opening and exposing the core',()=>{
+  const boss=ready(),ranges=new Map();
+  for(let frame=0;frame<30*60;frame++){
+    const range=ranges.get(boss.state)||{minX:boss.x,maxX:boss.x,minY:boss.y,maxY:boss.y};
+    range.minX=Math.min(range.minX,boss.x);range.maxX=Math.max(range.maxX,boss.x);
+    range.minY=Math.min(range.minY,boss.y);range.maxY=Math.max(range.maxY,boss.y);
+    ranges.set(boss.state,range);tick(boss,{x:575,y:1145});
+  }
+  for(const state of ['closed','charge','fire','opening','exposed','closing']){
+    const range=ranges.get(state);assert.ok(range,`${state} reached`);
+    assert.ok(range.maxX-range.minX>5,`${state} cannot remain a static turret`);
+  }
+  const exposed=ranges.get('exposed');assert.ok(exposed.maxX-exposed.minX>50);
+});
+
+test('motion stays inside its physical arena with bounded velocity, acceleration and no transition snaps',()=>{
+  for(const width of [280,320,390,720])for(const seed of [1,17,507]){
+    const boss=ready({width,seed});
+    for(let frame=0;frame<60*60;frame++){
+      const before={x:boss.x,y:boss.y,vx:boss.motionVx,vy:boss.motionVy};
+      tick(boss,{x:width*(.5+.4*Math.sin(frame*.03)),y:1145});
+      const margin=boss.r+Math.min(18,width*.025);
+      assert.ok(boss.x>=margin-1e-8&&boss.x<=width-margin+1e-8);
+      assert.ok(boss.y>=Math.max(64,boss.targetY-16)-1e-8&&boss.y<=boss.targetY+24+1e-8);
+      assert.ok(Math.abs(boss.x-before.x)<=R.motion.maxSpeed*DT+1e-8);
+      assert.ok(Math.abs(boss.y-before.y)<=R.motion.maxVerticalSpeed*DT+1e-8);
+      assert.ok(Math.abs(boss.motionVx-before.vx)<=R.motion.acceleration*DT+1e-7);
+      assert.ok(Math.abs(boss.motionVy-before.vy)<=R.motion.acceleration*DT+1e-7);
+    }
+  }
+});
+
+test('phase change and phase-two exposure retain physical movement, then shutdown fixes the disabled wreck in place',()=>{
+  const boss=expose(),start={x:boss.x,y:boss.y};
+  hitGuardianAtlas(boss,boss.maxHp/2);assert.equal(boss.state,'phaseBreak');
+  runFor(boss,.65,{x:150,y:1145});assert.ok(Math.hypot(boss.x-start.x,boss.y-start.y)>8);
+  until(boss,b=>b.state==='exposed',{x:150,y:1145});const exposedAt={x:boss.x,y:boss.y};
+  runFor(boss,1,{x:575,y:1145});assert.equal(boss.vulnerability,true);
+  assert.ok(Math.hypot(boss.x-exposedAt.x,boss.y-exposedAt.y)>10);
+  hitGuardianAtlas(boss,1000);const stopped={x:boss.x,y:boss.y};
+  runFor(boss,5);assert.deepEqual({x:boss.x,y:boss.y},stopped);assert.equal(boss.resolved,true);
+});
+
+test('every volley leaves the actual moving weapons while the sampled target remains locked',()=>{
+  const boss=ready(),events=[];
+  while(boss.phaseAttacks<3||boss.state!=='exposed'){
+    const frame=tick(boss,{x:170,y:1145});events.push(...frame);
+    for(const volley of frame.filter(e=>e.type==='volley')){
+      const shots=frame.filter(e=>e.type==='projectile'&&e.projectile.attackId===volley.attackId&&
+        e.projectile.volley===volley.volley).map(e=>e.projectile);
+      assert.ok(shots.length>0);
+      for(const s of shots){assert.equal(s.x,volley.x);assert.equal(s.y,volley.y);}
+      assert.ok(Math.abs(volley.y-(boss.y+boss.r*.7))<R.motion.maxVerticalSpeed*DT+1e-8);
+      const cross=boss.attackTier==='medium'&&boss.phase===1;
+      const anchor=boss.x+(cross?(volley.volley===0?-1:1)*boss.r*.72:0);
+      assert.ok(Math.abs(volley.x-anchor)<R.motion.maxSpeed*DT+1e-8);
+    }
+  }
+  const volleys=events.filter(e=>e.type==='volley'&&e.attackTier==='medium');
+  assert.equal(volleys.length,2);assert.notEqual(volleys[0].x,volleys[1].x);
+});
+
+test('after introducing routines, adaptive decisions intercept flanks and still recharge a superpower',()=>{
+  const centre=ready({seed:17}),flank=ready({seed:17}),centreEvents=[],flankEvents=[];
+  until(centre,b=>b.phaseAttacks>=8&&b.state==='charge',{x:360,y:1145},centreEvents);
+  until(flank,b=>b.phaseAttacks>=8&&b.state==='charge',{x:120,y:1145},flankEvents);
+  const first=e=>e.filter(event=>event.type==='warning').slice(0,3).map(event=>event.attackTier);
+  assert.deepEqual(first(centreEvents),['basic','medium','superpower']);
+  assert.deepEqual(first(flankEvents),first(centreEvents));
+  const later=e=>e.filter(event=>event.type==='warning').slice(3);
+  assert.ok(later(flankEvents).some(event=>event.decision==='intercept-flank'));
+  assert.ok(later(centreEvents).some(event=>event.decision==='pressure-observed-lane'));
+  assert.ok(later(flankEvents).some(event=>event.decision==='reactor-recharged'&&event.attackTier==='superpower'));
+  assert.notDeepEqual(later(flankEvents).map(e=>e.attackTier),later(centreEvents).map(e=>e.attackTier));
 });
 
 test('lead uses sampled prior velocity, is capped and does not consult a later input reversal',()=>{
@@ -213,7 +285,7 @@ test('lead uses sampled prior velocity, is capped and does not consult a later i
   assert.ok(events.filter(e=>e.type==='projectile').every(e=>e.projectile.targetX===lock.targetX));
 });
 
-function simulateManual(type,{missiles=false,seed=507}={}){
+function simulateManual(type,{missiles=false,seed=507,evasive=true}={}){
   const boss=createGuardianAtlas({seed}),weapons=createClassicWeapons({type,unlocked:type==='pulse'?['pulse']:['pulse','twin']});
   setClassicUnlimitedFire(weapons,true);
   const ship={x:360,y:1145};let hostile=[],destination=360,nextReaction=0,hull=100,taps=0,rewards=0,missilesUsed=0;
@@ -240,7 +312,7 @@ function simulateManual(type,{missiles=false,seed=507}={}){
       if(event.type==='disabled')rewards++;
     }
     phases.add(boss.phase);advanceClassicWeapons(weapons,DT);
-    nextReaction-=DT;if(nextReaction<=0){nextReaction=.16;destination=choose();}
+    nextReaction-=DT;if(nextReaction<=0){nextReaction=.16;destination=evasive?choose():boss.x;}
     ship.x+=clamp(destination-ship.x,-720*DT,720*DT);
     if(['opening','exposed'].includes(boss.state)&&Math.abs(ship.x-boss.x)<24){
       if(triggerClassicWeapon(weapons,{x:ship.x,y:ship.y-50}).accepted)taps++;
@@ -277,7 +349,7 @@ test('manual basic infinite fire and retained Twin defeat the real core windows 
   assert.ok(twin.seconds<pulse.seconds,'The retained two-barrel upgrade has a real counterattack benefit');
 });
 
-test('exactly three physical six-damage missiles are a useful finite supplement to the same infinite basic fire',t=>{
+test('exactly three physical missiles are a useful finite supplement to the same infinite basic fire',t=>{
   const baseline=simulateManual('pulse'),armed=simulateManual('pulse',{missiles:true});t.diagnostic(JSON.stringify(armed));
   assert.equal(armed.resolved,true);assert.ok(armed.hull>0);assert.equal(armed.missilesUsed,3);
   assert.equal(armed.rewards,1);assert.equal(armed.magazineAfter,20);
@@ -289,6 +361,14 @@ test('counterplay stays viable across deterministic combat seeds using only emit
     const result=simulateManual('pulse',{seed});assert.equal(result.resolved,true);assert.ok(result.hull>0);
     assert.equal(result.rewards,1);assert.ok(result.seconds<180);
   }
+});
+
+test('following the core and firing without evasion is punished even with accurate manual aiming',t=>{
+  const evasive=simulateManual('pulse'),reckless=simulateManual('pulse',{evasive:false});
+  t.diagnostic(JSON.stringify({evasive,reckless}));
+  assert.equal(evasive.resolved,true);assert.ok(evasive.hull>0);
+  assert.ok(reckless.hull<evasive.hull,'Firing accurately must not erase the need to dodge a final guardian');
+  assert.equal(reckless.resolved,false);assert.ok(reckless.hull<=0);
 });
 
 test('shutdown is visible, terminates attacks and emits one restored-identity record and progression receipt',()=>{

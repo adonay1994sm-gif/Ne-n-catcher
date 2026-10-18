@@ -82,6 +82,14 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-SPECIALIST-ENERGY-01 / P1 | CRONIUM animado sin caja opaca ni bisel | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_PASSED | PENDING_OWNER | PENDING |
 | P1-SPECIALIST-PROPULSION-01 / P1 | Motores proporcionados y misil sin lanzador flotante | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_PASSED | PENDING_OWNER | PENDING |
 | P1-SPECIALIST-AUDIO-01 / P1 | Efectos originales conectados a combate y controles de audio | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-INTRO / P1 | Abrir sobre Chronos vivo y enseñar acciones breves | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-IA / P1 | Maniobras procedurales y mayor presencia enemiga | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-ATLAS / P1 | Atlas móvil y exigente con decisiones y ventanas | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-MISSILE / P1 | Misil18 y explosión ilustrada visible al contacto | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-C9 / P1 | Taller C9 ilustrado desde HUD sin estación orbital | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-AUDIO / P1 | Emisiones enemigas con sonidos originales y pausa/mute | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-FLIGHT / P1 | Nave30% mayor y cometas con trayectorias variadas transitables | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-TOOLS / P1 | Skills útiles, higiene recuperable y Netlify QA preparado | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | NOT_APPLICABLE | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -96,18 +104,18 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 8/89 (9.0%) | 36 | 0 | 1 | 44 |
+| Jugabilidad | 8/91 (8.8%) | 36 | 0 | 1 | 46 |
 | Campaña clásica | 5/57 (8.8%) | 4 | 1 | 0 | 47 |
 | Campaña N-7 | 4/42 (9.5%) | 35 | 1 | 0 | 2 |
-| Enemigos | 5/81 (6.2%) | 57 | 0 | 0 | 19 |
-| Jefes | 0/19 (0.0%) | 13 | 0 | 0 | 6 |
-| Assets | 3/202 (1.5%) | 124 | 3 | 1 | 71 |
+| Enemigos | 5/82 (6.1%) | 57 | 0 | 0 | 20 |
+| Jefes | 0/20 (0.0%) | 13 | 0 | 0 | 7 |
+| Assets | 3/205 (1.5%) | 124 | 3 | 1 | 74 |
 | Animaciones | 5/158 (3.2%) | 109 | 1 | 0 | 43 |
-| Narrativa | 0/23 (0.0%) | 17 | 0 | 0 | 6 |
-| Audio | 1/18 (5.6%) | 12 | 0 | 1 | 4 |
-| Interfaz | 5/40 (12.5%) | 9 | 1 | 0 | 25 |
+| Narrativa | 0/24 (0.0%) | 17 | 0 | 0 | 7 |
+| Audio | 1/19 (5.3%) | 12 | 0 | 1 | 5 |
+| Interfaz | 5/41 (12.2%) | 9 | 1 | 0 | 26 |
 | Rendimiento | 1/16 (6.3%) | 11 | 1 | 0 | 3 |
-| QA | 22/105 (21.0%) | 20 | 3 | 5 | 55 |
+| QA | 22/113 (19.5%) | 20 | 3 | 5 | 63 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
@@ -115,8 +123,8 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
 | 03 · Prueba integrada y cierre técnico | 20/32 (62.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 10 · DONE: 20 |
-| 04 · Jugabilidad procedural | 2/56 (3.6%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 34 · DONE: 2 |
-| 05 · Producción visual y 150 assets | 5/193 (2.6%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 65 · DONE: 5 |
+| 04 · Jugabilidad procedural | 2/64 (3.1%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 42 · DONE: 2 |
+| 05 · Producción visual y 150 assets | 5/196 (2.6%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 68 · DONE: 5 |
 | 06 · Diez jefes | 0/13 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 3 · DONE: 0 |
 | 07 · Narrativa completa | 0/15 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/15 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 2 · DONE: 0 |
@@ -125,7 +133,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 50; PLANNED: 116; IMPLEMENTED_CODE: 2**; 168 identificadores. Cierre de los doce requisitos: **0/168 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 53; PLANNED: 116; IMPLEMENTED_CODE: 2**; 171 identificadores. Cierre de los doce requisitos: **0/171 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 

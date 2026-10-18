@@ -1,0 +1,45 @@
+
+> neon-cronium@7.2.0 test
+> node tests/run-tests.mjs
+
+PASS 01 · versión interna 7.2.0 compatible y portada canónica sin distintivos técnicos
+PASS 02 · dependencias exactas y reproducibles
+PASS 03 · JavaScript y JSON con sintaxis válida
+PASS 04 · game.js coincide con los 9 módulos ordenados
+PASS 05 · sin latest, TODO ni identificadores publicitarios ficticios
+PASS 06 · manifiesto y archivos conservados coinciden exactamente con el disco
+PASS 07 · plan de producción conserva los 150 IDs históricos y registra ampliaciones únicas y trazables
+PASS 08 · todos los assets de juego están documentados y precargados
+PASS 09 · service worker incluye recursos activos y excluye referencias visuales retiradas
+PASS 10 · todas las referencias locales de HTML existen
+PASS 11 · www es un paquete limpio y coincide con los archivos públicos
+PASS 12 · proyecto iOS real conserva bundle, versión y orientación vertical
+PASS 13 · recursos iOS y web sincronizado son coherentes
+[NEON CRONIUM] build 7.2.0
+PASS 14 · almacenamiento aislado sobrevive a bloqueos y valores ausentes
+PASS 15 · migración V1→V2 idempotente y sin pérdida de récord
+PASS 16 · claves, campaña y balance crítico permanecen iguales
+PASS 17 · el cargador canónico ofrece veinte proyectiles, se agota y recupera uno sin contador ni disparos fantasma
+PASS 18 · guardados corruptos se normalizan sin romper el menú ni el control
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'a40789b028be6be21f4e38897310e205ff2008bc05c4c6cdef03712215077622'
+- 'e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865'
+
+    at file:///workspace/Ne-n-catcher/tests/run-tests.mjs:439:10
+    at test (file:///workspace/Ne-n-catcher/tests/run-tests.mjs:14:9)
+    at file:///workspace/Ne-n-catcher/tests/run-tests.mjs:436:7 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'a40789b028be6be21f4e38897310e205ff2008bc05c4c6cdef03712215077622',
+  expected: 'e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

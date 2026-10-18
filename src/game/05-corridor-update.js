@@ -395,7 +395,7 @@
 
       if (item.classicScout) {
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
-        advance(item,dt*scale,player,shot=>items.push(shot));
+        advance(item,dt*scale,player,shot=>{items.push(shot);if(isUnifiedClassic())combatSound("enemy-phaser",shot.x);});
       }
       if (item.journeyEntry && item.classicScout.age < .9) {
         const entry = item.classicScout.age / .9;
