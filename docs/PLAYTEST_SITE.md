@@ -1,3 +1,17 @@
+## Web vigente · 18/10/2026 · versión 17
+
+https://neon-catcher-pruebas.chictide18.chatgpt.site
+
+Pulsa **CONTINUAR VIAJE** para abrir el clásico 8d651b5. Si tenías abierta la versión anterior, recarga la página; los guardados se conservan.
+
+Incluye C9 más rápida, nuevos disparos, patrullas que mantienen el combate y Atlas manual. Gemelo se desbloquea al vencerlo. AUTO empieza desactivado y se cambia desde Ajustes. Las armas que ya estaban guardadas se conservan.
+
+Fuente del sitio 6d5c560; HTTP remoto 4/4 comprobado. Privado para su propietario, sin visitantes externos ni cambios en producción Netlify. [Informe, capturas y paquete](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md).
+
+Las revisiones siguientes se conservan como historial.
+
+---
+
 ## Versión vigente16 ·18/10/2026
 
 **[Abrir NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE. Paquete limpio d39ed440740b094f9dddb588c540c537f4499215, fuenteSite8fb37f4d0ed9d4626bb2524c00abc406f6e954dd. Publicación y HTTP remoto4/4 comprobados; mismo laboratorio privado/origen/guardados. [Informe, capturas, ZIP y hashes](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md).

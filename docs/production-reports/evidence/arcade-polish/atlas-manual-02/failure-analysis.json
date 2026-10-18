@@ -1,0 +1,29 @@
+{
+  "classification": "QA_HARNESS_FLOATING_POINT_ASSERTION",
+  "runtimeDefectDemonstrated": false,
+  "originalExitCode": 1,
+  "originalError": "AssertionError [ERR_ASSERTION]: Basic Pulse/Twin must fly straight\n+ actual - expected\n\n+ 5.633375276077825e-14\n- 0\n\n    at /workspace/Ne-n-catcher/scripts/guardian-atlas-browser-smoke.cjs:372:22\n    at async check (/workspace/Ne-n-catcher/scripts/guardian-atlas-browser-smoke.cjs:60:9)\n    at async /workspace/Ne-n-catcher/scripts/guardian-atlas-browser-smoke.cjs:309:3",
+  "observedProjectile": {
+    "id": "classic-weapons-v1:projectile:1",
+    "shotId": "classic-weapons-v1:shot:1",
+    "weapon": "pulse",
+    "barrel": 0,
+    "x": 360.00000000000006,
+    "y": 1064.4298388625618,
+    "vx": 5.633375276077825e-14,
+    "vy": -920,
+    "damage": 1,
+    "radius": 9,
+    "pierce": 1,
+    "duration": 2.4,
+    "life": 2.383300000000003,
+    "hitTargets": [],
+    "previousX": 360.00000000000006,
+    "previousY": 1079.7938388625591
+  },
+  "explanation": "The projectile is emitted at angle -PI/2. Its vx=920*cos(-PI/2) is approximately 5.633375276077825e-14, rather than exact binary zero. vy is exactly -920. The strict-zero assertion was invalid.",
+  "fix": "Preserve straight-flight assertion with abs(vx)<1e-9 and retain negative-Y assertion. No runtime, health, input, collision, weapon or difficulty change.",
+  "runtimeCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+  "originalQaScriptSha256": "bb11564e9a238089733bba46a475fdebb33f043aded7f1a5d68d5a7d2561a587",
+  "nextEvidence": "/tmp/neon-polish-atlas-manual-03"
+}

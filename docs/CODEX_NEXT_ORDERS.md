@@ -1,3 +1,17 @@
+## Continuación vigente · 18/10/2026 · Site 17
+
+[Último cierre](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md). Juego 8d651b5; fuente del sitio 6d5c560, versión 17. Comprobar HEAD y remoto posteriores sin retroceder.
+
+1. Perfilar B09-01 en Gaia: recogida a 10,36–11,22 RAF/s frente a Atlas a 59,91, incluso aislado. Capturar CPU y rasterizado por función/tipo; corregir el coste confirmado y comparar A/B con regresiones. No atribuir una causa sin perfil ni prometer 60 FPS en iPhone.
+2. Revisar jugando C9, patrullas, Atlas y progresión del arsenal. Arte y balance humano siguen pendientes. Gemelo/Lanza históricos se conservan; un perfil nuevo empieza con Pulso. AUTO desactivado por defecto, accesible sólo desde Ajustes.
+3. Completar CH-03 y las escenas de llegada a Gaia y salida hacia Vulkar. La siguiente mejora de arsenal necesita otro jefe real integrado y probado; no desbloquear Lanza por cuota ni presentar registros como jefes terminados.
+4. Conservar intentos fallidos e interrumpidos: C9 usa un guardado de entrada declarado; Atlas sí es una partida manual natural; la observación de Gaia no prueba la muerte del interceptor.
+5. Mantener la rama autorizada, Motor V1 desactivado, un RAF y campañas/guardados. Sólo web privada de pruebas; no producción, PR #3, main ni tiendas. Correo de soporte aplazado: no preguntar otra vez.
+
+Las órdenes siguientes son historial y ceden ante este cierre.
+
+---
+
 ## Continuación vigente ·18/10/2026
 
 [Último cierre](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md): web privada16, paquete d39ed44, fuenteSite8fb37f4, CI39105045562success. Preservar HEAD/remoto más recientes; rama continuity-assets-audit-20261013 y MotorV1=false.

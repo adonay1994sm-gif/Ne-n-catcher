@@ -1,0 +1,27 @@
+{
+  "status": "REPORT_PREPARED_PENDING_COMMIT_RECEIPT",
+  "branch": "continuity-assets-audit-20261013",
+  "initialCommit": "c4d528cd75bb7b40a21b693540179c0470b524ed",
+  "runtimeCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+  "qaCommit": "33e423c650ee2ddcfcf31314e7709d100be4b550",
+  "reportCommit": null,
+  "reportPath": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+  "privateSiteVersion": 17,
+  "siteCommit": "6d5c560ddc80daee30dcff0c30cd1f5b3f5eb9b4",
+  "siteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "packageSha256": "e20d78a5becb077f6768c8ab90aa52cff12ce9bff04835b6bedcf4a81330fcc8",
+  "functionalCI": {
+    "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39108203642",
+    "conclusion": "success"
+  },
+  "qaCI": {
+    "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39108699491",
+    "conclusion": "success"
+  },
+  "limitations": [
+    "Six scoped improvements remain IN_REVIEW pending owner acceptance and physical testing.",
+    "B09-01 field collection performance requires profiling.",
+    "C9 uses a declared stage-entry save fixture; Atlas is a natural manual game; Gaia observation does not certify enemy destruction.",
+    "No new complete Chronos ten-stage natural run is claimed after the coordinator stopped attempt01."
+  ]
+}

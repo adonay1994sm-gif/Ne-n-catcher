@@ -1,0 +1,458 @@
+{
+  "kind": "coordinator-interruption-not-game-failure",
+  "requestedAt": "2026-10-18T07:38:03.848589+00:00",
+  "reason": "Coordinator requested sequential browser execution: concurrent software Chromium sessions were advancing at about 2\u20133 FPS and risked false wall-clock timeouts. No gameplay or source assertion had failed.",
+  "signal": "SIGINT",
+  "targetPid": 18773,
+  "argv": [
+    "node",
+    "scripts/gaia-interceptor-browser-smoke.cjs",
+    "--root",
+    "preview-dist",
+    "--output",
+    "/tmp/neon-polish-gaia-engagement-01",
+    "--expected-commit",
+    "8d651b51453c143d395d3feb8c0d5629066a72c9",
+    "--observe-engagement",
+    "--timeout",
+    "600000"
+  ],
+  "qaScriptSha256": "f96b43dc60b6876b4545b0239ea00bc549c733ade99dff597ff44d56fe8b2f39",
+  "expectedCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+  "expectedExitCode": 130,
+  "exitCode": 130,
+  "lastReportStatus": "running",
+  "lastCases": [
+    {
+      "name": "open Gaia via the actual selector with declared unlock/equipment fixtures",
+      "status": "passed"
+    },
+    {
+      "name": "the real CH-02 image contains sixteen distinct nonempty transparent cells",
+      "status": "passed"
+    },
+    {
+      "name": "a natural interceptor flanks, announces an attack, fires a real projectile and freezes on pause",
+      "status": "running"
+    }
+  ],
+  "lastSample": {
+    "wallMs": 128818,
+    "elapsed": 17.065900000000095,
+    "hull": 66,
+    "collected": 9,
+    "score": 250,
+    "hudScoreTarget": 250,
+    "displayedScore": 250,
+    "hudScoreText": "250",
+    "weapons": {
+      "version": "classic-weapons-v1",
+      "width": 720,
+      "height": 1558,
+      "selected": "pulse",
+      "unlocked": [
+        "pulse"
+      ],
+      "charges": 3,
+      "recharge": 0,
+      "cooldown": 0,
+      "elapsed": 15.808600000000126,
+      "projectileSequence": 0,
+      "eventSequence": 0,
+      "shotSequence": 0,
+      "projectiles": [],
+      "label": "Pulso",
+      "description": "Da\u00f1o \u00d71: un pulso de 1 de da\u00f1o por carga.",
+      "damageMultiplier": 1,
+      "rechargeProgress": 0
+    },
+    "target": {
+      "id": "classic-pursuit-v2:1:0:1",
+      "type": "scout",
+      "x": 583.4145591051504,
+      "y": 358.5014899256296,
+      "s": 1.0039024810910746,
+      "r": 35,
+      "hp": 3,
+      "maxHp": 3,
+      "rot": 0,
+      "rs": 0,
+      "circles": [
+        {
+          "x": 0,
+          "y": 0,
+          "r": 32.9
+        }
+      ],
+      "classicScoutProjectile": false,
+      "classicScout": {
+        "tacticsVersion": "classic-pursuit-v2",
+        "role": "interceptor",
+        "state": "reposition",
+        "stateAge": 0.8500000000000005,
+        "age": 5.167999999999984,
+        "vx": 21.617191098120173,
+        "targetX": 590.4,
+        "side": 1,
+        "holdY": 359.05921352623574,
+        "combatStartedAt": 2.991999999999996,
+        "combatMinX": 129.6,
+        "combatMaxX": 590.4,
+        "retreatReason": null,
+        "repositionCount": 1,
+        "firedSerial": 1,
+        "fired": 1,
+        "telegraph": 0,
+        "chargeSerial": 1,
+        "lockedTarget": null,
+        "frame": {
+          "state": "bankRight",
+          "frameIndex": 3,
+          "rect": {
+            "x": 768,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    },
+    "destruction": [],
+    "hostileProjectiles": [
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 396.0733723208499,
+        "y": 1499.574651241812,
+        "s": 295,
+        "r": 9,
+        "hp": 1,
+        "maxHp": 1,
+        "rot": 0,
+        "rs": 0,
+        "vx": 36.071754849865734,
+        "vy": 292.78631884371094,
+        "circles": [
+          {
+            "x": 0,
+            "y": 0,
+            "r": 8.459999999999999
+          }
+        ],
+        "classicScoutProjectile": true,
+        "attackSerial": 2,
+        "role": "scout",
+        "classicScout": null
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 519.5476183121627,
+        "y": 742.4271007446096,
+        "s": 295,
+        "r": 9,
+        "hp": 1,
+        "maxHp": 1,
+        "rot": 0,
+        "rs": 0,
+        "vx": -17.18687536793015,
+        "vy": 294.4989156433131,
+        "circles": [
+          {
+            "x": 0,
+            "y": 0,
+            "r": 8.459999999999999
+          }
+        ],
+        "classicScoutProjectile": true,
+        "attackSerial": 1,
+        "role": "interceptor",
+        "classicScout": null
+      }
+    ],
+    "draws": {
+      "0,0,256,256": 76,
+      "256,0,256,256": 56,
+      "0,256,256,256": 4,
+      "256,256,256,256": 3,
+      "512,256,256,256": 2,
+      "768,256,256,256": 5,
+      "768,0,256,256": 25
+    }
+  },
+  "interceptors": [
+    {
+      "id": "classic-pursuit-v2:1:0:1",
+      "firstElapsed": 11.965900000000047,
+      "initialHp": 3,
+      "minimumX": 540,
+      "maximumX": 583.4145591051504,
+      "fired": 1,
+      "states": [
+        "entry",
+        "brake",
+        "charge",
+        "fire",
+        "reposition"
+      ],
+      "animationStates": [
+        "spawn",
+        "flight",
+        "idle",
+        "attack",
+        "bankRight"
+      ],
+      "frames": [
+        0,
+        1,
+        4,
+        5,
+        7,
+        3
+      ],
+      "hp": [
+        3
+      ],
+      "holdSamples": [
+        {
+          "age": 2.991999999999996,
+          "y": 327.3093514396459,
+          "speed": 57.149751755861665,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 3.5699999999999927,
+          "y": 348.20785234607683,
+          "speed": 19.532450124286026,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 3.6379999999999924,
+          "y": 349.4954158323097,
+          "speed": 17.214835849066912,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 3.705999999999992,
+          "y": 350.63020403961144,
+          "speed": 15.172217075923731,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 3.7739999999999916,
+          "y": 351.63034445148264,
+          "speed": 13.371964334555571,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 3.841999999999991,
+          "y": 352.5118136428451,
+          "speed": 11.785319790103177,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 3.909999999999991,
+          "y": 353.2886924951529,
+          "speed": 10.386937855949157,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 3.9779999999999904,
+          "y": 353.9733911290668,
+          "speed": 9.154480314904118,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.283999999999989,
+          "y": 356.17837498649993,
+          "speed": 5.185509371524449,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.351999999999989,
+          "y": 356.5201996158633,
+          "speed": 4.570225038670379,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.419999999999988,
+          "y": 356.8214651942324,
+          "speed": 4.027946997605977,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.487999999999988,
+          "y": 357.08698423795704,
+          "speed": 3.5500127189016553,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.555999999999988,
+          "y": 357.32099823637685,
+          "speed": 3.1287875217459944,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.623999999999987,
+          "y": 357.5272454067803,
+          "speed": 2.75754261501977,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.691999999999987,
+          "y": 357.7090204099283,
+          "speed": 2.430347609353362,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.7599999999999865,
+          "y": 357.86922698005884,
+          "speed": 2.1419757831184145,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.827999999999986,
+          "y": 358.0104243101014,
+          "speed": 1.8878205890417576,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.895999999999986,
+          "y": 358.1348679330746,
+          "speed": 1.6638220676900688,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 4.963999999999985,
+          "y": 358.2445457527191,
+          "speed": 1.4664019923299634,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 5.031999999999985,
+          "y": 358.3412097989319,
+          "speed": 1.292406709146883,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 5.0999999999999845,
+          "y": 358.42640421527346,
+          "speed": 1.139056759732091,
+          "holdY": 359.05921352623574
+        },
+        {
+          "age": 5.167999999999984,
+          "y": 358.5014899256296,
+          "speed": 1.0039024810910746,
+          "holdY": 359.05921352623574
+        }
+      ],
+      "retreatReason": null
+    }
+  ],
+  "processTree": [
+    {
+      "pid": 18773,
+      "parent": 18770,
+      "name": "MainThread"
+    },
+    {
+      "pid": 18785,
+      "parent": 18773,
+      "name": "chromium"
+    },
+    {
+      "pid": 18806,
+      "parent": 18785,
+      "name": "chromium"
+    },
+    {
+      "pid": 18807,
+      "parent": 18785,
+      "name": "chromium"
+    },
+    {
+      "pid": 18827,
+      "parent": 18806,
+      "name": "chromium"
+    },
+    {
+      "pid": 18828,
+      "parent": 18785,
+      "name": "chromium"
+    },
+    {
+      "pid": 18841,
+      "parent": 18807,
+      "name": "chromium"
+    },
+    {
+      "pid": 18863,
+      "parent": 18807,
+      "name": "chromium"
+    },
+    {
+      "pid": 18872,
+      "parent": 18807,
+      "name": "chromium"
+    },
+    {
+      "pid": 18874,
+      "parent": 18807,
+      "name": "chromium"
+    },
+    {
+      "pid": 18940,
+      "parent": 18785,
+      "name": "chromium"
+    }
+  ],
+  "stoppedAt": "2026-10-18T07:38:12.082596+00:00",
+  "remainingOwnedProcesses": [
+    {
+      "pid": 18806,
+      "state": "Z"
+    },
+    {
+      "pid": 18807,
+      "state": "Z"
+    },
+    {
+      "pid": 18827,
+      "state": "Z"
+    },
+    {
+      "pid": 18828,
+      "state": "Z"
+    },
+    {
+      "pid": 18841,
+      "state": "Z"
+    },
+    {
+      "pid": 18863,
+      "state": "Z"
+    },
+    {
+      "pid": 18874,
+      "state": "Z"
+    },
+    {
+      "pid": 18940,
+      "state": "Z"
+    }
+  ]
+}

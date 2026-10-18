@@ -1,0 +1,52 @@
+{
+  "runtimeCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+  "passed": true,
+  "previewIsolationTransforms": [
+    "namespaced storage",
+    "simulated repair label",
+    "scoped versioned service worker and preview config CORE entry"
+  ],
+  "files": [
+    {
+      "name": "game.js",
+      "sourceHash": "6452544eff86d26f68941a272d364b2ab88e83ad189f779bb1d03171e926a100",
+      "previewHash": "b4a7fc21f0502dcdfeb01835e30faa1c8ef49debcf50d0f6c73578637a8e5d47",
+      "nativeCopiesEqual": true,
+      "pipelinePreviewMatches": true
+    },
+    {
+      "name": "content-runtime.js",
+      "sourceHash": "f69346b0c2f3835e44d8c95b79d3f6649c7a68157a8e1723afcaf47da72fac39",
+      "previewHash": "f69346b0c2f3835e44d8c95b79d3f6649c7a68157a8e1723afcaf47da72fac39",
+      "nativeCopiesEqual": true,
+      "pipelinePreviewMatches": true
+    },
+    {
+      "name": "core-runtime.js",
+      "sourceHash": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78",
+      "previewHash": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78",
+      "nativeCopiesEqual": true,
+      "pipelinePreviewMatches": true
+    },
+    {
+      "name": "index.html",
+      "sourceHash": "f1e493d06b488ae1e509788113c1db84685a263d0b7038398991effc94305910",
+      "nativeCopiesEqual": true,
+      "preview": "HTML isolation checked by23 test:preview cases"
+    },
+    {
+      "name": "styles.css",
+      "sourceHash": "dad244a6ee17b0c1860f66f04504561fad07c4ab19a11796a2e81227469caa40",
+      "previewHash": "dad244a6ee17b0c1860f66f04504561fad07c4ab19a11796a2e81227469caa40",
+      "nativeCopiesEqual": true,
+      "pipelinePreviewMatches": true
+    },
+    {
+      "name": "sw.js",
+      "sourceHash": "40facfcabb031a4b59e4e495fe37f54cbc49f2896eea78d644bc2979bd61e695",
+      "previewHash": "a0a19fe6ef48b1c7ed8236eb8a851ff30574b543fb11f913f3e3fa3fcbf50551",
+      "nativeCopiesEqual": true,
+      "pipelinePreviewMatches": true
+    }
+  ]
+}

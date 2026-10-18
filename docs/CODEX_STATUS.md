@@ -1,3 +1,17 @@
+## Estado vigente · 18/10/2026 · pulido arcade
+
+[Informe completo](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md). Juego probado y publicado: **8d651b5**. Web privada: **versión 17**, fuente **6d5c560**. GitHub Actions funcional y QA aprobados.
+
+Integrados: C9 más rápida, nave sin nube superpuesta, disparos físicos animados, enemigos que sostienen el combate, Atlas manual y progresión Pulso → Atlas → Gemelo. Se conservan los guardados y las armas anteriores. Motor V1 desactivado.
+
+Verificación: 551 casos de suites y 23 de preview; Atlas natural 4/4, C9 dirigida 4/4, observación de Gaia 4/4, actualización/offline 5/5, layout en tres perfiles, N-7 en una sesión de seis pasos, Site local 2/2 y HTTP remoto 4/4. No equivale a cien etapas completas ni a certificación física.
+
+**B09-01 sigue abierto:** en este host por software la recogida registra 10,36–11,22 RAF/s frente a 59,91 en Atlas, incluso en ejecución aislada. Falta perfilado. Aceptación artística, balance humano y Safari/iPhone pendientes. El informe separa fallos de arnés e interrupciones de las pruebas aprobadas.
+
+Lo siguiente es historial; no restaura el AUTO predeterminado ni las armas gratuitas en C9.
+
+---
+
 <!-- chronos-pursuit-current -->
 ## DIAGNÓSTICO · cierre Chronos–Gaia,18/10/2026
 

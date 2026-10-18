@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-18T07:31:46.464Z**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-18T07:54:42.413677+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -55,12 +55,12 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P2-PLAYTEST-01 / P2 | Preparar y ejecutar diez pruebas humanas de Chronos–Gaia | BLOCKED | PREPARED_NOT_EXECUTED | NOT_APPLICABLE | PENDING |
 | P3-PURSUIT-01 / P3 | Conectar las etapas Chronos–Gaia con transiciones continuas y persecución posterior a la ruptura | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-GAIA-02 / P1 | Integrar CH-02 animado con ataque anunciado en una Gaia orbital multicapa | IN_REVIEW | PASSED_INTEGRATED_CHROMIUM | PENDING_OWNER | PENDING |
-| P2-C9-FAST-01 / P2 | Abrir C9 al alcanzar el atraque y conservar salida, pausas y guardados | IN_REVIEW | PENDING_CHROMIUM | PENDING_OWNER | PENDING |
-| P1-SHIP-CLEAN-01 / P1 | Integrar propulsión y daño sin una imagen de humo pegada a la nave | IN_REVIEW | PENDING_CHROMIUM | PENDING_OWNER | PENDING |
-| P2-PULSE-VISUAL-01 / P2 | Alinear los proyectiles verticales reales con su nuevo arte e impactos | IN_REVIEW | PENDING_CHROMIUM | PENDING_OWNER | PENDING |
-| P2-ENEMY-COMBAT-01 / P2 | Mantener intención y respuesta de combate de los enemigos activos | IN_REVIEW | PENDING_CHROMIUM | PENDING_OWNER | PENDING |
-| P1-ATLAS-MANUAL-01 / P1 | Validar Atlas como reto manual con AUTO apagado y opt-in sólo en Ajustes | IN_REVIEW | PENDING_CHROMIUM | PENDING_OWNER | PENDING |
-| P2-ARSENAL-01 / P2 | Vincular Pulso→Atlas→Gemelo a victoria persistida y conservar armamento antiguo | IN_REVIEW | PENDING_CHROMIUM | PENDING_OWNER | PENDING |
+| P2-C9-FAST-01 / P2 | Abrir C9 al alcanzar el atraque y conservar salida, pausas y guardados | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
+| P1-SHIP-CLEAN-01 / P1 | Integrar propulsión y daño sin una imagen de humo pegada a la nave | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
+| P2-PULSE-VISUAL-01 / P2 | Alinear los proyectiles verticales reales con su nuevo arte e impactos | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
+| P2-ENEMY-COMBAT-01 / P2 | Mantener intención y respuesta de combate de los enemigos activos | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
+| P1-ATLAS-MANUAL-01 / P1 | Validar Atlas como reto manual con AUTO apagado y opt-in sólo en Ajustes | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
+| P2-ARSENAL-01 / P2 | Vincular Pulso→Atlas→Gemelo a victoria persistida y conservar armamento antiguo | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -85,8 +85,8 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Narrativa | 0/19 (0.0%) | 17 | 1 | 0 | 1 |
 | Audio | 0/15 (0.0%) | 12 | 0 | 1 | 2 |
 | Interfaz | 5/31 (16.1%) | 9 | 1 | 0 | 16 |
-| Rendimiento | 1/14 (7.1%) | 12 | 0 | 0 | 1 |
-| QA | 21/87 (24.1%) | 20 | 2 | 5 | 39 |
+| Rendimiento | 1/14 (7.1%) | 11 | 1 | 0 | 1 |
+| QA | 21/87 (24.1%) | 19 | 3 | 5 | 39 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
@@ -99,7 +99,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
-| 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 15 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
+| 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 14 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
 | 10 · Preparación para lanzamiento | 0/15 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0 |
 
 ## Assets: catálogo frente a entrega

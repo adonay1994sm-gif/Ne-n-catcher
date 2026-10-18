@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T07:31:46.464Z",
+  "updatedAt": "2026-10-18T07:54:42.413677+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -3352,7 +3352,7 @@
       "block": "09",
       "name": "Medir FPS y distribución del tiempo de fotograma",
       "priority": "CRITICAL",
-      "status": "PENDING",
+      "status": "IN_PROGRESS",
       "areas": [
         "Rendimiento",
         "QA"
@@ -3367,10 +3367,16 @@
         "src/core/storage-service.js",
         "scripts/content-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
-      "openErrors": [],
+      "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "tests": [
+        "Chromium aislado software: recogida10,36–11,22RAF/s vsAtlas59,91; no son mediciones de dispositivo. Falta perfilCPU/raster yA/B."
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/arcade-polish/neon-polish-performance-observations.md"
+      ],
+      "openErrors": [
+        "Lentitud reproducible durante recogida incluso sin concurrencia; causa pendiente de perfilado. No se certifican60FPS generales."
+      ],
       "acceptance": [
         "Mediana/p95/p99, duración y dispositivo; no declarar60FPS sin trazas."
       ]
@@ -7020,7 +7026,8 @@
         "CI 39105045562 completed/success: corrige la prueba intermitente 39104552902; cinco semillas y 100 secuencias repetidas, archivo completo 30/30.",
         "HUD corregido con reproducción roja sobre 33263c5 y verde sobre d39; scoreTarget=score es la única diferencia de aplicación y 114 archivos runtime permanecen iguales.",
         "Sitio privado versión 16 succeeded el 18/10/2026 a las 06:48:49 UTC; HTTP-02 4/4 y hashes del paquete d39 verificados.",
-        "Gaia-06 sobre d39: salida 1 por timeout del piloto a los 187.224 ms; no hubo game over ni error JS. Se observó daño HP 3→2 y HUD score 2466=target 2466 con texto animándose en 2465; final 2476/2476/2476. No valida otra destrucción ni se ejecutó gaia-07."
+        "Gaia-06 sobre d39: salida 1 por timeout del piloto a los 187.224 ms; no hubo game over ni error JS. Se observó daño HP 3→2 y HUD score 2466=target 2466 con texto animándose en 2465; final 2476/2476/2476. No valida otra destrucción ni se ejecutó gaia-07.",
+        "IA v2/paquete8d: observación realGaia4/4; ataque/reenganche/retirada. Ver P2-ENEMY-COMBAT-01 para alcance actual."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
@@ -7080,8 +7087,8 @@
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "followupCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
       "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
-      "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-      "privateSiteVersion": 16,
+      "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "privateSiteVersion": 17,
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
       "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
       "qaHistory": {
@@ -7119,14 +7126,22 @@
         }
       ],
       "verificationScope": {
-        "integratedCombatPassedCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-        "integratedCombatEvidence": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
-        "currentCleanPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-        "currentAttempt": "gaia-06: timeout del piloto, destrucción no validada.",
-        "unchangedEnemyArtAndAIRuntimeFiles": 114,
-        "equivalenceEvidence": "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
-        "limitation": "La aceptación técnica acotada de CH-02 se apoya en gaia-05 sobre 33263c5 y equivalencia explícita. No se atribuye un combate de destrucción 4/4 al SHA d39 ni se certifica todo Gaia."
-      }
+        "currentCleanPackageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+        "behaviorEvidence": "docs/production-reports/evidence/arcade-polish/gaia-engagement-02/results.json",
+        "naturalBossEvidence": "docs/production-reports/evidence/arcade-polish/atlas-manual-03/results.json",
+        "limitation": "La IA cambió a v2: su permanencia/4ataques/retirada se prueban ahora. La muerte natural de CH02 de33263c5 es historial, no se atribuye al nuevoAI."
+      },
+      "verificationHistory": [
+        {
+          "integratedCombatPassedCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+          "integratedCombatEvidence": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
+          "currentCleanPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+          "currentAttempt": "gaia-06: timeout del piloto, destrucción no validada.",
+          "unchangedEnemyArtAndAIRuntimeFiles": 114,
+          "equivalenceEvidence": "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
+          "limitation": "La aceptación técnica acotada de CH-02 se apoya en gaia-05 sobre 33263c5 y equivalencia explícita. No se atribuye un combate de destrucción 4/4 al SHA d39 ni se certifica todo Gaia."
+        }
+      ]
     },
     {
       "id": "P2-C9-FAST-01",
@@ -7152,19 +7167,25 @@
         "tests/chronos-voyage.test.mjs",
         "tests/chronos-voyage-rendering.test.mjs",
         "tests/unified-flight-legacy.test.mjs",
-        "scripts/chronos-voyage-browser-smoke.cjs"
+        "scripts/chronos-voyage-browser-smoke.cjs",
+        "scripts/c9-polish-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "tests": [
+        "node scripts/c9-polish-browser-smoke.cjs --root preview-dist --output /tmp/neon-c9-polish-02 --expected-commit 8d651b51453c143d395d3feb8c0d5629066a72c9 →4/4exit0; atraque183,2/1,2s, salida2,4s, checkpointcurado/recarga sin reabrir.",
+        "Certificación limpia11/11:396contenido,60motor,6arquitectura,13estáticas,34regresión,13web,14adapter,3audio,12artpass;preview23/23;Actions39108203642success."
+      ],
       "evidence": [
         "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
-        "docs/production-reports/evidence/arcade-polish/"
+        "docs/production-reports/evidence/arcade-polish/c9-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/certificate-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/site-deployment.json"
       ],
       "openErrors": [
-        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+        "Aceptación artística y balance humano pendientes; Safari/iPhone físico no ejecutado."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CHROMIUM",
+        "technical": "PASSED_SCOPED_CHROMIUM_AND_AUTOMATION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7176,8 +7197,11 @@
       "relations": {
         "extends": "P2-PRESENTATION-01"
       },
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "VERIFIED_CLEAN",
+      "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
+      "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "privateSiteVersion": 17,
+      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
     },
     {
       "id": "P1-SHIP-CLEAN-01",
@@ -7201,17 +7225,22 @@
         "tests/arcade-pulse-rendering.test.mjs",
         "tests/ship-render-fallback.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "tests": [
+        "Chromium C9:casco36,162dibujos modulares/0humo; Gaia natural con casco32 sin nubarrón. Render puro8/8.",
+        "Certificación limpia11/11:396contenido,60motor,6arquitectura,13estáticas,34regresión,13web,14adapter,3audio,12artpass;preview23/23;Actions39108203642success."
+      ],
       "evidence": [
         "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
-        "docs/production-reports/evidence/arcade-polish/"
+        "docs/production-reports/evidence/arcade-polish/c9-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/certificate-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/site-deployment.json"
       ],
       "openErrors": [
-        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+        "Aceptación artística y balance humano pendientes; Safari/iPhone físico no ejecutado."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CHROMIUM",
+        "technical": "PASSED_SCOPED_CHROMIUM_AND_AUTOMATION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7223,8 +7252,11 @@
       "relations": {
         "extends": "P1-SHIP-01"
       },
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "VERIFIED_CLEAN",
+      "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
+      "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "privateSiteVersion": 17,
+      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
     },
     {
       "id": "P2-PULSE-VISUAL-01",
@@ -7254,17 +7286,22 @@
         "tests/arcade-pulse-rendering.test.mjs",
         "tests/classic-weapons.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "tests": [
+        "Chromium C9:3poses Pulse,centroerror0,000059px,vyvertical; Atlasmanual26proyectilesfísicos. Render puro8/8 verifica las3armas; aceptación estética pendiente.",
+        "Certificación limpia11/11:396contenido,60motor,6arquitectura,13estáticas,34regresión,13web,14adapter,3audio,12artpass;preview23/23;Actions39108203642success."
+      ],
       "evidence": [
         "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
-        "docs/production-reports/evidence/arcade-polish/"
+        "docs/production-reports/evidence/arcade-polish/c9-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/certificate-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/site-deployment.json"
       ],
       "openErrors": [
-        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+        "Aceptación artística y balance humano pendientes; Safari/iPhone físico no ejecutado."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CHROMIUM",
+        "technical": "PASSED_SCOPED_CHROMIUM_AND_AUTOMATION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7276,8 +7313,11 @@
       "relations": {
         "extends": "P2-PRESENTATION-01"
       },
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "VERIFIED_CLEAN",
+      "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
+      "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "privateSiteVersion": 17,
+      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
     },
     {
       "id": "P2-ENEMY-COMBAT-01",
@@ -7305,17 +7345,22 @@
         "scripts/gaia-interceptor-browser-smoke.cjs",
         "scripts/pursuit-resume-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "tests": [
+        "node scripts/gaia-interceptor-browser-smoke.cjs --root preview-dist --output /tmp/neon-polish-gaia-engagement-02 --expected-commit 8d651b51453c143d395d3feb8c0d5629066a72c9 --observe-engagement --timeout 600000 →4/4exit0; CH02 combate10,846s/4ataques/retirada. No prueba muerte.",
+        "Certificación limpia11/11:396contenido,60motor,6arquitectura,13estáticas,34regresión,13web,14adapter,3audio,12artpass;preview23/23;Actions39108203642success."
+      ],
       "evidence": [
         "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
-        "docs/production-reports/evidence/arcade-polish/"
+        "docs/production-reports/evidence/arcade-polish/gaia-engagement-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/certificate-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/site-deployment.json"
       ],
       "openErrors": [
-        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+        "Aceptación artística y balance humano pendientes; Safari/iPhone físico no ejecutado."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CHROMIUM",
+        "technical": "PASSED_SCOPED_CHROMIUM_AND_AUTOMATION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7327,8 +7372,11 @@
       "relations": {
         "extends": "P3-PURSUIT-01"
       },
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "VERIFIED_CLEAN",
+      "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
+      "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "privateSiteVersion": 17,
+      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
     },
     {
       "id": "P1-ATLAS-MANUAL-01",
@@ -7359,17 +7407,22 @@
         "tests/unified-flight-legacy.test.mjs",
         "scripts/guardian-atlas-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "tests": [
+        "node scripts/guardian-atlas-browser-smoke.cjs --root preview-dist --output /tmp/neon-polish-atlas-manual-03 --expected-commit 8d651b51453c143d395d3feb8c0d5629066a72c9 --weapon pulse --timeout 900000 →4/4exit0; 24HP,26disparosmanuales,2fases,casco54,0poderes/AUTOfalse.",
+        "Certificación limpia11/11:396contenido,60motor,6arquitectura,13estáticas,34regresión,13web,14adapter,3audio,12artpass;preview23/23;Actions39108203642success."
+      ],
       "evidence": [
         "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
-        "docs/production-reports/evidence/arcade-polish/"
+        "docs/production-reports/evidence/arcade-polish/atlas-manual-03/results.json",
+        "docs/production-reports/evidence/arcade-polish/certificate-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/site-deployment.json"
       ],
       "openErrors": [
-        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+        "Aceptación artística y balance humano pendientes; Safari/iPhone físico no ejecutado."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CHROMIUM",
+        "technical": "PASSED_SCOPED_CHROMIUM_AND_AUTOMATION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7381,8 +7434,11 @@
       "relations": {
         "extends": "P1-ATLAS-01"
       },
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "VERIFIED_CLEAN",
+      "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
+      "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "privateSiteVersion": 17,
+      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
     },
     {
       "id": "P2-ARSENAL-01",
@@ -7412,17 +7468,22 @@
         "tests/completion-journal-legacy.test.mjs",
         "tests/unified-flight-legacy.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "tests": [
+        "Atlasnatural4/4:Gemelo premiaunaúnicavez,selecciónPulso,SinLanza,reload/Vulkar/N7persistentes. Journal54/54, arsenal9/9, integración46/46 dentrodecontenido396/396.",
+        "Certificación limpia11/11:396contenido,60motor,6arquitectura,13estáticas,34regresión,13web,14adapter,3audio,12artpass;preview23/23;Actions39108203642success."
+      ],
       "evidence": [
         "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
-        "docs/production-reports/evidence/arcade-polish/"
+        "docs/production-reports/evidence/arcade-polish/atlas-manual-03/results.json",
+        "docs/production-reports/evidence/arcade-polish/certificate-02/results.json",
+        "docs/production-reports/evidence/arcade-polish/site-deployment.json"
       ],
       "openErrors": [
-        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+        "Aceptación artística y balance humano pendientes; Safari/iPhone físico no ejecutado."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CHROMIUM",
+        "technical": "PASSED_SCOPED_CHROMIUM_AND_AUTOMATION",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7435,8 +7496,11 @@
       "relations": {
         "extends": "P2-SAVE-01"
       },
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "VERIFIED_CLEAN",
+      "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
+      "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
+      "privateSiteVersion": 17,
+      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
     }
   ],
   "canonicalPlan": {

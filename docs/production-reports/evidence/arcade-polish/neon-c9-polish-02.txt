@@ -1,0 +1,5 @@
+[C9 polish] the declared damaged stage-entry save starts through the real selector; the original loop draws a clean modular hull
+[C9 polish] one real Pulse press emits a vertical moving projectile and at least two centered authored poses before C9 opens
+[C9 polish] C9 opens at the actual1.2-second arrival; service freezes route and battery, heals and only prepares the recovered component
+[C9 polish] Continue leaves the station within2.4s, persists a healed same-stage milestone and reload never reopens C9
+{"status":"passed","exitCode":0,"passed":4,"failed":0,"durationMs":13652,"output":"/tmp/neon-c9-polish-02"}
