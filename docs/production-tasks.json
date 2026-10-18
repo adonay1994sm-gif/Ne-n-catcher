@@ -345,11 +345,21 @@
           "art-source/enemies/ch01/ch01-validation.json",
           "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
           "docs/production-reports/evidence/block-05/certification-03/results.json",
-          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
+          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json",
+          "docs/immersive-rebirth/evidence/classic-scout-06/results.json",
+          "docs/production-reports/evidence/chapter1-living/certification-3547147/content-integration-assets.txt"
         ],
         "openErrors": [
+          "Integrado en N-7 y Gaia clásica; revisión artística, balance humano y Safari/iPhone físico pendientes."
+        ],
+        "historicalOpenErrors": [
           "Asset integrated in N-7 only; Gaia classic pending and iPhone visual QA pending."
-        ]
+        ],
+        "acceptanceStatus": {
+          "technical": "INTEGRATED_CLASSIC_AND_N7_WITH_CHROMIUM_AND_REGRESSION_EVIDENCE",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       },
       "gaia-ch01-attack": {
         "status": "IN_REVIEW",
@@ -372,11 +382,21 @@
           "art-source/enemies/ch01/ch01-validation.json",
           "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
           "docs/production-reports/evidence/block-05/certification-03/results.json",
-          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
+          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json",
+          "docs/immersive-rebirth/evidence/classic-scout-06/results.json",
+          "docs/production-reports/evidence/chapter1-living/certification-3547147/content-integration-assets.txt"
         ],
         "openErrors": [
+          "Integrado en N-7 y Gaia clásica; revisión artística, balance humano y Safari/iPhone físico pendientes."
+        ],
+        "historicalOpenErrors": [
           "Asset integrated in N-7 only; Gaia classic pending and iPhone visual QA pending."
-        ]
+        ],
+        "acceptanceStatus": {
+          "technical": "INTEGRATED_CLASSIC_AND_N7_WITH_CHROMIUM_AND_REGRESSION_EVIDENCE",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       },
       "gaia-ch01-destroy": {
         "status": "IN_REVIEW",
@@ -399,11 +419,21 @@
           "art-source/enemies/ch01/ch01-validation.json",
           "docs/production-reports/evidence/block-05/browser-ch01-01/results.json",
           "docs/production-reports/evidence/block-05/certification-03/results.json",
-          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json"
+          "docs/production-reports/evidence/block-05/ch01-visual-browser-04/results.json",
+          "docs/immersive-rebirth/evidence/classic-scout-06/results.json",
+          "docs/production-reports/evidence/chapter1-living/certification-3547147/content-integration-assets.txt"
         ],
         "openErrors": [
+          "Integrado en N-7 y Gaia clásica; revisión artística, balance humano y Safari/iPhone físico pendientes."
+        ],
+        "historicalOpenErrors": [
           "Asset integrated in N-7 only; Gaia classic pending and iPhone visual QA pending."
-        ]
+        ],
+        "acceptanceStatus": {
+          "technical": "INTEGRATED_CLASSIC_AND_N7_WITH_CHROMIUM_AND_REGRESSION_EVIDENCE",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       },
       "shared-temporal-shockwave": {
         "status": "IN_REVIEW",
@@ -8787,7 +8817,10 @@
       "privateSiteVersion": 20,
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
       "privateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
-      "scope": "Primer capítulo integrado: certificación11/11 a354, naturalfinalf6344/4, visual6/6, actualización/offline7/7, Site20HTTP12/12 y CI39120714906success. Artística/humana/física pendientes."
+      "scope": "Primer capítulo integrado: certificación11/11 a354, naturalfinalf6344/4, visual6/6, actualización/offline7/7, Site20HTTP12/12 y CI39120714906success. Artística/humana/física pendientes.",
+      "documentaryCommit": "d30fb15201ec094818d181d5e1e22998d27b213b",
+      "documentaryWorkflowRun": 39121735314,
+      "documentaryWorkflowConclusion": "success"
     },
     "productName": "NEON CRONIUM",
     "brandChange": {
@@ -8823,14 +8856,15 @@
       "initialHead": "827c1b5f50d88cbca5f68924d6ffc71f0794074e",
       "audit": "docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md",
       "currentBatch": [
-        "P2-C9-FAST-01",
-        "P1-SHIP-CLEAN-01",
-        "P2-PULSE-VISUAL-01",
-        "P2-ENEMY-COMBAT-01",
-        "P1-ATLAS-MANUAL-01",
-        "P2-ARSENAL-01"
+        "P1-CH1-STORY-01",
+        "P1-CH1-CINEMATIC-01",
+        "P1-CH1-SHIP-01",
+        "P2-CH1-MISSILE-01",
+        "P1-CH1-ATLAS-01",
+        "P1-CH1-QA-01",
+        "P1-CH1-AUDIO-01"
       ],
-      "report": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+      "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
       "note": "Se ejecuta por dependencias; aprobación del plan no equivale a terminar100etapas ni autoriza MotorV1, producción, beta o tiendas.",
       "operatorPreparation": {
         "name": "Adonay Sánchez Melo",
@@ -8840,8 +8874,8 @@
         "source": "Datos proporcionados por el propietario en la sesión17/10/2026; solicita dejar correo para otro momento. No se declara una política comercial definitiva."
       },
       "presentationReport": "docs/production-reports/VOYAGE_POLISH_2026-10-17.md",
-      "currentFunctionalCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-      "currentPrivateVersion": 16,
+      "currentFunctionalCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "currentPrivateVersion": 20,
       "batchHistory": [
         {
           "date": "2026-10-17",
@@ -8865,22 +8899,56 @@
           "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
           "functionalCommit": "d39ed440740b094f9dddb588c540c537f4499215",
           "privateVersion": 16
+        },
+        {
+          "date": "2026-10-18",
+          "status": "HISTORICAL_STALE_SNAPSHOT_RECONCILED",
+          "note": "Los camposcurrent de este snapshot correspondían aSite16 y se habían quedado obsoletos; se conservan aquí, sin atribuirlos al cierre actual.",
+          "legacyCurrentFields": {
+            "currentBatch": [
+              "P2-C9-FAST-01",
+              "P1-SHIP-CLEAN-01",
+              "P2-PULSE-VISUAL-01",
+              "P2-ENEMY-COMBAT-01",
+              "P1-ATLAS-MANUAL-01",
+              "P2-ARSENAL-01"
+            ],
+            "currentFunctionalCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+            "currentPrivateVersion": 16,
+            "currentPrivateCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+            "currentBatchPackageStatus": "PENDING_CURRENT_BATCH_BUILD",
+            "currentBatchPrivateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+            "pendingFunctionalVerification": "Las seis tareas del nuevo lote permanecen IN_REVIEW con técnica PENDING_CHROMIUM; arte y prueba física pendientes. Mantener como histórica la certificación y web del lote anterior.",
+            "currentVerifiedPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+            "currentPrivateSiteSourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
+            "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+            "currentPackageSha256": "87dfe31b679730d00de9adf2a03d2211e192598575d54c963fd41342c8732135",
+            "currentPackageBytes": 8777108,
+            "currentPackageEntries": 120,
+            "latestWorkflowRun": 39105045562,
+            "latestWorkflowConclusion": "success",
+            "latestSuccessfulPackageWorkflowRun": 39105045562,
+            "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
+            "nextPriority": "Integrar y probar el pulido arcade, C9, combate manual y progresión del arsenal antes de ampliar contenido o cinemáticas.",
+            "currentPackageRevision": "458f6dcf810bc827aad45191b5d46b4862d47cfa83329e163e6f321b97a7b11f",
+            "currentBatchVerification": "PENDING_CHROMIUM; las pruebas y la web anteriores no certifican este lote en desarrollo."
+          }
         }
       ],
-      "currentPrivateCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-      "currentBatchPackageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "currentBatchPrivateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
-      "pendingFunctionalVerification": "Las seis tareas del nuevo lote permanecen IN_REVIEW con técnica PENDING_CHROMIUM; arte y prueba física pendientes. Mantener como histórica la certificación y web del lote anterior.",
-      "currentVerifiedPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-      "currentPrivateSiteSourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
+      "currentPrivateCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "currentBatchPackageStatus": "BUILT_CLEAN_VERIFIED_F634A46",
+      "currentBatchPrivateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED",
+      "pendingFunctionalVerification": "Sólo revisión artística/balance/audición humana y Safari/iPhone físicos pendientes. Natural4/4, visual6/6, actualización/offline7/7 y CI completos registrados por SHA.",
+      "currentVerifiedPackageCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "currentPrivateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
       "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "currentPackageSha256": "87dfe31b679730d00de9adf2a03d2211e192598575d54c963fd41342c8732135",
-      "currentPackageBytes": 8777108,
-      "currentPackageEntries": 120,
-      "latestWorkflowRun": 39105045562,
+      "currentPackageSha256": "5153eb0c06b9b5aea4ed40b05532178af1d9041ed84cab28f604da64e205b18a",
+      "currentPackageBytes": 11327979,
+      "currentPackageEntries": 128,
+      "latestWorkflowRun": 39121735314,
       "latestWorkflowConclusion": "success",
-      "latestSuccessfulPackageWorkflowRun": 39105045562,
-      "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
+      "latestSuccessfulPackageWorkflowRun": 39120714906,
+      "ciStatus": "PASSED_RUNTIME_AND_REPORT_CLOSE",
       "latestCIFailure": {
         "workflowRun": 39104552902,
         "conclusion": "failure",
@@ -8894,9 +8962,10 @@
         "fixedByCommit": "d39ed440740b094f9dddb588c540c537f4499215",
         "passedWorkflowRun": 39105045562
       },
-      "nextPriority": "Integrar y probar el pulido arcade, C9, combate manual y progresión del arsenal antes de ampliar contenido o cinemáticas.",
-      "currentPackageRevision": "458f6dcf810bc827aad45191b5d46b4862d47cfa83329e163e6f321b97a7b11f",
-      "currentBatchVerification": "PENDING_CHROMIUM; las pruebas y la web anteriores no certifican este lote en desarrollo."
+      "nextPriority": "Revisión del primer capítulo, impacto/restos del misil, mezcla y QA física; luego Gaia, sin activar MotorV1.",
+      "currentPackageRevision": "1d3776f68358c21fb98c39b99842d0e170f715a8a92f0b82f5b817fb4ba2e83e",
+      "currentBatchVerification": "Natural4/4, visual6/6 y offline7/7 sobreF; propietario/dispositivo pendientes.",
+      "latestWorkflowCommit": "d30fb15201ec094818d181d5e1e22998d27b213b"
     },
     "feedbackHistory": [
       {

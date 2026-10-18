@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "branch": "continuity-assets-audit-20261013",
+  "initialCommit": "2dcad1611292cd12440c144e07bf90c671536af5",
+  "testedRuntimeCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+  "reportAndEvidenceCommit": "d30fb15201ec094818d181d5e1e22998d27b213b",
+  "runtimeWorkflowRun": 39120714906,
+  "reportWorkflowRun": 39121735314,
+  "runtimeWorkflowConclusion": "success",
+  "reportWorkflowConclusion": "success",
+  "privateSiteVersion": 20,
+  "privateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
+  "runtimeUnchangedSinceTestedPackage": true,
+  "scope": "This follow-up records the already-pushed report commit and its completed CI, reconciles stale ledger snapshots, and changes no runtime. Its own SHA is available in git log; no self-referential hash is invented."
+}

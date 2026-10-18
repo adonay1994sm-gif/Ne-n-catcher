@@ -17,7 +17,7 @@ Entrega técnica del primer capítulo para revisión. Los resultados se atribuye
 - **SHA funcional corregido y jugado:** `35471470cb94a2ba1ec37e230c95646b189a06fe`.
 - **Último SHA de aplicación aprobado en CI:** `f634a4635c4faacd33d19390706e0a97d1198662`, ejecución39120714906 completed/success.
 - **SHA final de aplicación publicado y con QA visual repetida:** `f634a4635c4faacd33d19390706e0a97d1198662`; CI completed/success y QA visual6/6.
-- **SHA de cierre documental:** PENDING; identificar el commit que incorpora este informe y su recibo posterior.
+- **SHA de cierre documental (informe y evidencias):** `d30fb15201ec094818d181d5e1e22998d27b213b`, publicado y CI39121735314 completed/success. [Recibo posterior](evidence/chapter1-living/closure-receipt.json). El recibo añade trazabilidad sin cambiar el runtime ni inventar un hash autorreferente.
 - **Bloques trabajados:** `CHAPTER_ONE_LIVING_JOURNEY`: historia, apertura ilustrada, nave, colisiones, reserva de integridad, misiles, economía, Atlas y audio.
 - **Nivel modificado:** nivel clásico 1, diez etapas 1.1–1.10 y su frontera orbital. Gaia conserva su territorio posterior; se retira el Atlas duplicado de ese segundo tramo.
 - **Mecánicas nuevas/rediseñadas:** reserva consumible sin temporizador, misiles físicos persistidos, básico ilimitado sólo durante Atlas, blindaje/núcleo expuesto y cierre argumental antes de guardar la victoria.
@@ -285,7 +285,7 @@ Estado de cierre y trabajo siguiente:
 
 1. Partida natural final4/4, CI39120714906success y QAvisual6/6 ya registradas; conservar ambas partidas354/f634con susSHA propios. Cierre documental posterior se identifica en el recibo.
 2. Actualización/offline final7/7 verificada. Mantener la distinción entre fixtures de compatibilidad y el inicio fresco offline.
-3. Publicación privada20/HTTP12/12 y ZIP comprobados; completar únicamente recibo documental y CI de cierre. No producciónNetlify.
+3. Publicación privada20/HTTP12/12, ZIP, recibo documental y CI39121735314 comprobados. El commit posterior de confirmación no cambia el runtime. No producciónNetlify.
 4. Revisión estética del propietario, escucha humana y balance del capítulo con jugadores.
 5. Safari/iPhone físico, interrupción de aplicación, memoria y rendimiento medidos.
 6. Evaluar la rareza monetaria a escala de campaña y el ritmo real de un primer capítulo de aproximadamente ocho minutos observado por el piloto.
@@ -299,3 +299,11 @@ Riesgos y decisiones reservadas: legibilidad de la nave reducida en pantallas f�
 - [Visión vigente](../PRODUCT_VISION.md), [registro único de tareas](../production-tasks.json) y [guion/diseño del capítulo 1](../design/CHAPTER_01_CHRONOS_GAIA.md).
 - [Procedencia y estados gráficos](../../art-source/chapter1-rebirth/README.md) y [composición, síntesis y límites del audio](../../art-source/audio/chapter1-score/README.md).
 - Los informes previos, sus capturas y el Site versión 19 conservan valor histórico; no acreditan esta compilación. Se conserva el mismo origen para guardar partidas, pero cada publicación nueva acredita su SHA y contenido mediante recibos y hashes propios.
+
+## 12. Recibo de cierre y reconciliación final
+
+Informe y184archivos de evidencia incorporados en `d30fb15201ec094818d181d5e1e22998d27b213b`, push normal a la rama autorizada. [GitHubActions39121735314](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39121735314) terminó completed/success; [JSON](evidence/chapter1-living/ci-documentary-d30fb15.json). El paquete jugado/publicado sigue siendo `f634a46`; [ninguna fuente de runtime cambió al documentar](evidence/chapter1-living/runtime-unchanged-at-close.json).
+
+La revisión final corrigió dos referencias obsoletas del registro: `releasePlanExecution` aún llamaba current aSite16/d39y verificaciones anteriores; esos campos se conservan como snapshot histórico y los actuales apuntan aSite20/F. Los tres registros CH-01 de movimiento/ataque/destrucción ya no dicen «sóloN7, Gaia pendiente»: enlazan su evidencia clásica posterior, conservan el error histórico y mantienen aceptación artística/física pendientes.
+
+La rama `main` del juego yPR3 no se tocaron. El sourcecommit del Site pertenece a su repositorio de alojamiento separado. Se conservaron146archivos ajenos al paquete y la audiencia privada del propietario. NoNetlifyproducción, AppStore, TestFlight ni monetización.
