@@ -1,16 +1,17 @@
 ## Continuación vigente ·18/10/2026
 
-[Último cierre verificable](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). Web privada15, paquete33263c5, fuenteSite0fdde84. No volver a HEAD históricos. Mantener EngineV1=false y usar sólo la rama continuity-assets-audit-20261013.
+[Último cierre](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md): web privada16, paquete d39ed44, fuenteSite8fb37f4, CI39105045562success. Preservar HEAD/remoto más recientes; rama continuity-assets-audit-20261013 y MotorV1=false.
 
-1. Revisar la respuesta del propietario al viaje/perseguidores. Primer nivel casi terminado según su comentario; no equivale a aceptación visual/física completa.
-2. Cerrar CH-02 con una destrucción natural: movimiento vertical y anticipación durante su carga, recuperar suministros y observar animación terminal/recompensa única. No basta insertar un enemigo en una escena. Los intentos02/03 perdieron por suministros y04 llegó45/45peroAtlas sustituyó la patrulla; conservarlos. --combat continúa exigiendo el kill.
-3. Evaluar la retirada lateral y las ventanas de tiro con jugador humano antes de aumentar presión o copiar la IA a otras familias. No corregir colisiones para ayudar a un bot.
-4. Continuar Gaia con CH-03 y secuencia de defensa orbital/identificación/Atlas, por unidades integradas. No declarar diez etapasGaia o cien etapas canónicas implementadas.
-5. Preservar árbol/remoto, el Site orbital ajeno y los guardados. Antes de una nueva publicación usar la procedencia/hash actuales, no una URL como prueba de un SHA diferente. Revisiones artísticas, humanas y físicas pendientes; soporte público aplazado, no preguntar de nuevo por el correo.
+1. Revisar jugando el incremento Chronos–Gaia: cruces continuos, presión tras la ruptura y llegada directa. La opinión de que el primer nivel está casi terminado no equivale a aceptación artística/física completa.
+2. Continuar la misión Gaia completa y equilibrar recuperación mientras se combate; después integrar CH-03 y cerrar la red Atlas por unidades. CH-02 ya tiene un kill natural4/4 en332con16poses/recompensaúnica. El posterior d39 sólo cambia el objetivo del HUD; su intento06 falló por tiempo del piloto y certifica daño/refresco de puntos, no otro kill.
+3. Probar Pulso y Gemelo con movimiento vertical y ventanas de ataque, sin convertir una mejora en requisito obligatorio. El07conPulso no se ejecutó. Evaluar retirada lateral con humanos; no ajustar colisiones o dificultad para ayudar al bot.
+4. Conservar los fallos y evidencias. La prueba de programación ahora aísla peligros ambientales: la semilla34 mataba al fixture quieto antes de la segunda patrulla. Cinco semillas/100secuencias y CIcorrigida pasan; no repetir el fallo como si fuera un recurso ausente.
+5. No expandir cien etapas, activar motores o sobrescribir el experimento orbital del Site. No producción/tiendas/pagos; correo público de soporte aplazado, no solicitarlo de nuevo. Las nuevas publicaciones deben comprobar SHA/URL reales.
 
-El contenido siguiente conserva las instrucciones históricas; prevalecen las anteriores para este lote.
+Las instrucciones siguientes conservan su alcance histórico; prevalece este cierre.
 
 ---
+
 
 ## Continuación vigente · versión14, 17/10/2026
 

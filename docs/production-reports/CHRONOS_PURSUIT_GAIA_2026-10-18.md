@@ -1,4 +1,85 @@
-> Actualización de trabajo posterior a la versión15: CH-02 ya fue destruido naturalmente en el intento05 sobre33263c5:4/4,16celdas dibujadas,recompensa10única. Los fallos01–04 se conservan. Se detectó y corrigió además el refresco tardío de puntuación de combate con hudScoreTarget=score; nueva compilación en preparación. El CI documental39104552902 falló porque un piloto inmóvil murió por peligros aleatorios antes de la segunda patrulla (reproducido con semilla34); se corrige el aislamiento de esa prueba, no la dificultad del juego. El cierre definitivo se añadirá antes de terminar la sesión. La web15 sigue sirviendo el paquete33263c5 verificado.
+# DIAGNÓSTICO · cierre vigente
+
+El viaje inicial necesitaba continuidad entre etapas y presión después del ataque a Chronos; Gaia necesitaba un enemigo con intención y arte animado. Se implementó y publicó ese incremento. Durante la verificación aparecieron dos defectos adicionales: un fixture inmóvil podía morir por peligros aleatorios antes de comprobar la segunda patrulla, y los puntos de combate esperaban otra recogida para actualizar el HUD. Ambos están corregidos y la nueva ejecución completa de Actions ha pasado. Se conserva íntegro el diagnóstico/informe anterior debajo, identificado como histórico.
+
+# INFORME DE PRODUCCIÓN — NEON CRONIUM
+
+- Fecha: **18/10/2026, UTC**. No se atribuyen horas de trabajo no cronometradas; los procesos conservan sus duraciones.
+- Rama: **continuity-assets-audit-20261013**.
+- SHA inicial: **51d56295aa07ff60f961c63c078be5ba17a83de1**.
+- SHA funcional y paquete final limpio: **d39ed440740b094f9dddb588c540c537f4499215**.
+- SHA de cierre documental: [recibo posterior al commit de informe](evidence/chronos-pursuit-gaia/closure.json); no modifica el paquete d39ed44.
+- Bloques/niveles: presentación y persecución de **1.1–1.10 Chronos → Gaia**; profundidad orbital y **CH-02 del territorio clásico2**. No se han terminado otros nueve mundos ni cien etapas.
+- Mecánicas nuevas/rediseñadas: cruces continuos, presión gradual tras la ruptura, adquisición de objetivo/carga/disparo/retirada por roles y cruce directo a Gaia. Se conserva la recuperación de CRONIUM, C9 y equipamiento.
+- Assets/animaciones: atlas CH-02 WebP1024×1024,16 celdas256×256,252.886bytes, dos maestrosPNG1254×1254 conservados. **Las16 celdas se dibujaron realmente en gameplay**, incluidas las cuatro de destrucción. Estimación decodificada4MiB, no medición de GPU.
+- Enemigos: CH-01 existente con nuevos roles clásicos y CH-02 de Gaia con flanqueo/ataque señalado. CH-03 y la terminación de Gaia siguen pendientes.
+- Eventos/narrativa: huida posterior al ataque, cruces de restos/balizas y recepción hostil de Atlas. Audio contextual anterior conservado; no hay audio nuevo.
+- Pruebas finales: **11/11 fases locales,484 casos por suites más23/23 preview**, salida0; GitHub Actions **completed/success**.
+- Chromium: viaje natural4/4 sobre612a3f3; ciclo CH-02 completo4/4 sobre33263c5; paquete d39ed44: reentrada2/2, actualización/offline5/5, N-7 una sesión /seis pasos. La repetición ampliada Gaia06 en d39ed44 terminó por timeout del piloto y no se cuenta como aprobada; sí observó daño y el HUD corregido.
+- Errores corregidos: objetos borrados al cruzar, acceso a metadatos N-7 ausentes, gracia de reentrada perdida, puntuación de combate no publicada al HUD y aislamiento defectuoso del test de patrullas. Falso RAF duplicado del arnés corregido sin alterar el juego.
+- Errores/limitaciones abiertos: calibración humana de persecución/recuperación, repetición de la misión Gaia completa y comprobación física/iPhone. No hay prueba de kill completa en el SHA d39ed44; se conserva la procedencia del kill33263c5 y la diferencia de una sola línea de presentación.
+- Web vigente: **[versión privada16](https://neon-catcher-pruebas.chictide18.chatgpt.site)**, succeeded18/10/2026 **06:48:49UTC**. Fuente Site **8fb37f4d0ed9d4626bb2524c00abc406f6e954dd**, paquete d39ed44. HTTP remoto4/4 confirma los bytes actuales.
+- Estado Netlify: no se despliega; se mantiene el laboratorio privado autorizado, sin alterar producción.
+- Motor: **USE_ENGINE_V1=false**, un único RAF del clásico; sin migración de motor. Experimento orbital ajeno conservado.
+- Tareas: **316**,26 DONE /77 IN_REVIEW /5 IN_PROGRESS /200 PENDING /8 BLOCKED. CH-02 y las dos tareas de este lote están IN_REVIEW, con técnica/arte/prueba física separados. Ningún territorio nuevo se declara visualmente completo.
+- Siguiente prioridad: comprobar el ritmo de una misión Gaia completa y viabilidad de Pulso/Gemelo con recuperación de suministros; después integrar CH-03. Revisar dificultad con humanos antes de aumentar densidad o expandir otros mundos.
+
+## Qué cambió después del primer informe
+
+**Combate CH-02 completo.** El intento05 usó12 entradas verticales reales y dos activaciones de Gemelo para acercarse, atacar y retroceder. El enemigo apareció a12,0418s, atacó y pasó HP3→2→1→0; murió a18,2229s. Recompensa de destrucción10 puntos exactamente una vez, sin duplicación por animación; hitbox y efecto desaparecen al terminar. Casco88%,15 fragmentos,0 errores JavaScript/recursos/RAF y las16 poses dibujadas. [Resultados](evidence/chronos-pursuit-gaia/gaia-05/results.json), [resumen](evidence/chronos-pursuit-gaia/gaia-05/verified-close-range-summary.json). Es una partida de piloto automático con sólo desbloqueo/equipamiento sembrados, no una prueba humana ni toda Gaia.
+
+**HUD.** En esas capturas, el estado interno tenía406/416puntos pero el HUD seguía en400. La causa era score actualizado sin publicar hudScoreTarget. Se añade **una línea** en src/game/03-ui-game-flow.js tras el premio de proyectil; updateHudVisual conserva su interpolación existente. No se cambia daño, recompensa, control, temporización, IA, colisiones, audio o guardados. La regresión exige3puntos por impacto y13tras destrucción, visibles sin recoger ningún orbe y sin duplicación. Falla contra33263c5 y pasa con el código corregido.
+
+**Actions.** [39104552902](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902) falló en la aserción de presencia CH-02 al segundo17. Con semilla34, el fixture quieto moría a10,710s y terminaba antes de programar el segundo patrullero. No era un fallo del loader ni ausencia de CH-02 en gameplay. Se mantiene la prueba y sus aserciones, aislando sólo spawns ambientales/gates para observar el contrato del programador; los patrulleros, tiempos, HP, colisiones y ataques siguen siendo los reales. Cinco semillas incluida34 comprueban ordenCH-01→CH-02, HP3, atlas, partida viva y RAF1. [Investigación reproducible](evidence/chronos-pursuit-gaia/patrol-ci-investigation/investigation-summary.json):24 ejecuciones previas,35 semillas diagnosticadas,20 repeticiones corregidas /40 casos /100 secuencias, archivo completo30/30. No se presenta el fixture aislado como partida natural.
+
+La corrección está publicada en [d39ed44](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/d39ed440740b094f9dddb588c540c537f4499215). [Actions39105045562](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105045562) terminó **completed/success, incluidas las fases posteriores y empaquetado**; [recibo de jobs/pasos](evidence/chronos-pursuit-gaia/github-hud-complete.json). No se resolvió simplemente repitiendo el workflow fallido ni quitando su aserción.
+
+## Paquete final y pruebas actuales
+
+[ZIP d39ed44](evidence/chronos-pursuit-gaia/closing-package/neon-cronium-chronos-gaia-pursuit-d39ed44.zip) · [recibo](evidence/chronos-pursuit-gaia/closing-package/package.json) · [build-info](evidence/chronos-pursuit-gaia/closing-package/build-info.json).
+
+- **8.777.108bytes/120entradas**, SHA-256 **87dfe31b679730d00de9adf2a03d2211e192598575d54c963fd41342c8732135**.
+- Revisión **458f6dcf810bc827aad45191b5d46b4862d47cfa83329e163e6f321b97a7b11f**, dirty=false.
+- Descomprimir y servir index.html por HTTP; CONTINUAR VIAJE abre juego/index.html. En el Site se sirve en /clasico-actual/ con el mismo prefijo de guardados.
+- [Equivalencia332→d39](evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json):114archivos idénticos; cambian game.js por la líneaHUD y cuatro archivos de generación/procedencia de preview, además de build-info. Se conserva el [parche exacto](evidence/chronos-pursuit-gaia/closing-package/post-kill-05-source.patch). No se atribuye la partida05 al SHA posterior.
+- [Certificación03](evidence/chronos-pursuit-gaia/certificate-03/results.json): build0; motor60/60, arquitectura6/6, contenido329/329, estáticos13/13, regresión34/34, web13/13, adapters14/14, audio3/3, artpass12/12 e inventario84. Todos salida0. Arrancó sobre8720d77 con los cambios d39 aún en el árbol; hashes de sus bundles preservados, iguales a los del paquete limpio posterior. No se oculta ese estado del árbol.
+- [Build preview03](evidence/chronos-pursuit-gaia/build-preview-03.txt) y [preview23/23](evidence/chronos-pursuit-gaia/preview-03.txt), salida0; raíces web/iOS regeneradas mediante pipeline, no parcheadas a mano.
+
+~~~bash
+node scripts/certify-local.mjs /tmp/neon-pursuit-certificate-03
+npm run build:preview
+npm run test:preview
+node scripts/pursuit-resume-browser-smoke.cjs --root preview-dist --checkpoint /tmp/neon-pursuit-natural-01/results.json --output /tmp/neon-pursuit-resume-browser-03 --expected-commit d39ed440740b094f9dddb588c540c537f4499215
+node scripts/rebrand-browser-smoke.cjs --root preview-dist --previous /tmp/neon-before-pursuit-preview --output /tmp/neon-pursuit-upgrade-03 --timeout 180000
+node scripts/content-browser-smoke.cjs --root preview-dist --output /tmp/neon-pursuit-n7-03 --profile 390x844 --mode n7
+node scripts/gaia-interceptor-browser-smoke.cjs --combat --equip-twin --close-range --root preview-dist --output /tmp/neon-pursuit-gaia-06 --expected-commit d39ed440740b094f9dddb588c540c537f4499215 --timeout 180000
+~~~
+
+| Verificación | Resultado y evidencia | Alcance |
+| --- | --- | --- |
+| Recuperación actual | [2/2,exit0](evidence/chronos-pursuit-gaia/resume-browser-03/results.json) | Checkpoint auténtico1.2;7s de margen y pausa |
+| Actualización/offline actual | [5/5,exit0](evidence/chronos-pursuit-gaia/upgrade-03/results.json) | Paquete anteriorv14→d39,SWreales,bytes de guardado/equipamiento,continuación1.3yRAF1 |
+| N-7 actual | [1 sesión /6 pasos,exit0](evidence/chronos-pursuit-gaia/n7-03/results.json) | Entrada,controles,pausa,reinicio,recursos yRAF;no100partidas |
+| Gaia06 actual | [2 casos aprobados /1 fallido,exit1](evidence/chronos-pursuit-gaia/gaia-06/results.json) | Timeout187.224ms;seguía jugando72%casco/41de45;sin muerte, Atlas ni error JavaScript;no se certifica kill |
+| HUD actual en combate | [Observación específica](evidence/chronos-pursuit-gaia/gaia-06/hud-observation-and-failed-combat-summary.json) | Golpe real HP3→2:score2466=target2466, texto2465interpolando;final2476=target=displayed=text. Ventana posterior al kill no ejecutada |
+| Entrada del Site final | [2/2,exit0](evidence/chronos-pursuit-gaia/site-local-02/results.json) | Chromium sobre distribución exacta,portada→clásicoactual→inicio;sin hooks/SWbloqueado |
+| HTTP remoto actual | [4/4,exit0](evidence/chronos-pursuit-gaia/site-http-02/results.json) | HTTP200,build-info d39,bundle/atlas con hashes finales;no una partida remota completa |
+
+**Fallos retenidos:** intentosGaia01/02/03/04/06, invocaciónresume01conSHAincorrecto, transporteNodefetchinicial, workflow39104552902 y rojo intencionalHUDcontra332. No se contabilizan como aprobados. El07conPulso **no se ejecutó**, al no cerrar06; su viabilidad natural sigue como próximoQA. No hay nueva certificaciónSafari/iPhone/Xcode, FPS,memorybenchmark ni humanos. No se rebaja dificultad para que gane el piloto.
+
+## Publicación, capturas y continuación
+
+[Web privada16](https://neon-catcher-pruebas.chictide18.chatgpt.site) → CONTINUAR VIAJE. Para volver al inicio: NIVELES → La Onda de Choque →1.1. Al completar el trayecto, CRUZAR HACIA GAIA NOVA entra directamente en el segundo territorio. [Recibo nativo](evidence/chronos-pursuit-gaia/site-publication-02.json), fuenteSite8fb37f4d0ed9d4626bb2524c00abc406f6e954dd. La comprobación remota confirma bundleSHA **0b84901e8f34b36c014970911f33fcc20460acedc47ed28c4c38d2a56be978e5** y atlas **0b1b84b7a14edbc315136339f6f423989d685c7ea4c6122a7a7b88939be78729**. [148archivosajenos preservados](evidence/chronos-pursuit-gaia/site-preservation-02.json), sin cambiar audiencia, producciónNetlify, main/PR3deljuego o tiendas.
+
+Las capturas05 son del combate completo en332; las06 son de d39 y no representan un kill. [Galería05](evidence/chronos-pursuit-gaia/gaia-05/results.json) y [galería06](evidence/chronos-pursuit-gaia/gaia-06/results.json) enumeran archivos/tiempos/estado. La galería del viaje y comparación antes/después se conserva en el informe histórico siguiente. Son imágenes del ejecutable, no concept art.
+
+La mejora está integrada y disponible para pruebas privadas. Falta terminar Gaia, CH-03, calibrar combate/recuperación con personas y certificar dispositivos. Se conserva el registro único de316 tareas y la aceptación artística/física separada; no se convierten las pruebas o la opinión de que el primer nivel está casi terminado en un DONEcomercial. El correo de soporte sigue aplazado, sin nuevas preguntas.
+
+---
+
+# Historial técnico · versión15 y primera integración de este lote
+
+**Lo siguiente registra el estado anterior a los cierres05/HUD/CI. Sus SHA, resultados, pendientes y versión15 son históricos; prevalece el cierre d39/versión16 anterior.**
 
 # DIAGNÓSTICO
 

@@ -1,6 +1,6 @@
 ## Prioridad vigente ·18/10/2026
 
-El propietario considera el primer nivel casi terminado y pide mejorar transiciones, presión moderada después de la ruptura y lógica enemiga antes de continuar Gaia. Leer docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md: versión privada15/paquete33263c5. Cruces y persecución verificados; CH-02 requiere todavía destrucción natural/revisión humana antes de cerrar su integración y ampliar CH-03. Las restricciones siguientes siguen vigentes; no activar MotorV1 ni sustituir el clásico.
+El propietario considera el primer nivel casi terminado y pide transiciones continuas, presión moderada tras la ruptura y enemigos con intención. Leer docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md: privado16/paquete d39ed44/Actions39105045562success. Viaje y CH-02 tienen evidencia natural con sus SHA separados; el HUD de puntos y el fixture de patrullas se corrigieron después. Continuar Gaia completa, viabilidad Pulso/Gemelo y CH-03; aceptación humana/artística/física pendientes. No activar MotorV1 ni sustituir el clásico; restricciones siguientes vigentes.
 
 ---
 

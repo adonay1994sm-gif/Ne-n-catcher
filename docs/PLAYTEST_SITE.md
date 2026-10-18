@@ -1,12 +1,13 @@
-## Versión vigente15 ·18/10/2026
+## Versión vigente16 ·18/10/2026
 
-**[Abrir NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE. Mismo laboratorio privado y mismo origen de guardados. Paquete33263c5219240b5fb119f23b430f9c6698191e0c, fuenteSite0fdde843ec0b171d9022ed501a8b22fa0f2873b0; publicación y cuatro respuestasHTTP comprobadas. [Informe/capturas/ZIP/hash y fallos conservados](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md).
+**[Abrir NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE. Paquete limpio d39ed440740b094f9dddb588c540c537f4499215, fuenteSite8fb37f4d0ed9d4626bb2524c00abc406f6e954dd. Publicación y HTTP remoto4/4 comprobados; mismo laboratorio privado/origen/guardados. [Informe, capturas, ZIP y hashes](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md).
 
-Para repetir el ataque y nueva persecución: NIVELES → La Onda de Choque →1.1. Para continuar la partida, usa el checkpoint actual. La llegada ofrece CRUZAR HACIA GAIA NOVA. El segundo territorio incorpora CH-02 en su segunda patrulla, no en el menú. Su destrucción en partida natural aún no está certificada; Gaia sigue en desarrollo. No hace falta entrar en Netlify y no se ha modificado producción.
+Para repetir explosión y perseguidores: NIVELES → La Onda de Choque →1.1. CONTINUAR conserva el checkpoint. La llegada ofrece CRUZAR HACIA GAIA NOVA; CH-02 aparece en la segunda patrulla del segundo territorio. Ciclo completo probado en332; nueva revisión d39 añade puntos visibles al impactar, sin cambiar IA/daño/controles. Gaia sigue en desarrollo. No hace falta entrar a Netlify ni se modifica producción.
 
-Las referencias a versiones anteriores que siguen son históricas; el experimento orbital ajeno se conserva.
+Los datos de versiones anteriores que siguen son historial; el experimento orbital ajeno permanece.
 
 ---
+
 
 <!-- score-read-guard-current -->
 ## DIAGNÓSTICO · refuerzo final de guardados, 17/10/2026

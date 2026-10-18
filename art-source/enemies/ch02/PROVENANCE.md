@@ -1,6 +1,6 @@
 # CH-02 Interceptor — producción del 18/10/2026
 
-Estado: **IN_REVIEW**. Arte/animador comprobados en aislamiento y aparición, flanqueo, aviso, disparo, pausa y daño observados en el juego. Paquete final33263c5, web privada15; smoke Gaia4/4, actualización/offline5/5. La destrucción natural no se certificó: los intentos ampliados y el balance humano permanecen pendientes. Aceptación artística/física pendientes. Ver [informe de integración](../../../docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). Los datos de producción siguientes conservan su procedencia.
+Estado: **IN_REVIEW**. Arte/animador, aparición, flanqueo, aviso, ataque, daño y destrucción comprobados en el ejecutable: intento05 sobre33263c5,16poses dibujadas y recompensaúnica. Paquete actuald39ed44/web16 conserva idéntico atlas/IA; sólo corrige puntuaciónHUD, observada en daño real del intento06, que no completó otro kill. Aceptación artística, balance humano y dispositivo pendientes. [Informe de integración y procedencia de pruebas](../../../docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). Los datos de producción siguientes conservan su origen.
 
 ## Diseño y archivos
 

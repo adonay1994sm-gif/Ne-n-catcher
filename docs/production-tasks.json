@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T06:40:42.214Z",
+  "updatedAt": "2026-10-18T06:50:52.052Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -769,7 +769,8 @@
           "Decodificación y composición de transparencia en Chromium: PASS; no equivale a comprobar el combate real.",
           "Chromium gaia-04:12celdas dibujadas, disparo/pausa y daño3→2→1 observados; salida130 por interrupción. No se certifica destrucción durante la partida.",
           "Paquete final 33263c5219240b5fb119f23b430f9c6698191e0c: gaia-focused-final 4/4, salida 0; aparición, disparo anunciado, pausa y celdas reales verificadas. Destrucción real fuera del alcance aprobado.",
-          "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes."
+          "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes.",
+          "Integración de combate completa aprobada en gaia-05 sobre 33263c5; paquete actual d39 cambia sólo sincronización HUD. Equivalencia de 114 archivos runtime acredita IA/arte idénticos. Gaia-06 sobre d39 agotó el timeout del piloto sin validar otra muerte; no se declara kill 4/4 sobre d39."
         ],
         "evidence": [
           "art-source/enemies/ch02/ch02-atlas-v1.json",
@@ -782,7 +783,11 @@
           "docs/production-reports/evidence/chronos-pursuit-gaia/final-package/package.json",
           "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication.json",
           "docs/production-reports/evidence/chronos-pursuit-gaia/site-http/results.json",
-          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json"
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/package.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication-02.json"
         ],
         "openErrors": [
           "Aceptación artística del propietario, balance humano y certificación física iPhone pendientes; no se declara completo el territorio Gaia."
@@ -796,16 +801,23 @@
           "16poses distintas y registradas, no un esqueleto ni un ciclo de alta tasa de fotogramas.",
           "La prueba del atlas no sustituye la destrucción real durante una partida."
         ],
-        "packageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-        "finalSHA": "33263c5219240b5fb119f23b430f9c6698191e0c",
-        "privateSiteVersion": 15,
+        "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+        "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
+        "privateSiteVersion": 16,
         "packageStatus": "VERIFIED_CLEAN",
         "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
-        "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
+        "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
         "qaHistory": {
           "previousPartialAttempt": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json",
           "latestPassed": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
-          "correctionScope": "Cambio exclusivo de estrategia del piloto QA; mismo paquete 33263c5 y aplicación sin cambios."
+          "correctionScope": "Cambio exclusivo de estrategia del piloto QA; mismo paquete 33263c5 y aplicación sin cambios.",
+          "currentAttempt": {
+            "evidence": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+            "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+            "status": "FAILED_PILOT_TIMEOUT",
+            "killValidated": false
+          },
+          "acceptanceProvenance": "CH-02 integrado aprobado en gaia-05 sobre 33263c5; equivalencia de IA/arte registrada frente a d39; aceptación artística, humana y física pendientes."
         }
       },
       "gaia-ch02-attack": {
@@ -826,7 +838,8 @@
           "Decodificación y composición de transparencia en Chromium: PASS; no equivale a comprobar el combate real.",
           "Chromium gaia-04:12celdas dibujadas, disparo/pausa y daño3→2→1 observados; salida130 por interrupción. No se certifica destrucción durante la partida.",
           "Paquete final 33263c5219240b5fb119f23b430f9c6698191e0c: gaia-focused-final 4/4, salida 0; aparición, disparo anunciado, pausa y celdas reales verificadas. Destrucción real fuera del alcance aprobado.",
-          "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes."
+          "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes.",
+          "Integración de combate completa aprobada en gaia-05 sobre 33263c5; paquete actual d39 cambia sólo sincronización HUD. Equivalencia de 114 archivos runtime acredita IA/arte idénticos. Gaia-06 sobre d39 agotó el timeout del piloto sin validar otra muerte; no se declara kill 4/4 sobre d39."
         ],
         "evidence": [
           "art-source/enemies/ch02/ch02-atlas-v1.json",
@@ -839,7 +852,11 @@
           "docs/production-reports/evidence/chronos-pursuit-gaia/final-package/package.json",
           "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication.json",
           "docs/production-reports/evidence/chronos-pursuit-gaia/site-http/results.json",
-          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json"
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/package.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication-02.json"
         ],
         "openErrors": [
           "Aceptación artística del propietario, balance humano y certificación física iPhone pendientes; no se declara completo el territorio Gaia."
@@ -853,16 +870,23 @@
           "16poses distintas y registradas, no un esqueleto ni un ciclo de alta tasa de fotogramas.",
           "La prueba del atlas no sustituye la destrucción real durante una partida."
         ],
-        "packageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-        "finalSHA": "33263c5219240b5fb119f23b430f9c6698191e0c",
-        "privateSiteVersion": 15,
+        "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+        "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
+        "privateSiteVersion": 16,
         "packageStatus": "VERIFIED_CLEAN",
         "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
-        "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
+        "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
         "qaHistory": {
           "previousPartialAttempt": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json",
           "latestPassed": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
-          "correctionScope": "Cambio exclusivo de estrategia del piloto QA; mismo paquete 33263c5 y aplicación sin cambios."
+          "correctionScope": "Cambio exclusivo de estrategia del piloto QA; mismo paquete 33263c5 y aplicación sin cambios.",
+          "currentAttempt": {
+            "evidence": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+            "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+            "status": "FAILED_PILOT_TIMEOUT",
+            "killValidated": false
+          },
+          "acceptanceProvenance": "CH-02 integrado aprobado en gaia-05 sobre 33263c5; equivalencia de IA/arte registrada frente a d39; aceptación artística, humana y física pendientes."
         }
       },
       "gaia-ch02-destroy": {
@@ -883,7 +907,8 @@
           "Decodificación y composición de transparencia en Chromium: PASS; no equivale a comprobar el combate real.",
           "Chromium gaia-04:12celdas dibujadas, disparo/pausa y daño3→2→1 observados; salida130 por interrupción. No se certifica destrucción durante la partida.",
           "Paquete final 33263c5219240b5fb119f23b430f9c6698191e0c: gaia-focused-final 4/4, salida 0; aparición, disparo anunciado, pausa y celdas reales verificadas. Destrucción real fuera del alcance aprobado.",
-          "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes."
+          "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes.",
+          "Integración de combate completa aprobada en gaia-05 sobre 33263c5; paquete actual d39 cambia sólo sincronización HUD. Equivalencia de 114 archivos runtime acredita IA/arte idénticos. Gaia-06 sobre d39 agotó el timeout del piloto sin validar otra muerte; no se declara kill 4/4 sobre d39."
         ],
         "evidence": [
           "art-source/enemies/ch02/ch02-atlas-v1.json",
@@ -896,7 +921,11 @@
           "docs/production-reports/evidence/chronos-pursuit-gaia/final-package/package.json",
           "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication.json",
           "docs/production-reports/evidence/chronos-pursuit-gaia/site-http/results.json",
-          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json"
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/package.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication-02.json"
         ],
         "openErrors": [
           "Aceptación artística del propietario, balance humano y certificación física iPhone pendientes; no se declara completo el territorio Gaia."
@@ -910,16 +939,23 @@
           "16poses distintas y registradas, no un esqueleto ni un ciclo de alta tasa de fotogramas.",
           "La prueba del atlas no sustituye la destrucción real durante una partida."
         ],
-        "packageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-        "finalSHA": "33263c5219240b5fb119f23b430f9c6698191e0c",
-        "privateSiteVersion": 15,
+        "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+        "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
+        "privateSiteVersion": 16,
         "packageStatus": "VERIFIED_CLEAN",
         "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
-        "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
+        "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
         "qaHistory": {
           "previousPartialAttempt": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json",
           "latestPassed": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
-          "correctionScope": "Cambio exclusivo de estrategia del piloto QA; mismo paquete 33263c5 y aplicación sin cambios."
+          "correctionScope": "Cambio exclusivo de estrategia del piloto QA; mismo paquete 33263c5 y aplicación sin cambios.",
+          "currentAttempt": {
+            "evidence": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+            "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+            "status": "FAILED_PILOT_TIMEOUT",
+            "killValidated": false
+          },
+          "acceptanceProvenance": "CH-02 integrado aprobado en gaia-05 sobre 33263c5; equivalencia de IA/arte registrada frente a d39; aceptación artística, humana y física pendientes."
         }
       }
     },
@@ -6811,7 +6847,12 @@
         "Chromium upgrade-02: 5/5, salida 0; actualización de service worker, compatibilidad de guardados y recursos sin conexión.",
         "GitHub Actions 39103902742: completed/success para 33263c5219240b5fb119f23b430f9c6698191e0c.",
         "Sitio privado versión 15: despliegue succeeded el 18/10/2026 a las 06:27:02 UTC; HTTP 4/4 y hashes del paquete final comprobados.",
-        "Partida natural 4/4 realizada sobre 612a3f34b99cc1e5197ebf066432a43fb848667f; el paquete final conserva 114 archivos runtime iguales. Sólo cambia la gracia de reentrada en 1313a2bee65d2ebb48cd3772a68a9ed2f8695919, comprobada mediante resume-browser-02 (2/2). No se declara repetida la partida completa sobre el SHA final."
+        "Partida natural 4/4 realizada sobre 612a3f34b99cc1e5197ebf066432a43fb848667f; el paquete final conserva 114 archivos runtime iguales. Sólo cambia la gracia de reentrada en 1313a2bee65d2ebb48cd3772a68a9ed2f8695919, comprobada mediante resume-browser-02 (2/2). No se declara repetida la partida completa sobre el SHA final.",
+        "Cierre d39ed440740b094f9dddb588c540c537f4499215 limpio: certificate-03, 11/11 fases, contenido 329/329 y preview 23/23; todos salida 0.",
+        "Sobre d39: Chromium resume-browser-03 2/2, upgrade-03 5/5 y N-7 n7-03 una sesión con seis pasos; todos salida 0.",
+        "CI 39105045562 completed/success: corrige la prueba intermitente 39104552902; cinco semillas y 100 secuencias repetidas, archivo completo 30/30.",
+        "HUD corregido con reproducción roja sobre 33263c5 y verde sobre d39; scoreTarget=score es la única diferencia de aplicación y 114 archivos runtime permanecen iguales.",
+        "Sitio privado versión 16 succeeded el 18/10/2026 a las 06:48:49 UTC; HTTP-02 4/4 y hashes del paquete d39 verificados."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
@@ -6828,7 +6869,18 @@
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-http/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-local/results.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39103902742"
+        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39103902742",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/certificate-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/resume-browser-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/upgrade-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/n7-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/github-hud-complete.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/patrol-ci-investigation/investigation-summary.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/package.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication-02.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/site-http-02/results.json",
+        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105045562"
       ],
       "openErrors": [
         "Aceptación artística y balance humano pendientes; Chromium automatizado no valida por sí solo la dificultad percibida ni certifica iPhone físico."
@@ -6851,11 +6903,28 @@
       "packageStatus": "VERIFIED_CLEAN",
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "followupCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
-      "finalSHA": "33263c5219240b5fb119f23b430f9c6698191e0c",
-      "packageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-      "privateSiteVersion": 15,
+      "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
+      "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+      "privateSiteVersion": 16,
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
       "verificationScope": {
+        "naturalPlayedCommit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+        "reentryCorrectedPackageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+        "currentCleanPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+        "naturalRunRepeatedOnCurrent": false,
+        "finalDifference": "scoreTarget=score, corrección de sincronización HUD; IA, arte, daño y recompensas idénticos a 33263c5 según closing-package/runtime-equivalence.json (114 archivos runtime iguales).",
+        "currentTargetedQA": "resume-browser-03 2/2, upgrade-03 5/5, n7-03 una sesión/seis pasos; Gaia-06 acredita HUD actualizado y daño, pero no una segunda muerte del interceptor."
+      },
+      "packageHistory": [
+        {
+          "commit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+          "privateSiteVersion": 15,
+          "packageStatus": "VERIFIED_CLEAN",
+          "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP"
+        }
+      ],
+      "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
+      "priorFinalCorrectionVerification": {
         "naturalPlayedCommit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
         "functionalCorrectionCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
         "finalCleanPackageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
@@ -6911,7 +6980,13 @@
         "Sitio privado versión 15: despliegue succeeded el 18/10/2026 a las 06:27:02 UTC; HTTP 4/4 y hashes del paquete final comprobados.",
         "Chromium gaia-focused-final: 4/4, salida 0; aparición, ataque anunciado, disparo, pausa y atlas real. Alcance explícito sin muerte del interceptor; gaia-05 añade posteriormente esa cobertura.",
         "Chromium n7-final: una sesión y seis pasos, salida 0; regresión N-7 separada de la campaña clásica.",
-        "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes."
+        "Chromium gaia-05 --combat --equip-twin --close-range: 4/4, salida 0, 43.283 ms sobre el mismo paquete 33263c5219240b5fb119f23b430f9c6698191e0c. Controles reales ArrowUp/ArrowDown y dos disparos Gemelo: HP 3→2→1→0, muerte a los 18,2229 s, recompensa de 10 una sola vez, hitbox y efecto retirados al terminar; 16 celdas dibujadas, 0 errores JS, RAF máximo 1, casco 88% y 15 orbes.",
+        "Cierre d39ed440740b094f9dddb588c540c537f4499215 limpio: certificate-03, 11/11 fases, contenido 329/329 y preview 23/23; todos salida 0.",
+        "Sobre d39: Chromium resume-browser-03 2/2, upgrade-03 5/5 y N-7 n7-03 una sesión con seis pasos; todos salida 0.",
+        "CI 39105045562 completed/success: corrige la prueba intermitente 39104552902; cinco semillas y 100 secuencias repetidas, archivo completo 30/30.",
+        "HUD corregido con reproducción roja sobre 33263c5 y verde sobre d39; scoreTarget=score es la única diferencia de aplicación y 114 archivos runtime permanecen iguales.",
+        "Sitio privado versión 16 succeeded el 18/10/2026 a las 06:48:49 UTC; HTTP-02 4/4 y hashes del paquete d39 verificados.",
+        "Gaia-06 sobre d39: salida 1 por timeout del piloto a los 187.224 ms; no hubo game over ni error JS. Se observó daño HP 3→2 y HUD score 2466=target 2466 con texto animándose en 2465; final 2476/2476/2476. No valida otra destrucción ni se ejecutó gaia-07."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
@@ -6934,11 +7009,23 @@
         "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39103902742",
         "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-focused-final/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/n7-final/results.json",
-        "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json"
+        "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/certificate-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/resume-browser-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/upgrade-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/n7-03/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/github-hud-complete.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/patrol-ci-investigation/investigation-summary.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/package.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication-02.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/site-http-02/results.json",
+        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105045562",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/hud-observation-and-failed-combat-summary.json"
       ],
       "openErrors": [
-        "Aceptación artística del propietario, balance humano y prueba física iPhone pendientes.",
-        "CI de cierre 39104552902 falló en una aserción temporal de presencia del interceptor; reparación en curso. La CI previa del paquete 39103902742 sigue aprobada."
+        "Aceptación artística del propietario, balance humano y prueba física iPhone pendientes."
       ],
       "acceptanceStatus": {
         "technical": "PASSED_INTEGRATED_CHROMIUM",
@@ -6958,11 +7045,11 @@
       "packageStatus": "VERIFIED_CLEAN",
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "followupCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
-      "finalSHA": "33263c5219240b5fb119f23b430f9c6698191e0c",
-      "packageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-      "privateSiteVersion": 15,
+      "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
+      "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+      "privateSiteVersion": 16,
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
+      "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
       "qaHistory": {
         "priorAttempts": [
           "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-01/results.json",
@@ -6972,7 +7059,39 @@
         ],
         "latestPassed": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
         "correctionScope": "Sólo estrategia del piloto QA: aproximación real con teclas y dos disparos Gemelo. No cambia la aplicación, HP, tiempo de simulación, reglas de daño ni recompensa.",
-        "note": "Se conservan los intentos anteriores y su cobertura parcial/fallos; no se reescriben como aprobados. Esta tarea acotada no certifica completo el territorio Gaia."
+        "note": "Se conservan los intentos anteriores y su cobertura parcial/fallos; no se reescriben como aprobados. Esta tarea acotada no certifica completo el territorio Gaia.",
+        "latestAttempt": {
+          "evidence": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
+          "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+          "status": "FAILED_PILOT_TIMEOUT",
+          "durationMs": 187224,
+          "killValidated": false,
+          "gameOver": false,
+          "javascriptErrors": 0
+        },
+        "resolvedCIFailure": {
+          "workflowRun": 39104552902,
+          "status": "RESOLVED",
+          "fixedByCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+          "passedWorkflowRun": 39105045562
+        }
+      },
+      "packageHistory": [
+        {
+          "commit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+          "privateSiteVersion": 15,
+          "packageStatus": "VERIFIED_CLEAN",
+          "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP"
+        }
+      ],
+      "verificationScope": {
+        "integratedCombatPassedCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+        "integratedCombatEvidence": "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
+        "currentCleanPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+        "currentAttempt": "gaia-06: timeout del piloto, destrucción no validada.",
+        "unchangedEnemyArtAndAIRuntimeFiles": 114,
+        "equivalenceEvidence": "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
+        "limitation": "La aceptación técnica acotada de CH-02 se apoya en gaia-05 sobre 33263c5 y equivalencia explícita. No se atribuye un combate de destrucción 4/4 al SHA d39 ni se certifica todo Gaia."
       }
     }
   ],
@@ -7017,28 +7136,19 @@
     "latestVerification": {
       "date": "2026-10-18",
       "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
-      "commit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-      "functionalCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
+      "commit": "d39ed440740b094f9dddb588c540c537f4499215",
+      "functionalCommit": "d39ed440740b094f9dddb588c540c537f4499215",
       "naturalPlayedCommit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
-      "workflowRun": 39103902742,
+      "integratedCH02CombatPlayedCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+      "workflowRun": 39105045562,
       "conclusion": "success",
-      "scope": "Paquete limpio 33263c5: certificación 11/11, contenido 329/329, preview 23/23, Chromium reentrada 2/2, actualización/offline 5/5, Gaia enfocada 4/4 y combate/destrucción CH-02 gaia-05 4/4. Partida completa 4/4 sobre 612a y corrección final de reentrada probada por separado. CI previa del paquete aprobada; CI posterior de cierre 39104552902 falló y se investiga. Aceptación artística, balance humano y dispositivo pendientes.",
-      "privateSiteVersion": 15,
+      "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
+      "scope": "Paquete limpio d39: certificate-03 11/11, contenido 329/329, preview 23/23, reentrada Chromium 2/2, actualización/offline 5/5 y N-7 una sesión/seis pasos. HUD reproducido rojo sobre 332 y verde sobre d39. Gaia-05 combate/destrucción 4/4 se ejecutó sobre 332; Gaia-06 sobre d39 acabó por timeout del piloto y no valida otra muerte. IA/arte equivalentes en 114 archivos runtime. Partida completa Chronos 4/4 sobre 612a. Aceptación artística, balance humano e iPhone pendientes.",
+      "privateSiteVersion": 16,
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "privateSiteSourceCommit": "0fdde843ec0b171d9022ed501a8b22fa0f2873b0",
-      "privateSiteVerifiedAt": "2026-10-18T06:27:02Z",
-      "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
-      "latestWorkflow": {
-        "workflowRun": 39104552902,
-        "conclusion": "failure",
-        "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902",
-        "error": "assert.ok(interceptors.length >= 1)",
-        "file": "tests/unified-flight-legacy.test.mjs",
-        "line": 986,
-        "scope": "Ejecución de cierre documental 872; aplicación idéntica al paquete probado 33263c5. Se investiga la ventana temporal intermitente de la prueba; no se declara reparada.",
-        "status": "UNDER_REPAIR"
-      },
-      "scopeStatus": "GAMEPLAY_VERIFIED_LATEST_CI_UNDER_REPAIR"
+      "privateSiteSourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
+      "privateSiteVerifiedAt": "2026-10-18T06:48:49Z",
+      "scopeStatus": "VERIFIED_WITH_EXPLICIT_PRIOR_COMBAT_PROVENANCE_AND_FAILED_REPEAT_RETAINED"
     },
     "productName": "NEON CRONIUM",
     "brandChange": {
@@ -7087,8 +7197,8 @@
         "source": "Datos proporcionados por el propietario en la sesión17/10/2026; solicita dejar correo para otro momento. No se declara una política comercial definitiva."
       },
       "presentationReport": "docs/production-reports/VOYAGE_POLISH_2026-10-17.md",
-      "currentFunctionalCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
-      "currentPrivateVersion": 15,
+      "currentFunctionalCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+      "currentPrivateVersion": 16,
       "batchHistory": [
         {
           "date": "2026-10-17",
@@ -7104,20 +7214,20 @@
           "privateVersion": 14
         }
       ],
-      "currentPrivateCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+      "currentPrivateCommit": "d39ed440740b094f9dddb588c540c537f4499215",
       "currentBatchPackageStatus": "VERIFIED_CLEAN",
       "currentBatchPrivateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
-      "pendingFunctionalVerification": "Destrucción real de CH-02 ya comprobada con gaia-05 (4/4). Pendientes: reparar la aserción temporal intermitente de CI, continuar Gaia con CH-03 y revisar ritmo con jugadores humanos; aceptación artística e iPhone físico separados.",
-      "currentVerifiedPackageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-      "currentPrivateSiteSourceCommit": "0fdde843ec0b171d9022ed501a8b22fa0f2873b0",
+      "pendingFunctionalVerification": "Continuar Gaia con CH-03 y revisar ritmo con jugadores humanos. CH-02 tiene combate completo gaia-05 sobre 332 y equivalencia IA/arte con d39; gaia-06 sobre d39 conserva timeout del piloto, sin nueva destrucción validada. Aceptación artística e iPhone físico pendientes.",
+      "currentVerifiedPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+      "currentPrivateSiteSourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
       "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "currentPackageSha256": "ba580b5335fc201e0f3cab264101ea3b22bfd9b1082f23eedec1449a5de53703",
-      "currentPackageBytes": 8777106,
+      "currentPackageSha256": "87dfe31b679730d00de9adf2a03d2211e192598575d54c963fd41342c8732135",
+      "currentPackageBytes": 8777108,
       "currentPackageEntries": 120,
-      "latestWorkflowRun": 39104552902,
-      "latestWorkflowConclusion": "failure",
-      "latestSuccessfulPackageWorkflowRun": 39103902742,
-      "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
+      "latestWorkflowRun": 39105045562,
+      "latestWorkflowConclusion": "success",
+      "latestSuccessfulPackageWorkflowRun": 39105045562,
+      "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
       "latestCIFailure": {
         "workflowRun": 39104552902,
         "conclusion": "failure",
@@ -7125,10 +7235,14 @@
         "error": "assert.ok(interceptors.length >= 1)",
         "file": "tests/unified-flight-legacy.test.mjs",
         "line": 986,
-        "scope": "Ejecución de cierre documental 872; aplicación idéntica al paquete probado 33263c5. Se investiga la ventana temporal intermitente de la prueba; no se declara reparada.",
-        "status": "UNDER_REPAIR"
+        "scope": "Diagnóstico histórico antes de la corrección: Ejecución de cierre documental 872; aplicación idéntica al paquete probado 33263c5. Se investiga la ventana temporal intermitente de la prueba; no se declara reparada.",
+        "status": "RESOLVED",
+        "resolution": "La fixture con semilla 34 podía morir por amenaza ambiental a los 10,710 s antes de observar el interceptor. Se corrigió la ventana de observación sin cambiar la aplicación para esa prueba; cinco semillas, 100 secuencias y archivo 30/30 aprobados. Además se corrigió por separado la sincronización HUD.",
+        "fixedByCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+        "passedWorkflowRun": 39105045562
       },
-      "nextPriority": "Resolver primero la CI intermitente; después CH-03 integrado, ritmo de Gaia y pruebas humanas."
+      "nextPriority": "CH-03 integrado en Gaia, ritmo de encuentros y pruebas humanas; conservar el intento fallido gaia-06 y la procedencia exacta del combate aprobado.",
+      "currentPackageRevision": "458f6dcf810bc827aad45191b5d46b4862d47cfa83329e163e6f321b97a7b11f"
     },
     "feedbackHistory": [
       {
@@ -7154,6 +7268,32 @@
         "workflowRun": 39102869812,
         "conclusion": "success",
         "scope": "Base funcional: transiciones y persecución, partida Chromium natural4/4 y paso persistido a Gaia. CH02atlas/animador8/8; combate/destrucciónChromium todavía en curso. Corrección adicional de gracia tras reentrada pendiente de SHA/paquete final."
+      },
+      {
+        "date": "2026-10-18",
+        "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+        "commit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+        "functionalCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
+        "naturalPlayedCommit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+        "workflowRun": 39103902742,
+        "conclusion": "success",
+        "scope": "Paquete limpio 33263c5: certificación 11/11, contenido 329/329, preview 23/23, Chromium reentrada 2/2, actualización/offline 5/5, Gaia enfocada 4/4 y combate/destrucción CH-02 gaia-05 4/4. Partida completa 4/4 sobre 612a y corrección final de reentrada probada por separado. CI previa del paquete aprobada; CI posterior de cierre 39104552902 falló y se investiga. Aceptación artística, balance humano y dispositivo pendientes.",
+        "privateSiteVersion": 15,
+        "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+        "privateSiteSourceCommit": "0fdde843ec0b171d9022ed501a8b22fa0f2873b0",
+        "privateSiteVerifiedAt": "2026-10-18T06:27:02Z",
+        "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
+        "latestWorkflow": {
+          "workflowRun": 39104552902,
+          "conclusion": "failure",
+          "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902",
+          "error": "assert.ok(interceptors.length >= 1)",
+          "file": "tests/unified-flight-legacy.test.mjs",
+          "line": 986,
+          "scope": "Ejecución de cierre documental 872; aplicación idéntica al paquete probado 33263c5. Se investiga la ventana temporal intermitente de la prueba; no se declara reparada.",
+          "status": "UNDER_REPAIR"
+        },
+        "scopeStatus": "GAMEPLAY_VERIFIED_LATEST_CI_UNDER_REPAIR"
       }
     ]
   }

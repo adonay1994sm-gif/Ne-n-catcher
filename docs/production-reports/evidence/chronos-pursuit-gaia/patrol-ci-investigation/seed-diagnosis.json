@@ -1,0 +1,7487 @@
+[
+  {
+    "seed": 0,
+    "passed": true,
+    "state": "playing",
+    "hull": 52,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.764000000000046,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.764000000000046,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 146.7396513815038,
+        "y": 1563.2629398384377,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 111.3790000000023,
+        "y": 452.02649440000044,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.26842105263157745,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 349.46930930018425,
+        "y": 1012.0186417993878,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 398.81440395722166,
+        "y": 533.2034362686014,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 361.3021802139604,
+        "y": 912.4236854565257,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 404.87084792694077,
+        "y": 501.85254161362775,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 496.49999572429806,
+        "y": 251.97849595148577,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 105.05817162338644,
+        "y": 16.423666202767187,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 1,
+    "passed": true,
+    "state": "playing",
+    "hull": 42,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.560000000000041,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.560000000000041,
+        "state": "playing",
+        "hull": 54,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 99.39400000000217,
+        "y": 464.0661664000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.5368421052631549,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 77.00599823379889,
+        "y": 1212.5787526503007,
+        "projectile": false
+      },
+      {
+        "type": "shield",
+        "x": 460.70153795881197,
+        "y": 848.9490913366192,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 361.07802197169605,
+        "y": 972.60326798318,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 439.71386869670823,
+        "y": 510.46466455965594,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 503.70648209005594,
+        "y": 338.5367012813779,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 369.0029213554226,
+        "y": 181.150775418633,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 67.81255900627002,
+        "y": -43.45187414208651,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 2,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.52600000000004,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.52600000000004,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 98.40800000000215,
+        "y": 465.5676064000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.5815789473684178,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 196.8521329846736,
+        "y": 1031.8981844856892,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 592.6000904035755,
+        "y": 684.2630564824854,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 361.040662264652,
+        "y": 982.633198404289,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "id": "classic-target:5",
+        "type": "debris",
+        "x": 81.32384801050648,
+        "y": 706.6347720916838,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 213.75776211963966,
+        "y": 381.0427436428623,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 627.3211714578792,
+        "y": 162.8274357591754,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 57.829902444500476,
+        "y": -6.726877770790821,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 3,
+    "passed": true,
+    "state": "playing",
+    "hull": 100,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.96800000000005,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.96800000000005,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-target:2",
+        "type": "meteor",
+        "x": 549.4824972329661,
+        "y": 1574.818774085797,
+        "hp": 1,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 664.1816142178141,
+        "y": 1415.554910348579,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 133.7680000000025,
+        "y": 429.90465280000046,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 374.2076494288631,
+        "y": 949.290446099605,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 649.6526837931015,
+        "y": 828.6947562663103,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 587.4333770526573,
+        "y": 570.2182094861114,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 361.5263384562248,
+        "y": 852.2441029298715,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 414.46409840136766,
+        "y": 419.2771463721866,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 279.58781517110765,
+        "y": 300.30446674858064,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 206.64097086526453,
+        "y": 66.63395634059098,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 4,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.44400000000006,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.44400000000006,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 84.62805143557489,
+        "y": 1410.7819705859206,
+        "projectile": false
+      },
+      {
+        "type": "shield",
+        "x": 205.8599204919301,
+        "y": 1566.6758829614769,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 203.92700000000266,
+        "y": 364.21665280000036,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 313.994415467605,
+        "y": 1015.0309310481117,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 553.5639231279492,
+        "y": 741.330150510068,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 637.9891259851865,
+        "y": 473.78096903239566,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 362.04937435484163,
+        "y": 711.8250770343449,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 408.14199165673926,
+        "y": 371.1319639277752,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 390.1294398889877,
+        "y": 173.38489488757915,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 183.37648064130917,
+        "y": -16.198835022391272,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 5,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.628000000000043,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.628000000000043,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 102.2330000000022,
+        "y": 461.0313808000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.44736842105262903,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 140.44559760717675,
+        "y": 833.7657947656546,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 361.15274138578417,
+        "y": 952.5434071409619,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "id": "classic-target:4",
+        "type": "debris",
+        "x": 148.7444827053696,
+        "y": 465.2529251358071,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 443.6541264504194,
+        "y": 256.3868169395812,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 233.51007610792294,
+        "y": 124.1454865142401,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 6,
+    "passed": true,
+    "state": "playing",
+    "hull": 88,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.682000000000064,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.682000000000064,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 540.4525551572442,
+        "y": 1536.6973160448917,
+        "hp": 3,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 239.15100000000274,
+        "y": 331.3726528000003,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 269.0370630589314,
+        "y": 856.7555262178676,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 309.50144848320633,
+        "y": 815.6191146296366,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 662.8815963212401,
+        "y": 614.6287136189237,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 362.31089230415006,
+        "y": 641.6155640865816,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 567.3108636727557,
+        "y": 312.474400974359,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 143.0612392933108,
+        "y": 122.09165974733729,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 7,
+    "passed": true,
+    "state": "playing",
+    "hull": 42,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.900000000000048,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.900000000000048,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 125.14900000000243,
+        "y": 438.42720160000044,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.08947368421052582,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 659.6042194659822,
+        "y": 698.2978354440501,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 330.28556153876707,
+        "y": 544.3092761149,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 361.45161904213666,
+        "y": 872.3039637720896,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 70.96526071196422,
+        "y": 384.0256494183302,
+        "projectile": false
+      },
+      {
+        "type": "shield",
+        "x": 507.0667467173189,
+        "y": 254.6002885869456,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 400.935605277773,
+        "y": 76.42194441300184,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 8,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.172000000000054,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.172000000000054,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 71.80875553516671,
+        "y": 1473.321485828464,
+        "hp": 3,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 163.67100000000258,
+        "y": 401.7526528000004,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 543.9742014487274,
+        "y": 936.4686222335107,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 498.23819153243676,
+        "y": 680.0306607901367,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 464.00243528652936,
+        "y": 512.2618726437416,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 361.75049669848914,
+        "y": 792.0645204032172,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 181.34692076593637,
+        "y": 361.5612393584563,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 154.7641036985442,
+        "y": 199.64288557821882,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 280.22520071594045,
+        "y": -14.446518837071013,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 9,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.00200000000005,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.00200000000005,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 493.95813591079786,
+        "y": 1440.120192303028,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 513.8460798515007,
+        "y": 1235.2915714061257,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 138.51100000000253,
+        "y": 425.21265280000046,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 184.1486060572788,
+        "y": 1018.8259844249735,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 406.90937820822,
+        "y": 741.9495450453571,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 606.1972865252756,
+        "y": 583.5618180230822,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 361.56369816326884,
+        "y": 842.2141725087624,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 282.7079801238142,
+        "y": 322.7904114304543,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 548.8971661753021,
+        "y": 183.13714166253305,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 356.46095203002915,
+        "y": -9.564229596884372,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 10,
+    "passed": true,
+    "state": "playing",
+    "hull": 64,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.96800000000005,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.96800000000005,
+        "state": "playing",
+        "hull": 64,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 133.7680000000025,
+        "y": 429.90465280000046,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 503.7406106782146,
+        "y": 806.7348479065089,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 622.2291463939473,
+        "y": 809.8667382803719,
+        "hp": 3,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 361.5263384562248,
+        "y": 852.2441029298715,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 175.40447807172313,
+        "y": 400.49793026003726,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 352.75485411053523,
+        "y": 299.69937133466584,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 469.48101297952235,
+        "y": 71.51277778885594,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 11,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.96800000000005,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.96800000000005,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 133.7680000000025,
+        "y": 429.90465280000046,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 601.4166610920802,
+        "y": 1112.081650762535,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 629.9233062635176,
+        "y": 1006.2014106059147,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 143.68415118195117,
+        "y": 885.8448818213406,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 434.94833956472576,
+        "y": 700.2847200873749,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 361.5263384562248,
+        "y": 852.2441029298715,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 122.59716378990561,
+        "y": 440.1335548918766,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 274.09121031407267,
+        "y": 299.38527407881355,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 525.0990873482078,
+        "y": 80.3898447680599,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 12,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.96800000000005,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.96800000000005,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 574.1086324397475,
+        "y": 1201.6036614100979,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 133.7680000000025,
+        "y": 429.90465280000046,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 452.1784790651873,
+        "y": 1098.3899989139093,
+        "projectile": false
+      },
+      {
+        "type": "shield",
+        "x": 235.88328731944785,
+        "y": 941.3052439189507,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 345.11749185156077,
+        "y": 820.11654470714,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 656.1843185406178,
+        "y": 725.2266986070869,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 361.5263384562248,
+        "y": 852.2441029298715,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 409.75326744141057,
+        "y": 379.1361171684583,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 513.039631980937,
+        "y": 218.4938989037782,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 91.40800593653694,
+        "y": 9.486781397046524,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 13,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.342000000000057,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.342000000000057,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 95.77420657034963,
+        "y": 1541.3624569034891,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 95.62872166978195,
+        "y": 1292.5439898520133,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 188.83100000000263,
+        "y": 378.2926528000004,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 60.85421400843188,
+        "y": 1304.2228922260256,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 342.95153479557484,
+        "y": 1034.3094892815407,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 87.87237044190988,
+        "y": 647.2762379759056,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 524.5649535045959,
+        "y": 492.745806715056,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 361.93729523370945,
+        "y": 741.914868297672,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 104.1420743172057,
+        "y": 321.92922538834137,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 292.96023700851947,
+        "y": 124.27770583429873,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 14,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.424000000000039,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.424000000000039,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 97.1840000000021,
+        "y": 470.0719264000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.7157894736842065,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 1,
+          "rect": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 439.79301917832345,
+        "y": 1057.486588334998,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 485.89742673560977,
+        "y": 704.58866499095,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 360.9285831435198,
+        "y": 1012.7229896676162,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 178.6355563555844,
+        "y": 762.6158039124247,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 272.53857507836074,
+        "y": 415.65776628585303,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 399.5400313963182,
+        "y": 197.36681632720507,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 377.8431170480326,
+        "y": 60.29771868185719,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 15,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.44400000000006,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.44400000000006,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 655.1706855394877,
+        "y": 1408.9179244326192,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 203.92700000000266,
+        "y": 364.21665280000036,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 230.62553329626098,
+        "y": 1069.2826898243338,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 448.0363626079634,
+        "y": 736.3074736728242,
+        "hp": 3,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 611.6246857517399,
+        "y": 521.9688199159148,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 362.04937435484163,
+        "y": 711.8250770343449,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 168.99756846716627,
+        "y": 377.60929717491234,
+        "hp": 1,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 586.674986043945,
+        "y": 113.13078638761515,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 16,
+    "passed": true,
+    "state": "playing",
+    "hull": 52,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.104000000000052,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.104000000000052,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 209.99952889978886,
+        "y": 1424.5174677829755,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 153.60700000000256,
+        "y": 411.13665280000043,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 100.34519279375672,
+        "y": 987.7952972024052,
+        "hp": 3,
+        "projectile": false
+      },
+      {
+        "type": "shield",
+        "x": 284.9352478305809,
+        "y": 834.9347646154919,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 62.67857698490843,
+        "y": 852.3991051796444,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 361.675777284401,
+        "y": 812.1243812454353,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 68.49423287669197,
+        "y": 574.7565103979808,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 443.4045585663989,
+        "y": 281.67488611418696,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 447.6684582256712,
+        "y": 88.34050261311961,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 17,
+    "passed": true,
+    "state": "playing",
+    "hull": 42,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.424000000000039,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.424000000000039,
+        "state": "playing",
+        "hull": 54,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 97.1840000000021,
+        "y": 470.0719264000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.7157894736842065,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 1,
+          "rect": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 184.91832852363586,
+        "y": 908.0828222541329,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 360.9285831435198,
+        "y": 1012.7229896676162,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 381.0959362098947,
+        "y": 778.2505960917972,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 296.25333863310516,
+        "y": 434.32378849334987,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 566.263572901953,
+        "y": 191.02253612827874,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 531.5312409191392,
+        "y": 17.340108832819396,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 18,
+    "passed": true,
+    "state": "playing",
+    "hull": 42,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.682000000000064,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.682000000000064,
+        "state": "playing",
+        "hull": 54,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 239.15100000000274,
+        "y": 331.3726528000003,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 342.54843392642215,
+        "y": 957.0815145196559,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 641.6140332096256,
+        "y": 1002.3966739558914,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 527.9809914459474,
+        "y": 670.6870255443691,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 369.437866313383,
+        "y": 410.09315625228726,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 362.31089230415006,
+        "y": 641.6155640865816,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 187.51862976467237,
+        "y": 249.29528856871727,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 435.4921454261057,
+        "y": 29.258054236681396,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 19,
+    "passed": true,
+    "state": "playing",
+    "hull": 88,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.96800000000005,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.96800000000005,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 531.9877780531533,
+        "y": 1479.3592558278408,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 133.7680000000025,
+        "y": 429.90465280000046,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 599.7297526849434,
+        "y": 1188.123067532936,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 447.2749491292052,
+        "y": 777.885365766418,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 434.88471345277503,
+        "y": 680.4091406488792,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 361.5263384562248,
+        "y": 852.2441029298715,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 349.1212505917065,
+        "y": 473.2493896341334,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 536.0426118643954,
+        "y": 258.47957402522593,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 127.00518830213696,
+        "y": 39.514543505577386,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 20,
+    "passed": true,
+    "state": "playing",
+    "hull": 42,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.51200000000006,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.51200000000006,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 213.99100000000269,
+        "y": 354.83265280000035,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 114.71929864259437,
+        "y": 1103.8229199458563,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 420.19185326294973,
+        "y": 591.6002185534172,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 431.01721682585776,
+        "y": 594.0368856354643,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 362.12409376892975,
+        "y": 691.7652161921268,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 259.1497956006788,
+        "y": 310.13642436688997,
+        "projectile": false
+      },
+      {
+        "type": "shield",
+        "x": 430.84039529785514,
+        "y": 103.73483790026158,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 21,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.322000000000036,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.322000000000036,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 97.1840000000021,
+        "y": 474.5762464000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.8499999999999952,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 588.6478278436698,
+        "y": 1466.7325889075194,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 431.2006370560266,
+        "y": 1165.0883120086423,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 378.642533745151,
+        "y": 1059.7158901897367,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 68.65622127894312,
+        "y": 616.2300597252884,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 360.8165040223876,
+        "y": 1042.8127809309435,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 138.57824741164222,
+        "y": 483.08512181954217,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 401.5285606123507,
+        "y": 361.8069412486805,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 300.5993724707514,
+        "y": 138.8979306528989,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 22,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.662000000000043,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.662000000000043,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 628.3578869211487,
+        "y": 1568.3458847688971,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 227.56738216849044,
+        "y": 1253.6086015792594,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 104.08600000000223,
+        "y": 459.2108848000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.4026315789473661,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 171.43138218438253,
+        "y": 1455.7771596050184,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 136.67032388271764,
+        "y": 1027.8343420021265,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 269.7995816473849,
+        "y": 818.6478372667951,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 62.005549415480345,
+        "y": 549.6989043672482,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:7",
+        "type": "meteor",
+        "x": 361.19010109282823,
+        "y": 942.5134767198529,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "tractor",
+        "x": 113.51938584586605,
+        "y": 475.0169603087734,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 104.18093750718981,
+        "y": 333.17994719597306,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 258.25194616802037,
+        "y": 87.12731158296485,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 23,
+    "passed": true,
+    "state": "playing",
+    "hull": 66,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.070000000000052,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.070000000000052,
+        "state": "playing",
+        "hull": 66,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 553.4428821573965,
+        "y": 1412.3355201741247,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 84.25822386983782,
+        "y": 1285.5824428199583,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 148.57500000000255,
+        "y": 415.82865280000044,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 459.0107624488883,
+        "y": 938.2633673557269,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 249.6070922841318,
+        "y": 949.5658116617025,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 621.3652963051572,
+        "y": 599.9964640023113,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 361.63841757735696,
+        "y": 822.1543116665443,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "id": "classic-target:7",
+        "type": "meteor",
+        "x": 650.1806467189454,
+        "y": 537.4139713991235,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 143.61647475278005,
+        "y": 261.9391876655728,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 524.268459433224,
+        "y": 8.79554304123597,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 24,
+    "passed": true,
+    "state": "playing",
+    "hull": 8,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.580000000000062,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.580000000000062,
+        "state": "playing",
+        "hull": 54,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 224.0550000000027,
+        "y": 345.44865280000033,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 364.42364673828706,
+        "y": 995.0585671426037,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 608.5429589031264,
+        "y": 1081.5001625422133,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 647.9887001984753,
+        "y": 653.5374842972814,
+        "hp": 3,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 601.9368385407142,
+        "y": 414.64333292027925,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:6",
+        "type": "meteor",
+        "x": 362.1988131830179,
+        "y": 671.7053553499087,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 156.5679510612972,
+        "y": 286.17178252632004,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 554.6803046297282,
+        "y": 108.89363441761286,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 25,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.866000000000048,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.866000000000048,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 121.2730000000024,
+        "y": 442.2577504000004,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.13421052631578873,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 576.1219528410584,
+        "y": 1165.8723821676438,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 167.86863734479994,
+        "y": 831.7090805924216,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 261.1258399602957,
+        "y": 739.5710113974139,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 361.4142593350926,
+        "y": 882.3338941931986,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 267.29133827378973,
+        "y": 652.6265360008475,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 395.5462442082353,
+        "y": 368.45249243195076,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 107.87103754002601,
+        "y": 141.19094952867303,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 58.91279561445117,
+        "y": -29.687695235675566,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 26,
+    "passed": true,
+    "state": "playing",
+    "hull": 42,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.322000000000036,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.322000000000036,
+        "state": "playing",
+        "hull": 54,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 151.3540459331125,
+        "y": 1455.913826592679,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 97.1840000000021,
+        "y": 474.5762464000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.8499999999999952,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 215.39071259787306,
+        "y": 1177.334338677877,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 170.32385263824835,
+        "y": 1072.7856549255876,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 382.7272477000952,
+        "y": 664.9817539767685,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 360.8165040223876,
+        "y": 1042.8127809309435,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "shield",
+        "x": 662.939342528116,
+        "y": 583.704392555601,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 605.0632559345104,
+        "y": 300.89788840322166,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 58.88337251264602,
+        "y": 200.73489399332232,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 257.45758519507945,
+        "y": -37.04460318628401,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 27,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.764000000000046,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.764000000000046,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 111.3790000000023,
+        "y": 452.02649440000044,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.26842105263157745,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 641.9900718866847,
+        "y": 1028.2875285177024,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 541.8706300435588,
+        "y": 1067.4858082660726,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 270.3697030665353,
+        "y": 996.1047838113684,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 456.90396746387705,
+        "y": 586.6326703562816,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 361.3021802139604,
+        "y": 912.4236854565257,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 205.07038444979116,
+        "y": 318.41352386742824,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 377.0817078300752,
+        "y": 204.0650114052224,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 636.576213769149,
+        "y": -33.98082840849608,
+        "hp": 1,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 28,
+    "passed": true,
+    "state": "playing",
+    "hull": 100,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.322000000000036,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.322000000000036,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 97.1840000000021,
+        "y": 474.5762464000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.8499999999999952,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 190.10057618608698,
+        "y": 1112.15311391524,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 178.79881120985374,
+        "y": 613.9135886784327,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 360.8165040223876,
+        "y": 1042.8127809309435,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 189.29075305117294,
+        "y": 579.5115016578053,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 383.69031607406214,
+        "y": 415.61405903354256,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 90.11362820398062,
+        "y": 168.2455731753045,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 369.3080192618072,
+        "y": -49.327702712929806,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 29,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.49200000000004,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.49200000000004,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 537.1168405539356,
+        "y": 1446.1389252765002,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 97.71100000000213,
+        "y": 467.0690464000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.6263157894736807,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 600.2462965226732,
+        "y": 1399.8416027929154,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 630.3305320139043,
+        "y": 1262.6151233775254,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 409.887696984224,
+        "y": 936.1336646180863,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 361.0033025576079,
+        "y": 992.6631288253981,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "id": "classic-target:4",
+        "type": "debris",
+        "x": 318.3955773920752,
+        "y": 786.5233988883648,
+        "hp": 1,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 169.1229598573409,
+        "y": 499.38861321617475,
+        "projectile": false
+      },
+      {
+        "type": "tractor",
+        "x": 445.9358845441602,
+        "y": 176.32804332996054,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 538.7968035717495,
+        "y": 18.836692487688367,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 30,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 11.662000000000043,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 11.662000000000043,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 510.2639496466145,
+        "y": 1399.6730191932359,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 104.08600000000223,
+        "y": 459.2108848000005,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "charge",
+        "telegraph": 0.4026315789473661,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 484.37210763571784,
+        "y": 948.5099417135165,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 411.88638551160693,
+        "y": 941.6811060035295,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 55.61487545026466,
+        "y": 609.0368109835911,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 361.19010109282823,
+        "y": 942.5134767198529,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "shield",
+        "x": 426.17830278584734,
+        "y": 583.256052683763,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 327.6990532199852,
+        "y": 357.24074717409235,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 493.24383524246514,
+        "y": 117.34431777826612,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 31,
+    "passed": true,
+    "state": "playing",
+    "hull": 8,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.546000000000062,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.546000000000062,
+        "state": "playing",
+        "hull": 20,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "type": "energy",
+        "x": 569.2982937442139,
+        "y": 1248.307524427606,
+        "projectile": false
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 219.0230000000027,
+        "y": 350.14065280000034,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 510.23263020440936,
+        "y": 1216.8893657461176,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 394.0033947536722,
+        "y": 827.0423232471824,
+        "projectile": false
+      },
+      {
+        "type": "tractor",
+        "x": 507.11462064879015,
+        "y": 810.2431730711178,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 95.83186912350357,
+        "y": 587.4022285857186,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 117.06812784774229,
+        "y": 367.57522690662637,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 362.1614534759738,
+        "y": 681.7352857710177,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 541.2532972474582,
+        "y": 194.913755383134,
+        "projectile": false
+      },
+      {
+        "type": "tractor",
+        "x": 563.6565188597888,
+        "y": 7.319946106734147,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 32,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.784000000000066,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.784000000000066,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 254.24700000000277,
+        "y": 317.2966528000003,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "energy",
+        "x": 60.86045778589323,
+        "y": 970.9211983819863,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 140.19503695657477,
+        "y": 759.285312646565,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:3",
+        "type": "meteor",
+        "x": 241.9338519521989,
+        "y": 423.0053582029802,
+        "hp": 3,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 362.42297142528224,
+        "y": 611.5257728232544,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 518.436904931441,
+        "y": 251.20057302424226,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 85.9763812739402,
+        "y": 4.435464468374777,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 33,
+    "passed": true,
+    "state": "playing",
+    "hull": 76,
+    "elapsed": 17.0000000000001,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "requested": "interceptor",
+        "elapsed": 12.308000000000057,
+        "role": "interceptor",
+        "id": "classic-pursuit-v1:1:0:1",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 12.308000000000057,
+        "state": "playing",
+        "hull": 88,
+        "ids": [
+          "classic-pursuit-v1:1:0:0",
+          "classic-pursuit-v1:1:0:1"
+        ],
+        "roles": [
+          "scout",
+          "interceptor"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "id": "classic-pursuit-v1:1:0:0",
+        "type": "scout",
+        "x": 653.9626533144535,
+        "y": 1269.9603328000017,
+        "hp": 2,
+        "role": "scout",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 2,
+        "projectile": false,
+        "frame": {
+          "state": "flight",
+          "frameIndex": 11,
+          "rect": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      },
+      {
+        "id": "classic-pursuit-v1:1:0:1",
+        "type": "scout",
+        "x": 183.79900000000262,
+        "y": 382.9846528000004,
+        "hp": 3,
+        "role": "interceptor",
+        "tactics": "classic-pursuit-v1",
+        "enemyState": "break-away",
+        "telegraph": 0,
+        "fired": 1,
+        "projectile": false,
+        "frame": {
+          "state": "bankLeft",
+          "frameIndex": 2,
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 108,
+          "image": "assets/ch02_interceptor_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 3,
+          "maxHp": 3
+        }
+      },
+      {
+        "type": "shield",
+        "x": 133.00136835779995,
+        "y": 1280.850064119952,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 254.47274341713637,
+        "y": 923.0725374710728,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 217.4272486823611,
+        "y": 547.0616029356684,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:4",
+        "type": "meteor",
+        "x": 357.7215558150783,
+        "y": 483.2950811688361,
+        "hp": 2,
+        "projectile": false
+      },
+      {
+        "id": "classic-target:5",
+        "type": "meteor",
+        "x": 361.8999355266654,
+        "y": 751.944798718781,
+        "hp": 1,
+        "projectile": true,
+        "vx": -1.0988149130603182,
+        "vy": 294.9979535620321
+      },
+      {
+        "type": "energy",
+        "x": 79.07887823879719,
+        "y": 243.32807348499696,
+        "projectile": false
+      },
+      {
+        "type": "energy",
+        "x": 278.4057466080412,
+        "y": 21.083197054659962,
+        "projectile": false
+      }
+    ]
+  },
+  {
+    "seed": 34,
+    "passed": false,
+    "state": "gameover",
+    "hull": 0,
+    "elapsed": 11.900000000000048,
+    "patrolSpawns": [
+      {
+        "requested": "scout",
+        "elapsed": 5.065999999999985,
+        "role": "scout",
+        "id": "classic-pursuit-v1:1:0:0",
+        "frame": {
+          "state": "spawn",
+          "frameIndex": 0,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          },
+          "pivot": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "drawSize": 128,
+          "image": "assets/ch01_atlas_v1.webp",
+          "done": false,
+          "terminal": false,
+          "damageRatio": 0,
+          "damaged": false,
+          "attackId": null,
+          "hp": 2,
+          "maxHp": 2
+        }
+      }
+    ],
+    "seen": [
+      {
+        "elapsed": 5.065999999999985,
+        "state": "playing",
+        "hull": 100,
+        "ids": [
+          "classic-pursuit-v1:1:0:0"
+        ],
+        "roles": [
+          "scout"
+        ]
+      },
+      {
+        "elapsed": 10.710000000000024,
+        "state": "destroying",
+        "hull": 0,
+        "ids": [],
+        "roles": []
+      }
+    ],
+    "targets": []
+  }
+]

@@ -1,0 +1,35 @@
+
+> neon-cronium@7.2.0 test:preview
+> node --test tests/preview-build.test.mjs tests/service-worker-generation.test.mjs
+
+✔ unit: preview offers one main journey and preserves historical versions inside a closed QA archive (290.48989ms)
+✔ unit: isolated storage never reads, overwrites or removes normal campaign keys (1.520697ms)
+✔ unit: preview transforms require the actual game markers and preserve ordinary input (39.746806ms)
+✔ unit: launcher unlock affects only preview N-7 and reports blocked storage (47.970143ms)
+✔ unit: classic QA unlock preserves achievements, ordinary saves and N-7 (14.410797ms)
+✔ unit: preview installation opens the selector with one identity from either entry point (1.642647ms)
+✔ unit: launcher worker caches its shell and preserves game and unrelated caches (1.380801ms)
+✔ unit: launcher worker serves the selector offline without intercepting game or foreign pages (1.051387ms)
+✔ unit: preview worker preserves foreign caches and nested-scope caches (1.906745ms)
+✔ unit: offline navigation uses only the scoped cache and ignores foreign paths (1.554586ms)
+✔ unit: Netlify opt-in cannot authorize main or PR deploy contexts (450.809233ms)
+✔ built launcher has one principal journey, recoverable historical archives and resolving package paths (27.534382ms)
+✔ built preview manifest consistently launches the offline selector (2.442483ms)
+✔ preview preserves core, content and every original asset byte for byte (39.052044ms)
+✔ preview-only transforms do not change the default web root or native game (3.170975ms)
+✔ preview cannot initialize native ads or make real payments (2.111206ms)
+✔ build provenance records exact commit, source tree and every emitted byte (75.514038ms)
+✔ a delayed old code response cannot recreate its cache after the newer worker activates (31.60535ms)
+✔ a delayed old uncached image cannot recreate a retired game generation (11.152921ms)
+✔ a failing old navigation uses its retained fallback without creating an empty old cache (14.240938ms)
+✔ the launcher retained handle remains writable after retirement without resurrecting its name (4.084167ms)
+✔ activation removes only its own scope generation and preserves launcher, sibling and foreign caches (7.579269ms)
+✔ the VM CacheStorage fixture distinguishes retained handles from a fresh open after delete (0.907776ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1782.615781

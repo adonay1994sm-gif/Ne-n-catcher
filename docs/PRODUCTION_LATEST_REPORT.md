@@ -1,17 +1,17 @@
 <!-- chronos-pursuit-current -->
-## DIAGNÓSTICO · continuidad y persecución Chronos–Gaia,18/10/2026
+## DIAGNÓSTICO · cierre Chronos–Gaia,18/10/2026
 
-El propietario considera el primer nivel casi terminado y pide cruces más naturales, una ligera subida de presión tras el ataque y enemigos con intención. Se conserva HEAD51d5629 y la base anterior. El cambio de etapa borraba objetos/disparos; se conserva su continuidad y se añade persecución anunciada. Gaia recibe capas orbitales independientes y CH-02 ilustrado/animado.
+Los cruces borraban objetos/disparos; se conserva la continuidad y se añade persecución tras el ataque. Gaia recibe capas orbitales y CH-02 ilustrado/animado. Durante QA se corrigieron el margen de reentrada, el refresco de puntos de combate y un fixture que moría por peligros aleatorios antes de observar la segunda patrulla.
 
-## INFORME DE PRODUCCIÓN · versión15 privada
+## INFORME DE PRODUCCIÓN · versión16 privada
 
-[Informe completo, capturas, fallos y paquete](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). **[Probar NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE; para revisar desde el comienzo: NIVELES → La Onda de Choque →1.1. Paquete limpio **33263c5**, revisión07236e09; fuente Site0fdde84. Publicación succeeded18/10/2026 06:27:02UTC y HTTP remoto4/4 con hashes. Actions[39103902742](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39103902742) completed/success.
+[Informe completo, capturas, fallos y ZIP](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). **[Probar NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE. Para empezar desde la explosión: NIVELES → La Onda de Choque →1.1. Paquete limpio **d39ed44**, fuente Site **8fb37f4**; publicación succeeded18/10/2026 06:48:49UTC, HTTP remoto4/4 con hashes. Actions [39105045562](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105045562) **completed/success**, incluido empaquetado; fallo previo39104552902 corregido, conservado y reproducido con semilla34.
 
-Travesía natural **4/4 sobre612a3f3**: diez etapas, pieza,C9,Gemelo,llegada y cruce directo aGaia. Después se corrige el margen al recuperar un checkpoint: **paquete final Chromium2/2**, actualización/offline5/5, Gaia breve4/4, N-7una sesión/seis pasos. Certificación11/11, contenido329/329, preview23/23. La equivalencia de fuentes/hashes separa ambas verificaciones; no se afirma haber repetido la travesía completa sobre el SHA posterior.
+Partida natural del viaje **4/4 sobre612a3f3**; combate CH-02 completo **4/4 sobre33263c5**,16poses en pantalla y recompensa10única. La única diferencia de aplicación entre332 y d39 es publicar los puntos al HUD animado. Paquete actual: reentrada2/2, actualización/offline5/5, N-7una sesión/seis pasos, Site2/2; certificación11/11/contenido329/preview23. Gaia06 en d39 agotó el tiempo del piloto: no certifica kill; sí observó daño y score=target/texto convergente. Los fallos01–04/06 permanecen. Las atribuciones y equivalencia114archivos constan en el informe.
 
-**Pendiente:** destrucción CH-02 durante una partida normal, equilibrio humano, revisión artística/iPhone y completar Gaia/CH-03. Los cuatro intentos ampliados de combate y su interrupción130 se conservan; el smoke breve aprobado no certifica kill. Dos tareas nuevas y tres secuenciasCH02 quedan IN_REVIEW; registro316tareas:26DONE/77IN_REVIEW/5IN_PROGRESS/200PENDING/8BLOCKED. No son porcentajes comerciales ni territorios nuevos terminados.
+**Pendiente:** completar y equilibrar la misión Gaia, CH-03, viabilidad humana de Pulso/Gemelo, aceptación artística e iPhone. Dos tareas y tres secuencias CH-02 siguen IN_REVIEW; registro316tareas:26DONE/77IN_REVIEW/5IN_PROGRESS/200PENDING/8BLOCKED. No se declaran otros territorios o cien etapas terminados.
 
-148archivos del Site fuera del alcance preservados byteporbyte, incluyendo las aportaciones orbitales. Guardados/campañas conservados, MotorV1=false, único RAF del clásico. Sin producción Netlify, main del juego, PR3, tiendas o pagos. Correo de soporte aplazado por el propietario. Los cierres anteriores siguen debajo como historial con sus SHA propios.
+148archivos ajenos del Site preservados, incluyendo experimento orbital; mismo origen/guardados y audiencia. MotorV1=false y único RAF del clásico. Sin producción Netlify, main/PR3del juego, tiendas o pagos; soporte público aplazado. Las secciones siguientes conservan el historial y sus SHA propios.
 <!-- /chronos-pursuit-current -->
 
 ---
