@@ -148,8 +148,9 @@ export async function buildPreview() {
     if (!info.isFile() || info.size === 0) throw new Error(`Preview source is missing or empty: ${file}`);
   }
   const landing = await readFile(join(root, 'preview/launcher.html'), 'utf8');
-  if (!landing.includes('href="juego/index.html?campaign=n7"') || !landing.includes('href="juego/index.html"')) {
-    throw new Error('Preview launcher must retain both game modes');
+  if (!landing.includes('id="classiclink"') || !landing.includes('href="juego/index.html"') ||
+      /(?:\?campaign=|id="qaArchive"|id="unlockClassic")/.test(landing)) {
+    throw new Error('Preview launcher must expose only the canonical journey');
   }
   const sourceFiles = {};
   for (const file of await filesBelow(source)) sourceFiles[`www/${file}`] = sha256(await readFile(join(source, file)));
