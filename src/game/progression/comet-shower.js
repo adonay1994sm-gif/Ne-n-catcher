@@ -3,7 +3,7 @@
  * second route clock or update loop. The legacy caller advances it with played
  * delta only and integrates emitted items once with advanceShowerComet.
  */
-export const COMET_SHOWER_VERSION = 'comet-shower-v1';
+export const COMET_SHOWER_VERSION = 'comet-shower-v2';
 export const COMET_SHOWER_RULES = Object.freeze({
   maxActive: 5, warningSeconds: 2, resumeGraceSeconds: 7,
   maxDelta: .05, shipWidth: 208, corridorClearance: 40,
@@ -83,9 +83,12 @@ function makeCandidate(state, burst, ordinal, mode) {
     // reserved passage. Acceleration is authored once and never tracks a ship.
     const laneMinimum = dangerSide < 0 ? 32 : corridor.right + 44;
     const laneMaximum = dangerSide < 0 ? corridor.left - 44 : width - 32;
-    const preferredX = width * (dangerSide < 0 ? .25 : .75) + (random() - .5) * 30;
+    const fraction=width>=500?(dangerSide<0?.46:.54):(dangerSide<0?.25:.75);
+    const preferredX = width * fraction + (random() - .5) * 30;
     // Keep the rain inside useful flight lanes. Placing it at x≈60/660 on the
     // 720px field would let a ship ignore every crossing from the center.
+    // The v2 wide-field lanes pass close enough to the center to require a
+    // response, while the full-width safe lane remains on the opposite side.
     x = laneMinimum <= laneMaximum ? clamp(preferredX, laneMinimum, laneMaximum) : preferredX;
     y = mode === 1 ? -margin : height + margin;
     vx = dangerSide * (15 + random() * 15);
@@ -164,7 +167,9 @@ export function advanceCometShower(state, delta, player, emit) {
     state.emittedIds.add(id);
     if (scheduled.kind === 'warning') {
       state.warnings++;
-      emit(Object.freeze({id, type: 'warning', text: 'Se aproxima lluvia de cometas',
+      const entrance=state.width>=500&&scheduled.burst>0
+        ?`${scheduled.burst===2?'desde abajo, ':''}${state.corridors[scheduled.burst].side<0?'derecha':'izquierda'}`:null;
+      emit(Object.freeze({id, type: 'warning', text: `Se aproxima lluvia de cometas${entrance?` · ${entrance}`:''}`,
         stageId: state.stageId, burst: scheduled.burst, at: scheduled.at,
         firstCometAt: scheduled.at + COMET_SHOWER_RULES.warningSeconds,
         corridor: state.corridors[scheduled.burst]}));

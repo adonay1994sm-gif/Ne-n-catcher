@@ -880,7 +880,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/comet-shower.js
-  var COMET_SHOWER_VERSION = "comet-shower-v1";
+  var COMET_SHOWER_VERSION = "comet-shower-v2";
   var COMET_SHOWER_RULES = Object.freeze({
     maxActive: 5,
     warningSeconds: 2,
@@ -958,7 +958,8 @@ var NeonCampaign = (() => {
     } else {
       const laneMinimum = dangerSide < 0 ? 32 : corridor.right + 44;
       const laneMaximum = dangerSide < 0 ? corridor.left - 44 : width - 32;
-      const preferredX = width * (dangerSide < 0 ? 0.25 : 0.75) + (random() - 0.5) * 30;
+      const fraction = width >= 500 ? dangerSide < 0 ? 0.46 : 0.54 : dangerSide < 0 ? 0.25 : 0.75;
+      const preferredX = width * fraction + (random() - 0.5) * 30;
       x = laneMinimum <= laneMaximum ? clamp(preferredX, laneMinimum, laneMaximum) : preferredX;
       y = mode === 1 ? -margin : height + margin;
       vx = dangerSide * (15 + random() * 15);
@@ -1071,10 +1072,11 @@ var NeonCampaign = (() => {
       state.emittedIds.add(id);
       if (scheduled.kind === "warning") {
         state.warnings++;
+        const entrance = state.width >= 500 && scheduled.burst > 0 ? `${scheduled.burst === 2 ? "desde abajo, " : ""}${state.corridors[scheduled.burst].side < 0 ? "derecha" : "izquierda"}` : null;
         emit(Object.freeze({
           id,
           type: "warning",
-          text: "Se aproxima lluvia de cometas",
+          text: `Se aproxima lluvia de cometas${entrance ? ` \xB7 ${entrance}` : ""}`,
           stageId: state.stageId,
           burst: scheduled.burst,
           at: scheduled.at,

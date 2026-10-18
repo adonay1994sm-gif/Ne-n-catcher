@@ -39,7 +39,7 @@ function run({width = 720, height = 1280, seed = 0, stageId = '1.5', elapsed = 0
 }
 
 test('new shower is isolated from route content/checkpoints and rejects impossible input', () => {
-  assert.equal(COMET_SHOWER_VERSION, 'comet-shower-v1');
+  assert.equal(COMET_SHOWER_VERSION, 'comet-shower-v2');
   const state = createCometShower();
   assert.equal(state.stageId, '1.5');
   assert.equal(state.elapsed, 0);
@@ -56,7 +56,7 @@ test('three distinct trains are preceded by two played seconds of warning and bo
   const warnings = result.events.filter(event => event.type === 'warning');
   const spawns = result.events.filter(event => event.type === 'spawn');
   assert.deepEqual(warnings.map(event => event.at), [5, 14, 23]);
-  assert.ok(warnings.every(event => event.text === 'Se aproxima lluvia de cometas'));
+  assert.ok(warnings.every(event => event.text.startsWith('Se aproxima lluvia de cometas')));
   assert.deepEqual(spawns.map(event => event.burst), [0, 0, 0, 1, 1, 1, 1, 2, 2, 2]);
   for (const warning of warnings) {
     const first = spawns.find(event => event.burst === warning.burst);
@@ -105,6 +105,43 @@ test('trajectories curve ballistically and cannot home after the player changes 
     const first = trace.positions[0], last = trace.positions.at(-1);
     assert.notEqual(Math.atan2(first.vy, first.vx), Math.atan2(last.vy, last.vx));
   }
+});
+
+test('wide-field danger reaches a stationary central hull instead of leaving a permanent refuge', () => {
+  // A 32px circle around the ship center lies entirely inside its unchanged
+  // hull. Crossing even this smaller body is sufficient to disprove immunity;
+  // exact polygon/contact integration has its own legacy-loop regression.
+  const width=720,height=1558,player={x:360,y:1262},state=createCometShower({width,height,seed:4055});
+  const items=[],contacts=new Set();
+  for(let frame=0;frame<34/DT;frame++) {
+    advanceCometShower(state,DT,player,event=>{if(event.type==='spawn')items.push(event.item);});
+    for(let index=items.length-1;index>=0;index--) {
+      const item=items[index],alive=advanceShowerComet(item,DT);
+      if(showerCometIntersectsCircle(item,{...player,r:32}))contacts.add(item.id);
+      if(!alive){releaseCometShowerItem(state,item);items.splice(index,1);}
+    }
+  }
+  assert.ok(contacts.size>0,'A stationary center must not be immune throughout the vacuum');
+  assert.ok([...contacts].some(id=>id.endsWith(':1:0')),'Descending rain reaches the central hull');
+  assert.ok([...contacts].some(id=>id.includes(':2:')),'An overtaking train also requires a response');
+});
+
+test('wide-field warnings announce the actual entrance side and bottom approach two seconds before its first nucleus', () => {
+  for(let seed=0;seed<100;seed++) {
+    const result=run({width:720,height:1558,seed});
+    for(const warning of result.events.filter(event=>event.type==='warning')) {
+      const first=result.events.find(event=>event.type==='spawn'&&event.burst===warning.burst);
+      assert.equal(first.at-warning.at,2);
+      if(warning.burst===0){assert.equal(warning.text,'Se aproxima lluvia de cometas');continue;}
+      const trace=result.trajectories.get(first.item.id).positions[0];
+      const direction=trace.x<360?'izquierda':'derecha';
+      assert.ok(warning.text.endsWith(direction));
+      assert.equal(warning.text.includes('desde abajo'),warning.burst===2);
+    }
+  }
+  const narrow=run({width:390,height:844});
+  assert.ok(narrow.events.filter(event=>event.type==='warning').every(event=>event.text==='Se aproxima lluvia de cometas'),
+    'The original narrow-profile policy remains unchanged');
 });
 
 test('zero delta freezes scheduling and positions, while oversized deltas cannot bypass an approach', () => {
