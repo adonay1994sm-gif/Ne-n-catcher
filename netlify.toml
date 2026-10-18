@@ -7,7 +7,7 @@
 
 # Dedicated preview: deployment stays blocked until the site owner opts in.
 # NEON_PREVIEW_DEPLOY=1 must be set explicitly for this branch in Netlify.
-# A separate neonpreviewdeploy project may use its default deployment context;
+# The separate neon-preview-deploy project may use its default deployment context;
 # the gate verifies its Netlify site name/HTTPS host and still rejects main/PRs.
 [context.continuity-assets-audit-20261013]
   ignore = "node ./scripts/netlify-preview-gate.mjs --ignore"

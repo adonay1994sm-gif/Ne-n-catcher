@@ -3,8 +3,8 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 
 const allowedBranch = 'continuity-assets-audit-20261013';
-const isolatedTestSite = 'neonpreviewdeploy';
-const isolatedTestHost = 'neonpreviewdeploy.netlify.app';
+const isolatedTestSite = 'neon-preview-deploy';
+const isolatedTestHost = 'neon-preview-deploy.netlify.app';
 const cwd = fileURLToPath(new URL('..', import.meta.url));
 let checkoutBranch = '';
 try { checkoutBranch = execFileSync('git', ['branch', '--show-current'], {cwd, encoding: 'utf8'}).trim(); } catch {}
@@ -36,7 +36,7 @@ if (command === '--require-enabled') {
     for (const error of errors) console.error(`[NEON CRONIUM] ${error}`);
     process.exit(1);
   }
-  console.log(`[NEON CRONIUM] ${context === 'production' ? 'Proyecto aislado neonpreviewdeploy' : 'Rama de pruebas'} autorizado; solo genera preview-dist`);
+  console.log(`[NEON CRONIUM] ${context === 'production' ? `Proyecto aislado ${isolatedTestSite}` : 'Rama de pruebas'} autorizado; solo genera preview-dist`);
   process.exit(0);
 }
 console.error('Uso: netlify-preview-gate.mjs --ignore|--require-enabled');

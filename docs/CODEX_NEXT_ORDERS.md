@@ -1,3 +1,9 @@
+## Continuación — sitio con guiones ·18/10/2026
+
+Prioridad: comprobar el ajuste de identidad **neon-preview-deploy / neon-preview-deploy.netlify.app**. Captura fallida82c demuestra que se ejecutó la corrección, pero el nombre sin guiones del allowlist no coincide. Leer adenda de [Netlify](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md), no atribuir ese fallo de82c a registroantiguo. La puerta/pruebas se actualizan; conservar rechazo del nombre anterior,main,PRs,producciónoriginalyhostsmezclados. ComprobarCIyHTTP/build-infodelnuevoSHAantesdecerrar. Runtimejuego/guardados/MotorV1sin cambios.
+
+---
+
 ## Continuación Netlify aislado ·18/10/2026
 
 Leer [corrección de puerta](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md) y [guía actual](agents/NETLIFY_TEST_SETUP.md). El propietario creó `neonpreviewdeploy`, con opt-in1 en Production. Preservar la excepción estricta sólo para ese sitio/rama/hostNetlify; no volver a confundir Production del proyecto de pruebas con el sitio principal ni permitir destinos genéricos. Corrección82c3311 y CI39134274955 ya verificadas. Observar el nuevo push documental y la publicación real de build-info antes de cerrar P1-NETLIFY-ISOLATED-01; NetlifyAPI401/webhooks403 limitan control directo y no justifican debilitar la puerta. No cambiar gameplay, main, PR3, sitio original o MotorV1 para resolver esta incidencia. Los resultados anteriores conservan sus SHA.

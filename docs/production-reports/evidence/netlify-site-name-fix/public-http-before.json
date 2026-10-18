@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://neon-preview-deploy.netlify.app/",
+    "http": 404
+  },
+  {
+    "url": "https://neon-preview-deploy.netlify.app/build-info.json",
+    "http": 404
+  }
+]

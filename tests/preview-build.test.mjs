@@ -260,8 +260,8 @@ test('unit: Netlify opt-in cannot authorize main or PR deploy contexts', () => {
 });
 
 test('unit: Netlify production permits only the explicitly opted-in isolated test site and exact HTTPS origin', () => {
-  const isolated = {context: 'production', netlify: 'true', siteName: 'neonpreviewdeploy',
-    siteId: '', url: 'https://neonpreviewdeploy.netlify.app', flag: '1', branch: PREVIEW_BRANCH};
+  const isolated = {context: 'production', netlify: 'true', siteName: 'neon-preview-deploy',
+    siteId: '', url: 'https://neon-preview-deploy.netlify.app', flag: '1', branch: PREVIEW_BRANCH};
   for (const mode of ['--require-enabled', '--ignore']) {
     const result = runNetlifyPreviewGate({...isolated, mode});
     assert.equal(result.status, mode === '--ignore' ? 1 : 0,
@@ -279,19 +279,22 @@ test('unit: Netlify production permits only the explicitly opted-in isolated tes
     ['missing site name', {siteName: ''}],
     ['original site', {siteName: 'neoncatcheroriginal', url: 'https://neoncatcheroriginal.netlify.app'}],
     ['original site with copied preview URL', {siteName: 'neoncatcheroriginal'}],
+    ['previous mistaken site identity', {siteName: 'neonpreviewdeploy', url: 'https://neonpreviewdeploy.netlify.app'}],
+    ['correct site name with previous mistaken host', {url: 'https://neonpreviewdeploy.netlify.app'}],
+    ['previous mistaken site name with correct host', {siteName: 'neonpreviewdeploy'}],
     ['unknown site', {siteName: 'some-other-test-site'}],
-    ['site name suffix', {siteName: 'neonpreviewdeploy-copy'}],
+    ['site name suffix', {siteName: 'neon-preview-deploy-copy'}],
     ['missing URL', {url: ''}],
     ['malformed URL', {url: 'not-a-url'}],
     ['original host', {url: 'https://neoncatcheroriginal.netlify.app'}],
     ['unknown host', {url: 'https://some-other-test-site.netlify.app'}],
-    ['host suffix spoof', {url: 'https://neonpreviewdeploy.netlify.app.example.invalid'}],
-    ['host prefix spoof', {url: 'https://copy-neonpreviewdeploy.netlify.app'}],
-    ['HTTP transport', {url: 'http://neonpreviewdeploy.netlify.app'}],
-    ['userinfo', {url: 'https://user@neonpreviewdeploy.netlify.app'}],
-    ['username and password', {url: 'https://user:password@neonpreviewdeploy.netlify.app'}],
-    ['userinfo host confusion', {url: 'https://neonpreviewdeploy.netlify.app@example.invalid'}],
-    ['non-default port', {url: 'https://neonpreviewdeploy.netlify.app:8443'}]
+    ['host suffix spoof', {url: 'https://neon-preview-deploy.netlify.app.example.invalid'}],
+    ['host prefix spoof', {url: 'https://copy-neon-preview-deploy.netlify.app'}],
+    ['HTTP transport', {url: 'http://neon-preview-deploy.netlify.app'}],
+    ['userinfo', {url: 'https://user@neon-preview-deploy.netlify.app'}],
+    ['username and password', {url: 'https://user:password@neon-preview-deploy.netlify.app'}],
+    ['userinfo host confusion', {url: 'https://neon-preview-deploy.netlify.app@example.invalid'}],
+    ['non-default port', {url: 'https://neon-preview-deploy.netlify.app:8443'}]
   ];
   for (const [label, overrides] of rejected) {
     for (const mode of ['--require-enabled', '--ignore']) {

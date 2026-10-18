@@ -1,3 +1,9 @@
+## Identidad exacta del sitio de pruebas ·18/10/2026
+
+La última captura muestra **neon-preview-deploy**, con guiones, y fallo82c3311. La puerta anterior permitía neonpreviewdeploy; se corrige el nombre/host exactos sin autorizar destinos adicionales. [Adenda y reproducción antes/después](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md). Local:buildpreview0,preview24/24,static13/13;27variantesnegativas×2modos. Commit/CI/publicación del destino corregido aún pendientes de comprobación. Los registros siguientes son históricos y conservan sus nombres y SHA.
+
+---
+
 ## Corrección Netlify aislado ·18/10/2026
 
 [Diagnóstico y corrección](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md): el propietario conectó `neonpreviewdeploy`; la puerta rechazaba su contexto Production aunque era un proyecto de pruebas. Se admite únicamente esa identidad Netlify/hostHTTPS/rama/opt-in, manteniendo producción original/main/PRs bloqueados. Build local y preview24/24, estáticas13/13 y arquitectura6/6 aprobados. Corrección82c3311 publicada y CI39134274955 completa/success; publicación Netlify todavía sin verificar. La variable1 en Production del sitio de pruebas fue confirmada por el propietario.

@@ -1,8 +1,10 @@
 # Probar NEON CRONIUM en Netlify aislado
 
-## Sitio de pruebas del propietario: neonpreviewdeploy
+## Sitio de pruebas del propietario: neon-preview-deploy
 
-El propietario ha conectado un proyecto nuevo, **`neonpreviewdeploy`**, a `continuity-assets-audit-20261013`. Su captura del18/10/2026 confirma el fallo de `scripts/netlify-preview-gate.mjs --require-enabled`: Netlify llama **Production** al despliegue principal de este proyecto separado; la puerta anterior sólo admitía branch-deploy/local. El propietario confirma `NEON_PREVIEW_DEPLOY=1` en Production. El fallo ocurre antes de compilar el juego.
+**Identidad vigente confirmada en la última captura del propietario: `neon-preview-deploy`, con guiones.** La corrección82c y su cierre9f94 habían quedado vinculados al nombre sin guiones `neonpreviewdeploy`; la ejecución82c que aparece en la captura falla al no coincidir esa identidad. Se corrige sólo el destino permitido y se añaden rechazos del nombre anterior y de identidades mezcladas.
+
+El propietario ha conectado un proyecto nuevo, **`neon-preview-deploy`**, a `continuity-assets-audit-20261013`. Su captura del18/10/2026 confirma el fallo de `scripts/netlify-preview-gate.mjs --require-enabled`: Netlify llama **Production** al despliegue principal de este proyecto separado; la puerta anterior sólo admitía branch-deploy/local. El propietario confirma `NEON_PREVIEW_DEPLOY=1` en Production. El fallo ocurre antes de compilar el juego.
 
 La corrección admite ese contexto exclusivamente si coinciden todos estos datos:
 
@@ -11,8 +13,8 @@ La corrección admite ese contexto exclusivamente si coinciden todos estos datos
 | Rama | `continuity-assets-audit-20261013` |
 | Opt-in | `NEON_PREVIEW_DEPLOY=1` en el contexto que se construye |
 | Marca del proveedor | `NETLIFY=true` |
-| Proyecto | `SITE_NAME=neonpreviewdeploy` |
-| URL principal del proyecto | HTTPS, host exacto `neonpreviewdeploy.netlify.app`, sin credenciales ni puerto distinto del estándar |
+| Proyecto | `SITE_NAME=neon-preview-deploy` |
+| URL principal del proyecto | HTTPS, host exacto `neon-preview-deploy.netlify.app`, sin credenciales ni puerto distinto del estándar |
 | Contexto | `production` exclusivamente para ese proyecto; branch-deploy/local conservan su contrato anterior |
 
 `NETLIFY`, `SITE_NAME` y `URL` los proporciona Netlify; **no son variables que haya que inventar o sobrescribir manualmente**. La URL anterior define la identidad permitida, no afirma que ya exista una publicación accesible. Verificar una publicación exige HTTP real y `build-info.json` del SHA esperado.
@@ -22,7 +24,7 @@ En este proyecto de pruebas la rama principal del proyecto puede ser la rama aut
 ## Configuración que debe conservarse en el proyecto nuevo
 
 1. Repositorio `adonay1994sm-gif/Ne-n-catcher`; rama del proyecto de pruebas `continuity-assets-audit-20261013`.
-2. Variable `NEON_PREVIEW_DEPLOY` con valor `1`, disponible para **Production de neonpreviewdeploy**. Una variable limitada a Branch deploys no llega a ese contexto.
+2. Variable `NEON_PREVIEW_DEPLOY` con valor `1`, disponible para **Production de neon-preview-deploy**. Una variable limitada a Branch deploys no llega a ese contexto.
 3. Usar la configuración de `netlify.toml`: Node22.13, puerta de seguridad, `npm run build:preview`, pruebas estáticas/preview y carpeta `preview-dist`. La captura del fallo confirma que Netlify ya selecciona ese comando desde el TOML; no hace falta sustituir la configuración global.
 4. Tras recibir el commit corregido, el enlace Git puede arrancar el build. Si se reintenta desde el panel, elegir el **último commit de esta rama**, no repetir el SHA8c5b44e que contiene la puerta anterior.
 5. Esperar publicación completa; abrir la URL que muestre Netlify, comprobar `build-info.json` con SHA/revisión/dirtyfalse/MotorV1false, recursos200, inicio, C9, disparo, pausa y guardado. Registrar el resultado real; un build local o GitHub Actions verde no certifica Netlify.

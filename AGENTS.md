@@ -1,3 +1,9 @@
+## Identidad Netlify vigente ·18/10/2026
+
+La última captura del propietario muestra el proyecto de pruebas **neon-preview-deploy**, con guiones, y ejecución fallida82c3311. El nombre anterior sin guiones no identifica ese destino. La puerta debe admitir únicamente SITE_NAME=neon-preview-deploy y URLHTTPS del hostexacto neon-preview-deploy.netlify.app, además de Netlifytrue/ramaautorizada/opt-in1. Conservar rechazo de nombre/hostviejos, combinacionesmezcladas, main/PRs y producción del sitiooriginal. Esta identidad sustituye la de las notas anteriores; no modifica las demás protecciones. Fuente y evidencia: docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md.
+
+---
+
 ## Corrección de preview Netlify aislada ·18/10/2026
 
 El propietario creó el proyecto de pruebas `neonpreviewdeploy`, conectado a la rama autorizada. Su despliegue principal usa el contexto técnico `production`; eso no autoriza producción del juego ni del sitio original. Admitirlo exclusivamente con opt-in1, rama autorizada, marcaNetlifytrue, SITE_NAMEexacto y URLHTTPS del host exacto `neonpreviewdeploy.netlify.app`. Mantener rechazados main/PRs/destinos desconocidos/producción de neoncatcheroriginal. Variables de identidad las proporciona Netlify, no falsificarlas. Esta excepción sustituye el rechazo incondicional de contexto production de la guía anterior; no cambia las demás protecciones. Ver `docs/agents/NETLIFY_TEST_SETUP.md` y el informe de corrección. No confundir pruebas locales o CI con un despliegue Netlify comprobado.

@@ -1,0 +1,28 @@
+{
+  "initialCommit": "9f94de2aeb759eccdd4d481c195fbaf9dd4b73d7",
+  "tree": "dirty integration snapshot, no gameplay sources changed",
+  "site": "neon-preview-deploy",
+  "allowedHost": "neon-preview-deploy.netlify.app",
+  "status": "passed",
+  "checks": [
+    {
+      "command": "npm run build:preview",
+      "exitCode": 0,
+      "log": "build-preview.txt"
+    },
+    {
+      "command": "npm run test:preview",
+      "exitCode": 0,
+      "passed": 24,
+      "log": "test-preview.txt"
+    },
+    {
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "passed": 13,
+      "log": "test-static.txt"
+    }
+  ],
+  "identityCases": "27 rejection variants, both CLI modes; exact positive site identity allowed",
+  "deployment": "NOT_YET_VERIFIED"
+}

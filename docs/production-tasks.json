@@ -9494,20 +9494,23 @@
         "npm run test:preview (24/24)",
         "npm run test:static (13/13)",
         "npm run test:architecture (6/6)",
-        "GitHub Actions39134274955 completed/success on82c3311"
+        "GitHub Actions39134274955 completed/success on82c3311",
+        "Site-name correction: npm run build:preview exit0, npm run test:preview24/24, npm run test:static13/13;27negativeidentityvariants bothmodes"
       ],
       "evidence": [
         "docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md",
         "docs/production-reports/evidence/netlify-isolated-fix/local-checks.json",
         "docs/production-reports/evidence/netlify-isolated-fix/reported-error.md",
         "docs/production-reports/evidence/netlify-isolated-fix/remote-state-before-retry.json",
-        "docs/production-reports/evidence/netlify-isolated-fix/retry-request.json"
+        "docs/production-reports/evidence/netlify-isolated-fix/retry-request.json",
+        "docs/production-reports/evidence/netlify-site-name-fix/before-after-gate.json",
+        "docs/production-reports/evidence/netlify-site-name-fix/local-checks.json"
       ],
       "openErrors": [
-        "Publicación Netlify no verificada: dirección esperada404, API401 y accesoGitHubwebhooks403; nuevo push normal para emitir eventoGit."
+        "Identidad corregida a neon-preview-deploy y pruebas locales aprobadas; falta comprobar el nuevo commit, CI y publicación Netlify."
       ],
       "acceptanceStatus": {
-        "technical": "GATE_PREVIEW_AND_GITHUB_CI_PASSED_NETLIFY_PUBLISH_UNVERIFIED",
+        "technical": "EXACT_HYPHENATED_SITE_GATE_AND_PREVIEW_PASSED_REMOTE_PENDING",
         "artistic": "NOT_APPLICABLE",
         "physical": "NOT_APPLICABLE"
       },
@@ -9516,6 +9519,12 @@
         "Producción original, main, PRs e identidades/dominios desconocidos siguen rechazados.",
         "Pruebas de los dos modos y pipeline preview aprobados; commit publicado y CI comprobada.",
         "Distinguir publicación Netlify realmente observada de corrección local o acceso pendiente."
+      ],
+      "revisionHistory": [
+        {
+          "previousImplementationCommit": "82c3311c147fb71da4ff93348a105bbf148c2828",
+          "reason": "Owner screenshot identifies hyphenated project neon-preview-deploy; previous allowlist named neonpreviewdeploy. Preserve prior CI evidence under its original SHA."
+        }
       ]
     }
   ],
