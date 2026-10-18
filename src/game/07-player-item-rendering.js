@@ -431,12 +431,14 @@
   }
 
   function drawCh01Frame(animator) {
-    if (!animator || !spriteReady(SPRITES.ch01)) return false;
+    if (!animator) return false;
     const frame = animator.getFrame();
+    const sprite=frame.image==="assets/ch02_interceptor_atlas_v1.webp"?SPRITES.ch02:SPRITES.ch01;
+    if(!spriteReady(sprite))return false;
     const {x, y, width, height} = frame.rect;
     ctx.shadowBlur = 17;
     ctx.shadowColor = frame.damaged ? "#ff6079" : "#50e8ff";
-    ctx.drawImage(SPRITES.ch01, x, y, width, height,
+    ctx.drawImage(sprite, x, y, width, height,
       -frame.drawSize * frame.pivot.x, -frame.drawSize * frame.pivot.y,
       frame.drawSize, frame.drawSize);
     return true;
@@ -452,7 +454,8 @@
       ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
       ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
       ctx.shadowBlur = 12;
-      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42, Math.PI / 2)) {
+      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42,
+        item.tacticsVersion?Math.atan2(item.vy,item.vx):Math.PI/2)) {
         ctx.fillRect(-4, -12, 8, 24);
       }
       ctx.restore();
@@ -462,7 +465,10 @@
     if (telegraph > 0) {
       ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
       ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(0, 28); ctx.lineTo(0, 160); ctx.stroke();
+      const aim=item.classicScout?.lockedTarget;
+      const angle=aim?Math.atan2(aim.y-item.y,aim.x-item.x):Math.PI/2;
+      ctx.beginPath();ctx.moveTo(Math.cos(angle)*35,Math.sin(angle)*35);
+      ctx.lineTo(Math.cos(angle)*145,Math.sin(angle)*145);ctx.stroke();
     }
     if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
       ctx.restore();

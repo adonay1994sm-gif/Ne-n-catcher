@@ -537,8 +537,9 @@
         showStoryTransmission("ACCESO ATLAS", "Bloqueo desactivado. Corredor a Gaia abierto.", 3.4);
       }
       if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
+      const duration=animator.getFrame().image==="assets/ch02_interceptor_atlas_v1.webp"?.56:.49;
       explosions.push({x: target.x, y: target.y, ch01Animator: animator,
-        life: .49, duration: .49, scale: 1, rotation: 0});
+        life: duration, duration, scale: 1, rotation: 0});
     }
   }
 

@@ -238,11 +238,33 @@
     }
   }
 
+  function drawChronosRouteCrossing(transition) {
+    const cue = transition?.cue;
+    if (!cue) return;
+    const image = cue.kind === "chronos-remnant"
+      ? (cue.side > 0 ? SPRITES.debrisPanel : SPRITES.debrisMetal) : SPRITES.satellite;
+    if (!spriteReady(image)) return;
+    const frame = chronosSceneryFrame();
+    const size = Math.min(W * cue.scale, frame.height * .28);
+    ctx.save();
+    // A navigation marker passes at the side of the corridor, behind combat.
+    // Its growing scale and exit, rather than opacity, communicate the crossing.
+    // Clip its projection to the measured HUD/control corridor, not a hitbox.
+    ctx.beginPath(); ctx.rect(0, frame.top, W, frame.height); ctx.clip();
+    ctx.translate(W * cue.x, frame.top + cue.y * frame.height);
+    ctx.rotate(cue.rotation);
+    ctx.globalAlpha = cue.kind === "chronos-remnant" ? .58 : .74;
+    ctx.drawImage(image, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+
   function drawChronosFlightBackground() {
     const view = classicFlightView;
     if (!view) return;
     const clock = view.elapsed;
     const destruction = NeonCampaign.getChronosDestructionPose(view);
+    const transition = typeof NeonCampaign.getVoyageTransitionPresentation === "function"
+      ? NeonCampaign.getVoyageTransitionPresentation(view, {reducedEffects: Boolean(settings.reduceEffects)}) : null;
     const space = SPRITES.flightSpace;
     ctx.fillStyle = "#020817"; ctx.fillRect(0, 0, W, H);
     if (spriteReady(space)) {
@@ -256,8 +278,8 @@
       // The authored route becomes genuinely sparse between Chronos and Gaia;
       // the opaque origin and destination still travel independently below.
       ctx.save();
-      ctx.globalAlpha = Number.isFinite(view.deepSpace.nebulaOpacity)
-        ? clamp(view.deepSpace.nebulaOpacity, 0, 1) : 1;
+      ctx.globalAlpha = transition?.environment.nebulaOpacity ?? (Number.isFinite(view.deepSpace.nebulaOpacity)
+        ? clamp(view.deepSpace.nebulaOpacity, 0, 1) : 1);
       ctx.drawImage(space, (W - width) / 2 + offsetX, (H - height) / 2 + offsetY, width, height);
       ctx.restore();
     }
@@ -266,8 +288,8 @@
     // below are original illustrated sprites, not substitute geometry.
     ctx.save(); ctx.globalCompositeOperation = "screen";
     const starBudget = settings.effectsQuality === "low" ? 16 : 30;
-    const starDensity = Number.isFinite(view.deepSpace.starDensity)
-      ? clamp(view.deepSpace.starDensity, 0, 1) : 1;
+    const starDensity = transition?.environment.starDensity ?? (Number.isFinite(view.deepSpace.starDensity)
+      ? clamp(view.deepSpace.starDensity, 0, 1) : 1);
     const starCount = Math.round(starBudget * starDensity);
     // Travel gives every depth layer the same continuous direction even when a
     // new stage changes cruise speed. No wall clock or additional update loop.
@@ -279,7 +301,7 @@
       const radius = .55 + depth * .65;
       ctx.globalAlpha = .12 + depth * .18;
       ctx.fillStyle = index % 4 ? "#cce8ff" : "#cbbdff";
-      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed * .6));
+      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed * .6 + (transition?.starStretch || 0) * 2));
     }
     ctx.restore();
 
@@ -311,6 +333,7 @@
     }
 
     drawChronosServiceRelay(view);
+    drawChronosRouteCrossing(transition);
 
     if (view.beacon.visible && spriteReady(SPRITES.satellite)) {
       const size = Math.max(30, W * view.beacon.scale);
@@ -370,6 +393,62 @@
     ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
 
+  function drawGaiaOrbitBackground() {
+    const space = SPRITES.flightSpace;
+    // These independent illustrated layers are shared with the journey that
+    // just arrived here. The old perimeter painting below remains a fallback.
+    if (!spriteReady(space) || !spriteReady(SPRITES.flightKit)) return false;
+    const frame = chronosSceneryFrame();
+    const progress = clamp(collected / level().goal, 0, 1);
+    const travel = elapsed;
+    ctx.fillStyle = "#020817"; ctx.fillRect(0, 0, W, H);
+    const scale = Math.max(W / space.naturalWidth, H / space.naturalHeight) * 1.16;
+    const width = space.naturalWidth * scale, height = space.naturalHeight * scale;
+    const driftX = Math.sin(travel * .018) * Math.min(12, (width - W) * .35);
+    const driftY = Math.sin(travel * .012) * Math.min(20, (height - H) * .35);
+    ctx.save(); ctx.globalAlpha = .46;
+    ctx.drawImage(space, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+    ctx.restore();
+
+    ctx.save(); ctx.globalCompositeOperation = "screen";
+    const count = settings.effectsQuality === "low" ? 12 : 24;
+    for (let index = 0; index < count; index++) {
+      const depth = .25 + index % 4 * .18;
+      const x = ((index * 149.13 - travel * depth * 1.2) % W + W) % W;
+      const y = (index * 271.73 + travel * depth * 13) % H;
+      ctx.globalAlpha = .12 + depth * .18; ctx.fillStyle = "#d3edff";
+      ctx.fillRect(x, y, .6 + depth * .6, 1 + depth);
+    }
+    ctx.restore();
+
+    const planet = chronosDestinationPresentation({visible: true, x: .78 - progress * .04,
+      y: .065, scale: .90 + progress * .22, rotation: .06 + travel * .0003});
+    drawChronosFlightSprite(2, planet);
+
+    // Small, unarmed navigation relays orbit at a nearer depth. They are scenery,
+    // never registered as enemies or colliders, and remain behind all combat.
+    if (spriteReady(SPRITES.satellite)) {
+      ctx.save(); ctx.beginPath(); ctx.rect(0, frame.top, W, frame.height); ctx.clip();
+      for (let index = 0; index < 2; index++) {
+        const depth = (travel * .0045 + index * .53) % 1;
+        const size = W * (.055 + depth * .055);
+        const side = index ? 1 : -1;
+        const x = W * (.5 + side * (.39 + .035 * depth));
+        const y = frame.top + frame.height * (-.10 + 1.25 * depth);
+        ctx.save(); ctx.translate(x, y); ctx.rotate(side * (.18 + travel * .035));
+        ctx.globalAlpha = .64;
+        ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+    const readability = ctx.createLinearGradient(0, H * .40, 0, H);
+    readability.addColorStop(0, "rgba(2,6,15,0)");
+    readability.addColorStop(1, "rgba(2,6,15,.38)");
+    ctx.fillStyle = readability; ctx.fillRect(0, 0, W, H);
+    return true;
+  }
+
   function drawVulkarOrbitBackground() {
     const plate=SPRITES.vulkarOrbitBackground,planet=SPRITES.vulkarOrbitPlanet;
     ensureSprite(plate);ensureSprite(planet);
@@ -405,6 +484,7 @@
   function background(t) {
     if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
     if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
+    if(isUnifiedClassic() && currentLevel===1 && drawGaiaOrbitBackground()) {return;}
     if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);

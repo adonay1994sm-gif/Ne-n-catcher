@@ -1,4 +1,4 @@
-const CACHE = "neon-cronium-pre-release-7-2-0-voyage-polish-1";
+const CACHE = "neon-cronium-pre-release-7-2-0-pursuit-1";
 const CORE = [
   "assets/c9_station_v1.webp",
   "assets/player_ship_identity_v1.webp",
@@ -66,6 +66,7 @@ const CORE = [
   "assets/meteor_medium_alt.webp",
   "assets/meteor_large.webp",
   "assets/ch01_atlas_v1.webp",
+  "assets/ch02_interceptor_atlas_v1.webp",
   "assets/guardian_atlas_states_v1.webp",
   "assets/atlas_combat_vfx_v1.webp",
   "assets/debris_metal.webp",

@@ -254,16 +254,17 @@
     if(event.type==="checkpoint") {
       classicFlightView=classicFlight.snapshot();
       // Initial assets can finish loading after the player has already fired.
-      // Entry one must keep those real shots; later checkpoints clear leftovers
-      // from the previous encounter before the next stage begins.
-      if(classicFlightView.stageNumber>1){items=[];if(classicWeapons)classicWeapons.projectiles.length=0;}
+      // Route markers are not scene resets: already visible debris, enemies and
+      // real shots keep flying across the boundary. C9 clears its safe dock only.
       classicVoyageStageId=classicFlightView.stageId;
-      classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicPatrolTimer=8;classicCometSequence=0;
+      classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;
+      classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;
       saveClassicVoyageCheckpoint(event.checkpoint);
     }
     if(event.type==="stage-start") {
       classicFlightView=classicFlight.snapshot();
-      showStoryTransmission(`TRAYECTO ${classicFlightView.stageId}`,classicFlightView.stageObjective,4.5);
+      showStoryTransmission(`TRAYECTO ${classicFlightView.stageId}`,
+        `${classicFlightView.stageName} · ${classicFlightView.stageObjective}`,3.2);
       hud();
     }
     if(event.type==="service") { classicFlightView=classicFlight.snapshot();beginClassicVoyageService(); }
@@ -273,7 +274,7 @@
       // generic orange/pink combat explosion used to obscure its structure.
       levelOneShockwaveTriggered=true;
       shake=8;stormPulse=.18;tone(72,.5,"sawtooth",.05);
-      showStoryTransmission("N-7","¡Impacto! El CRONIUM se dispersa por las rutas. Recupera los fragmentos y sigue su señal.",6);
+      showStoryTransmission("N-7","¡Chronos ha sido alcanzado! Recupera el CRONIUM. Los atacantes siguen en la zona.",6);
     }
     if(event.type==="departure") { showStoryTransmission("N-7","Chronos queda atrás. La primera señal conduce a Gaia Nova.",4.6); classicPatrolTimer=.6; }
     if(event.type==="twin-module-marker" && !classicEquipment.recoveredTwin) {
@@ -326,13 +327,13 @@
       items.push({type:"energy",x,baseX:x,y:-45,r:22,s:175+n*4,rot:0,rs:.2,p:0,phase:n,amp:12,special:"",alpha:1});
       energySpawned++;classicVoyageSpawnTimer=2.8;
     }
-    // The empty interstellar legs deliberately leave room to look and pilot.
-    // Only the outer approach has regular patrols; none can fill the corridor.
-    if(n>=7) {
+    // Escape pressure after the actual rupture, with quiet space and C9 left
+    // intact. A two-enemy cap includes survivors from the preceding crossing.
+    if(![5,6].includes(n)) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
-        if(items.filter(item=>item.flightPatrol).length<(n===10?2:1))spawnClassicFlightPatrol();
-        classicPatrolTimer=23-n;
+        if(items.filter(item=>item.flightPatrol).length<(n>=9?2:1))spawnClassicFlightPatrol(n<7?"raider":"scout");
+        classicPatrolTimer=n<5?17:n>=9?14:18;
       }
     }
     if([2,4,8].includes(n)) {
@@ -356,17 +357,29 @@
     }
   }
 
-  function spawnClassicFlightPatrol() {
+  function spawnClassicFlightPatrol(role="scout") {
     const ordinal=classicPatrolSequence++;
-    const pattern=["linear","zigzag","chaser","shooter"][ordinal%4];
-    const left=ordinal%2===0, bounds=left?{min:60,max:180}:{min:540,max:660};
-    const spec={id:`chronos-flight-v1:${ordinal}`,type:pattern,x:(bounds.min+bounds.max)/2,bounds,
-      phase:ordinal*1.7,speedMultiplier:.78,telegraphSeconds:1.15,fireInterval:2.6,projectileMultiplier:.8};
-    const item=NeonCampaign.makeLegacyEntity({kind:"enemy",data:spec},{corridor:{left:260,right:460}});
-    const scout=createThreat("scout",level());
-    item.type="scout";item.flightPatrol=true;item.damage=16;item.s=138;
-    item.n7.ch01Animator=scout.classicScout.animator;
+    const stage=classicFlightView?.stageNumber||0;
+    const interceptor=role==="interceptor"&&spriteReady(SPRITES.ch02);
+    if(role==="interceptor"&&!interceptor)role="scout";
+    ensureSprite(SPRITES.ch01);
+    const item=createThreat("scout",level());
+    item.id=`${NeonCampaign.CLASSIC_PURSUIT_VERSION}:${currentLevel}:${stage}:${ordinal}`;
+    item.x=item.baseX=W*(ordinal%2===0?.25:.75);item.y=-65;item.rot=0;item.rs=0;
+    item.flightPatrol=true;item.damage=16;item.s=role==="raider"?150:138;
+    item.r=interceptor?35:32;item.hp=item.maxHp=interceptor?3:2;
+    item.classicScout=NeonCampaign.createClassicPursuer({x:item.x,width:W,height:H,role,
+      seed:stage*17+ordinal,minAttackY:(classicFlightBounds?.presentationTop||95)+45,baseSpeed:item.s});
+    if(interceptor)item.classicScout.animator=NeonCampaign.createCh02Animator({hp:3,maxHp:3});
     items.push(item);
+    if(!classicPursuitAnnounced.has(role)) {
+      classicPursuitAnnounced.add(role);
+      showStoryTransmission(role==="raider"?"N-7":"RED ATLAS",role==="raider"
+        ?"Nos persiguen entre los restos. Su arma fija tu posición: cambia de rumbo cuando cargue."
+        :role==="interceptor"?"CH-02 en intercepción. Sus motores le permiten cerrar el flanco."
+        :"CH-01 ha detectado el CRONIUM. Mantén espacio para esquivar su disparo.",4.2);
+    }
+    return item;
   }
 
   function fireClassicWeapon() {
@@ -403,7 +416,10 @@
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);addImpactEffect(item.x,item.y,.8);
       score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);tone(destroyed?920:620,.05,"triangle",.04);
-      if(destroyed){addExplosion(item.x,item.y,.7,.5);return true;}
+      if(destroyed){
+        if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
+        return true;
+      }
     }
     return false;
   }
@@ -1091,7 +1107,7 @@
     classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
-    classicPatrolTimer=0;classicPatrolSequence=0;classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    classicPatrolTimer=0;classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
@@ -1099,6 +1115,7 @@
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
+        ensureSprite(SPRITES.ch01);
         ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);ensureSprite(SPRITES.c9Station);
       }
     }
@@ -1109,7 +1126,11 @@
     ui.goal.previousElementSibling.textContent = "NÚCLEOS";
     document.body.classList.remove("atlas-combat");
     ui.atlasEncounter?.classList.add("hidden");
-    if (isAtlasMission()) { ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); }
+    if (isAtlasMission()) {
+      ensureSprite(SPRITES.guardianAtlas);ensureSprite(SPRITES.atlasVfx);
+      ensureSprite(SPRITES.ch01);ensureSprite(SPRITES.ch02);
+      ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);ensureSprite(SPRITES.satellite);
+    }
     encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
     encounterWave = 0;
     setState("playing");
@@ -1320,6 +1341,14 @@
         ? `${N7_CAMPAIGN ? "Ruta" : "Sector"} ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
+    ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
+      ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE SECTOR →";
+    if(isUnifiedClassic()&&currentLevel===0) {
+      if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
+      ui.completeLabel.textContent="TRAYECTO CHRONOS → GAIA COMPLETADO";
+      ui.completeTitle.textContent="Gaia Nova al frente";
+      ui.unlockMessage.textContent="El rastro atraviesa el perímetro Atlas. La defensa orbital no reconoce nuestra identificación.";
+    }
     overlay(ui.complete);
     tone(760, 0.12, "triangle", 0.08);
     setTimeout(() => tone(980, 0.18, "sine", 0.07), 120);

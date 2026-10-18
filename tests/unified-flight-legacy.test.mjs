@@ -131,6 +131,8 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
         items=[{id:'fixture-target',type:'meteor',x:player.x,baseX:player.x,y:player.y-350,
           r:28,s:0,rot:0,rs:0,p:0,phase:0,amp:0,alpha:1,special:'',spriteKey:'meteorMedium',hp:2,maxHp:2,damage:20}];
       },
+      seedTransitFixture(){items=[{id:'boundary-live-debris',type:'debris',x:W*.2,baseX:W*.2,y:H*.35,
+        r:26,s:0,rot:0,rs:0,p:0,phase:0,amp:0,alpha:1,special:'',spriteKey:'debrisMetal',hp:2,maxHp:2,damage:16}];},
       snapshot:()=>({state,elapsed,score,hull,ammo,collected,currentLevel,W,H,unlocked:getUnlocked(),
         player:{...player},bounds:classicFlightBounds?{...classicFlightBounds}:null,input:{...classicFlightInput},
         weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
@@ -139,7 +141,10 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
         destructionAsset:{ready:spriteReady(SPRITES.chronosDestruction),failed:SPRITES.chronosDestruction._loadError},
         explosionCalls:explosionCallsForTest.map(args=>[...args]),
         equipmentWritable:classicEquipmentWritable,events:flightEventsForTest.map(event=>({...event})),
-        targets:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,hp:item.hp})),
+        targets:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,hp:item.hp,
+          role:item.classicScout?.role,tactics:item.classicScout?.tacticsVersion,enemyState:item.classicScout?.state,
+          telegraph:item.classicScout?.telegraph,fired:item.classicScout?.fired,projectile:Boolean(item.classicScoutProjectile),
+          vx:item.vx,vy:item.vy,frame:item.classicScout?.animator.getFrame()})),
         projectiles:items.filter(item=>item.guardianProjectile).map(item=>({id:item.projectileId,
           x:item.x,y:item.y,vx:item.vx,vy:item.vy,targetX:item.targetX,targetY:item.targetY})),
         boss:atlasBoss?JSON.parse(JSON.stringify(atlasBoss)):null})
@@ -948,4 +953,53 @@ test('a malformed new voyage is backed up without inferring stages from old clas
   assert.equal(h.stored('neon-n7-unlocked-v1'), '37');
   assert.equal(h.stored('neon-n7-best-v1'), '2037');
   assert.equal(h.pending.size, 1);
+});
+
+test('stage crossings retain live debris and genuine projectiles instead of resetting the scene', t => {
+  const h=harness(t,{unlocked:1});h.api.prepare();h.recoverStageQuota();
+  h.advance(35.98);h.api.seedTransitFixture();h.api.fireManualShot();
+  const before=h.snapshot();assert.equal(before.route.stageNumber,1);
+  assert.ok(before.weapons.projectiles.length>0);
+  h.api.update(.034);const after=h.snapshot();
+  assert.equal(after.route.stageNumber,2);
+  assert.ok(after.targets.some(item=>item.id==='boundary-live-debris'));
+  assert.ok(after.weapons.projectiles.length>0);
+  assert.ok(after.weapons.projectiles[0].y<before.weapons.projectiles[0].y);
+  assert.equal(h.voyage().checkpoint.stageNumber,2);assert.equal(h.pending.size,1);
+});
+
+test('actual Chronos runtime introduces an announced pursuer after rupture without N-7 metadata', t => {
+  const h=harness(t,{unlocked:1});h.api.startLevel(0);
+  for(let n=0;n<Math.ceil(12/.034);n++)h.api.update(.034);
+  assert.equal(h.snapshot().targets.some(item=>item.tactics),false);
+  for(let n=0;n<Math.ceil(9/.034);n++)h.api.update(.034);
+  const q=h.snapshot(),raiders=q.targets.filter(item=>item.tactics==='classic-pursuit-v1');
+  assert.ok(raiders.length>=1&&raiders.length<=1);
+  assert.equal(raiders[0].role,'raider');
+  assert.ok(q.events.some(event=>event.type==='rupture'));
+  assert.ok(q.targets.some(item=>item.projectile)||raiders[0].fired>0,'Pursuit must emit an actual signalled shot');
+  h.api.pauseGame();const paused=h.snapshot();h.advance(2,false);
+  assert.deepEqual(h.snapshot().targets,paused.targets);assert.deepEqual(h.snapshot().route,paused.route);
+  assert.equal(h.pending.size,1);
+});
+
+test('Gaia introduces a genuine CH-02 animator in a natural patrol sequence after CH-01',t=>{
+  const h=harness(t,{unlocked:2});h.api.startLevel(1);
+  for(let n=0;n<Math.ceil(17/.034);n++)h.api.update(.034);
+  const q=h.snapshot(),interceptors=q.targets.filter(item=>item.role==='interceptor');
+  assert.ok(interceptors.length>=1);
+  assert.equal(interceptors[0].hp,3);
+  assert.equal(interceptors[0].frame.image,'assets/ch02_interceptor_atlas_v1.webp');
+  assert.equal(q.currentLevel,1);assert.equal(q.route,null);assert.equal(h.pending.size,1);
+});
+
+test('Chronos arrival enters Gaia through the actual next control without a duplicate briefing',t=>{
+  const h=harness(t,{unlocked:1});h.api.prepare();
+  for(let n=1;n<=10;n++)h.advanceStage({service:true});
+  assert.equal(h.snapshot().state,'complete');assert.equal(h.snapshot().unlocked,2);
+  assert.match(h.node('nextLevel').textContent,/GAIA NOVA/);
+  h.node('nextLevel').click();
+  const q=h.snapshot();assert.equal(q.state,'playing');assert.equal(q.currentLevel,1);
+  assert.equal(h.node('briefing').classList.contains('show'),false);
+  assert.equal(h.voyage().completed,true);assert.equal(h.pending.size,1);
 });

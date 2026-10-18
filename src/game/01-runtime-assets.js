@@ -105,6 +105,7 @@
   let classicShieldImpact = 0;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
+  let classicPursuitAnnounced = new Set();
   let classicCometSequence = 0;
   let classicCometWarning = -1;
   let classicVoyageRecord = null;
@@ -227,6 +228,7 @@
     meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
     meteorLarge: loadSprite("assets/meteor_large.webp"),
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
+    ch02: loadSprite("assets/ch02_interceptor_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
     shipIdentity: loadSprite("assets/player_ship_identity_v1.webp", true),

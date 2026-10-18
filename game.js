@@ -116,8 +116,8 @@
       accent: "#4da2ff", top: "#14245c", mid: "#0a1035", hazard: "fast", scene: "rift",
       world: "GAIA NOVA", enemyCue: "Red defensiva CH",
       zone: "Anillo defensivo de Gaia Nova", desc: "La red Atlas despierta",
-      mission: "Recupera energía mientras evitas las patrullas CH y confirma quién reprogramó las defensas orbitales.",
-      threatLabel: "Drones CH-01 y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
+      mission: "El CRONIUM de Chronos ha llegado a Gaia. Recupera el rastro orbital, rompe la fijación de CH-01 y los flanqueos de CH-02 y alcanza al guardián Atlas.",
+      threatLabel: "CH-01, interceptores CH-02 y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
     },
     {
       name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
@@ -309,6 +309,7 @@
   let classicShieldImpact = 0;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
+  let classicPursuitAnnounced = new Set();
   let classicCometSequence = 0;
   let classicCometWarning = -1;
   let classicVoyageRecord = null;
@@ -431,6 +432,7 @@
     meteorMediumAlt: loadSprite("assets/meteor_medium_alt.webp"),
     meteorLarge: loadSprite("assets/meteor_large.webp"),
     ch01: loadSprite("assets/ch01_atlas_v1.webp", false),
+    ch02: loadSprite("assets/ch02_interceptor_atlas_v1.webp", false),
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
     shipIdentity: loadSprite("assets/player_ship_identity_v1.webp", true),
@@ -1083,16 +1085,17 @@
     if(event.type==="checkpoint") {
       classicFlightView=classicFlight.snapshot();
       // Initial assets can finish loading after the player has already fired.
-      // Entry one must keep those real shots; later checkpoints clear leftovers
-      // from the previous encounter before the next stage begins.
-      if(classicFlightView.stageNumber>1){items=[];if(classicWeapons)classicWeapons.projectiles.length=0;}
+      // Route markers are not scene resets: already visible debris, enemies and
+      // real shots keep flying across the boundary. C9 clears its safe dock only.
       classicVoyageStageId=classicFlightView.stageId;
-      classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicPatrolTimer=8;classicCometSequence=0;
+      classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;
+      classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;
       saveClassicVoyageCheckpoint(event.checkpoint);
     }
     if(event.type==="stage-start") {
       classicFlightView=classicFlight.snapshot();
-      showStoryTransmission(`TRAYECTO ${classicFlightView.stageId}`,classicFlightView.stageObjective,4.5);
+      showStoryTransmission(`TRAYECTO ${classicFlightView.stageId}`,
+        `${classicFlightView.stageName} · ${classicFlightView.stageObjective}`,3.2);
       hud();
     }
     if(event.type==="service") { classicFlightView=classicFlight.snapshot();beginClassicVoyageService(); }
@@ -1102,7 +1105,7 @@
       // generic orange/pink combat explosion used to obscure its structure.
       levelOneShockwaveTriggered=true;
       shake=8;stormPulse=.18;tone(72,.5,"sawtooth",.05);
-      showStoryTransmission("N-7","¡Impacto! El CRONIUM se dispersa por las rutas. Recupera los fragmentos y sigue su señal.",6);
+      showStoryTransmission("N-7","¡Chronos ha sido alcanzado! Recupera el CRONIUM. Los atacantes siguen en la zona.",6);
     }
     if(event.type==="departure") { showStoryTransmission("N-7","Chronos queda atrás. La primera señal conduce a Gaia Nova.",4.6); classicPatrolTimer=.6; }
     if(event.type==="twin-module-marker" && !classicEquipment.recoveredTwin) {
@@ -1155,13 +1158,13 @@
       items.push({type:"energy",x,baseX:x,y:-45,r:22,s:175+n*4,rot:0,rs:.2,p:0,phase:n,amp:12,special:"",alpha:1});
       energySpawned++;classicVoyageSpawnTimer=2.8;
     }
-    // The empty interstellar legs deliberately leave room to look and pilot.
-    // Only the outer approach has regular patrols; none can fill the corridor.
-    if(n>=7) {
+    // Escape pressure after the actual rupture, with quiet space and C9 left
+    // intact. A two-enemy cap includes survivors from the preceding crossing.
+    if(![5,6].includes(n)) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
-        if(items.filter(item=>item.flightPatrol).length<(n===10?2:1))spawnClassicFlightPatrol();
-        classicPatrolTimer=23-n;
+        if(items.filter(item=>item.flightPatrol).length<(n>=9?2:1))spawnClassicFlightPatrol(n<7?"raider":"scout");
+        classicPatrolTimer=n<5?17:n>=9?14:18;
       }
     }
     if([2,4,8].includes(n)) {
@@ -1185,17 +1188,29 @@
     }
   }
 
-  function spawnClassicFlightPatrol() {
+  function spawnClassicFlightPatrol(role="scout") {
     const ordinal=classicPatrolSequence++;
-    const pattern=["linear","zigzag","chaser","shooter"][ordinal%4];
-    const left=ordinal%2===0, bounds=left?{min:60,max:180}:{min:540,max:660};
-    const spec={id:`chronos-flight-v1:${ordinal}`,type:pattern,x:(bounds.min+bounds.max)/2,bounds,
-      phase:ordinal*1.7,speedMultiplier:.78,telegraphSeconds:1.15,fireInterval:2.6,projectileMultiplier:.8};
-    const item=NeonCampaign.makeLegacyEntity({kind:"enemy",data:spec},{corridor:{left:260,right:460}});
-    const scout=createThreat("scout",level());
-    item.type="scout";item.flightPatrol=true;item.damage=16;item.s=138;
-    item.n7.ch01Animator=scout.classicScout.animator;
+    const stage=classicFlightView?.stageNumber||0;
+    const interceptor=role==="interceptor"&&spriteReady(SPRITES.ch02);
+    if(role==="interceptor"&&!interceptor)role="scout";
+    ensureSprite(SPRITES.ch01);
+    const item=createThreat("scout",level());
+    item.id=`${NeonCampaign.CLASSIC_PURSUIT_VERSION}:${currentLevel}:${stage}:${ordinal}`;
+    item.x=item.baseX=W*(ordinal%2===0?.25:.75);item.y=-65;item.rot=0;item.rs=0;
+    item.flightPatrol=true;item.damage=16;item.s=role==="raider"?150:138;
+    item.r=interceptor?35:32;item.hp=item.maxHp=interceptor?3:2;
+    item.classicScout=NeonCampaign.createClassicPursuer({x:item.x,width:W,height:H,role,
+      seed:stage*17+ordinal,minAttackY:(classicFlightBounds?.presentationTop||95)+45,baseSpeed:item.s});
+    if(interceptor)item.classicScout.animator=NeonCampaign.createCh02Animator({hp:3,maxHp:3});
     items.push(item);
+    if(!classicPursuitAnnounced.has(role)) {
+      classicPursuitAnnounced.add(role);
+      showStoryTransmission(role==="raider"?"N-7":"RED ATLAS",role==="raider"
+        ?"Nos persiguen entre los restos. Su arma fija tu posición: cambia de rumbo cuando cargue."
+        :role==="interceptor"?"CH-02 en intercepción. Sus motores le permiten cerrar el flanco."
+        :"CH-01 ha detectado el CRONIUM. Mantén espacio para esquivar su disparo.",4.2);
+    }
+    return item;
   }
 
   function fireClassicWeapon() {
@@ -1232,7 +1247,10 @@
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);addImpactEffect(item.x,item.y,.8);
       score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);tone(destroyed?920:620,.05,"triangle",.04);
-      if(destroyed){addExplosion(item.x,item.y,.7,.5);return true;}
+      if(destroyed){
+        if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
+        return true;
+      }
     }
     return false;
   }
@@ -1920,7 +1938,7 @@
     classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
-    classicPatrolTimer=0;classicPatrolSequence=0;classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    classicPatrolTimer=0;classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
@@ -1928,6 +1946,7 @@
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
+        ensureSprite(SPRITES.ch01);
         ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);ensureSprite(SPRITES.c9Station);
       }
     }
@@ -1938,7 +1957,11 @@
     ui.goal.previousElementSibling.textContent = "NÚCLEOS";
     document.body.classList.remove("atlas-combat");
     ui.atlasEncounter?.classList.add("hidden");
-    if (isAtlasMission()) { ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); }
+    if (isAtlasMission()) {
+      ensureSprite(SPRITES.guardianAtlas);ensureSprite(SPRITES.atlasVfx);
+      ensureSprite(SPRITES.ch01);ensureSprite(SPRITES.ch02);
+      ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);ensureSprite(SPRITES.satellite);
+    }
     encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
     encounterWave = 0;
     setState("playing");
@@ -2149,6 +2172,14 @@
         ? `${N7_CAMPAIGN ? "Ruta" : "Sector"} ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
+    ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
+      ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE SECTOR →";
+    if(isUnifiedClassic()&&currentLevel===0) {
+      if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
+      ui.completeLabel.textContent="TRAYECTO CHRONOS → GAIA COMPLETADO";
+      ui.completeTitle.textContent="Gaia Nova al frente";
+      ui.unlockMessage.textContent="El rastro atraviesa el perímetro Atlas. La defensa orbital no reconoce nuestra identificación.";
+    }
     overlay(ui.complete);
     tone(760, 0.12, "triangle", 0.08);
     setTimeout(() => tone(980, 0.18, "sine", 0.07), 120);
@@ -2792,8 +2823,9 @@
         showStoryTransmission("ACCESO ATLAS", "Bloqueo desactivado. Corredor a Gaia abierto.", 3.4);
       }
       if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
+      const duration=animator.getFrame().image==="assets/ch02_interceptor_atlas_v1.webp"?.56:.49;
       explosions.push({x: target.x, y: target.y, ch01Animator: animator,
-        life: .49, duration: .49, scale: 1, rotation: 0});
+        life: duration, duration, scale: 1, rotation: 0});
     }
   }
 
@@ -3200,7 +3232,7 @@
         classicScoutTimer -= dt;
         if (classicScoutTimer <= 0) {
           if (items.filter(item => item.classicScout).length < 2) {
-            items.push(createThreat("scout", lv));
+            spawnClassicFlightPatrol(classicPatrolSequence%3===1?"interceptor":"scout");
             if (!classicScoutAnnounced) {
               classicScoutAnnounced = true;
               showStoryTransmission("RED ATLAS", "Identificación denegada. Dron CH-01 armado.", 3.2);
@@ -3253,7 +3285,10 @@
       // Recovering the final fragment can replace the field with the Atlas
       // arena synchronously. The old loop indexes must not read that old field.
       if (!item) continue;
-      if(item.flightComet) {
+      if(item.classicScoutProjectile && item.tacticsVersion===NeonCampaign.CLASSIC_PURSUIT_VERSION) {
+        item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
+        if(item.life<=0||item.x< -60||item.x>W+60){items.splice(index,1);continue;}
+      } else if(item.flightComet) {
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
       } else if (item.guardianProjectile) {
@@ -3265,10 +3300,13 @@
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
-      if(item.flightPatrol && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
+      if(item.flightPatrol && item.n7 && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
-      if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
+      if (item.classicScout) {
+        const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
+        advance(item,dt*scale,player,shot=>items.push(shot));
+      }
       if (item.journeyEntry && item.classicScout.age < .9) {
         const entry = item.classicScout.age / .9;
         item.x = -80 + (item.journeyEntry.targetX + 80) * entry;
@@ -3574,11 +3612,33 @@
     }
   }
 
+  function drawChronosRouteCrossing(transition) {
+    const cue = transition?.cue;
+    if (!cue) return;
+    const image = cue.kind === "chronos-remnant"
+      ? (cue.side > 0 ? SPRITES.debrisPanel : SPRITES.debrisMetal) : SPRITES.satellite;
+    if (!spriteReady(image)) return;
+    const frame = chronosSceneryFrame();
+    const size = Math.min(W * cue.scale, frame.height * .28);
+    ctx.save();
+    // A navigation marker passes at the side of the corridor, behind combat.
+    // Its growing scale and exit, rather than opacity, communicate the crossing.
+    // Clip its projection to the measured HUD/control corridor, not a hitbox.
+    ctx.beginPath(); ctx.rect(0, frame.top, W, frame.height); ctx.clip();
+    ctx.translate(W * cue.x, frame.top + cue.y * frame.height);
+    ctx.rotate(cue.rotation);
+    ctx.globalAlpha = cue.kind === "chronos-remnant" ? .58 : .74;
+    ctx.drawImage(image, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+
   function drawChronosFlightBackground() {
     const view = classicFlightView;
     if (!view) return;
     const clock = view.elapsed;
     const destruction = NeonCampaign.getChronosDestructionPose(view);
+    const transition = typeof NeonCampaign.getVoyageTransitionPresentation === "function"
+      ? NeonCampaign.getVoyageTransitionPresentation(view, {reducedEffects: Boolean(settings.reduceEffects)}) : null;
     const space = SPRITES.flightSpace;
     ctx.fillStyle = "#020817"; ctx.fillRect(0, 0, W, H);
     if (spriteReady(space)) {
@@ -3592,8 +3652,8 @@
       // The authored route becomes genuinely sparse between Chronos and Gaia;
       // the opaque origin and destination still travel independently below.
       ctx.save();
-      ctx.globalAlpha = Number.isFinite(view.deepSpace.nebulaOpacity)
-        ? clamp(view.deepSpace.nebulaOpacity, 0, 1) : 1;
+      ctx.globalAlpha = transition?.environment.nebulaOpacity ?? (Number.isFinite(view.deepSpace.nebulaOpacity)
+        ? clamp(view.deepSpace.nebulaOpacity, 0, 1) : 1);
       ctx.drawImage(space, (W - width) / 2 + offsetX, (H - height) / 2 + offsetY, width, height);
       ctx.restore();
     }
@@ -3602,8 +3662,8 @@
     // below are original illustrated sprites, not substitute geometry.
     ctx.save(); ctx.globalCompositeOperation = "screen";
     const starBudget = settings.effectsQuality === "low" ? 16 : 30;
-    const starDensity = Number.isFinite(view.deepSpace.starDensity)
-      ? clamp(view.deepSpace.starDensity, 0, 1) : 1;
+    const starDensity = transition?.environment.starDensity ?? (Number.isFinite(view.deepSpace.starDensity)
+      ? clamp(view.deepSpace.starDensity, 0, 1) : 1);
     const starCount = Math.round(starBudget * starDensity);
     // Travel gives every depth layer the same continuous direction even when a
     // new stage changes cruise speed. No wall clock or additional update loop.
@@ -3615,7 +3675,7 @@
       const radius = .55 + depth * .65;
       ctx.globalAlpha = .12 + depth * .18;
       ctx.fillStyle = index % 4 ? "#cce8ff" : "#cbbdff";
-      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed * .6));
+      ctx.fillRect(x, y, radius, radius * (1 + view.deepSpace.speed * .6 + (transition?.starStretch || 0) * 2));
     }
     ctx.restore();
 
@@ -3647,6 +3707,7 @@
     }
 
     drawChronosServiceRelay(view);
+    drawChronosRouteCrossing(transition);
 
     if (view.beacon.visible && spriteReady(SPRITES.satellite)) {
       const size = Math.max(30, W * view.beacon.scale);
@@ -3706,6 +3767,62 @@
     ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
 
+  function drawGaiaOrbitBackground() {
+    const space = SPRITES.flightSpace;
+    // These independent illustrated layers are shared with the journey that
+    // just arrived here. The old perimeter painting below remains a fallback.
+    if (!spriteReady(space) || !spriteReady(SPRITES.flightKit)) return false;
+    const frame = chronosSceneryFrame();
+    const progress = clamp(collected / level().goal, 0, 1);
+    const travel = elapsed;
+    ctx.fillStyle = "#020817"; ctx.fillRect(0, 0, W, H);
+    const scale = Math.max(W / space.naturalWidth, H / space.naturalHeight) * 1.16;
+    const width = space.naturalWidth * scale, height = space.naturalHeight * scale;
+    const driftX = Math.sin(travel * .018) * Math.min(12, (width - W) * .35);
+    const driftY = Math.sin(travel * .012) * Math.min(20, (height - H) * .35);
+    ctx.save(); ctx.globalAlpha = .46;
+    ctx.drawImage(space, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
+    ctx.restore();
+
+    ctx.save(); ctx.globalCompositeOperation = "screen";
+    const count = settings.effectsQuality === "low" ? 12 : 24;
+    for (let index = 0; index < count; index++) {
+      const depth = .25 + index % 4 * .18;
+      const x = ((index * 149.13 - travel * depth * 1.2) % W + W) % W;
+      const y = (index * 271.73 + travel * depth * 13) % H;
+      ctx.globalAlpha = .12 + depth * .18; ctx.fillStyle = "#d3edff";
+      ctx.fillRect(x, y, .6 + depth * .6, 1 + depth);
+    }
+    ctx.restore();
+
+    const planet = chronosDestinationPresentation({visible: true, x: .78 - progress * .04,
+      y: .065, scale: .90 + progress * .22, rotation: .06 + travel * .0003});
+    drawChronosFlightSprite(2, planet);
+
+    // Small, unarmed navigation relays orbit at a nearer depth. They are scenery,
+    // never registered as enemies or colliders, and remain behind all combat.
+    if (spriteReady(SPRITES.satellite)) {
+      ctx.save(); ctx.beginPath(); ctx.rect(0, frame.top, W, frame.height); ctx.clip();
+      for (let index = 0; index < 2; index++) {
+        const depth = (travel * .0045 + index * .53) % 1;
+        const size = W * (.055 + depth * .055);
+        const side = index ? 1 : -1;
+        const x = W * (.5 + side * (.39 + .035 * depth));
+        const y = frame.top + frame.height * (-.10 + 1.25 * depth);
+        ctx.save(); ctx.translate(x, y); ctx.rotate(side * (.18 + travel * .035));
+        ctx.globalAlpha = .64;
+        ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+    const readability = ctx.createLinearGradient(0, H * .40, 0, H);
+    readability.addColorStop(0, "rgba(2,6,15,0)");
+    readability.addColorStop(1, "rgba(2,6,15,.38)");
+    ctx.fillStyle = readability; ctx.fillRect(0, 0, W, H);
+    return true;
+  }
+
   function drawVulkarOrbitBackground() {
     const plate=SPRITES.vulkarOrbitBackground,planet=SPRITES.vulkarOrbitPlanet;
     ensureSprite(plate);ensureSprite(planet);
@@ -3741,6 +3858,7 @@
   function background(t) {
     if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
     if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
+    if(isUnifiedClassic() && currentLevel===1 && drawGaiaOrbitBackground()) {return;}
     if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
@@ -4636,12 +4754,14 @@
   }
 
   function drawCh01Frame(animator) {
-    if (!animator || !spriteReady(SPRITES.ch01)) return false;
+    if (!animator) return false;
     const frame = animator.getFrame();
+    const sprite=frame.image==="assets/ch02_interceptor_atlas_v1.webp"?SPRITES.ch02:SPRITES.ch01;
+    if(!spriteReady(sprite))return false;
     const {x, y, width, height} = frame.rect;
     ctx.shadowBlur = 17;
     ctx.shadowColor = frame.damaged ? "#ff6079" : "#50e8ff";
-    ctx.drawImage(SPRITES.ch01, x, y, width, height,
+    ctx.drawImage(sprite, x, y, width, height,
       -frame.drawSize * frame.pivot.x, -frame.drawSize * frame.pivot.y,
       frame.drawSize, frame.drawSize);
     return true;
@@ -4657,7 +4777,8 @@
       ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
       ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
       ctx.shadowBlur = 12;
-      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42, Math.PI / 2)) {
+      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42,
+        item.tacticsVersion?Math.atan2(item.vy,item.vx):Math.PI/2)) {
         ctx.fillRect(-4, -12, 8, 24);
       }
       ctx.restore();
@@ -4667,7 +4788,10 @@
     if (telegraph > 0) {
       ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
       ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(0, 28); ctx.lineTo(0, 160); ctx.stroke();
+      const aim=item.classicScout?.lockedTarget;
+      const angle=aim?Math.atan2(aim.y-item.y,aim.x-item.x):Math.PI/2;
+      ctx.beginPath();ctx.moveTo(Math.cos(angle)*35,Math.sin(angle)*35);
+      ctx.lineTo(Math.cos(angle)*145,Math.sin(angle)*145);ctx.stroke();
     }
     if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
       ctx.restore();
@@ -5343,6 +5467,11 @@
   $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
+    if(isUnifiedClassic()&&currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
+      startLevel(1);
+      showStoryTransmission("BALIZA GAIA","Estás en el perímetro Atlas. Recupera el rastro y evita que sus patrullas te encierren.",4.8);
+      return;
+    }
     prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
   };
 

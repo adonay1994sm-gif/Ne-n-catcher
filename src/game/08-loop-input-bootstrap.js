@@ -324,6 +324,11 @@
   $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
+    if(isUnifiedClassic()&&currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
+      startLevel(1);
+      showStoryTransmission("BALIZA GAIA","Estás en el perímetro Atlas. Recupera el rastro y evita que sus patrullas te encierren.",4.8);
+      return;
+    }
     prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
   };
 

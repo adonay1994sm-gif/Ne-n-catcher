@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 83,
-  "runtimeBytes": 8272028,
+  "assetCount": 84,
+  "runtimeBytes": 8524914,
   "audit": {
-    "reviewed": 83,
+    "reviewed": 84,
     "READY": 58,
-    "IN_REVIEW": 25,
+    "IN_REVIEW": 26,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -791,6 +791,27 @@
       "origin": "OpenAI image_gen tool; original generated image for this project",
       "version": "c9-station-v1",
       "evidence": "docs/production-reports/evidence/voyage-polish/focused/contrast-final-02/results.json"
+    },
+    {
+      "id": "ch02-interceptor-v1",
+      "path": "assets/ch02_interceptor_atlas_v1.webp",
+      "dimensions": "1024x1024",
+      "format": "webp-alpha",
+      "size": 252886,
+      "sha256": "0b1b84b7a14edbc315136339f6f423989d685c7ea4c6122a7a7b88939be78729",
+      "decodedRGBABytes": 4194304,
+      "pivot": "0.5,0.5 per 256x256 cell",
+      "level": "2",
+      "use": "Gaia CH-02 interceptor; 16 genuine navigation, attack, impact and destruction poses",
+      "animation": "4x4 atlas; fire event at160ms, destruction540ms; sources in art-source/enemies/ch02/ch02-atlas-v1.json",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "ASSET_ANIMATOR_AND_ALPHA_CANVAS_VERIFIED; INTEGRATED_QA_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original OpenAI image_gen production; preserved masters and provenance",
+      "version": "ch02-art-v1"
     }
   ],
   "project": "NEON CRONIUM"

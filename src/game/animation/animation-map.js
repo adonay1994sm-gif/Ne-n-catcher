@@ -1,3 +1,4 @@
+import ch02 from '../../../art-source/enemies/ch02/ch02-atlas-v1.json' with {type:'json'};
 /** Asset-backed sequences. Missing enemy poses remain explicitly unproduced. */
 const sequence = (prefix, indices) => indices.map(index =>
   `assets/${prefix}_frame_${String(index).padStart(2, '0')}.webp`);
@@ -34,6 +35,11 @@ const forceShieldAtlas = (cells, options = {}) => define(['assets/force_shield_a
 });
 
 export const ANIMATION_MAP = Object.freeze({
+  ch02Interceptor: Object.freeze(Object.fromEntries(Object.entries(ch02.animations).map(([name,animation])=>
+    [name,define([ch02.proposedRuntimeImage],{frameMs:animation.durationMs[0],loop:animation.loop,
+      atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,
+      atlasCells:Object.freeze([...animation.frames]),durationMs:Object.freeze([...animation.durationMs]),
+      pivot:Object.freeze({...ch02.pivot}),integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'})]))),
   cometFlight: Object.freeze({
     travel: define(['assets/comet_flight_atlas_v2.webp'], {
       frameMs:125,loop:true,atlasColumns:4,atlasRows:1,

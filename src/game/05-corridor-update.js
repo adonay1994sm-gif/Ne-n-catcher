@@ -288,7 +288,7 @@
         classicScoutTimer -= dt;
         if (classicScoutTimer <= 0) {
           if (items.filter(item => item.classicScout).length < 2) {
-            items.push(createThreat("scout", lv));
+            spawnClassicFlightPatrol(classicPatrolSequence%3===1?"interceptor":"scout");
             if (!classicScoutAnnounced) {
               classicScoutAnnounced = true;
               showStoryTransmission("RED ATLAS", "Identificación denegada. Dron CH-01 armado.", 3.2);
@@ -341,7 +341,10 @@
       // Recovering the final fragment can replace the field with the Atlas
       // arena synchronously. The old loop indexes must not read that old field.
       if (!item) continue;
-      if(item.flightComet) {
+      if(item.classicScoutProjectile && item.tacticsVersion===NeonCampaign.CLASSIC_PURSUIT_VERSION) {
+        item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
+        if(item.life<=0||item.x< -60||item.x>W+60){items.splice(index,1);continue;}
+      } else if(item.flightComet) {
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
       } else if (item.guardianProjectile) {
@@ -353,10 +356,13 @@
       item.rot += item.rs * dt;
       item.p += dt * 4;
       if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
-      if(item.flightPatrol && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
+      if(item.flightPatrol && item.n7 && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
-      if (item.classicScout) NeonCampaign.advanceClassicScout(item, dt * scale, player, (shot) => items.push(shot));
+      if (item.classicScout) {
+        const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
+        advance(item,dt*scale,player,shot=>items.push(shot));
+      }
       if (item.journeyEntry && item.classicScout.age < .9) {
         const entry = item.classicScout.age / .9;
         item.x = -80 + (item.journeyEntry.targetX + 80) * entry;

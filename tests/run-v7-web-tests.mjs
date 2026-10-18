@@ -58,6 +58,7 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
     "privacy.html", "terms.html", "analytics-manager.js", "assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/core_frame_00.webp",
     "assets/cronium_fragment_v1.webp", "assets/cronos_level1_background.webp",
     "assets/chronos_shockwave_atlas_v1.webp", "assets/atlas_perimeter_background_v1.webp",
+    "assets/ch02_interceptor_atlas_v1.webp",
     "assets/vulkar_descent_background_v1.webp", "assets/vulkar_magma_tunnel_background_v1.webp",
     "assets/cryon_whiteout_background_v1.webp", "assets/cryon_leviathan_rift_background_v1.webp",
     "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp",
@@ -65,7 +66,7 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
   ]) assert.ok(paths.has(path), path);
   // The live ship and its emergency portrait must agree with the inventory;
   // preserved artwork is not a reason to restore retired images to precache.
-  for (const active of ["assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp"]) {
+  for (const active of ["assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/ch02_interceptor_atlas_v1.webp"]) {
     const entry = manifest.standalone.find(asset => asset.path === active);
     assert.ok(entry, `recurso activo sin inventario: ${active}`);
     assert.notEqual(entry.activeRuntime, false, active);

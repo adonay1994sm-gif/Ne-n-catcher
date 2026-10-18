@@ -116,8 +116,8 @@
       accent: "#4da2ff", top: "#14245c", mid: "#0a1035", hazard: "fast", scene: "rift",
       world: "GAIA NOVA", enemyCue: "Red defensiva CH",
       zone: "Anillo defensivo de Gaia Nova", desc: "La red Atlas despierta",
-      mission: "Recupera energía mientras evitas las patrullas CH y confirma quién reprogramó las defensas orbitales.",
-      threatLabel: "Drones CH-01 y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
+      mission: "El CRONIUM de Chronos ha llegado a Gaia. Recupera el rastro orbital, rompe la fijación de CH-01 y los flanqueos de CH-02 y alcanza al guardián Atlas.",
+      threatLabel: "CH-01, interceptores CH-02 y restos Atlas", threatPool: ["meteor", "meteor", "meteor", "debris"], gate: 0
     },
     {
       name: "Descenso Ígneo", goal: 60, speed: 1.02, spawn: 0.67, meteor: 0.115, power: 0.066,
