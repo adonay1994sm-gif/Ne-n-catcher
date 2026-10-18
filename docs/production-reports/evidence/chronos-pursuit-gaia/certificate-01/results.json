@@ -1,0 +1,154 @@
+{
+  "startedAt": "2026-10-18T06:06:07.000Z",
+  "node": "v24.19.0",
+  "branch": "continuity-assets-audit-20261013",
+  "head": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+  "workingTree": "",
+  "results": [
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 745,
+      "log": "build.txt"
+    },
+    {
+      "name": "engine",
+      "command": "npm run test:engine",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 264,
+      "log": "engine.txt"
+    },
+    {
+      "name": "architecture",
+      "command": "npm run test:architecture",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 139,
+      "log": "architecture.txt"
+    },
+    {
+      "name": "content-integration-assets",
+      "command": "npm run test:content",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 63875,
+      "log": "content-integration-assets.txt"
+    },
+    {
+      "name": "static",
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 206,
+      "log": "static.txt"
+    },
+    {
+      "name": "regression",
+      "command": "npm test",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 2670,
+      "log": "regression.txt"
+    },
+    {
+      "name": "web",
+      "command": "node tests/run-v7-web-tests.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 1077,
+      "log": "web.txt"
+    },
+    {
+      "name": "experimental-render-adapter",
+      "command": "node --test tests/campaign-adapter.test.mjs tests/neon-render-engine.test.mjs tests/sprite-animator.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 193,
+      "log": "experimental-render-adapter.txt"
+    },
+    {
+      "name": "audio-lifecycle",
+      "command": "node --test tests/audio-lifecycle.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 91,
+      "log": "audio-lifecycle.txt"
+    },
+    {
+      "name": "visual-artpass",
+      "command": "node --test tests/visual-artpass.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 134,
+      "log": "visual-artpass.txt"
+    },
+    {
+      "name": "inventory",
+      "command": "node scripts/audit-asset-inventory.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 64,
+      "log": "inventory.txt"
+    }
+  ],
+  "artifacts": {
+    "game.js": [
+      {
+        "directory": ".",
+        "sha256": "25ed96aedfede3238c261e3e950ed36704d80170fb005b4b66924d9e99b5fdfa"
+      },
+      {
+        "directory": "www",
+        "sha256": "25ed96aedfede3238c261e3e950ed36704d80170fb005b4b66924d9e99b5fdfa"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "25ed96aedfede3238c261e3e950ed36704d80170fb005b4b66924d9e99b5fdfa"
+      }
+    ],
+    "core-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "www",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      }
+    ],
+    "content-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "9f753ab0538233f24c73eab7e6e8176a9a8039a2206b304bcc8a9ba33ca09664"
+      },
+      {
+        "directory": "www",
+        "sha256": "9f753ab0538233f24c73eab7e6e8176a9a8039a2206b304bcc8a9ba33ca09664"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "9f753ab0538233f24c73eab7e6e8176a9a8039a2206b304bcc8a9ba33ca09664"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-18T06:07:16.481Z",
+  "ok": true
+}

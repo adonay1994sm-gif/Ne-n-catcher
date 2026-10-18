@@ -1,0 +1,105 @@
+✔ CH-02 has a preserved unique 16-pose atlas, true padded alpha and the exported runtime hash (3.119507ms)
+✔ every animation uses its own CH-02 metadata rectangle and timing (0.48322ms)
+✔ interceptor deployment resists banking until ready, then follows actual movement (1.451174ms)
+✔ real muzzle cell 5 emits exactly one fire at 160 ms, even across skipped pose boundaries (0.270678ms)
+✔ damage cancels a prepared attack before emission and never schedules a ghost projectile (0.350235ms)
+✔ damage after emission preserves the consumed attack and terminal destruction removes once (0.450543ms)
+✔ paused frames freeze damage, clock and pending events, and suspension deltas remain bounded (0.614814ms)
+✔ partitioned update timing reproduces one shot and the same recovery pose (0.201696ms)
+✔ new pursuit keeps the legacy item contract and has no independent timer (3.179135ms)
+✔ charge fixes the observed aim and waits for a complete warning plus the animation fire event (1.540325ms)
+✔ damage cancels charging with real hurt frames and no hidden projectile or immediate retry (1.332759ms)
+✔ a close approach or a player crossing above the enemy cancels the locked attack (1.510051ms)
+✔ death stops attacks and plays the terminal produced animation (1.086307ms)
+✔ roles produce distinct tracking decisions with bounded velocity and deterministic replay (1.934234ms)
+✔ large resume deltas are capped rather than skipping an unobserved attack warning (0.369844ms)
+✔ 100 seeds across three roles keep readable, finite, bounded attacks and an evadeable trajectory (43.080743ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ three classic charges recharge from played time and freeze completely while paused (314.781172ms)
+✔ a classic projectile travels before impact and applies damage and destruction reward only once (99.803004ms)
+✔ the actual PointerEvent handlers anchor without jumping and move both axes without a second finger stealing control (57.661101ms)
+✔ the Safari touch fallback tracks the first finger and ignores a secondary finger ending (36.818686ms)
+✔ the first mission requires recovered CRONIUM, all ten visible stages and the service stop before Gaia unlocks (2415.788214ms)
+✔ the Chronos attack and reactor rupture occur once in route order and cannot advance during pause (163.160199ms)
+✔ the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station (214.971008ms)
+✔ pause and repeated real background renders freeze the Chronos pose, clock and event stream (137.667266ms)
+✔ a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback (125.791395ms)
+✔ recovering, installing and switching a real weapon preserve ammunition and separate campaign saves (130.969059ms)
+✔ invalid equipment is backed up once before replacement and a failed backup blocks destructive recovery (99.730096ms)
+✔ C9 calibrates the recovered twin into a persistent lance and cycling ×1/×2/×3 never grants ammunition (112.512691ms)
+✔ malformed lance unlocks are preserved as backups instead of granting uncalibrated weapons (196.024025ms)
+✔ Atlas locks its warning and actual projectile trajectory to the movable ship position (266.207068ms)
+✔ the route bar advances between collections without a stage, ammunition or recharge change (50.496407ms)
+✔ compact comms do not repeat the quota and expire only with played time without moving the flight bounds (53.556686ms)
+✔ measured compact bounds release the former top reserve and ignore side controls outside the Canvas (31.901626ms)
+✔ the compact HUD and weapon share menu, completion, death and Atlas visibility while switching preserves ammunition (109.347833ms)
+✔ power pickup and expiry update flight clearance only when chip visibility changes and leave N-7 bounds alone (203.768937ms)
+✔ each Chronos stage gates its actual route on time and its cumulative recovery quota without replaying events (463.34675ms)
+✔ Chronos stage-entry checkpoints restore coherently after reload and retry without rewriting archived campaign saves (674.223929ms)
+✔ the in-route C9 stop pauses the same flight, installs its recovered emitter and continues at stage 7 without granting charges (1558.685229ms)
+✔ the archived N-7 mode neither loads nor modifies the new Chronos voyage record (445.321052ms)
+✔ the ten-stage selector exposes only persisted unlocked entries and an actual launch replays the chosen checkpoint (688.041884ms)
+✔ a malformed new voyage is backed up without inferring stages from old classic or N-7 progress (38.014875ms)
+✔ stage crossings retain live debris and genuine projectiles instead of resetting the scene (336.120704ms)
+✔ actual Chronos runtime introduces an announced pursuer after rupture without N-7 metadata (142.264398ms)
+✔ Gaia introduces a genuine CH-02 animator in a natural patrol sequence after CH-01 (118.989178ms)
+✔ Chronos arrival enters Gaia through the actual next control without a duplicate briefing (2470.625332ms)
+✔ all nine stage boundaries share a continuous, route-timed crossing and ambient state (2.304258ms)
+✔ brief crossing windows do not create an introduction, fake completion or repeat mid-stage (0.372848ms)
+✔ an illustrated waypoint approaches, grows and leaves the corridor without an opacity dissolve (0.454829ms)
+✔ C9 remains the actual service landmark instead of getting a copied second station (0.147107ms)
+✔ comfort mode removes brief foreground acceleration but keeps continuous route geography (0.193905ms)
+✔ paused/quota-blocked snapshots are immutable and repeat exactly without a presentation clock (0.441399ms)
+✔ historical flights and invalid timing data cannot acquire new scenery or overwrite their models (1.093508ms)
+✔ the real legacy renderer uses an illustrated peripheral object clipped clear of HUD and controls (2.949276ms)
+✔ the crossing has no geometric substitute if its illustration is unavailable (0.718917ms)
+✔ Gaia orbital scenery separates illustrated space, growing planet and relays below measured HUD (5.594487ms)
+✔ Gaia keeps its existing painting fallback until both independent illustrations are ready (0.685027ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12868.7718

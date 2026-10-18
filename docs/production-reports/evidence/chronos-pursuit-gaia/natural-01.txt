@@ -1,0 +1,15 @@
+[Chronos voyage natural] fresh launcher enters only the first unlocked stage using the real UI
+[Chronos voyage natural] relative touch and pause freeze the single real route and weapons clock
+[Chronos voyage natural] naturally play all ten connected stages, recover the piece, use C9 and arrive at Gaia
+[Chronos voyage natural] 1.1 Emergencia en Chronos · 0.2% · 0/4 · hull 100
+[Chronos voyage natural] 1.2 Perímetro destruido · 10.6% · 4/8 · hull 100
+[Chronos voyage natural] 1.2 Perímetro destruido · 16.6% · 8/8 · hull 100
+[Chronos voyage natural] 1.3 Campo de restos · 26.2% · 12/12 · hull 100
+[Chronos voyage natural] 1.4 Salida orbital · 34.5% · 15/16 · hull 100
+[Chronos voyage natural] 1.5 El gran vacío · 46.1% · 18/18 · hull 100
+[Chronos voyage natural] 1.6 Refugio C9 · 58.6% · 18/18 · hull 100
+[Chronos voyage natural] 1.7 Estela de regreso · 69.4% · 24/24 · hull 100
+[Chronos voyage natural] 1.9 Señales de Atlas · 80.4% · 28/32 · hull 100
+[Chronos voyage natural] 1.10 Llegada a Gaia · 91.1% · 32/36 · hull 100
+[Chronos voyage natural] arrival, equipment and stage unlocks persist and the real next-level UI enters Gaia
+{"status":"passed","exitCode":0,"checks":[{"name":"fresh launcher enters only the first unlocked stage using the real UI","status":"passed"},{"name":"relative touch and pause freeze the single real route and weapons clock","status":"passed"},{"name":"naturally play all ten connected stages, recover the piece, use C9 and arrive at Gaia","status":"passed"},{"name":"arrival, equipment and stage unlocks persist and the real next-level UI enters Gaia","status":"passed"}],"output":"/tmp/neon-pursuit-natural-01"}

@@ -1,0 +1,14 @@
+{
+  "commit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+  "sourceTree": "977baa04315bf6f99dd101ab802a1a8b175b2eae",
+  "dirty": false,
+  "revision": "8a2e72c47149de0cf89456328d639a0199d2142d280a749929e51e7ae6ef92d0",
+  "file": "neon-cronium-chronos-gaia-pursuit-612a3f3.zip",
+  "bytes": 8777008,
+  "entries": 120,
+  "sha256": "bf42be836c9d0ded866dd518683a6760a5849ac97defcd881ad2d0d527dac689",
+  "entriesToOpen": [
+    "index.html",
+    "juego/index.html"
+  ]
+}

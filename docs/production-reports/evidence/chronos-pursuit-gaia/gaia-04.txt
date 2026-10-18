@@ -1,0 +1,3 @@
+[Gaia interceptor] open Gaia via the actual selector with declared unlock/equipment fixtures
+[Gaia interceptor] the real CH-02 image contains sixteen distinct nonempty transparent cells
+[Gaia interceptor] a natural interceptor flanks, announces an attack, freezes on pause and can be shot down

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-17T22:31:20.729564+00:00",
+  "updatedAt": "2026-10-18T06:23:09.594Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -750,6 +750,123 @@
           "Aceptación artística del propietario y físico pendientes."
         ],
         "commit": "6d30b6884db9cc8bb2d9c636e9f7434c9c416ccb"
+      },
+      "gaia-ch02-move": {
+        "status": "IN_REVIEW",
+        "commit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+        "files": [
+          "art-source/enemies/ch02/ch02-master-v1.png",
+          "art-source/enemies/ch02/ch02-master-v2.png",
+          "art-source/enemies/ch02/ch02-atlas-v1.webp",
+          "art-source/enemies/ch02/ch02-atlas-v1.json",
+          "art-source/enemies/ch02/PROVENANCE.md",
+          "assets/ch02_interceptor_atlas_v1.webp",
+          "src/game/animation/ch02-animator.js",
+          "src/game/07-player-item-rendering.js"
+        ],
+        "tests": [
+          "node --test tests/ch02-animation.test.mjs:8/8, exit0; atlas/animador y eventos únicos simulados.",
+          "Decodificación y composición de transparencia en Chromium: PASS; no equivale a comprobar el combate real.",
+          "Chromium gaia-04:12celdas dibujadas, disparo/pausa y daño3→2→1 observados; salida130 por interrupción. No se certifica destrucción durante la partida."
+        ],
+        "evidence": [
+          "art-source/enemies/ch02/ch02-atlas-v1.json",
+          "art-source/enemies/ch02/ch02-browser-validation.json",
+          "art-source/enemies/ch02/ch02-chromium-composited.png",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/pure-01.txt",
+          "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json"
+        ],
+        "openErrors": [
+          "Destrucción real en Chromium no certificada: la ejecución gaia-04 se interrumpió con salida130 después de que Atlas sustituyera las patrullas. Aceptación artística e iPhone físico pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "ASSET_ANIMATOR_PASSED_RUNTIME_COMBAT_QA_PENDING",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        },
+        "limitations": [
+          "16poses distintas y registradas, no un esqueleto ni un ciclo de alta tasa de fotogramas.",
+          "La prueba del atlas no sustituye la destrucción real durante una partida."
+        ]
+      },
+      "gaia-ch02-attack": {
+        "status": "IN_REVIEW",
+        "commit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+        "files": [
+          "art-source/enemies/ch02/ch02-master-v1.png",
+          "art-source/enemies/ch02/ch02-master-v2.png",
+          "art-source/enemies/ch02/ch02-atlas-v1.webp",
+          "art-source/enemies/ch02/ch02-atlas-v1.json",
+          "art-source/enemies/ch02/PROVENANCE.md",
+          "assets/ch02_interceptor_atlas_v1.webp",
+          "src/game/animation/ch02-animator.js",
+          "src/game/07-player-item-rendering.js"
+        ],
+        "tests": [
+          "node --test tests/ch02-animation.test.mjs:8/8, exit0; atlas/animador y eventos únicos simulados.",
+          "Decodificación y composición de transparencia en Chromium: PASS; no equivale a comprobar el combate real.",
+          "Chromium gaia-04:12celdas dibujadas, disparo/pausa y daño3→2→1 observados; salida130 por interrupción. No se certifica destrucción durante la partida."
+        ],
+        "evidence": [
+          "art-source/enemies/ch02/ch02-atlas-v1.json",
+          "art-source/enemies/ch02/ch02-browser-validation.json",
+          "art-source/enemies/ch02/ch02-chromium-composited.png",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/pure-01.txt",
+          "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json"
+        ],
+        "openErrors": [
+          "Destrucción real en Chromium no certificada: la ejecución gaia-04 se interrumpió con salida130 después de que Atlas sustituyera las patrullas. Aceptación artística e iPhone físico pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "ASSET_ANIMATOR_PASSED_RUNTIME_COMBAT_QA_PENDING",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        },
+        "limitations": [
+          "16poses distintas y registradas, no un esqueleto ni un ciclo de alta tasa de fotogramas.",
+          "La prueba del atlas no sustituye la destrucción real durante una partida."
+        ]
+      },
+      "gaia-ch02-destroy": {
+        "status": "IN_REVIEW",
+        "commit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+        "files": [
+          "art-source/enemies/ch02/ch02-master-v1.png",
+          "art-source/enemies/ch02/ch02-master-v2.png",
+          "art-source/enemies/ch02/ch02-atlas-v1.webp",
+          "art-source/enemies/ch02/ch02-atlas-v1.json",
+          "art-source/enemies/ch02/PROVENANCE.md",
+          "assets/ch02_interceptor_atlas_v1.webp",
+          "src/game/animation/ch02-animator.js",
+          "src/game/07-player-item-rendering.js"
+        ],
+        "tests": [
+          "node --test tests/ch02-animation.test.mjs:8/8, exit0; atlas/animador y eventos únicos simulados.",
+          "Decodificación y composición de transparencia en Chromium: PASS; no equivale a comprobar el combate real.",
+          "Chromium gaia-04:12celdas dibujadas, disparo/pausa y daño3→2→1 observados; salida130 por interrupción. No se certifica destrucción durante la partida."
+        ],
+        "evidence": [
+          "art-source/enemies/ch02/ch02-atlas-v1.json",
+          "art-source/enemies/ch02/ch02-browser-validation.json",
+          "art-source/enemies/ch02/ch02-chromium-composited.png",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/pure-01.txt",
+          "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+          "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json"
+        ],
+        "openErrors": [
+          "Destrucción real en Chromium no certificada: la ejecución gaia-04 se interrumpió con salida130 después de que Atlas sustituyera las patrullas. Aceptación artística e iPhone físico pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "ASSET_ANIMATOR_PASSED_RUNTIME_COMBAT_QA_PENDING",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        },
+        "limitations": [
+          "16poses distintas y registradas, no un esqueleto ni un ciclo de alta tasa de fotogramas.",
+          "La prueba del atlas no sustituye la destrucción real durante una partida."
+        ]
       }
     },
     "note": "Se genera una tarea por sequence estable del catálogo (155 entradas tras el fondo orbital). READY/IN_REVIEW/IMPLEMENTED_CODE exige verificación técnica y aceptación artística separadas; no equivale a DONE."
@@ -6599,6 +6716,145 @@
         "Protocolo preparado no equivale a sesiones realizadas."
       ],
       "packageCommit": "6cf67fc445e2cadd214ebbd266ba6d36713a0bdc"
+    },
+    {
+      "id": "P3-PURSUIT-01",
+      "block": "04",
+      "canonicalPhase": "P3",
+      "name": "Conectar las etapas Chronos–Gaia con transiciones continuas y persecución posterior a la ruptura",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Enemigos",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "files": [
+        "src/game/presentation/voyage-transitions.js",
+        "src/game/combat/classic-pursuit.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js",
+        "src/game/06-world-rendering.js",
+        "tests/voyage-transitions.test.mjs",
+        "tests/classic-pursuit.test.mjs",
+        "tests/unified-flight-legacy.test.mjs",
+        "scripts/chronos-voyage-browser-smoke.cjs"
+      ],
+      "commit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+      "tests": [
+        "node --test tests/classic-pursuit.test.mjs tests/ch02-animation.test.mjs tests/classic-scout.test.mjs tests/voyage-transitions.test.mjs: conjunto puro39/39, exit0; CH02 se contabiliza además en su tarea específica.",
+        "Integración local56/56, exit0; continuidad de items/proyectiles y entrada Chronos→Gaia por el control real sin briefing repetido.",
+        "node scripts/chronos-voyage-browser-smoke.cjs --root preview-dist --output /tmp/neon-pursuit-natural-01 --expected-commit 612a3f34b99cc1e5197ebf066432a43fb848667f --timeout 1200000: Chromium real4/4, exit0; diez etapas,360s de ruta,36fragmentos, pieza recuperada, C9, llegada y paso a Gaia.",
+        "GitHub Actions39102869812, 612a3f34b99cc1e5197ebf066432a43fb848667f: completed/success."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/pure-01.txt",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/integration-01.txt",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/natural-01/results.json",
+        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39102869812"
+      ],
+      "openErrors": [
+        "La corrección adicional de la gracia de siete segundos tras reanudar/recargar está publicada en 1313a2bee65d2ebb48cd3772a68a9ed2f8695919; verificación del paquete final pendiente.",
+        "Aceptación artística y balance humano pendientes; Chromium automatizado no valida por sí solo la dificultad percibida ni iPhone físico."
+      ],
+      "acceptanceStatus": {
+        "technical": "PASSED_CHROMIUM_BASE_FINAL_PACKAGE_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Las nueve fronteras de1.1–1.10 conservan movimiento, progreso y amenazas durante una transición breve que deja visible el corredor.",
+        "La presión hostil comienza después de la ruptura del reactor: perseguidores con aproximación, fijación anunciada, proyectiles visibles y retirada; pausa y reentrada no omiten advertencias.",
+        "El espacio intermedio conserva recuperación y respiro; no se aumenta la dificultad mediante daño inevitable ni se cambia versión/duración del checkpoint.",
+        "Partida natural, controles, C9, llegada persistida y continuación a Gaia verificadas; aceptación artística y física evaluadas por separado."
+      ],
+      "limitations": [
+        "El piloto automatizado superó la ruta; queda pendiente comprobar la dificultad con jugadores humanos.",
+        "La presentación reutiliza ilustraciones existentes y efectos secundarios; no certifica terminados los diez territorios."
+      ],
+      "packageStatus": "PENDING_FINAL_VERIFIED_PACKAGE",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "followupCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919"
+    },
+    {
+      "id": "P1-GAIA-02",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Integrar CH-02 animado con ataque anunciado en una Gaia orbital multicapa",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Enemigos",
+        "Assets",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-ATLAS-01"
+      ],
+      "files": [
+        "assets/ch02_interceptor_atlas_v1.webp",
+        "art-source/enemies/ch02/ch02-master-v2.png",
+        "art-source/enemies/ch02/ch02-atlas-v1.json",
+        "art-source/enemies/ch02/PROVENANCE.md",
+        "src/game/animation/ch02-animator.js",
+        "src/game/combat/classic-pursuit.js",
+        "src/game/01-runtime-assets.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js",
+        "src/game/06-world-rendering.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/ch02-animation.test.mjs",
+        "scripts/gaia-interceptor-browser-smoke.cjs"
+      ],
+      "commit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+      "tests": [
+        "CH02:8/8 pruebas puras de atlas/animador dentro del conjunto puro39/39, exit0; estados reales, eventos de ataque únicos y destrucción terminal simulada.",
+        "Composición/decodificación Chromium del recurso1024×1024: PASS en art-source/enemies/ch02/ch02-browser-validation.json; comprueba transparencia, no combate.",
+        "Partida natural Chronos→Gaia4/4 confirma llegada y siguiente territorio; no certifica todavía el ciclo completo de combate/destrucciónCH02.",
+        "GitHub Actions39102869812, 612a3f34b99cc1e5197ebf066432a43fb848667f: completed/success; QA Chromium de combateCH02 sigue en curso.",
+        "Chromium gaia-04: carga, disparo, pausa y daño CH-02 de3→2→1 observados;12celdas dibujadas. Ejecución interrumpida explícitamente con salida130 al entrar Atlas,45/45fragmentos y casco100; destrucción real no certificada."
+      ],
+      "evidence": [
+        "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/pure-01.txt",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/integration-01.txt",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/natural-01/results.json",
+        "art-source/enemies/ch02/ch02-atlas-v1.json",
+        "art-source/enemies/ch02/ch02-browser-validation.json",
+        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39102869812",
+        "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json"
+      ],
+      "openErrors": [
+        "El QA Chromium observó ataque, pausa y daño de CH-02, pero Atlas sustituyó las patrullas antes de matarlo; salida130 por interrupción explícita. Destrucción real pendiente de certificar.",
+        "Aceptación artística del propietario, balance humano y prueba física iPhone pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "ASSET_ANIMATOR_PASSED_RUNTIME_COMBAT_QA_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "CH02 usa su atlas de16poses reales con navegación, giro, carga, ataque, daño y destrucción; el disparo se emite una sola vez mediante evento.",
+        "Gaia compone espacio, planeta y relés ilustrados independientes que se mueven con el tiempo jugado, permanecen legibles fuera del HUD y conservan fallback.",
+        "El interceptor anuncia una posición objetivo que el jugador puede esquivar; ataque, impacto y destrucción se prueban en el ejecutable real antes del cierre técnico.",
+        "El nuevo enemigo se integra sin alterar guardados, N-7 ni la decisión pendiente del MotorV1."
+      ],
+      "limitations": [
+        "La animación contiene16poses distintas; no es un esqueleto ni un ciclo de alta tasa de fotogramas.",
+        "CH03, el resto de Gaia y la aceptación completa del segundo territorio siguen pendientes."
+      ],
+      "packageStatus": "PENDING_FINAL_VERIFIED_PACKAGE",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "followupCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919"
     }
   ],
   "canonicalPlan": {
@@ -6628,10 +6884,11 @@
     ],
     "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion.",
     "latestFeedback": {
-      "date": "2026-10-17",
+      "date": "2026-10-18",
       "status": "CHANGES_REQUESTED",
-      "report": "docs/production-reports/NAVES_MODULARES_2026-10-17.md",
-      "priority": "Recuperar ritmo clásico e integración; no expandir el prototipo corto."
+      "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+      "priority": "El propietario considera el primer nivel casi terminado: mejorar transiciones, subir levemente la dificultad tras la explosión de Chronos, dar lógica comprensible a los perseguidores y continuar con Gaia.",
+      "scope": "Primer territorio Chronos→Gaia y segundo territorio Gaia; no equivale a aceptación artística completa ni a finalizar cien etapas."
     },
     "latestClarification": {
       "date": "2026-10-17",
@@ -6639,12 +6896,12 @@
       "scope": "Implementar diez etapas del trayecto Chronos–Gaia que representen el espacio vacío y el viaje. Orden reanuda este alcance; conserva los otros nueve territorios, N-7 y motor legacy."
     },
     "latestVerification": {
-      "date": "2026-10-17",
-      "report": "docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md",
-      "commit": "207a94edf01eb26f5f4210429cf51a4497b1b6d7",
-      "workflowRun": 39069397503,
+      "date": "2026-10-18",
+      "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+      "commit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
+      "workflowRun": 39102869812,
       "conclusion": "success",
-      "scope": "NEON CRONIUM active brand, native splash, same-origin native workers upgrade/offline5/5 and save compatibility. No gameplay changes or physical device certification."
+      "scope": "Base funcional: transiciones y persecución, partida Chromium natural4/4 y paso persistido a Gaia. CH02atlas/animador8/8; combate/destrucciónChromium todavía en curso. Corrección adicional de gracia tras reentrada pendiente de SHA/paquete final."
     },
     "productName": "NEON CRONIUM",
     "brandChange": {
@@ -6680,13 +6937,10 @@
       "initialHead": "827c1b5f50d88cbca5f68924d6ffc71f0794074e",
       "audit": "docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md",
       "currentBatch": [
-        "P2-PRESENTATION-01",
-        "P2-AUDIO-01",
-        "P2-COMFORT-01",
-        "P2-SAVE-01",
-        "P2-PLAYTEST-01"
+        "P3-PURSUIT-01",
+        "P1-GAIA-02"
       ],
-      "report": "docs/production-reports/SCORE_READ_GUARD_2026-10-17.md",
+      "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
       "note": "Se ejecuta por dependencias; aprobación del plan no equivale a terminar100etapas ni autoriza MotorV1, producción, beta o tiendas.",
       "operatorPreparation": {
         "name": "Adonay Sánchez Melo",
@@ -6696,8 +6950,45 @@
         "source": "Datos proporcionados por el propietario en la sesión17/10/2026; solicita dejar correo para otro momento. No se declara una política comercial definitiva."
       },
       "presentationReport": "docs/production-reports/VOYAGE_POLISH_2026-10-17.md",
-      "currentFunctionalCommit": "f39082f04667d7dc18ceba17705095bacb30806e",
-      "currentPrivateVersion": 14
-    }
+      "currentFunctionalCommit": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
+      "currentPrivateVersion": 14,
+      "batchHistory": [
+        {
+          "date": "2026-10-17",
+          "tasks": [
+            "P2-PRESENTATION-01",
+            "P2-AUDIO-01",
+            "P2-COMFORT-01",
+            "P2-SAVE-01",
+            "P2-PLAYTEST-01"
+          ],
+          "report": "docs/production-reports/SCORE_READ_GUARD_2026-10-17.md",
+          "functionalCommit": "f39082f04667d7dc18ceba17705095bacb30806e",
+          "privateVersion": 14
+        }
+      ],
+      "currentPrivateCommit": "f39082f04667d7dc18ceba17705095bacb30806e",
+      "currentBatchPackageStatus": "PENDING_FINAL_VERIFIED_PACKAGE",
+      "currentBatchPrivateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "pendingFunctionalVerification": "Corrección de gracia de siete segundos tras reentrada publicada en 1313a2bee65d2ebb48cd3772a68a9ed2f8695919; paquete final y publicación privada del lote pendientes. Destrucción real CH-02 pendiente de certificar."
+    },
+    "feedbackHistory": [
+      {
+        "date": "2026-10-17",
+        "status": "CHANGES_REQUESTED",
+        "report": "docs/production-reports/NAVES_MODULARES_2026-10-17.md",
+        "priority": "Recuperar ritmo clásico e integración; no expandir el prototipo corto."
+      }
+    ],
+    "verificationHistory": [
+      {
+        "date": "2026-10-17",
+        "report": "docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md",
+        "commit": "207a94edf01eb26f5f4210429cf51a4497b1b6d7",
+        "workflowRun": 39069397503,
+        "conclusion": "success",
+        "scope": "NEON CRONIUM active brand, native splash, same-origin native workers upgrade/offline5/5 and save compatibility. No gameplay changes or physical device certification."
+      }
+    ]
   }
 }
