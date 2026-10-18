@@ -1,3 +1,17 @@
+## Continuación vigente ·18/10/2026 · LEVEL_ONE_DYNAMIC
+
+Leer [cierre, capturas y límites](production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md) y `production-tasks.json`. Runtime actual **da3f4b839744940fee1032a8b637d5c3266c862f**, web privada22, Actions39131063614success. Conservar cualquier HEAD remoto posterior; no restaurar intro bloqueante, nave40% o parada orbitalC9.
+
+1. Revisar jugando con el propietario el primer nivel completo: presión, nave52%, cometas, tallerHUD y Atlas móvil. La partida automatizada pasa pero no certifica dificultad humana. Valores reversibles: misil18,Atlas96HP, exposición3,8s, básico ilimitado durante el jefe y tres misiles pagados.
+2. Pulir apertura Atlas con articulación real, estados ilustrados de daño y montaje fijo del lanzador4–7. Vuelo0–3/explosión8–11/restos12–15 ya integrados; no volver a pegarlos a la nave. Revisar scrollC9 y la comunicación del hito1.6; conservar reparación única/checkpointsv2, compras/recibos y retorno al mismo campo.
+3. Audición humana y Safari/iPhone físico: dos dedos, interrupciones, controles y rendimiento/memoria. Perfil320×568/390×844 y offline real pasan en Chromium; no presentarlos como certificación física.
+4. Netlify sólo sitio de pruebas identificado: [guía](agents/NETLIFY_TEST_SETUP.md), ZIP limpio da3 y SHA256 en informe. No hay autenticación/SiteID/destino; no afirmar conexión ni usar producción para saltar la puerta. La web privada22 ya sirve este paquete con HTTP16/16.
+5. Tras revisar referencia1, continuar Gaia orbital/CH03 y salida haciaVulkar. No producir cien etapas ni otros nueve mundos antes de cerrar esta base. Mantener MotorV1false, RAFúnico, campañas/guardados, rama autorizada, main/PR3/tiendas/producción protegidos.
+
+Skills de sesión aplicadas y verificadas, no modelos reentrenados. Correo de soporte aplazado; no volver a pedirlo. Lo siguiente es historial, no restaura reglas sustituidas.
+
+---
+
 ## Continuación vigente ·18/10/2026 · SPECIALIST_POLISH
 
 Leer [cierre y evidencias](production-reports/SPECIALIST_POLISH_2026-10-18.md), `production-tasks.json` y [.agents/skills/neon-production/SKILL.md](../.agents/skills/neon-production/SKILL.md). Runtime webprivada21: `99bf90b22a61cfd287393338fc55f65f3ba057a1`, CI39126299949success. No volver a los recortes viejos ni cambiar el tamaño40% sin orden del propietario.

@@ -82,14 +82,14 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-SPECIALIST-ENERGY-01 / P1 | CRONIUM animado sin caja opaca ni bisel | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_PASSED | PENDING_OWNER | PENDING |
 | P1-SPECIALIST-PROPULSION-01 / P1 | Motores proporcionados y misil sin lanzador flotante | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_PASSED | PENDING_OWNER | PENDING |
 | P1-SPECIALIST-AUDIO-01 / P1 | Efectos originales conectados a combate y controles de audio | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_PASSED | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-INTRO / P1 | Abrir sobre Chronos vivo y enseñar acciones breves | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-IA / P1 | Maniobras procedurales y mayor presencia enemiga | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-ATLAS / P1 | Atlas móvil y exigente con decisiones y ventanas | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-MISSILE / P1 | Misil18 y explosión ilustrada visible al contacto | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-C9 / P1 | Taller C9 ilustrado desde HUD sin estación orbital | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-AUDIO / P1 | Emisiones enemigas con sonidos originales y pausa/mute | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-FLIGHT / P1 | Nave30% mayor y cometas con trayectorias variadas transitables | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | PENDING_OWNER | PENDING |
-| P1-DYNAMIC-TOOLS / P1 | Skills útiles, higiene recuperable y Netlify QA preparado | IN_REVIEW | LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING | NOT_APPLICABLE | PENDING |
+| P1-DYNAMIC-INTRO / P1 | Abrir sobre Chronos vivo y enseñar acciones breves | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-IA / P1 | Maniobras procedurales y mayor presencia enemiga | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-ATLAS / P1 | Atlas móvil y exigente con decisiones y ventanas | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-MISSILE / P1 | Misil18 y explosión ilustrada visible al contacto | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-C9 / P1 | Taller C9 ilustrado desde HUD sin estación orbital | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-AUDIO / P1 | Emisiones enemigas con sonidos originales y pausa/mute | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-FLIGHT / P1 | Nave30% mayor y cometas con trayectorias variadas transitables | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
+| P1-DYNAMIC-TOOLS / P1 | Skills útiles, higiene recuperable y Netlify QA preparado | DONE | PROCEDURE_SKILL_HYGIENE_AND_PREVIEW_GATE_PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -115,7 +115,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Audio | 1/19 (5.3%) | 12 | 0 | 1 | 5 |
 | Interfaz | 5/41 (12.2%) | 9 | 1 | 0 | 26 |
 | Rendimiento | 1/16 (6.3%) | 11 | 1 | 0 | 3 |
-| QA | 22/113 (19.5%) | 20 | 3 | 5 | 63 |
+| QA | 23/113 (20.4%) | 20 | 3 | 5 | 62 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
@@ -123,7 +123,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
 | 03 · Prueba integrada y cierre técnico | 20/32 (62.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 10 · DONE: 20 |
-| 04 · Jugabilidad procedural | 2/64 (3.1%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 42 · DONE: 2 |
+| 04 · Jugabilidad procedural | 3/64 (4.7%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 41 · DONE: 3 |
 | 05 · Producción visual y 150 assets | 5/196 (2.6%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 68 · DONE: 5 |
 | 06 · Diez jefes | 0/13 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 3 · DONE: 0 |
 | 07 · Narrativa completa | 0/15 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |

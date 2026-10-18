@@ -1,0 +1,15 @@
+{
+  "file": "/workspace/artifacts/NEON-CRONIUM-NIVEL1-da3f4b8-NETLIFY.zip",
+  "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+  "dirty": false,
+  "engineV1": false,
+  "revision": "e6aec451eb36f81c324e562cad6269fb43974fc3df2f889b8d51cd00a25b716b",
+  "bytes": 12755972,
+  "entries": 135,
+  "sha256": "a03143c6529b45d2b247ba567b5328bc15ac9004d3a612b32eeb77b30e21f246",
+  "zipCRC": "passed",
+  "inventoryHashesVerified": 134,
+  "entry": "index.html",
+  "gameEntry": "juego/index.html",
+  "netlifyDeployment": "NOT_DEPLOYED_NO_AUTHENTICATED_ISOLATED_TARGET"
+}

@@ -1,0 +1,18 @@
+{
+  "applicationCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+  "revision": "e6aec451eb36f81c324e562cad6269fb43974fc3df2f889b8d51cd00a25b716b",
+  "dirty": false,
+  "protectedFiles": 146,
+  "changedOutsideAllowedScope": [],
+  "hostingUnchanged": true,
+  "gameSha256": "9b3372e86d1fe2a151813299aee5e477840b9e48da693a4c5ec9bbd04d5f2ec7",
+  "allowedRootChanges": [
+    "README.md",
+    "dist/build-info.json",
+    "dist/index.html",
+    "dist/launcher-sw.js",
+    "dist/manifest.webmanifest"
+  ],
+  "package": "/tmp/neon-level-one-playtest-da3f4b8",
+  "preparedAt": "2026-10-18T13:23:34.824736+00:00"
+}

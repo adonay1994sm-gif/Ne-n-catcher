@@ -1,3 +1,17 @@
+## Cierre vigente ·18/10/2026 · LEVEL_ONE_DYNAMIC
+
+[Informe y diagnóstico](production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md) · [Galería real antes/después](production-reports/evidence/level-one-followup/GALERIA.md) · [Probar web privada22](https://neon-catcher-pruebas.chictide18.chatgpt.site).
+
+Runtime limpio publicado **da3f4b839744940fee1032a8b637d5c3266c862f**, [Actions39131063614 completo/success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614). Sitio fuente3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932, HTTP16/16 y paquete con135entradas/CRC/134huellas verificados.
+
+Chronos jugable sin láminas, tutorial breve, más enemigos con curvas, cometasv3, nave **52%** (30%mayor respecto a40%), Atlasv6 móvil, misil18 con explosión y C9 voluntario desdeHUD con cuatro ilustraciones. Sonidos propios de emisión enemiga, mismos mute/pausa/bus; no música nueva. Seis especialistas, nueva skill de interacción/accesibilidad MIT aplicada,28copias generadas desindexadas sin borrar fuentes/maestros/historial.
+
+Certificación11/11, contenido661, preview23. Paquete limpio: visual12/12 (390×844/320×568), partida natural4/4 (548.090ms, diez tramos, compra ganada, Atlas y reload) y actualización/offline7/7. La partida registra32enemigos,855ganados−24pagados=831persistidos y RAFúnico sin errores. Fixtures visuales separados de la partida natural; balance humano, estética/audición y Safari/iPhone pendientes.
+
+Registro único actualizado; siete tareas de juego IN_REVIEW y herramientas DONE por su alcance. No diez mundos ni cien etapas completados. Netlify **preparado, no conectado/desplegado**, falta autenticación/destino aislado; ZIP y guía en informe. MotorV1=false, campañas/guardados conservados. Todo el contenido siguiente es histórico y conserva sus propias revisiones.
+
+---
+
 ## Cierre vigente ·18/10/2026 · SPECIALIST_POLISH
 
 [Informe detallado](production-reports/SPECIALIST_POLISH_2026-10-18.md) · [Galería real antes/después](production-reports/evidence/specialist-polish/GALERIA.md) · [Web privada21](https://neon-catcher-pruebas.chictide18.chatgpt.site).

@@ -1,0 +1,43 @@
+{
+  "testedApplicationCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+  "workingTree": "Documentary tracking, asset acceptance metadata and QA fixture updates; runtime sources unchanged",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "static",
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "log": "close-static.txt"
+    },
+    {
+      "name": "main",
+      "command": "npm test",
+      "exitCode": 0,
+      "log": "close-main.txt"
+    },
+    {
+      "name": "architecture",
+      "command": "npm run test:architecture",
+      "exitCode": 0,
+      "log": "close-architecture.txt"
+    },
+    {
+      "name": "inventory",
+      "command": "node scripts/audit-asset-inventory.mjs",
+      "exitCode": 0,
+      "log": "close-inventory.txt"
+    },
+    {
+      "name": "progress",
+      "command": "node scripts/update-production-progress.mjs --check",
+      "exitCode": 0,
+      "log": "close-progress.txt"
+    },
+    {
+      "name": "harness",
+      "command": "node --check scripts/current-level-visual-smoke.cjs",
+      "exitCode": 0,
+      "log": "close-harness.txt"
+    }
+  ]
+}

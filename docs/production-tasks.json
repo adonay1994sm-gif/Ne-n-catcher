@@ -9088,24 +9088,37 @@
         "src/game/narrative/flight-tutorial.js",
         "src/game/narrative/chronos-chapter.js"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
       ],
       "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+        "Aceptación artística, balance/audición humana cuando corresponde y prueba física Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "acceptance": [
         "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+      ],
+      "verificationNote": "Chronos se presenta dentro del escenario jugable, sin bloqueo por láminas; tutorial contextual y controles activos comprobados.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT"
     },
     {
       "id": "P1-DYNAMIC-IA",
@@ -9123,24 +9136,37 @@
       "files": [
         "src/game/combat/classic-pursuit.js"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
       ],
       "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+        "Aceptación artística, balance/audición humana cuando corresponde y prueba física Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "acceptance": [
         "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+      ],
+      "verificationNote": "Mayor presencia y trayectorias procedurales acotadas; combate natural ejercitado. La IA usa reglas de juego, no aprendizaje automático.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT"
     },
     {
       "id": "P1-DYNAMIC-ATLAS",
@@ -9158,24 +9184,37 @@
       "files": [
         "src/game/combat/guardian-atlas.js"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
       ],
       "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+        "Aceptación artística, balance/audición humana cuando corresponde y prueba física Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "acceptance": [
         "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+      ],
+      "verificationNote": "Atlas v6 se desplaza con collider coherente y fases cerrada/apertura/exposición; resolución natural y epílogo comprobados. Dificultad humana pendiente.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT"
     },
     {
       "id": "P1-DYNAMIC-MISSILE",
@@ -9194,24 +9233,37 @@
         "src/game/combat/classic-weapons.js",
         "src/game/07-player-item-rendering.js"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
       ],
       "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+        "Aceptación artística, balance/audición humana cuando corresponde y prueba física Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "acceptance": [
         "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+      ],
+      "verificationNote": "Misil físico18 de daño con contacto real y expansión/desperdicios ilustrados; tres consumos persistidos y recompensa única conservados.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT"
     },
     {
       "id": "P1-DYNAMIC-C9",
@@ -9231,24 +9283,37 @@
         "src/game/03-ui-game-flow.js",
         "assets/c9_upgrade_icons_v1.webp"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
       ],
       "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+        "Aceptación artística, balance/audición humana cuando corresponde y prueba física Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "acceptance": [
         "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+      ],
+      "verificationNote": "Acceso HUD con pausa, limpieza de contactos, foco modal y retorno; tarjetas ilustradas, compra con chatarra ganada en partida y recursos offline comprobados.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT"
     },
     {
       "id": "P1-DYNAMIC-AUDIO",
@@ -9267,24 +9332,37 @@
         "src/game/audio/combat-sfx.js",
         "src/game/05-corridor-update.js"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
       ],
       "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+        "Aceptación artística, balance/audición humana cuando corresponde y prueba física Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "acceptance": [
         "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+      ],
+      "verificationNote": "Banco original v2 y emisiones enemigas reales registradas por cue; pausa/mute controlados. Reproducción medida no certifica calidad de escucha humana.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT"
     },
     {
       "id": "P1-DYNAMIC-FLIGHT",
@@ -9303,24 +9381,37 @@
         "src/game/00-bootstrap-config.js",
         "src/game/progression/comet-shower.js"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
       ],
       "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
+        "Aceptación artística, balance/audición humana cuando corresponde y prueba física Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
       "acceptance": [
         "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+      ],
+      "verificationNote": "Escala .4→.52: aumento relativo30% respecto de la nave anterior; movilidad/colisiones y cometas transitables ejercitados, sin convertirlo en escala30% del diseño original.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT"
     },
     {
       "id": "P1-DYNAMIC-TOOLS",
@@ -9329,7 +9420,7 @@
       "canonicalPhase": "P1",
       "name": "Skills útiles, higiene recuperable y Netlify QA preparado",
       "priority": "HIGH",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -9339,24 +9430,44 @@
         "scripts/repository-hygiene.mjs",
         "docs/agents/NETLIFY_TEST_SETUP.md"
       ],
-      "commit": null,
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "tests": [
-        "certify-local11/11; content661/661; engine60; architecture6; static13; main34; web13. Dirty integration snapshot based on d4b08dc."
+        "node scripts/certify-local.mjs docs/production-reports/evidence/level-one-followup/certification-04 — 11/11 fases, exit0; snapshot de integración dirty basado en d4b08dcb2f22268944aa73fc4b71bca5f3496c7e; no atribuir árbol limpio a esa ejecución.",
+        "npm run build:preview; npm run test:preview — paquete limpio da3f4b839744940fee1032a8b637d5c3266c862f, 23/23, exit0.",
+        "node scripts/current-level-visual-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f — 12/12 comprobaciones en Chromium390×844 y320×568; escenas controladas declaradas.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --output docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 900000 — 4/4; partida natural sin dinero, progreso, salud ni daño al jefe inyectados.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-level-one-playtest-da3f4b8 --previous /tmp/neon-specialist-playtest-99bf90b --previous-commit 99bf90b22a61cfd287393338fc55f65f3ba057a1 --output docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01 --expected-commit da3f4b839744940fee1032a8b637d5c3266c862f --timeout 120000 — 7/7; actualización real de service workers, guardados y recursos offline.",
+        "GitHub Actions39131063614 — completed/success para SHA da3f4b839744940fee1032a8b637d5c3266c862f.",
+        "python3 tools/third-party/skills/openai-skill-creator/scripts/quick_validate.py .agents/skills/neon-interface-review — Skill is valid, exit0.",
+        "node --test tests/repository-hygiene.test.mjs — seis casos incluidos en test:content aprobado.",
+        "node scripts/repository-hygiene.mjs --duplicates — auditoría read-only posterior a desindexar copias generadas; cero salidas generadas aún rastreadas."
       ],
       "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json"
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json",
+        "docs/production-reports/evidence/level-one-followup/skill-validation.txt",
+        "docs/production-reports/evidence/level-one-followup/skills-hygiene-notes.md",
+        "docs/production-reports/evidence/level-one-followup/repository-audit-after.json",
+        "docs/production-reports/evidence/level-one-followup/generated-copies-untracked.json",
+        "docs/agents/NETLIFY_TEST_SETUP.md"
       ],
-      "openErrors": [
-        "Certificación integrada y revisión de propietario/dispositivo pendientes."
-      ],
+      "openErrors": [],
       "acceptanceStatus": {
-        "technical": "LOCAL_CERTIFICATION_PASSED_BROWSER_PENDING",
+        "technical": "PROCEDURE_SKILL_HYGIENE_AND_PREVIEW_GATE_PASSED",
         "artistic": "NOT_APPLICABLE",
-        "physical": "PENDING"
+        "physical": "NOT_APPLICABLE"
       },
       "acceptance": [
-        "Comportamiento integrado, pruebas pertinentes sobre snapshot identificado, evidencia real y guardados conservados."
-      ]
+        "Fuentes GitHub fijadas con licencias y hashes verificables, skill adaptada validada y aplicada a C9; auditoría no destructiva y retirada del índice sólo de copias regenerables; guía y gate Netlify QA probados. No exige ni certifica despliegue Netlify."
+      ],
+      "verificationNote": "Skills GitHub fijadas y adaptadas, higiene no destructiva verificada y preparación Netlify QA documentada; despliegue Netlify fuera del criterio de cierre de esta tarea.",
+      "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT",
+      "netlifyDeploymentStatus": "PREPARED_NOT_DEPLOYED_AUTHENTICATION_AND_ISOLATED_TEST_DESTINATION_REQUIRED"
     }
   ],
   "canonicalPlan": {
@@ -9376,56 +9487,68 @@
       "P4",
       "P5"
     ],
-    "demoMap": "Centro Chronos -> Baliza C9 -> aproximación Gaia -> acceso Atlas",
+    "demoMap": "Centro Chronos → restos y espacio profundo → aproximación a Gaia → acceso Atlas; C9 se abre desde HUD sin estación orbital obligatoria.",
     "decisions": [
-      "El primer nivel abarca sabotaje Chronos→registro→diez etapas espaciales→C9→frontera Atlas→verificación Iria; el siguiente territorio conserva continuidad y la pista Vulkar no salta contenido.",
-      "Apertura 26 s sobre reloj de ruta, ruptura única 9 s, pilotaje liberado a los 9 s o al omitir; salto/repetición no cambian ruta, cuota o recompensas. Epílogo 8 s tras resolución real.",
-      "Lira evacúa y conserva pruebas, Mira mantiene el corredor y vende mejoras, Atlas aplica una identificación falsa e Iria puede revisar y revocar el bloqueo. Redacción y nombres son decisiones de trabajo.",
-      "Naves clásicas al 40 % de ancho y alto con geometría de colisión probada; variantes históricas mantienen dimensiones. Reserva de integridad 30 sin temporizador, ampliable a 45 por 30 de chatarra.",
-      "Conservar 20 disparos / recarga 2 s fuera del jefe, o 1,5 s con refrigeración. Básico ilimitado con cadencia sólo durante Atlas sin consumir/rellenar la reserva; manual por defecto y AUTO sólo en Ajustes.",
-      "Tres misiles especiales persistidos con daño inicial 6 y reposición 6 por cada misil faltante en C9; máximo 3 y transacciones idempotentes. Preparación24,refrigeración 45,reparación de emergencia gratuita.",
-      "Atlas v5 de 96 HP: blindaje cerrado durante ataque, núcleo 42 expuesto sólo en su ventana, tres escalones de ataque. Chatarra física 600, Gemelo y acceso al nivel 2 sólo con sus condiciones y guardado coherente.",
-      "Las compras antiguas shield-cell migran a hull-reinforcement con respaldo y sin otro cargo; conservar saldos, armamento y partidas. Dinero sólo al recoger chatarra, no al destruir enemigos.",
-      "Conversiones: 100.000 chatarra → 1 plata, 100 plata → 1 oro, 10 oro → 1 estelar; CRONIUM es energía diferenciada. Mantener lluvia 1.5/1.9 y 360 s / checkpoints v2 con regresión específica.",
-      "Arte y música originales conservan maestros y QA de exportación; aceptación artística, escucha humana, mezcla y Safari/iPhone pendientes. Limitación de exportación Canva registrada sin compras.",
-      "Arsenal futuro 10–15 armas PENDING. No expandir masivamente ni activar Motor V1; un único RAF, rama autorizada, guardados conservados y sin publicación comercial."
+      "Nivel1 contiene diez tramos espaciales Chronos→Gaia y termina tras Atlas y verificación Iria; el territorio posterior es nivel2. Nunca se aterriza.",
+      "Apertura sobre Chronos real y pilotaje inmediato, sin imágenes cinematográficas de pantalla completa ni bloqueo26s; se conservan recursos maestros y la secuencia del accidente dentro del paisaje.",
+      "Tutorial breve por acciones y comunicaciones de Lira/Mira/Iria con motivos diferenciados; aceptación narrativa/artística pendiente del propietario.",
+      "Naves clásicas .4→.52: aumentar30% respecto del tamaño anterior, con geometría/collider específicos probados. Reserva30 sin reloj, ampliable45 por30chatarra.",
+      "Conservar20disparos/recarga2s fuera del jefe o1,5s con refrigeración; básico ilimitado sólo duranteAtlas y manual predeterminado; AUTO voluntario en Ajustes.",
+      "Tres misiles físicos persistidos con daño18, explosión ilustrada al contacto y reposición6porunidad faltante; precios y recibos idempotentes conservados.",
+      "Atlas v6 mantiene96HP y600chatarra física: movimiento acotado, tres intensidades de ataque, blindaje cerrado y núcleo expuesto por ventanas. Gemelo/accesoGaia sólo tras resolución real.",
+      "C9 pasa a tallerHUD: pausar y limpiar contactos/foco al abrir, sin reparar por abrir/reabrir, volver al mismo tramo al salir. El hito de reparación ya persistido en1.6 conserva compatibilidad y no es una parada orbital obligatoria.",
+      "Enemigos con reposicionamiento e interceptación acotada; cometas de trayectorias variables y corredor transitable. Progreso360s y checkpointsv2 no se sustituyen por otro reloj.",
+      "Audio v2 incluye emisiones de Phaser y ataque pesado enemigos en el grafo existente, con pausa/mute/cupos; escucha/mix humano y Safari/iPhone pendientes.",
+      "Guardados, compras antiguas, campañas y maestros recuperables; moneda física al recoger y recompensas únicas. Mantener USE_ENGINE_V1=false y RAF único.",
+      "Skills e higiene recuperable integradas; Netlify QA preparado pero no desplegado por falta de autenticación y destino aislado. No producción, App Store/TestFlight ni gastos externos."
     ],
     "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion.",
     "latestFeedback": {
       "date": "2026-10-18",
-      "status": "IMPLEMENTATION_DIRECTION_APPROVED_ARTISTIC_ACCEPTANCE_PENDING",
+      "status": "IMPLEMENTED_AWAITING_OWNER_REVIEW",
       "reference": "docs/PRODUCT_VISION.md",
-      "design": "docs/design/CHAPTER_01_CHRONOS_GAIA.md",
-      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
-      "priority": "Cerrar el nivel 1 completo: sabotaje y registro, viaje real, C9, naves al 40 %,reserva de casco, misiles persistidos y Atlas final con epílogo Iria.",
-      "scope": "Dirección aprobada para implementación; cifras, nombres, textos y presentación son decisiones de trabajo. No equivale a aceptación estética, cien etapas ni certificación física."
+      "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "priority": "Revisar primer nivel con Chronos jugable, tutorial, enemigos/Atlas móviles, audio enemigo, misil18, C9HUD y nave30%mayor antes de extender otros nueve territorios.",
+      "scope": "Integración técnica comprobada; aceptación artística, dificultad/sonido humano y dispositivo físico pendientes."
     },
     "latestClarification": {
       "date": "2026-10-18",
-      "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
-      "scope": "Nivel1 incluye diez tramos espaciales y termina tras Atlas y verificación Iria; Gaia posterior es nivel2, nunca aterrizaje.",
+      "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
+      "scope": "Nivel1 espacial con diez tramos hasta Atlas; C9 es accesoHUD, no estación en órbita ni nivel adicional.",
       "decisions": [
-        "Naves clásicas al40% de ancho/alto anteriores; colisiones específicas probadas.",
-        "Reserva de casco30 sin temporizador, capacidad45 por30chatarra; no burbuja temporizada.",
-        "Tres misiles físicos persistidos; reposición6porunidad enC9; básico ilimitado sólo anteAtlas.",
-        "Atlas96HP, blindaje cerrado y núcleo expuesto; tres intensidades de ataque;600chatarra física.",
-        "Arco Lira→Mira→Atlas→Iria con prueba del sabotaje, apertura26s y epílogo8s."
+        "Apertura sobre Chronos real y pilotaje inmediato, sin imágenes cinematográficas de pantalla completa ni bloqueo26s; se conservan recursos maestros y la secuencia del accidente dentro del paisaje.",
+        "Naves clásicas .4→.52: aumentar30% respecto del tamaño anterior, con geometría/collider específicos probados. Reserva30 sin reloj, ampliable45 por30chatarra.",
+        "Tres misiles físicos persistidos con daño18, explosión ilustrada al contacto y reposición6porunidad faltante; precios y recibos idempotentes conservados.",
+        "Atlas v6 mantiene96HP y600chatarra física: movimiento acotado, tres intensidades de ataque, blindaje cerrado y núcleo expuesto por ventanas. Gemelo/accesoGaia sólo tras resolución real.",
+        "C9 pasa a tallerHUD: pausar y limpiar contactos/foco al abrir, sin reparar por abrir/reabrir, volver al mismo tramo al salir. El hito de reparación ya persistido en1.6 conserva compatibilidad y no es una parada orbital obligatoria."
       ]
     },
     "latestVerification": {
       "date": "2026-10-18",
-      "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
-      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
-      "certifiedCommit": "35471470cb94a2ba1ec37e230c95646b189a06fe",
-      "workflowRun": 39120714906,
+      "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
+      "batch": "LEVEL_ONE_DYNAMIC",
+      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "workflowRun": 39131063614,
+      "workflowUrl": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614",
       "conclusion": "success",
-      "privateSiteVersion": 20,
+      "scope": "Paquete limpio da3: Chromium visual12/12 sobre escenas controladas, partida natural4/4 y actualización/offline7/7; buildpreview y preview23/23. Certificación local11/11 corresponde al snapshot dirty basado end4, no a un árbol limpio da3. CI39131063614 comprueba el commit funcional publicado. Aceptación artística/humana/física pendientes; no despliegue Netlify certificado.",
+      "evidence": [
+        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json",
+        "docs/production-reports/evidence/level-one-followup/site-deployment.json",
+        "docs/production-reports/evidence/level-one-followup/site-http/results.json"
+      ],
+      "netlifyDeploymentStatus": "PREPARED_NOT_DEPLOYED_AUTHENTICATION_AND_ISOLATED_TEST_DESTINATION_REQUIRED",
+      "privateSiteVersion": 22,
+      "privateSiteSourceCommit": "3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932",
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "privateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
-      "scope": "Primer capítulo integrado: certificación11/11 a354, naturalfinalf6344/4, visual6/6, actualización/offline7/7, Site20HTTP12/12 y CI39120714906success. Artística/humana/física pendientes.",
-      "documentaryCommit": "d30fb15201ec094818d181d5e1e22998d27b213b",
-      "documentaryWorkflowRun": 39121735314,
-      "documentaryWorkflowConclusion": "success"
+      "privateSiteHttp": "PASSED_16_OF_16"
     },
     "productName": "NEON CRONIUM",
     "brandChange": {
@@ -9461,15 +9584,16 @@
       "initialHead": "827c1b5f50d88cbca5f68924d6ffc71f0794074e",
       "audit": "docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md",
       "currentBatch": [
-        "P1-CH1-STORY-01",
-        "P1-CH1-CINEMATIC-01",
-        "P1-CH1-SHIP-01",
-        "P2-CH1-MISSILE-01",
-        "P1-CH1-ATLAS-01",
-        "P1-CH1-QA-01",
-        "P1-CH1-AUDIO-01"
+        "P1-DYNAMIC-INTRO",
+        "P1-DYNAMIC-IA",
+        "P1-DYNAMIC-ATLAS",
+        "P1-DYNAMIC-MISSILE",
+        "P1-DYNAMIC-C9",
+        "P1-DYNAMIC-AUDIO",
+        "P1-DYNAMIC-FLIGHT",
+        "P1-DYNAMIC-TOOLS"
       ],
-      "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+      "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
       "note": "Se ejecuta por dependencias; aprobación del plan no equivale a terminar100etapas ni autoriza MotorV1, producción, beta o tiendas.",
       "operatorPreparation": {
         "name": "Adonay Sánchez Melo",
@@ -9479,8 +9603,8 @@
         "source": "Datos proporcionados por el propietario en la sesión17/10/2026; solicita dejar correo para otro momento. No se declara una política comercial definitiva."
       },
       "presentationReport": "docs/production-reports/VOYAGE_POLISH_2026-10-17.md",
-      "currentFunctionalCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
-      "currentPrivateVersion": 20,
+      "currentFunctionalCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "currentPrivateVersion": 22,
       "batchHistory": [
         {
           "date": "2026-10-17",
@@ -9538,22 +9662,73 @@
             "currentPackageRevision": "458f6dcf810bc827aad45191b5d46b4862d47cfa83329e163e6f321b97a7b11f",
             "currentBatchVerification": "PENDING_CHROMIUM; las pruebas y la web anteriores no certifican este lote en desarrollo."
           }
+        },
+        {
+          "date": "2026-10-18",
+          "status": "HISTORICAL_SNAPSHOT_RECONCILED",
+          "note": "Se conserva el snapshot anterior; campos current actualizados al paquete limpio y Site22 comprobados.",
+          "legacyCurrentFields": {
+            "currentBatch": [
+              "P1-CH1-STORY-01",
+              "P1-CH1-CINEMATIC-01",
+              "P1-CH1-SHIP-01",
+              "P2-CH1-MISSILE-01",
+              "P1-CH1-ATLAS-01",
+              "P1-CH1-QA-01",
+              "P1-CH1-AUDIO-01"
+            ],
+            "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+            "presentationReport": "docs/production-reports/VOYAGE_POLISH_2026-10-17.md",
+            "currentFunctionalCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+            "currentPrivateVersion": 20,
+            "currentPrivateCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+            "currentBatchPackageStatus": "BUILT_CLEAN_VERIFIED_F634A46",
+            "currentBatchPrivateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED",
+            "pendingFunctionalVerification": "Sólo revisión artística/balance/audición humana y Safari/iPhone físicos pendientes. Natural4/4, visual6/6, actualización/offline7/7 y CI completos registrados por SHA.",
+            "currentVerifiedPackageCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+            "currentPrivateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
+            "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+            "currentPackageSha256": "5153eb0c06b9b5aea4ed40b05532178af1d9041ed84cab28f604da64e205b18a",
+            "currentPackageBytes": 11327979,
+            "currentPackageEntries": 128,
+            "latestWorkflowRun": 39121735314,
+            "latestWorkflowConclusion": "success",
+            "latestSuccessfulPackageWorkflowRun": 39120714906,
+            "ciStatus": "PASSED_RUNTIME_AND_REPORT_CLOSE",
+            "latestCIFailure": {
+              "workflowRun": 39104552902,
+              "conclusion": "failure",
+              "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902",
+              "error": "assert.ok(interceptors.length >= 1)",
+              "file": "tests/unified-flight-legacy.test.mjs",
+              "line": 986,
+              "scope": "Diagnóstico histórico antes de la corrección: Ejecución de cierre documental 872; aplicación idéntica al paquete probado 33263c5. Se investiga la ventana temporal intermitente de la prueba; no se declara reparada.",
+              "status": "RESOLVED",
+              "resolution": "La fixture con semilla 34 podía morir por amenaza ambiental a los 10,710 s antes de observar el interceptor. Se corrigió la ventana de observación sin cambiar la aplicación para esa prueba; cinco semillas, 100 secuencias y archivo 30/30 aprobados. Además se corrigió por separado la sincronización HUD.",
+              "fixedByCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+              "passedWorkflowRun": 39105045562
+            },
+            "nextPriority": "Revisión del primer capítulo, impacto/restos del misil, mezcla y QA física; luego Gaia, sin activar MotorV1.",
+            "currentPackageRevision": "1d3776f68358c21fb98c39b99842d0e170f715a8a92f0b82f5b817fb4ba2e83e",
+            "currentBatchVerification": "Natural4/4, visual6/6 y offline7/7 sobreF; propietario/dispositivo pendientes.",
+            "latestWorkflowCommit": "d30fb15201ec094818d181d5e1e22998d27b213b"
+          }
         }
       ],
-      "currentPrivateCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
-      "currentBatchPackageStatus": "BUILT_CLEAN_VERIFIED_F634A46",
-      "currentBatchPrivateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED",
-      "pendingFunctionalVerification": "Sólo revisión artística/balance/audición humana y Safari/iPhone físicos pendientes. Natural4/4, visual6/6, actualización/offline7/7 y CI completos registrados por SHA.",
-      "currentVerifiedPackageCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
-      "currentPrivateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
+      "currentPrivateCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "currentBatchPackageStatus": "BUILT_CLEAN_VERIFIED_DA3F4B8",
+      "currentBatchPrivateSiteStatus": "PRIVATE_SITE22_SUCCEEDED_HTTP16_PASSED",
+      "pendingFunctionalVerification": "Aceptación artística, balance/audición humanos y Safari/iPhone físico pendientes. No se presenta el paquete técnico como juego comercial terminado.",
+      "currentVerifiedPackageCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "currentPrivateSiteSourceCommit": "3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932",
       "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "currentPackageSha256": "5153eb0c06b9b5aea4ed40b05532178af1d9041ed84cab28f604da64e205b18a",
-      "currentPackageBytes": 11327979,
-      "currentPackageEntries": 128,
-      "latestWorkflowRun": 39121735314,
+      "currentPackageSha256": "a03143c6529b45d2b247ba567b5328bc15ac9004d3a612b32eeb77b30e21f246",
+      "currentPackageBytes": 12755972,
+      "currentPackageEntries": 135,
+      "latestWorkflowRun": 39131063614,
       "latestWorkflowConclusion": "success",
-      "latestSuccessfulPackageWorkflowRun": 39120714906,
-      "ciStatus": "PASSED_RUNTIME_AND_REPORT_CLOSE",
+      "latestSuccessfulPackageWorkflowRun": 39131063614,
+      "ciStatus": "PASSED_RUNTIME_DOCUMENTARY_CLOSE_PENDING",
       "latestCIFailure": {
         "workflowRun": 39104552902,
         "conclusion": "failure",
@@ -9567,10 +9742,11 @@
         "fixedByCommit": "d39ed440740b094f9dddb588c540c537f4499215",
         "passedWorkflowRun": 39105045562
       },
-      "nextPriority": "Revisión del primer capítulo, impacto/restos del misil, mezcla y QA física; luego Gaia, sin activar MotorV1.",
-      "currentPackageRevision": "1d3776f68358c21fb98c39b99842d0e170f715a8a92f0b82f5b817fb4ba2e83e",
-      "currentBatchVerification": "Natural4/4, visual6/6 y offline7/7 sobreF; propietario/dispositivo pendientes.",
-      "latestWorkflowCommit": "d30fb15201ec094818d181d5e1e22998d27b213b"
+      "nextPriority": "Revisión humana del primer nivel móvil/C9HUD; articulación de Atlas, mezcla y dispositivo antes de extender Gaia.",
+      "currentPackageRevision": "e6aec451eb36f81c324e562cad6269fb43974fc3df2f889b8d51cd00a25b716b",
+      "currentBatchVerification": "Chromium visual12/12, natural4/4, offline7/7, HTTP16/16 y CI completos sobre runtime limpio da3.",
+      "latestWorkflowCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "netlifyDeploymentStatus": "PREPARED_NOT_DEPLOYED_AUTHENTICATION_AND_ISOLATED_TEST_DESTINATION_REQUIRED"
     },
     "feedbackHistory": [
       {
@@ -9671,6 +9847,26 @@
         "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
         "privateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
         "scope": "Primer capítulo integrado: certificación11/11 a354, naturalfinalf6344/4, visual6/6, actualización/offline7/7, Site20HTTP12/12 y CI39120714906success. Artística/humana/física pendientes."
+      },
+      {
+        "date": "2026-10-18",
+        "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
+        "batch": "LEVEL_ONE_DYNAMIC",
+        "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+        "workflowRun": 39131063614,
+        "workflowUrl": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614",
+        "conclusion": "success",
+        "scope": "Paquete limpio da3: Chromium visual12/12 sobre escenas controladas, partida natural4/4 y actualización/offline7/7; buildpreview y preview23/23. Certificación local11/11 corresponde al snapshot dirty basado end4, no a un árbol limpio da3. CI39131063614 comprueba el commit funcional publicado. Aceptación artística/humana/física pendientes; no despliegue Netlify certificado.",
+        "evidence": [
+          "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
+          "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
+          "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
+          "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+          "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+          "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+          "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
+        ],
+        "netlifyDeploymentStatus": "PREPARED_NOT_DEPLOYED_AUTHENTICATION_AND_ISOLATED_TEST_DESTINATION_REQUIRED"
       }
     ],
     "decisionHistory": [
@@ -9719,6 +9915,25 @@
       },
       {
         "date": "2026-10-18",
+        "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+        "decisions": [
+          "El primer nivel abarca sabotaje Chronos→registro→diez etapas espaciales→C9→frontera Atlas→verificación Iria; el siguiente territorio conserva continuidad y la pista Vulkar no salta contenido.",
+          "Apertura 26 s sobre reloj de ruta, ruptura única 9 s, pilotaje liberado a los 9 s o al omitir; salto/repetición no cambian ruta, cuota o recompensas. Epílogo 8 s tras resolución real.",
+          "Lira evacúa y conserva pruebas, Mira mantiene el corredor y vende mejoras, Atlas aplica una identificación falsa e Iria puede revisar y revocar el bloqueo. Redacción y nombres son decisiones de trabajo.",
+          "Naves clásicas al 40 % de ancho y alto con geometría de colisión probada; variantes históricas mantienen dimensiones. Reserva de integridad 30 sin temporizador, ampliable a 45 por 30 de chatarra.",
+          "Conservar 20 disparos / recarga 2 s fuera del jefe, o 1,5 s con refrigeración. Básico ilimitado con cadencia sólo durante Atlas sin consumir/rellenar la reserva; manual por defecto y AUTO sólo en Ajustes.",
+          "Tres misiles especiales persistidos con daño inicial 6 y reposición 6 por cada misil faltante en C9; máximo 3 y transacciones idempotentes. Preparación24,refrigeración 45,reparación de emergencia gratuita.",
+          "Atlas v5 de 96 HP: blindaje cerrado durante ataque, núcleo 42 expuesto sólo en su ventana, tres escalones de ataque. Chatarra física 600, Gemelo y acceso al nivel 2 sólo con sus condiciones y guardado coherente.",
+          "Las compras antiguas shield-cell migran a hull-reinforcement con respaldo y sin otro cargo; conservar saldos, armamento y partidas. Dinero sólo al recoger chatarra, no al destruir enemigos.",
+          "Conversiones: 100.000 chatarra → 1 plata, 100 plata → 1 oro, 10 oro → 1 estelar; CRONIUM es energía diferenciada. Mantener lluvia 1.5/1.9 y 360 s / checkpoints v2 con regresión específica.",
+          "Arte y música originales conservan maestros y QA de exportación; aceptación artística, escucha humana, mezcla y Safari/iPhone pendientes. Limitación de exportación Canva registrada sin compras.",
+          "Arsenal futuro 10–15 armas PENDING. No expandir masivamente ni activar Motor V1; un único RAF, rama autorizada, guardados conservados y sin publicación comercial."
+        ],
+        "supersededBy": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
+        "note": "Conservar historial del contrato anterior; el lote LEVEL_ONE_DYNAMIC sustituye apertura por láminas, escala40%, misil6 y parada orbital obligatoria C9. Las demás protecciones y guardados siguen vigentes."
+      },
+      {
+        "date": "2026-10-18",
         "batch": "LEVEL_ONE_DYNAMIC",
         "decisions": [
           "Aumento relativo30%: .4→.52; probar collider real.",
@@ -9729,6 +9944,6 @@
         "supersedesCreativeConstraintsFrom": "CHAPTER_ONE_LIVING_JOURNEY; SPECIALIST_POLISH; historical orbital C9 and cinematic-lock contract"
       }
     ],
-    "currentBatch": "CHAPTER_ONE_LIVING_JOURNEY"
+    "currentBatch": "LEVEL_ONE_DYNAMIC"
   }
 }

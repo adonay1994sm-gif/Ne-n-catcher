@@ -1167,11 +1167,27 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_CURRENT_BUILD_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original project illustration/synthesis; see retained metadata and masters",
-      "version": 1
+      "version": 1,
+      "integrationCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "evidence": "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+      "verificationHistory": [
+        {
+          "date": "2026-10-18",
+          "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+          "technical": "PASSED",
+          "evidence": [
+            "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+            "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+            "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+            "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
+          ],
+          "scope": "Recurso real usado en C9 o reproducción del banco de combate durante acciones; entrega offline con bytes/SHA comprobados. Escenas controladas y partida natural diferenciadas; no certifica estética/escucha ni iPhone."
+        }
+      ]
     },
     {
       "id": "combat-sfx-atlas-v2",
@@ -1187,11 +1203,27 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_CURRENT_BUILD_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original project illustration/synthesis; see retained metadata and masters",
-      "version": 2
+      "version": 2,
+      "integrationCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "evidence": "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+      "verificationHistory": [
+        {
+          "date": "2026-10-18",
+          "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+          "technical": "PASSED",
+          "evidence": [
+            "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+            "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+            "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+            "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
+          ],
+          "scope": "Recurso real usado en C9 o reproducción del banco de combate durante acciones; entrega offline con bytes/SHA comprobados. Escenas controladas y partida natural diferenciadas; no certifica estética/escucha ni iPhone."
+        }
+      ]
     },
     {
       "id": "combat-sfx-map-v2",
@@ -1206,11 +1238,27 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_CURRENT_BUILD_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original project illustration/synthesis; see retained metadata and masters",
-      "version": 2
+      "version": 2,
+      "integrationCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+      "evidence": "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+      "verificationHistory": [
+        {
+          "date": "2026-10-18",
+          "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
+          "technical": "PASSED",
+          "evidence": [
+            "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
+            "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
+            "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
+            "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json"
+          ],
+          "scope": "Recurso real usado en C9 o reproducción del banco de combate durante acciones; entrega offline con bytes/SHA comprobados. Escenas controladas y partida natural diferenciadas; no certifica estética/escucha ni iPhone."
+        }
+      ]
     }
   ],
   "project": "NEON CRONIUM"

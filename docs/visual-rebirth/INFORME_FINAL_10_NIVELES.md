@@ -1,3 +1,5 @@
+> **Cierre vigente18/10/2026:** [LEVEL_ONE_DYNAMIC, web privada22 y pruebas actuales](../production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md). El contenido siguiente es histórico, con sus propias revisiones. Runtime limpio da3f4b8: primer nivel técnicamente verificado, en revisión artística/humana/física; no diez territorios terminados. Registro único: `docs/production-tasks.json`.
+
 > Cierre vigente18/10/2026: [SPECIALIST_POLISH](../production-reports/SPECIALIST_POLISH_2026-10-18.md). El contenido siguiente es histórico; sus resultados conservan susSHA. No significa diez niveles terminados.
 
 > **Referencia vigente18/10/2026:** [CapítuloChronos–Gaia, Site20, pruebas y capturas](../production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). Este documento conserva historial. El primer nivel está integrado y en revisión; no se certifican los diez territorios ni dispositivo físico. Registro único: `docs/production-tasks.json`.

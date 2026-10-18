@@ -1,5 +1,25 @@
 # DIAGNÓSTICO
 
+SHA inicial local/remoto limpio **d4b08dcb2f22268944aa73fc4b71bca5f3496c7e**, preservado. Se confirmó audio ausente en emisión enemiga, movimiento Atlas limitado por estado/layout, C9 orbital obligatorio y copias generadas indexadas. Se corrigieron conservando el primer viaje, campañas, guardados y MotorV1false.
+
+# INFORME DE PRODUCCIÓN — LEVEL_ONE_DYNAMIC
+
+18/10/2026 · [Informe detallado vigente](production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md) · [Galería antes/después](production-reports/evidence/level-one-followup/GALERIA.md) · [Web privada22](https://neon-catcher-pruebas.chictide18.chatgpt.site).
+
+Runtime limpio **da3f4b839744940fee1032a8b637d5c3266c862f**, fuenteSite3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932; publicación succeeded y HTTP16/16. [Actions39131063614 completo/success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614).
+
+Integrados: Chronos del renderer sin láminas iniciales, tutorial, más perseguidores curvos, cometas variados, nave30%mayor respecto a la anterior (escala52%), Atlasv6 móvil, misiles18con explosión y taller C9enHUD con4diseños propios. Audioenemigov2: cuatro emisiones nuevas más16interpretaciones conservadas. Nuevas guíasMIT aplicadas y limpieza reversible de28copias generadas; no nueva música ni otro motor.
+
+Pruebas:11/11fases/661contenido y23preview; paquete limpio con visual12/12, partida natural4/4(9m08s), offline7/7. Dieztramos, compraC9ganada, Atlas y llegadaGaia/recompensa únicas al recargar; RAFmáximo1, sin erroresJavaScript/recursos del juego. Natural:32enemigos,855ganados−24pagados=831persistidos. El daño18delmisil y la separación del HUD se comprueban además en fixtures declaradas.
+
+Siete tareas de juego IN_REVIEW; herramientas DONE exclusivamente por preparación/skills/higiene verificadas. Aceptación artística, audición/balance humano y Safari/iPhone pendientes. Netlify **sin conexión/despliegue** por falta de acceso/destino aislado; ZIP12.755.972bytes/135entradas ySHA256/guía en informe. Siguiente: revisión jugable de esta base, pulido Atlas/C9 y dispositivo antes de Gaia2. No main/PR3/producción/tiendas/forcepush; MotorV1false.
+
+Contenido siguiente histórico; cifras y pruebas conservan sus SHA y no certifican el runtime actual.
+
+---
+
+# DIAGNÓSTICO
+
 HEAD/remoto inicial50bc9ca conservado; último runtime previoF634. Contornos truncados deAtlas, CRONIUMopaco, deformación de llama y lanzador pegado al misil reproducidos. Seis especialistas coordinaron correcciones sin cambiar reglas, economía o guardados.
 
 # INFORME DE PRODUCCIÓN — SPECIALIST_POLISH

@@ -13,7 +13,7 @@ const report={status:'running',exitCode:null,command:process.argv,sourceRoot:roo
   executionKind:'CONTROLLED_REAL_RENDERER_UI_AUDIO_AND_PHYSICAL_MISSILE_NOT_NATURAL',profiles:[],limits:[
     'Fresh contexts at390x844 and320x568. The opening, workshop, purchases, focus, escape and re-entry use real UI controls.',
     'C9 is an explicit declared stage-three fixture with recovered emitter, hull62, reserve12,48 fixture scrap and one missile; amounts are granted through the real ledger and never described as earned.',
-    'Atlas is established from a valid stage-ten checkpoint. The single legacy RAF is then explicitly stopped for controlled model/update steps and restarted once per profile at the end.',
+    'Atlas is established from a valid stage-ten checkpoint with unrelated ambient spawn/hazard schedules explicitly suppressed. The single legacy RAF is then stopped for controlled model/update steps and restarted once per profile at the end.',
     'Accepted model hits resolve phase contracts for the conclusion fixture; they do not certify balance. The missile test launches a real physical projectile and advances actual collision/update before reading its impact.',
     'Only a temporary HTTP response receives the fixture and observation API. Original package files are hashed before and after. No production file, second RAF or original save is modified.',
     'Sound measurements show decoded sample playback, not listening quality. Browser viewport emulation is not physical Safari/iPhone certification.'
@@ -134,8 +134,17 @@ function guardianBounds(q,positions){
             goHome();const checkpoint=NeonCampaign.createChronosVoyageCheckpoint(10,{goal:36,collected:36});
             storage.setJSON(NeonCampaign.CHRONOS_VOYAGE_KEY,{version:2,checkpoint,entry:{hull:100,reserve:30,score:160,maxCombo:1,collected:36},unlockedStage:10,completed:false});
             loadClassicVoyage();startLevel(0);warpTimer=0;spawnTimer=classicScoutTimer=classicPatrolTimer=999;gateCountdown=999;
-            for(let n=0;n<2000&&!atlasBoss;n++)update(.034);
-            if(!atlasBoss)throw Error('Real update did not establish Atlas');stopLegacyLoop();qaPaint.length=0;render(performance.now());
+            classicVoyageHazardTimer=classicVoyageSpawnTimer=999;items=[];gates=[];
+            // Route-entry callbacks reset ambient timers on their first tick;
+            // suppress those declared fixtures on every preparation step.
+            for(let n=0;n<2000&&!atlasBoss;n++){
+              spawnTimer=classicScoutTimer=classicPatrolTimer=classicVoyageHazardTimer=classicVoyageSpawnTimer=999;
+              update(.034);
+            }
+            if(!atlasBoss)throw Error('Real update did not establish Atlas');
+            // The actual frame normally synchronizes audio after startLevel.
+            // Do that same zero-delta synchronization before freezing its RAF.
+            updateScore(0,false);stopLegacyLoop();qaPaint.length=0;render(performance.now());
           },
           bossUntil(target){
             for(let n=0;n<3500&&atlasBoss.state!==target;n++)updateAtlasEncounter(.034);
