@@ -1,3 +1,13 @@
+## Versión vigente15 ·18/10/2026
+
+**[Abrir NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE. Mismo laboratorio privado y mismo origen de guardados. Paquete33263c5219240b5fb119f23b430f9c6698191e0c, fuenteSite0fdde843ec0b171d9022ed501a8b22fa0f2873b0; publicación y cuatro respuestasHTTP comprobadas. [Informe/capturas/ZIP/hash y fallos conservados](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md).
+
+Para repetir el ataque y nueva persecución: NIVELES → La Onda de Choque →1.1. Para continuar la partida, usa el checkpoint actual. La llegada ofrece CRUZAR HACIA GAIA NOVA. El segundo territorio incorpora CH-02 en su segunda patrulla, no en el menú. Su destrucción en partida natural aún no está certificada; Gaia sigue en desarrollo. No hace falta entrar en Netlify y no se ha modificado producción.
+
+Las referencias a versiones anteriores que siguen son históricas; el experimento orbital ajeno se conserva.
+
+---
+
 <!-- score-read-guard-current -->
 ## DIAGNÓSTICO · refuerzo final de guardados, 17/10/2026
 

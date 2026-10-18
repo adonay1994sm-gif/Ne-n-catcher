@@ -1,6 +1,6 @@
 # CH-02 Interceptor — producción del 18/10/2026
 
-Estado: **IN_REVIEW**. Arte y controlador comprobados en aislamiento; su aparición real, combate natural, caché y aceptación estética requieren integración y revisión. No se declara certificación de iPhone.
+Estado: **IN_REVIEW**. Arte/animador comprobados en aislamiento y aparición, flanqueo, aviso, disparo, pausa y daño observados en el juego. Paquete final33263c5, web privada15; smoke Gaia4/4, actualización/offline5/5. La destrucción natural no se certificó: los intentos ampliados y el balance humano permanecen pendientes. Aceptación artística/física pendientes. Ver [informe de integración](../../../docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). Los datos de producción siguientes conservan su procedencia.
 
 ## Diseño y archivos
 

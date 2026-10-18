@@ -1,3 +1,9 @@
+## Prioridad vigente ·18/10/2026
+
+El propietario considera el primer nivel casi terminado y pide mejorar transiciones, presión moderada después de la ruptura y lógica enemiga antes de continuar Gaia. Leer docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md: versión privada15/paquete33263c5. Cruces y persecución verificados; CH-02 requiere todavía destrucción natural/revisión humana antes de cerrar su integración y ampliar CH-03. Las restricciones siguientes siguen vigentes; no activar MotorV1 ni sustituir el clásico.
+
+---
+
 ## Ejecución autorizada del plan de publicación ·17/10/2026
 
 El propietario acepta ejecutar las metas de la [auditoría de publicación](docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md). Cerrar incrementos integrados y comprobables antes de expandir: primero Chronos–Gaia/Atlas, presentación de C9, audio contextual, accesibilidad y persistencia ante interrupciones. Las metas de contenido, pruebas humanas, dispositivos y distribución no se consideran terminadas por aprobar el plan. Motor V1 reservado/desactivado; historial y límites siguientes vigentes.

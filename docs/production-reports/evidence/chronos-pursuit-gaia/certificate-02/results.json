@@ -1,0 +1,154 @@
+{
+  "startedAt": "2026-10-18T06:22:29.609Z",
+  "node": "v24.19.0",
+  "branch": "continuity-assets-audit-20261013",
+  "head": "1313a2bee65d2ebb48cd3772a68a9ed2f8695919",
+  "workingTree": "?? docs/production-reports/evidence/chronos-pursuit-gaia/",
+  "results": [
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 755,
+      "log": "build.txt"
+    },
+    {
+      "name": "engine",
+      "command": "npm run test:engine",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 281,
+      "log": "engine.txt"
+    },
+    {
+      "name": "architecture",
+      "command": "npm run test:architecture",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 133,
+      "log": "architecture.txt"
+    },
+    {
+      "name": "content-integration-assets",
+      "command": "npm run test:content",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 66098,
+      "log": "content-integration-assets.txt"
+    },
+    {
+      "name": "static",
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 192,
+      "log": "static.txt"
+    },
+    {
+      "name": "regression",
+      "command": "npm test",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 2661,
+      "log": "regression.txt"
+    },
+    {
+      "name": "web",
+      "command": "node tests/run-v7-web-tests.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 1160,
+      "log": "web.txt"
+    },
+    {
+      "name": "experimental-render-adapter",
+      "command": "node --test tests/campaign-adapter.test.mjs tests/neon-render-engine.test.mjs tests/sprite-animator.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 195,
+      "log": "experimental-render-adapter.txt"
+    },
+    {
+      "name": "audio-lifecycle",
+      "command": "node --test tests/audio-lifecycle.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 95,
+      "log": "audio-lifecycle.txt"
+    },
+    {
+      "name": "visual-artpass",
+      "command": "node --test tests/visual-artpass.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 129,
+      "log": "visual-artpass.txt"
+    },
+    {
+      "name": "inventory",
+      "command": "node scripts/audit-asset-inventory.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 57,
+      "log": "inventory.txt"
+    }
+  ],
+  "artifacts": {
+    "game.js": [
+      {
+        "directory": ".",
+        "sha256": "9795c6705eab1872627b6fd895596f2ab7fc83dac6b2dbbc090e541a4b8d9831"
+      },
+      {
+        "directory": "www",
+        "sha256": "9795c6705eab1872627b6fd895596f2ab7fc83dac6b2dbbc090e541a4b8d9831"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "9795c6705eab1872627b6fd895596f2ab7fc83dac6b2dbbc090e541a4b8d9831"
+      }
+    ],
+    "core-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "www",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      }
+    ],
+    "content-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "9f753ab0538233f24c73eab7e6e8176a9a8039a2206b304bcc8a9ba33ca09664"
+      },
+      {
+        "directory": "www",
+        "sha256": "9f753ab0538233f24c73eab7e6e8176a9a8039a2206b304bcc8a9ba33ca09664"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "9f753ab0538233f24c73eab7e6e8176a9a8039a2206b304bcc8a9ba33ca09664"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-18T06:23:41.384Z",
+  "ok": true
+}

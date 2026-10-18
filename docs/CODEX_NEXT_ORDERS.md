@@ -1,3 +1,17 @@
+## Continuación vigente ·18/10/2026
+
+[Último cierre verificable](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). Web privada15, paquete33263c5, fuenteSite0fdde84. No volver a HEAD históricos. Mantener EngineV1=false y usar sólo la rama continuity-assets-audit-20261013.
+
+1. Revisar la respuesta del propietario al viaje/perseguidores. Primer nivel casi terminado según su comentario; no equivale a aceptación visual/física completa.
+2. Cerrar CH-02 con una destrucción natural: movimiento vertical y anticipación durante su carga, recuperar suministros y observar animación terminal/recompensa única. No basta insertar un enemigo en una escena. Los intentos02/03 perdieron por suministros y04 llegó45/45peroAtlas sustituyó la patrulla; conservarlos. --combat continúa exigiendo el kill.
+3. Evaluar la retirada lateral y las ventanas de tiro con jugador humano antes de aumentar presión o copiar la IA a otras familias. No corregir colisiones para ayudar a un bot.
+4. Continuar Gaia con CH-03 y secuencia de defensa orbital/identificación/Atlas, por unidades integradas. No declarar diez etapasGaia o cien etapas canónicas implementadas.
+5. Preservar árbol/remoto, el Site orbital ajeno y los guardados. Antes de una nueva publicación usar la procedencia/hash actuales, no una URL como prueba de un SHA diferente. Revisiones artísticas, humanas y físicas pendientes; soporte público aplazado, no preguntar de nuevo por el correo.
+
+El contenido siguiente conserva las instrucciones históricas; prevalecen las anteriores para este lote.
+
+---
+
 ## Continuación vigente · versión14, 17/10/2026
 
 [Cierre de guardados y paquete](production-reports/SCORE_READ_GUARD_2026-10-17.md). Verificar remoto y conservar avances posteriores. HEAD funcional probado f39082f; web privada14, fuenteSite5f06e63. No repetir la corrección de migración/derrota ni declarar que falta el journal: leer sus pruebas y límites. Guardado de derrota no es una transacción atómica entre dos claves.

@@ -1,0 +1,12 @@
+{
+  "commit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+  "revision": "07236e09448ce9e791ea0b8ca29e4b84eea7fd23ad76deb858bedec61f1f3d01",
+  "dirty": false,
+  "archive": "neon-cronium-chronos-gaia-pursuit-33263c5.zip",
+  "bytes": 8777106,
+  "entries": 120,
+  "sha256": "ba580b5335fc201e0f3cab264101ea3b22bfd9b1082f23eedec1449a5de53703",
+  "entryPoint": "index.html",
+  "gameEntryPoint": "juego/index.html",
+  "instructions": "Serve the extracted root; CONTINUAR VIAJE. Preview saves have their own namespace."
+}

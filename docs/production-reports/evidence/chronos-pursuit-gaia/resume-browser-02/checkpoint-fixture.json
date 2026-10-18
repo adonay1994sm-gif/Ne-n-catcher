@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "checkpoint": {
+    "version": 2,
+    "contentVersion": "chronos-voyage-v2",
+    "routeId": "chronos-to-gaia",
+    "stageIndex": 1,
+    "stageId": "1.2",
+    "stageNumber": 2,
+    "goal": 36,
+    "collected": 4,
+    "eventIds": [
+      "chronos-voyage:1.1:start",
+      "chronos-voyage:1.1:checkpoint",
+      "chronos-voyage-intruder",
+      "chronos-voyage-breach",
+      "chronos-voyage:1.1:complete",
+      "chronos-voyage:1.2:start",
+      "chronos-voyage:1.2:checkpoint"
+    ]
+  },
+  "entry": {
+    "hull": 100,
+    "score": 53,
+    "maxCombo": 2,
+    "collected": 4
+  },
+  "unlockedStage": 2,
+  "completed": false
+}

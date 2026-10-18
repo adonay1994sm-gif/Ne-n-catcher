@@ -1,0 +1,12 @@
+{
+  "reportLinks": "passed except the closure receipt to be added after committing this report",
+  "expectedPendingLink": [
+    "evidence/chronos-pursuit-gaia/closure.json"
+  ],
+  "zipHash": "passed",
+  "runtimeUnchangedAfterPackage": true,
+  "githubFunctional": "completed/success",
+  "siteHTTP": "4/4 passed",
+  "siteLocalRoute": "2/2 passed",
+  "exitCode": 0
+}

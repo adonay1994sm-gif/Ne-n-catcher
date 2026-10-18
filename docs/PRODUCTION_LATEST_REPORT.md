@@ -1,3 +1,21 @@
+<!-- chronos-pursuit-current -->
+## DIAGNÓSTICO · continuidad y persecución Chronos–Gaia,18/10/2026
+
+El propietario considera el primer nivel casi terminado y pide cruces más naturales, una ligera subida de presión tras el ataque y enemigos con intención. Se conserva HEAD51d5629 y la base anterior. El cambio de etapa borraba objetos/disparos; se conserva su continuidad y se añade persecución anunciada. Gaia recibe capas orbitales independientes y CH-02 ilustrado/animado.
+
+## INFORME DE PRODUCCIÓN · versión15 privada
+
+[Informe completo, capturas, fallos y paquete](production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md). **[Probar NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE; para revisar desde el comienzo: NIVELES → La Onda de Choque →1.1. Paquete limpio **33263c5**, revisión07236e09; fuente Site0fdde84. Publicación succeeded18/10/2026 06:27:02UTC y HTTP remoto4/4 con hashes. Actions[39103902742](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39103902742) completed/success.
+
+Travesía natural **4/4 sobre612a3f3**: diez etapas, pieza,C9,Gemelo,llegada y cruce directo aGaia. Después se corrige el margen al recuperar un checkpoint: **paquete final Chromium2/2**, actualización/offline5/5, Gaia breve4/4, N-7una sesión/seis pasos. Certificación11/11, contenido329/329, preview23/23. La equivalencia de fuentes/hashes separa ambas verificaciones; no se afirma haber repetido la travesía completa sobre el SHA posterior.
+
+**Pendiente:** destrucción CH-02 durante una partida normal, equilibrio humano, revisión artística/iPhone y completar Gaia/CH-03. Los cuatro intentos ampliados de combate y su interrupción130 se conservan; el smoke breve aprobado no certifica kill. Dos tareas nuevas y tres secuenciasCH02 quedan IN_REVIEW; registro316tareas:26DONE/77IN_REVIEW/5IN_PROGRESS/200PENDING/8BLOCKED. No son porcentajes comerciales ni territorios nuevos terminados.
+
+148archivos del Site fuera del alcance preservados byteporbyte, incluyendo las aportaciones orbitales. Guardados/campañas conservados, MotorV1=false, único RAF del clásico. Sin producción Netlify, main del juego, PR3, tiendas o pagos. Correo de soporte aplazado por el propietario. Los cierres anteriores siguen debajo como historial con sus SHA propios.
+<!-- /chronos-pursuit-current -->
+
+---
+
 <!-- score-read-guard-current -->
 ## DIAGNÓSTICO · refuerzo final de guardados, 17/10/2026
 

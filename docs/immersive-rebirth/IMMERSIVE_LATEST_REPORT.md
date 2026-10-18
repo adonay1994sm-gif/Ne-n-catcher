@@ -1,3 +1,7 @@
+## Continuación vigente ·18/10/2026
+
+[Diagnóstico e informe Chronos–Gaia](../production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md): versión privada15, paquete limpio33263c5. Diez etapas del primer territorio con cruces continuos/persecución; nueva profundidad Gaia y CH-02 de16poses. Partida natural4/4sobre612a, corrección de reentrada verificada2/2sobrepaquetefinal; Gaia breve4/4. Ataque/daño observados, **destrucción natural CH-02 aún pendiente**. Catálogo156 IDs, sin declarar niveles visualmente completos. Aceptación artística/física y resto deGaia pendientes; MotorV1apagado. Registro único production-tasks.json actualizado; las cifras y capturas siguientes conservan su alcance histórico.
+
 <!-- score-read-guard-current -->
 ## DIAGNÓSTICO · refuerzo final de guardados, 17/10/2026
 

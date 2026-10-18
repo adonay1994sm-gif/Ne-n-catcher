@@ -1,0 +1,5 @@
+[Gaia interceptor] open Gaia via the actual selector with declared unlock/equipment fixtures
+[Gaia interceptor] the real CH-02 image contains sixteen distinct nonempty transparent cells
+[Gaia interceptor] a natural interceptor flanks, announces an attack, fires a real projectile and freezes on pause
+[Gaia interceptor] actual gameplay uses distinct CH-02 animation cells and unlocked Twin still works
+{"status":"passed","exitCode":0,"cases":[{"name":"open Gaia via the actual selector with declared unlock/equipment fixtures","status":"passed"},{"name":"the real CH-02 image contains sixteen distinct nonempty transparent cells","status":"passed"},{"name":"a natural interceptor flanks, announces an attack, fires a real projectile and freezes on pause","status":"passed"},{"name":"actual gameplay uses distinct CH-02 animation cells and unlocked Twin still works","status":"passed"}],"output":"/tmp/neon-pursuit-gaia-focused-final"}

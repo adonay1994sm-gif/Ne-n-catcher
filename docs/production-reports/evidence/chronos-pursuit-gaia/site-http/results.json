@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 6278,
+      "sha256": "41751f1ad6c6881f4e2347f4e037e6b8921264b4e1ae7ee52a8fbfa05224a4e2",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/build-info.json",
+      "status": 200,
+      "bytes": 31582,
+      "sha256": "a9d27436deddc8e5f7bfe6c8b5829256e56c9afd5dba4d14be8f02088cacee02",
+      "result": "passed",
+      "commit": "33263c5219240b5fb119f23b430f9c6698191e0c"
+    },
+    {
+      "path": "/clasico-actual/juego/game.js",
+      "status": 200,
+      "bytes": 257415,
+      "sha256": "edce8aa6a57e0448598618feb42cfb95f0965adf6c833825eaa162ee482d0543",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/ch02_interceptor_atlas_v1.webp",
+      "status": 200,
+      "bytes": 252886,
+      "sha256": "0b1b84b7a14edbc315136339f6f423989d685c7ea4c6122a7a7b88939be78729",
+      "result": "passed"
+    }
+  ],
+  "observedAt": "2026-10-18T06:29:27.670237+00:00",
+  "site": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "commit": "33263c5219240b5fb119f23b430f9c6698191e0c",
+  "method": "Python urllib with configured environment transport",
+  "errors": [],
+  "exitCode": 0
+}
