@@ -7668,12 +7668,14 @@
       "tests": [
         "npm run test:content (463/463)",
         "npm run test:preview (23/23)",
-        "Chromium del lote: ver evidencias y alcance"
+        "Chromium del lote: ver evidencias y alcance",
+        "Chromium natural desde cero hasta C9:3/3,48ganados/24pagados, sin seed"
       ],
       "evidence": [
         "docs/production-reports/evidence/main-salvage-combat/atlas-manual-02/results.json",
         "docs/production-reports/evidence/main-salvage-combat/gaia/results.json",
-        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json"
+        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/salvage-journey/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
@@ -7724,11 +7726,13 @@
       "tests": [
         "npm run test:content (463/463)",
         "npm run test:preview (23/23)",
-        "Chromium del lote: ver evidencias y alcance"
+        "Chromium del lote: ver evidencias y alcance",
+        "Chromium natural desde cero hasta C9:3/3,48ganados/24pagados, sin seed"
       ],
       "evidence": [
         "docs/production-reports/evidence/main-salvage-combat/c9/results.json",
-        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json"
+        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/salvage-journey/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."

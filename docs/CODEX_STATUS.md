@@ -1,8 +1,9 @@
+<!-- Cierre documental base: 8f0fae8404e818b109dd05352f1073d7aab726e3; adenda posterior en el historial de este archivo. Runtime publicado:b2a89f694215bddba3a5ba2f6d1a68a03c70cccd. -->
 ## Estado vigente ·18/10/2026 · entrada, combate y chatarra
 
 Runtime publicado y probado: `b2a89f694215bddba3a5ba2f6d1a68a03c70cccd`, limpio al empaquetar; Site privado18: https://neon-catcher-pruebas.chictide18.chatgpt.site. Fuente Site37c1ce5722f34c57c60779a975d6348f911e4955; HTTP remoto6/6 y distribución local2/2. [Informe completo y diagnóstico](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md).
 
-Entrada principal única,20 cargas sin contador/recarga2s, chatarra recogible/pagosC9, IA v3/Atlasv4, cometas1.5/1.9 y dos atlas originales. MotorV1=false; saves y campañas preservados. Suites641 casos finales y CI39112642373 success; Chromium28 casos del juego, además deSite. Rendimiento Gaia11,56→59,17callbacks/s en este host; no es certificación iPhone. Ocho tareas técnicamente verificadas continúanIN_REVIEW por aceptación artística y física. Ver adenda del recorrido nuevo desde cero antes de afirmar economía naturalChronos→C9.
+Entrada principal única,20 cargas sin contador/recarga2s, chatarra recogible/pagosC9, IA v3/Atlasv4, cometas1.5/1.9 y dos atlas originales. MotorV1=false; saves y campañas preservados. Suites641 casos finales y CI39112642373 success; Chromium31 casos del juego, además deSite. Rendimiento Gaia11,56→59,17callbacks/s en este host; no es certificación iPhone. Ocho tareas técnicamente verificadas continúanIN_REVIEW por aceptación artística y física. La partida nueva desde cero pasó3/3:48ganados,24pagados enC9 y salida persistida, sin moneda de fixture.
 
 El contenido anterior permanece como historial; sus cifras y mandatos sustituidos no describen el runtime actual.
 

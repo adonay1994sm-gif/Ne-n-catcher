@@ -6,6 +6,6 @@ Runtime limpio probado/publicado: **b2a89f694215bddba3a5ba2f6d1a68a03c70cccd**. 
 
 Entrada única, cargador20 sin contador, pagos con chatarra enC9, enemigos/Atlas más activos, lluvia de cometas y pulsosGaia ilustrados. Suites641 casos finales; CI39112642373 success. Chromium: Atlasmanual4/4,C9dirigida4/4,Gaia4/4,offline5/5,dosdedos7/7,cometas2/2 y rendimiento2/2. No son pruebas físicas ni aceptación estética.
 
-Ocho tareas nuevas con técnica verificada/IN_REVIEW; 333tareas de seguimiento incluyendo159 entradas del catálogo. No se expresa como porcentaje comercial. El informe distingue snapshots, SHA del paquete/ZIP, pruebas naturales/fixtures, fallos y correcciones. Consultar su adenda para la comprobación adicional de chatarra ganada desde cero antes deC9.
+Ocho tareas nuevas con técnica verificada/IN_REVIEW; 333tareas de seguimiento incluyendo159 entradas del catálogo. No se expresa como porcentaje comercial. El informe distingue snapshots, SHA del paquete/ZIP, pruebas naturales/fixtures, fallos y correcciones. Adenda natural3/3:desde0chatarra hasta48ganados, compra24 enC9 y salida con saldo24/checkpoint.
 
 Informe anterior histórico: [pulido y progresión](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md).

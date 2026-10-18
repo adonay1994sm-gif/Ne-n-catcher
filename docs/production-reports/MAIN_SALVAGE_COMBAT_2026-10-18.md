@@ -12,7 +12,7 @@ SHA inicial: `39f7b06e726d71eacff1316de85ee325a46c8f70`.
 
 SHA funcional probado y publicado: **`b2a89f694215bddba3a5ba2f6d1a68a03c70cccd`**.
 
-Cierre documental: identificado por el commit que incorpora este informe y las evidencias; es posterior al SHA del ejecutable. Consultar el historial del archivo y `CODEX_STATUS.md`. No confundir ese cierre con una reconstrucción o despliegue del runtime.
+Cierre documental base: **`8f0fae8404e818b109dd05352f1073d7aab726e3`**. La adenda de la partida desde cero se conserva en el commit posterior de este mismo informe; el historial del archivo identifica su SHA. Ninguno de esos commits documentales reconstruye ni despliega otro runtime.
 
 Bloques trabajados: entrada canónica; combate/IA; cargador; chatarra/C9; cometas; arte; rendimiento; QA y publicación privada.
 
@@ -123,9 +123,9 @@ Total de suites: **618 casos**, más23 de preview=**641**. No se suman de nuevo 
 | Site distribución local |2/2|Portada única y arranque real deChronos desde el árbol exacto publicado.|
 | Site HTTP remoto |6/6|Portada, manifest,build-info,bundle y ambos atlas con hashes idénticos.|
 
-Son28 casos Chromium del juego, más2 de la distribución local y6 HTTP. Exportación de arte: otros4/4+4/4 de decodificación/celdas. No equivalen a pruebas humanas ni físicas. Los scripts de navegador y sus comandos exactos, SHA, estado del árbol, limitaciones y capturas constan en cada `results.json`.
+Son31 casos Chromium del juego (incluidos3 de la adenda natural), más2 de la distribución local y6 HTTP. Exportación de arte: otros4/4+4/4 de decodificación/celdas. No equivalen a pruebas humanas ni físicas. Los scripts de navegador y sus comandos exactos, SHA, estado del árbol, limitaciones y capturas constan en cada `results.json`.
 
-Partida adicional desde cero hacia C9: **ver adenda al cierre**. Los fixtures C9/cometas y una victoria enGaia no se presentan como demostración del recorrido natural completo Chronos→C9.
+Partida adicional desde cero hacia C9: **3/3, primer intento**, descrita en la adenda al cierre. Los fixtures C9/cometas y una victoria enGaia no se presentan como demostración del recorrido natural completo Chronos→C9.
 
 ## Incidencias y correcciones
 
@@ -189,3 +189,12 @@ No se modificaron main del juego, PR#3, firmado, MotorV1 ni producción Netlify.
 Fuente única: `docs/production-tasks.json`,333tareas contando159 del catálogo. Resumen:26DONE,94IN_REVIEW,6IN_PROGRESS,8BLOCKED,199PENDING. Este cociente histórico no mide la terminación comercial. Las ocho tareas MAIN_SALVAGE_COMBAT tienen técnica verificada y revisión artística/física pendiente. El catálogo se amplió con dos entradas trazables, sin declarar listos159assets.
 
 Prioridad exacta: revisar jugando en el dispositivo del propietario la presión del primer viaje, la claridad del pulso y la economía hastaC9; contrastar la partida natural adicional de la adenda. Después consolidar dos configuraciones y afinarGuardianAtlas, antes de expandir Gaia→Vulkar y generalizar a los diez territorios. Falta certificar Safari/iPhone, equilibrar la economía de final de campaña y completar personajes, enemigos/arte/narrativa de los demás territorios. La decisión del motor y la aceptación estética siguen reservadas al propietario. Si un futuro jefe usa hazards wave/final, excluir explícitamente sus proyectiles de offsets ambientales; Atlas actual usa fast y no está afectado.
+
+
+## Adenda: economía natural Chronos → C9
+
+Se ejecutó `node scripts/salvage-journey-browser-smoke.cjs --root preview-dist --output /tmp/neon-salvage-browser-01/salvage-journey --expected-commit b2a89f694215bddba3a5ba2f6d1a68a03c70cccd`, con el paquete inmutable y sin otro navegador simultáneo. **3/3, salida0**, primer y único intento,189,894s reales.
+
+Contexto vacío:0chatarra, un nivel desbloqueado, Pulso y sin emisor. El piloto realizó40 gatillos mediante controles normales, destruyó ocho enemigos, observó ocho drops y recogió48chatarra, con ocho recibos únicos. Los24 necesarios ya estaban ganados a81,65s. Recuperó el emisor del escenario, atravesó el vacío y llegó aC9. Allí pagó24 una vez, quedó saldo24, conservó Pulso y obtuvo `twinPrepared`; al desacoplar quedó persistido `service-complete` en la etapa1.6. La lectura final de simulación es185,7966s y la de ruta185,7166s. No hubo daño, muerte, reinicio, moneda inyectada, alteración del reloj ni errores JS/consola/recursos/RAF. El hook sólo observa.
+
+[Evidencia completa](evidence/main-salvage-combat/salvage-journey/results.json), con ocho capturas y copia exacta del harness. Esta prueba confirma el enlace real combate→recogida→pieza→compra→continuación. Termina al salir deC9; no certifica por sí sola las diez etapas completas ni equilibrio humano. Atlas y continuación aVulkar tienen sus pruebas separadas.
