@@ -1,3 +1,5 @@
+> Cierre vigente18/10/2026: [Forja y remates del nivel1](../production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md). Nivel1 comprende1.1–1.10yAtlas; siete remates técnicos comprobados, arte/balance humano/iPhone pendientes. El contenido siguiente conserva su valor histórico y no certifica el runtime actual.
+
 > Cierre actual: [LEVEL_ONE_DYNAMIC,18/10/2026](../production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md). El primer territorio y sus diez tramos están técnicamente verificados y en revisión humana/artística/física; no son diez mundos terminados. Este documento conserva evidencias históricas; seguimiento único en `docs/production-tasks.json`.
 
 > **Referencia vigente18/10/2026:** [CapítuloChronos–Gaia, Site20, pruebas y capturas](../production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). Este documento conserva historial. El primer nivel está integrado y en revisión; no se certifican los diez territorios ni dispositivo físico. Registro único: `docs/production-tasks.json`.

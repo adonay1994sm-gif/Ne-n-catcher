@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T16:45:52.829961+00:00",
+  "updatedAt": "2026-10-18T17:06:41.822326+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -5594,7 +5594,7 @@
         "scripts/compact-hud-browser-smoke.cjs",
         "scripts/compact-hud-powers-smoke.cjs"
       ],
-      "commit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a",
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
       "tests": [
         "node scripts/certify-local.mjs docs/production-reports/evidence/compact-hud/certification-03:11/11 exit0; contenido168/168",
         "node scripts/compact-hud-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/after-04:26/26 exit0; antes del ajuste final del toast",
@@ -5605,7 +5605,8 @@
         "npm run test:architecture; npm run test:static:6/6 y13/13 exit0 después del último ajuste CSS",
         "npm run build:preview:6891f81 dirty:false; npm run test:preview:23/23 exit0",
         "Sites versión7 succeeded18:44:38UTC;113archivos idénticos al paquete; no prueba física",
-        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados."
+        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
       ],
       "evidence": [
         "docs/production-reports/COMPACT_HUD_2026-10-17.md",
@@ -5621,7 +5622,8 @@
         "docs/production-reports/evidence/compact-hud/package-6891f81/preview-tests.json",
         "docs/production-reports/evidence/level-one-controls/visual-8f6c61b-03/results.json",
         "docs/production-reports/evidence/level-one-controls/two-touch-8f6c61b-01/results.json",
-        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md"
+        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario pendiente.",
@@ -5637,7 +5639,7 @@
         "QA Chromium sobre preview-dist; paquete exacto publicado y revisión del propietario."
       ],
       "acceptanceStatus": {
-        "technical": "CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -6146,13 +6148,14 @@
         "tests/two-finger-input.test.mjs",
         "scripts/two-touch-browser-smoke.cjs"
       ],
-      "commit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a",
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
       "tests": [
         "Certificación inicial: build y 9 suites/auditorías aprobadas; 10/11 fases. Contrato web actualizado: 13/13, salida 0.",
         "Contenido 193/193; motor 40/40; arquitectura 6/6; estáticos 13/13; regresión 33/33; preview 23/23.",
         "Chromium multitáctil: 14/14 grupos y 70 aserciones (7 grupos CDP nativo y 7 fixture TouchEvent).",
         "Chromium HUD compacto: 26/26 grupos en 5 tamaños; partida natural Chronos–C9–Gaia: 5/5; N-7: 6 pasos, salida 0.",
-        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados."
+        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados.",
+        "FORJA:20/20 native-pointer y TouchEventfallback; misilambosórdenes/cancel/pausa, recargaexacta yconsumoúnico. Evidencia02 conserva corrección del arnés temporal."
       ],
       "evidence": [
         "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
@@ -6164,11 +6167,11 @@
         "docs/production-reports/evidence/ship-controls/n7-02/results.json",
         "docs/production-reports/evidence/level-one-controls/visual-8f6c61b-03/results.json",
         "docs/production-reports/evidence/level-one-controls/two-touch-8f6c61b-01/results.json",
-        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md"
+        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json"
       ],
       "openErrors": [
-        "Safari y prueba física iPhone pendientes; aceptación técnica Chromium no equivale a publicación comercial.",
-        "Propietario informa fallo simultáneo de misil/pilotaje: el lote FORJA lo corrige y añade pruebas específicas; no confundir los smokes históricos de Phaser con misil."
+        "Propietario debe repetir misil+pilotaje en Safari/iPhone físico;20comprobacionesChromium no sustituyen esa partida."
       ],
       "acceptance": [
         "Dos órdenes de contacto, fuego inmediato y movimiento continuo.",
@@ -6176,7 +6179,7 @@
         "Botón sigue recibiendo contacto durante recarga con disponibilidad comunicada por aria-disabled."
       ],
       "acceptanceStatus": {
-        "technical": "CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED",
+        "technical": "PASSED_PHASER_AND_MISSILE_MULTITOUCH_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING_OWNER_MISSILE_RETEST"
       },
@@ -8723,14 +8726,15 @@
         "tests/guardian-atlas-legacy.test.mjs",
         "tests/chronos-chapter.test.mjs"
       ],
-      "commit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a",
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
       "tests": [
         "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
         "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
         "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
         "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
         "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados.",
-        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados."
+        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
       ],
       "evidence": [
         "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
@@ -8743,13 +8747,14 @@
         "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json",
         "docs/production-reports/evidence/level-one-controls/visual-8f6c61b-03/results.json",
         "docs/production-reports/evidence/level-one-controls/two-touch-8f6c61b-01/results.json",
-        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md"
+        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
         "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios."
       ],
       "acceptanceStatus": {
-        "technical": "CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9569,20 +9574,28 @@
         "src/game/progression/scrap-economy.js",
         "src/game/combat/classic-weapons.js"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "tests": [
+        "certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.",
+        "Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.",
+        "Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
+      ],
       "evidence": [
-        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json",
+        "docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
-        "Pendiente completar verificación del paquete exacto.",
-        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+        "Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes."
       ],
       "acceptance": [
         "Comprar no equipa ni concede Gemelo; ambos proyectiles tienen trayectorias y funciones diferentes."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CURRENT_PACKAGE",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9612,20 +9625,28 @@
         "assets/forja_modules_atlas_v1.webp",
         "art-source/forja-c9/metadata.json"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "tests": [
+        "certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.",
+        "Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.",
+        "Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
+      ],
       "evidence": [
-        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json",
+        "docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
-        "Pendiente completar verificación del paquete exacto.",
-        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+        "Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes."
       ],
       "acceptance": [
         "Mira, arsenal, evolución y suministros accesibles en320/390; requisito, coste y estado visibles; compras/retorno conservados."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CURRENT_PACKAGE",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9654,20 +9675,28 @@
         "src/game/03-ui-game-flow.js",
         "src/game/05-corridor-update.js"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "tests": [
+        "certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.",
+        "Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.",
+        "Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
+      ],
       "evidence": [
-        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json",
+        "docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
-        "Pendiente completar verificación del paquete exacto.",
-        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+        "Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes."
       ],
       "acceptance": [
         "Pilotaje, tiro y recuperación completan lecciones; misil es opcional; no pausa ni invade Atlas; checkpoint en ajustes y repetición."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CURRENT_PACKAGE",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9695,20 +9724,28 @@
         "src/game/combat/guardian-atlas.js",
         "tests/guardian-atlas.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "tests": [
+        "certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.",
+        "Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.",
+        "Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
+      ],
       "evidence": [
-        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json",
+        "docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
-        "Pendiente completar verificación del paquete exacto.",
-        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+        "Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes."
       ],
       "acceptance": [
         "Ventanas reales y cinco rutinas nuevas; tiros balísticos, objetivo comprometido, máximo10proyectiles y salida posible; balance humano pendiente."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CURRENT_PACKAGE",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9738,20 +9775,28 @@
         "styles.css",
         "scripts/two-touch-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "tests": [
+        "certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.",
+        "Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.",
+        "Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
+      ],
       "evidence": [
-        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json",
+        "docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
-        "Pendiente completar verificación del paquete exacto.",
-        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+        "Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes."
       ],
       "acceptance": [
         "Pilotar y lanzar misil en ambos órdenes con pointer/touch, consumo único, click asistivo, cancelación/pausa/blur sin disparos fantasma."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CURRENT_PACKAGE",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9780,20 +9825,28 @@
         "src/game/combat/classic-weapons.js",
         "src/game/combat/hull-reinforcement.js"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "tests": [
+        "certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.",
+        "Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.",
+        "Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
+      ],
       "evidence": [
-        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json",
+        "docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
-        "Pendiente completar verificación del paquete exacto.",
-        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+        "Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes."
       ],
       "acceptance": [
         "Abanico y Aguja tienen rangoII funcional; defensa45→65, recarga1.5→1; requisitos y recibos atómicos conservan guardados."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CURRENT_PACKAGE",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9822,20 +9875,28 @@
         "src/game/03-ui-game-flow.js",
         "tests/debris-salvage.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
+      "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "tests": [
+        "certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.",
+        "Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.",
+        "Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.",
+        "FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico."
+      ],
       "evidence": [
-        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+        "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+        "docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json",
+        "docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json",
+        "docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json"
       ],
       "openErrors": [
-        "Pendiente completar verificación del paquete exacto.",
-        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+        "Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes."
       ],
       "acceptance": [
         "Destrucción produce6/18físicos, recogida única; contacto/meteoro/proyectil no dan botín; límites y Atlas600 conservados."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_CURRENT_PACKAGE",
+        "technical": "PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -9907,29 +9968,22 @@
     },
     "latestVerification": {
       "date": "2026-10-18",
-      "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
-      "batch": "LEVEL_ONE_DYNAMIC",
-      "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
-      "workflowRun": 39131063614,
-      "workflowUrl": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614",
-      "conclusion": "success",
-      "scope": "Paquete limpio da3: Chromium visual12/12 sobre escenas controladas, partida natural4/4 y actualización/offline7/7; buildpreview y preview23/23. Certificación local11/11 corresponde al snapshot dirty basado end4, no a un árbol limpio da3. CI39131063614 comprueba el commit funcional publicado. Aceptación artística/humana/física pendientes; no despliegue Netlify certificado.",
-      "evidence": [
-        "docs/production-reports/evidence/level-one-followup/certification-04/results.json",
-        "docs/production-reports/evidence/level-one-followup/build-preview-da3f4b8.txt",
-        "docs/production-reports/evidence/level-one-followup/test-preview-da3f4b8.txt",
-        "docs/production-reports/evidence/level-one-followup/visual-da3f4b8-04/results.json",
-        "docs/production-reports/evidence/level-one-followup/natural-da3f4b8-01/results.json",
-        "docs/production-reports/evidence/level-one-followup/offline-da3f4b8-01/results.json",
-        "docs/production-reports/evidence/level-one-followup/github-actions-runtime.json",
-        "docs/production-reports/evidence/level-one-followup/site-deployment.json",
-        "docs/production-reports/evidence/level-one-followup/site-http/results.json"
-      ],
-      "netlifyDeploymentStatus": "PREPARED_NOT_DEPLOYED_AUTHENTICATION_AND_ISOLATED_TEST_DESTINATION_REQUIRED",
-      "privateSiteVersion": 22,
-      "privateSiteSourceCommit": "3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932",
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "privateSiteHttp": "PASSED_16_OF_16"
+      "batch": "FORJA_LEVEL_ONE_REMATES",
+      "runtimeCommit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+      "report": "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md",
+      "technical": "PASSED_LOCAL_CHROMIUM_FULL_NATURAL_LOOP_AND_CI",
+      "artistic": "PENDING_OWNER",
+      "physical": "PENDING",
+      "netlify": "EXACT_39C2CA4_VERIFIED",
+      "note": "Misil y Phaser certificados por separado; arte y balance humano pendientes.",
+      "natural": {
+        "checks": "4/4",
+        "durationMs": 437554,
+        "earned": 744,
+        "spent": 24,
+        "balance": 720,
+        "bossRewards": 1
+      }
     },
     "productName": "NEON CRONIUM",
     "brandChange": {

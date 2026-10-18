@@ -1,3 +1,5 @@
+> Cierre vigente18/10/2026: [Forja y remates del nivel1](../production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md). Nivel1 comprende1.1–1.10yAtlas; siete remates técnicos comprobados, arte/balance humano/iPhone pendientes. El contenido siguiente conserva su valor histórico y no certifica el runtime actual.
+
 > **Cierre vigente18/10/2026:** [LEVEL_ONE_DYNAMIC, web privada22 y pruebas actuales](../production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md). El contenido siguiente es histórico, con sus propias revisiones. Runtime limpio da3f4b8: primer nivel técnicamente verificado, en revisión artística/humana/física; no diez territorios terminados. Registro único: `docs/production-tasks.json`.
 
 > Cierre vigente18/10/2026: [SPECIALIST_POLISH](../production-reports/SPECIALIST_POLISH_2026-10-18.md). El contenido siguiente es histórico; sus resultados conservan susSHA. No significa diez niveles terminados.

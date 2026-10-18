@@ -1274,11 +1274,22 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_CURRENT_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original image generated with the available image_gen tool on 2026-10-18; no external purchased or third-party asset",
-      "version": 1
+      "version": 1,
+      "integrationCommit": "1c7c72ec879452c53bc3cd19f9410eb40a2450fd",
+      "evidence": "docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json",
+      "verificationHistory": [
+        {
+          "date": "2026-10-18",
+          "commit": "39c2ca434ac9df38deccd235d011b76eb680fb58",
+          "scope": "30 game captures; Forja actual UI purchases and both physical weapons; exact same atlas decoded offline on1c7c72e",
+          "artisticAcceptance": "PENDING_OWNER",
+          "physicalAcceptance": "PENDING"
+        }
+      ]
     }
   ],
   "project": "NEON CRONIUM"

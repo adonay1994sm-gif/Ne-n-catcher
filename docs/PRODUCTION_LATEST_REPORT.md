@@ -1,12 +1,16 @@
 # DIAGNÓSTICO
 
-El propietario solicita continuar siete remates del primer viaje. Base preservada `34ae40f0717243c445ffdb967f835bddb8509751`; misil por onclick y tutorial por reloj confirmados como carencias reales.
+18/10/2026 · Base34ae40f preservada. Se corrigió el misil por clic separado del multitoque y se sustituyó el tutorial por reloj. Funcional probado **39c2ca434ac9df38deccd235d011b76eb680fb58**; MotorV1false, RAFúnico y guardados/campañas conservados.
 
 # INFORME DE PRODUCCIÓN — FORJA_LEVEL_ONE_REMATES
 
-[Informe detallado vigente](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md). Forja con arsenal y árbol, nuevas armas y rangos, tutorial por acciones, Atlasv7, consola/misil multitoque y chatarra física de restos integrados. La verificación, SHA funcional, evidencia y publicación se completan en el cierre del lote; no declarar nivel1 `DONE` ni los diez niveles terminados. Arte, dificultad humana y Safari/iPhone siguen pendientes.
+Forja C9 ilustrada, dos armas comprables y sus rangosII, ramas de casco/refrigeración, tutorial por acciones, Atlasv7 con cinco rutinas nuevas, consola/misil táctil independiente y chatarra de restos/satélites integrados. [Informe, capturas, archivos y huellas](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md).
 
-Los cierres siguientes son históricos y conservan sus pruebas/identificadores originales.
+Certificaciónlocal11/11,696contenido; visual39c2ca4 **14/14/30capturas**, multitoque1c7 **20/20**, offline1c7 **7/7**, partida natural39c2ca4 **4/4/437554ms**:10tramos, compra ganada,Atlas,llegada yreload;744−24=720persistidos, unAtlas600. [Actions39c2ca4 completo/success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39147083429). Netlify sirve el mismo paquete limpio/revisión comprobada; publicación documental posterior se comprueba separadamente.
+
+Las siete tareas y nivel1 quedan`IN_REVIEW`. Pendientes aceptación del propietario, balance humano y Safari/iPhone. Próxima tarea: partida en teléfono centrada en Forja/tutorial/misil/Atlas; después corregir y cerrar antes de expandir. El export de código ZIP/TXT usa blobs Git y conserva las omisiones/hashes en manifiesto; no se ha detenido el desarrollo por una supuesta reactivación.
+
+Los cierres siguientes son históricos y conservan sus SHA/pruebas.
 
 ---
 

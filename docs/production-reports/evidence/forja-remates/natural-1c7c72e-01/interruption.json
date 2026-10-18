@@ -1,0 +1,44 @@
+{
+  "status": "INTERRUPTED_BY_INTEGRATOR",
+  "at": "2026-10-18T16:56:40.987400+00:00",
+  "runtimeCommit": "1c7c72ec879452c53bc3cd19f9410eb40a2450fd",
+  "reason": "QA pilot always prioritizes newly abundant salvage and combat before visible mission energy. It stalled at stage1.8 quota27/28 while still killing/collecting, hull100. Correct the input policy, never grant quota or change gameplay to assist the bot.",
+  "lastSample": {
+    "wallMs": 528011,
+    "elapsed": 448.72580000006656,
+    "routeElapsed": 288,
+    "stage": "1.8",
+    "state": "playing",
+    "hull": 100,
+    "reserve": 0,
+    "balance": 273,
+    "missileAmmo": 3,
+    "collected": 27,
+    "boss": null,
+    "combat": {
+      "version": 2,
+      "ready": true,
+      "loading": false,
+      "failed": false,
+      "disposed": false,
+      "paused": false,
+      "enabled": true,
+      "volume": 0.7,
+      "activeVoices": 1,
+      "activeGain": 0.31,
+      "played": 273,
+      "playedByCue": {
+        "phaser": 159,
+        "enemy-phaser": 23,
+        "enemy-break": 50,
+        "impact-metal": 39,
+        "hull-hit": 2
+      },
+      "dropped": 0,
+      "stolen": 0,
+      "decodedBytes": 2815340
+    },
+    "ordnanceRows": {}
+  },
+  "originalResultsPreserved": true
+}

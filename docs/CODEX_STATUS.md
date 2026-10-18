@@ -1,12 +1,16 @@
 # DIAGNÓSTICO
 
-18/10/2026 · Se preservó HEAD `34ae40f0717243c445ffdb967f835bddb8509751`. El propietario pide siete remates antes de cerrar el nivel1. El misil usaba onclick separado del multitoque y el tutorial sólo mostraba mensajes por tiempo; ambas carencias se abordan en este lote.
+18/10/2026 · Base34ae40f preservada. Se corrigió el misil por clic separado del multitoque y se sustituyó el tutorial por reloj. Funcional probado **39c2ca434ac9df38deccd235d011b76eb680fb58**; MotorV1false, RAFúnico y guardados/campañas conservados.
 
 # INFORME DE PRODUCCIÓN — FORJA_LEVEL_ONE_REMATES
 
-Armas Abanico/Aguja y rangosII, Forja C9 ilustrada con desarrollo, guía por acciones, Atlasv7 con cinco rutinas nuevas, consola/misil táctil independiente y botín de restos/satélites integrados en fuentes. [Informe, compatibilidad y criterios](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md). Verificación del paquete exacto en curso; las siete tareas y el nivel1 permanecen `IN_REVIEW`. Aceptación artística, balance humano e iPhone/Safari pendientes. MotorV1false; no expansión de los otros nueve niveles.
+Forja C9 ilustrada, dos armas comprables y sus rangosII, ramas de casco/refrigeración, tutorial por acciones, Atlasv7 con cinco rutinas nuevas, consola/misil táctil independiente y chatarra de restos/satélites integrados. [Informe, capturas, archivos y huellas](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md).
 
-Los informes siguientes conservan su SHA y son históricos frente a este cierre.
+Certificaciónlocal11/11,696contenido; visual39c2ca4 **14/14/30capturas**, multitoque1c7 **20/20**, offline1c7 **7/7**, partida natural39c2ca4 **4/4/437554ms**:10tramos, compra ganada,Atlas,llegada yreload;744−24=720persistidos, unAtlas600. [Actions39c2ca4 completo/success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39147083429). Netlify sirve el mismo paquete limpio/revisión comprobada; publicación documental posterior se comprueba separadamente.
+
+Las siete tareas y nivel1 quedan`IN_REVIEW`. Pendientes aceptación del propietario, balance humano y Safari/iPhone. Próxima tarea: partida en teléfono centrada en Forja/tutorial/misil/Atlas; después corregir y cerrar antes de expandir. El export de código ZIP/TXT usa blobs Git y conserva las omisiones/hashes en manifiesto; no se ha detenido el desarrollo por una supuesta reactivación.
+
+Los cierres siguientes son históricos y conservan sus SHA/pruebas.
 
 ---
 

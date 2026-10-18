@@ -12,7 +12,7 @@ assert.ok(values.output&&/^[a-f0-9]{40}$/.test(values['expected-commit']||''),'P
 const root=path.resolve(values.root||'preview-dist'),output=path.resolve(values.output),timeout=Number(values.timeout||900000);
 assert.ok(Number.isFinite(timeout)&&timeout>=120000&&timeout<=1200000,'Timeout must be 120000–1200000 ms');
 const started=Date.now(),report={status:'running',exitCode:null,command:process.argv,sourceRoot:root,
-  startedAt:new Date().toISOString(),pilotVersion:'chapter-one-fresh-hud-c9-moving-atlas-v2',skipIntro:values['skip-intro'],
+  startedAt:new Date().toISOString(),pilotVersion:'chapter-one-fresh-hud-c9-moving-atlas-v3-cronium-priority',skipIntro:values['skip-intro'],
   checks:[],errors:[],consoleErrors:[],failedRequests:[],samples:[],screenshots:[],manualShots:[],missiles:[],
   enemies:[],physicalDrops:[],claims:[],damage:[],mobility:[],limits:[
     'Fresh Chromium context with no saved progress, currency, equipment or health fixtures.',
@@ -67,13 +67,17 @@ function choosePilotTarget(q,attackObserved){
   const part=pickups.find(item=>item.type==='flightModule'&&!q.equipment.recoveredTwin);
   const loot=pickups.filter(item=>item.salvagePickup).sort((a,b)=>b.y-a.y)[0];
   const energy=pickups.filter(item=>item.type==='energy').sort((a,b)=>b.y-a.y)[0];
+  const needsCronium=q.flight?.stageQuotaComplete===false||q.flight?.waitingFor==='cronium';
   const enemies=q.items.filter(item=>item.isPursuer&&item.hp>0&&item.y>80&&item.y<ship.y-270)
     .sort((a,b)=>a.hp-b.hp||b.y-a.y);
   const enemy=attackObserved?enemies[0]:null;
   const lead=enemy?enemy.x+clamp(enemy.observedVx*Math.max(0,(ship.y-125-enemy.y)/920)*.75,-100,100):null;
-  const objective=part||loot;
+  // Wreckage can keep supplying useful salvage while a stage waits for its
+  // final orb. Recover the mission objective before optional loot/combat;
+  // threat scoring below still vetoes an unsafe direct interception.
+  const objective=part||(needsCronium?energy:null)||loot;
   const aim=objective?.x??(enemy?lead:energy?.x??ship.x);
-  const weight=part?2.2:loot?1.6:enemy?1.1:.5;
+  const weight=objective===part&&part?2.2:objective===energy&&needsCronium?2:objective===loot&&loot?1.6:enemy?1.1:.5;
   const candidates=[aim,ship.x,ship.target,bounds.minX,bounds.maxX,
     ...pickups.slice(0,6).map(item=>item.x)];
   for(let x=bounds.minX;x<=bounds.maxX;x+=24)candidates.push(x);
@@ -98,7 +102,7 @@ function choosePilotTarget(q,attackObserved){
   };
   const x=[...new Set(candidates.filter(Number.isFinite).map(value=>clamp(value,bounds.minX,bounds.maxX)))]
     .map(x=>({x,cost:cost(x)})).sort((a,b)=>a.cost-b.cost)[0].x;
-  return {x,enemy,lead,objective:objective?.type||'combat-or-energy'};
+  return {x,enemy,lead,objective:objective?.type||(enemy?'combat':energy?'energy':'coast'),needsCronium};
 }
 
 function combatTarget(q) {
@@ -282,6 +286,9 @@ function combatTarget(q) {
       if(Date.now()-lastSample>2000){report.samples.push({wallMs:Date.now()-started,elapsed:q.elapsed,
         routeElapsed:q.flight?.elapsed,stage:q.flight?.stageId,state:q.state,hull:q.hull,reserve:q.reserve,
         balance:q.salvage.balance,missileAmmo:q.salvage.missileAmmo,collected:q.collected,boss:q.boss,
+        stageGoal:q.flight?.stageGoal,stageQuotaComplete:q.flight?.stageQuotaComplete,waitingFor:q.flight?.waitingFor,
+        visibleCronium:q.items.filter(item=>item.type==='energy'&&item.y<q.player.y+80).map(item=>({x:item.x,y:item.y})),
+        pilotObjective:q.boss?'guardian':choosePilotTarget(q,attackObserved).objective,
         combat:q.combat,ordnanceRows:q.ordnanceDraw.rows});
         report.mobility.push({wallMs:Date.now()-started,boss:q.boss&&{x:q.boss.x,y:q.boss.y,state:q.boss.state,phase:q.boss.phase},
           enemies:q.items.filter(item=>item.isPursuer).map(item=>({id:item.id,x:item.x,y:item.y,vx:item.observedVx,pose:item.pose}))});

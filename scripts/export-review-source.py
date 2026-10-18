@@ -39,11 +39,21 @@ manifest = {'commit': commit, 'branch': branch, 'source': 'immutable Git HEAD bl
             'kind': 'source review, not a deployment package', 'files': [], 'omitted': [],
             'preserves': ['current and archived campaign source', 'runtime assets',
                           'art masters', 'native project', 'tests', 'licenses', 'documentation text']}
-intro = f'''NEON CRONIUM — CÓDIGO PARA REVISIÓN\nRama: {branch}\nCommit: {commit}\n\n'
-Las mejoras implementadas y los límites están en docs/CODEX_STATUS.md y el informe más reciente.\n'
-Este TXT concatena fuentes actuales, pruebas y herramientas; el ZIP conserva rutas y recursos.\n'
-No pegar cambios directamente en game.js: editar src/game y regenerar con npm run build:preview.\n'
-No activar USE_ENGINE_V1, cambiar claves de guardado ni integrar main/PR3.\n\n'''.replace("\n'", '\n')
+intro = f'''NEON CRONIUM — CÓDIGO PARA REVISIÓN
+Rama: {branch}
+Commit: {commit}
+
+La referencia de este lote es docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md,
+incluida también en este TXT. Describe lo implementado, decisiones y validación pendiente.
+Este TXT concatena fuentes actuales, pruebas y herramientas; el ZIP conserva rutas y recursos.
+Los bundles duplicados se omiten del TXT y se conservan en el ZIP.
+No editar copias históricas de docs/evidence ni pegar parches exclusivamente en game.js.
+Editar src/game y regenerar con npm run build:preview.
+No activar USE_ENGINE_V1, cambiar claves de guardado ni integrar main/PR3.
+Para proponer mejoras, citar archivo y función, defecto concreto, efecto en el jugador
+y comprobación que demostraría la corrección. Distinguir revisión de código y partida real.
+
+'''
 chunks = [intro]
 with zipfile.ZipFile(output, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
     for entry in entries:
@@ -70,7 +80,8 @@ with zipfile.ZipFile(output, 'x', compression=zipfile.ZIP_DEFLATED, compressleve
         archive.writestr(name, content)
         manifest['files'].append({'path': name, 'bytes': len(content),
                                   'sha256': hashlib.sha256(content).hexdigest()})
-        current_code = path.parts[0] in code_roots or len(path.parts) == 1
+        current_code = path.parts[0] in code_roots or len(path.parts) == 1 or name == \
+            'docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md'
         if current_code and suffix in text_suffixes and name not in {
                 'game.js', 'content-runtime.js', 'core-runtime.js', 'native-admob.js',
                 'package-lock.json', 'ASSET_PRODUCTION_150.json', 'ASSET_MANIFEST.json'}:

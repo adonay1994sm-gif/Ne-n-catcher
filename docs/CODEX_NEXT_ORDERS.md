@@ -2,11 +2,11 @@
 
 Leer [informe actual](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md), HEAD/remoto y registro único sin retroceder.
 
-1. Completar pruebas del paquete exacto y comprobar Actions/Netlify aislado. Conservar evidencia fallida y corregida; un smoke piloto+Phaser no certifica misil.
+1. Funcional39c2ca4 ya pasa Actions y Netlify, visual14, multitoque20, offline7 y partida natural4. Verificar el SHA documental final en build-info antes de atribuir una edición futura. Conservar los intentos y sus correcciones; no repetir suites sin cambios o fallos nuevos.
 2. Partida del propietario en teléfono: piloto+misil ambos órdenes, pausa/cancelación; guía interactiva; compras y rangos de Forja; Atlasv7. Mantener `IN_REVIEW` con arte/físico separados.
 3. Balancear las ramas y chatarra después de jugar. Los precios nuevos son provisionales y sus recibos históricos no se recalculan. Preparar arma no concede Gemelo antes deAtlas.
 4. Si se acepta la base, continuar Gaia→Vulkar con identidad propia. No extender este trabajo a cien etapas antes de cerrar el primer nivel.
-5. Preservar export de código y maestros: `scripts/export-review-source.py --output /ruta/externa/NUEVO.zip`. Editar fuentes, regenerar bundles; conservar motorfalse, únicoRAF, rama autorizada y restricciones de main/PR3/producción.
+5. Preservar export de código y maestros: `scripts/export-review-source.py --output /workspace/artifacts/NUEVO.zip`. Editar fuentes, regenerar bundles; conservar motorfalse, únicoRAF, rama autorizada y restricciones de main/PR3/producción.
 
 El propietario aclaró que se continúe programando; no dejar sólo una lista ni esperar una reactivación sin bloqueo comprobado. Lo siguiente es historial.
 

@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-18T16:45:52.829961+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-18T17:06:41.822326+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -25,7 +25,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P0-DESIGN-100 / P0 | Diseñar editorialmente cien etapas espaciales conectadas sin declararlas runtime | IN_REVIEW | PASSED_EDITORIAL_SCHEMA | PENDING_OWNER | NOT_APPLICABLE |
 | P1-FLIGHT-01 / P1 | Integrar una entrada principal, salida real de Chronos, recarga y emisor recuperable en C9 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-CHRONOS-02 / P1 | Desarrollar el acontecimiento ilustrado de destrucción de Chronos dentro del nivel 1 | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
-| P1-HUD-01 / P1 | Integrar HUD compacto y recuperar espacio real de pilotaje clásico | IN_REVIEW | CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED | PENDING_OWNER | PENDING |
+| P1-HUD-01 / P1 | Integrar HUD compacto y recuperar espacio real de pilotaje clásico | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
 | P1-COMBAT-02 / P1 | Concentrar gemelo y añadir lanza con daño ×1/×2/×3 y batería común | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-ATLAS-02 / P1 | Aumentar desafío de Atlas sin mostrar la solución de esquiva | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-ORBS-01 / P1 | Reducir orbes clásicos al50% visual conservando recogida | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
@@ -33,7 +33,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-VULKAR-01 / P1 | Llevar nivel3 al espacio con planeta y restos orbitales independientes | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-TRANSITIONS-01 / P1 | Hacer legibles selector, briefing y victoria de los diez niveles | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-IDENTITY-02 / P1 | Fijar la nave modular como identidad única y retirar la ilustración anterior | IN_REVIEW | PASSED | ACCEPTED_MODULAR_BASE | PENDING |
-| P1-INPUT-02 / P1 | Pilotar y disparar con dos contactos independientes y mantener para disparar | IN_REVIEW | CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED | PENDING_OWNER | PENDING_OWNER_MISSILE_RETEST |
+| P1-INPUT-02 / P1 | Pilotar y disparar con dos contactos independientes y mantener para disparar | IN_REVIEW | PASSED_PHASER_AND_MISSILE_MULTITOUCH_CHROMIUM | PENDING_OWNER | PENDING_OWNER_MISSILE_RETEST |
 | P1-COMET-02 / P1 | Animar cometa mineral helado y alinear núcleo y estela con su trayectoria | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
 | P1-CI-01 / P1 | Cerrar fallo de Actions por contrato de nave retirada y verificar la nave actual offline | DONE | PASSED | NOT_APPLICABLE_TO_CI_FIX | NOT_REQUIRED_FOR_CI_FIX; GAME_DEVICE_CERTIFICATION_REMAINS_PENDING |
 | P3-TRANSIT-01 / P3 | Integrar diez etapas jugables del tránsito Chronos–Gaia con vacío, C9 y checkpoints | IN_REVIEW | PASSED_CHROMIUM_AND_REGRESSION | PENDING_OWNER | PENDING |
@@ -74,7 +74,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-CH1-SHIP-01 / P1 | Reducir naves clásicas al 40 % e integrar reserva de casco sin temporizador | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
 | P2-CH1-MISSILE-01 / P2 | Persistir tres misiles, refuerzo de casco y reposición pagada en C9 | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
 | P1-CH1-ATLAS-01 / P1 | Cerrar el primer nivel con Atlas blindado, núcleo expuesto y verificación Iria | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
-| P1-CH1-QA-01 / P1 | Verificar el bucle completo del primer capítulo en una compilación recuperable | IN_REVIEW | CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED | PENDING_OWNER | PENDING |
+| P1-CH1-QA-01 / P1 | Verificar el bucle completo del primer capítulo en una compilación recuperable | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
 | P1-CH1-AUDIO-01 / P1 | Integrar música original de apertura y viaje con controles de reproducción | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
 | P4-ARSENAL-10-15-01 / P4 | Diseñar y producir un arsenal de 10–15 armas con identidad a lo largo de la campaña | PENDING | NOT_IMPLEMENTED | PENDING_OWNER | PENDING |
 | P1-SPECIALIST-TEAM-01 / P1 | Equipo especializado y skills fijadas reutilizables | DONE | PROCEDURES_VALIDATED_AND_USED | NOT_APPLICABLE | NOT_APPLICABLE |
@@ -91,13 +91,13 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-DYNAMIC-FLIGHT / P1 | Nave30% mayor y cometas con trayectorias variadas transitables | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
 | P1-DYNAMIC-TOOLS / P1 | Skills útiles, higiene recuperable y Netlify QA preparado | DONE | PROCEDURE_SKILL_HYGIENE_AND_PREVIEW_GATE_PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
 | P1-NETLIFY-ISOLATED-01 / P1 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | DONE | PUBLIC_PREVIEW_EXACT_COMMIT_VERIFIED | NOT_APPLICABLE | NOT_APPLICABLE |
-| P2-FORJA-ARSENAL-01 / P2 | Arsenal comprable Abanico y Aguja con equipamiento explícito | IN_REVIEW | PENDING_CURRENT_PACKAGE | PENDING_OWNER | PENDING |
-| P2-FORJA-TREE-01 / P2 | Forja C9 ilustrada con ramas, requisitos y navegación de taller | IN_REVIEW | PENDING_CURRENT_PACKAGE | PENDING_OWNER | PENDING |
-| P1-TUTORIAL-INTERACTIVE-02 / P1 | Guía del primer viaje que avanza por acciones reales | IN_REVIEW | PENDING_CURRENT_PACKAGE | PENDING_OWNER | PENDING |
-| P1-ATLAS-REPERTOIRE-07 / P1 | Atlas v7 con salvas adaptativas, flanqueo y repertorio ampliado | IN_REVIEW | PENDING_CURRENT_PACKAGE | PENDING_OWNER | PENDING |
-| P1-MISSILE-MULTITOUCH-02 / P1 | Consola coherente y misil por contacto independiente del piloto | IN_REVIEW | PENDING_CURRENT_PACKAGE | PENDING_OWNER | PENDING |
-| P2-WEAPON-RANKS-01 / P2 | Subprogresión de arma, blindaje y refrigeración por rangos | IN_REVIEW | PENDING_CURRENT_PACKAGE | PENDING_OWNER | PENDING |
-| P2-WRECK-SALVAGE-01 / P2 | Restos de nave y satélites generan chatarra recuperable | IN_REVIEW | PENDING_CURRENT_PACKAGE | PENDING_OWNER | PENDING |
+| P2-FORJA-ARSENAL-01 / P2 | Arsenal comprable Abanico y Aguja con equipamiento explícito | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P2-FORJA-TREE-01 / P2 | Forja C9 ilustrada con ramas, requisitos y navegación de taller | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P1-TUTORIAL-INTERACTIVE-02 / P1 | Guía del primer viaje que avanza por acciones reales | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P1-ATLAS-REPERTOIRE-07 / P1 | Atlas v7 con salvas adaptativas, flanqueo y repertorio ampliado | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P1-MISSILE-MULTITOUCH-02 / P1 | Consola coherente y misil por contacto independiente del piloto | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P2-WEAPON-RANKS-01 / P2 | Subprogresión de arma, blindaje y refrigeración por rangos | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P2-WRECK-SALVAGE-01 / P2 | Restos de nave y satélites generan chatarra recuperable | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
