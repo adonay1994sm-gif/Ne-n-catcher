@@ -7890,18 +7890,23 @@
         "tests/comet-shower.test.mjs",
         "tests/unified-flight-legacy.test.mjs"
       ],
-      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "commit": "49e4e59e7f5301d2b44e929755b4895f5b830212",
       "tests": [
         "npm run test:content (463/463)",
         "npm run test:preview (23/23)",
-        "Chromium del lote: ver evidencias y alcance"
+        "Chromium del lote: ver evidencias y alcance",
+        "comet-shower-v2:12/12;465content+23preview",
+        "Chromiumv2:2/2, evasión real de carriles interiores"
       ],
       "evidence": [
         "docs/production-reports/evidence/main-salvage-combat/comets/results.json",
-        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json"
+        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/comets-v2/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/comet-balance-analysis/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/certification-02/results.json"
       ],
       "openErrors": [
-        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
+        "Validación humana de dificultad y avisos direccionales; aceptación artística y Safari/iPhone pendientes."
       ],
       "acceptanceStatus": {
         "technical": "VERIFIED_CHROMIUM",

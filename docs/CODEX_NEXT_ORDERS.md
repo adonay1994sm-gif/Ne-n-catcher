@@ -1,3 +1,9 @@
+## Cierre posterior vigente ·18/10/2026 · Site19
+
+Runtime **49e4e59e7f5301d2b44e929755b4895f5b830212**, limpio al empaquetar, publicado en la web privada. Cometasv2 elimina el refugio fijo del centro; avisos indican entrada real, sin retícula.643 casos finales y CI39114083326 success; Chromiumcometas2/2 y offline18→19 cinco de cinco. [Informe y adenda](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). Fuente Site49fa305aca7f804166d44f9f8b689df288149a08. Sin producción Netlify; motorV1=false. Las pruebas naturales anteriores conservan el SHAb2 y no se reetiquetan como49; sólo cambió el encuentro de cometas y su caché. Aceptación humana/artística/iPhone pendiente.
+
+---
+
 ## Continuación vigente ·18/10/2026 · MAIN_SALVAGE_COMBAT
 
 Leer primero el [cierre con evidencia](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md) y su adenda final. No volver a introducir selector técnico, contador de munición, retícula de aim ni20→3 cargas. Preservar `neonCatcher.classicSalvage.v1`, sus recibos y las claves/checkpoints anteriores.

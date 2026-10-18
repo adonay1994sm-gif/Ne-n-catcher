@@ -1,4 +1,4 @@
-> **Cierre posterior vigente ·18/10/2026:** [MAIN_SALVAGE_COMBAT](../production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). El contenido siguiente es histórico. Se actualizaron el viaje clásico/combate/arte y el Site privado; no se certifican diez mundos completos por este incremento.
+> **Cierre posterior vigente ·18/10/2026:** [MAIN_SALVAGE_COMBAT](../production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). Site19/runtime49e4e59 y643 casos finales; ver adenda de cometasv2. El contenido siguiente es histórico. Se actualizaron el viaje clásico/combate/arte y el Site privado; no se certifican diez mundos completos por este incremento.
 
 ## Continuación vigente ·18/10/2026
 

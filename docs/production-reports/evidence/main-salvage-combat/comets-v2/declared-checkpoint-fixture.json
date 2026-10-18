@@ -1,0 +1,50 @@
+{
+  "voyage": {
+    "version": 2,
+    "checkpoint": {
+      "version": 2,
+      "contentVersion": "chronos-voyage-v2",
+      "routeId": "chronos-to-gaia",
+      "stageIndex": 4,
+      "stageId": "1.5",
+      "stageNumber": 5,
+      "goal": 36,
+      "collected": 18,
+      "eventIds": [
+        "chronos-voyage-intruder",
+        "chronos-voyage-breach",
+        "chronos-voyage-perimeter-exit",
+        "chronos-voyage-recovered-module",
+        "chronos-voyage:1.1:start",
+        "chronos-voyage:1.1:checkpoint",
+        "chronos-voyage:1.1:complete",
+        "chronos-voyage:1.2:start",
+        "chronos-voyage:1.2:checkpoint",
+        "chronos-voyage:1.2:complete",
+        "chronos-voyage:1.3:start",
+        "chronos-voyage:1.3:checkpoint",
+        "chronos-voyage:1.3:complete",
+        "chronos-voyage:1.4:start",
+        "chronos-voyage:1.4:checkpoint",
+        "chronos-voyage:1.4:complete"
+      ]
+    },
+    "entry": {
+      "hull": 100,
+      "score": 160,
+      "collected": 18,
+      "maxCombo": 1
+    },
+    "unlockedStage": 5,
+    "completed": false
+  },
+  "equipment": {
+    "version": 1,
+    "recoveredTwin": true,
+    "unlocked": [
+      "pulse"
+    ],
+    "selected": "pulse"
+  },
+  "showerSeed": 4055
+}

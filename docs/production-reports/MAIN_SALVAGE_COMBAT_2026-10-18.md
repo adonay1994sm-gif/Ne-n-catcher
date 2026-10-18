@@ -1,3 +1,5 @@
+> **Cierre vigente: Site privado19, runtime49e4e59,643 casos finales y CI39114083326 success.** La adenda final registra el ajuste de dificultad comprobado después de la integración inicial b2a89f6. Las evidencias previas conservan sus SHA reales.
+
 # DIAGNÓSTICO
 
 Se continuó desde `39f7b06e726d71eacff1316de85ee325a46c8f70`, igual al remoto al comenzar, sin descartar avances. La entrada todavía exponía archivos de QA y otras variantes; el arma clásica seguía limitada a tres cargas; C9 no disponía de pagos con chatarra; los avisos de ataque resolvían demasiado el combate y los cometas del vacío eran lentos. La IA anterior y el arte ilustrado del viaje se conservaron como base. El recorrido Chronos→Gaia sigue durando360s, con diez etapas y checkpoint v2. No se sustituyó por una demo corta.
@@ -10,7 +12,7 @@ Rama: `continuity-assets-audit-20261013`.
 
 SHA inicial: `39f7b06e726d71eacff1316de85ee325a46c8f70`.
 
-SHA funcional probado y publicado: **`b2a89f694215bddba3a5ba2f6d1a68a03c70cccd`**.
+SHA funcional final probado y publicado: **`49e4e59e7f5301d2b44e929755b4895f5b830212`**. Integración inicial probada: `b2a89f694215bddba3a5ba2f6d1a68a03c70cccd`; el cuerpo conserva esas evidencias y la adenda final identifica la corrección posterior.
 
 Cierre documental base: **`8f0fae8404e818b109dd05352f1073d7aab726e3`**. La adenda de la partida desde cero se conserva en el commit posterior de este mismo informe; el historial del archivo identifica su SHA. Ninguno de esos commits documentales reconstruye ni despliega otro runtime.
 
@@ -24,7 +26,7 @@ Assets creados/integrados: dos atlas WebP nuevos,32 celdas reales en total. No s
 
 Motor: **USE_ENGINE_V1=false**, renderizador legacy y propietario único de RAF conservados.
 
-Netlify: sin nuevo despliegue; se publicó el **Site privado18**, con acceso exclusivo del propietario y sin modificar producción Netlify.
+Netlify: sin nuevo despliegue; se publicó primero el Site privado18 y finalmente el **Site privado19**, con acceso exclusivo del propietario y sin modificar producción Netlify.
 
 Web comprobada: https://neon-catcher-pruebas.chictide18.chatgpt.site
 
@@ -173,7 +175,7 @@ Revisión: `293f66b839af486afa5486715fc56b7e176bb9d03b5511495c4139e53ff93130`.
 
 El ZIP local está en `/workspace/artifacts/`; el workflow incluye un artefacto descargable equivalente construido porCI con su propia procedencia. Para NetlifyDrop, extraer el ZIP y subir su contenido con `index.html` en raíz a un **sitio nuevo de pruebas**, nunca al principal. No se hizo ese despliegue.
 
-Site privado18: fuente `37c1ce5722f34c57c60779a975d6348f911e4955`; deployment `appgdep_6ad48842adfc819198aa3b1d3cdfcaf0`, **succeeded**. Archivo de despliegue construido del árbol fuente exacto después de su push. Propietario único, sin usuarios externos nuevos. HTTP comprobó que sirve el runtimeb2a89f6 y los hashes de ambos atlas. El repositorio del Site es distinto del juego.
+Primera publicación del lote — Site privado18: fuente `37c1ce5722f34c57c60779a975d6348f911e4955`; deployment `appgdep_6ad48842adfc819198aa3b1d3cdfcaf0`, **succeeded**. Archivo de despliegue construido del árbol fuente exacto después de su push. Propietario único, sin usuarios externos nuevos. HTTP comprobó que sirve el runtimeb2a89f6 y los hashes de ambos atlas. El repositorio del Site es distinto del juego.
 
 Commits funcionales publicados:
 
@@ -198,3 +200,22 @@ Se ejecutó `node scripts/salvage-journey-browser-smoke.cjs --root preview-dist 
 Contexto vacío:0chatarra, un nivel desbloqueado, Pulso y sin emisor. El piloto realizó40 gatillos mediante controles normales, destruyó ocho enemigos, observó ocho drops y recogió48chatarra, con ocho recibos únicos. Los24 necesarios ya estaban ganados a81,65s. Recuperó el emisor del escenario, atravesó el vacío y llegó aC9. Allí pagó24 una vez, quedó saldo24, conservó Pulso y obtuvo `twinPrepared`; al desacoplar quedó persistido `service-complete` en la etapa1.6. La lectura final de simulación es185,7966s y la de ruta185,7166s. No hubo daño, muerte, reinicio, moneda inyectada, alteración del reloj ni errores JS/consola/recursos/RAF. El hook sólo observa.
 
 [Evidencia completa](evidence/main-salvage-combat/salvage-journey/results.json), con ocho capturas y copia exacta del harness. Esta prueba confirma el enlace real combate→recogida→pieza→compra→continuación. Termina al salir deC9; no certifica por sí sola las diez etapas completas ni equilibrio humano. Atlas y continuación aVulkar tienen sus pruebas separadas.
+
+
+## Adenda final: dificultad comprobada, runtime49e4e59 y Site19
+
+La revisión final encontró un defecto verificable: en el campo real720×1558, mantenerse fijo en el centro evitaba todos los cometas en100/100semillas. El browser2/2 anterior demostraba integración, animación y pausa; **no demostraba dificultad**. Se conservaron el modelo anterior, el [análisis reproducible](evidence/main-salvage-combat/comet-balance-analysis/results.json) y los resultados en vez de declarar suficiente ese verde.
+
+Se corrigió en [49e4e59](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/49e4e59e7f5301d2b44e929755b4895f5b830212): `comet-shower-v2` acerca las entradas al corredor en campos≥500px, conserva los perfiles estrechos, las tres ráfagas y el paso248px. Los avisos de lluvia indican la entrada real por izquierda/derecha y desde abajo para dar respuesta antes del adelantamiento; no muestran un lugar seguro ni añaden avisos al proyectil enemigo. El checkpoint del viaje conserva su versión2 y estructura; estos encuentros son efímeros entre entradas de etapa. La reproducción anterior permanece en el commitb2 y el modelo archivado. No se alteraron las compras, los controles, los enemigos o los atlas en esta corrección.
+
+Pruebas finales repetidas sobre **49e4e59 limpio**:11 fases de `certify-local`, todas salida0; contenido**465/465**, demás suites iguales:620 casos, más23/23 de preview=**643**. [Certificación completa con SHA limpio](evidence/main-salvage-combat/certification-02/results.json). [GitHub Actions39114083326:ejecución completa success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39114083326), incluido npmci y empaquetado. No hay fallos finales de estas comprobaciones.
+
+Chromium actual49e4e59: **cometas2/2**,39,2069s naturales desde el checkpoint declarado hastaC9. Diez cometas, máximo4 simultáneos,1.137 dibujos y cuatro celdas animadas. El piloto tuvo que desplazar realmente la nave **x360→264→167**, leyendo posiciones ya visibles, sin leer el corredor interno ni modificar el juego. Casco100%, pausa y checkpoint correctos,0errores JS/consola/recursos y un único RAF. [Evidencia y capturas](evidence/main-salvage-combat/comets-v2/results.json).
+
+**Actualización offline18→19:5/5**,23,633s, ambos paquetes inmutables. Guardados conservados, ambos atlas y fallback con hash/1024² desdeSW, disparoGemelo real y un único RAF. [Resultados](evidence/main-salvage-combat/offline-v2/results.json). Las pruebas naturales de economía y Atlas del cuerpo corresponden al runtimeb2; sus sistemas no cambiaron. La porción de viaje modificada se volvió a ejecutar en49. No se presenta la partida completa anterior como una nueva partida completa de49.
+
+Publicación final: **Site privado19**, https://neon-catcher-pruebas.chictide18.chatgpt.site. Fuente del Site **`49fa305aca7f804166d44f9f8b689df288149a08`**; deployment `appgdep_6ad48d4e4ff48191a5fffc91c66840ad`, **succeeded**, propietario único. HTTP real**7/7** confirmó portada, manifest,build-info,game.js,**content-runtime.js** y ambos atlas. Se comprobó específicamente el bundle de contenido modificado, evitando usar el hash de game.js —que no cambió— como prueba suficiente. Los146archivos protegidos del Site conservaron sus hashes. [Prueba HTTP](evidence/main-salvage-combat/site-http-v2/results.json), [preservación](evidence/main-salvage-combat/site-preservation-v2.json).
+
+Paquete final: **NEON-CRONIUM-SALVAGE-49e4e59.zip**,9.425.350B,123entradas; SHA-256 **`d08d41ed4799e08790f8d0c2da5c2b9a0acf79353e3700d928b718387e2f7e5f`**. Revisión **`5077c4fdf3072408366d41fef38aed5f0ed66cd2a4b2cc51dcd660196e9777b2`**, árbol limpio al empaquetar. `content-runtime.js` servido:SHA-256 `ba171dc6e8908c2a46d5610900f948e5f76bd98b2b7e81f378d57d81147223b6`. [Metadatos del paquete](evidence/main-salvage-combat/package-v2.json). El ZIPb2 previo es histórico y no corresponde aSite19.
+
+La fluidez59,17callbacks/s se midió enb2 y no se repitió tras este ajuste de trayectorias; el renderizador es el mismo. No extrapolarlo a todos los dispositivos. Ocho tareas siguenIN_REVIEW, con técnica comprobada y aceptación artística/física pendientes. Próxima tarea: evaluación humana del recorrido, avisos de entrada y economía; después consolidarGaia/Atlas y producir su continuación. No se inició otra funcionalidad al cerrar.

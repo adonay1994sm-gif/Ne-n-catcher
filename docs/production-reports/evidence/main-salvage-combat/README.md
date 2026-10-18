@@ -1,3 +1,5 @@
+> Cierre actual: runtime49e4e59, Site19. Ver certification-02 (620casos/árbol limpio), preview23, comets-v2, offline-v2 y site-http-v2 (7respuestas). Los registros inicialesb2 siguientes se conservan sin reetiquetar su SHA.
+
 # Evidencia MAIN_SALVAGE_COMBAT ·18/10/2026
 
 Runtime publicado `b2a89f694215bddba3a5ba2f6d1a68a03c70cccd`, revision `293f66b839af486afa5486715fc56b7e176bb9d03b5511495c4139e53ff93130`, árbol limpio al empaquetar.

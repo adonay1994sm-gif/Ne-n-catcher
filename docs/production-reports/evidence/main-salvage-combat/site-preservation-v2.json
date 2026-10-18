@@ -1,0 +1,21 @@
+{
+  "applicationCommit": "49e4e59e7f5301d2b44e929755b4895f5b830212",
+  "revision": "5077c4fdf3072408366d41fef38aed5f0ed66cd2a4b2cc51dcd660196e9777b2",
+  "dirty": false,
+  "protectedFiles": 146,
+  "changedOutsideAllowedScope": [],
+  "gameSha256": "6efd02b4b493f7c09d14c478d918148c4094237181ca040fa146efb7af4d4317",
+  "allowedRootChanges": [
+    "README.md",
+    "dist/build-info.json",
+    "dist/index.html",
+    "dist/launcher-sw.js",
+    "dist/manifest.webmanifest"
+  ],
+  "siteSourceCommit": "49fa305aca7f804166d44f9f8b689df288149a08",
+  "siteVersion": 19,
+  "deployment": "appgdep_6ad48d4e4ff48191a5fffc91c66840ad",
+  "deploymentStatus": "succeeded",
+  "audience": "owner-only",
+  "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+}
