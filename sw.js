@@ -1,4 +1,4 @@
-const CACHE = "neon-cronium-pre-release-7-2-0-forja-controls-2";
+const CACHE = "neon-cronium-pre-release-7-2-0-orbital-hud-1";
 const CORE = [
   "assets/combat_sfx_atlas_v2.m4a",
   "assets/combat_sfx_atlas_v2.json",

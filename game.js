@@ -630,11 +630,47 @@
     return item && ["meteor", "debris", "satellite", "scout"].includes(item.type);
   }
 
+  const overlayReturnFocus = new WeakMap();
   function overlay(el) {
-    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar, ui.flightDock].filter(Boolean)
-      .forEach((node) => node.classList.remove("show"));
-    if (el) el.classList.add("show");
+    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar, ui.flightDock].filter(Boolean);
+    const previous = panels.find(node => node.classList.contains("show"));
+    const opener = document.activeElement;
+    const restore = previous && overlayReturnFocus.get(previous);
+    if (el && previous !== el && previous?.contains(opener)) overlayReturnFocus.set(el, opener);
+    panels.forEach(node => {
+      node.classList.remove("show");
+      node.inert = node !== el;
+      node.setAttribute("aria-hidden", String(node !== el));
+    });
+    if (!el) { canvas.focus({preventScroll:true}); return; }
+    el.classList.add("show");
+    // The same visible panel owns focus and pointer input. No extra frame loop.
+    const available = node => node && !node.disabled && !node.closest('[hidden],.hidden') &&
+      node.ownerDocument.defaultView.getComputedStyle(node).display !== "none";
+    const target = restore && el.contains(restore) && available(restore) ? restore
+      : [...el.querySelectorAll('.primary:not(:disabled),button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]')].find(available);
+    target?.focus({preventScroll:true});
   }
+
+  addEventListener("keydown", event => {
+    const modal = document.querySelector('.overlay.show[role="dialog"]');
+    if (!modal || modal === ui.flightDock || modal === ui.shipHangar) return;
+    if (event.key === "Escape") {
+      const close = {settingsPanel:"settingsBack",briefing:"briefingBack",levelSelect:"levelBack",instructions:"back",paused:"resume",complete:"completeHome",over:"home"}[modal.id];
+      if (!close) return;
+      event.preventDefault();event.stopPropagation();
+      $(close)?.click();
+    } else if (event.key === "Tab") {
+      const controls = [...modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]')].filter(node => node.getClientRects().length && !node.closest('[hidden],.hidden'));
+      const first = controls[0], lastControl = controls.at(-1);
+      if (!first) return;
+      if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+        event.preventDefault();lastControl.focus();
+      } else if (!event.shiftKey && (document.activeElement === lastControl || !modal.contains(document.activeElement))) {
+        event.preventDefault();first.focus();
+      }
+    }
+  }, true);
 
   function toast(message) {
     ui.toast.textContent = message;
@@ -1106,17 +1142,17 @@
     loadClassicSalvage();
     document.body.classList.add("flight-mode");
     const mount = document.createElement("div");
-    mount.innerHTML = `<div id="flightHud" class="flight-hud hidden">
+    mount.innerHTML = `<div id="flightHud" class="flight-hud cockpit-flight hidden">
       <section id="flightRoute" class="flight-route hidden" aria-label="Trayecto espacial"><div><small id="flightDestination">CHRONOS → GAIA NOVA</small><b id="flightStage">Recupera el CRONIUM</b></div><progress id="flightDistance" max="1" value="0" aria-label="Recorrido hasta el destino"></progress></section>
       <p id="flightObjective" class="flight-comms" role="status" aria-live="polite" data-active="false"></p>
-      <button id="flightWeapon" class="flight-weapon" type="button"><small id="flightWeaponDamage">DAÑO ×1</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
+      <button id="flightWeapon" class="flight-weapon cockpit-control" type="button"><small id="flightWeaponDamage">DAÑO ×1</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
       <div id="flightPilotHint" class="flight-pilot-hint" aria-hidden="true"><span></span>DESLIZA PARA MOVER</div>
       <div id="flightPilotStick" class="flight-pilot-stick hidden" aria-hidden="true"><span id="flightPilotKnob"></span></div>
       </div>
-      <div id="flightDock" class="overlay" role="dialog" aria-modal="true" aria-labelledby="c9Title"><section class="panel flight-dock"><header class="c9-header"><span class="chapter-face" data-actor="mira" aria-hidden="true"></span><div><small>C9 · MIRA</small><h2 id="c9Title">Taller de a bordo</h2></div></header><div class="c9-preview"><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p></div><p id="c9Balance" class="c9-wallet" aria-label="Chatarra disponible">0 chatarra</p><div class="c9-upgrades"><button id="flightInstallTwin" class="primary" type="button"><span class="c9-upgrade-art" data-upgrade="emitter" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>PREPARAR EMISOR · 24 CHATARRA</b><small>Segundo cañón · autorización tras Atlas</small></span></button><button id="c9BuyShield" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="hull" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFUERZO DE CASCO · 30 CHATARRA</b><small>15 puntos de blindaje adicionales</small></span></button><button id="c9BuyMissiles" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="missiles" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REPONER MISILES</b><small>18 de daño · 6 de chatarra por unidad</small></span></button><button id="c9BuyCoolant" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="coolant" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFRIGERACIÓN · 45 CHATARRA</b><small>Recuperación de energía un 25 % más rápida</small></span></button></div><p id="c9PurchaseStatus" class="c9-purchase-status" role="status"></p><div class="c9-actions"><button id="flightDockContinue" class="secondary" type="button">VOLVER A PILOTAR</button><button id="flightDockHome" class="secondary" type="button">GUARDAR Y VOLVER AL MENÚ</button></div></section></div>`;
+      <div id="flightDock" class="overlay" role="dialog" aria-modal="true" aria-labelledby="c9Title"><section class="panel flight-dock cockpit-dialog"><header class="c9-header cockpit-section-head"><span class="chapter-face" data-actor="mira" aria-hidden="true"></span><div><small>C9 · MIRA</small><h2 id="c9Title">Taller de a bordo</h2></div></header><div class="c9-preview"><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p></div><aside class="cockpit-ledger" aria-label="Bodega de la nave"><small>CHATARRA DISPONIBLE</small><p id="c9Balance" class="c9-wallet" aria-label="Chatarra disponible">0 chatarra</p></aside><div class="c9-upgrades"><button id="flightInstallTwin" class="primary" type="button"><span class="c9-upgrade-art" data-upgrade="emitter" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>PREPARAR EMISOR · 24 CHATARRA</b><small>Segundo cañón · autorización tras Atlas</small></span></button><button id="c9BuyShield" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="hull" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFUERZO DE CASCO · 30 CHATARRA</b><small>15 puntos de blindaje adicionales</small></span></button><button id="c9BuyMissiles" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="missiles" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REPONER MISILES</b><small>18 de daño · 6 de chatarra por unidad</small></span></button><button id="c9BuyCoolant" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="coolant" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFRIGERACIÓN · 45 CHATARRA</b><small>Recuperación de energía un 25 % más rápida</small></span></button></div><p id="c9PurchaseStatus" class="c9-purchase-status" role="status"></p><div class="c9-actions"><button id="flightDockContinue" class="secondary" type="button">VOLVER A PILOTAR</button><button id="flightDockHome" class="secondary" type="button">GUARDAR Y VOLVER AL MENÚ</button></div></section></div>`;
     canvas.parentElement.append(mount);
     const chapterControls=document.createElement("div");
-    chapterControls.innerHTML=`<button id="classicC9" class="classic-c9 hidden" type="button" aria-label="Abrir taller C9; pausa el viaje"><b>C9</b><span>TALLER</span></button><button id="chapterSkip" class="chapter-skip hidden" type="button">OMITIR INTRODUCCIÓN →</button><button id="classicMissile" class="classic-missile hidden" type="button" aria-label="Lanzar misil"><span class="missile-symbol" aria-hidden="true"></span><span>MISIL <b id="classicMissileCount">3</b></span></button>`;
+    chapterControls.innerHTML=`<button id="classicC9" class="classic-c9 cockpit-control hidden" type="button" aria-label="Abrir taller C9; pausa el viaje"><b>C9</b><span>TALLER</span></button><button id="chapterSkip" class="chapter-skip hidden" type="button">OMITIR INTRODUCCIÓN →</button><button id="classicMissile" class="classic-missile cockpit-control hidden" type="button" aria-label="Lanzar misil"><span class="missile-symbol" aria-hidden="true"></span><span>MISIL <b id="classicMissileCount">3</b></span></button>`;
     canvas.parentElement.append(chapterControls);
     ui.classicC9=$("classicC9");ui.classicC9.onclick=()=>openClassicDock("hud");
     ui.chapterSkip=$("chapterSkip");ui.classicMissile=$("classicMissile");ui.classicMissileCount=$("classicMissileCount");
@@ -1133,8 +1169,10 @@
     setupClassicWorkshopSections(loadout,calibrate);
     for(const [type,weapon] of Object.entries(NeonCampaign.CLASSIC_WEAPON_RULES.types)) {
       const button=document.createElement("button");button.type="button";button.dataset.flightLoadout=type;
+      button.className="cockpit-loadout-card";
       const roles={pulse:"Precisión · una carga",twin:"Dos pulsos centrados",lance:"Perfora dos objetivos",scatter:"Tres pulsos · corta distancia",needle:"Perfora tres objetivos"};
-      button.innerHTML=`<b>${weapon.label} ×${weapon.damageMultiplier}</b><small>${roles[type]}</small>`;
+      const art={pulse:"emitter",twin:"emitter",lance:"needle",scatter:"scatter",needle:"needle"};
+      button.innerHTML=`<span class="c9-upgrade-art" data-upgrade="${art[type]}" aria-hidden="true"></span><span class="cockpit-loadout-copy"><b>${weapon.label} ×${weapon.damageMultiplier}</b><small>${roles[type]}</small><em data-loadout-state></em></span>`;
       button.onclick=()=>{
         if(!classicEquipment.unlocked.includes(type))return;
         if(persistClassicEquipment({...classicEquipment,selected:type})) {
@@ -1170,11 +1208,11 @@
     });
     $("flightDockHome").onclick = goHome;
     const workshop = document.createElement("button"); workshop.id="openFlightDock"; workshop.className="secondary hidden";
-    workshop.type="button"; workshop.textContent="TALLER C9"; workshop.onclick=()=>openClassicDock("menu");
+    workshop.type="button"; workshop.textContent="FORJA C9"; workshop.onclick=()=>openClassicDock("menu");
     ui.menu.querySelector(".menu-actions")?.append(workshop);
     const stages = document.createElement("section");
-    stages.id="chronosStages"; stages.className="chronos-stages hidden";
-    stages.innerHTML='<small>CHRONOS → GAIA · DIEZ ETAPAS</small><div id="chronosStageGrid" class="chronos-stage-grid"></div><p id="chronosStagesNote"></p>';
+    stages.id="chronosStages"; stages.className="chronos-stages cockpit-stage-list hidden";
+    stages.innerHTML='<small>CHRONOS → GAIA · TRAMOS DEL VIAJE</small><div id="chronosStageGrid" class="chronos-stage-grid"></div><p id="chronosStagesNote"></p>';
     $("launch").before(stages);
     syncClassicFlightHud();
   }
@@ -1192,16 +1230,16 @@
       ['arsenal','01 · ARSENAL','Elige cómo quieres combatir. Comprar no equipa automáticamente.'],
       ['systems','02 · EVOLUCIÓN','Cada conexión requiere el módulo anterior. Tú eliges la rama.'],
       ['supplies','03 · SUMINISTROS','Tres misiles de reserva. Pagas únicamente las unidades que faltan.']]) {
-      const section=document.createElement('section');section.id=`c9-${id}`;section.className='c9-section';
-      const heading=document.createElement('h3');heading.textContent=label;
+      const section=document.createElement('section');section.id=`c9-${id}`;section.className='c9-section cockpit-workshop-section';
+      const heading=document.createElement('h3');heading.textContent=label;heading.className='cockpit-section-title';
       const help=document.createElement('p');help.className='c9-section-help';help.textContent=description;
       const grid=document.createElement('div');grid.className='c9-upgrades';
       section.append(heading,help,grid);sections[id]={section,grid};
-      const link=document.createElement('button');link.type='button';link.textContent=label.slice(5);
+      const link=document.createElement('button');link.type='button';link.textContent=label.slice(5);link.setAttribute('aria-controls',section.id);
       link.onclick=()=>section.scrollIntoView?.({behavior:settings.reduceEffects?'instant':'smooth',block:'start'});
       nav.append(link);oldGrid.before(section);
     }
-    ui.c9Balance.after(nav);
+    ui.c9Balance.closest('.cockpit-ledger').after(nav);
     sections.arsenal.grid.before(loadout);
     for(const node of [ui.flightInstallTwin,ui.c9BuyShield,ui.c9BuyCoolant,calibrate])sections.systems.grid.append(node);
     sections.supplies.grid.append(ui.c9BuyMissiles);
@@ -1298,13 +1336,19 @@
       const button=document.createElement("button");button.type="button";button.dataset.voyageStage=String(number);
       button.disabled=number>unlocked;button.classList.toggle("selected",number===selected);
       button.setAttribute("aria-pressed",String(number===selected));
-      button.textContent=`1.${number} · ${stage.name}`;
+      button.className=`cockpit-stage${number===selected?" selected":""}`;
+      const identifier=document.createElement("small");identifier.className="cockpit-stage-number";identifier.textContent=`1.${number}`;
+      const name=document.createElement("b");name.textContent=stage.name;
+      const status=document.createElement("span");status.className="cockpit-stage-state";
+      status.textContent=number>unlocked?"BLOQUEADO":number===selected?"SELECCIONADO":"DISPONIBLE";
+      button.append(identifier,name,status);
+      button.setAttribute("aria-label",`Tramo 1.${number}. ${stage.name}. ${status.textContent.toLowerCase()}.`);
       button.onclick=()=>{classicVoyageRequestedStage=number;buildChronosStageGrid();};
       grid.append(button);
     }
-    $("chronosStagesNote").textContent=`Etapa 1.${selected} · ${unlocked}/10 disponibles. Se reanuda desde la entrada de cada etapa; pausa y taller detienen el viaje.`;
+    $("chronosStagesNote").textContent=`Tramo 1.${selected} · ${unlocked}/10 disponibles. Reanudas desde la entrada del tramo guardado.`;
     const stage=NeonCampaign.CHRONOS_VOYAGE_STAGES[selected-1];
-    ui.briefingSector.textContent=`ETAPA 1.${selected} · CHRONOS → GAIA`;
+    ui.briefingSector.textContent=`TRAMO 1.${selected} · CHRONOS → GAIA`;
     ui.briefingName.textContent=stage.name;
     ui.briefingZone.textContent=`${stage.origin} → ${stage.destination}`;
     ui.briefingGoal.textContent=`${stage.goal}/36 CRONIUM`;
@@ -1388,11 +1432,12 @@
     ui.flightDockStatus.textContent=installed||purchasedWeapon
       ? `${weapon.label}${selectedUpgrade?' II':''} equipado. ${selectedUpgrade?.description||weapon.description} Puedes cambiar de arma antes de volver al vuelo.`
       : classicEquipment.twinPrepared ? "Emisor preparado. Conservas Pulso hasta vencer a Atlas: su autorización desbloquea el segundo cañón."
-      : classicEquipment.recoveredTwin ? "Emisor rescatado. Mira prepara sus anclajes por 24 de chatarra; necesitarás superar a Atlas para activar el segundo cañón. La reparación de emergencia se efectúa una vez al alcanzar el enlace del corredor."
-      : "Taller conectado. Tu pulso central se recarga en vuelo. Recupera la pieza de Chronos; Atlas custodia el segundo cañón.";
+      : classicEquipment.recoveredTwin ? "Emisor recuperado. Prepáralo por 24 de chatarra; vencer a Atlas autoriza el segundo cañón."
+      : "Pulso central equipado. Recupera el módulo de Chronos para desarrollar tu nave.";
     for(const button of $("flightLoadoutChoices").querySelectorAll("button")) {
       const type=button.dataset.flightLoadout,unlocked=classicEquipment.unlocked.includes(type);
       button.disabled=!unlocked;button.setAttribute("aria-pressed",String(type===classicEquipment.selected));
+      button.querySelector('[data-loadout-state]').textContent=type===classicEquipment.selected?'EQUIPADA':unlocked?'EQUIPAR':type==='twin'?'REQUIERE ATLAS':'SIN ADQUIRIR';
       button.title=unlocked?NeonCampaign.CLASSIC_WEAPON_RULES.types[type].description:type==="twin"?"Supera a Guardian Atlas":"Una frontera posterior desbloquea esta arma";
       button.classList.toggle('hidden',type==='lance'&&!unlocked);
       button.title=type==='scatter'||type==='needle' ? unlocked?NeonCampaign.CLASSIC_WEAPON_RULES.types[type].description:'Disponible en el arsenal de la Forja':button.title;
@@ -1733,7 +1778,7 @@
 
   function setupAtlasEncounter() {
     const mount = document.createElement("section");
-    mount.id = "atlasEncounter"; mount.className = "atlas-encounter hidden";
+    mount.id = "atlasEncounter"; mount.className = "atlas-encounter cockpit-boss-signal hidden";
     mount.setAttribute("aria-label", "Encuentro Guardian Atlas");
     mount.innerHTML = `<div class="atlas-identity"><b>GUARDIAN ATLAS</b><span id="atlasPhase">CONTENCIÓN ORBITAL</span><progress id="atlasHealth" max="1" value="1" aria-label="Integridad de Guardian Atlas"></progress></div><p id="atlasStatus" role="status">Recupera el CRONIUM antes de cruzar el perímetro.</p>`;
     canvas.parentElement.append(mount);
@@ -1895,8 +1940,8 @@
     hangar.setAttribute("aria-modal", "true");
     hangar.setAttribute("aria-labelledby", "shipHangarTitle");
     hangar.setAttribute("aria-describedby", "shipHangarRules");
-    hangar.innerHTML = `<section class="panel ship-hangar-panel" tabindex="-1">
-      <header class="ship-hangar-header"><small>FLOTA · CONFIGURACIÓN DE NAVE</small><h2 id="shipHangarTitle">Tu nave, a tu manera.</h2><p id="shipHangarRules">Configuración visual · mismas reglas de vuelo.</p></header>
+    hangar.innerHTML = `<section class="panel ship-hangar-panel cockpit-dialog" tabindex="-1">
+      <header class="ship-hangar-header cockpit-section-head"><small>NAVE · COMPONENTES</small><h2 id="shipHangarTitle">HANGAR</h2><p id="shipHangarRules">Configuración visual · mismas reglas de vuelo.</p></header>
       <div class="ship-hangar-layout">
         <figure class="ship-hangar-preview"><canvas id="shipHangarCanvas" width="512" height="512" role="img" aria-label="Vista previa de la nave seleccionada">Vista previa de la configuración de nave.</canvas><figcaption id="shipHangarName">Nave seleccionada</figcaption><p id="shipAtlasNotice" class="hidden" role="status">No se han cargado los componentes. Se muestra la nave de reserva; vuelve a abrir el juego para reintentar.</p></figure>
         <div class="ship-hangar-controls">
@@ -1941,9 +1986,8 @@
       if (state !== "menu" || !(ui.menu.classList.contains("show") || ui.briefing.classList.contains("show"))) return;
       shipHangarDraft = { mode: "modular", loadout: { ...NeonCampaign.normalizeShipLoadout(shipLoadout) } };
       refreshDraft();
-      overlay();
       hangar.classList.remove("hidden");
-      hangar.classList.add("show");
+      overlay(hangar);
       panel.focus({ preventScroll: true });
     };
     for (const button of presetButtons) button.onclick = () => {
@@ -2158,8 +2202,8 @@
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
-    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
-    if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · ETAPA 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
+    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -2285,16 +2329,16 @@
     LEVELS.forEach((lv, index) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `level-card${index === currentLevel ? " current" : ""}`;
+      button.className = `level-card cockpit-destination${index === currentLevel ? " current" : ""}`;
       button.style.setProperty("--level-accent", lv.accent);
       button.dataset.scene = lv.scene;
       button.disabled = index + 1 > unlocked;
       const earned = +(starsMap[index + 1] || 0);
       const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
       button.innerHTML = `
-        <small>${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${index + 1}</small>
+        <small>${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${index + 1}</small>
         <strong>${lv.name}</strong>
-        <span>${lv.world} · ${lv.goal} núcleos</span>
+        <span>${lv.world} · ${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
         ${button.disabled ? '<div class="lock">🔒</div>' : ""}
       `;
@@ -2308,10 +2352,10 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
-    ui.briefingGoal.textContent = `${lv.goal} núcleos`;
+    ui.briefingGoal.textContent = `${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}`;
     ui.briefingThreat.textContent = lv.threatLabel;
     ui.briefingSupply.textContent = `${lv.goal + Math.ceil(lv.goal * 0.25)} disponibles`;
     ui.briefingMission.textContent = lv.mission;
@@ -2671,7 +2715,7 @@
       if(earnedEquipment)classicEquipment=earnedEquipment;
     }
     registerRun();
-    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "SECTOR SUPERADO";
+    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "NIVEL SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
       ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
@@ -2684,13 +2728,13 @@
     ui.levelHull.textContent = `${Math.ceil(hull)}%`;
     ui.maxCombo.textContent = `x${maxCombo}`;
     ui.unlockMessage.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "La siguiente expansión podrá añadir más sectores")
+      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "Puedes volver a cada nivel para mejorar tu resultado")
       : newlyUnlocked
-        ? `${N7_CAMPAIGN ? "Ruta" : "Sector"} ${currentLevel + 2} desbloqueado`
+        ? `${N7_CAMPAIGN ? "Ruta" : "Nivel"} ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
     ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
-      ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE SECTOR →";
+      ?"CRUZAR HACIA GAIA NOVA →":N7_CAMPAIGN?"SIGUIENTE RUTA →":"SIGUIENTE NIVEL →";
     if(isUnifiedClassic()&&currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";

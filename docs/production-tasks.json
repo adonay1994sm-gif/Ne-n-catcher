@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T17:06:41.822326+00:00",
+  "updatedAt": "2026-10-18",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -9903,6 +9903,47 @@
       "canonicalRelationship": {
         "extends": "P2-SALVAGE-01",
         "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
+    },
+    {
+      "id": "P1-ORBITAL-HUD-01",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Consola común de vuelo, menús y taller con mandos accesibles",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-MISSILE-MULTITOUCH-02"
+      ],
+      "files": [
+        "styles.css",
+        "index.html",
+        "preview/launcher.html",
+        "src/game/02-storage-audio.js",
+        "src/game/03-ui-game-flow.js"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/ORBITAL_HUD_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Verificación del paquete, aceptación artística y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Inicio, instrumentos, mandos, pausa, ajustes, ruta, hangar y Forja comparten jerarquía y estilo; 44px, sin solapamientos, foco/Escape, pausa y dos contactos conservados."
+      ],
+      "acceptanceStatus": {
+        "technical": "IN_PROGRESS",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-MISSILE-MULTITOUCH-02",
+        "note": "Rediseño visual solicitado; no cierre de nivel ni modificación del combate."
       }
     }
   ],

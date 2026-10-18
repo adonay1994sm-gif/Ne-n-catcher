@@ -74,11 +74,47 @@
     return item && ["meteor", "debris", "satellite", "scout"].includes(item.type);
   }
 
+  const overlayReturnFocus = new WeakMap();
   function overlay(el) {
-    [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar, ui.flightDock].filter(Boolean)
-      .forEach((node) => node.classList.remove("show"));
-    if (el) el.classList.add("show");
+    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar, ui.flightDock].filter(Boolean);
+    const previous = panels.find(node => node.classList.contains("show"));
+    const opener = document.activeElement;
+    const restore = previous && overlayReturnFocus.get(previous);
+    if (el && previous !== el && previous?.contains(opener)) overlayReturnFocus.set(el, opener);
+    panels.forEach(node => {
+      node.classList.remove("show");
+      node.inert = node !== el;
+      node.setAttribute("aria-hidden", String(node !== el));
+    });
+    if (!el) { canvas.focus({preventScroll:true}); return; }
+    el.classList.add("show");
+    // The same visible panel owns focus and pointer input. No extra frame loop.
+    const available = node => node && !node.disabled && !node.closest('[hidden],.hidden') &&
+      node.ownerDocument.defaultView.getComputedStyle(node).display !== "none";
+    const target = restore && el.contains(restore) && available(restore) ? restore
+      : [...el.querySelectorAll('.primary:not(:disabled),button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]')].find(available);
+    target?.focus({preventScroll:true});
   }
+
+  addEventListener("keydown", event => {
+    const modal = document.querySelector('.overlay.show[role="dialog"]');
+    if (!modal || modal === ui.flightDock || modal === ui.shipHangar) return;
+    if (event.key === "Escape") {
+      const close = {settingsPanel:"settingsBack",briefing:"briefingBack",levelSelect:"levelBack",instructions:"back",paused:"resume",complete:"completeHome",over:"home"}[modal.id];
+      if (!close) return;
+      event.preventDefault();event.stopPropagation();
+      $(close)?.click();
+    } else if (event.key === "Tab") {
+      const controls = [...modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]')].filter(node => node.getClientRects().length && !node.closest('[hidden],.hidden'));
+      const first = controls[0], lastControl = controls.at(-1);
+      if (!first) return;
+      if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+        event.preventDefault();lastControl.focus();
+      } else if (!event.shiftKey && (document.activeElement === lastControl || !modal.contains(document.activeElement))) {
+        event.preventDefault();first.focus();
+      }
+    }
+  }, true);
 
   function toast(message) {
     ui.toast.textContent = message;

@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-18T17:06:41.822326+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-18**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -98,6 +98,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-MISSILE-MULTITOUCH-02 / P1 | Consola coherente y misil por contacto independiente del piloto | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
 | P2-WEAPON-RANKS-01 / P2 | Subprogresión de arma, blindaje y refrigeración por rangos | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
 | P2-WRECK-SALVAGE-01 / P2 | Restos de nave y satélites generan chatarra recuperable | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P1-ORBITAL-HUD-01 / P1 | Consola común de vuelo, menús y taller con mandos accesibles | IN_PROGRESS | IN_PROGRESS | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -121,9 +122,9 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Animaciones | 5/158 (3.2%) | 109 | 1 | 0 | 43 |
 | Narrativa | 0/24 (0.0%) | 17 | 0 | 0 | 7 |
 | Audio | 1/19 (5.3%) | 12 | 0 | 1 | 5 |
-| Interfaz | 5/46 (10.9%) | 9 | 1 | 0 | 31 |
+| Interfaz | 5/47 (10.6%) | 9 | 2 | 0 | 31 |
 | Rendimiento | 1/16 (6.3%) | 11 | 1 | 0 | 3 |
-| QA | 24/119 (20.2%) | 20 | 3 | 5 | 67 |
+| QA | 24/120 (20.0%) | 20 | 4 | 5 | 67 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
@@ -131,7 +132,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
 | 03 · Prueba integrada y cierre técnico | 20/32 (62.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 10 · DONE: 20 |
-| 04 · Jugabilidad procedural | 3/71 (4.2%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 48 · DONE: 3 |
+| 04 · Jugabilidad procedural | 3/72 (4.2%) | PENDING: 19 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 48 · DONE: 3 |
 | 05 · Producción visual y 150 assets | 5/196 (2.6%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 68 · DONE: 5 |
 | 06 · Diez jefes | 0/13 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 3 · DONE: 0 |
 | 07 · Narrativa completa | 0/15 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |

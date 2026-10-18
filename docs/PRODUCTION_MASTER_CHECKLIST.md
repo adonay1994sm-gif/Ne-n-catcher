@@ -1,6 +1,6 @@
 # NEON CRONIUM — Checklist maestra de producción
 
-Fecha del registro: **2026-10-18T17:06:41.822326+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-18**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -98,6 +98,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-MISSILE-MULTITOUCH-02 / P1 | Consola coherente y misil por contacto independiente del piloto | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
 | P2-WEAPON-RANKS-01 / P2 | Subprogresión de arma, blindaje y refrigeración por rangos | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
 | P2-WRECK-SALVAGE-01 / P2 | Restos de nave y satélites generan chatarra recuperable | IN_REVIEW | PASSED_LOCAL_CHROMIUM_FULL_LOOP_AND_CI | PENDING_OWNER | PENDING |
+| P1-ORBITAL-HUD-01 / P1 | Consola común de vuelo, menús y taller con mandos accesibles | IN_PROGRESS | IN_PROGRESS | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -181,7 +182,7 @@ Este registro cubre los Bloques 03–10 del mandato. Los avances históricos per
 
 ## Resumen de estados
 
-PENDING: 200 · IN_PROGRESS: 5 · BLOCKED: 8 · IN_REVIEW: 132 · DONE: 29. Total: 374 tareas.
+PENDING: 200 · IN_PROGRESS: 6 · BLOCKED: 8 · IN_REVIEW: 132 · DONE: 29. Total: 375 tareas.
 
 ## Bloque 03 — Prueba integrada y cierre técnico
 
@@ -259,7 +260,7 @@ PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 10 · DONE: 20.
 
 ## Bloque 04 — Jugabilidad procedural
 
-PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 48 · DONE: 3.
+PENDING: 19 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 48 · DONE: 3.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -334,6 +335,7 @@ PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 48 · DONE: 3.
 | P1-MISSILE-MULTITOUCH-02 | Consola coherente y misil por contacto independiente del piloto | CRITICAL | IN_REVIEW | P1-INPUT-02 | [src/game/08-loop-input-bootstrap.js](../src/game/08-loop-input-bootstrap.js)<br>[index.html](../index.html)<br>[styles.css](../styles.css)<br>[scripts/two-touch-browser-smoke.cjs](../scripts/two-touch-browser-smoke.cjs) | 39c2ca434ac9df38deccd235d011b76eb680fb58 | certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.<br>Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.<br>Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.<br>FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico. | [docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md)<br>[docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json](production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json)<br>[docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json](production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json)<br>[docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json](production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json)<br>[docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json](production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json) | Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes. |
 | P2-WEAPON-RANKS-01 | Subprogresión de arma, blindaje y refrigeración por rangos | HIGH | IN_REVIEW | P2-FORJA-ARSENAL-01 | [src/game/progression/scrap-economy.js](../src/game/progression/scrap-economy.js)<br>[src/game/combat/classic-weapons.js](../src/game/combat/classic-weapons.js)<br>[src/game/combat/hull-reinforcement.js](../src/game/combat/hull-reinforcement.js) | 39c2ca434ac9df38deccd235d011b76eb680fb58 | certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.<br>Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.<br>Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.<br>FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico. | [docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md)<br>[docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json](production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json)<br>[docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json](production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json)<br>[docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json](production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json)<br>[docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json](production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json) | Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes. |
 | P2-WRECK-SALVAGE-01 | Restos de nave y satélites generan chatarra recuperable | HIGH | IN_REVIEW | P2-SALVAGE-01 | [src/game/04-entities-collision-damage.js](../src/game/04-entities-collision-damage.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js)<br>[tests/debris-salvage.test.mjs](../tests/debris-salvage.test.mjs) | 39c2ca434ac9df38deccd235d011b76eb680fb58 | certify-local certification-02:11/11 exit0; contenido696/696 y regression34/34; paquete limpio posterior39c2ca4 visual14/14/30capturas.<br>Chromium multitouch20/20 y offline/update7/7 en1c7c72e; input/modelos/assets conservados en39c2ca4.<br>Actions39147083429 completed/success para39c2ca4; Netlify build-info exacto dirtyfalse/enginefalse.<br>FORJA39c2ca4 partida natural4/4 en437554ms:10tramos/compra ganada/Atlas/guardado-reload;744−24=720,reciboAtlasúnico. | [docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md)<br>[docs/production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json](production-reports/evidence/forja-remates/visual-39c2ca4-02/results.json)<br>[docs/production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json](production-reports/evidence/forja-remates/two-touch-1c7c72e-02/results.json)<br>[docs/production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json](production-reports/evidence/forja-remates/offline-1c7c72e-03/results.json)<br>[docs/production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json](production-reports/evidence/forja-remates/natural-39c2ca4-01/results.json) | Aceptación artística, dificultad/economía humana y Safari/iPhone físico pendientes. |
+| P1-ORBITAL-HUD-01 | Consola común de vuelo, menús y taller con mandos accesibles | HIGH | IN_PROGRESS | P1-MISSILE-MULTITOUCH-02 | [styles.css](../styles.css)<br>[index.html](../index.html)<br>[preview/launcher.html](../preview/launcher.html)<br>[src/game/02-storage-audio.js](../src/game/02-storage-audio.js)<br>[src/game/03-ui-game-flow.js](../src/game/03-ui-game-flow.js) | — | — | [docs/production-reports/ORBITAL_HUD_2026-10-18.md](production-reports/ORBITAL_HUD_2026-10-18.md) | Verificación del paquete, aceptación artística y Safari/iPhone físico pendientes. |
 
 ### Criterios verificables
 
@@ -408,6 +410,7 @@ PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 48 · DONE: 3.
 - **P1-MISSILE-MULTITOUCH-02:** Pilotar y lanzar misil en ambos órdenes con pointer/touch, consumo único, click asistivo, cancelación/pausa/blur sin disparos fantasma..
 - **P2-WEAPON-RANKS-01:** Abanico y Aguja tienen rangoII funcional; defensa45→65, recarga1.5→1; requisitos y recibos atómicos conservan guardados..
 - **P2-WRECK-SALVAGE-01:** Destrucción produce6/18físicos, recogida única; contacto/meteoro/proyectil no dan botín; límites y Atlas600 conservados..
+- **P1-ORBITAL-HUD-01:** Inicio, instrumentos, mandos, pausa, ajustes, ruta, hangar y Forja comparten jerarquía y estilo; 44px, sin solapamientos, foco/Escape, pausa y dos contactos conservados..
 
 ## Bloque 05 — Producción visual y 150 assets
 

@@ -1,0 +1,154 @@
+{
+  "startedAt": "2026-10-18T17:27:49.538Z",
+  "node": "v24.19.0",
+  "branch": "continuity-assets-audit-20261013",
+  "head": "cbd41131e57bd5a82d3fdf5faf0388e356d20817",
+  "workingTree": "M AGENTS.md\n M docs/CODEX_NEXT_ORDERS.md\n M docs/CODEX_STATUS.md\n M docs/PRODUCTION_LATEST_REPORT.md\n M docs/PRODUCTION_MASTER_CHECKLIST.md\n M docs/PRODUCTION_PROGRESS.md\n M docs/production-tasks.json\n M game.js\n M index.html\n M preview/launcher.html\n M src/game/02-storage-audio.js\n M src/game/03-ui-game-flow.js\n M styles.css\n M sw.js\n M tests/product-brand.test.mjs\n M tests/run-static-tests.mjs\n M tests/run-tests.mjs\n M tests/run-v7-web-tests.mjs\n M tools/third-party/skills/SOURCES.json\n?? docs/production-reports/ORBITAL_HUD_2026-10-18.md\n?? docs/production-reports/evidence/orbital-hud/\n?? scripts/hud-redesign-smoke.cjs\n?? tools/third-party/skills/anthropic-frontend-design/",
+  "results": [
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 774,
+      "log": "build.txt"
+    },
+    {
+      "name": "engine",
+      "command": "npm run test:engine",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 316,
+      "log": "engine.txt"
+    },
+    {
+      "name": "architecture",
+      "command": "npm run test:architecture",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 130,
+      "log": "architecture.txt"
+    },
+    {
+      "name": "content-integration-assets",
+      "command": "npm run test:content",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "durationMs": 107634,
+      "log": "content-integration-assets.txt"
+    },
+    {
+      "name": "static",
+      "command": "npm run test:static",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 203,
+      "log": "static.txt"
+    },
+    {
+      "name": "regression",
+      "command": "npm test",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 3068,
+      "log": "regression.txt"
+    },
+    {
+      "name": "web",
+      "command": "node tests/run-v7-web-tests.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 1692,
+      "log": "web.txt"
+    },
+    {
+      "name": "experimental-render-adapter",
+      "command": "node --test tests/campaign-adapter.test.mjs tests/neon-render-engine.test.mjs tests/sprite-animator.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 218,
+      "log": "experimental-render-adapter.txt"
+    },
+    {
+      "name": "audio-lifecycle",
+      "command": "node --test tests/audio-lifecycle.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 119,
+      "log": "audio-lifecycle.txt"
+    },
+    {
+      "name": "visual-artpass",
+      "command": "node --test tests/visual-artpass.test.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 157,
+      "log": "visual-artpass.txt"
+    },
+    {
+      "name": "inventory",
+      "command": "node scripts/audit-asset-inventory.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "durationMs": 62,
+      "log": "inventory.txt"
+    }
+  ],
+  "artifacts": {
+    "game.js": [
+      {
+        "directory": ".",
+        "sha256": "8fb2d349b87cc88e361f046d360736ba5aaffc555b6a9421cbcbfa49ea798925"
+      },
+      {
+        "directory": "www",
+        "sha256": "8fb2d349b87cc88e361f046d360736ba5aaffc555b6a9421cbcbfa49ea798925"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "8fb2d349b87cc88e361f046d360736ba5aaffc555b6a9421cbcbfa49ea798925"
+      }
+    ],
+    "core-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "www",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "25ec325209fc42a696f7ce73a2b1b46e101040c6fe59089df531b645953aab78"
+      }
+    ],
+    "content-runtime.js": [
+      {
+        "directory": ".",
+        "sha256": "baf4b0f2a4ee5e7ebe7cf6186db03dd47f884d9af619045897919b425b185881"
+      },
+      {
+        "directory": "www",
+        "sha256": "baf4b0f2a4ee5e7ebe7cf6186db03dd47f884d9af619045897919b425b185881"
+      },
+      {
+        "directory": "ios/App/App/public",
+        "sha256": "baf4b0f2a4ee5e7ebe7cf6186db03dd47f884d9af619045897919b425b185881"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-18T17:29:43.940Z",
+  "ok": false
+}

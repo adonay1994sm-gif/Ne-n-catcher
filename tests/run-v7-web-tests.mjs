@@ -53,7 +53,7 @@ const swContext = {
 vm.runInNewContext(`${serviceWorkerSource}\nglobalThis.__SW_TEST__ = { CACHE, CORE };`, swContext);
 
 await test("PWA precarga código, legales, sprites y fondo de Cronos", async () => {
-  assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-forja-controls-2");
+  assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-orbital-hud-1");
   const paths = new Set(swContext.__SW_TEST__.CORE.map(withoutQuery));
   const manifest = JSON.parse(await text("ASSET_MANIFEST.json"));
   for (const path of [

@@ -1,3 +1,9 @@
+# Cierre vigente en preparación
+
+[ORBITAL_HUD — rediseño integral](production-reports/ORBITAL_HUD_2026-10-18.md). El contenido siguiente es histórico y conserva sus SHA/evidencias.
+
+---
+
 # DIAGNÓSTICO
 
 18/10/2026 · Base34ae40f preservada. Se corrigió el misil por clic separado del multitoque y se sustituyó el tutorial por reloj. Funcional probado **39c2ca434ac9df38deccd235d011b76eb680fb58**; MotorV1false, RAFúnico y guardados/campañas conservados.

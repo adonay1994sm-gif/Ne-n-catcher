@@ -1,3 +1,9 @@
+# Continuación vigente — ORBITAL_HUD
+
+Completar el [rediseño integral](production-reports/ORBITAL_HUD_2026-10-18.md), capturar 320/390 y paisaje, verificar foco/Escape, dos contactos y offline; publicar rama y comprobar SHA exacto en Actions/Netlify. No ampliar niveles ni afirmar aceptación artística/física.
+
+---
+
 ## Continuación vigente — FORJA_LEVEL_ONE_REMATES ·18/10/2026
 
 Leer [informe actual](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md), HEAD/remoto y registro único sin retroceder.

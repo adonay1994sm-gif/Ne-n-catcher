@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#050712">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07131d">
   <meta name="description" content="Neon Cronium: expedición arcade por sectores galácticos, restos orbitales y sistemas de nave.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,16 +13,16 @@
   <link rel="stylesheet" href="styles.css?v=7.2.0">
   <title>Neon Cronium · La Onda de Choque</title>
 </head>
-<body>
+<body class="cockpit-screen">
 <main class="shell">
   <section class="game" aria-label="Neon Cronium">
-    <canvas id="canvas" width="720" height="1280" aria-label="Zona de juego"></canvas>
+    <canvas id="canvas" width="720" height="1280" tabindex="0" aria-label="Zona de juego; flechas para pilotar, espacio para disparar y M para misil"></canvas>
 
-    <div id="hud" class="hud hidden">
-      <div><small>SECTOR</small><b id="hudLevel">1</b></div>
-      <div><small>PUNTOS</small><b id="score">0</b></div>
-      <div><small>NÚCLEOS</small><b id="goal">0/36</b></div>
-      <div class="hull-cell"><small>CASCO</small><b id="hull">100%</b><i><span id="hullBar"></span></i></div>
+    <div id="hud" class="hud hidden" role="region" aria-label="Instrumentos de vuelo">
+      <div class="hud-metric metric-sector"><small>NIVEL</small><b id="hudLevel">1</b></div>
+      <div class="hud-metric metric-score"><small>PUNTOS</small><b id="score">0</b></div>
+      <div class="hud-metric metric-cronium"><small>CRONIUM</small><b id="goal">0/36</b></div>
+      <div class="hud-metric hull-cell"><small>CASCO</small><b id="hull">100%</b><i><span id="hullBar"></span></i></div>
       <button id="pause" class="icon" type="button" aria-label="Pausar">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14M16 5v14" stroke-width="3"/></svg>
       </button>
@@ -45,7 +45,7 @@
     <div id="levelBanner" class="level-banner">
       <small id="bannerSector">SECTOR 1</small>
       <strong id="bannerName">LA ONDA DE CHOQUE</strong>
-      <span id="bannerGoal">Recupera 36 fragmentos temporales</span>
+      <span id="bannerGoal">Recupera el CRONIUM de Chronos</span>
     </div>
 
     <div id="storyTransmission" class="story-transmission" aria-live="polite">
@@ -68,7 +68,7 @@
 
       <div class="panel menu-panel">
         <small class="menu-chapter">CHRONOS → GAIA NOVA</small>
-        <h2>El rastro comienza<br>entre las estrellas.</h2>
+        <h2>El rastro<br>de Chronos.</h2>
         <p>Chronos ha sido atacado. Recupera el CRONIUM disperso y descubre quién rompió el equilibrio.</p>
 
         <div class="menu-stats hidden" aria-hidden="true">
@@ -85,8 +85,8 @@
 
         <button id="play" class="primary hero-cta" type="button"><span id="playLabel">CONTINUAR VIAJE</span><small id="playSector">SECTOR 1 · LA ONDA DE CHOQUE</small></button>
         <div class="menu-actions">
-          <button id="levels" class="secondary" type="button"><span class="button-glyph">▦</span>NIVELES</button>
-          <button id="settings" class="secondary" type="button"><span class="button-glyph">⚙</span>AJUSTES</button>
+          <button id="levels" class="secondary" type="button"><span class="button-glyph" aria-hidden="true">▦</span>RUTA</button>
+          <button id="settings" class="secondary" type="button"><span class="button-glyph" aria-hidden="true">⚙</span>AJUSTES</button>
         </div>
       </div>
 
@@ -98,7 +98,7 @@
     </div>
 
 
-    <div id="briefing" class="overlay">
+    <div id="briefing" class="overlay" role="dialog" aria-modal="true" aria-labelledby="briefingName">
       <div id="briefingPanel" class="panel briefing-panel">
         <small id="briefingSector">SECTOR 1</small>
         <div id="briefingVisual" class="briefing-visual" data-scene="cronos" aria-hidden="true">
@@ -120,21 +120,21 @@
       </div>
     </div>
 
-    <div id="levelSelect" class="overlay">
+    <div id="levelSelect" class="overlay" role="dialog" aria-modal="true" aria-labelledby="routeTitle">
       <div class="panel level-panel">
         <small>CAMPAÑA</small>
-        <h2>Elige tu próximo destino</h2>
+        <h2 id="routeTitle">Tu ruta estelar</h2>
         <div id="levelGrid" class="level-grid"></div>
         <button id="levelBack" class="secondary" type="button">VOLVER</button>
       </div>
     </div>
 
-    <div id="settingsPanel" class="overlay">
+    <div id="settingsPanel" class="overlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
       <div class="panel settings-panel">
         <small>SISTEMAS DE NAVE</small>
-        <h2>Configuración</h2>
+        <h2 id="settingsTitle">Ajusta tu nave</h2>
         <div class="setting-row">
-          <label for="musicVolume"><span>Música ambiental</span><b id="musicValue">35%</b></label>
+          <label for="musicVolume"><span>Música</span><b id="musicValue">35%</b></label>
           <input id="musicVolume" type="range" min="0" max="100" step="1" value="35">
         </div>
         <div class="setting-row">
@@ -145,7 +145,7 @@
           <label for="sensitivity"><span>Sensibilidad de la nave</span><b id="sensitivityValue">100%</b></label>
           <input id="sensitivity" type="range" min="60" max="150" step="5" value="100">
         </div>
-        <label class="toggle-row"><span><b>Disparo automático</b><small>Opcional en el viaje clásico. Empieza desactivado; consume la misma batería.</small></span><input id="autoFire" type="checkbox"><i></i></label>
+        <label class="toggle-row"><span><b>Disparo automático</b><small>Opcional. Usa la misma batería que el disparo manual.</small></span><input id="autoFire" type="checkbox"><i></i></label>
         <label class="toggle-row"><span><b>Vibración</b><small>Impactos, recogidas y avisos</small></span><input id="vibration" type="checkbox" checked><i></i></label>
         <label class="toggle-row"><span><b>Reducir sacudidas y destellos</b><small>Conserva los avisos y el control de la nave</small></span><input id="reduceEffects" type="checkbox"><i></i></label>
         <label class="quality-row" for="effectsQuality">
@@ -162,19 +162,19 @@
       </div>
     </div>
 
-    <div id="instructions" class="overlay">
+    <div id="instructions" class="overlay" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
       <div class="panel scroll-panel">
-        <h2>Cómo se juega</h2>
+        <h2 id="instructionsTitle">Aprende a pilotar</h2>
         <div class="rules">
           <p><span><b>Pilotaje:</b> arrastra con un dedo para mover la nave y mantén DISPARAR con el otro. Cada dedo conserva su control. Con teclado, usa las cuatro flechas y espacio.</span></p>
-          <p><span><b>Pulso:</b> un cargador de veinte disparos que se repone durante el vuelo. Vence a Atlas para desbloquear el segundo cañón; en C9 puedes preparar y mejorar tu nave.</span></p>
-          <p><i class="energy"></i><span><b>Núcleo:</b> alimenta la nave y completa el objetivo. Cada nivel tiene una cantidad limitada.</span></p>
+          <p><span><b>Phaser:</b> batería de veinte disparos. Mantén DISPARAR para usarla; se recupera durante el vuelo. Contra Atlas el arma básica no se agota. El misil usa un botón independiente y se repone con chatarra en la Forja C9.</span></p>
+          <p><i class="energy"></i><span><b>CRONIUM:</b> recupera la energía dispersa para seguir el rastro de Chronos. El indicador superior muestra lo que has recogido.</span></p>
           <p><i class="meteor"></i><span><b>Amenazas:</b> meteoritos, restos metálicos y satélites dañan distintos porcentajes del casco.</span></p>
           <p><i class="debris-corridor"></i><span><b>Formación de basura espacial:</b> cruza por el pasillo cian. Las amenazas no pueden aparecer dentro mientras esté protegido.</span></p>
         </div>
-        <h3>Sistemas que pueden caer</h3>
+        <h3>Recuperación y equipo</h3>
         <div class="ability-list">
-          <p><i class="ability shield-a">◉</i><span><b>Escudo:</b> absorbe impactos durante unos segundos.</span></p>
+          <p><i class="ability shield-a">◉</i><span><b>Refuerzo de casco:</b> reserva adicional que absorbe daño antes del casco y se consume con los impactos. Puedes ampliar su capacidad en la Forja C9.</span></p>
           <p><i class="ability tractor-a">⌁</i><span><b>Rayo tractor:</b> conecta un cable y atrae un solo objeto cada vez.</span></p>
           <p><i class="ability slow-a">◷</i><span><b>Estabilizador:</b> reduce temporalmente la velocidad del campo.</span></p>
           <p><i class="ability double-a">×2</i><span><b>Sobrecarga:</b> duplica la energía procesada.</span></p>
@@ -185,10 +185,10 @@
       </div>
     </div>
 
-    <div id="paused" class="overlay">
+    <div id="paused" class="overlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
       <div class="panel pause-panel">
         <small>EXPEDICIÓN EN PAUSA</small>
-        <h2>Sistemas detenidos</h2>
+        <h2 id="pauseTitle">Un respiro<br>en el viaje.</h2>
         <button id="resume" class="primary" type="button">CONTINUAR</button>
         <button id="pauseSettings" class="secondary" type="button">CONFIGURACIÓN</button>
         <button id="restart" class="secondary" type="button">REINICIAR SECTOR</button>
@@ -196,7 +196,7 @@
       </div>
     </div>
 
-    <div id="complete" class="overlay">
+    <div id="complete" class="overlay" role="dialog" aria-modal="true" aria-labelledby="completeTitle">
       <div class="panel complete-panel">
         <small id="completeLabel">SECTOR SUPERADO</small>
         <div id="completeVisual" class="briefing-visual complete-visual" data-scene="cronos" aria-hidden="true"></div>
@@ -214,7 +214,7 @@
       </div>
     </div>
 
-    <div id="over" class="overlay">
+    <div id="over" class="overlay" role="dialog" aria-modal="true" aria-labelledby="result">
       <div class="panel">
         <small>EXPEDICIÓN INTERRUMPIDA</small>
         <h2 id="result">El casco ha cedido</h2>

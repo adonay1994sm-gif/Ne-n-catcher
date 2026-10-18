@@ -1,3 +1,9 @@
+# Estado vigente — ORBITAL_HUD ·18/10/2026
+
+Rediseño de interfaz autorizado en curso desde `cbd4113`. Diagnóstico, archivos y pruebas: [informe](production-reports/ORBITAL_HUD_2026-10-18.md). La evidencia FORJA anterior conserva su SHA.
+
+---
+
 # DIAGNÓSTICO
 
 18/10/2026 · Base34ae40f preservada. Se corrigió el misil por clic separado del multitoque y se sustituyó el tutorial por reloj. Funcional probado **39c2ca434ac9df38deccd235d011b76eb680fb58**; MotorV1false, RAFúnico y guardados/campañas conservados.

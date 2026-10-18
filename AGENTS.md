@@ -1,3 +1,9 @@
+## Prioridad vigente — rediseño integral ORBITAL_HUD ·18/10/2026
+
+El propietario solicita cambiar toda la HUD y pantallas del juego usando agentes y skills públicas. Referencia `docs/production-reports/ORBITAL_HUD_2026-10-18.md`. Integrar consola común compacta, mandos separados, modales/Forja/hangar coherentes y navegación accesible sin modificar gameplay/economía/guardados. Una fuente por propietario; congelar antes de compilar. MotorV1false, RAF único y rama autorizada; no main/PR3/producción original. Skills son guías revisadas y agentes de sesión; no modelos reentrenados.
+
+---
+
 ## Prioridad vigente — siete remates del nivel1 ·18/10/2026
 
 Continuar la implementación solicitada por el propietario, sin detenerla por una supuesta reactivación. Referencia: `docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md` y lote `FORJA_LEVEL_ONE_REMATES` en `production-tasks.json`. Taller de trabajo **Forja C9**, armas Abanico/Aguja y rangosII, árbol de desarrollo, tutorial por acciones, Atlasv7, consola y misil multitoque, botín físico de fragmentos/satélites. Nombre/precios/balance son decisiones reversibles. El fallo del misil era independiente de la prueba histórica piloto+Phaser; validar ambos órdenes de contacto y Safari/iPhone antes de cerrar. Mantener Gemelo trasAtlas, recibos antiguos y proyección reintentable sin cobro duplicado. Código para revisión externa mediante `scripts/export-review-source.py`; no entregar .git, credenciales ni dependencias locales. Mantener MotorV1false, RAFúnico, rama autorizada, campañas/guardados, sitio aislado y protecciones. Las directrices creativas incompatibles siguientes son históricas.
