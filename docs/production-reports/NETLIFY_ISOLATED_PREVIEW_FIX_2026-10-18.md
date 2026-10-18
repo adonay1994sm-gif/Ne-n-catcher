@@ -14,12 +14,20 @@ Fuentes: `scripts/netlify-preview-gate.mjs`; contratos: `tests/preview-build.tes
 
 ## Verificación y publicación
 
-[Resultados locales](evidence/netlify-isolated-fix/local-checks.json): buildpreview0, dos pruebas de puerta con ambos modos y24variantes negativas, preview24/24, estáticas13/13 y arquitectura6/6. Sintaxis y diffcheck0. Snapshot de integración sucio sobre8c; no se atribuye un SHA limpio a ese build. Ninguna fuente de gameplay cambió. La CI del commit publicado comprobará de nuevo el pipeline completo.
+[Resultados locales](evidence/netlify-isolated-fix/local-checks.json): buildpreview0, dos pruebas de puerta con ambos modos y24variantes negativas, preview24/24, estáticas13/13 y arquitectura6/6. Sintaxis y diffcheck0. Snapshot de integración sucio sobre8c; no se atribuye un SHA limpio a ese build. Ninguna fuente de gameplay cambió. La CI del commit publicado volvió a comprobar el pipeline completo y terminó correctamente: [39134274955](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39134274955).
 
 [Error transcrito de las capturas](evidence/netlify-isolated-fix/reported-error.md). La excepción sólo autoriza el destino del propietario; no elimina la prueba ni debilita el rechazo genérico. Los tests limpian las variables Netlify heredadas para que ejecutarlos dentro del proyecto aislado no contamine los casos de rechazo.
 
-Commit funcional: el commit que introduce esta revisión de `scripts/netlify-preview-gate.mjs`, resoluble con `git log -1 --format=%H -- scripts/netlify-preview-gate.mjs`. Publicación del commit, CI y resultado Netlify se registrarán al comprobarlos; todavía no se declara que Netlify haya publicado. La nueva tarea queda IN_REVIEW técnica local aprobada, despliegue pendiente; aceptación artística/física no aplicables a esta puerta.
+Commit funcional publicado **82c3311c147fb71da4ff93348a105bbf148c2828**, CI completa/success. La nueva tarea permanece IN_REVIEW: puerta/pipeline verificados, publicación Netlify no verificada; aceptación artística/física no aplicables a esta puerta.
 
 ## Continuación
 
-Publicar el commit normal en la rama autorizada, esperar CI y el build Git del sitio de pruebas, comprobar build-info/recursos reales. Si Netlify no se puede observar desde GitHub o HTTP, registrar esa limitación y pedir sólo el error concreto del panel; no inventar una URL accesible ni desplegar al sitio principal. La web privada22 y el paquete limpio da3 siguen disponibles mientras tanto.
+El propietario solicita un intento directo desde Codex. Se emite un segundo push normal con este cierre para producir un evento Git nuevo, conservando el código de puerta ya probado. [Solicitud de reintento](evidence/netlify-isolated-fix/retry-request.json). Después se comprueba la CI del nuevo SHA y se observa HTTP/build-info del sitio de pruebas. Si Netlify no se puede observar desde GitHub o HTTP, registrar esa limitación y pedir sólo el error concreto del panel; no inventar una URL accesible ni desplegar al sitio principal. La web privada22 y el paquete limpio da3 siguen disponibles mientras tanto.
+
+## Acceso comprobado y límite del intento directo
+
+[Estado previo al reintento](evidence/netlify-isolated-fix/remote-state-before-retry.json): GitHub82c correcto y CI success; la dirección esperada y build-info del sitio de pruebas devuelven404. Esto no permite distinguir build detenido, integración no activada o dirección real distinta.
+
+[Acceso Netlify](evidence/netlify-isolated-fix/permission-check.json): API401 sin autenticación. No hay credencialNetlify, SiteID ni CLI configurados; búsqueda de pluginNetlify sin conexión disponible. Los permisos nominales de GitHub dicenadmin, pero [la consulta de webhooks devuelve403](evidence/netlify-isolated-fix/webhook-access.json): esa operación no está autorizada por la conexión actual. No se intentó eludirla ni usar credencialesGitHub en Netlify.
+
+La documentación oficial no justifica modificar de nuevo ignore/require: [revisión](evidence/netlify-isolated-fix/ignore-command-review.md). No se toca la seguridad por una causa hipotética. El nuevo push es una solicitud por el enlace Git existente, no una afirmación de webhook entregado o build publicado. Para gestionar el panel/API directamente hace falta una conexión Netlify autenticada, con la credencial en el entorno seguro, nunca incrustada en código o informes. La web privada22 y el paquete da3 continúan recuperables.

@@ -9487,24 +9487,27 @@
         "netlify.toml",
         "docs/agents/NETLIFY_TEST_SETUP.md"
       ],
-      "commit": null,
+      "commit": "82c3311c147fb71da4ff93348a105bbf148c2828",
       "tests": [
         "npm run build:preview (exit0, dirty snapshot8c)",
         "node --test --test-name-pattern=unit:Netlify tests/preview-build.test.mjs (2/2; exact command in local-checks.json)",
         "npm run test:preview (24/24)",
         "npm run test:static (13/13)",
-        "npm run test:architecture (6/6)"
+        "npm run test:architecture (6/6)",
+        "GitHub Actions39134274955 completed/success on82c3311"
       ],
       "evidence": [
         "docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md",
         "docs/production-reports/evidence/netlify-isolated-fix/local-checks.json",
-        "docs/production-reports/evidence/netlify-isolated-fix/reported-error.md"
+        "docs/production-reports/evidence/netlify-isolated-fix/reported-error.md",
+        "docs/production-reports/evidence/netlify-isolated-fix/remote-state-before-retry.json",
+        "docs/production-reports/evidence/netlify-isolated-fix/retry-request.json"
       ],
       "openErrors": [
-        "Commit, GitHub Actions y publicación real del sitio Netlify pendientes de comprobación."
+        "Publicación Netlify no verificada: dirección esperada404, API401 y accesoGitHubwebhooks403; nuevo push normal para emitir eventoGit."
       ],
       "acceptanceStatus": {
-        "technical": "LOCAL_GATE_AND_PREVIEW_PASSED_REMOTE_PENDING",
+        "technical": "GATE_PREVIEW_AND_GITHUB_CI_PASSED_NETLIFY_PUBLISH_UNVERIFIED",
         "artistic": "NOT_APPLICABLE",
         "physical": "NOT_APPLICABLE"
       },
@@ -9792,7 +9795,7 @@
       "currentPackageRevision": "e6aec451eb36f81c324e562cad6269fb43974fc3df2f889b8d51cd00a25b716b",
       "currentBatchVerification": "Chromium visual12/12, natural4/4, offline7/7, HTTP16/16 y CI completos sobre runtime limpio da3.",
       "latestWorkflowCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
-      "netlifyDeploymentStatus": "PREPARED_NOT_DEPLOYED_AUTHENTICATION_AND_ISOLATED_TEST_DESTINATION_REQUIRED"
+      "netlifyDeploymentStatus": "ISOLATED_PROJECT_IDENTIFIED_GATE_FIX_AND_CI_PASSED_NETLIFY_PUBLISH_UNVERIFIED"
     },
     "feedbackHistory": [
       {

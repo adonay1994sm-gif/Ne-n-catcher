@@ -1,6 +1,8 @@
 ## Corrección Netlify aislado ·18/10/2026
 
-[Diagnóstico y corrección](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md): el propietario conectó `neonpreviewdeploy`; la puerta rechazaba su contexto Production aunque era un proyecto de pruebas. Se admite únicamente esa identidad Netlify/hostHTTPS/rama/opt-in, manteniendo producción original/main/PRs bloqueados. Build local y preview24/24, estáticas13/13 y arquitectura6/6 aprobados. Publicación real y CI del nuevo commit todavía pendientes de comprobación. La variable1 en Production del sitio de pruebas fue confirmada por el propietario.
+[Diagnóstico y corrección](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md): el propietario conectó `neonpreviewdeploy`; la puerta rechazaba su contexto Production aunque era un proyecto de pruebas. Se admite únicamente esa identidad Netlify/hostHTTPS/rama/opt-in, manteniendo producción original/main/PRs bloqueados. Build local y preview24/24, estáticas13/13 y arquitectura6/6 aprobados. Corrección82c3311 publicada y CI39134274955 completa/success; publicación Netlify todavía sin verificar. La variable1 en Production del sitio de pruebas fue confirmada por el propietario.
+
+Intento directo autorizado por el propietario: nuevo push normal con el cierre para emitir un eventoGit, sin modificar de nuevo la puerta. NetlifyAPI401 y webhooksGitHub403 impiden control directo del panel. No afirmar entrega de webhook ni despliegue por sólo publicar código.
 
 El juego no cambia: web privada22 y runtime da3 conservan su evidencia. Registrar resultado Netlify antes de afirmar que el sitio nuevo está actualizado; una URL permitida en la puerta no es una URL desplegada.
 

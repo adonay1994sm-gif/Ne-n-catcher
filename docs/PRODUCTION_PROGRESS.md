@@ -90,7 +90,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-DYNAMIC-AUDIO / P1 | Emisiones enemigas con sonidos originales y pausa/mute | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
 | P1-DYNAMIC-FLIGHT / P1 | Nave30% mayor y cometas con trayectorias variadas transitables | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
 | P1-DYNAMIC-TOOLS / P1 | Skills útiles, higiene recuperable y Netlify QA preparado | DONE | PROCEDURE_SKILL_HYGIENE_AND_PREVIEW_GATE_PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
-| P1-NETLIFY-ISOLATED-01 / P1 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | IN_REVIEW | LOCAL_GATE_AND_PREVIEW_PASSED_REMOTE_PENDING | NOT_APPLICABLE | NOT_APPLICABLE |
+| P1-NETLIFY-ISOLATED-01 / P1 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | IN_REVIEW | GATE_PREVIEW_AND_GITHUB_CI_PASSED_NETLIFY_PUBLISH_UNVERIFIED | NOT_APPLICABLE | NOT_APPLICABLE |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
