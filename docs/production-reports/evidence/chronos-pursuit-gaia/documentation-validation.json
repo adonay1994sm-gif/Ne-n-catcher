@@ -1,11 +1,8 @@
 {
-  "observedAt": "2026-10-18T06:54:15.189719+00:00",
+  "observedAt": "2026-10-18T06:58:13.789949+00:00",
   "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-  "reportLinks": "pass except forthcoming report closure receipt",
-  "expectedPendingLinks": [
-    "evidence/chronos-pursuit-gaia/closure.json",
-    "evidence/chronos-pursuit-gaia/closure.json"
-  ],
+  "reportLinks": "passed; all current and historical relative links exist",
+  "expectedPendingLinks": [],
   "zipHash": "passed",
   "applicationUnchangedAfterPackage": true,
   "githubFunctional": "39105045562 completed/success",
@@ -24,5 +21,7 @@
     "siteHTTP": "4/4 passed",
     "siteLocalRoute": "2/2 passed",
     "exitCode": 0
-  }
+  },
+  "reportCommit": "61810969823f4bd2018753db31bcd0eb5ac2eed7",
+  "reportWorkflow": "39105694567 completed/success"
 }

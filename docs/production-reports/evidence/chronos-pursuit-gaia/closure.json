@@ -1,0 +1,62 @@
+{
+  "observedAt": "2026-10-18T06:58:13.789949+00:00",
+  "branch": "continuity-assets-audit-20261013",
+  "initialCommit": "51d56295aa07ff60f961c63c078be5ba17a83de1",
+  "functionalAndPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+  "finalVerifiedReportCommit": "61810969823f4bd2018753db31bcd0eb5ac2eed7",
+  "reportRemoteVerified": "61810969823f4bd2018753db31bcd0eb5ac2eed7",
+  "reportWorkflow": {
+    "id": 39105694567,
+    "head_sha": "61810969823f4bd2018753db31bcd0eb5ac2eed7",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105694567",
+    "updated_at": "2026-10-18T06:56:50Z"
+  },
+  "functionalWorkflow": {
+    "id": 39105045562,
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105045562",
+    "head_sha": "d39ed440740b094f9dddb588c540c537f4499215",
+    "updated_at": "2026-10-18T06:45:49Z"
+  },
+  "receiptOnlyFollowup": true,
+  "receiptCommitProvenance": "git log -1 --format=%H -- docs/production-reports/evidence/chronos-pursuit-gaia/closure.json",
+  "runtimeChangesAfterPackage": [],
+  "cleanBeforeReceipt": true,
+  "site": {
+    "url": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+    "version": 16,
+    "sourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
+    "httpChecksPassed": 4,
+    "localRouteChecksPassed": 2
+  },
+  "counts": {
+    "tasks": 316,
+    "assetsCatalog": 156,
+    "DONE": 26,
+    "IN_REVIEW": 77,
+    "IN_PROGRESS": 5,
+    "PENDING": 200,
+    "BLOCKED": 8
+  },
+  "limits": [
+    "Gaia kill05 proven on33263c5; finald39 changes only HUD score target, with exact source/file equivalence.",
+    "Gaia06 final package timed out; damage and corrected HUD observed; no new kill claimed.",
+    "Aesthetic, human balance, complete Gaia mission and physical iPhone pending.",
+    "No production Netlify, game main/PR3, AppStore/TestFlight or EngineV1 activation."
+  ],
+  "administrativeDiagnostics": [
+    {
+      "operation": "Explicit git add of ignored parent paths",
+      "exitCode": 1,
+      "status": "All intended tracked files staged; subsequent commit/push verified."
+    },
+    {
+      "operation": "First workflow-observer invocation",
+      "exitCode": 1,
+      "error": "Python SyntaxError before any HTTP request (else1); corrected observer obtained completed/success."
+    }
+  ]
+}
