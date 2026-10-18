@@ -1,3 +1,9 @@
+## Lote vigente ·18/10/2026 · SPECIALIST_POLISH · IN_REVIEW
+
+Seis especialistas de sesión, dos skills locales validadas y Pixelmatch ISC fijado. Atlas/CRONIUM nuevos, propulsión proporcionada, impacto de misil y banco de combate integrados; certificación final/browser/publicación en curso. Leer [diagnóstico e informe](production-reports/SPECIALIST_POLISH_2026-10-18.md). No declarar cerrado ni atribuir al nuevo código pruebas del runtime anterior. Preservar las restricciones vigentes y revisar este lote antes de ampliar.
+
+---
+
 ## Cierre vigente ·18/10/2026 · capítulo Chronos–Gaia · Site20
 
 [DIAGNÓSTICO e informe con capturas y pruebas](production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). Runtime limpio **f634a4635c4faacd33d19390706e0a97d1198662**, CI [39120714906](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39120714906) completo/success. Web privada20, fuenteSite **a5c735e2c034f8fe81b288d52b290292a712c362**, HTTP12/12 con hashes comprobados.

@@ -114,22 +114,28 @@ test('a recovered atlas replaces reserve with the authored components and keeps 
   assert.equal(h.stats().rafRequests,0);
 });
 
-test('the paired plume omits the contaminated centre without moving either mounting point',t=>{
-  const h=harness(t);h.ready();h.open();h.api.draw(0);
-  const plumeDraws=h.draws.filter(draw=>draw.canvas==='shipHangarCanvas').slice(0,2);
-  assert.equal(plumeDraws.length,2);
-  const first=plumeDraws[0].args,second=plumeDraws[1].args;
-  assert.equal(first[0],1455);assert.equal(second[0],1581);
-  assert.equal(first[1],143);assert.equal(second[1],143);
-  const flame=shipModel.shipPartFrame(aster,'flames'),anchors=shipModel.shipNozzleAnchors(aster);
-  const point=(draw,x,y)=>({x:draw[4]+(x-draw[0])/draw[2]*draw[6],
-    y:draw[5]+(y-draw[1])/draw[3]*draw[7]});
-  const rootLeft=point(first,1498,177),rootRight=point(second,1616,178);
-  for(const [root,anchor]of [[rootLeft,anchors[0]],[rootRight,anchors[1]]]) {
-    assert.ok(Math.abs(root.x-anchor.x)<.3);assert.ok(Math.abs(root.y-anchor.y)<.3);
+test('the real renderer draws independent proportional jets at either engine family mounting points',t=>{
+  const h=harness(t);h.ready();
+  const roots={aster:[[1498,177],[1616,178]],bastion:[[1499,557],[1612,557]]};
+  for(const engines of ['aster','bastion']){
+    const loadout={...aster,engines};h.api.active('modular',loadout);h.open();h.draws.length=0;h.api.draw(0);
+    const plumeDraws=h.draws.filter(draw=>draw.canvas==='shipHangarCanvas').slice(0,2);
+    assert.equal(plumeDraws.length,2);
+    const flame=shipModel.shipPartFrame(loadout,'flames'),anchors=shipModel.shipNozzleAnchors(loadout);
+    for(const [side,draw]of plumeDraws.entries()){
+      const {source,destination}=flame.plumes[side];
+      assert.deepEqual(draw.args,[source.x,source.y,source.width,source.height,
+        destination.x,destination.y,destination.width,destination.height]);
+      assert.ok(Math.abs(draw.args[6]/draw.args[7]-draw.args[2]/draw.args[3])<1e-12,
+        'a wider nozzle separation cannot stretch the individual plume');
+      const [x,y]=roots[engines][side];
+      const root={x:draw.args[4]+(x-draw.args[0])/draw.args[2]*draw.args[6],
+        y:draw.args[5]+(y-draw.args[1])/draw.args[3]*draw.args[7]};
+      assert.ok(Math.abs(root.x-anchors[side].x)<1e-9);assert.ok(Math.abs(root.y-anchors[side].y)<1e-9);
+    }
+    const [first,second]=plumeDraws.map(draw=>draw.args);
+    assert.ok(first[0]+first[2]<second[0],'the contaminated center stays excluded');
+    assert.equal(h.draws.some(draw=>/ship_frame_/.test(draw.path)),false);
+    h.node('shipHangarBack').click();
   }
-  assert.equal(first[4],flame.destination.x);
-  assert.equal(second[4],flame.destination.x+flame.destination.width*.6);
-  assert.ok(first[0]+first[2]<second[0],'the contaminated center stays excluded');
-  assert.equal(h.draws.some(draw=>/ship_frame_/.test(draw.path)),false);
 });

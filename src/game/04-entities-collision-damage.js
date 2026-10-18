@@ -380,6 +380,12 @@
     impactEffects.push({ x, y, scale, angle, life: 0.24, duration: 0.24, variant: (Math.random() * SPRITE_GROUPS.impact.length) | 0 });
   }
 
+  function addMissileImpact(x,y) {
+    if(!settings.effects)return;
+    if(impactEffects.length>=EFFECT_LIMITS.impacts)impactEffects.shift();
+    impactEffects.push({x,y,scale:1,angle:0,life:.65,duration:.65,missileImpact:true});
+  }
+
   function activatePower(type, item) {
     const durations = { shield: 7, tractor: 8, slow: 6, double: 7, phaser: 7 };
     if (type === "repair") {
@@ -433,7 +439,7 @@
       burst(x, y, 18, "cyan");
       pulseRing(x, y, "#62fff1", 90, 0.42);
       addImpactEffect(x, y, 0.85, impactAngle);
-      tone(230, 0.08, "square", 0.045);
+      if(classicDamage)combatSound("hull-hit",x);else tone(230, 0.08, "square", 0.045);
       if(classicDamage)hud();
       return;
     }
@@ -452,7 +458,7 @@
     burst(x, y, 28, "red");
     pulseRing(x, y, "#ff496f", 110, 0.48);
     addImpactEffect(x, y, 1.05, impactAngle);
-    tone(95, 0.22, "sawtooth", 0.08);
+    if(classicDamage)combatSound("hull-hit",x);else tone(95, 0.22, "sawtooth", 0.08);
     vibrate([45, 35, 60]);
     hud();
 

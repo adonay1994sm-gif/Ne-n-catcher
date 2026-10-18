@@ -321,7 +321,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 164,
+    "expectedCount": 168,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -1133,9 +1133,81 @@
           "artistic": "PENDING_OWNER_LISTENING",
           "physical": "PENDING"
         }
+      },
+      "guardian-atlas-states-v2": {
+        "status": "IN_REVIEW",
+        "commit": null,
+        "files": [
+          "assets/guardian_atlas_states_v2.webp",
+          "art-source/atlas-repair-v2/guardian-atlas-packed-master.png"
+        ],
+        "tests": [],
+        "evidence": [],
+        "openErrors": [
+          "Integración y revisión humana pendientes; no atribuir certificación física."
+        ],
+        "acceptanceStatus": {
+          "technical": "PENDING_INTEGRATED_BROWSER",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
+      },
+      "cronium-energy-v2": {
+        "status": "IN_REVIEW",
+        "commit": null,
+        "files": [
+          "assets/cronium_energy_atlas_v2.webp",
+          "art-source/cronium-repair-v1/masters/cronium_energy_atlas_normalized_v2.png"
+        ],
+        "tests": [],
+        "evidence": [],
+        "openErrors": [
+          "Integración y revisión humana pendientes; no atribuir certificación física."
+        ],
+        "acceptanceStatus": {
+          "technical": "PENDING_INTEGRATED_BROWSER",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
+      },
+      "combat-sfx-atlas-v1": {
+        "status": "IN_REVIEW",
+        "commit": null,
+        "files": [
+          "assets/combat_sfx_atlas_v1.m4a",
+          "art-source/audio/combat-sfx-v1/combat_sfx_atlas_v1.wav"
+        ],
+        "tests": [],
+        "evidence": [],
+        "openErrors": [
+          "Integración y revisión humana pendientes; no atribuir certificación física."
+        ],
+        "acceptanceStatus": {
+          "technical": "PENDING_INTEGRATED_BROWSER",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
+      },
+      "combat-sfx-map-v1": {
+        "status": "IN_REVIEW",
+        "commit": null,
+        "files": [
+          "assets/combat_sfx_atlas_v1.json",
+          "art-source/audio/combat-sfx-v1/PROVENANCE.json"
+        ],
+        "tests": [],
+        "evidence": [],
+        "openErrors": [
+          "Integración y revisión humana pendientes; no atribuir certificación física."
+        ],
+        "acceptanceStatus": {
+          "technical": "PENDING_INTEGRATED_BROWSER",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       }
     },
-    "note": "Una tarea por sequence estable del catálogo:164 entradas. Los cinco recursos añadidos del capítulo1 están en revisión; las16poses del misil no equivalen a16estados runtime integrados. Ninguna exportación o prueba aislada concede DONE.",
+    "note": "One stable task per catalog entry; additions remain IN_REVIEW until integrated and reviewed. No asset count is a completion percentage.",
     "scopeHistory": [
       {
         "date": "2026-10-18",
@@ -1156,6 +1228,18 @@
           "chapter1-voyage-score-v1"
         ],
         "reason": "Tres atlas y dos pistas originales con maestros, exportaciones e integración. Estado IN_REVIEW; se amplía el catálogo con IDs estables, sin borrar historial ni declarar terminado el catálogo."
+      },
+      {
+        "date": "2026-10-18",
+        "previousExpectedCount": 164,
+        "expectedCount": 168,
+        "addedIds": [
+          "guardian-atlas-states-v2",
+          "cronium-energy-v2",
+          "combat-sfx-atlas-v1",
+          "combat-sfx-map-v1"
+        ],
+        "reason": "Padded Atlas/CRONIUM and original combat bank with cue metadata; masters and previous assets retained. IN_REVIEW until integration and owner/device acceptance."
       }
     ]
   },
@@ -8749,6 +8833,182 @@
         "Diseñar funciones tácticas diferentes, obtención gradual, costes y estrategias viables; no multiplicar colores de un mismo disparo.",
         "Cada arma nueva tiene arte, preparación, proyectil, impacto, sonido, integración, guardado y pruebas reales antes de contarla como implementada.",
         "Las definiciones actuales de Pulso/Gemelo/Lanza y el misil especial no equivalen a diez o quince armas terminadas ni obligan a inventar desbloqueos antes de sus encuentros."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-SPECIALIST-TEAM-01",
+      "batch": "SPECIALIST_POLISH",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Equipo especializado y skills fijadas reutilizables",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "QA",
+        "Assets",
+        "Audio"
+      ],
+      "dependencies": [],
+      "files": [
+        ".agents/skills/neon-production/SKILL.md",
+        ".agents/skills/neon-visual-qa/SKILL.md",
+        "docs/agents/SPECIALIST_TEAM.md"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Pendiente verificar integración actual y revisión del propietario/dispositivo según corresponda."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_BUILD",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "NOT_APPLICABLE"
+      },
+      "acceptance": [
+        "Recurso o procedimiento conectado y ejercitado; evidencia de SHA actual, conservación y pruebas pertinentes."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-SPECIALIST-ATLAS-01",
+      "batch": "SPECIALIST_POLISH",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Atlas sin contornos truncados y coraza coherente",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Jefes"
+      ],
+      "dependencies": [],
+      "files": [
+        "assets/guardian_atlas_states_v2.webp",
+        "src/game/animation/guardian-atlas-animator.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Pendiente verificar integración actual y revisión del propietario/dispositivo según corresponda."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_BUILD",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Recurso o procedimiento conectado y ejercitado; evidencia de SHA actual, conservación y pruebas pertinentes."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-SPECIALIST-ENERGY-01",
+      "batch": "SPECIALIST_POLISH",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "CRONIUM animado sin caja opaca ni bisel",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Campaña clásica"
+      ],
+      "dependencies": [],
+      "files": [
+        "assets/cronium_energy_atlas_v2.webp",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Pendiente verificar integración actual y revisión del propietario/dispositivo según corresponda."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_BUILD",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Recurso o procedimiento conectado y ejercitado; evidencia de SHA actual, conservación y pruebas pertinentes."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-SPECIALIST-PROPULSION-01",
+      "batch": "SPECIALIST_POLISH",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Motores proporcionados y misil sin lanzador flotante",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Jugabilidad"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/ship/modular-ship.js",
+        "src/game/07-player-item-rendering.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Pendiente verificar integración actual y revisión del propietario/dispositivo según corresponda."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_BUILD",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Recurso o procedimiento conectado y ejercitado; evidencia de SHA actual, conservación y pruebas pertinentes."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-SPECIALIST-AUDIO-01",
+      "batch": "SPECIALIST_POLISH",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Efectos originales conectados a combate y controles de audio",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Audio",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "src/game/audio/combat-sfx.js",
+        "src/game/02-storage-audio.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Pendiente verificar integración actual y revisión del propietario/dispositivo según corresponda."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_BUILD",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Recurso o procedimiento conectado y ejercitado; evidencia de SHA actual, conservación y pruebas pertinentes."
       ],
       "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
       "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"

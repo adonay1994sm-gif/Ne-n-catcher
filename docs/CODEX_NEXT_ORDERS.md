@@ -1,3 +1,9 @@
+## Lote vigente ·18/10/2026 · SPECIALIST_POLISH · IN_REVIEW
+
+Seis especialistas de sesión, dos skills locales validadas y Pixelmatch ISC fijado. Atlas/CRONIUM nuevos, propulsión proporcionada, impacto de misil y banco de combate integrados; certificación final/browser/publicación en curso. Leer [diagnóstico e informe](production-reports/SPECIALIST_POLISH_2026-10-18.md). No declarar cerrado ni atribuir al nuevo código pruebas del runtime anterior. Preservar las restricciones vigentes y revisar este lote antes de ampliar.
+
+---
+
 ## Continuación vigente ·18/10/2026 · CHAPTER_ONE_LIVING_JOURNEY
 
 Leer el [último cierre](production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md) y `production-tasks.json`, preservar HEAD/remoto posteriores. Runtime publicado **f634a46**, Site20. El primer nivel termina después deAtlas y el epílogo; Gaia continúa como nivel2. No volver a insertar un segundoAtlas enGaia ni confundir etapas1.1–1.10 con diez niveles completos.

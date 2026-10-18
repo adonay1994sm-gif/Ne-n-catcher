@@ -1,5 +1,5 @@
   // Image-backed artwork. The simulation, not the render clock, selects poses.
-  const ATLAS_FRAME_PIVOTS = [[222,226],[221,241],[224,226],[223,239],[221,235],[223,218],[224,219],[222,232]];
+  const ATLAS_FRAME_PIVOTS = Array.from({length:8},()=>[256,256]);
   const ATLAS_VFX_CROPS = [[120,0,280,680],[546,0,298,725],[837,65,700,600],[1540,0,630,635]];
 
   function drawAtlasVfx(index, width, height, alpha = 1, head = .5) {
@@ -67,8 +67,10 @@
       const age = shot.duration - shot.life;
       if(shot.weapon==="missile" && spriteReady(SPRITES.chapterMissile)) {
         const atlas=SPRITES.chapterMissile,cell=atlas.naturalWidth/4;
-        const row=age<.18?1:0,frame=Math.floor(age*14)%4,size=54;
-        ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
+        // Launch hardware stays on the ship. Only the authored flying missile
+        // row travels with this physical projectile, including its first frame.
+        const frame=Math.floor(age*14)%4,size=54;
+        ctx.drawImage(atlas,frame*cell,0,cell,cell,-size/2,-size/2,size,size);
       } else if(!drawArcadePulse(shot.weapon,age,shot.weapon === "lance" ? 88 : 72))
         drawAtlasVfx(1,shot.weapon === "twin" ? 16 : 23,68,1,.5);
       ctx.restore();
@@ -123,45 +125,28 @@
       // Charge belongs to the barrels. Do not reveal a solved escape lane or
       // paint the player's future safe position onto the arena.
       for(const side of [-1,1]) {
-        ctx.save();ctx.translate(boss.x+side*(boss.visualSize||350)*.24,boss.y+55);
+        const artSize=(boss.visualSize||350)*1.25;
+        ctx.save();ctx.translate(boss.x+side*artSize*.25,boss.y+artSize*(327/512-.5));
         drawAtlasVfx(3,48,48,.45+boss.telegraph.progress*.5);ctx.restore();
       }
     }
     const animation = NeonCampaign.guardianAtlasAnimation(boss);
-    // The existing closed plating pose communicates the protected movement,
-    // instead of showing an apparently exposed core while rejecting damage.
-    if (boss.state === "idle" && !boss.vulnerability) {
-      animation.frame=boss.phase===1?2:5;animation.previousFrame=null;animation.blend=1;
-    }
     const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
     const frameHeight = SPRITES.guardianAtlas.naturalHeight / 2;
-    const size = boss.visualSize || 350;
+    // V2 adds actual transparent gutters: compensate only the artboard size,
+    // keeping the model's reactor position, radius and combat geometry intact.
+    const size = (boss.visualSize || 350)*1.25;
     const paint = (frame, alpha) => {
       if (alpha <= 0) return;
       const pivot = ATLAS_FRAME_PIVOTS[frame];
       ctx.save(); ctx.globalAlpha *= alpha;
-      // Existing firing cells touch the next cell at their muzzle edge. Stay
-      // inside the authored cell to avoid bilinear sampling its neighbour.
-      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth+.5, Math.floor(frame / 4) * frameHeight+.5,
-        frameWidth-1, frameHeight-1,
-        boss.x - size * pivot[0] / 443.5, boss.y - size * pivot[1] / 443.5, size, size);
+      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth, Math.floor(frame / 4) * frameHeight,
+        frameWidth, frameHeight,
+        boss.x - size * pivot[0] / 512, boss.y - size * pivot[1] / 512, size, size);
       ctx.restore();
     };
     if (animation.previousFrame !== null) paint(animation.previousFrame, 1 - animation.blend);
     paint(animation.frame, animation.blend);
-    if(animation.coreCover>0 && animation.coverRect) {
-      const rect=animation.coverRect,frame=animation.coverFrame??0;
-      const scale=size/(rect.sourceCell||443.5),width=rect.width*scale,height=rect.height*scale;
-      const x=boss.x-rect.pivotX*scale,y=boss.y-rect.pivotY*scale;
-      const sx=frameWidth/(rect.sourceCell||443.5),sy=frameHeight/(rect.sourceCell||443.5);
-      ctx.save();ctx.globalAlpha*=Math.min(1,animation.coreCover);
-      ctx.beginPath();ctx.ellipse(x+width/2,y+height/2,width/2,height/2,0,0,Math.PI*2);ctx.clip();
-      // Reuse the real closed reactor plating while preserving each firing
-      // pose's articulated cannons. No visual open core can reject damage.
-      ctx.drawImage(SPRITES.guardianAtlas,(frame%4)*frameWidth+rect.x*sx,
-        Math.floor(frame/4)*frameHeight+rect.y*sy,rect.width*sx,rect.height*sy,x,y,width,height);
-      ctx.restore();
-    }
   }
 
   // Authored component crops share explicit mounting coordinates, not icon offsets.
@@ -173,13 +158,10 @@
     const sx = atlas.naturalWidth / frame.sourceWidth;
     const sy = atlas.naturalHeight / frame.sourceHeight;
     if (part === "flames") {
-      // The paired source plume contains a solid connector in its empty centre.
-      // Keep each authored jet at its nozzle; never paint that extraction seam.
-      for (const [offset, fraction] of [[0, .4], [.6, .4]]) {
-        target.drawImage(atlas, (source.x + source.width * offset) * sx, source.y * sy,
-          source.width * fraction * sx, source.height * sy,
-          destination.x + destination.width * offset, destination.y,
-          destination.width * fraction, destination.height);
+      for (const plume of frame.plumes) {
+        const crop=plume.source,mount=plume.destination;
+        target.drawImage(atlas,crop.x*sx,crop.y*sy,crop.width*sx,crop.height*sy,
+          mount.x,mount.y,mount.width,mount.height);
       }
       return true;
     }
@@ -442,23 +424,20 @@
 
   function drawEnergy(item) {
     if (typeof isUnifiedClassic === "function" && isUnifiedClassic()) {
-      // Reuse the authored animated energy center without its metal bezel.
-      // One prepared halo is shared by all orbs; never blur each pickup/frame.
-      const sequence = [0,1,2,3,4,5,4,3,2,1];
+      // V2 is actual animated energy, padded on every cell. Preserve the whole
+      // illustration: no rectangular crop, metal bezel or opaque fragment.
       const phase = Number.isFinite(item.phase) ? item.phase : 0;
-      const frame = frameFrom("core", sequence[Math.floor((elapsed * 9 + phase) % sequence.length)]);
+      const atlas=SPRITES.croniumEnergy,frame=Math.floor(elapsed*8+phase)%4;
       const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
       ctx.save(); ctx.translate(item.x, item.y);
       ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
       ctx.shadowBlur = 0;ctx.globalCompositeOperation="screen";
-      const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*2.2;
+      const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*4;
       if(halo)ctx.drawImage(halo,-glow/2,-glow/2,glow,glow);
-      if(spriteReady(frame)) {
-        const sourceWidth=frame.naturalWidth,sourceHeight=frame.naturalHeight;
-        ctx.drawImage(frame,sourceWidth*.27,sourceHeight*.27,sourceWidth*.46,sourceHeight*.46,-size/2,-size/2,size,size);
+      if(spriteReady(atlas)) {
+        const cell=atlas.naturalWidth/2;
+        ctx.drawImage(atlas,(frame%2)*cell,Math.floor(frame/2)*cell,cell,cell,-size/2,-size/2,size,size);
       }
-      if (spriteReady(SPRITES.croniumFragment))
-        drawImageCentered(SPRITES.croniumFragment, item.r * 1.45, item.r * 1.45, elapsed*.20+phase, .42);
       ctx.restore(); return;
     }
     ctx.save();
@@ -871,6 +850,14 @@
   function drawImpactEffects() {
     for (const effect of impactEffects) {
       const progress = 1 - effect.life / effect.duration;
+      if(effect.missileImpact&&spriteReady(SPRITES.chapterMissile)) {
+        const age=effect.duration-effect.life,atlas=SPRITES.chapterMissile,cell=atlas.naturalWidth/4;
+        const row=age<.25?2:3,frame=Math.min(3,Math.floor((age-(row===3?.25:0))*(row===2?16:10)));
+        const size=row===2?94:108;
+        ctx.save();ctx.translate(effect.x,effect.y);ctx.globalAlpha*=row===3?Math.max(0,1-(age-.25)/.4):1;
+        ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
+        ctx.restore();continue;
+      }
       if (effect.atlasImpact) {
         ctx.save(); ctx.translate(effect.x, effect.y);
         if(!drawArcadePulse("impact",effect.duration-effect.life,60,1-progress*.4))drawAtlasVfx(2,58,52,1-progress);

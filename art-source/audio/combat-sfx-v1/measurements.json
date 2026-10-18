@@ -1,0 +1,173 @@
+{
+  "sampleRate": 48000,
+  "channels": 1,
+  "atlasSamples": 656640,
+  "duration": 13.68,
+  "estimatedDecodedFloat32Bytes": 2626560,
+  "masterBytes": 1969964,
+  "masterSha256": "a8336e0526f35156be3d1b30c309840ffdb7bd6193f0ea0250f5c7e9eb463c1f",
+  "runtimeBytes": 241003,
+  "runtimeSha256": "c3edcbbe73aad99123c3ea0647b2d8cfdc43732fe746a6e172cbb008adaeaff8",
+  "stems": [
+    {
+      "cue": "phaser",
+      "variant": 1,
+      "path": "masters/phaser-01.wav",
+      "samples": 9600,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -18.297,
+      "clippedSamples": 0,
+      "sha256": "05d85c35a9b53e9949d2dafb5b3271de4ccf65f332a8c686d85131f7654bc028"
+    },
+    {
+      "cue": "phaser",
+      "variant": 2,
+      "path": "masters/phaser-02.wav",
+      "samples": 9600,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -18.975,
+      "clippedSamples": 0,
+      "sha256": "458b7152e7524bc8e68112a91f2a0d83c60de0faf5e451e586b63d68921722a6"
+    },
+    {
+      "cue": "missile-launch",
+      "variant": 1,
+      "path": "masters/missile-launch-01.wav",
+      "samples": 27840,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -17.637,
+      "clippedSamples": 0,
+      "sha256": "1d5f9238470372d0f96612bb48413379d39b69422bc7ee1fd6176a5d61344bc7"
+    },
+    {
+      "cue": "missile-launch",
+      "variant": 2,
+      "path": "masters/missile-launch-02.wav",
+      "samples": 27840,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -17.362,
+      "clippedSamples": 0,
+      "sha256": "f1aba2f2bd7d1f671e1c8a6cee4af43540a6418ada5c3ad018257b7d0b742ade"
+    },
+    {
+      "cue": "impact-metal",
+      "variant": 1,
+      "path": "masters/impact-metal-01.wav",
+      "samples": 21120,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -18.254,
+      "clippedSamples": 0,
+      "sha256": "89f298f10ca73aaa3bc59cec075c5f6695c85132bd78ae3df59e09d0c3c67e59"
+    },
+    {
+      "cue": "impact-metal",
+      "variant": 2,
+      "path": "masters/impact-metal-02.wav",
+      "samples": 21120,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -18.264,
+      "clippedSamples": 0,
+      "sha256": "0f403067a158baf4506f9f5b41db9053e2039ab56c0d698c8089d1fbd37a00f3"
+    },
+    {
+      "cue": "impact-plasma",
+      "variant": 1,
+      "path": "masters/impact-plasma-01.wav",
+      "samples": 19200,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -19.583,
+      "clippedSamples": 0,
+      "sha256": "57669a287dd7c68a7e7be9637337d3e20e2e86561b742b6c4be8adddb5c922d7"
+    },
+    {
+      "cue": "impact-plasma",
+      "variant": 2,
+      "path": "masters/impact-plasma-02.wav",
+      "samples": 19200,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -19.246,
+      "clippedSamples": 0,
+      "sha256": "a6c8cbecb44a94d70ef429fdb45674eff325cdb87e4c4cf637613c8b276e8190"
+    },
+    {
+      "cue": "hull-hit",
+      "variant": 1,
+      "path": "masters/hull-hit-01.wav",
+      "samples": 27840,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -16.939,
+      "clippedSamples": 0,
+      "sha256": "367e636e15c19401b0b60dddc1077895e3c0a138e5c1aafeff281897b0a9a225"
+    },
+    {
+      "cue": "hull-hit",
+      "variant": 2,
+      "path": "masters/hull-hit-02.wav",
+      "samples": 27840,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -16.878,
+      "clippedSamples": 0,
+      "sha256": "96e81ca0d42994a77d130a0b082c8d3891840bc210fdc36f34ea475173751225"
+    },
+    {
+      "cue": "enemy-break",
+      "variant": 1,
+      "path": "masters/enemy-break-01.wav",
+      "samples": 45600,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -17.974,
+      "clippedSamples": 0,
+      "sha256": "1eef6dc284de27a696d8d4f087534722d50ae631a86419537b00698996d3cc9c"
+    },
+    {
+      "cue": "enemy-break",
+      "variant": 2,
+      "path": "masters/enemy-break-02.wav",
+      "samples": 45600,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -17.861,
+      "clippedSamples": 0,
+      "sha256": "98d27a510500639aae5e085446a20083555df9e5319a441a56a25779e67a3c15"
+    },
+    {
+      "cue": "atlas-charge",
+      "variant": 1,
+      "path": "masters/atlas-charge-01.wav",
+      "samples": 42240,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -13.823,
+      "clippedSamples": 0,
+      "sha256": "e223a36f33332c597f2f69feedf589253b69c35bb685ad850aaca962ae9dc127"
+    },
+    {
+      "cue": "atlas-charge",
+      "variant": 2,
+      "path": "masters/atlas-charge-02.wav",
+      "samples": 42240,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -14.146,
+      "clippedSamples": 0,
+      "sha256": "16ef56c87efa0152eda3bfd8ad9903a5b95f01e8edce9f757d4a5452bbff04f6"
+    },
+    {
+      "cue": "atlas-collapse",
+      "variant": 1,
+      "path": "masters/atlas-collapse-01.wav",
+      "samples": 88800,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -17.217,
+      "clippedSamples": 0,
+      "sha256": "68bc050d24714b3aa2952b5bd635604b6aa118f57431aaecc4f7e272b314353b"
+    },
+    {
+      "cue": "atlas-collapse",
+      "variant": 2,
+      "path": "masters/atlas-collapse-02.wav",
+      "samples": 88800,
+      "peakDbfs": -3.098,
+      "rmsDbfs": -17.343,
+      "clippedSamples": 0,
+      "sha256": "db935879ed96d2d04a54f8ccebe30cef41edaf3768f09e3a3cf22a1ce7e981d9"
+    }
+  ]
+}

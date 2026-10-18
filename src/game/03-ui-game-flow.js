@@ -576,7 +576,7 @@
     const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-125*SHIP_VISUAL.classicScale});
     if(!result.accepted)return false;
     ammo=classicWeapons.charges;manualShotCooldown=classicWeapons.cooldown;
-    tone(classicWeapons.selected==="twin"?820:670,.065,"triangle",.04);
+    combatSound("phaser");
     cameraKickY=Math.max(cameraKickY,2.5);vibrate(12);updateAmmoHud();return true;
   }
 
@@ -595,7 +595,7 @@
       y:player.y-72*SHIP_VISUAL.classicScale,shotId:`missile:${classicSalvageState.missileShotsSpent}`});
     syncClassicMissileHud();
     if(!fired.accepted)return false;
-    cameraKickY=Math.max(cameraKickY,3);tone(145,.18,"triangle",.045);vibrate(16);
+    cameraKickY=Math.max(cameraKickY,3);combatSound("missile-launch",player.x,`missile:${classicSalvageState.missileShotsSpent}`);vibrate(16);
     return true;
   }
 
@@ -611,7 +611,7 @@
         const contact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,"guardian-atlas");
         if(!contact.accepted)continue;
         // Shield contact consumes a shot too; vulnerability is checked on arrival.
-        resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage});
+        resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage,weapon:shot.weapon});
       }
     }
     if(events.some(event=>event.type==="recharged")){tone(520,.035,"sine",.025);updateAmmoHud();}
@@ -632,8 +632,9 @@
       if(!impact.accepted)continue;
       item.hp=Math.max(0,(item.hp??1)-impact.damage);
       const destroyed=item.hp<=1e-8;
-      animateScoutHit(item,destroyed);addImpactEffect(item.x,item.y,.8);
-      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);tone(destroyed?920:620,.05,"triangle",.04);
+      animateScoutHit(item,destroyed);
+      if(shot.weapon==="missile")addMissileImpact(item.x,item.y);else addImpactEffect(item.x,item.y,.8);
+      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
       hudScoreTarget=score;
       if(destroyed){
         if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
@@ -725,10 +726,10 @@
     if (event.clearProjectiles || event.type === "shutdown") {
       items = items.filter(item => !item.guardianProjectile);
     }
-    if (event.type === "volley") tone(95, .12, "sawtooth", .045);
+    if (event.type === "volley") combatSound("impact-plasma",atlasBoss.x);
     if (event.type === "phase") { signalClassicChapter("atlas-phase-two"); cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
-      score += 250;tone(640, .28, "sine", .06);
+      score += 250;combatSound("atlas-collapse",atlasBoss.x);
       spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
     }
     if (event.type === "disabled") {
@@ -743,7 +744,9 @@
     if (atlasReentryGrace > 0) { atlasReentryGrace = Math.max(0, atlasReentryGrace - dt); syncAtlasHud(); return; }
     // Slow affects both the guardian's warning/recovery clock and its bullets.
     // A different clock could announce a new corridor over an older curtain.
+    const previousState=atlasBoss.state;
     NeonCampaign.advanceGuardianAtlas(atlasBoss, dt * (powers.slow > 0 ? .5 : 1), player, consumeAtlasEvent);
+    if(atlasBoss.state==="charge"&&previousState!=="charge")combatSound("atlas-charge",atlasBoss.x);
     if (state !== "playing") return;
     atlasFireTimer = Math.max(0, atlasFireTimer - dt);
     if (settings.autoFire && atlasFireTimer === 0 && atlasBoss.vulnerability && Math.abs(atlasBoss.x - player.x) < 115) {
@@ -774,13 +777,14 @@
     for (const event of result.events) consumeAtlasEvent(event);
     if (result.accepted) {
       score += 3;
-      if (settings.effects) {
+      if (settings.effects&&shot.weapon==="missile")addMissileImpact(atlasBoss.x,atlasBoss.y);
+      else if (settings.effects) {
         if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
         impactEffects.push({x: atlasBoss.x, y: atlasBoss.y, angle: 0, scale: 1,
           life: .24, duration: .24, atlasImpact: true});
       }
-      tone(620, .055, "triangle", .035);
-    } else tone(180, .04, "square", .025);
+      combatSound("impact-metal",atlasBoss.x);
+    } else combatSound("impact-plasma",atlasBoss.x);
     syncAtlasHud();
   }
 
@@ -1338,7 +1342,7 @@
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
-      ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);
+      ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
       if(classicFlightView?.stageNumber===1)ensureSprite(SPRITES.chapterIntro);
       ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);

@@ -1,0 +1,85 @@
+{
+  "kind": "static-asset-export-verification",
+  "notBrowserOrGameplayQA": true,
+  "runAtUTC": "2026-10-18T11:57:43.868Z",
+  "asset": "assets/cronium_energy_atlas_v2.webp",
+  "sha256": "3b374f972a69d13f9ec11436c8a6221d970b66d31eeb39cb64af61d344820a15",
+  "bytes": 72176,
+  "dimensions": [
+    512,
+    512
+  ],
+  "decodedRGBABytes": 1048576,
+  "checks": {
+    "dimensionsAndRGBA": "PASS",
+    "fourAuthenticallyDistinctFrames": "PASS",
+    "padding32PixelsClearEveryCell": "PASS",
+    "noOpaqueBlackMatte": "PASS",
+    "noFrameEdgeClipping": "PASS",
+    "threeBackgroundCompositesWritten": "PASS"
+  },
+  "frames": [
+    {
+      "frame": 0,
+      "maximumPaddingAlpha": 0,
+      "opaqueBlackPixels": 0,
+      "visiblePixels": 18254,
+      "alphaBounds": {
+        "x": 53,
+        "y": 35,
+        "width": 150,
+        "height": 176
+      },
+      "decodedPixelSha256": "7ec8ff4f5af7faab1ef6467f44d7b5b61caa283bd279bf5b16a86293e2b18418"
+    },
+    {
+      "frame": 1,
+      "maximumPaddingAlpha": 0,
+      "opaqueBlackPixels": 0,
+      "visiblePixels": 23857,
+      "alphaBounds": {
+        "x": 35,
+        "y": 40,
+        "width": 171,
+        "height": 178
+      },
+      "decodedPixelSha256": "d0132dcd3dfd70102e7429a43109c1ff7526bf7a4f0e719d595652724b3f3187"
+    },
+    {
+      "frame": 2,
+      "maximumPaddingAlpha": 0,
+      "opaqueBlackPixels": 0,
+      "visiblePixels": 19322,
+      "alphaBounds": {
+        "x": 66,
+        "y": 37,
+        "width": 156,
+        "height": 160
+      },
+      "decodedPixelSha256": "6f5ff5f2f5448b6ccfa4e2816d887df6881f19c9fa748f94ff604a178daa6ee5"
+    },
+    {
+      "frame": 3,
+      "maximumPaddingAlpha": 0,
+      "opaqueBlackPixels": 0,
+      "visiblePixels": 22369,
+      "alphaBounds": {
+        "x": 35,
+        "y": 43,
+        "width": 174,
+        "height": 178
+      },
+      "decodedPixelSha256": "4187ebf876d7b8fac8b35729529d28c9e132e02c57b7a943526fdea6d838d298"
+    }
+  ],
+  "reviewedBackgrounds": [
+    "black.png",
+    "gray.png",
+    "white.png"
+  ],
+  "limitations": [
+    "No claim of runtime integration or physical iPhone testing",
+    "Visual owner acceptance pending",
+    "Source art has four distinct temporal states; transition smoothness must be evaluated in gameplay"
+  ]
+}

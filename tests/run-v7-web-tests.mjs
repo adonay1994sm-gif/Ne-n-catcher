@@ -53,7 +53,7 @@ const swContext = {
 vm.runInNewContext(`${serviceWorkerSource}\nglobalThis.__SW_TEST__ = { CACHE, CORE };`, swContext);
 
 await test("PWA precarga código, legales, sprites y fondo de Cronos", async () => {
-  assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-chapter-one-living-1");
+  assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-specialist-polish-1");
   const paths = new Set(swContext.__SW_TEST__.CORE.map(withoutQuery));
   const manifest = JSON.parse(await text("ASSET_MANIFEST.json"));
   for (const path of [
@@ -61,7 +61,8 @@ await test("PWA precarga código, legales, sprites y fondo de Cronos", async () 
     "privacy.html", "terms.html", "analytics-manager.js", "assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/core_frame_00.webp",
     "assets/cronium_fragment_v1.webp", "assets/cronos_level1_background.webp",
     "assets/chronos_shockwave_atlas_v1.webp", "assets/atlas_perimeter_background_v1.webp",
-    "assets/ch02_interceptor_atlas_v1.webp",
+    "assets/ch02_interceptor_atlas_v1.webp", "assets/guardian_atlas_states_v2.webp", "assets/cronium_energy_atlas_v2.webp",
+    "assets/combat_sfx_atlas_v1.m4a", "assets/combat_sfx_atlas_v1.json",
     "assets/vulkar_descent_background_v1.webp", "assets/vulkar_magma_tunnel_background_v1.webp",
     "assets/cryon_whiteout_background_v1.webp", "assets/cryon_leviathan_rift_background_v1.webp",
     "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp",

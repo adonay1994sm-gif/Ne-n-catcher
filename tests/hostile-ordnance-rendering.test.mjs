@@ -31,7 +31,14 @@ test('raw scrap uses the copper token, not a misleading stellar or gold denomina
 });
 test('classic CRONIUM uses authored animated sprites without live per-orb blur/gradient passes',()=>{
  const calls=[];const ctx=new Proxy({save(){},restore(){},translate(){},scale(){},drawImage(...args){calls.push(args);}},{get(o,k){if(k in o)return o[k];if(k==='createRadialGradient')return()=>{throw Error('per-orb gradient');};return undefined;},set(o,k,v){if(k==='shadowBlur')assert.equal(v,0);o[k]=v;return true;}});
- const sandbox=vm.createContext({ctx,isUnifiedClassic:()=>true,elapsed:1.2,frameFrom:(group,index)=>({group,index,naturalWidth:320,naturalHeight:320}),spriteReady:()=>true,SPRITES:{croniumFragment:{}},drawImageCentered:(...args)=>calls.push(args),itemVisualAlpha:()=>1});
+ const energy={name:'cronium-energy-v2',naturalWidth:512,naturalHeight:512};
+ const sandbox=vm.createContext({ctx,isUnifiedClassic:()=>true,elapsed:0,frameFrom:()=>{throw Error('Classic must not sample old metal core');},spriteReady:image=>Boolean(image?.naturalWidth),SPRITES:{croniumEnergy:energy,croniumFragment:{}},drawImageCentered:()=>{throw Error('Classic must not draw old crystal');},itemVisualAlpha:()=>1});
  vm.runInContext(source.slice(source.indexOf('  let classicCroniumHalo='),source.indexOf('  function drawCh01Frame(')),sandbox);
- sandbox.drawEnergy({x:50,y:200,r:22,phase:0,rot:1});assert.equal(calls.length,2);assert.equal(calls[0][0].group,'core');
+ const item={x:50,y:200,r:22,phase:0,rot:1},before=structuredClone(item);
+ for(let frame=0;frame<4;frame++){
+  sandbox.elapsed=frame/8;sandbox.drawEnergy(item);
+  assert.equal(calls[frame][0],energy);
+  assert.deepEqual(calls[frame].slice(1,5),[(frame%2)*256,Math.floor(frame/2)*256,256,256]);
+ }
+ assert.equal(calls.length,4);assert.deepEqual(item,before);
 });

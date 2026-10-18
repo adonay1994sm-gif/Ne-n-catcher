@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-18",
+  "title": "NEON CRONIUM original layered combat foley v1",
+  "creator": "Codex audio specialist, procedural offline authoring for the project owner",
+  "construction": "Original NumPy/SciPy synthesis, metal modes, filtered noise, envelopes and authored temporal layers. No imported samples, soundfont, voice, third-party DSP code, paid API or AI music service.",
+  "authoringSource": "art-source/audio/combat-sfx-v1/render_bank.py",
+  "masters": "art-source/audio/combat-sfx-v1/masters/",
+  "atlasMaster": "art-source/audio/combat-sfx-v1/combat_sfx_atlas_v1.wav",
+  "runtime": [
+    "assets/combat_sfx_atlas_v1.m4a",
+    "assets/combat_sfx_atlas_v1.json"
+  ],
+  "runtimeSha256": "c3edcbbe73aad99123c3ea0647b2d8cfdc43732fe746a6e172cbb008adaeaff8",
+  "runtimeBytes": 241003,
+  "sourceDurationSeconds": 13.68,
+  "measuredDecodedDurationFFmpegSeconds": 13.696,
+  "estimatedDecodedFloat32Bytes48k": 2626560,
+  "estimatedDecodedFloat32Bytes44100Hz": 2415976,
+  "aacPeakDbfsMeasuredFFmpeg": -2.552554130554199,
+  "aacClippedSamplesMeasuredFFmpeg": 0,
+  "environments": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "thirdPartyCodeImported": false,
+  "thirdPartyResearch": "research/sources.json",
+  "review": {
+    "runtimeIntegration": "PENDING_ROOT_INTEGRATION",
+    "pureContractTests": "28/28 passed, node --test tests/combat-sfx.test.mjs",
+    "codecDecodeFFmpeg": "PASS",
+    "browserDecode": "PENDING",
+    "humanListening": "PENDING",
+    "physicalSafariIPhone": "PENDING",
+    "artisticAcceptance": "PENDING"
+  },
+  "limitations": [
+    "This batch adds foley and preserves the two existing chapter music tracks; it does not claim new music.",
+    "FFmpeg codec decoding is not browser or physical-device audio certification.",
+    "Generated spectra and tests cannot replace human listening and mix review."
+  ]
+}

@@ -193,6 +193,7 @@
   // updateScore; no score timer, RAF or permanently running drone is created.
   let voyageScore = null;
   let chapterScore = null;
+  let combatSfx = null;
   let voyageScoreContext = "transit";
   let scoreSuspended = false;
   const activeToneVoices = new Set();
@@ -221,6 +222,11 @@
     if(!chapterScore&&isUnifiedClassic()&&ac.createMediaElementSource) {
       try {chapterScore=NeonCampaign.createChapterScore({context:ac,output:musicGain});} catch {chapterScore=null;}
     }
+    if(!combatSfx&&isUnifiedClassic()&&typeof NeonCampaign.createCombatSfx==="function") {
+      combatSfx=NeonCampaign.createCombatSfx({context:ac,output:ac.destination});
+      combatSfx?.load();
+    }
+    else if(combatSfx?.snapshot().failed)combatSfx.load();
     scoreSuspended = false;
     updateAudioVolumes();
   }
@@ -232,6 +238,7 @@
   }
 
   function updateScore(dt, paused = false) {
+    combatSfx?.setPaused(paused||scoreSuspended||!isUnifiedClassic()||state!=="playing");
     if (!voyageScore) return;
     const rendered=chapterScore?.update({active:isUnifiedClassic()&&Boolean(classicChapterStory),
       elapsed:classicFlightView?.elapsed||0,paused:paused||scoreSuspended,enabled:settings.music>0});
@@ -249,6 +256,7 @@
   async function suspendAudio() {
     scoreSuspended = true;
     chapterScore?.suspend();
+    combatSfx?.setPaused(true);
     voyageScore?.setPaused(true);
     stopToneVoices();
     if (audioCtx?.state === "running") await audioCtx.suspend().catch(() => {});
@@ -264,12 +272,28 @@
 
   function updateAudioVolumes() {
     voyageScore?.setEnabled(settings.music > 0);
+    combatSfx?.setEnabled(settings.fx>0);
+    combatSfx?.setVolume(settings.fx/100);
+    combatSfx?.setPaused(scoreSuspended||!isUnifiedClassic()||state!=="playing");
     if (settings.fx <= 0) stopToneVoices();
     if(settings.music<=0)chapterScore?.suspend();
     if (musicGain && audioCtx) {
       const value = (settings.music / 100) * 0.26;
       musicGain.gain.setTargetAtTime(value, audioCtx.currentTime, 0.08);
     }
+  }
+
+  function combatSound(cue,x=player.x,eventId=null) {
+    if(isUnifiedClassic()&&(state!=="playing"||scoreSuspended||settings.fx<=0))return;
+    if(isUnifiedClassic()&&combatSfx?.snapshot().ready) {
+      // A rejected voice means muted/paused/throttled, never a fallback beep.
+      combatSfx.play(cue,{pan:clamp(x/W*2-1,-.75,.75),eventId});return;
+    }
+    const fallback={phaser:[670,.065,"triangle",.04],"missile-launch":[145,.18,"triangle",.045],
+      "impact-metal":[620,.05,"triangle",.035],"impact-plasma":[180,.04,"square",.025],
+      "hull-hit":[95,.22,"sawtooth",.08],"enemy-break":[920,.05,"triangle",.04],
+      "atlas-charge":[135,.28,"triangle",.065],"atlas-collapse":[640,.28,"sine",.06]};
+    if(fallback[cue])tone(...fallback[cue]);
   }
 
   function tone(frequency = 440, duration = 0.06, type = "sine", base = 0.06) {

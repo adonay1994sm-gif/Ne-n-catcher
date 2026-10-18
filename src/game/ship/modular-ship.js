@@ -47,11 +47,47 @@ const FRAME_LAYOUTS=Object.freeze({
     {source:{x:1450,y:518,width:216,height:369},destination:{x:-122.43519000520561,y:160.40309863475994,width:253.44299843831337,height:145}}
   ]
 });
+// Pixel-measured roots on the original atlas. The paired plume's wide envelope
+// remains available for old presentation consumers; it is not a draw rectangle.
+// Each jet is cropped and mounted separately so nozzle spacing never stretches
+// the illustrated flame sideways. The contaminated gap between jets is omitted.
+const NOZZLE_POINTS=Object.freeze([
+  Object.freeze([[1040,375],[1185,375]].map(Object.freeze)),
+  Object.freeze([[1042,799],[1189,799]].map(Object.freeze))
+]);
+const PLUME_LAYOUTS=Object.freeze([
+  Object.freeze([
+    Object.freeze({source:Object.freeze({x:1455,y:143,width:84,height:300}),root:Object.freeze({x:1498,y:177})}),
+    Object.freeze({source:Object.freeze({x:1581,y:143,width:84,height:300}),root:Object.freeze({x:1616,y:178})})
+  ]),
+  Object.freeze([
+    Object.freeze({source:Object.freeze({x:1450,y:518,width:86,height:369}),root:Object.freeze({x:1499,y:557})}),
+    Object.freeze({source:Object.freeze({x:1580,y:518,width:86,height:369}),root:Object.freeze({x:1612,y:557})})
+  ])
+]);
+function nozzleAt(row,side){
+  const {source,destination}=FRAME_LAYOUTS.engines[row],point=NOZZLE_POINTS[row][side];
+  return Object.freeze({
+    x:destination.x+(point[0]-source.x)/source.width*destination.width,
+    y:destination.y+(point[1]-source.y)/source.height*destination.height
+  });
+}
+function mountedPlumes(row){
+  return Object.freeze(PLUME_LAYOUTS[row].map(({source,root},side)=>{
+    const anchor=nozzleAt(row,side),scale=145/source.height;
+    return Object.freeze({source,anchor,destination:Object.freeze({
+      x:anchor.x-(root.x-source.x)*scale,
+      y:anchor.y-(root.y-source.y)*scale,
+      width:source.width*scale,height:source.height*scale
+    })});
+  }));
+}
 const FRAMES=Object.freeze(Object.fromEntries(['hull','wings','engines','flames'].map((part,column)=>[
   part,Object.freeze(VARIANTS.map((_,row)=>Object.freeze({column,row,columns:4,rows:2,
     sourceWidth:1774,sourceHeight:887,
     source:Object.freeze(FRAME_LAYOUTS[part][row].source),
-    destination:Object.freeze(FRAME_LAYOUTS[part][row].destination)
+    destination:Object.freeze(FRAME_LAYOUTS[part][row].destination),
+    ...(part==='flames'?{plumes:mountedPlumes(row)}:{})
   })))
 ])));
 
@@ -60,7 +96,9 @@ const FRAMES=Object.freeze(Object.fromEntries(['hull','wings','engines','flames'
  * is its reviewed placement on the shared 512-unit ship artboard. column/row
  * describe the original layout only and must never calculate the actual crop.
  * Do not independently center trimmed pieces by their alpha bounds. Flames
- * follow engines so a mixed assembly uses the correct family's exhaust.
+ * follow engines so a mixed assembly uses the correct family's exhaust. Draw
+ * flames with the two `plumes` placements, preserving their authored proportions;
+ * the parent source/destination describe the previous paired envelope only.
  */
 export function shipPartFrame(loadout,part){
   if(!Object.hasOwn(FRAMES,part))throw new RangeError('Unknown ship part');
@@ -70,11 +108,8 @@ export function shipPartFrame(loadout,part){
 
 /** Reviewed nozzle centers on the shared artboard, independent of render size. */
 export function shipNozzleAnchors(loadout){
-  const frame=shipPartFrame(loadout,'engines'),points=frame.row===0?[[1040,375],[1185,375]]:[[1042,799],[1189,799]];
-  return Object.freeze(points.map(([x,y])=>Object.freeze({
-    x:frame.destination.x+(x-frame.source.x)/frame.source.width*frame.destination.width,
-    y:frame.destination.y+(y-frame.source.y)/frame.source.height*frame.destination.height
-  })));
+  const row=shipPartFrame(loadout,'engines').row;
+  return Object.freeze(NOZZLE_POINTS[row].map((_,side)=>nozzleAt(row,side)));
 }
 
 /** Visual response only; the existing update loop keeps full control accuracy. */

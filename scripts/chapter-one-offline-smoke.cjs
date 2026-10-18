@@ -89,7 +89,7 @@ async function newPage() {
       if (/\/favicon\.ico(?:\?|$)/.test(entry.url)) report.incidentalBrowserRequests.push(entry);
       else report.failedRequests.push(entry);
     }
-    if (/\/assets\/(?:(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2|gaia_pulse_atlas_v3|hostile_ordnance_atlas_v1|chapter1_intro_atlas_v1|chapter1_portraits_v1|chapter1_missile_atlas_v1)\.webp|chapter1_(?:opening|voyage)_score_v1\.m4a)(?:\?|$)/.test(response.url()))
+    if (/\/assets\/(?:(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2|gaia_pulse_atlas_v3|hostile_ordnance_atlas_v1|chapter1_intro_atlas_v1|chapter1_portraits_v1|chapter1_missile_atlas_v1|guardian_atlas_states_v2|cronium_energy_atlas_v2)\.webp|chapter1_(?:opening|voyage)_score_v1\.m4a|combat_sfx_atlas_v1\.(?:m4a|json))(?:\?|$)/.test(response.url()))
       report.assetResponses.push({url: response.url(), status: response.status(), offline, fromServiceWorker: response.fromServiceWorker()});
   });
   return page;
@@ -128,7 +128,8 @@ function savedBytesEqual(actual, fixture, allowEconomyMigration=false) {
 }
 
 const chapterAssets=['chapter1_intro_atlas_v1.webp','chapter1_portraits_v1.webp',
-  'chapter1_missile_atlas_v1.webp','chapter1_opening_score_v1.m4a','chapter1_voyage_score_v1.m4a'];
+  'chapter1_missile_atlas_v1.webp','chapter1_opening_score_v1.m4a','chapter1_voyage_score_v1.m4a',
+  'guardian_atlas_states_v2.webp','cronium_energy_atlas_v2.webp','combat_sfx_atlas_v1.m4a','combat_sfx_atlas_v1.json'];
 async function verifyChapterAssetsOffline(page) {
   const results=[];
   for(const file of chapterAssets) {
@@ -139,6 +140,8 @@ async function verifyChapterAssetsOffline(page) {
       if(file.endsWith('.webp')) {
         const image=new Image();image.src='assets/'+file;await image.decode();
         result.width=image.naturalWidth;result.height=image.naturalHeight;
+      } else if(file.endsWith('.json')) {
+        result.metadata=JSON.parse(new TextDecoder().decode(bytes));
       } else {
         // OfflineAudioContext only decodes the actual returned artifact. It
         // neither drives gameplay nor creates an audible second music owner.
@@ -156,9 +159,12 @@ async function verifyChapterAssetsOffline(page) {
     assert.equal(item.bytes,disk.length);assert.equal(item.sha256,sha256(disk));
     if(file.endsWith('.webp')) {
       const dimensions={'chapter1_intro_atlas_v1.webp':[1024,1536],
-        'chapter1_portraits_v1.webp':[768,256],'chapter1_missile_atlas_v1.webp':[1024,1024]};
+        'chapter1_portraits_v1.webp':[768,256],'chapter1_missile_atlas_v1.webp':[1024,1024],
+        'guardian_atlas_states_v2.webp':[2048,1024],'cronium_energy_atlas_v2.webp':[512,512]};
       assert.deepEqual([item.width,item.height],dimensions[file],`${file} must decode at its actual registered dimensions`);
     }
+    else if(file.endsWith('.json')) assert.ok(item.metadata&&typeof item.metadata==='object','Cue metadata decodes offline');
+    else if(file.startsWith('combat_')){assert.equal(item.channels,1);assert.ok(item.duration>=13.56&&item.duration<15);assert.ok(item.sampledPeak>.001);}
     else {assert.equal(item.channels,2);assert.equal(item.duration,file.includes('opening')?28:48);assert.ok(item.sampledPeak>.001);}
     assert.ok(report.assetResponses.some(response=>response.offline&&response.fromServiceWorker&&response.url.endsWith('/'+file)),
       file+' must be returned by its real current game service worker');
@@ -347,7 +353,7 @@ async function prepareContext() {
     const game = await gameBrandAndSave(page, fixture); await capture(page, 'current-offline-menu');
     assert.equal((await workerState(page)).online, false);
     report.chapterAssetsOffline=await verifyChapterAssetsOffline(page);
-    assert.equal(report.chapterAssetsOffline.length,5);
+    assert.equal(report.chapterAssetsOffline.length,9);
     report.offlineStorageBeforeLaunch = await storage(page);
     await page.close(); return {launcher, game};
   });

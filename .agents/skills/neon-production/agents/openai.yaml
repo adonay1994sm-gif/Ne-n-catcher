@@ -1,0 +1,4 @@
+interface:
+  display_name: "NEON · Producción especializada"
+  short_description: "Coordinar especialistas y entregas de NEON CRONIUM"
+  default_prompt: "Usa $neon-production para coordinar una entrega integrada y verificada de NEON CRONIUM."

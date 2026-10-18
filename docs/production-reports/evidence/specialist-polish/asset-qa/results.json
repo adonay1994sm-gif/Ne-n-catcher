@@ -1,0 +1,688 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-18T12:01:16.261Z",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/Ne-n-catcher/scripts/specialist-visual-assets.mjs",
+    "--root",
+    ".",
+    "--output",
+    "/tmp/neon-specialist-assets-20261018-01"
+  ],
+  "sourceRoot": "/workspace/Ne-n-catcher",
+  "executionKind": "ASSET_RGBA_COMPOSITION_NOT_GAMEPLAY",
+  "tool": {
+    "name": "pixelmatch",
+    "revision": "ab76f526ef951c0ec6284e314a700e161b1800e6",
+    "license": "ISC"
+  },
+  "assets": [
+    {
+      "id": "atlas-v2",
+      "file": "assets/guardian_atlas_states_v2.webp",
+      "width": 2048,
+      "height": 1024,
+      "columns": 4,
+      "rows": 2,
+      "gutter": 24,
+      "sha256": "6ddaa0d7c9d97b23430829b9470b06da0ad30d395fc7f4e8dbd320dbcf989da5",
+      "bytes": 656550,
+      "rgbaDecodedBytes": 8388608,
+      "cellWidth": 512,
+      "cellHeight": 512,
+      "frames": [
+        {
+          "index": 0,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 94863,
+          "bounds": {
+            "minX": 84,
+            "minY": 38,
+            "maxX": 423,
+            "maxY": 402
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 10615,
+          "rgbaSha256": "ae6ff1a0ac59c20a62d5e195512f37bd8397f671719fb779bf7e31f6112a57fa"
+        },
+        {
+          "index": 1,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 100856,
+          "bounds": {
+            "minX": 80,
+            "minY": 37,
+            "maxX": 427,
+            "maxY": 400
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 10808,
+          "rgbaSha256": "f4642d8164a33731543cf5e95b43d37d77d817b1808cffb5c39a584562c4822e"
+        },
+        {
+          "index": 2,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 102624,
+          "bounds": {
+            "minX": 72,
+            "minY": 37,
+            "maxX": 437,
+            "maxY": 400
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 10246,
+          "rgbaSha256": "e72e699fc65098530ecac5745b85a2a0e876e742af3b7b07e30859e5ecabb8c7"
+        },
+        {
+          "index": 3,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 107791,
+          "bounds": {
+            "minX": 70,
+            "minY": 37,
+            "maxX": 441,
+            "maxY": 402
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 9115,
+          "rgbaSha256": "ec39344f93c799c3d0da2644bdc725ece768439eaddbfefc284d9f6fb4d37406"
+        },
+        {
+          "index": 4,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 100798,
+          "bounds": {
+            "minX": 80,
+            "minY": 32,
+            "maxX": 425,
+            "maxY": 403
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 8196,
+          "rgbaSha256": "813f72251cd9754a6e9b4a9a15fad55e1ea3bd1a6301f2cdd9018f31e26bb32a"
+        },
+        {
+          "index": 5,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 110945,
+          "bounds": {
+            "minX": 56,
+            "minY": 58,
+            "maxX": 451,
+            "maxY": 418
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 9804,
+          "rgbaSha256": "ab8d3895cc10cb8cdc974ad6ca69e809b85a5159772efc54c94eea7aa7e9ef91"
+        },
+        {
+          "index": 6,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 113339,
+          "bounds": {
+            "minX": 62,
+            "minY": 58,
+            "maxX": 446,
+            "maxY": 423
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 8944,
+          "rgbaSha256": "b7799bf41463190ae0a5eed600518d33785bd16c1b2cb511fcf9d4dc4ffe6b77"
+        },
+        {
+          "index": 7,
+          "width": 512,
+          "height": 512,
+          "gutter": 24,
+          "visiblePixels": 110058,
+          "bounds": {
+            "minX": 67,
+            "minY": 36,
+            "maxX": 440,
+            "maxY": 401
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 9950,
+          "rgbaSha256": "82f6fd27c8943b0712ed2461c2a88bc7b3c2828d6061394af3e68c1caf24cbd2"
+        }
+      ],
+      "comparisons": [
+        {
+          "first": 0,
+          "second": 1,
+          "differentPixels": {
+            "black": 80863,
+            "gray": 75817,
+            "white": 76726
+          }
+        },
+        {
+          "first": 0,
+          "second": 2,
+          "differentPixels": {
+            "black": 79140,
+            "gray": 72267,
+            "white": 73904
+          }
+        },
+        {
+          "first": 0,
+          "second": 3,
+          "differentPixels": {
+            "black": 84657,
+            "gray": 76125,
+            "white": 77577
+          }
+        },
+        {
+          "first": 0,
+          "second": 4,
+          "differentPixels": {
+            "black": 91095,
+            "gray": 86393,
+            "white": 88204
+          }
+        },
+        {
+          "first": 0,
+          "second": 5,
+          "differentPixels": {
+            "black": 105223,
+            "gray": 100528,
+            "white": 101739
+          }
+        },
+        {
+          "first": 0,
+          "second": 6,
+          "differentPixels": {
+            "black": 106741,
+            "gray": 99462,
+            "white": 101215
+          }
+        },
+        {
+          "first": 0,
+          "second": 7,
+          "differentPixels": {
+            "black": 100199,
+            "gray": 95734,
+            "white": 97715
+          }
+        },
+        {
+          "first": 1,
+          "second": 2,
+          "differentPixels": {
+            "black": 81733,
+            "gray": 74989,
+            "white": 76581
+          }
+        },
+        {
+          "first": 1,
+          "second": 3,
+          "differentPixels": {
+            "black": 84515,
+            "gray": 77053,
+            "white": 78401
+          }
+        },
+        {
+          "first": 1,
+          "second": 4,
+          "differentPixels": {
+            "black": 94815,
+            "gray": 89548,
+            "white": 91470
+          }
+        },
+        {
+          "first": 1,
+          "second": 5,
+          "differentPixels": {
+            "black": 107057,
+            "gray": 102180,
+            "white": 103505
+          }
+        },
+        {
+          "first": 1,
+          "second": 6,
+          "differentPixels": {
+            "black": 107253,
+            "gray": 100569,
+            "white": 102326
+          }
+        },
+        {
+          "first": 1,
+          "second": 7,
+          "differentPixels": {
+            "black": 102588,
+            "gray": 98238,
+            "white": 100098
+          }
+        },
+        {
+          "first": 2,
+          "second": 3,
+          "differentPixels": {
+            "black": 82393,
+            "gray": 73998,
+            "white": 75923
+          }
+        },
+        {
+          "first": 2,
+          "second": 4,
+          "differentPixels": {
+            "black": 96859,
+            "gray": 90022,
+            "white": 92943
+          }
+        },
+        {
+          "first": 2,
+          "second": 5,
+          "differentPixels": {
+            "black": 108221,
+            "gray": 102493,
+            "white": 104370
+          }
+        },
+        {
+          "first": 2,
+          "second": 6,
+          "differentPixels": {
+            "black": 106614,
+            "gray": 99671,
+            "white": 101494
+          }
+        },
+        {
+          "first": 2,
+          "second": 7,
+          "differentPixels": {
+            "black": 103230,
+            "gray": 98022,
+            "white": 100364
+          }
+        },
+        {
+          "first": 3,
+          "second": 4,
+          "differentPixels": {
+            "black": 100628,
+            "gray": 92255,
+            "white": 94794
+          }
+        },
+        {
+          "first": 3,
+          "second": 5,
+          "differentPixels": {
+            "black": 109710,
+            "gray": 104013,
+            "white": 105141
+          }
+        },
+        {
+          "first": 3,
+          "second": 6,
+          "differentPixels": {
+            "black": 106159,
+            "gray": 99781,
+            "white": 101097
+          }
+        },
+        {
+          "first": 3,
+          "second": 7,
+          "differentPixels": {
+            "black": 106403,
+            "gray": 100004,
+            "white": 102143
+          }
+        },
+        {
+          "first": 4,
+          "second": 5,
+          "differentPixels": {
+            "black": 109342,
+            "gray": 103138,
+            "white": 105244
+          }
+        },
+        {
+          "first": 4,
+          "second": 6,
+          "differentPixels": {
+            "black": 110576,
+            "gray": 102358,
+            "white": 104967
+          }
+        },
+        {
+          "first": 4,
+          "second": 7,
+          "differentPixels": {
+            "black": 103090,
+            "gray": 96876,
+            "white": 100247
+          }
+        },
+        {
+          "first": 5,
+          "second": 6,
+          "differentPixels": {
+            "black": 97910,
+            "gray": 91383,
+            "white": 92664
+          }
+        },
+        {
+          "first": 5,
+          "second": 7,
+          "differentPixels": {
+            "black": 108853,
+            "gray": 103338,
+            "white": 105583
+          }
+        },
+        {
+          "first": 6,
+          "second": 7,
+          "differentPixels": {
+            "black": 110490,
+            "gray": 103262,
+            "white": 105723
+          }
+        }
+      ],
+      "compositions": [
+        {
+          "background": "black",
+          "file": "atlas-v2-black.png"
+        },
+        {
+          "background": "gray",
+          "file": "atlas-v2-gray.png"
+        },
+        {
+          "background": "white",
+          "file": "atlas-v2-white.png"
+        }
+      ],
+      "firstPoseDiff": {
+        "differentPixels": 75817,
+        "file": "atlas-v2-frame0-vs1-diff.png"
+      },
+      "sha256After": "6ddaa0d7c9d97b23430829b9470b06da0ad30d395fc7f4e8dbd320dbcf989da5"
+    },
+    {
+      "id": "cronium-v2",
+      "file": "assets/cronium_energy_atlas_v2.webp",
+      "width": 512,
+      "height": 512,
+      "columns": 2,
+      "rows": 2,
+      "gutter": 32,
+      "sha256": "3b374f972a69d13f9ec11436c8a6221d970b66d31eeb39cb64af61d344820a15",
+      "bytes": 72176,
+      "rgbaDecodedBytes": 1048576,
+      "cellWidth": 256,
+      "cellHeight": 256,
+      "frames": [
+        {
+          "index": 0,
+          "width": 256,
+          "height": 256,
+          "gutter": 32,
+          "visiblePixels": 18254,
+          "bounds": {
+            "minX": 53,
+            "minY": 35,
+            "maxX": 202,
+            "maxY": 210
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 0,
+          "rgbaSha256": "734897f9bdacc37a089d451ee5a0617bdcb472e1b2978c98fda891ce420a10ee"
+        },
+        {
+          "index": 1,
+          "width": 256,
+          "height": 256,
+          "gutter": 32,
+          "visiblePixels": 23857,
+          "bounds": {
+            "minX": 35,
+            "minY": 40,
+            "maxX": 205,
+            "maxY": 217
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 0,
+          "rgbaSha256": "5fcbbf6c535f7283cc08ff9cd45a0c4b68405078b35d1ca0bec3e9e60e4559ee"
+        },
+        {
+          "index": 2,
+          "width": 256,
+          "height": 256,
+          "gutter": 32,
+          "visiblePixels": 19322,
+          "bounds": {
+            "minX": 66,
+            "minY": 37,
+            "maxX": 221,
+            "maxY": 196
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 0,
+          "rgbaSha256": "2c55cf4178a6b801797aebe1bf48bcae3a60eabdd5c4f10029e3e9bfc096f501"
+        },
+        {
+          "index": 3,
+          "width": 256,
+          "height": 256,
+          "gutter": 32,
+          "visiblePixels": 22369,
+          "bounds": {
+            "minX": 35,
+            "minY": 43,
+            "maxX": 208,
+            "maxY": 220
+          },
+          "gutterAlphaPixels": 0,
+          "maximumGutterAlpha": 0,
+          "opaqueDarkPixels": 0,
+          "rgbaSha256": "055e7677935fe00701f3b4219dca0e87e40ec07133e4fc706a5f1d80ba1848c0"
+        }
+      ],
+      "comparisons": [
+        {
+          "first": 0,
+          "second": 1,
+          "differentPixels": {
+            "black": 21727,
+            "gray": 16685,
+            "white": 18666
+          }
+        },
+        {
+          "first": 0,
+          "second": 2,
+          "differentPixels": {
+            "black": 20655,
+            "gray": 16000,
+            "white": 17963
+          }
+        },
+        {
+          "first": 0,
+          "second": 3,
+          "differentPixels": {
+            "black": 20714,
+            "gray": 15444,
+            "white": 17403
+          }
+        },
+        {
+          "first": 1,
+          "second": 2,
+          "differentPixels": {
+            "black": 24581,
+            "gray": 19449,
+            "white": 21883
+          }
+        },
+        {
+          "first": 1,
+          "second": 3,
+          "differentPixels": {
+            "black": 19956,
+            "gray": 15893,
+            "white": 16855
+          }
+        },
+        {
+          "first": 2,
+          "second": 3,
+          "differentPixels": {
+            "black": 23827,
+            "gray": 18247,
+            "white": 20791
+          }
+        }
+      ],
+      "compositions": [
+        {
+          "background": "black",
+          "file": "cronium-v2-black.png"
+        },
+        {
+          "background": "gray",
+          "file": "cronium-v2-gray.png"
+        },
+        {
+          "background": "white",
+          "file": "cronium-v2-white.png"
+        }
+      ],
+      "firstPoseDiff": {
+        "differentPixels": 16685,
+        "file": "cronium-v2-frame0-vs1-diff.png"
+      },
+      "sha256After": "3b374f972a69d13f9ec11436c8a6221d970b66d31eeb39cb64af61d344820a15"
+    }
+  ],
+  "historical": [
+    {
+      "id": "cronium-fragment-v1",
+      "file": "assets/cronium_fragment_v1.webp",
+      "sha256": "3fa0fb8ae876ece6f8a91f89f008e1ad563d429676069b69d922a02f3148fc85",
+      "bytes": 9570,
+      "width": 256,
+      "height": 256,
+      "gutter": 0,
+      "visiblePixels": 32318,
+      "bounds": {
+        "minX": 75,
+        "minY": 0,
+        "maxX": 255,
+        "maxY": 255
+      },
+      "gutterAlphaPixels": 0,
+      "maximumGutterAlpha": 0,
+      "opaqueDarkPixels": 19412,
+      "rgbaSha256": "edb2757220c17e3fcabd4d247a3f60f6bc3f075004d16bf15511753558280d1f",
+      "compositions": [
+        {
+          "background": "black",
+          "file": "cronium-fragment-v1-black.png"
+        },
+        {
+          "background": "gray",
+          "file": "cronium-fragment-v1-gray.png"
+        },
+        {
+          "background": "white",
+          "file": "cronium-fragment-v1-white.png"
+        }
+      ],
+      "sha256After": "3fa0fb8ae876ece6f8a91f89f008e1ad563d429676069b69d922a02f3148fc85"
+    },
+    {
+      "id": "cronium-core-frame00-v1",
+      "file": "assets/core_frame_00.webp",
+      "sha256": "328485a75acbe14613301bf960a0ba601dacf453a5e6feec137fe996934ea98e",
+      "bytes": 14050,
+      "width": 192,
+      "height": 192,
+      "gutter": 0,
+      "visiblePixels": 26000,
+      "bounds": {
+        "minX": 7,
+        "minY": 6,
+        "maxX": 184,
+        "maxY": 185
+      },
+      "gutterAlphaPixels": 0,
+      "maximumGutterAlpha": 0,
+      "opaqueDarkPixels": 141,
+      "rgbaSha256": "98abe70b1009f9e4a2e7300cbc8a63519dcf1354158887234ccc7e8e435da3ac",
+      "compositions": [
+        {
+          "background": "black",
+          "file": "cronium-core-frame00-v1-black.png"
+        },
+        {
+          "background": "gray",
+          "file": "cronium-core-frame00-v1-gray.png"
+        },
+        {
+          "background": "white",
+          "file": "cronium-core-frame00-v1-white.png"
+        }
+      ],
+      "sha256After": "328485a75acbe14613301bf960a0ba601dacf453a5e6feec137fe996934ea98e"
+    }
+  ],
+  "limitations": [
+    "Compositions inspect actual decoded artwork, not a rendered game or a natural playthrough.",
+    "Distinct poses and gutters do not certify animation quality, artistic acceptance, physical Safari/iPhone or frame rate."
+  ],
+  "source": {
+    "commit": "50bc9caafccedd7469e932ba26e533065e688120",
+    "dirty": true
+  },
+  "browserVersion": "154.0.8037.57",
+  "exitCode": 0,
+  "finishedAt": "2026-10-18T12:01:22.511Z"
+}

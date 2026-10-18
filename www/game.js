@@ -452,6 +452,7 @@
     chapterIntro: loadSprite("assets/chapter1_intro_atlas_v1.webp", false),
     chapterPortraits: loadSprite("assets/chapter1_portraits_v1.webp", false),
     chapterMissile: loadSprite("assets/chapter1_missile_atlas_v1.webp", false),
+    croniumEnergy: loadSprite("assets/cronium_energy_atlas_v2.webp", false),
     flightKit: loadSprite("assets/chronos_flight_atlas_v1.webp", false),
     chronosDestruction: loadSprite("assets/chronos_destruction_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
@@ -469,7 +470,7 @@
     chronosModule: loadSprite("assets/chronos_detached_module_v1.webp", false),
     modularShip: loadSprite("assets/ship_modular_atlas_v1.webp", true),
     shipIdentity: loadSprite("assets/player_ship_identity_v1.webp", true),
-    guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
+    guardianAtlas: loadSprite("assets/guardian_atlas_states_v2.webp", false),
     atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
     arcadePulse: loadSprite("assets/arcade_pulse_atlas_v2.webp", false),
     hostileOrdnance: loadSprite("assets/hostile_ordnance_atlas_v1.webp", false),
@@ -742,6 +743,7 @@
   // updateScore; no score timer, RAF or permanently running drone is created.
   let voyageScore = null;
   let chapterScore = null;
+  let combatSfx = null;
   let voyageScoreContext = "transit";
   let scoreSuspended = false;
   const activeToneVoices = new Set();
@@ -770,6 +772,11 @@
     if(!chapterScore&&isUnifiedClassic()&&ac.createMediaElementSource) {
       try {chapterScore=NeonCampaign.createChapterScore({context:ac,output:musicGain});} catch {chapterScore=null;}
     }
+    if(!combatSfx&&isUnifiedClassic()&&typeof NeonCampaign.createCombatSfx==="function") {
+      combatSfx=NeonCampaign.createCombatSfx({context:ac,output:ac.destination});
+      combatSfx?.load();
+    }
+    else if(combatSfx?.snapshot().failed)combatSfx.load();
     scoreSuspended = false;
     updateAudioVolumes();
   }
@@ -781,6 +788,7 @@
   }
 
   function updateScore(dt, paused = false) {
+    combatSfx?.setPaused(paused||scoreSuspended||!isUnifiedClassic()||state!=="playing");
     if (!voyageScore) return;
     const rendered=chapterScore?.update({active:isUnifiedClassic()&&Boolean(classicChapterStory),
       elapsed:classicFlightView?.elapsed||0,paused:paused||scoreSuspended,enabled:settings.music>0});
@@ -798,6 +806,7 @@
   async function suspendAudio() {
     scoreSuspended = true;
     chapterScore?.suspend();
+    combatSfx?.setPaused(true);
     voyageScore?.setPaused(true);
     stopToneVoices();
     if (audioCtx?.state === "running") await audioCtx.suspend().catch(() => {});
@@ -813,12 +822,28 @@
 
   function updateAudioVolumes() {
     voyageScore?.setEnabled(settings.music > 0);
+    combatSfx?.setEnabled(settings.fx>0);
+    combatSfx?.setVolume(settings.fx/100);
+    combatSfx?.setPaused(scoreSuspended||!isUnifiedClassic()||state!=="playing");
     if (settings.fx <= 0) stopToneVoices();
     if(settings.music<=0)chapterScore?.suspend();
     if (musicGain && audioCtx) {
       const value = (settings.music / 100) * 0.26;
       musicGain.gain.setTargetAtTime(value, audioCtx.currentTime, 0.08);
     }
+  }
+
+  function combatSound(cue,x=player.x,eventId=null) {
+    if(isUnifiedClassic()&&(state!=="playing"||scoreSuspended||settings.fx<=0))return;
+    if(isUnifiedClassic()&&combatSfx?.snapshot().ready) {
+      // A rejected voice means muted/paused/throttled, never a fallback beep.
+      combatSfx.play(cue,{pan:clamp(x/W*2-1,-.75,.75),eventId});return;
+    }
+    const fallback={phaser:[670,.065,"triangle",.04],"missile-launch":[145,.18,"triangle",.045],
+      "impact-metal":[620,.05,"triangle",.035],"impact-plasma":[180,.04,"square",.025],
+      "hull-hit":[95,.22,"sawtooth",.08],"enemy-break":[920,.05,"triangle",.04],
+      "atlas-charge":[135,.28,"triangle",.065],"atlas-collapse":[640,.28,"sine",.06]};
+    if(fallback[cue])tone(...fallback[cue]);
   }
 
   function tone(frequency = 440, duration = 0.06, type = "sine", base = 0.06) {
@@ -1453,7 +1478,7 @@
     const result=NeonCampaign.triggerClassicWeapon(classicWeapons,{x:player.x,y:player.y-125*SHIP_VISUAL.classicScale});
     if(!result.accepted)return false;
     ammo=classicWeapons.charges;manualShotCooldown=classicWeapons.cooldown;
-    tone(classicWeapons.selected==="twin"?820:670,.065,"triangle",.04);
+    combatSound("phaser");
     cameraKickY=Math.max(cameraKickY,2.5);vibrate(12);updateAmmoHud();return true;
   }
 
@@ -1472,7 +1497,7 @@
       y:player.y-72*SHIP_VISUAL.classicScale,shotId:`missile:${classicSalvageState.missileShotsSpent}`});
     syncClassicMissileHud();
     if(!fired.accepted)return false;
-    cameraKickY=Math.max(cameraKickY,3);tone(145,.18,"triangle",.045);vibrate(16);
+    cameraKickY=Math.max(cameraKickY,3);combatSound("missile-launch",player.x,`missile:${classicSalvageState.missileShotsSpent}`);vibrate(16);
     return true;
   }
 
@@ -1488,7 +1513,7 @@
         const contact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,"guardian-atlas");
         if(!contact.accepted)continue;
         // Shield contact consumes a shot too; vulnerability is checked on arrival.
-        resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage});
+        resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage,weapon:shot.weapon});
       }
     }
     if(events.some(event=>event.type==="recharged")){tone(520,.035,"sine",.025);updateAmmoHud();}
@@ -1509,8 +1534,9 @@
       if(!impact.accepted)continue;
       item.hp=Math.max(0,(item.hp??1)-impact.damage);
       const destroyed=item.hp<=1e-8;
-      animateScoutHit(item,destroyed);addImpactEffect(item.x,item.y,.8);
-      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);tone(destroyed?920:620,.05,"triangle",.04);
+      animateScoutHit(item,destroyed);
+      if(shot.weapon==="missile")addMissileImpact(item.x,item.y);else addImpactEffect(item.x,item.y,.8);
+      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
       hudScoreTarget=score;
       if(destroyed){
         if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
@@ -1602,10 +1628,10 @@
     if (event.clearProjectiles || event.type === "shutdown") {
       items = items.filter(item => !item.guardianProjectile);
     }
-    if (event.type === "volley") tone(95, .12, "sawtooth", .045);
+    if (event.type === "volley") combatSound("impact-plasma",atlasBoss.x);
     if (event.type === "phase") { signalClassicChapter("atlas-phase-two"); cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
-      score += 250;tone(640, .28, "sine", .06);
+      score += 250;combatSound("atlas-collapse",atlasBoss.x);
       spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
     }
     if (event.type === "disabled") {
@@ -1620,7 +1646,9 @@
     if (atlasReentryGrace > 0) { atlasReentryGrace = Math.max(0, atlasReentryGrace - dt); syncAtlasHud(); return; }
     // Slow affects both the guardian's warning/recovery clock and its bullets.
     // A different clock could announce a new corridor over an older curtain.
+    const previousState=atlasBoss.state;
     NeonCampaign.advanceGuardianAtlas(atlasBoss, dt * (powers.slow > 0 ? .5 : 1), player, consumeAtlasEvent);
+    if(atlasBoss.state==="charge"&&previousState!=="charge")combatSound("atlas-charge",atlasBoss.x);
     if (state !== "playing") return;
     atlasFireTimer = Math.max(0, atlasFireTimer - dt);
     if (settings.autoFire && atlasFireTimer === 0 && atlasBoss.vulnerability && Math.abs(atlasBoss.x - player.x) < 115) {
@@ -1651,13 +1679,14 @@
     for (const event of result.events) consumeAtlasEvent(event);
     if (result.accepted) {
       score += 3;
-      if (settings.effects) {
+      if (settings.effects&&shot.weapon==="missile")addMissileImpact(atlasBoss.x,atlasBoss.y);
+      else if (settings.effects) {
         if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
         impactEffects.push({x: atlasBoss.x, y: atlasBoss.y, angle: 0, scale: 1,
           life: .24, duration: .24, atlasImpact: true});
       }
-      tone(620, .055, "triangle", .035);
-    } else tone(180, .04, "square", .025);
+      combatSound("impact-metal",atlasBoss.x);
+    } else combatSound("impact-plasma",atlasBoss.x);
     syncAtlasHud();
   }
 
@@ -2215,7 +2244,7 @@
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
-      ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);
+      ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
       if(classicFlightView?.stageNumber===1)ensureSprite(SPRITES.chapterIntro);
       ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
@@ -2967,6 +2996,12 @@
     impactEffects.push({ x, y, scale, angle, life: 0.24, duration: 0.24, variant: (Math.random() * SPRITE_GROUPS.impact.length) | 0 });
   }
 
+  function addMissileImpact(x,y) {
+    if(!settings.effects)return;
+    if(impactEffects.length>=EFFECT_LIMITS.impacts)impactEffects.shift();
+    impactEffects.push({x,y,scale:1,angle:0,life:.65,duration:.65,missileImpact:true});
+  }
+
   function activatePower(type, item) {
     const durations = { shield: 7, tractor: 8, slow: 6, double: 7, phaser: 7 };
     if (type === "repair") {
@@ -3020,7 +3055,7 @@
       burst(x, y, 18, "cyan");
       pulseRing(x, y, "#62fff1", 90, 0.42);
       addImpactEffect(x, y, 0.85, impactAngle);
-      tone(230, 0.08, "square", 0.045);
+      if(classicDamage)combatSound("hull-hit",x);else tone(230, 0.08, "square", 0.045);
       if(classicDamage)hud();
       return;
     }
@@ -3039,7 +3074,7 @@
     burst(x, y, 28, "red");
     pulseRing(x, y, "#ff496f", 110, 0.48);
     addImpactEffect(x, y, 1.05, impactAngle);
-    tone(95, 0.22, "sawtooth", 0.08);
+    if(classicDamage)combatSound("hull-hit",x);else tone(95, 0.22, "sawtooth", 0.08);
     vibrate([45, 35, 60]);
     hud();
 
@@ -4737,7 +4772,7 @@
     ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
   // Image-backed artwork. The simulation, not the render clock, selects poses.
-  const ATLAS_FRAME_PIVOTS = [[222,226],[221,241],[224,226],[223,239],[221,235],[223,218],[224,219],[222,232]];
+  const ATLAS_FRAME_PIVOTS = Array.from({length:8},()=>[256,256]);
   const ATLAS_VFX_CROPS = [[120,0,280,680],[546,0,298,725],[837,65,700,600],[1540,0,630,635]];
 
   function drawAtlasVfx(index, width, height, alpha = 1, head = .5) {
@@ -4805,8 +4840,10 @@
       const age = shot.duration - shot.life;
       if(shot.weapon==="missile" && spriteReady(SPRITES.chapterMissile)) {
         const atlas=SPRITES.chapterMissile,cell=atlas.naturalWidth/4;
-        const row=age<.18?1:0,frame=Math.floor(age*14)%4,size=54;
-        ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
+        // Launch hardware stays on the ship. Only the authored flying missile
+        // row travels with this physical projectile, including its first frame.
+        const frame=Math.floor(age*14)%4,size=54;
+        ctx.drawImage(atlas,frame*cell,0,cell,cell,-size/2,-size/2,size,size);
       } else if(!drawArcadePulse(shot.weapon,age,shot.weapon === "lance" ? 88 : 72))
         drawAtlasVfx(1,shot.weapon === "twin" ? 16 : 23,68,1,.5);
       ctx.restore();
@@ -4861,45 +4898,28 @@
       // Charge belongs to the barrels. Do not reveal a solved escape lane or
       // paint the player's future safe position onto the arena.
       for(const side of [-1,1]) {
-        ctx.save();ctx.translate(boss.x+side*(boss.visualSize||350)*.24,boss.y+55);
+        const artSize=(boss.visualSize||350)*1.25;
+        ctx.save();ctx.translate(boss.x+side*artSize*.25,boss.y+artSize*(327/512-.5));
         drawAtlasVfx(3,48,48,.45+boss.telegraph.progress*.5);ctx.restore();
       }
     }
     const animation = NeonCampaign.guardianAtlasAnimation(boss);
-    // The existing closed plating pose communicates the protected movement,
-    // instead of showing an apparently exposed core while rejecting damage.
-    if (boss.state === "idle" && !boss.vulnerability) {
-      animation.frame=boss.phase===1?2:5;animation.previousFrame=null;animation.blend=1;
-    }
     const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
     const frameHeight = SPRITES.guardianAtlas.naturalHeight / 2;
-    const size = boss.visualSize || 350;
+    // V2 adds actual transparent gutters: compensate only the artboard size,
+    // keeping the model's reactor position, radius and combat geometry intact.
+    const size = (boss.visualSize || 350)*1.25;
     const paint = (frame, alpha) => {
       if (alpha <= 0) return;
       const pivot = ATLAS_FRAME_PIVOTS[frame];
       ctx.save(); ctx.globalAlpha *= alpha;
-      // Existing firing cells touch the next cell at their muzzle edge. Stay
-      // inside the authored cell to avoid bilinear sampling its neighbour.
-      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth+.5, Math.floor(frame / 4) * frameHeight+.5,
-        frameWidth-1, frameHeight-1,
-        boss.x - size * pivot[0] / 443.5, boss.y - size * pivot[1] / 443.5, size, size);
+      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth, Math.floor(frame / 4) * frameHeight,
+        frameWidth, frameHeight,
+        boss.x - size * pivot[0] / 512, boss.y - size * pivot[1] / 512, size, size);
       ctx.restore();
     };
     if (animation.previousFrame !== null) paint(animation.previousFrame, 1 - animation.blend);
     paint(animation.frame, animation.blend);
-    if(animation.coreCover>0 && animation.coverRect) {
-      const rect=animation.coverRect,frame=animation.coverFrame??0;
-      const scale=size/(rect.sourceCell||443.5),width=rect.width*scale,height=rect.height*scale;
-      const x=boss.x-rect.pivotX*scale,y=boss.y-rect.pivotY*scale;
-      const sx=frameWidth/(rect.sourceCell||443.5),sy=frameHeight/(rect.sourceCell||443.5);
-      ctx.save();ctx.globalAlpha*=Math.min(1,animation.coreCover);
-      ctx.beginPath();ctx.ellipse(x+width/2,y+height/2,width/2,height/2,0,0,Math.PI*2);ctx.clip();
-      // Reuse the real closed reactor plating while preserving each firing
-      // pose's articulated cannons. No visual open core can reject damage.
-      ctx.drawImage(SPRITES.guardianAtlas,(frame%4)*frameWidth+rect.x*sx,
-        Math.floor(frame/4)*frameHeight+rect.y*sy,rect.width*sx,rect.height*sy,x,y,width,height);
-      ctx.restore();
-    }
   }
 
   // Authored component crops share explicit mounting coordinates, not icon offsets.
@@ -4911,13 +4931,10 @@
     const sx = atlas.naturalWidth / frame.sourceWidth;
     const sy = atlas.naturalHeight / frame.sourceHeight;
     if (part === "flames") {
-      // The paired source plume contains a solid connector in its empty centre.
-      // Keep each authored jet at its nozzle; never paint that extraction seam.
-      for (const [offset, fraction] of [[0, .4], [.6, .4]]) {
-        target.drawImage(atlas, (source.x + source.width * offset) * sx, source.y * sy,
-          source.width * fraction * sx, source.height * sy,
-          destination.x + destination.width * offset, destination.y,
-          destination.width * fraction, destination.height);
+      for (const plume of frame.plumes) {
+        const crop=plume.source,mount=plume.destination;
+        target.drawImage(atlas,crop.x*sx,crop.y*sy,crop.width*sx,crop.height*sy,
+          mount.x,mount.y,mount.width,mount.height);
       }
       return true;
     }
@@ -5180,23 +5197,20 @@
 
   function drawEnergy(item) {
     if (typeof isUnifiedClassic === "function" && isUnifiedClassic()) {
-      // Reuse the authored animated energy center without its metal bezel.
-      // One prepared halo is shared by all orbs; never blur each pickup/frame.
-      const sequence = [0,1,2,3,4,5,4,3,2,1];
+      // V2 is actual animated energy, padded on every cell. Preserve the whole
+      // illustration: no rectangular crop, metal bezel or opaque fragment.
       const phase = Number.isFinite(item.phase) ? item.phase : 0;
-      const frame = frameFrom("core", sequence[Math.floor((elapsed * 9 + phase) % sequence.length)]);
+      const atlas=SPRITES.croniumEnergy,frame=Math.floor(elapsed*8+phase)%4;
       const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
       ctx.save(); ctx.translate(item.x, item.y);
       ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
       ctx.shadowBlur = 0;ctx.globalCompositeOperation="screen";
-      const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*2.2;
+      const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*4;
       if(halo)ctx.drawImage(halo,-glow/2,-glow/2,glow,glow);
-      if(spriteReady(frame)) {
-        const sourceWidth=frame.naturalWidth,sourceHeight=frame.naturalHeight;
-        ctx.drawImage(frame,sourceWidth*.27,sourceHeight*.27,sourceWidth*.46,sourceHeight*.46,-size/2,-size/2,size,size);
+      if(spriteReady(atlas)) {
+        const cell=atlas.naturalWidth/2;
+        ctx.drawImage(atlas,(frame%2)*cell,Math.floor(frame/2)*cell,cell,cell,-size/2,-size/2,size,size);
       }
-      if (spriteReady(SPRITES.croniumFragment))
-        drawImageCentered(SPRITES.croniumFragment, item.r * 1.45, item.r * 1.45, elapsed*.20+phase, .42);
       ctx.restore(); return;
     }
     ctx.save();
@@ -5609,6 +5623,14 @@
   function drawImpactEffects() {
     for (const effect of impactEffects) {
       const progress = 1 - effect.life / effect.duration;
+      if(effect.missileImpact&&spriteReady(SPRITES.chapterMissile)) {
+        const age=effect.duration-effect.life,atlas=SPRITES.chapterMissile,cell=atlas.naturalWidth/4;
+        const row=age<.25?2:3,frame=Math.min(3,Math.floor((age-(row===3?.25:0))*(row===2?16:10)));
+        const size=row===2?94:108;
+        ctx.save();ctx.translate(effect.x,effect.y);ctx.globalAlpha*=row===3?Math.max(0,1-(age-.25)/.4):1;
+        ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
+        ctx.restore();continue;
+      }
       if (effect.atlasImpact) {
         ctx.save(); ctx.translate(effect.x, effect.y);
         if(!drawArcadePulse("impact",effect.duration-effect.life,60,1-progress*.4))drawAtlasVfx(2,58,52,1-progress);
@@ -6001,6 +6023,7 @@
   ui.fxVolume.oninput = (event) => {
     settings.fx = +event.target.value;
     ui.fxValue.textContent = `${settings.fx}%`;
+    updateAudioVolumes();
     tone(620, 0.05, "triangle", 0.04);
   };
   ui.sensitivity.oninput = (event) => {

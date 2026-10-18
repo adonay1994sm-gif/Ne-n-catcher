@@ -1,5 +1,15 @@
 # DIAGNÓSTICO
 
+HEAD inicial/remoto50bc9ca conservado. Defectos de alpha, celdasAtlas y propulsión comprobados; seis especialistas aportan correcciones integradas sin cambiar reglas/guardados.
+
+# INFORME DE PRODUCCIÓN — SPECIALIST_POLISH
+
+18/10/2026 · [Informe vigente](production-reports/SPECIALIST_POLISH_2026-10-18.md). IN_REVIEW: certificación y comprobación de paquete/publicación en curso. Arte y dispositivo pendientes. El contenido siguiente corresponde al cierre anterior y se conserva como historial.
+
+---
+
+# DIAGNÓSTICO
+
 Se conservó HEAD2dcad16 y el clásico existente. Faltaba un argumento integrado yAtlas como cierre del primer viaje. Se reconstruyó ese cierre sin activar MotorV1 ni descartar campañas/guardados.
 
 # INFORME DE PRODUCCIÓN — NEON CRONIUM

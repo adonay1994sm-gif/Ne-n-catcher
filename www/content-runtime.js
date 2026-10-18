@@ -71,6 +71,7 @@ var NeonCampaign = (() => {
     createClassicPursuer: () => createClassicPursuer,
     createClassicScout: () => createClassicScout,
     createClassicWeapons: () => createClassicWeapons,
+    createCombatSfx: () => createCombatSfx,
     createCometShower: () => createCometShower,
     createCompletionJournal: () => createCompletionJournal,
     createGuardianAtlas: () => createGuardianAtlas,
@@ -653,7 +654,7 @@ var NeonCampaign = (() => {
     ...CHRONOS_CHAPTER_AFTERMATH
   ]);
   var TIMED_DIALOGUES = [...CHRONOS_CHAPTER_OPENING, ...ROUTE_DIALOGUES];
-  var dialogueById = new Map(CHRONOS_CHAPTER_DIALOGUES.map((cue) => [cue.id, cue]));
+  var dialogueById = new Map(CHRONOS_CHAPTER_DIALOGUES.map((cue2) => [cue2.id, cue2]));
   var signalNames = /* @__PURE__ */ new Set([...Object.keys(SIGNAL_DIALOGUES), "atlas-disabled"]);
   var minimumRouteTime = freeze({
     "module-recovered": 72,
@@ -663,17 +664,17 @@ var NeonCampaign = (() => {
     "atlas-phase-two": 359,
     "atlas-disabled": 359
   });
-  var signalForCue = new Map(Object.entries(SIGNAL_DIALOGUES).map(([name, cue]) => [cue.id, name]));
+  var signalForCue = new Map(Object.entries(SIGNAL_DIALOGUES).map(([name, cue2]) => [cue2.id, name]));
   var uniqueStrings = (value) => Array.isArray(value) && value.every((id) => typeof id === "string") && new Set(value).size === value.length;
   function normalizeChronosChapterCheckpoint(value) {
     if (!value || typeof value !== "object" || Array.isArray(value) || value.version !== 1 || value.contentVersion !== CHRONOS_CHAPTER_VERSION || value.routeId !== ROUTE_ID || !finiteTime(value.routeElapsed) || value.routeElapsed > CHRONOS_CHAPTER_ROUTE_SECONDS || !finiteTime(value.aftermathElapsed) || value.aftermathElapsed > CHRONOS_CHAPTER_AFTERMATH_SECONDS || typeof value.introSeen !== "boolean" || typeof value.introSkipped !== "boolean" || value.introSkipped && !value.introSeen || !uniqueStrings(value.eventIds) || value.eventIds.length > CHRONOS_CHAPTER_DIALOGUES.length || !uniqueStrings(value.signalIds) || value.signalIds.some((name) => !signalNames.has(name) || minimumRouteTime[name] > value.routeElapsed + 0.05) || value.signalIds.includes("c9-departure") && !value.signalIds.includes("c9-arrival") || value.signalIds.some((name) => ["atlas-phase-two", "atlas-disabled"].includes(name)) && !value.signalIds.includes("atlas-entry") || value.aftermathElapsed > 0 && !value.signalIds.includes("atlas-disabled")) return null;
     for (const id of value.eventIds) {
-      const cue = dialogueById.get(id);
-      if (!cue) return null;
-      if (cue.phase === "opening" && cue.at > value.routeElapsed + 0.05 && !value.introSeen) return null;
-      if (cue.phase === "route" && cue.at > value.routeElapsed + 0.05) return null;
-      if (cue.phase === "event" && !value.signalIds.includes(signalForCue.get(id))) return null;
-      if (cue.phase === "aftermath" && (!value.signalIds.includes("atlas-disabled") || cue.at > value.aftermathElapsed + 0.05)) return null;
+      const cue2 = dialogueById.get(id);
+      if (!cue2) return null;
+      if (cue2.phase === "opening" && cue2.at > value.routeElapsed + 0.05 && !value.introSeen) return null;
+      if (cue2.phase === "route" && cue2.at > value.routeElapsed + 0.05) return null;
+      if (cue2.phase === "event" && !value.signalIds.includes(signalForCue.get(id))) return null;
+      if (cue2.phase === "aftermath" && (!value.signalIds.includes("atlas-disabled") || cue2.at > value.aftermathElapsed + 0.05)) return null;
     }
     return freeze({
       version: 1,
@@ -708,22 +709,22 @@ var NeonCampaign = (() => {
     for (const name of restored?.signalIds || []) if (minimumRouteTime[name] <= routeElapsed + 0.05) signals.add(name);
     if (signals.has("atlas-disabled")) aftermathElapsed = restored.aftermathElapsed;
     for (const id of restored?.eventIds || []) {
-      const cue = dialogueById.get(id);
-      if (cue.phase === "opening") {
-        if (!replayIntro || cue.at < routeElapsed) fired.add(id);
-      } else if (cue.phase === "route" && cue.at <= routeElapsed) fired.add(id);
-      else if (cue.phase === "event" && signals.has(signalForCue.get(id))) fired.add(id);
-      else if (cue.phase === "aftermath" && signals.has("atlas-disabled") && cue.at <= aftermathElapsed) fired.add(id);
+      const cue2 = dialogueById.get(id);
+      if (cue2.phase === "opening") {
+        if (!replayIntro || cue2.at < routeElapsed) fired.add(id);
+      } else if (cue2.phase === "route" && cue2.at <= routeElapsed) fired.add(id);
+      else if (cue2.phase === "event" && signals.has(signalForCue.get(id))) fired.add(id);
+      else if (cue2.phase === "aftermath" && signals.has("atlas-disabled") && cue2.at <= aftermathElapsed) fired.add(id);
     }
-    for (const cue of TIMED_DIALOGUES) {
-      if (cue.at < routeElapsed) fired.add(cue.id);
+    for (const cue2 of TIMED_DIALOGUES) {
+      if (cue2.at < routeElapsed) fired.add(cue2.id);
     }
     if (routeElapsed >= CHRONOS_CHAPTER_OPENING_SECONDS) introSeen = true;
     function snapshot() {
       const active = openingEnabled && elapsed < CHRONOS_CHAPTER_OPENING_SECONDS;
-      const shot = [...CHRONOS_CHAPTER_OPENING].reverse().find((cue) => elapsed >= cue.at) || CHRONOS_CHAPTER_OPENING[0];
+      const shot = [...CHRONOS_CHAPTER_OPENING].reverse().find((cue2) => elapsed >= cue2.at) || CHRONOS_CHAPTER_OPENING[0];
       const aftermathActive = signals.has("atlas-disabled") && aftermathElapsed < CHRONOS_CHAPTER_AFTERMATH_SECONDS;
-      const line = aftermathActive ? [...CHRONOS_CHAPTER_AFTERMATH].reverse().find((cue) => aftermathElapsed >= cue.at) : null;
+      const line = aftermathActive ? [...CHRONOS_CHAPTER_AFTERMATH].reverse().find((cue2) => aftermathElapsed >= cue2.at) : null;
       return freeze({
         version: CHRONOS_CHAPTER_VERSION,
         routeId: ROUTE_ID,
@@ -749,15 +750,15 @@ var NeonCampaign = (() => {
         signalIds: freeze([...signals])
       });
     }
-    function emitOnce(cue, emit) {
-      if (fired.has(cue.id)) return false;
-      fired.add(cue.id);
+    function emitOnce(cue2, emit) {
+      if (fired.has(cue2.id)) return false;
+      fired.add(cue2.id);
       emit(freeze({
-        ...cue,
+        ...cue2,
         chapter: 1,
         storyVersion: CHRONOS_CHAPTER_VERSION,
         routeElapsed: elapsed,
-        ...cue.phase === "aftermath" ? { aftermathElapsed } : {}
+        ...cue2.phase === "aftermath" ? { aftermathElapsed } : {}
       }));
       return true;
     }
@@ -767,10 +768,10 @@ var NeonCampaign = (() => {
       const next = Math.min(view.elapsed, CHRONOS_CHAPTER_ROUTE_SECONDS);
       if (next + 1e-9 < elapsed) throw new RangeError("Create a new story controller when restoring an earlier route checkpoint");
       elapsed = Math.max(elapsed, next);
-      for (const cue of TIMED_DIALOGUES) {
-        if (cue.at > elapsed + 1e-9 || fired.has(cue.id)) continue;
-        if (cue.phase === "opening" && !openingEnabled || elapsed >= cue.at + cue.duration) fired.add(cue.id);
-        else emitOnce(cue, emit);
+      for (const cue2 of TIMED_DIALOGUES) {
+        if (cue2.at > elapsed + 1e-9 || fired.has(cue2.id)) continue;
+        if (cue2.phase === "opening" && !openingEnabled || elapsed >= cue2.at + cue2.duration) fired.add(cue2.id);
+        else emitOnce(cue2, emit);
       }
       if (elapsed >= CHRONOS_CHAPTER_OPENING_SECONDS) {
         introSeen = true;
@@ -780,10 +781,10 @@ var NeonCampaign = (() => {
         const nextAftermath = Math.min(view.aftermathElapsed, CHRONOS_CHAPTER_AFTERMATH_SECONDS);
         if (nextAftermath + 1e-9 < aftermathElapsed) throw new RangeError("Aftermath clock must be monotonic");
         aftermathElapsed = Math.max(aftermathElapsed, nextAftermath);
-        for (const cue of CHRONOS_CHAPTER_AFTERMATH) {
-          if (cue.at > aftermathElapsed + 1e-9 || fired.has(cue.id)) continue;
-          if (aftermathElapsed >= cue.at + cue.duration) fired.add(cue.id);
-          else emitOnce(cue, emit);
+        for (const cue2 of CHRONOS_CHAPTER_AFTERMATH) {
+          if (cue2.at > aftermathElapsed + 1e-9 || fired.has(cue2.id)) continue;
+          if (aftermathElapsed >= cue2.at + cue2.duration) fired.add(cue2.id);
+          else emitOnce(cue2, emit);
         }
       }
       return snapshot();
@@ -803,7 +804,7 @@ var NeonCampaign = (() => {
       introSeen = true;
       introSkipped = true;
       openingEnabled = false;
-      for (const cue of CHRONOS_CHAPTER_OPENING) fired.add(cue.id);
+      for (const cue2 of CHRONOS_CHAPTER_OPENING) fired.add(cue2.id);
       return true;
     }
     function checkpointRecord() {
@@ -4390,7 +4391,7 @@ var NeonCampaign = (() => {
     const cueAllowed = boundary !== null && boundary !== 5 && boundary !== 6 && !reducedEffects;
     const side = boundary % 2 ? 1 : -1;
     const depth = clamp9(progress, 0, 1);
-    const cue = cueAllowed ? Object.freeze({
+    const cue2 = cueAllowed ? Object.freeze({
       kind: boundary <= 3 ? "chronos-remnant" : "navigation-beacon",
       side,
       x: 0.5 + side * (0.19 + 0.52 * Math.pow(depth, 1.9)),
@@ -4402,7 +4403,7 @@ var NeonCampaign = (() => {
       active: boundary !== null,
       boundary,
       progress: depth,
-      cue,
+      cue: cue2,
       environment,
       // Navigation stars are secondary presentation; comfort mode retains the
       // same route/environment but removes this brief acceleration embellishment.
@@ -4996,7 +4997,6 @@ var NeonCampaign = (() => {
   // src/game/animation/guardian-atlas-animator.js
   var states = /* @__PURE__ */ new Set(["entry", "closed", "charge", "fire", "opening", "exposed", "closing", "phaseBreak", "disabled"]);
   var clamp11 = (value) => Math.max(0, Math.min(1, value));
-  var coverRect = Object.freeze({ x: 156, y: 145, width: 132, height: 162, pivotX: 66, pivotY: 81, sourceCell: 443.5 });
   function pose(frame, previousFrame = null, blend = 1) {
     const opacity = clamp11(blend);
     return {
@@ -5014,24 +5014,247 @@ var NeonCampaign = (() => {
     }
     if (boss.phase !== 1 && boss.phase !== 2) throw new RangeError("Unknown Guardian Atlas animation phase");
     const { state, stateTime, phase } = boss, openFrame = phase === 2 ? 5 : 1;
+    const exposure = state === "disabled" ? 1 : Number.isFinite(boss.coreExposure) ? clamp11(boss.coreExposure) : state === "exposed" ? 1 : state === "opening" ? clamp11(stateTime / GUARDIAN_ATLAS_RULES.openingSeconds) : state === "closing" ? 1 - clamp11(stateTime / GUARDIAN_ATLAS_RULES.closingSeconds) : 0;
+    const impactFlash = clamp11((boss.flash || 0) / 0.14);
     let result;
     if (state === "entry" || state === "closed") result = pose(0);
-    else if (state === "charge") result = pose(2, 0, stateTime / 0.18);
+    else if (state === "charge" || state === "phaseBreak") result = pose(2, 0, stateTime / 0.18);
     else if (state === "fire") result = pose(phase === 2 ? 6 : 3);
-    else if (state === "opening") result = pose(openFrame, 0, stateTime / GUARDIAN_ATLAS_RULES.openingSeconds);
-    else if (state === "exposed") result = pose(openFrame);
-    else if (state === "closing") result = pose(0, openFrame, stateTime / GUARDIAN_ATLAS_RULES.closingSeconds);
-    else if (state === "phaseBreak") result = pose(5, 2, stateTime / 0.5);
+    else if (state === "opening") result = pose(openFrame, 0, exposure);
+    else if (state === "exposed") result = phase === 1 && impactFlash > 0 ? pose(4, openFrame, impactFlash) : pose(openFrame);
+    else if (state === "closing") result = pose(0, openFrame, 1 - exposure);
     else result = pose(7, openFrame, stateTime / 0.6);
-    const exposure = state === "disabled" ? 1 : Number.isFinite(boss.coreExposure) ? clamp11(boss.coreExposure) : state === "exposed" ? 1 : state === "opening" ? clamp11(stateTime / GUARDIAN_ATLAS_RULES.openingSeconds) : state === "closing" ? 1 - clamp11(stateTime / GUARDIAN_ATLAS_RULES.closingSeconds) : 0;
     return {
       ...result,
       coreCover: 1 - exposure,
       coverFrame: 0,
-      coverRect,
-      impactFlash: clamp11((boss.flash || 0) / 0.14),
+      coverRect: null,
+      impactFlash,
       attackTier: boss.attackTier || null
     };
+  }
+
+  // src/game/audio/combat-sfx.js
+  var COMBAT_SFX_VERSION = 1;
+  var COMBAT_SFX_SRC = "assets/combat_sfx_atlas_v1.m4a";
+  var COMBAT_SFX_VOICE_LIMIT = 8;
+  var COMBAT_SFX_GAIN_BUDGET = 0.95;
+  var cue = (offsets, duration, gain, priority3, cooldown, polyphony) => Object.freeze({
+    variants: Object.freeze(offsets.map((offset) => Object.freeze({ offset, duration }))),
+    gain,
+    priority: priority3,
+    cooldown,
+    polyphony
+  });
+  var COMBAT_SFX_CUES = Object.freeze({
+    "phaser": cue([0, 0.32], 0.2, 0.15, 1, 0.045, 3),
+    "missile-launch": cue([0.64, 1.34], 0.58, 0.31, 5, 0.25, 2),
+    "impact-metal": cue([2.04, 2.6], 0.44, 0.23, 3, 0.04, 3),
+    "impact-plasma": cue([3.16, 3.68], 0.4, 0.23, 3, 0.04, 3),
+    "hull-hit": cue([4.2, 4.9], 0.58, 0.29, 6, 0.12, 2),
+    "enemy-break": cue([5.6, 6.67], 0.95, 0.31, 5, 0.1, 2),
+    "atlas-charge": cue([7.74, 8.74], 0.88, 0.28, 7, 0.3, 1),
+    "atlas-collapse": cue([9.74, 11.71], 1.85, 0.4, 9, 1, 1)
+  });
+  var disconnect = (node) => {
+    try {
+      node?.disconnect();
+    } catch {
+    }
+  };
+  var clamp12 = (value, low, high) => Math.max(low, Math.min(high, Number(value) || 0));
+  function createCombatSfx({ context, output, fetchAsset = (...args) => fetch(...args) } = {}) {
+    if (!context?.createBufferSource || !context?.decodeAudioData || !context?.createGain || !output) return null;
+    const bus = context.createGain();
+    bus.gain.value = 1;
+    bus.connect(output);
+    const active = /* @__PURE__ */ new Set(), lastPlayed = /* @__PURE__ */ new Map(), variants = /* @__PURE__ */ new Map(), recentIds = /* @__PURE__ */ new Set();
+    let buffer = null, loading = null, disposed = false, paused = true, enabled = true;
+    let generation = 0, volume = 1, played = 0, dropped = 0, stolen = 0, failed = false;
+    function release(record) {
+      if (!active.delete(record)) return;
+      record.source.onended = null;
+      disconnect(record.source);
+      disconnect(record.gain);
+      disconnect(record.pan);
+    }
+    function stop(record) {
+      try {
+        record.source.stop(context.currentTime);
+      } catch {
+      }
+      release(record);
+    }
+    function stopAll() {
+      for (const record of [...active]) stop(record);
+    }
+    function prune() {
+      for (const record of [...active]) if (record.end <= context.currentTime) release(record);
+    }
+    function remember(id) {
+      if (id === null) return;
+      recentIds.add(id);
+      while (recentIds.size > 256) recentIds.delete(recentIds.values().next().value);
+    }
+    function load() {
+      if (disposed) return Promise.resolve(false);
+      if (buffer) return Promise.resolve(true);
+      if (loading) return loading;
+      const attempt = ++generation;
+      failed = false;
+      loading = (async () => {
+        await Promise.resolve();
+        try {
+          if (disposed || generation !== attempt) return false;
+          const response = await fetchAsset(COMBAT_SFX_SRC);
+          if (!response?.ok) throw new Error("combat-sfx asset unavailable");
+          const bytes = await response.arrayBuffer();
+          if (disposed || generation !== attempt) return false;
+          if (!(bytes instanceof ArrayBuffer) || bytes.byteLength === 0 || bytes.byteLength > 4 * 1024 * 1024) {
+            throw new Error("combat-sfx asset size invalid");
+          }
+          const decoded = await context.decodeAudioData(bytes);
+          if (disposed || generation !== attempt) return false;
+          if (!Number.isFinite(decoded?.duration) || decoded.duration < 13.56 || decoded.duration > 15) {
+            throw new Error("combat-sfx atlas duration invalid");
+          }
+          buffer = decoded;
+          failed = false;
+          return true;
+        } catch {
+          if (!disposed && generation === attempt) failed = true;
+          return false;
+        } finally {
+          if (generation === attempt) loading = null;
+        }
+      })();
+      return loading;
+    }
+    function play(name, { eventId = null, pan = 0 } = {}) {
+      if (disposed || !enabled || paused || volume <= 0 || !buffer || context.state !== "running") return false;
+      if (!Object.prototype.hasOwnProperty.call(COMBAT_SFX_CUES, name)) return false;
+      const definition = COMBAT_SFX_CUES[name];
+      if (!definition) return false;
+      const id = typeof eventId === "string" && eventId.length > 0 && eventId.length <= 160 ? eventId : Number.isSafeInteger(eventId) && eventId >= 0 ? String(eventId) : null;
+      if (id !== null && recentIds.has(id)) {
+        dropped++;
+        return false;
+      }
+      const now = context.currentTime;
+      if (now - (lastPlayed.get(name) ?? -Infinity) < definition.cooldown) {
+        remember(id);
+        dropped++;
+        return false;
+      }
+      prune();
+      const matching = [...active].filter((record2) => record2.name === name);
+      if (matching.length >= definition.polyphony) {
+        remember(id);
+        dropped++;
+        return false;
+      }
+      const weight = () => [...active].reduce((sum, record2) => sum + record2.level, 0);
+      while (active.size >= COMBAT_SFX_VOICE_LIMIT || weight() + definition.gain > COMBAT_SFX_GAIN_BUDGET) {
+        const candidate = [...active].filter((record2) => record2.priority < definition.priority).sort((a, b) => a.priority - b.priority || a.end - b.end)[0];
+        if (!candidate) {
+          remember(id);
+          dropped++;
+          return false;
+        }
+        stop(candidate);
+        stolen++;
+      }
+      const index = variants.get(name) || 0;
+      const segment = definition.variants[index % definition.variants.length];
+      let source, gain, spatial = null, record;
+      try {
+        source = context.createBufferSource();
+        gain = context.createGain();
+        source.buffer = buffer;
+        gain.gain.setValueAtTime(definition.gain, now);
+        source.connect(gain);
+        if (context.createStereoPanner) {
+          spatial = context.createStereoPanner();
+          spatial.pan.setValueAtTime(clamp12(pan, -0.75, 0.75), now);
+          gain.connect(spatial);
+          spatial.connect(bus);
+        } else gain.connect(bus);
+        record = {
+          source,
+          gain,
+          pan: spatial,
+          name,
+          priority: definition.priority,
+          level: definition.gain,
+          end: now + segment.duration
+        };
+        active.add(record);
+        source.onended = () => release(record);
+        source.start(now, segment.offset, segment.duration);
+      } catch {
+        if (record) stop(record);
+        else {
+          disconnect(source);
+          disconnect(gain);
+          disconnect(spatial);
+        }
+        dropped++;
+        return false;
+      }
+      variants.set(name, index + 1);
+      lastPlayed.set(name, now);
+      remember(id);
+      played++;
+      return true;
+    }
+    return Object.freeze({
+      load,
+      play,
+      setEnabled(value) {
+        if (disposed) return;
+        enabled = value === true;
+        if (!enabled) stopAll();
+      },
+      setPaused(value) {
+        if (disposed) return;
+        paused = value === true;
+        if (paused) stopAll();
+      },
+      setVolume(value) {
+        if (disposed) return;
+        volume = clamp12(value, 0, 1);
+        bus.gain.setTargetAtTime(volume, context.currentTime, 0.02);
+        if (volume === 0) stopAll();
+      },
+      snapshot: () => Object.freeze({
+        version: COMBAT_SFX_VERSION,
+        ready: Boolean(buffer),
+        loading: Boolean(loading),
+        failed,
+        disposed,
+        paused,
+        enabled,
+        volume,
+        activeVoices: active.size,
+        activeGain: [...active].reduce((sum, record) => sum + record.level, 0),
+        played,
+        dropped,
+        stolen,
+        decodedBytes: buffer ? buffer.length * buffer.numberOfChannels * 4 : 0
+      }),
+      dispose() {
+        if (disposed) return;
+        disposed = true;
+        generation++;
+        loading = null;
+        stopAll();
+        buffer = null;
+        lastPlayed.clear();
+        variants.clear();
+        recentIds.clear();
+        disconnect(bus);
+      }
+    });
   }
 
   // src/game/ship/modular-ship.js
@@ -5077,6 +5300,38 @@ var NeonCampaign = (() => {
       { source: { x: 1450, y: 518, width: 216, height: 369 }, destination: { x: -122.43519000520561, y: 160.40309863475994, width: 253.44299843831337, height: 145 } }
     ]
   });
+  var NOZZLE_POINTS = Object.freeze([
+    Object.freeze([[1040, 375], [1185, 375]].map(Object.freeze)),
+    Object.freeze([[1042, 799], [1189, 799]].map(Object.freeze))
+  ]);
+  var PLUME_LAYOUTS = Object.freeze([
+    Object.freeze([
+      Object.freeze({ source: Object.freeze({ x: 1455, y: 143, width: 84, height: 300 }), root: Object.freeze({ x: 1498, y: 177 }) }),
+      Object.freeze({ source: Object.freeze({ x: 1581, y: 143, width: 84, height: 300 }), root: Object.freeze({ x: 1616, y: 178 }) })
+    ]),
+    Object.freeze([
+      Object.freeze({ source: Object.freeze({ x: 1450, y: 518, width: 86, height: 369 }), root: Object.freeze({ x: 1499, y: 557 }) }),
+      Object.freeze({ source: Object.freeze({ x: 1580, y: 518, width: 86, height: 369 }), root: Object.freeze({ x: 1612, y: 557 }) })
+    ])
+  ]);
+  function nozzleAt(row, side) {
+    const { source, destination } = FRAME_LAYOUTS.engines[row], point = NOZZLE_POINTS[row][side];
+    return Object.freeze({
+      x: destination.x + (point[0] - source.x) / source.width * destination.width,
+      y: destination.y + (point[1] - source.y) / source.height * destination.height
+    });
+  }
+  function mountedPlumes(row) {
+    return Object.freeze(PLUME_LAYOUTS[row].map(({ source, root }, side) => {
+      const anchor = nozzleAt(row, side), scale = 145 / source.height;
+      return Object.freeze({ source, anchor, destination: Object.freeze({
+        x: anchor.x - (root.x - source.x) * scale,
+        y: anchor.y - (root.y - source.y) * scale,
+        width: source.width * scale,
+        height: source.height * scale
+      }) });
+    }));
+  }
   var FRAMES = Object.freeze(Object.fromEntries(["hull", "wings", "engines", "flames"].map((part, column) => [
     part,
     Object.freeze(VARIANTS.map((_, row) => Object.freeze({
@@ -5087,7 +5342,8 @@ var NeonCampaign = (() => {
       sourceWidth: 1774,
       sourceHeight: 887,
       source: Object.freeze(FRAME_LAYOUTS[part][row].source),
-      destination: Object.freeze(FRAME_LAYOUTS[part][row].destination)
+      destination: Object.freeze(FRAME_LAYOUTS[part][row].destination),
+      ...part === "flames" ? { plumes: mountedPlumes(row) } : {}
     })))
   ])));
   function shipPartFrame(loadout, part) {
@@ -5096,11 +5352,8 @@ var NeonCampaign = (() => {
     return FRAMES[part][VARIANTS.indexOf(variant)];
   }
   function shipNozzleAnchors(loadout) {
-    const frame = shipPartFrame(loadout, "engines"), points = frame.row === 0 ? [[1040, 375], [1185, 375]] : [[1042, 799], [1189, 799]];
-    return Object.freeze(points.map(([x, y]) => Object.freeze({
-      x: frame.destination.x + (x - frame.source.x) / frame.source.width * frame.destination.width,
-      y: frame.destination.y + (y - frame.source.y) / frame.source.height * frame.destination.height
-    })));
+    const row = shipPartFrame(loadout, "engines").row;
+    return Object.freeze(NOZZLE_POINTS[row].map((_, side) => nozzleAt(row, side)));
   }
   function advanceShipBank(current, target, delta) {
     if (!Number.isFinite(delta) || delta < 0) throw new RangeError("Visual bank delta must be nonnegative");
@@ -5171,7 +5424,7 @@ var NeonCampaign = (() => {
   var WAVE_FRAME_DURATION = WAVE_DURATION / 4;
   var FRAME_ENDS = Object.freeze([0, 0.45, 1.25, 2.4, 4.4]);
   var STATES = Object.freeze(["intact", "impact", "fracture", "rupture", "dispersion", "aftermath"]);
-  var clamp12 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp13 = (value, min, max) => Math.max(min, Math.min(max, value));
   function getChronosDestructionPose(view) {
     const elapsed = Number.isFinite(view?.elapsed) && view.elapsed >= 0 ? view.elapsed : 0;
     const duration = view?.cinematicDuration ?? view?.minDuration;
@@ -5184,8 +5437,8 @@ var NeonCampaign = (() => {
     let waveFrame = 0;
     while (waveFrame < 3 && elapsed >= ruptureAt + (waveFrame + 1) * WAVE_FRAME_DURATION) waveFrame++;
     const waveVisible = !beforeRupture && elapsed < ruptureAt + WAVE_DURATION;
-    const waveProgress = clamp12(age / WAVE_DURATION, 0, 1);
-    const waveAlpha = waveVisible ? 0.55 * clamp12((WAVE_DURATION - age) / WAVE_FADE_DURATION, 0, 1) : 0;
+    const waveProgress = clamp13(age / WAVE_DURATION, 0, 1);
+    const waveAlpha = waveVisible ? 0.55 * clamp13((WAVE_DURATION - age) / WAVE_FADE_DURATION, 0, 1) : 0;
     return Object.freeze({
       frame,
       age,
@@ -5531,7 +5784,7 @@ var NeonCampaign = (() => {
     }
     return bounds;
   }
-  var clamp13 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var clamp14 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   function calculateFlightBounds({ width, height, hudBottom, controlsTop, shipScale = 1 }) {
     finite7(width, "width");
     finite7(height, "height");
@@ -5544,7 +5797,7 @@ var NeonCampaign = (() => {
     const firstX = SIDE_CLEARANCE * shipScale, lastX = width - SIDE_CLEARANCE * shipScale;
     const firstY = hudBottom + NOSE_CLEARANCE * shipScale, lastY = controlsTop - TAIL_CLEARANCE * shipScale;
     const xFits = firstX <= lastX, yFits = firstY <= lastY;
-    const centerY = clamp13(firstY / 2 + lastY / 2, 0, height);
+    const centerY = clamp14(firstY / 2 + lastY / 2, 0, height);
     return Object.freeze({
       minX: xFits ? firstX : width / 2,
       maxX: xFits ? lastX : width / 2,
@@ -5590,8 +5843,8 @@ var NeonCampaign = (() => {
     if (sensitivity <= 0) throw new RangeError("Sensitivity must be positive");
     if (!state.active || state.id !== id) {
       return {
-        targetX: clamp13(targetX, bounds.minX, bounds.maxX),
-        targetY: clamp13(targetY, bounds.minY, bounds.maxY),
+        targetX: clamp14(targetX, bounds.minX, bounds.maxX),
+        targetY: clamp14(targetY, bounds.minY, bounds.maxY),
         moved: false
       };
     }
@@ -5603,8 +5856,8 @@ var NeonCampaign = (() => {
     state.lastX = x;
     state.lastY = y;
     return {
-      targetX: clamp13(nextX, bounds.minX, bounds.maxX),
-      targetY: clamp13(nextY, bounds.minY, bounds.maxY),
+      targetX: clamp14(nextX, bounds.minX, bounds.maxX),
+      targetY: clamp14(nextY, bounds.minY, bounds.maxY),
       moved
     };
   }

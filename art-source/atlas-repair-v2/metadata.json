@@ -1,0 +1,396 @@
+{
+  "version": "guardian-atlas-v2",
+  "status": "IN_REVIEW",
+  "runtimeIntegrated": false,
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "source": "art-source/atlas-repair-v2/guardian-atlas-generated-edit-master.png",
+  "master": "art-source/atlas-repair-v2/guardian-atlas-packed-master.png",
+  "runtime": "assets/guardian_atlas_states_v2.webp",
+  "dimensions": [
+    2048,
+    1024
+  ],
+  "cellDimensions": [
+    512,
+    512
+  ],
+  "columns": 4,
+  "rows": 2,
+  "rgbaDecodedBytes": 8388608,
+  "packScale": 0.9,
+  "sourceCellBoundaries": {
+    "x": [
+      0,
+      444,
+      887,
+      1331,
+      1774
+    ],
+    "y": [
+      0,
+      444,
+      887
+    ]
+  },
+  "alphaTrimRule": "Trim only pixels outside visible alpha>=8 bbox in each generated source cell; retain alpha inside. Resample LANCZOS once.",
+  "minimumAlpha8Padding": 32,
+  "frames": [
+    {
+      "index": 0,
+      "state": "arrival-closed",
+      "rect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "sourceRect": [
+        0,
+        0,
+        444,
+        444
+      ],
+      "sourcePivot": [
+        224,
+        262
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        85,
+        39,
+        424,
+        403
+      ],
+      "alpha8Margins": [
+        85,
+        39,
+        88,
+        109
+      ],
+      "sha256Rgba": "b9a90d02a3ea23c26de197541f1004b49c398698c0885e5c3dc6ad0aaabdbb95"
+    },
+    {
+      "index": 1,
+      "state": "idle-open",
+      "rect": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "sourceRect": [
+        444,
+        0,
+        443,
+        444
+      ],
+      "sourcePivot": [
+        224,
+        262
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        80,
+        38,
+        428,
+        401
+      ],
+      "alpha8Margins": [
+        80,
+        38,
+        84,
+        111
+      ],
+      "sha256Rgba": "54db8573ed9f6290edecd07418879b182bb3c09be8d0c542ec59fb6f833eb1d1"
+    },
+    {
+      "index": 2,
+      "state": "attack-windup-closed",
+      "rect": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "sourceRect": [
+        887,
+        0,
+        444,
+        444
+      ],
+      "sourcePivot": [
+        223,
+        262
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        72,
+        38,
+        438,
+        401
+      ],
+      "alpha8Margins": [
+        72,
+        38,
+        74,
+        111
+      ],
+      "sha256Rgba": "fe588acd26257105f919419e3255271b51af707a7cb70e536cf69f055faf3fcd"
+    },
+    {
+      "index": 3,
+      "state": "fire-closed",
+      "rect": [
+        1536,
+        0,
+        512,
+        512
+      ],
+      "sourceRect": [
+        1331,
+        0,
+        443,
+        444
+      ],
+      "sourcePivot": [
+        223,
+        262
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        70,
+        38,
+        442,
+        403
+      ],
+      "alpha8Margins": [
+        70,
+        38,
+        70,
+        109
+      ],
+      "sha256Rgba": "29c0a4cab7107d794e8be69ef52d7318d7422f0ffd1baa38ad250f39ad19b523"
+    },
+    {
+      "index": 4,
+      "state": "hurt-open",
+      "rect": [
+        0,
+        512,
+        512,
+        512
+      ],
+      "sourceRect": [
+        0,
+        444,
+        444,
+        443
+      ],
+      "sourcePivot": [
+        225,
+        249
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        80,
+        32,
+        426,
+        404
+      ],
+      "alpha8Margins": [
+        80,
+        32,
+        86,
+        108
+      ],
+      "sha256Rgba": "a3a790108301348de815b7ebcc9fed5a78b0ca0725bb6534821b7c2a4ab9e0d4"
+    },
+    {
+      "index": 5,
+      "state": "phase-break-open-ring",
+      "rect": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "sourceRect": [
+        444,
+        444,
+        443,
+        443
+      ],
+      "sourcePivot": [
+        222,
+        226
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        58,
+        58,
+        452,
+        419
+      ],
+      "alpha8Margins": [
+        58,
+        58,
+        60,
+        93
+      ],
+      "sha256Rgba": "ebd906d64dd22a71d68775b7cc9f1251fbb6e1b0d8a1057af23c1e4143ba010c"
+    },
+    {
+      "index": 6,
+      "state": "phase-two-fire-closed",
+      "rect": [
+        1024,
+        512,
+        512,
+        512
+      ],
+      "sourceRect": [
+        887,
+        444,
+        444,
+        443
+      ],
+      "sourcePivot": [
+        224,
+        226
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        63,
+        58,
+        447,
+        424
+      ],
+      "alpha8Margins": [
+        63,
+        58,
+        65,
+        88
+      ],
+      "sha256Rgba": "476004f3b6d91f818b075604b3e4452bcad7e8bf5b549afcd82fab9354baef9d"
+    },
+    {
+      "index": 7,
+      "state": "disabled-restored",
+      "rect": [
+        1536,
+        512,
+        512,
+        512
+      ],
+      "sourceRect": [
+        1331,
+        444,
+        443,
+        443
+      ],
+      "sourcePivot": [
+        223,
+        247
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "alpha8Bounds": [
+        67,
+        36,
+        441,
+        401
+      ],
+      "alpha8Margins": [
+        67,
+        36,
+        71,
+        111
+      ],
+      "sha256Rgba": "7fceaf5688a2ed59053c7d811a12291721ae7f11b1860d9b8ac85a8f8f694072"
+    }
+  ],
+  "files": [
+    {
+      "path": "art-source/atlas-repair-v2/guardian-atlas-generated-edit-master.png",
+      "bytes": 2903039,
+      "sha256": "c3d2b60b7694eb9e0cebb95393a28fb0b7b5c3c47ae5615761f44d4de1b29414"
+    },
+    {
+      "path": "art-source/atlas-repair-v2/guardian-atlas-packed-master.png",
+      "bytes": 2263489,
+      "sha256": "8cb1c974d8ad7831b8e4cb94c9acf032b845b41adfdc0fc7b4232b036fff8c68"
+    },
+    {
+      "path": "assets/guardian_atlas_states_v2.webp",
+      "bytes": 656550,
+      "sha256": "6ddaa0d7c9d97b23430829b9470b06da0ad30d395fc7f4e8dbd320dbcf989da5"
+    }
+  ],
+  "playbackNote": "Eight distinct state poses, not eight fully animated sequences. Source0/2/3/6 have sealed chest; 1/4/5 have exposed reactor; 7 is disabled cyan. Runtime must animate articulated doors separately if using a continuous opening sequence.",
+  "drawScaleGuidance": "Normal metal spans ~365px of each512px cell, compared to ~400px of a443.5px legacy cell. Increase visual-only draw size about1.25x to preserve visible boss body size; preserve gameplay hitboxes.",
+  "rights": "Original built-in image generation edit using the retained original Guardian Atlas master. No externally licensed artwork, downloaded model, paid API, or purchased resource.",
+  "visualMuzzleAnchors": {
+    "coordinateSpace": "512x512 atlas-local pixels; artwork landmarks only, not hitboxes or new ballistic aim rules",
+    "state3": {
+      "upperLeft": [
+        128,
+        269
+      ],
+      "lowerLeft": [
+        128,
+        327
+      ],
+      "upperRight": [
+        384,
+        269
+      ],
+      "lowerRight": [
+        384,
+        327
+      ]
+    },
+    "state6": {
+      "upperLeft": [
+        130,
+        267
+      ],
+      "lowerLeft": [
+        132,
+        325
+      ],
+      "upperRight": [
+        386,
+        267
+      ],
+      "lowerRight": [
+        386,
+        325
+      ]
+    },
+    "tolerancePixels": 3
+  }
+}

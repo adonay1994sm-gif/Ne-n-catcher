@@ -1,3 +1,9 @@
+## Equipo especializado vigente · 18/10/2026
+
+El propietario autoriza especialistas coordinados, investigación de skills/código abierto y producción auditiva. Aplicar [.agents/skills/neon-production/SKILL.md](.agents/skills/neon-production/SKILL.md) y [.agents/skills/neon-visual-qa/SKILL.md](.agents/skills/neon-visual-qa/SKILL.md); responsabilidades en [docs/agents/SPECIALIST_TEAM.md](docs/agents/SPECIALIST_TEAM.md). Son instrucciones reutilizables y agentes de sesión, no reentrenamiento permanente. Máximo seis especialistas simultáneos y un integrador; un escritor por archivo y fuentes congeladas antes de compilar/certificar. Seguimiento único en `docs/production-tasks.json`.
+
+Primer lote: contornos Atlas/CRONIUM, proporción y anclajes de propulsión, estados del misil y efectos de combate. Conservar escala clásica40%, física, economía, guardados, campañas, MotorV1false y límites vigentes. Revisar licencias/versiones antes de incorporar terceros; sin servicios de pago. No extender los otros nueve niveles para compensar defectos del primero.
+
 ## Mandato vigente — capítulo uno vivo, casco y Atlas · 18/10/2026
 
 El propietario aprobó implementar la revisión conversada: **el nivel uno completo va desde la cinemática del sabotaje de Chronos hasta desactivar Atlas y obtener autorización orbital de Gaia**. Sus diez etapas son tramos del mismo viaje. Nunca se aterriza; conservar origen que se aleja, tránsito y destino que gana escala, C9 y checkpoints. La historia incorpora operadora de Chronos, mecánica de C9 y mando orbital de Gaia con motivos distintos. Producir arte real y cinemáticas integradas; comprobar las capacidades/exportaciones de Canva y documentar límites sin atribuir vídeos o música inexistentes.

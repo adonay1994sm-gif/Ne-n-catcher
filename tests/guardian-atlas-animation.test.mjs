@@ -10,12 +10,12 @@ function until(boss,predicate){
   assert.fail(`Unknown presentation state ${boss.state}`);
 }
 
-test('authored mechanical poses cover the new closed/open/exposed/closing cycle',()=>{
+test('v2 mechanical poses cover the closed/open/exposed/closing encounter cycle',()=>{
   for(const [state,time,phase,frame]of[
     ['entry',1,1,0],['closed',.2,1,0],['charge',.2,1,2],['fire',.1,1,3],
     ['opening',R.openingSeconds,1,1],['exposed',1,1,1],['closing',R.closingSeconds,1,0],
     ['closed',.2,2,0],['charge',.2,2,2],['fire',.1,2,6],['exposed',1,2,5],
-    ['phaseBreak',.6,2,5],['disabled',1,2,7]
+    ['phaseBreak',.6,2,2],['disabled',1,2,7]
   ]){
     const visual=guardianAtlasAnimation(sample(state,time,phase));
     assert.equal(visual.frame,frame,`${state}/${phase}`);
@@ -24,46 +24,71 @@ test('authored mechanical poses cover the new closed/open/exposed/closing cycle'
   }
 });
 
-test('entry, patrol, charge and real firing require the authored central armor cover in both phases',()=>{
+test('entry, patrol, charge, firing and phase break use genuinely sealed art without an obsolete armor patch',()=>{
   for(const phase of[1,2])for(const state of['entry','closed','charge','fire','phaseBreak']){
-    const visual=guardianAtlasAnimation(sample(state,.3,phase));
-    assert.equal(visual.coreCover,1);assert.equal(visual.coverFrame,0);
-    assert.deepEqual(visual.coverRect,{x:156,y:145,width:132,height:162,pivotX:66,pivotY:81,sourceCell:443.5});
+    for(const time of[0,.03,.3,1]){
+      const visual=guardianAtlasAnimation(sample(state,time,phase));
+      assert.equal(visual.coreCover,1);assert.equal(visual.coverFrame,0);assert.equal(visual.coverRect,null);
+      assert.ok([0,2,3,6].includes(visual.frame),`${state}/${phase} cannot show a vulnerable core`);
+      assert.ok(visual.previousFrame===null||[0,2,3,6].includes(visual.previousFrame));
+    }
   }
 });
 
-test('the armor patch uses actual source art registered to the closed reactor pivot and stays within its cell',async()=>{
-  const metadata=JSON.parse(await readFile(new URL('../art-source/enemies/guardian-atlas/metadata.json',import.meta.url),'utf8'));
-  const visual=guardianAtlasAnimation(sample('fire',.1)),rect=visual.coverRect;
-  assert.equal(metadata.atlas.frames[visual.coverFrame],'arrival-closed');
-  assert.equal(rect.x+rect.pivotX,metadata.atlas.reactorPivotsPixels[0][0]);
-  assert.equal(rect.y+rect.pivotY,metadata.atlas.reactorPivotsPixels[0][1]);
-  assert.ok(rect.x>=0&&rect.y>=0&&rect.x+rect.width<metadata.atlas.baseCell&&rect.y+rect.height<metadata.atlas.baseCell);
-  assert.ok(Object.isFrozen(rect),'The shared source crop must not become mutable renderer state');
+test('v2 registers eight distinct complete 512px cells with uniform reactor pivots and transparent gutters',async()=>{
+  const metadata=JSON.parse(await readFile(new URL('../art-source/atlas-repair-v2/metadata.json',import.meta.url),'utf8'));
+  const qa=JSON.parse(await readFile(new URL('../art-source/atlas-repair-v2/alpha-qa.json',import.meta.url),'utf8'));
+  assert.equal(metadata.runtime,'assets/guardian_atlas_states_v2.webp');
+  assert.deepEqual(metadata.dimensions,[2048,1024]);assert.deepEqual(metadata.cellDimensions,[512,512]);
+  assert.equal(metadata.frames.length,8);assert.equal(qa.frames.length,8);
+  assert.equal(new Set(metadata.frames.map(frame=>frame.sha256Rgba)).size,8);
+  assert.ok(qa.checks.every(check=>check.passed));
+  for(const [index,frame]of metadata.frames.entries()){
+    assert.deepEqual(frame.rect,[(index%4)*512,Math.floor(index/4)*512,512,512]);
+    assert.deepEqual(frame.pivot,{x:.5,y:.5});
+    assert.ok(frame.alpha8Margins.every(margin=>margin>=32),`${index}: authored metal and visible glow cannot touch a cell edge`);
+    assert.ok(qa.frames[index].padding.every(margin=>margin>=24),`${index}: even faint alpha has a real gutter`);
+  }
+  assert.equal(metadata.frames[3].state,'fire-closed');assert.equal(metadata.frames[6].state,'phase-two-fire-closed');
 });
 
-test('opening retracts real shutters, exposes the core, then closing restores them in reverse',()=>{
+test('opening exposes the core and closing restores shutters using the encounter exposure value',()=>{
   for(const phase of[1,2]){
     const openFrame=phase===1?1:5;
-    const opening=guardianAtlasAnimation(sample('opening',R.openingSeconds/2,phase));
+    const opening=guardianAtlasAnimation({...sample('opening',.01,phase),coreExposure:.5});
     assert.equal(opening.frame,openFrame);assert.equal(opening.previousFrame,0);
     assert.equal(opening.blend,.5);assert.equal(opening.coreCover,.5);
-    const exposed=guardianAtlasAnimation(sample('exposed',2,phase));
+    const exposed=guardianAtlasAnimation({...sample('exposed',2,phase),coreExposure:1});
     assert.equal(exposed.frame,openFrame);assert.equal(exposed.coreCover,0);
-    const closing=guardianAtlasAnimation(sample('closing',R.closingSeconds/2,phase));
+    const closing=guardianAtlasAnimation({...sample('closing',.01,phase),coreExposure:.5});
     assert.equal(closing.frame,0);assert.equal(closing.previousFrame,openFrame);
     assert.equal(closing.blend,.5);assert.equal(closing.coreCover,.5);
   }
 });
 
-test('the encounter coreExposure overrides any renderer guess about a frame or transition age',()=>{
+test('the simulation coreExposure controls both transition blending and cover semantics rather than a renderer clock',()=>{
   const visual=guardianAtlasAnimation({...sample('fire',.1),coreExposure:0});
-  assert.equal(visual.frame,3,'Keep the genuine firing art');assert.equal(visual.coreCover,1,'Composite actual closed plate over its open-red-core source');
-  const opening=guardianAtlasAnimation({...sample('opening',.4),coreExposure:.25});
-  assert.equal(opening.coreCover,.75,'The one simulation exposure value controls the armor, not another animation clock');
+  assert.equal(visual.frame,3);assert.equal(visual.coreCover,1);assert.equal(visual.coverRect,null);
+  for(const phase of[1,2])for(const exposure of[0,.25,.8,1]){
+    const opening=guardianAtlasAnimation({...sample('opening',.6,phase),coreExposure:exposure});
+    assert.equal(opening.blend,exposure);assert.equal(opening.coreCover,1-exposure);
+    const closing=guardianAtlasAnimation({...sample('closing',.5,phase),coreExposure:exposure});
+    assert.equal(closing.blend,1-exposure);assert.equal(closing.coreCover,1-exposure);
+  }
+  assert.equal(guardianAtlasAnimation({...sample('opening',.1),coreExposure:-2}).blend,0);
+  assert.equal(guardianAtlasAnimation({...sample('opening',.1),coreExposure:2}).blend,1);
 });
 
-test('charge deploys the existing weapon pose without opening or repeatedly firing',()=>{
+test('legacy isolated fixtures may fall back to their state age without creating another animation scheduler',()=>{
+  for(const phase of[1,2]){
+    const opening=guardianAtlasAnimation(sample('opening',R.openingSeconds/2,phase));
+    const closing=guardianAtlasAnimation(sample('closing',R.closingSeconds/2,phase));
+    assert.equal(opening.blend,.5);assert.equal(opening.coreCover,.5);
+    assert.equal(closing.blend,.5);assert.equal(closing.coreCover,.5);
+  }
+});
+
+test('charge deploys a sealed weapon pose without opening the core or repeatedly firing',()=>{
   const beginning=guardianAtlasAnimation(sample('charge'));
   assert.equal(beginning.frame,2);assert.equal(beginning.previousFrame,0);assert.equal(beginning.blend,0);
   assert.equal(beginning.coreCover,1);
@@ -72,8 +97,22 @@ test('charge deploys the existing weapon pose without opening or repeatedly firi
   assert.equal(deployed.blend,1);assert.equal(deployed.coreCover,1);
 });
 
-test('phase-two impact never restores the old burnt hurt pose or changes the exposed clock',()=>{
+test('a real phase-one hit shows the authored damaged open pose only during its short hit flash',()=>{
+  const boss=createGuardianAtlas();until(boss,b=>b.state==='exposed');const time=boss.stateTime;
+  hitGuardianAtlas(boss,1);const visual=guardianAtlasAnimation(boss);
+  assert.equal(boss.state,'exposed');assert.equal(boss.stateTime,time);assert.equal(visual.frame,4);
+  assert.equal(visual.previousFrame,null);assert.equal(visual.impactFlash,1);assert.equal(visual.coreCover,0);
+  const fading=guardianAtlasAnimation({...boss,flash:.07});
+  assert.equal(fading.frame,4);assert.equal(fading.previousFrame,1);assert.equal(fading.blend,.5);
+  const faded=guardianAtlasAnimation({...boss,flash:0});assert.equal(faded.frame,1);assert.equal(faded.previousFrame,null);
+  for(const state of['entry','closed','charge','fire','opening','closing','phaseBreak','disabled']){
+    assert.notEqual(guardianAtlasAnimation({...sample(state,.1),flash:.14}).frame,4,`Damage pose must not open armor in ${state}`);
+  }
+});
+
+test('phase-two impact preserves the split ring instead of restoring the phase-one hurt pose or changing its clock',()=>{
   const boss=createGuardianAtlas();until(boss,b=>b.state==='exposed');hitGuardianAtlas(boss,boss.maxHp/2);
+  assert.equal(boss.state,'phaseBreak');assert.equal(guardianAtlasAnimation(boss).frame,2);
   until(boss,b=>b.state==='exposed');const time=boss.stateTime;
   hitGuardianAtlas(boss,1);const visual=guardianAtlasAnimation(boss);
   assert.equal(boss.state,'exposed');assert.equal(boss.stateTime,time);
@@ -81,7 +120,7 @@ test('phase-two impact never restores the old burnt hurt pose or changes the exp
   assert.equal(visual.impactFlash,1);
 });
 
-test('deactivation opens a restored cyan core for a visible nonlooping terminal sequence',()=>{
+test('deactivation reveals a restored cyan core for a visible nonlooping terminal sequence',()=>{
   const first=guardianAtlasAnimation(sample('disabled',0,2));
   assert.equal(first.frame,7);assert.equal(first.previousFrame,5);assert.equal(first.blend,0);assert.equal(first.coreCover,0);
   const midpoint=guardianAtlasAnimation(sample('disabled',.3,2));assert.equal(midpoint.blend,.5);
@@ -89,13 +128,29 @@ test('deactivation opens a restored cyan core for a visible nonlooping terminal 
   for(const time of[1.55,5,60])assert.deepEqual(guardianAtlasAnimation(sample('disabled',time,2)),final);
 });
 
-test('rendering is read-only and the real route pause freezes poses, shutters and impact flash exactly',()=>{
+test('sampling is read-only and the real route pause freezes poses, shutters and impact flash exactly',()=>{
   const boss=createGuardianAtlas();until(boss,b=>b.state==='opening');advanceGuardianAtlas(boss,.05,{x:360,y:1145});
   const before=structuredClone(boss),frozen=Object.freeze(structuredClone(boss)),visual=guardianAtlasAnimation(frozen);
   for(let frame=0;frame<1000;frame++)assert.deepEqual(guardianAtlasAnimation(frozen),visual);
   assert.deepEqual(boss,before);let events=0;
   advanceGuardianAtlas(boss,0,{x:119,y:900},()=>events++);
   assert.deepEqual(boss,before);assert.deepEqual(guardianAtlasAnimation(boss),visual);assert.equal(events,0);
+});
+
+test('repeated pose reads cannot duplicate combat projectiles, state transitions or terminal rewards',()=>{
+  const boss=createGuardianAtlas();until(boss,b=>b.state==='charge');
+  const readModel=structuredClone(boss);
+  for(let index=0;index<500;index++)guardianAtlasAnimation(boss);
+  assert.deepEqual(boss,readModel);
+  const withReads=structuredClone(boss),withoutReads=structuredClone(boss),readEvents=[],referenceEvents=[];
+  for(let frame=0;frame<360;frame++){
+    for(let sample=0;sample<10;sample++)guardianAtlasAnimation(withReads);
+    advanceGuardianAtlas(withReads,1/60,{x:360,y:1145},event=>readEvents.push(event));
+    advanceGuardianAtlas(withoutReads,1/60,{x:360,y:1145},event=>referenceEvents.push(event));
+  }
+  assert.deepEqual(withReads,withoutReads);assert.deepEqual(readEvents,referenceEvents);
+  const ids=readEvents.filter(event=>event.type==='projectile').map(event=>event.projectile.projectileId);
+  assert.ok(ids.length>0);assert.equal(new Set(ids).size,ids.length);
 });
 
 test('invalid presentation states and clocks fail clearly instead of sampling an unrelated pose',()=>{

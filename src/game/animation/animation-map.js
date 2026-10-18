@@ -35,6 +35,13 @@ const forceShieldAtlas = (cells, options = {}) => define(['assets/force_shield_a
 });
 
 export const ANIMATION_MAP = Object.freeze({
+  guardianAtlasV2: Object.freeze(Object.fromEntries([
+    'closed','exposed','chargeClosed','fireClosed','hurtExposed','phaseTwoExposed','phaseTwoFireClosed','disabled'
+  ].map((name,index)=>[name,define(['assets/guardian_atlas_states_v2.webp'],{
+    loop:false,atlasColumns:4,atlasRows:2,cellWidth:512,cellHeight:512,
+    atlasCells:Object.freeze([index]),pivot:Object.freeze({x:256,y:256}),frameEvents:Object.freeze([]),
+    timing:'Read-only state selection; encounter coreExposure owns transitions, damage and emission',
+    integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'})]))),
   chapterOneOpening: Object.freeze({
     cinematic: define(['assets/chapter1_intro_atlas_v1.webp'],{loop:false,
       atlasColumns:2,atlasRows:2,cellWidth:512,cellHeight:768,
@@ -114,6 +121,12 @@ export const ANIMATION_MAP = Object.freeze({
   }),
   energyCore: Object.freeze({
     pulse: define(sequence('core', [0, 1, 2, 3, 4, 5]), {frameMs: 111})
+  }),
+  classicCroniumEnergy: Object.freeze({
+    pulse: define(['assets/cronium_energy_atlas_v2.webp'],{frameMs:125,loop:true,
+      atlasColumns:2,atlasRows:2,cellWidth:256,cellHeight:256,atlasCells:Object.freeze([0,1,2,3]),
+      pivot:Object.freeze({x:128,y:128}),frameEvents:Object.freeze([]),
+      integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'})
   }),
   chronosFlight: Object.freeze({
     stationIntact: flightAtlas(0, {layer: 'landmark'}),

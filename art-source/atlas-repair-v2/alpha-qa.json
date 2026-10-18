@@ -1,0 +1,403 @@
+{
+  "time": "2026-10-18T11:57:51.042860+00:00",
+  "status": "PASS",
+  "scope": "Asset pixel QA only. No claim of runtime integration, gameplay, artistic acceptance, or physical device certification.",
+  "runtime": "assets/guardian_atlas_states_v2.webp",
+  "runtimeSha256": "6ddaa0d7c9d97b23430829b9470b06da0ad30d395fc7f4e8dbd320dbcf989da5",
+  "checks": [
+    {
+      "name": "runtime-2048x1024-integer-square-cells",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "runtime-alpha",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-0-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-0-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        84,
+        38,
+        88,
+        109
+      ]
+    },
+    {
+      "name": "frame-0-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        85,
+        39,
+        88,
+        109
+      ]
+    },
+    {
+      "name": "frame-1-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-1-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        80,
+        37,
+        84,
+        111
+      ]
+    },
+    {
+      "name": "frame-1-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        80,
+        38,
+        84,
+        111
+      ]
+    },
+    {
+      "name": "frame-2-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-2-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        72,
+        37,
+        74,
+        111
+      ]
+    },
+    {
+      "name": "frame-2-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        72,
+        38,
+        74,
+        111
+      ]
+    },
+    {
+      "name": "frame-3-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-3-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        70,
+        37,
+        70,
+        109
+      ]
+    },
+    {
+      "name": "frame-3-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        70,
+        38,
+        70,
+        109
+      ]
+    },
+    {
+      "name": "frame-4-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-4-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        80,
+        32,
+        86,
+        108
+      ]
+    },
+    {
+      "name": "frame-4-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        80,
+        32,
+        86,
+        108
+      ]
+    },
+    {
+      "name": "frame-5-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-5-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        56,
+        58,
+        60,
+        93
+      ]
+    },
+    {
+      "name": "frame-5-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        58,
+        58,
+        60,
+        93
+      ]
+    },
+    {
+      "name": "frame-6-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-6-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        62,
+        58,
+        65,
+        88
+      ]
+    },
+    {
+      "name": "frame-6-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        63,
+        58,
+        65,
+        88
+      ]
+    },
+    {
+      "name": "frame-7-no-pixels-on-cell-border",
+      "passed": true,
+      "details": null
+    },
+    {
+      "name": "frame-7-24px-entire-alpha-padding",
+      "passed": true,
+      "details": [
+        67,
+        36,
+        71,
+        110
+      ]
+    },
+    {
+      "name": "frame-7-32px-visible-alpha-padding",
+      "passed": true,
+      "details": [
+        67,
+        36,
+        71,
+        111
+      ]
+    },
+    {
+      "name": "eight-genuinely-distinct-images",
+      "passed": true,
+      "details": null
+    }
+  ],
+  "caseCount": 27,
+  "frames": [
+    {
+      "index": 0,
+      "alphaBounds": [
+        84,
+        38,
+        424,
+        403
+      ],
+      "padding": [
+        84,
+        38,
+        88,
+        109
+      ],
+      "visibleAlpha8Padding": [
+        85,
+        39,
+        88,
+        109
+      ],
+      "sha256Rgba": "f644873cd14d9e46fdbe980ad504c9561d984b512b0260d2dbaebdb1873e39dc"
+    },
+    {
+      "index": 1,
+      "alphaBounds": [
+        80,
+        37,
+        428,
+        401
+      ],
+      "padding": [
+        80,
+        37,
+        84,
+        111
+      ],
+      "visibleAlpha8Padding": [
+        80,
+        38,
+        84,
+        111
+      ],
+      "sha256Rgba": "e20bbf29c671c9ff9a22174eba7e277cf2895793f4a6913d9d3240a1b47efdd9"
+    },
+    {
+      "index": 2,
+      "alphaBounds": [
+        72,
+        37,
+        438,
+        401
+      ],
+      "padding": [
+        72,
+        37,
+        74,
+        111
+      ],
+      "visibleAlpha8Padding": [
+        72,
+        38,
+        74,
+        111
+      ],
+      "sha256Rgba": "3948ff29ef0d93a7532d26628ae507be7ce83a30279625c8fc4beff39c93aedb"
+    },
+    {
+      "index": 3,
+      "alphaBounds": [
+        70,
+        37,
+        442,
+        403
+      ],
+      "padding": [
+        70,
+        37,
+        70,
+        109
+      ],
+      "visibleAlpha8Padding": [
+        70,
+        38,
+        70,
+        109
+      ],
+      "sha256Rgba": "0b586d53642ab98215c84d3cd2f09b40dae26a24ff8bb2246044f1d89d5a4de7"
+    },
+    {
+      "index": 4,
+      "alphaBounds": [
+        80,
+        32,
+        426,
+        404
+      ],
+      "padding": [
+        80,
+        32,
+        86,
+        108
+      ],
+      "visibleAlpha8Padding": [
+        80,
+        32,
+        86,
+        108
+      ],
+      "sha256Rgba": "50e8f8eb2173492a073a6e580b36a4dc3058c1d58bea969a82adbf407dc011a2"
+    },
+    {
+      "index": 5,
+      "alphaBounds": [
+        56,
+        58,
+        452,
+        419
+      ],
+      "padding": [
+        56,
+        58,
+        60,
+        93
+      ],
+      "visibleAlpha8Padding": [
+        58,
+        58,
+        60,
+        93
+      ],
+      "sha256Rgba": "10be2b8681f2aad5989409dc290c875b9645e9f4a6f17ba0af322ab46f1f53a4"
+    },
+    {
+      "index": 6,
+      "alphaBounds": [
+        62,
+        58,
+        447,
+        424
+      ],
+      "padding": [
+        62,
+        58,
+        65,
+        88
+      ],
+      "visibleAlpha8Padding": [
+        63,
+        58,
+        65,
+        88
+      ],
+      "sha256Rgba": "b90ad9569a2828422c54407101a24b51a7168521009485d6479a1cb018f18656"
+    },
+    {
+      "index": 7,
+      "alphaBounds": [
+        67,
+        36,
+        441,
+        402
+      ],
+      "padding": [
+        67,
+        36,
+        71,
+        110
+      ],
+      "visibleAlpha8Padding": [
+        67,
+        36,
+        71,
+        111
+      ],
+      "sha256Rgba": "e717224ce468296030a62b4b097872b4e16528ab4b2de09ed8d6c21e290b6e49"
+    }
+  ]
+}

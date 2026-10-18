@@ -1,5 +1,8 @@
-const CACHE = "neon-cronium-pre-release-7-2-0-chapter-one-living-1";
+const CACHE = "neon-cronium-pre-release-7-2-0-specialist-polish-1";
 const CORE = [
+  "assets/combat_sfx_atlas_v1.m4a",
+  "assets/combat_sfx_atlas_v1.json",
+  "assets/cronium_energy_atlas_v2.webp",
   "assets/chapter1_opening_score_v1.m4a",
   "assets/chapter1_voyage_score_v1.m4a",
   "assets/chapter1_intro_atlas_v1.webp",
@@ -72,7 +75,7 @@ const CORE = [
   "assets/meteor_large.webp",
   "assets/ch01_atlas_v1.webp",
   "assets/ch02_interceptor_atlas_v1.webp",
-  "assets/guardian_atlas_states_v1.webp",
+  "assets/guardian_atlas_states_v2.webp",
   "assets/atlas_combat_vfx_v1.webp",
   "assets/arcade_pulse_atlas_v2.webp",
   "assets/hostile_ordnance_atlas_v1.webp",

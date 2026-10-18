@@ -345,6 +345,7 @@
   ui.fxVolume.oninput = (event) => {
     settings.fx = +event.target.value;
     ui.fxValue.textContent = `${settings.fx}%`;
+    updateAudioVolumes();
     tone(620, 0.05, "triangle", 0.04);
   };
   ui.sensitivity.oninput = (event) => {

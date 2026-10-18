@@ -1,0 +1,26 @@
+[
+  {
+    "repo": "chr15m/jsfxr",
+    "commit": "b7b6aa27d62f8f356db267276bf54b451555c49d",
+    "url": "https://raw.githubusercontent.com/chr15m/jsfxr/b7b6aa27d62f8f356db267276bf54b451555c49d/UNLICENSE",
+    "licenseEvidence": "research/chr15m-UNLICENSE",
+    "sha256": "7b30c10d168b77d43ddaa3269e7bef3e1a9dd68a54a5f23f1630a653d7e2e2f4",
+    "codeImported": false
+  },
+  {
+    "repo": "goldfire/howler.js",
+    "commit": "1d3053576a860e9854645493ad6c4a72c6cc6e45",
+    "url": "https://raw.githubusercontent.com/goldfire/howler.js/1d3053576a860e9854645493ad6c4a72c6cc6e45/LICENSE.md",
+    "licenseEvidence": "research/goldfire-LICENSE.md",
+    "sha256": "0ad5aef7beeb552832fe01db1c46933f948dfe5da35017bd0efa0006ffd2ced9",
+    "codeImported": false
+  },
+  {
+    "repo": "Tonejs/Tone.js",
+    "commit": "de9df332ca7573b90a9aaca10c0729a3091dda0a",
+    "url": "https://raw.githubusercontent.com/Tonejs/Tone.js/de9df332ca7573b90a9aaca10c0729a3091dda0a/LICENSE.md",
+    "licenseEvidence": "research/Tonejs-LICENSE.md",
+    "sha256": "c2f9e2f9fd21639e8f8976e56b7df01d6efcc3b003dfd43ca59d4b10616efce7",
+    "codeImported": false
+  }
+]

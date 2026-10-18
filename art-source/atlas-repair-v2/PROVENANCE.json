@@ -1,0 +1,23 @@
+{
+  "createdUtc": "2026-10-18T11:57:51.109093+00:00",
+  "tool": "image_gen.imagegen",
+  "operation": "Edit with referenced_image_paths, transparent_background=true",
+  "reference": "art-source/enemies/guardian-atlas/guardian-atlas-states-master.png",
+  "referenceSha256": "e30dc9e49eb48c16c61a583685892279f156ab63036d02f13251ef7b3ca7271a",
+  "generatedImagePath": "/workspace/generated_images/exec-d4eb03d7-cd48-45aa-8915-3a2672ddd023.png",
+  "generatedDimensions": [
+    1774,
+    887
+  ],
+  "requestedCanvas": [
+    2048,
+    1024
+  ],
+  "promptBrief": "Edit the exact original Guardian Atlas, same white ceramic armor, dark mechanics, red core, cyan running lights, ring crown, paired artillery guns. Repair clipped appendages. Eight distinct states: sealed; exposed core; closed charge; closed fire; real impact damage; split-ring phase2 exposed; phase2 closed fire; disabled cyan. Transparent, no text/grid; all complete sprites with padding; uniform center pivots.",
+  "postprocessing": "Reproducible pack-atlas.py: integer source bounds, align core pivots manually measured, trim generator low-alpha residual only outside visible bbox, one LANCZOS .90scale; pack2048x1024; WebP92. No generative fill or manual paint in Python.",
+  "rights": "Original built-in generated edit of retained production master; owner-supplied prior reference already archived. No external downloads, new licensing, paid API or purchased content.",
+  "sourcePreserved": true,
+  "runtimeIntegration": "PENDING_ROOT_INTEGRATION",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING"
+}
