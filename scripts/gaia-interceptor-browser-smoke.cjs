@@ -10,7 +10,8 @@ const {parseArgs} = require('node:util');
 const {startStaticServer, prepareEvidence, saveEvidence, sha256, errorText} = require('./browser-qa-helpers.cjs');
 
 const {values} = parseArgs({options: {root: {type: 'string'}, output: {type: 'string'},
-  timeout: {type: 'string'}, 'expected-commit': {type: 'string'}, combat: {type: 'boolean', default: false}}});
+  timeout: {type: 'string'}, 'expected-commit': {type: 'string'}, combat: {type: 'boolean', default: false},
+  'equip-twin': {type: 'boolean', default: false}}});
 const root = path.resolve(values.root || 'preview-dist');
 const output = path.resolve(values.output || `/tmp/gaia-interceptor-${Date.now()}`);
 const timeout = Number(values.timeout || 300000);
@@ -19,9 +20,9 @@ const equipment = {version: 1, selected: 'pulse', unlocked: ['pulse', 'twin'], r
   assembly: {hull: 'striker', wings: 'delta', engines: 'ion'}};
 const report = {status: 'running', exitCode: null, startedAt: new Date().toISOString(), command: process.argv,
   sourceRoot: root, browser: 'Real Chromium, 390x844, DPR 1',
-  pilotVersion: 'natural-gaia-ch02-v1', cases: [], errors: [], consoleErrors: [], failedRequests: [],
+  pilotVersion: 'natural-gaia-ch02-bait-align-v2', cases: [], errors: [], consoleErrors: [], failedRequests: [],
   screenshots: [], samples: [], interceptors: [], actions: [],
-  fixtures: {unlocked: 2, equipment}, combatRequired: values.combat,
+  fixtures: {unlocked: 2, equipment}, combatRequired: values.combat, equipTwinViaUI:values['equip-twin'],
   limits: ['Only level 2 unlock and owned Pulse/Twin equipment are seeded in a fresh preview profile.',
     'Patrol scheduling, enemy health, spawning, elapsed time, weapon projectiles and collisions are never changed.',
     'The automatic QA pilot uses real pointer and keyboard controls; this is not a human playtest.',
@@ -42,7 +43,9 @@ function healthy(q) {
   assert.deepEqual(q.observer.errors, [], 'RAF callback threw');
   assert.ok(q.legacyRunning, 'Legacy loop stopped');
   assert.ok(q.observer.maximum <= 1, 'More than one pending RAF callback');
-  assert.ok(!['destroying', 'gameover'].includes(q.state), `Natural pilot died with ${q.hull} hull`);
+  assert.ok(!['destroying', 'gameover'].includes(q.state),
+    `Natural QA run ended: state=${q.state}, reason=${q.supplyFailed?'supply':q.hull<=0?'hull':'see result'}, `+
+    `hull=${q.hull}, CRONIUM=${q.collected}/${q.goal}. ${q.resultText||''}`);
 }
 async function step(name, action) {
   const entry = {name, status: 'running', startedAt: new Date().toISOString()};
@@ -78,9 +81,28 @@ function pilotTarget(q, enemy, collecting = false) {
   const clamp = x => Math.max(bounds.minX, Math.min(bounds.maxX, x));
   const nearest = collecting ? q.items.filter(item => item.type === 'energy' && item.y < q.player.y + 40)
     .sort((a, b) => b.y - a.y)[0] : null;
-  const weaponSpeed = 940;
+  const weaponSpeed = q.weapons.selected==='twin'?900:920;
   const travel = enemy ? Math.max(0, (q.player.y - 125 - enemy.y) / (weaponSpeed + enemy.s)) : 0;
-  const aim = enemy ? clamp(enemy.x + enemy.classicScout.vx * travel) : nearest?.x ?? q.W / 2;
+  // Choose a firing lead from observed position/velocity and the disclosed
+  // pursuit-v1 movement limits. This simulates QA's aim only, never the game.
+  // Holding centre during entry avoids endlessly chasing a flanking target;
+  // once it commits to a visible charge, move into its firing lane.
+  let lead = enemy?.x;
+  if(enemy) {
+    let x=enemy.x,vx=enemy.classicScout.vx;
+    for(let future=0;future<travel;future+=.025) {
+      const step=Math.min(.025,travel-future);
+      const inFireHold=enemy.classicScout.state==='fire'&&future<Math.max(0,.34-enemy.classicScout.stateAge);
+      const held=enemy.classicScout.state==='charge'||inFireHold;
+      const target=enemy.classicScout.state==='fire'||enemy.classicScout.state==='break-away'
+        ?enemy.classicScout.side>0?q.W-66:66:enemy.classicScout.targetX;
+      const desired=held?0:Math.max(-148,Math.min(148,(target-x)*2.8));
+      vx+=Math.max(-250*step,Math.min(250*step,desired-vx));
+      x=Math.max(52,Math.min(q.W-52,x+vx*step));
+    }
+    lead=x;
+  }
+  const aim = enemy ? clamp(lead) : nearest?.x ?? q.W / 2;
   const candidates = [aim, q.player.x, q.player.target, bounds.minX, bounds.maxX];
   for (let x = bounds.minX; x <= bounds.maxX; x += 24) candidates.push(x);
   const threats = q.items.filter(item => ['meteor', 'debris', 'satellite', 'scout'].includes(item.type));
@@ -169,6 +191,7 @@ function pilotTarget(q, enemy, collecting = false) {
     const marker = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
     assert.equal(source.split(marker).length, 2, 'Legacy bootstrap marker changed');
     const hook = `window.__INTERCEPTOR_QA__ = () => ({state,currentLevel,elapsed,hull,score,collected,W,H,
+      goal:level().goal,supplyFailed,resultText:ui.result?.textContent,supplyStatus:ui.supplyStatus?.textContent,
       legacyRunning,legacyFrameId,follow:9+settings.sensitivity/100*8,outline:SHIP_COLLISION_OUTLINE,
       player:{x:player.x,y:player.y,target:player.target,targetY:player.targetY},
       bounds:classicFlightBounds?{...classicFlightBounds}:null,
@@ -179,7 +202,8 @@ function pilotTarget(q, enemy, collecting = false) {
         rot:item.rot,rs:item.rs,vx:item.vx,vy:item.vy,circles:collisionCircles(item),
         classicScoutProjectile:Boolean(item.classicScoutProjectile),attackSerial:item.attackSerial,role:item.role,
         classicScout:item.classicScout?{tacticsVersion:item.classicScout.tacticsVersion,role:item.classicScout.role,
-          state:item.classicScout.state,age:item.classicScout.age,vx:item.classicScout.vx,
+          state:item.classicScout.state,stateAge:item.classicScout.stateAge,age:item.classicScout.age,
+          vx:item.classicScout.vx,targetX:item.classicScout.targetX,side:item.classicScout.side,
           fired:item.classicScout.fired,telegraph:item.classicScout.telegraph,chargeSerial:item.classicScout.chargeSerial,
           lockedTarget:item.classicScout.lockedTarget?{...item.classicScout.lockedTarget}:null,
           frame:item.classicScout.animator?.getFrame()}:null})),
@@ -191,16 +215,26 @@ function pilotTarget(q, enemy, collecting = false) {
   await step('open Gaia via the actual selector with declared unlock/equipment fixtures', async () => {
     await page.goto(server.url, {waitUntil: 'load'});
     if (nested) await page.locator('#classiclink').click();
-    await page.waitForFunction(() => typeof __INTERCEPTOR_QA__ === 'function' && __INTERCEPTOR_QA__().state === 'menu');
+    await page.waitForFunction(() => typeof __INTERCEPTOR_QA__ === 'function' && __INTERCEPTOR_QA__().state === 'menu',
+      null, {polling: 100});
     await page.locator('#levels').click(); await page.locator('#levelGrid button').nth(1).click();
     await page.locator('#launch').click();
-    await page.waitForFunction(() => __INTERCEPTOR_QA__().currentLevel === 1 && __INTERCEPTOR_QA__().state === 'playing');
+    await page.waitForFunction(() => __INTERCEPTOR_QA__().currentLevel === 1 && __INTERCEPTOR_QA__().state === 'playing',
+      null, {polling: 100});
     const q = await inspect();
     assert.equal(q.equipment.selected, 'pulse'); assert.ok(q.equipment.unlocked.includes('twin'));
-    await capture('gaia-natural-patrol-start', q); return q;
+    await capture('gaia-natural-patrol-start', q);
+    if(values['equip-twin']) {
+      await page.locator('#flightWeapon').click();const equipped=await inspect();
+      assert.equal(equipped.weapons.selected,'twin');
+      assert.equal(equipped.weapons.charges,q.weapons.charges,'Selecting owned Twin must not recharge the battery');
+      report.initialWeaponSwitch={before:q.weapons,after:equipped.weapons,action:'Actual #flightWeapon click'};
+      await capture('gaia-twin-equipped-via-real-control',equipped);
+    }
+    return q;
   });
   await step('the real CH-02 image contains sixteen distinct nonempty transparent cells', async () => {
-    await page.waitForFunction(() => __INTERCEPTOR_QA__().atlas.ready);
+    await page.waitForFunction(() => __INTERCEPTOR_QA__().atlas.ready, null, {polling: 100});
     const atlas = await page.evaluate(async () => {
       const source = __INTERCEPTOR_QA__().atlas, image = new Image(); image.src = source.source; await image.decode();
       const canvas = document.createElement('canvas'); canvas.width = canvas.height = 256;
@@ -285,15 +319,18 @@ function pilotTarget(q, enemy, collecting = false) {
           score: q.score, weapons: q.weapons, target, destruction: q.destruction,
           hostileProjectiles: q.items.filter(item => item.classicScoutProjectile), draws: q.observer.draws});
         previousSample = Date.now();
+        if(report.samples.length%8===0)await save();
       }
       if (destroyed || (!values.combat && firstFireSeen && shotSerials.size > 0 && pauseChecked &&
           report.interceptors.some(enemy => enemy.maximumX - enemy.minimumX > 35))) break;
-      const destination = pilotTarget(q, target, !target);
+      const committedTarget=target&&(target.classicScout.state==='charge'||target.classicScout.fired>0||target.hp<target.maxHp)
+        ?target:null;
+      const destination = pilotTarget(q, committedTarget, !target);
       await page.mouse.move(box.x + destination * box.width / q.W, box.y + box.height * .72);
       const previousShot = firedAt.get(targetId) ?? -Infinity;
       const safeToShoot = target && firstFireSeen && target.y < q.player.y - 180 &&
         Math.abs(q.player.x - destination) < 26 && Math.abs(destination - target.x) < 135 &&
-        q.weapons.charges > 0 && q.weapons.cooldown <= 0 && q.elapsed - previousShot > .65;
+        q.weapons.charges > 0 && q.weapons.cooldown <= 0 && q.elapsed - previousShot > .32;
       if (values.combat && safeToShoot) {
         await page.keyboard.press('Space'); const after = await inspect();
         assert.equal(after.weapons.shotSequence, q.weapons.shotSequence + 1, 'Discrete fire emitted exactly one accepted shot');
@@ -341,9 +378,15 @@ function pilotTarget(q, enemy, collecting = false) {
       assert.equal(width, 256); assert.equal(height, 256);
       assert.ok(x >= 0 && x <= 768 && x % 256 === 0 && y >= 0 && y <= 768 && y % 256 === 0);
     }
-    await page.locator('#flightWeapon').click(); const switched = await inspect();
-    assert.equal(switched.weapons.selected, 'twin');
+    await page.locator('#flightWeapon').click(); let switched = await inspect();
+    assert.equal(switched.weapons.selected,after.weapons.selected==='twin'?'pulse':'twin');
     assert.equal(switched.weapons.charges, after.weapons.charges, 'Switching equipment granted battery charge');
+    if(switched.weapons.selected!=='twin') {
+      await page.locator('#flightWeapon').click();const restored=await inspect();
+      assert.equal(restored.weapons.selected,'twin');
+      assert.equal(restored.weapons.charges,switched.weapons.charges,'Restoring Twin granted battery charge');
+      switched=restored;
+    }
     await capture('gaia-after-ch02-twin-selected', switched); report.final = switched;
     return report.postDestruction;
   });

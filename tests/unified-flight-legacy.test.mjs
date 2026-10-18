@@ -1003,3 +1003,16 @@ test('Chronos arrival enters Gaia through the actual next control without a dupl
   assert.equal(h.node('briefing').classList.contains('show'),false);
   assert.equal(h.voyage().completed,true);assert.equal(h.pending.size,1);
 });
+
+test('restored stage-entry checkpoints retain the same seven-second patrol grace without replaying their entry event',t=>{
+  const first=harness(t,{unlocked:1});first.api.prepare();first.advanceStage();
+  const record=first.voyage();assert.equal(record.checkpoint.stageNumber,2);
+  const restored=harness(t,{unlocked:1,savedVoyage:record});restored.api.startLevel(0);
+  for(let n=0;n<Math.floor(6.7/.034);n++)restored.api.update(.034);
+  assert.equal(restored.snapshot().targets.some(item=>item.tactics),false);
+  for(let n=0;n<Math.ceil(.6/.034);n++)restored.api.update(.034);
+  assert.equal(restored.snapshot().targets.filter(item=>item.tactics==='classic-pursuit-v1').length,1);
+  assert.equal(restored.snapshot().route.stageNumber,2);
+  assert.equal(restored.snapshot().events.filter(event=>event.type==='attack'||event.type==='rupture').length,0);
+  assert.equal(restored.pending.size,1);
+});
