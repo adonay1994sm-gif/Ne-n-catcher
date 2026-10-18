@@ -110,6 +110,11 @@
   let classicCometShower = null;
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
+  let classicHullReserve = 30;
+  let classicHullReserveCapacity = 30;
+  let classicChapterStory = null;
+  let classicChapterView = null;
+  let classicChapterOutroStartedAt = null;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
   let classicPursuitAnnounced = new Set();
@@ -165,6 +170,10 @@
 
   const powers = { shield: 0, tractor: 0, slow: 0, double: 0, phaser: 0 };
   const player = NeonCore.createPlayerModel(W, H);
+  if (!N7_CAMPAIGN && !JOURNEY_DEMO) {
+    player.w *= SHIP_VISUAL.classicScale;
+    player.h *= SHIP_VISUAL.classicScale;
+  }
 
   // Silueta de colisión aproximada al sprite de la nave.
   // Está ligeramente metida hacia dentro para que los roces mínimos no sean injustos,
@@ -181,7 +190,15 @@
     [-28, -112], [-18, -137]
   ];
 
-  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth;
+  // Scale the actual collision silhouette with the owner's smaller classic
+  // ship; preserve the geometry of the two archived campaign variants.
+  if (!N7_CAMPAIGN && !JOURNEY_DEMO) {
+    for (const point of SHIP_COLLISION_OUTLINE) {
+      point[0] *= SHIP_VISUAL.classicScale * .9;
+      point[1] *= SHIP_VISUAL.classicScale * .8;
+    }
+  }
+  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth * SHIP_VISUAL.classicScale * (!N7_CAMPAIGN && !JOURNEY_DEMO ? .9 : 1);
   const CORRIDOR_REQUIRED_CLEARANCE = 14;
   const CORRIDOR_TOP = -170;
   const CORRIDOR_BOTTOM_PADDING = 94;
@@ -222,6 +239,9 @@
   };
 
   const SPRITES = {
+    chapterIntro: loadSprite("assets/chapter1_intro_atlas_v1.webp", false),
+    chapterPortraits: loadSprite("assets/chapter1_portraits_v1.webp", false),
+    chapterMissile: loadSprite("assets/chapter1_missile_atlas_v1.webp", false),
     flightKit: loadSprite("assets/chronos_flight_atlas_v1.webp", false),
     chronosDestruction: loadSprite("assets/chronos_destruction_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),

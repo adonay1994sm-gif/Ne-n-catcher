@@ -1,5 +1,10 @@
-const CACHE = "neon-cronium-pre-release-7-2-0-salvage-combat-2";
+const CACHE = "neon-cronium-pre-release-7-2-0-chapter-one-living-1";
 const CORE = [
+  "assets/chapter1_opening_score_v1.m4a",
+  "assets/chapter1_voyage_score_v1.m4a",
+  "assets/chapter1_intro_atlas_v1.webp",
+  "assets/chapter1_portraits_v1.webp",
+  "assets/chapter1_missile_atlas_v1.webp",
   "assets/c9_station_v1.webp",
   "assets/player_ship_identity_v1.webp",
   "assets/comet_flight_atlas_v2.webp",

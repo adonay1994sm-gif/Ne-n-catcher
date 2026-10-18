@@ -1,0 +1,53 @@
+{
+  "source": "Original offline composition and synthesized instruments; no third-party samples.",
+  "files": [
+    {
+      "file": "chapter1_opening_score_v1.mid",
+      "bytes": 1919,
+      "sha256": "7465b9865504cc7da8d53e8dc940f1cf5b34f8effe835d07e3ce67423b24e313"
+    },
+    {
+      "file": "chapter1_opening_score_v1.wav",
+      "bytes": 7408902,
+      "sha256": "0a9e12d2bb3d1e9b845899f1c25c99c856ecc42f923f52d6bf64456b49d8c42a",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 28.0,
+      "clipSamples": 0,
+      "peakDbFS": -3.0000009805991428,
+      "rmsDbFS": -19.669326140412245
+    },
+    {
+      "file": "chapter1_voyage_score_v1.mid",
+      "bytes": 2886,
+      "sha256": "35153d6914c39fc4e781330b3a629746efb91360cc2586587a2d7e89f6a1949f"
+    },
+    {
+      "file": "chapter1_voyage_score_v1.wav",
+      "bytes": 12700902,
+      "sha256": "3f78e3dc36640b6109f19df7ce0e05c69371fb8c61ee746242db134e98abd617",
+      "sampleRate": 44100,
+      "channels": 2,
+      "duration": 48.0,
+      "clipSamples": 0,
+      "peakDbFS": -7.00000128556364,
+      "rmsDbFS": -19.627141408615522,
+      "loopStart": 0,
+      "loopEnd": 48,
+      "seamDelta": 0.0014687776565551758,
+      "seamDeltaDbFS": -56.66087885396506,
+      "normalStepP99": 0.018171910047531104,
+      "decodedFloatBytes": 16934400
+    },
+    {
+      "file": "runtime/chapter1_opening_score_v1.m4a",
+      "bytes": 400143,
+      "sha256": "d01ec5d63a053aec7fd59c8cea92ce8620c40fb6ed8ba139ec328a0abca0f29f"
+    },
+    {
+      "file": "runtime/chapter1_voyage_score_v1.m4a",
+      "bytes": 683409,
+      "sha256": "5dbfb655178502c0e879613be0580b9849f4ea0de87504be946e193c38789368"
+    }
+  ]
+}

@@ -10,7 +10,7 @@
       512,
       512
     ],
-    "sha256": "0af32ceaa2bf4da71b8f2f668599946a424c61ebc7c7466274118edc87eebe81"
+    "sha256": "a522ecc3f2c26ed1b30de711b992998e8eab6027fb661f05aea43171c610d11b"
   },
   "runtime": {
     "path": "assets/player_ship_identity_v1.webp",
@@ -20,8 +20,8 @@
       256,
       256
     ],
-    "bytes": 67122,
-    "sha256": "bd22a7d85ccc774c3b5e5fdb219ba417febf547ddc3f08541ac8fa083ae68413",
+    "bytes": 66714,
+    "sha256": "ae134a89ef96a2545cad31bca57e725249071b81678973fd25b21f4e601f189e",
     "decodedRGBABytes": 1310720
   },
   "transparency": true,
@@ -34,8 +34,8 @@
   },
   "assemblySource": {
     "path": "src/game/07-player-item-rendering.js",
-    "sha256": "9406be2024b244c36eadbeb3e178ebaa41d950d292b942cfebe073c2c3ca9cc2",
-    "scope": "Source slice from drawShipComponent through drawModularShip, before syncShipPresentation"
+    "scope": "Source slice from drawShipComponent through drawModularShip, before syncShipPresentation",
+    "sha256": "a9f343aa13ba7fc61a06870dd81f047b1fa86059722f339a14e7bb3d335d3eb8"
   },
   "loadout": {
     "hull": "aster",
@@ -46,6 +46,5 @@
   "usage": "Launcher and emergency fallback only. Gameplay animates the original modular component atlas.",
   "status": "IN_REVIEW",
   "artisticAcceptance": "PENDING_OWNER",
-  "physicalAcceptance": "PENDING",
-  "baseArtisticAcceptance": "Owner selected the current modular fleet as the definitive visual base; not commercial/device certification"
+  "physicalAcceptance": "PENDING"
 }

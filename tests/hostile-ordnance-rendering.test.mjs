@@ -30,8 +30,8 @@ test('raw scrap uses the copper token, not a misleading stellar or gold denomina
  assert.deepEqual(h.calls.find(x=>x.type==='image').args.slice(1),[0,768,256,256,-28,-28,56,56]);
 });
 test('classic CRONIUM uses authored animated sprites without live per-orb blur/gradient passes',()=>{
- const calls=[];const ctx=new Proxy({save(){},restore(){},translate(){},scale(){}},{get(o,k){if(k in o)return o[k];if(k==='createRadialGradient')return()=>{throw Error('per-orb gradient');};return undefined;},set(o,k,v){if(k==='shadowBlur')assert.equal(v,0);o[k]=v;return true;}});
- const sandbox=vm.createContext({ctx,isUnifiedClassic:()=>true,elapsed:1.2,frameFrom:(group,index)=>({group,index}),spriteReady:()=>true,SPRITES:{croniumFragment:{}},drawImageCentered:(...args)=>calls.push(args),itemVisualAlpha:()=>1});
- vm.runInContext(source.slice(source.indexOf('  function drawEnergy(item)'),source.indexOf('  function drawCh01Frame(')),sandbox);
+ const calls=[];const ctx=new Proxy({save(){},restore(){},translate(){},scale(){},drawImage(...args){calls.push(args);}},{get(o,k){if(k in o)return o[k];if(k==='createRadialGradient')return()=>{throw Error('per-orb gradient');};return undefined;},set(o,k,v){if(k==='shadowBlur')assert.equal(v,0);o[k]=v;return true;}});
+ const sandbox=vm.createContext({ctx,isUnifiedClassic:()=>true,elapsed:1.2,frameFrom:(group,index)=>({group,index,naturalWidth:320,naturalHeight:320}),spriteReady:()=>true,SPRITES:{croniumFragment:{}},drawImageCentered:(...args)=>calls.push(args),itemVisualAlpha:()=>1});
+ vm.runInContext(source.slice(source.indexOf('  let classicCroniumHalo='),source.indexOf('  function drawCh01Frame(')),sandbox);
  sandbox.drawEnergy({x:50,y:200,r:22,phase:0,rot:1});assert.equal(calls.length,2);assert.equal(calls[0][0].group,'core');
 });

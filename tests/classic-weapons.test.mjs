@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {CLASSIC_WEAPON_RULES, createClassicWeapons, selectClassicWeapon, unlockClassicWeapon,
   triggerClassicWeapon, advanceClassicWeapons, hitClassicProjectile,
-  classicWeaponSnapshot, setClassicRechargeInterval} from '../src/game/combat/classic-weapons.js';
+  classicWeaponSnapshot, setClassicRechargeInterval, setClassicUnlimitedFire,
+  canTriggerClassicMissile, triggerClassicMissile} from '../src/game/combat/classic-weapons.js';
 
 const origin = {x: 360, y: 1000};
 const run = (state, seconds, events = []) => {
@@ -18,7 +19,7 @@ const run = (state, seconds, events = []) => {
 
 test('a match starts with twenty pulses and a trigger cannot spend through cooldown', () => {
   const state = createClassicWeapons();
-  assert.equal(state.version, 'classic-weapons-v2');
+  assert.equal(state.version, 'classic-weapons-v3');
   assert.equal(CLASSIC_WEAPON_RULES.maxCharges, 20);
   assert.equal(state.charges, 20);
   const first = triggerClassicWeapon(state, origin);
@@ -373,7 +374,7 @@ test('v1 saved type identifiers remain accepted and the additive lance type roun
   ]) {
     const restored = JSON.parse(JSON.stringify(saved));
     const state = createClassicWeapons({type: restored.selected, unlocked: restored.unlocked});
-    assert.equal(state.version, 'classic-weapons-v2');
+    assert.equal(state.version, 'classic-weapons-v3');
     assert.notEqual(state.version, restored.version, 'a new match adopts current ephemeral rules');
     assert.equal(state.selected, restored.selected);
     assert.deepEqual(state.unlocked, restored.unlocked);
@@ -477,6 +478,108 @@ test('long play stays bounded and deterministic with the same player inputs', ()
     }
   }
   assert.deepEqual(classicWeaponSnapshot(a), classicWeaponSnapshot(b));
+});
+
+test('Atlas unlimited basic fire preserves the previous magazine and recharge while obeying cadence and physics', () => {
+  for(const selected of ['pulse','twin','lance']) {
+    const state=createClassicWeapons({type:selected,unlocked:[selected]});
+    triggerClassicWeapon(state,origin);run(state,.13);
+    const battery={charges:state.charges,recharge:state.recharge};
+    setClassicUnlimitedFire(state,true);
+    assert.equal(triggerClassicWeapon(state,origin).reason,'cooldown');
+    for(let frame=0;frame<60*12;frame++) {
+      triggerClassicWeapon(state,origin);advanceClassicWeapons(state,1/60);
+      assert.equal(state.charges,battery.charges);
+      assert.equal(state.recharge,battery.recharge);
+      assert.ok(state.projectiles.length<=CLASSIC_WEAPON_RULES.maxProjectiles);
+    }
+    assert.ok(state.shotSequence>20,'The authored boss encounter is not limited to its entering magazine');
+    setClassicUnlimitedFire(state,false);
+    assert.equal(state.charges,battery.charges);assert.equal(state.recharge,battery.recharge);
+    run(state,CLASSIC_WEAPON_RULES.types[selected].cooldown);
+    const before=state.charges;
+    assert.equal(triggerClassicWeapon(state,origin).accepted,true);assert.equal(state.charges,before-1);
+  }
+});
+
+test('Atlas can start with an empty magazine without inventing ammunition for the following flight', () => {
+  const state=createClassicWeapons();
+  while(state.charges>0){triggerClassicWeapon(state,origin);if(state.charges>0)run(state,.24);}
+  const battery={charges:state.charges,recharge:state.recharge};
+  setClassicUnlimitedFire(state,true);run(state,.24);
+  assert.equal(triggerClassicWeapon(state,origin).accepted,true);
+  const frozen=classicWeaponSnapshot(state);assert.deepEqual(advanceClassicWeapons(state,0),[]);
+  assert.deepEqual(classicWeaponSnapshot(state),frozen);
+  setClassicUnlimitedFire(state,false);
+  assert.deepEqual({charges:state.charges,recharge:state.recharge},battery);
+  assert.equal(triggerClassicWeapon(state,origin).reason,'empty');
+  for(const invalid of [1,0,null,'true',undefined]) {
+    const before=classicWeaponSnapshot(state);assert.throws(()=>setClassicUnlimitedFire(state,invalid));
+    assert.deepEqual(classicWeaponSnapshot(state),before);
+  }
+});
+
+test('special missiles share physical movement but do not spend or recharge the basic magazine', () => {
+  const state=createClassicWeapons();triggerClassicWeapon(state,origin);
+  const battery={charges:state.charges,cooldown:state.cooldown,recharge:state.recharge};
+  assert.equal(canTriggerClassicMissile(state),true);
+  const fired=triggerClassicMissile(state,{...origin,shotId:'missile:7'});
+  assert.equal(fired.accepted,true);assert.equal(fired.projectiles.length,1);
+  const shot=fired.projectiles[0];
+  assert.equal(shot.weapon,'missile');assert.equal(shot.missile,true);assert.equal(shot.damage,6);
+  assert.equal(shot.vy,-760);assert.ok(Math.abs(shot.vx)<1e-9);assert.equal(shot.pierce,1);
+  assert.deepEqual({charges:state.charges,cooldown:state.cooldown,recharge:state.recharge},battery);
+  assert.equal(canTriggerClassicMissile(state),false);
+  const before=classicWeaponSnapshot(state);assert.deepEqual(advanceClassicWeapons(state,0),[]);
+  assert.deepEqual(classicWeaponSnapshot(state),before);
+  advanceClassicWeapons(state,10);
+  assert.equal(state.elapsed,.05);assert.ok(Math.abs(shot.y-(origin.y-760*.05))<1e-8);
+  assert.equal(state.missileSequence,7);assert.equal(state.charges,19);
+  assert.equal(fired.events.filter(event=>event.type==='missileFired').length,1);
+  assert.equal(fired.events.filter(event=>event.type==='projectile').length,1);
+  assert.equal(fired.events.find(event=>event.type==='projectile').projectile.y,origin.y,
+    'A dispatched event remains a snapshot while its projectile moves');
+});
+
+test('a missile receipt emits once and capacity or cooldown refusal cannot reserve or duplicate its identity', () => {
+  const state=createClassicWeapons();
+  assert.equal(triggerClassicMissile(state,{...origin,shotId:'missile:1'}).accepted,true);
+  let before=classicWeaponSnapshot(state);
+  assert.equal(triggerClassicMissile(state,{...origin,shotId:'missile:1'}).reason,'duplicate');
+  assert.deepEqual(classicWeaponSnapshot(state),before);
+  assert.equal(triggerClassicMissile(state,{...origin,shotId:'missile:2'}).reason,'cooldown');
+  assert.deepEqual(classicWeaponSnapshot(state),before);
+  run(state,.7);assert.equal(canTriggerClassicMissile(state),true);
+  const template=state.projectiles[0];
+  state.projectiles=Array.from({length:32},(_,index)=>({...template,id:'fixture-'+index,hitTargets:[]}));
+  before=classicWeaponSnapshot(state);assert.equal(canTriggerClassicMissile(state),false);
+  assert.equal(triggerClassicMissile(state,{...origin,shotId:'missile:2'}).reason,'capacity');
+  assert.deepEqual(classicWeaponSnapshot(state),before);
+  state.projectiles.pop();
+  assert.equal(triggerClassicMissile(state,{...origin,shotId:'missile:2'}).accepted,true);
+  assert.equal(state.projectiles.length,32);assert.equal(state.missileSequence,2);
+  assert.equal(state.charges,20,'Special ammunition does not debit the basic magazine');
+});
+
+test('a physical missile hits exactly one target once and never creates repeated damage or rewards', () => {
+  const state=createClassicWeapons();const shot=triggerClassicMissile(state,{...origin,shotId:'missile:1'}).projectiles[0];
+  assert.equal(state.projectiles.length,1);
+  const hit=hitClassicProjectile(state,shot.id,'atlas-core');
+  assert.equal(hit.accepted,true);assert.equal(hit.damage,6);assert.equal(hit.events.length,1);
+  assert.equal(state.projectiles.length,0);
+  for(const target of ['atlas-core','next-enemy','atlas-core']) {
+    const again=hitClassicProjectile(state,shot.id,target);
+    assert.equal(again.accepted,false);assert.equal(again.damage,0);assert.equal(again.events.length,0);
+  }
+  for(const shotId of ['',null,'shot:1','missile:0','missile:-1','missile:1.5','missile:9007199254740992']) {
+    const before=classicWeaponSnapshot(state);assert.throws(()=>triggerClassicMissile(state,{...origin,shotId}));
+    assert.deepEqual(classicWeaponSnapshot(state),before);
+  }
+  const lifetime=createClassicWeapons({width:100000,height:100000});
+  const long=triggerClassicMissile(lifetime,{x:50000,y:50000,shotId:'missile:1'}).projectiles[0];
+  const expired=run(lifetime,4).filter(event=>event.type==='expired');
+  assert.equal(lifetime.projectiles.length,0);assert.equal(expired.length,1);
+  assert.equal(expired[0].projectileId,long.id);assert.equal(lifetime.charges,20);
 });
 
 test('the model has no independent clock, random source, renderer or persistence', async () => {

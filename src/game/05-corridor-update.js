@@ -259,6 +259,8 @@
     player.previousCollisionX=player.x;player.previousCollisionY=player.y;
     const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
+    if(isUnifiedClassic())player.visualBank=NeonCampaign.advanceShipBank(player.visualBank||0,
+      clamp((player.target+player.drift-player.x)/95,-1,1),dt);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
     if(isUnifiedClassic() && classicFlightBounds) {
       player.x=clamp(player.x,classicFlightBounds.minX,classicFlightBounds.maxX);
@@ -337,7 +339,7 @@
       if (powers[key] > 0) powers[key] = Math.max(0, powers[key] - dt);
     }
     if(isUnifiedClassic()) {
-      if(powers.shield>0)classicShieldAge+=dt;
+      if(classicHullReserve>0)classicShieldAge+=dt;
       classicShieldImpact=Math.max(0,classicShieldImpact-dt);
     }
     if (powers.tractor <= 0) tractorTarget = null;

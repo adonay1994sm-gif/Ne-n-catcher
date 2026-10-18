@@ -1,5 +1,5 @@
   function availablePowers() {
-    const available = ["shield"];
+    const available = [isUnifiedClassic()?"repair":"shield"];
     if (currentLevel >= 1) available.push("tractor");
     if (currentLevel >= 2) available.push("slow");
     if (currentLevel >= 3) available.push("double");
@@ -356,8 +356,9 @@
   function engineTrail() {
     if (!settings.effects || state !== "playing" || Math.random() > 0.48) return;
     const hardTurn = Math.abs(player.target + player.drift - player.x) > 65;
-    const x = player.x + (hardTurn ? (player.target > player.x ? -1 : 1) * 28 : (Math.random() - 0.5) * 30) * SHIP_VISUAL.scale;
-    const y = player.y + 61 * SHIP_VISUAL.scale;
+    const trailScale=SHIP_VISUAL.scale;
+    const x = player.x + (hardTurn ? (player.target > player.x ? -1 : 1) * 28 : (Math.random() - 0.5) * 30) * trailScale;
+    const y = player.y + 61 * trailScale;
     addParticle({
       x, y, vx: (Math.random() - 0.5) * 28, vy: 125 + Math.random() * 120,
       life: 0.22 + Math.random() * 0.24, size: 2 + Math.random() * 4, kind: "cyan"
@@ -394,16 +395,17 @@
       return;
     }
 
-    powers[type] = Math.max(powers[type], durations[type]);
     if(type==="shield" && isUnifiedClassic()) {
+      powers.shield=0;classicHullReserve=classicHullReserveCapacity;
       classicShieldAge=0;classicShieldImpact=0;ensureSprite(SPRITES.forceShieldAtlas);
-    }
+      hud();
+    } else powers[type] = Math.max(powers[type], durations[type]);
     const effectKind = type === "double" ? "gold" : type === "phaser" ? "green" : type === "shield" ? "cyan" : "violet";
     const effectColor = type === "double" ? "#ffe66c" : type === "phaser" ? "#78ff9c" : type === "shield" ? "#62efff" : "#c58aff";
     burst(item.x, item.y, 20, effectKind);
     pulseRing(item.x, item.y, effectColor, 105, 0.58);
     const names = {
-      shield: "Escudo operativo",
+      shield: isUnifiedClassic() ? "Reserva de casco restaurada" : "Escudo operativo",
       tractor: "Rayo tractor conectado",
       slow: "Estabilizador activo",
       double: "Sobrecarga de núcleos",
@@ -416,17 +418,23 @@
     window.AnalyticsManager?.track("ability_used", { level: currentLevel + 1, ability: type });
   }
 
-  function damageShip(amount, x = player.x, y = player.y) {
+  function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
     const impactAngle = Math.atan2(y - player.y, x - player.x);
-    const damageResult = NeonCore.resolveDamage({ hull, amount, shieldActive: powers.shield > 0 });
+    const classicDamage=isUnifiedClassic();
+    const damageResult = classicDamage ? NeonCampaign.resolveHullReinforcement({hull,amount,
+      reserve:classicHullReserve,capacity:classicHullReserveCapacity,
+      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true}) :
+      NeonCore.resolveDamage({ hull, amount, shieldActive: powers.shield > 0 });
+    if(classicDamage)classicHullReserve=damageResult.reserve;
     if (damageResult.absorbed) {
       if(isUnifiedClassic())classicShieldImpact=.18;
-      score += 10;
+      if(!classicDamage)score += 10;
       burst(x, y, 18, "cyan");
       pulseRing(x, y, "#62fff1", 90, 0.42);
       addImpactEffect(x, y, 0.85, impactAngle);
       tone(230, 0.08, "square", 0.045);
+      if(classicDamage)hud();
       return;
     }
 
@@ -481,7 +489,8 @@
         if(!persistClassicEquipment({...classicEquipment,recoveredTwin:true}))return false;
         toast("Emisor gemelo recuperado · taller C9 al llegar");tone(900,.18,"triangle",.06);
         pulseRing(item.x,item.y,"#ffc874",90,.45);
-        showStoryTransmission("MIRA · C9","Pieza asegurada. La montamos antes de entrar en la red Atlas.",4.5);
+        if(classicChapterStory)signalClassicChapter("module-recovered");
+        else showStoryTransmission("MIRA · C9","Pieza asegurada. La montamos antes de entrar en la red Atlas.",4.5);
       }
     } else if (item.type === "journeyPart") {
       if (journey?.collectPart()) {
@@ -504,7 +513,9 @@
       tone(500 + combo * 28, 0.06, "triangle", 0.055);
       if (collected >= level().goal) completeLevel();
     } else if (isThreat(item)) {
-      damageShip(item.damage, item.x, item.y);
+      const enemyPhaser=isUnifiedClassic()&&(item.guardianProjectile||item.classicScoutProjectile);
+      damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
+        largeAsteroid:isUnifiedClassic()&&item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
     } else {
       activatePower(item.type, item);
     }

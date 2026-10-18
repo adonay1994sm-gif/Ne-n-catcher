@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 87,
-  "runtimeBytes": 9138764,
+  "assetCount": 92,
+  "runtimeBytes": 11026222,
   "audit": {
-    "reviewed": 87,
+    "reviewed": 92,
     "READY": 58,
-    "IN_REVIEW": 29,
+    "IN_REVIEW": 34,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -22,13 +22,13 @@
     "shipAnchor": "player.x/player.y",
     "shipVisualOffset": {
       "x": 0,
-      "y": -19.2
+      "y": -7.68
     },
     "shipVisualSize": {
-      "width": 198.4,
-      "height": 198.4
+      "width": 83.2,
+      "height": 83.2
     },
-    "shipCollision": "SHIP_COLLISION_OUTLINE in game.js; independent from sprite bounds"
+    "shipCollision": "Classic outline scaled to40%; N7 and archived Journey preserve historical geometry. Tests accompany the change."
   },
   "groups": [
     {
@@ -737,8 +737,8 @@
       "metadata": "art-source/ship-identity/player_ship_identity_v1.json",
       "dimensions": "512x640",
       "format": "webp-alpha",
-      "size": 67122,
-      "sha256": "bd22a7d85ccc774c3b5e5fdb219ba417febf547ddc3f08541ac8fa083ae68413",
+      "size": 66714,
+      "sha256": "ae134a89ef96a2545cad31bca57e725249071b81678973fd25b21f4e601f189e",
       "decodedRGBABytes": 1310720,
       "use": "Static portrait exported from the accepted modular game assembly; launcher and emergency fallback only.",
       "activeRuntime": true,
@@ -884,6 +884,173 @@
       "physicalAcceptance": "PENDING",
       "origin": "Canva-generated concept thumbnail, preserved source reference; original image_gen transparent production master because Canva full export403/background removal required paid plan. No payment or paid upgrade.",
       "version": "gaia-pulse-v3"
+    },
+    {
+      "id": "chapter1-intro-v1",
+      "path": "assets/chapter1_intro_atlas_v1.webp",
+      "master": "art-source/chapter1-rebirth/intro/chapter1-intro-generated-master.png",
+      "metadata": "art-source/chapter1-rebirth/intro/intro-metadata.json",
+      "dimensions": "1024x1536",
+      "format": "webp",
+      "size": 490076,
+      "sha256": "231c0e399aca61b83582c456cf2eb992b605474f1329ee5faf4ddac2170bf724",
+      "decodedRGBABytes": 6291456,
+      "pivot": "0.5,0.5 per cell",
+      "level": "1",
+      "use": "Apertura Chronos: cuatro escenas ilustradas",
+      "animation": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "Four distinct authored story states; timed transitions belong to game presentation",
+        "loop": false
+      },
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "CHROMIUM_ASSET_DECODE_PASSED_GAMEPLAY_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
+      "version": 1
+    },
+    {
+      "id": "chapter1-portraits-v1",
+      "path": "assets/chapter1_portraits_v1.webp",
+      "master": "art-source/chapter1-rebirth/portraits/chapter1-portraits-generated-master.png",
+      "metadata": "art-source/chapter1-rebirth/portraits/portraits-metadata.json",
+      "dimensions": "768x256",
+      "format": "webp-alpha",
+      "size": 67988,
+      "sha256": "445980a34b7d2982a61632e2ac0ca73a2f48cd9906cba6c82996afc098b115f3",
+      "decodedRGBABytes": 786432,
+      "pivot": "0.5,0.5 per cell",
+      "level": "1",
+      "use": "Personajes: Lira, Mira e Iria",
+      "animation": {
+        "type": "Three static illustrated portraits, not animation frames",
+        "loop": false
+      },
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "CHROMIUM_ASSET_DECODE_PASSED_GAMEPLAY_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
+      "version": 1
+    },
+    {
+      "id": "chapter1-missile-v1",
+      "path": "assets/chapter1_missile_atlas_v1.webp",
+      "master": "art-source/chapter1-rebirth/missile/chapter1-missile-generated-master.png",
+      "metadata": "art-source/chapter1-rebirth/missile/missile-metadata.json",
+      "dimensions": "1024x1024",
+      "format": "webp-alpha",
+      "size": 246250,
+      "sha256": "8b4949b8e87b8b1e2c744ea9b3f227025ca21e365251d9266d4c09ee6f379a05",
+      "decodedRGBABytes": 4194304,
+      "pivot": "0.5,0.5 per cell",
+      "level": "1",
+      "use": "Misil especial: vuelo, lanzamiento, impacto y restos",
+      "animation": {
+        "flight": {
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fps": 12,
+          "loop": true
+        },
+        "launch": {
+          "frames": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "fps": 12,
+          "loop": false,
+          "durationSeconds": 0.3333333333333333
+        },
+        "impact": {
+          "frames": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "fps": 16,
+          "loop": false,
+          "durationSeconds": 0.25
+        },
+        "aftermath": {
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "fps": 10,
+          "loop": false,
+          "durationSeconds": 0.4
+        }
+      },
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "CHROMIUM_ASSET_DECODE_PASSED_GAMEPLAY_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
+      "version": 1
+    },
+    {
+      "id": "chapter1-opening-score-v1",
+      "path": "assets/chapter1_opening_score_v1.m4a",
+      "master": "art-source/audio/chapter1-score/chapter1_opening_score_v1.wav",
+      "metadata": "art-source/audio/chapter1-score/inventory.json",
+      "dimensions": "audio stereo 44100Hz",
+      "format": "aac-lc-m4a",
+      "size": 400143,
+      "sha256": "d01ec5d63a053aec7fd59c8cea92ce8620c40fb6ed8ba139ec328a0abca0f29f",
+      "decodedRGBABytes": 0,
+      "decodedFloatAudioBytes": 9878400,
+      "use": "Original composed chapter-one opening cue; streamed media through shared AudioContext and music volume",
+      "level": "1",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "CHROMIUM_AUDIO_PLAYBACK_PASSED_GAMEPLAY_PENDING",
+      "artisticAcceptance": "PENDING_OWNER_LISTENING",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original offline synthesis and composition; no third-party samples or soundfont; see PROVENANCE.md"
+    },
+    {
+      "id": "chapter1-voyage-score-v1",
+      "path": "assets/chapter1_voyage_score_v1.m4a",
+      "master": "art-source/audio/chapter1-score/chapter1_voyage_score_v1.wav",
+      "metadata": "art-source/audio/chapter1-score/inventory.json",
+      "dimensions": "audio stereo 44100Hz",
+      "format": "aac-lc-m4a",
+      "size": 683409,
+      "sha256": "5dbfb655178502c0e879613be0580b9849f4ea0de87504be946e193c38789368",
+      "decodedRGBABytes": 0,
+      "decodedFloatAudioBytes": 16934400,
+      "use": "Original composed chapter-one voyage cue; streamed media through shared AudioContext and music volume",
+      "level": "1",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "CHROMIUM_AUDIO_PLAYBACK_PASSED_GAMEPLAY_PENDING",
+      "artisticAcceptance": "PENDING_OWNER_LISTENING",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original offline synthesis and composition; no third-party samples or soundfont; see PROVENANCE.md"
     }
   ],
   "project": "NEON CRONIUM"

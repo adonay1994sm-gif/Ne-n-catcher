@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18",
+  "updatedAt": "2026-10-18T10:25:39.852247+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -5095,6 +5095,15 @@
         "technical": "PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
+      },
+      "relations": {
+        "supersededAspects": [
+          {
+            "by": "P1-CH1-ATLAS-01",
+            "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+            "scope": "Atlas pasa a ser el cierre orbital del primer nivel tras 360 s y 36 CRONIUM, no un encuentro duplicado del segundo territorio."
+          }
+        ]
       }
     },
     {
@@ -5488,7 +5497,16 @@
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
       },
-      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832",
+      "relations": {
+        "supersededAspects": [
+          {
+            "by": "P1-CH1-ATLAS-01",
+            "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+            "scope": "Conservar evidencia histórica del combate anterior; el nuevo cierre exige blindaje cerrado/núcleo expuesto y epílogo contextual."
+          }
+        ]
+      }
     },
     {
       "id": "P1-ORBS-01",
@@ -5616,7 +5634,16 @@
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual por capturas: combate y presentación. No expande etapas ni activa MotorV1."
       },
-      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832"
+      "packageCommit": "d93b1352c9a036ccec0fc6337b02e41acd8a7832",
+      "relations": {
+        "supersededAspects": [
+          {
+            "by": "P1-CH1-SHIP-01",
+            "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+            "scope": "El escudo temporizado clásico se sustituye por reserva de casco consumida por daño; conservar sin cambios accidentales las variantes antiguas."
+          }
+        ]
+      }
     },
     {
       "id": "P1-VULKAR-01",
@@ -7455,6 +7482,11 @@
             "by": "P1-ATLAS-TACTICS-03",
             "batch": "MAIN_SALVAGE_COMBAT",
             "scope": "Revisión de 36 HP y patrones observados para el nuevo cargador; las pruebas anteriores mantienen sólo su alcance histórico."
+          },
+          {
+            "by": "P1-CH1-ATLAS-01",
+            "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+            "scope": "Se conserva el control manual; se revisan ubicación al final del primer nivel, cadencia ilimitada básica y desenlace antes de guardar victoria."
           }
         ]
       },
@@ -7636,7 +7668,16 @@
         "AUTO sólo se habilita desde Ajustes; se conservan equipo, progreso y guardados anteriores."
       ],
       "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "relations": {
+        "supersededAspects": [
+          {
+            "by": "P1-CH1-ATLAS-01",
+            "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+            "scope": "La reserva 20/2 s permanece fuera del jefe; sólo el básico de Atlas es ilimitado con cadencia, sin tocar la reserva finita."
+          }
+        ]
+      }
     },
     {
       "id": "P2-SALVAGE-01",
@@ -7750,7 +7791,16 @@
         "La reparación de emergencia sigue siendo gratuita; se verifican salida del taller, retorno al menú, reentrada y partidas sin dinero suficiente."
       ],
       "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "relations": {
+        "supersededAspects": [
+          {
+            "by": "P2-CH1-MISSILE-01",
+            "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+            "scope": "La mejora de 30 se convierte en refuerzo de casco 45 sin reloj; se reconocen derechos de shield-cell y se añade reposición pagada de misiles."
+          }
+        ]
+      }
     },
     {
       "id": "P2-HOSTILE-PURSUIT-02",
@@ -7861,7 +7911,16 @@
         "Pausa, reanudación, derrota y reintento conservan un solo propietario de RAF y no dejan proyectiles fantasma."
       ],
       "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "relations": {
+        "supersededAspects": [
+          {
+            "by": "P1-CH1-ATLAS-01",
+            "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+            "scope": "La revisión 36 HP se sustituye por v5/96 HP y un núcleo 42vulnerable sólo en exposición; requiere nueva verificación de juego real."
+          }
+        ]
+      }
     },
     {
       "id": "P3-COMET-SHOWER-01",
@@ -7989,6 +8048,426 @@
       ],
       "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
       "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-CH1-STORY-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "07",
+      "canonicalPhase": "P1",
+      "name": "Conectar sabotaje, registro, C9 y autorización Gaia mediante historia contextual",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Narrativa",
+        "Campaña clásica",
+        "Jugabilidad",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P3-TRANSIT-01"
+      ],
+      "files": [
+        "src/game/narrative/chronos-chapter.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js",
+        "tests/chronos-chapter.test.mjs",
+        "docs/design/CHAPTER_01_CHRONOS_GAIA.md"
+      ],
+      "commit": null,
+      "tests": [
+        "node --test tests/chronos-chapter.test.mjs: 17/17, salida 0, pruebas puras del controlador; no acredita integración ni partida."
+      ],
+      "evidence": [],
+      "openErrors": [
+        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+      ],
+      "acceptanceStatus": {
+        "technical": "PURE_MODEL_17_CASES_PASSED_INTEGRATION_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "El arco representa a Lira, permiso falsificado, sabotaje, registro transportado, persecución, Mira, Atlas engañado e Iria con motivaciones diferentes.",
+        "La apertura de 26 segundos se alinea con la ruptura existente a 9 segundos, se puede omitir/repetir y no añade un reloj de ruta ni duplica la destrucción.",
+        "Los diálogos de pieza, C9 y frontera responden a hechos reales; cada cue se entrega una vez y no concede recompensas económicas o de progreso.",
+        "La reentrada conserva checkpoints, no reproduce todas las transmisiones pasadas y no mantiene señales futuras de un intento anterior.",
+        "El epílogo de 8 segundos sólo empieza tras Atlas resuelto; la integración verifica pausa, desbloqueo y continuidad mediante controles reales."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-CH1-CINEMATIC-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "05",
+      "canonicalPhase": "P1",
+      "name": "Integrar planos ilustrados, retratos y misil animado del primer capítulo",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Narrativa",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-CH1-STORY-01",
+        "P2-HOSTILE-ART-01"
+      ],
+      "files": [
+        "assets/chapter1_intro_atlas_v1.webp",
+        "assets/chapter1_portraits_v1.webp",
+        "assets/chapter1_missile_atlas_v1.webp",
+        "art-source/chapter1-rebirth/README.md",
+        "art-source/chapter1-rebirth/asset-summary.json",
+        "art-source/chapter1-rebirth/chromium-asset-qa.json",
+        "src/game/01-runtime-assets.js",
+        "src/game/06-world-rendering.js",
+        "src/game/07-player-item-rendering.js",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_150.json",
+        "sw.js"
+      ],
+      "commit": null,
+      "tests": [
+        "node art-source/chapter1-rebirth/validate-browser.cjs: 7/7, salida 0 segúnJSON conservado; decodificación/dibujo de recursos, no gameplay."
+      ],
+      "evidence": [
+        "art-source/chapter1-rebirth/chromium-asset-qa.json",
+        "art-source/chapter1-rebirth/asset-summary.json"
+      ],
+      "openErrors": [
+        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+      ],
+      "acceptanceStatus": {
+        "technical": "ASSET_EXPORT_CHROMIUM_7_CASES_PASSED_GAMEPLAY_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Conservar los maestros originales, exportaciones, dimensiones, procedencia y límites de Canva sin atribuir un vídeo exportado o un original descargado que no existe.",
+        "Los cuatro estados ilustrados de apertura y tres retratos se usan en escenas/contextos reales; no se presentan como una animación de vídeo ni tres poses animadas de un solo personaje.",
+        "Los 16 fotogramas del misil muestran salida, vuelo, impacto y consecuencia; la lógica no emite misiles repetidos al reproducir frames.",
+        "La presentación revela el paisaje real después del incidente; es legible con pilotaje, orientación vertical/horizontal y reducción de efectos.",
+        "Loader, inventario y caché contienen los recursos utilizados; capturas del juego acreditan integración aparte del QA de exportación."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "externalDependencies": [
+        {
+          "capability": "Canva original image / video export",
+          "status": "BLOCKED",
+          "reason": "El conector consultado entrega concepto miniatura y referencia MEDIA; no expone exportación de original o vídeo. Alternativa original image_gen conservada; sin pagos.",
+          "evidence": "art-source/chapter1-rebirth/intro/intro-metadata.json"
+        }
+      ]
+    },
+    {
+      "id": "P1-CH1-SHIP-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Reducir naves clásicas al 40 % e integrar reserva de casco sin temporizador",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-SHIP-CLEAN-01",
+        "P1-INPUT-02"
+      ],
+      "files": [
+        "src/game/00-bootstrap-config.js",
+        "src/game/01-runtime-assets.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/07-player-item-rendering.js",
+        "src/game/ship/modular-ship.js",
+        "tests/hull-reinforcement.test.mjs",
+        "tests/ship-scale-energy.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Astér y Bastión se dibujan al 40 % de sus dimensiones clásicas anteriores con motores, armas, inclinación y menús coherentes, sin afectar accidentalmente los modos históricos.",
+        "La geometría de colisión se ajusta deliberadamente y se prueba frente a proyectiles, obstáculos y corredores; no basta reducir sólo el sprite.",
+        "La reserva inicial de 30 absorbe daño sin temporizador y su capacidad 45 se obtiene mediante la mejora correspondiente; casco y reserva son distinguibles.",
+        "Los guardados y derechos antiguos de shield-cell se conservan mediante migración explícita; pausa, entrada de etapa, daño, muerte y reaparición no rellenan reservas por error.",
+        "Chromium y pruebas humanas revisan visibilidad, control a dos dedos y lectura de CRONIUM brillante; la certificación física permanece separada."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-CH1-MISSILE-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Persistir tres misiles, refuerzo de casco y reposición pagada en C9",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-C9-TRADE-01",
+        "P1-CH1-SHIP-01",
+        "P1-CH1-CINEMATIC-01"
+      ],
+      "files": [
+        "src/game/combat/classic-weapons.js",
+        "src/game/progression/scrap-economy.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/07-player-item-rendering.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "tests/classic-weapons.test.mjs",
+        "tests/scrap-economy.test.mjs",
+        "tests/unified-flight-legacy.test.mjs",
+        "tests/guardian-atlas-legacy.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Tres misiles especiales tienen trayectoria física y daño inicial 6; cada emisión confirma antes un recibo duradero y no consume ni duplica el disparo básico.",
+        "C9 repone sólo los misiles que falten a 6 de chatarra cada uno, con máximo 3 y sin cobrar una bodega llena.",
+        "La migración del registro anterior conserva saldo, compras y derechos; recargar después de gastar un misil no vuelve a conceder los tres iniciales.",
+        "El refuerzo de casco cuesta 30 y sustituye el escudo de tiempo; preparación 24 y refrigeración 45 conservan sus requisitos, con reparación de emergencia gratuita.",
+        "Fallos antes/después de la escritura, doble clic, secuencias antiguas y recarga no generan saldos negativos, inventario gratis o cargos duplicados."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-CH1-ATLAS-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "06",
+      "canonicalPhase": "P1",
+      "name": "Cerrar el primer nivel con Atlas blindado, núcleo expuesto y verificación Iria",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "Campaña clásica",
+        "Narrativa",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-ATLAS-TACTICS-03",
+        "P1-CH1-STORY-01",
+        "P2-CH1-MISSILE-01"
+      ],
+      "files": [
+        "src/game/combat/guardian-atlas.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/05-corridor-update.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/guardian-atlas.test.mjs",
+        "tests/guardian-atlas-legacy.test.mjs",
+        "scripts/guardian-atlas-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Atlas comienza únicamente al completar los 360 segundos y 36 fragmentos del primer territorio; no aparece un segundo Atlas duplicado al entrar en Gaia.",
+        "La revisión v5 de 96 HP alterna blindaje cerrado, ataques, apertura, núcleo expuesto de radio 42 y cierre; sólo el núcleo expuesto recibe daño físico.",
+        "Los ataques básicos, medios y poderosos permiten respuesta sin revelar trayectorias futuras; los impactos no congelan ni prolongan la exposición.",
+        "Durante Atlas el básico es ilimitado con cadencia sin consumir o rellenar la reserva finita; los misiles siguen siendo un inventario separado y limitado.",
+        "Desactivación, epílogo 8 segundos, Gemelo, estrellas del nivel 1, acceso al nivel 2 y chatarra física 600 se producen con sus condiciones una sola vez.",
+        "Se comprueban partida real, derrota, continuación, reintento, pausa, interrupción del journal y conservación de N-7; el balance humano sigue siendo una revisión independiente."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-CH1-QA-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "03",
+      "canonicalPhase": "P1",
+      "name": "Verificar el bucle completo del primer capítulo en una compilación recuperable",
+      "priority": "HIGH",
+      "status": "IN_PROGRESS",
+      "areas": [
+        "QA",
+        "Rendimiento",
+        "Campaña clásica",
+        "Jugabilidad",
+        "Interfaz"
+      ],
+      "dependencies": [
+        "P1-CH1-STORY-01",
+        "P1-CH1-CINEMATIC-01",
+        "P1-CH1-SHIP-01",
+        "P2-CH1-MISSILE-01",
+        "P1-CH1-ATLAS-01",
+        "P1-CH1-AUDIO-01"
+      ],
+      "files": [
+        "scripts/chapter-one-browser-smoke.cjs",
+        "scripts/guardian-atlas-browser-smoke.cjs",
+        "scripts/two-touch-browser-smoke.cjs",
+        "scripts/certify-local.mjs",
+        "scripts/build-preview.mjs",
+        "tests/guardian-atlas-legacy.test.mjs",
+        "tests/chronos-chapter.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Compilar un snapshot con fuentes congeladas, registrar SHA/estado del árbol, comandos, salidas, capturas y paquete con SHA-256.",
+        "Probar apertura, omisión/repetición, controles, diez etapas, lluvia, rescate, C9, compras, llegada, Atlas y epílogo; distinguir escenas instrumentadas de una partida natural.",
+        "Cubrir pausa/segundo plano, reentrada, guardados antiguos, migraciones, recompensas únicas y un único RAF, incluyendo las variantes históricas aplicables.",
+        "Comprobar actualización de caché/offline, errores de recursos, orientación, tiempos de carga y memoria real o estimada con límites explícitos.",
+        "Publicar sólo una preview privada autorizada con revisión comprobada y CI completa; no confundir Chromium, fuente publicada y dispositivo físico."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-CH1-AUDIO-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "08",
+      "canonicalPhase": "P1",
+      "name": "Integrar música original de apertura y viaje con controles de reproducción",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Audio",
+        "Narrativa",
+        "Campaña clásica",
+        "Rendimiento",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-CH1-STORY-01",
+        "P2-AUDIO-01"
+      ],
+      "files": [
+        "assets/chapter1_opening_score_v1.m4a",
+        "assets/chapter1_voyage_score_v1.m4a",
+        "art-source/audio/chapter1-score/README.md",
+        "art-source/audio/chapter1-score/PROVENANCE.json",
+        "art-source/audio/chapter1-score/inventory.json",
+        "art-source/audio/chapter1-score/browser-audio-results.json",
+        "src/game/audio/chapter-score.js",
+        "src/game/02-storage-audio.js",
+        "tests/audio-lifecycle.test.mjs"
+      ],
+      "commit": null,
+      "tests": [
+        "node art-source/audio/chapter1-score/check-audio-browser.cjs: 4/4, salida 0 segúnJSON conservado; AAC/WebAudio con gesto, no audición humana ni integración final."
+      ],
+      "evidence": [
+        "art-source/audio/chapter1-score/browser-audio-results.json",
+        "art-source/audio/chapter1-score/inventory.json"
+      ],
+      "openErrors": [
+        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado.",
+        "Audición humana, mezcla final y Safari/iPhone físico pendientes; el recurso decodificado no demuestra aceptación musical."
+      ],
+      "acceptanceStatus": {
+        "technical": "AUDIO_ARTIFACT_CHROMIUM_4_CASES_PASSED_GAMEPLAY_PENDING",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Conservar composición original, maestros WAV/MIDI, exportaciones AAC, procedencia y medidas sin incorporar material externo sin licencia.",
+        "La apertura 28 s alinea la ruptura musical a 9 s; el viaje 48 s usa su bucle real y no duplica la música anterior.",
+        "Gesto, volumen, silencio, pausa, segundo plano, reentrada y liberación de audio se comprueban dentro del juego, no sólo al decodificar archivos.",
+        "La mezcla con radio, armas y amenazas se escucha y revisa por personas; señal no nula y LUFS no sustituyen una audición o aceptación musical.",
+        "Safari/iPhone físico y el comportamiento del bucle se evalúan aparte; no se atribuyen capacidades de vídeo/exportación de Canva no disponibles."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P4-ARSENAL-10-15-01",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "block": "04",
+      "canonicalPhase": "P4",
+      "name": "Diseñar y producir un arsenal de 10–15 armas con identidad a lo largo de la campaña",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "areas": [
+        "Jugabilidad",
+        "Assets",
+        "Animaciones",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-CH1-QA-01"
+      ],
+      "files": [
+        "src/game/combat/classic-weapons.js",
+        "docs/PRODUCT_VISION.md"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Objetivo futuro pendiente de diseño, producción e integración; no contabilizar como arsenal disponible."
+      ],
+      "acceptanceStatus": {
+        "technical": "NOT_IMPLEMENTED",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Diseñar funciones tácticas diferentes, obtención gradual, costes y estrategias viables; no multiplicar colores de un mismo disparo.",
+        "Cada arma nueva tiene arte, preparación, proyectil, impacto, sonido, integración, guardado y pruebas reales antes de contarla como implementada.",
+        "Las definiciones actuales de Pulso/Gemelo/Lanza y el misil especial no equivalen a diez o quince armas terminadas ni obligan a inventar desbloqueos antes de sus encuentros."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
     }
   ],
   "canonicalPlan": {
@@ -8010,23 +8489,27 @@
     ],
     "demoMap": "Centro Chronos -> Baliza C9 -> aproximación Gaia -> acceso Atlas",
     "decisions": [
-      "Único avance principal desde CONTINUAR VIAJE; fuentes, fixtures y guardados históricos permanecen recuperables sin exponer archivos QA o variantes técnicas.",
-      "Veinte disparos de capacidad y recarga de uno cada dos segundos de vuelo; DISPARAR sin restantes ni reloj. AUTO apagado salvo elección expresa en Ajustes.",
-      "Pulso inicial; victoria real ante Atlas autoriza Gemelo. Conservar Gemelo/Lanza de guardados válidos anteriores.",
-      "Chatarra física al destruir enemigos y saldo sólo al recoger, con recibos idempotentes y registro propio del clásico. Conversión exacta: 100.000 chatarra → 1 plata; 100 plata → 1 oro; 10 oro → 1 estelar.",
-      "Decisiones reversibles C9: preparación 24, escudo 30, refrigeración 45. Escudo tres segundos al salir/entrar etapa; refrigeración de2a 1,5 segundos. Reparación de emergencia gratuita.",
-      "IA por observación limitada y trayectorias físicas; sin líneas de apuntado o avisos HUD de cada tiro, con animación mecánica legible. Atlas v4 de 36 HP y dos fases.",
-      "Cruces rápidos y lluvia de cometas en 1.5 y 1.9; alerta ambiental y corredor alcanzable. Conservar 360 segundos, offsets, cuotas y checkpoints v2.",
-      "Nuevo arte de proyectiles y recogidas integrado en Canvas existente; Motor V1 desactivado, RAF único, campañas y guardados anteriores conservados. No lanzamiento comercial autorizado."
+      "El primer nivel abarca sabotaje Chronos→registro→diez etapas espaciales→C9→frontera Atlas→verificación Iria; el siguiente territorio conserva continuidad y la pista Vulkar no salta contenido.",
+      "Apertura 26 s sobre reloj de ruta, ruptura única 9 s, pilotaje liberado a los 9 s o al omitir; salto/repetición no cambian ruta, cuota o recompensas. Epílogo 8 s tras resolución real.",
+      "Lira evacúa y conserva pruebas, Mira mantiene el corredor y vende mejoras, Atlas aplica una identificación falsa e Iria puede revisar y revocar el bloqueo. Redacción y nombres son decisiones de trabajo.",
+      "Naves clásicas al 40 % de ancho y alto con geometría de colisión probada; variantes históricas mantienen dimensiones. Reserva de integridad 30 sin temporizador, ampliable a 45 por 30 de chatarra.",
+      "Conservar 20 disparos / recarga 2 s fuera del jefe, o 1,5 s con refrigeración. Básico ilimitado con cadencia sólo durante Atlas sin consumir/rellenar la reserva; manual por defecto y AUTO sólo en Ajustes.",
+      "Tres misiles especiales persistidos con daño inicial 6 y reposición 6 por cada misil faltante en C9; máximo 3 y transacciones idempotentes. Preparación24,refrigeración 45,reparación de emergencia gratuita.",
+      "Atlas v5 de 96 HP: blindaje cerrado durante ataque, núcleo 42 expuesto sólo en su ventana, tres escalones de ataque. Chatarra física 600, Gemelo y acceso al nivel 2 sólo con sus condiciones y guardado coherente.",
+      "Las compras antiguas shield-cell migran a hull-reinforcement con respaldo y sin otro cargo; conservar saldos, armamento y partidas. Dinero sólo al recoger chatarra, no al destruir enemigos.",
+      "Conversiones: 100.000 chatarra → 1 plata, 100 plata → 1 oro, 10 oro → 1 estelar; CRONIUM es energía diferenciada. Mantener lluvia 1.5/1.9 y 360 s / checkpoints v2 con regresión específica.",
+      "Arte y música originales conservan maestros y QA de exportación; aceptación artística, escucha humana, mezcla y Safari/iPhone pendientes. Limitación de exportación Canva registrada sin compras.",
+      "Arsenal futuro 10–15 armas PENDING. No expandir masivamente ni activar Motor V1; un único RAF, rama autorizada, guardados conservados y sin publicación comercial."
     ],
     "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion.",
     "latestFeedback": {
       "date": "2026-10-18",
-      "status": "CHANGES_REQUESTED",
+      "status": "IMPLEMENTATION_DIRECTION_APPROVED_ARTISTIC_ACCEPTANCE_PENDING",
       "reference": "docs/PRODUCT_VISION.md",
-      "batch": "MAIN_SALVAGE_COMBAT",
-      "priority": "Un único avance principal con portada pulida; veinte disparos recargables sin contador; enemigos que interceptan sin revelar apuntado; chatarra física y mejoras pagadas C9; Atlas36HP y cometas rápidos en el vacío.",
-      "scope": "Integración del clásico actual y sus diez etapas Chronos→Gaia; variantes históricas recuperables sin exposición en el menú, aceptación estética y dispositivos pendientes."
+      "design": "docs/design/CHAPTER_01_CHRONOS_GAIA.md",
+      "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+      "priority": "Cerrar el nivel 1 completo: sabotaje y registro, viaje real, C9, naves al 40 %,reserva de casco, misiles persistidos y Atlas final con epílogo Iria.",
+      "scope": "Dirección aprobada para implementación; cifras, nombres, textos y presentación son decisiones de trabajo. No equivale a aceptación estética, cien etapas ni certificación física."
     },
     "latestClarification": {
       "date": "2026-10-17",
@@ -8179,6 +8662,14 @@
         "report": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
         "priority": "C9 sin demora, nave sin humo pegado, tiros verticales reales, enemigos con intención de combate y Atlas manual retador. AUTO apagado y opt-in sólo en Ajustes; progresión Pulso→Atlas→Gemelo.",
         "scope": "Pulido integrado del clásico y sus guardados. Se aplazan las grandes cinemáticas Gaia→Vulkar; aceptación estética y dispositivo pendientes."
+      },
+      {
+        "date": "2026-10-18",
+        "status": "CHANGES_REQUESTED",
+        "reference": "docs/PRODUCT_VISION.md",
+        "batch": "MAIN_SALVAGE_COMBAT",
+        "priority": "Un único avance principal con portada pulida; veinte disparos recargables sin contador; enemigos que interceptan sin revelar apuntado; chatarra física y mejoras pagadas C9; Atlas36HP y cometas rápidos en el vacío.",
+        "scope": "Integración del clásico actual y sus diez etapas Chronos→Gaia; variantes históricas recuperables sin exposición en el menú, aceptación estética y dispositivos pendientes."
       }
     ],
     "verificationHistory": [
@@ -8252,7 +8743,24 @@
         "supersededBy": "docs/PRODUCT_VISION.md",
         "batch": "MAIN_SALVAGE_COMBAT",
         "note": "Historial inmediato de pulido arcade: las tres cargas y avisos HUD de proyectiles se sustituyen por el mandato actual. C9 deja de preparar gratis; se conservan compras y armas válidas."
+      },
+      {
+        "date": "2026-10-18",
+        "batch": "MAIN_SALVAGE_COMBAT",
+        "decisions": [
+          "Único avance principal desde CONTINUAR VIAJE; fuentes, fixtures y guardados históricos permanecen recuperables sin exponer archivos QA o variantes técnicas.",
+          "Veinte disparos de capacidad y recarga de uno cada dos segundos de vuelo; DISPARAR sin restantes ni reloj. AUTO apagado salvo elección expresa en Ajustes.",
+          "Pulso inicial; victoria real ante Atlas autoriza Gemelo. Conservar Gemelo/Lanza de guardados válidos anteriores.",
+          "Chatarra física al destruir enemigos y saldo sólo al recoger, con recibos idempotentes y registro propio del clásico. Conversión exacta: 100.000 chatarra → 1 plata; 100 plata → 1 oro; 10 oro → 1 estelar.",
+          "Decisiones reversibles C9: preparación 24, escudo 30, refrigeración 45. Escudo tres segundos al salir/entrar etapa; refrigeración de2a 1,5 segundos. Reparación de emergencia gratuita.",
+          "IA por observación limitada y trayectorias físicas; sin líneas de apuntado o avisos HUD de cada tiro, con animación mecánica legible. Atlas v4 de 36 HP y dos fases.",
+          "Cruces rápidos y lluvia de cometas en 1.5 y 1.9; alerta ambiental y corredor alcanzable. Conservar 360 segundos, offsets, cuotas y checkpoints v2.",
+          "Nuevo arte de proyectiles y recogidas integrado en Canvas existente; Motor V1 desactivado, RAF único, campañas y guardados anteriores conservados. No lanzamiento comercial autorizado."
+        ],
+        "supersededBy": "docs/PRODUCT_VISION.md",
+        "note": "Conservar entrada única, chatarra, recarga base y cometas. El capítulo vivo sustituye sólo escudo temporizado,36HP,Atlas separado del segundo territorio y consumo básico limitado durante el jefe."
       }
-    ]
+    ],
+    "currentBatch": "CHAPTER_ONE_LIVING_JOURNEY"
   }
 }

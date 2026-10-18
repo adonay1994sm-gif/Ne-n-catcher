@@ -9,10 +9,11 @@ const weapon = definition => Object.freeze({...definition,
 // Rules and ammunition are match-local. Saved equipment keeps the stable
 // pulse/twin/lance identifiers; a new run always adopts the current magazine.
 export const CLASSIC_WEAPON_RULES = Object.freeze({
-  version: 'classic-weapons-v2', maxCharges: 20, rechargeSeconds: 2,
+  version: 'classic-weapons-v3', maxCharges: 20, rechargeSeconds: 2,
   maxDelta: .05, maxProjectiles: 32, boundsMargin: 80,
+  missile: Object.freeze({damage:6,speed:760,radius:10,duration:3.2,cooldown:.7}),
   types: Object.freeze({
-    pulse: weapon({id: 'pulse', label: 'Pulso', damageMultiplier: 1,
+    pulse: weapon({id: 'pulse', label: 'Phaser', damageMultiplier: 1,
       description: 'Daño ×1: un pulso de 1 de daño por carga.', cooldown: .24, speed: 920,
       damage: 1, radius: 9, duration: 2.4, barrels: [{offset: 0, spread: 0}]}),
     twin: weapon({id: 'twin', label: 'Gemelo', damageMultiplier: 2,
@@ -60,6 +61,7 @@ export function createClassicWeapons({type = 'pulse', unlocked = ['pulse'],
     version: CLASSIC_WEAPON_RULES.version, width, height,
     selected: type, unlocked: available, charges: CLASSIC_WEAPON_RULES.maxCharges,
     rechargeSeconds, recharge: 0, cooldown: 0, elapsed: 0,
+    unlimitedFire: false, missileCooldown: 0, missileSequence: 0,
     projectileSequence: 0, eventSequence: 0, shotSequence: 0, projectiles: []
   };
 }
@@ -80,6 +82,48 @@ export function setClassicRechargeInterval(state, seconds) {
   state.recharge = state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 :
     Math.min(state.recharge, seconds - 1e-9);
   return seconds;
+}
+
+/** Atlas changes firing policy, never the stored magazine or its progress. */
+export function setClassicUnlimitedFire(state, active) {
+  if (typeof active !== 'boolean') throw new TypeError('Unlimited fire flag must be boolean');
+  state.unlimitedFire = active;
+  return active;
+}
+
+/** Check before the caller durably spends one of its three special missiles. */
+export function canTriggerClassicMissile(state) {
+  return state.missileCooldown <= 1e-9 &&
+    state.projectiles.length < CLASSIC_WEAPON_RULES.maxProjectiles;
+}
+
+/**
+ * The caller owns persistent ammunition and must commit its unique missile:N
+ * receipt before emission. Rendering and replaying an already emitted receipt
+ * cannot create another projectile. This local sequence resets with a match;
+ * the receipt sequence itself belongs to the persistent salvage ledger.
+ */
+export function triggerClassicMissile(state, {x, y, angle = -Math.PI / 2, shotId} = {}) {
+  finite(x,'origin x');finite(y,'origin y');finite(angle,'angle');
+  if(typeof shotId!=='string' || !/^missile:[1-9]\d*$/.test(shotId) ||
+    !Number.isSafeInteger(Number(shotId.slice(8))))throw new TypeError('Durable missile:N receipt required');
+  const receipt = Number(shotId.slice(8));
+  if(receipt<=state.missileSequence)return {accepted:false,reason:'duplicate',events:[],projectiles:[]};
+  if(state.missileCooldown>1e-9)return {accepted:false,reason:'cooldown',events:[],projectiles:[]};
+  if(state.projectiles.length>=CLASSIC_WEAPON_RULES.maxProjectiles)
+    return {accepted:false,reason:'capacity',events:[],projectiles:[]};
+  const definition=CLASSIC_WEAPON_RULES.missile;
+  const projectile={id:`${state.version}:projectile:${++state.projectileSequence}`,shotId,
+    weapon:'missile',special:true,missile:true,barrel:0,x,y,
+    vx:Math.cos(angle)*definition.speed,vy:Math.sin(angle)*definition.speed,
+    damage:definition.damage,radius:definition.radius,pierce:1,
+    duration:definition.duration,life:definition.duration,hitTargets:[]};
+  state.missileSequence=receipt;state.missileCooldown=definition.cooldown;
+  state.projectiles.push(projectile);
+  return {accepted:true,shotId,projectiles:[projectile],events:[
+    event(state,'missileFired',{shotId,weapon:'missile',special:true}),
+    event(state,'projectile',{projectile:{...projectile,hitTargets:[]}})
+  ]};
 }
 
 /** Reward/save code owns when this is called; repeated delivery is harmless. */
@@ -107,15 +151,17 @@ export function selectClassicWeapon(state, type) {
  */
 export function triggerClassicWeapon(state, {x, y, angle = -Math.PI / 2} = {}) {
   finite(x, 'origin x'); finite(y, 'origin y'); finite(angle, 'angle');
-  if (state.charges === 0) return {accepted: false, reason: 'empty', events: [], projectiles: []};
+  if (!state.unlimitedFire && state.charges === 0) return {accepted: false, reason: 'empty', events: [], projectiles: []};
   if (state.cooldown > 1e-9) return {accepted: false, reason: 'cooldown', events: [], projectiles: []};
   const definition = CLASSIC_WEAPON_RULES.types[state.selected];
   if (state.projectiles.length + definition.barrels.length > CLASSIC_WEAPON_RULES.maxProjectiles) {
     return {accepted: false, reason: 'capacity', events: [], projectiles: []};
   }
   const wasFull = state.charges === CLASSIC_WEAPON_RULES.maxCharges;
-  state.charges--;
-  if (wasFull) state.recharge = 0;
+  if (!state.unlimitedFire) {
+    state.charges--;
+    if (wasFull) state.recharge = 0;
+  }
   state.cooldown = definition.cooldown;
   const shotId = `${state.version}:shot:${++state.shotSequence}`;
   const events = [event(state, 'fired', {shotId, weapon: state.selected,
@@ -155,7 +201,8 @@ export function advanceClassicWeapons(state, delta) {
   const events = [];
   state.elapsed += dt;
   state.cooldown = Math.max(0, state.cooldown - dt);
-  if (state.charges < CLASSIC_WEAPON_RULES.maxCharges) {
+  state.missileCooldown = Math.max(0, state.missileCooldown - dt);
+  if (!state.unlimitedFire && state.charges < CLASSIC_WEAPON_RULES.maxCharges) {
     state.recharge += dt;
     while (state.recharge + 1e-9 >= state.rechargeSeconds &&
       state.charges < CLASSIC_WEAPON_RULES.maxCharges) {

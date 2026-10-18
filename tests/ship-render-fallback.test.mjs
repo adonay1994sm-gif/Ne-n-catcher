@@ -121,8 +121,15 @@ test('the paired plume omits the contaminated centre without moving either mount
   const first=plumeDraws[0].args,second=plumeDraws[1].args;
   assert.equal(first[0],1455);assert.equal(second[0],1581);
   assert.equal(first[1],143);assert.equal(second[1],143);
-  assert.equal(first[4],-135);assert.equal(second[4],41.400000000000006);
-  assert.equal(first[5],173);assert.equal(second[5],173);
-  assert.equal(first[6],117.60000000000001);assert.equal(second[6],117.60000000000001);
+  const flame=shipModel.shipPartFrame(aster,'flames'),anchors=shipModel.shipNozzleAnchors(aster);
+  const point=(draw,x,y)=>({x:draw[4]+(x-draw[0])/draw[2]*draw[6],
+    y:draw[5]+(y-draw[1])/draw[3]*draw[7]});
+  const rootLeft=point(first,1498,177),rootRight=point(second,1616,178);
+  for(const [root,anchor]of [[rootLeft,anchors[0]],[rootRight,anchors[1]]]) {
+    assert.ok(Math.abs(root.x-anchor.x)<.3);assert.ok(Math.abs(root.y-anchor.y)<.3);
+  }
+  assert.equal(first[4],flame.destination.x);
+  assert.equal(second[4],flame.destination.x+flame.destination.width*.6);
+  assert.ok(first[0]+first[2]<second[0],'the contaminated center stays excluded');
   assert.equal(h.draws.some(draw=>/ship_frame_/.test(draw.path)),false);
 });

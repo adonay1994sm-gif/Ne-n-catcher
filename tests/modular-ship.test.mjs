@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  SHIP_FLEET,SHIP_FLEET_SAVE_KEY,normalizeShipLoadout,shipPartFrame,shipAssemblyPose
+  SHIP_FLEET,SHIP_FLEET_SAVE_KEY,normalizeShipLoadout,shipPartFrame,shipAssemblyPose,shipNozzleAnchors,advanceShipBank
 } from '../src/game/ship/modular-ship.js';
 
 const stock={hull:'aster',wings:'aster',engines:'aster'};
@@ -101,10 +101,35 @@ test('explicit source crops exclude neighboring parts and destinations preserve 
     for(let side=0;side<2;side++){
       const nozzle=mapPoint(frames.engines,anchors[engines].nozzles[side]);
       const flame=mapPoint(frames.flames,anchors[engines].flames[side]);
-      assert.ok(Math.abs(nozzle.x-flame.x)<=14,`${engines} exhaust misses its nozzle horizontally`);
-      assert.ok(Math.abs(nozzle.y-flame.y)<=14,`${engines} exhaust misses its nozzle vertically`);
+      assert.ok(Math.abs(nozzle.x-flame.x)<=.3,`${engines} exhaust misses its nozzle horizontally`);
+      assert.ok(Math.abs(nozzle.y-flame.y)<=.3,`${engines} exhaust misses its nozzle vertically`);
     }
   }
+});
+
+test('shared nozzle anchors follow the equipped engine family and remain frozen under repeated preview draws',()=>{
+  for(const engines of ['aster','bastion']) {
+    const anchors=shipNozzleAnchors({engines});
+    assert.equal(anchors.length,2);assert.ok(anchors[0].x<0&&anchors[1].x>0);
+    assert.equal(anchors[0].y,anchors[1].y);assert.ok(anchors[0].y>170&&anchors[0].y<180);
+    assert.ok(Object.isFrozen(anchors)&&anchors.every(Object.isFrozen));
+    assert.deepEqual(shipNozzleAnchors({hull:'bastion',wings:'aster',engines}),anchors);
+  }
+});
+
+test('visual bank approaches smoothly, reverses continuously and freezes without altering flight position',()=>{
+  let bank=0;
+  for(let frame=0;frame<60;frame++)bank=advanceShipBank(bank,1,1/60);
+  assert.ok(bank>.99&&bank<1);
+  const reversed=advanceShipBank(bank,-1,1/60);
+  assert.ok(reversed<bank&&reversed>0,'reversal cannot snap across the neutral pose in one frame');
+  assert.equal(advanceShipBank(reversed,-1,0),reversed);
+  assert.equal(advanceShipBank(NaN,Infinity,0),0);
+  assert.throws(()=>advanceShipBank(0,1,-1),RangeError);
+  for(let frame=0;frame<90;frame++)bank=advanceShipBank(bank,0,1/60);
+  assert.ok(Math.abs(bank)<.001);
+  assert.equal(shipAssemblyPose({steering:.7,bankStrength:1.8}).bankRotation,
+    shipAssemblyPose({steering:.7}).bankRotation*1.8);
 });
 
 test('exhaust always follows the equipped engine and invalid part names cannot alias prototype properties',()=>{

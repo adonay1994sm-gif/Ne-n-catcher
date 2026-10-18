@@ -1,4 +1,16 @@
-## Mandato vigente — entrada principal, arsenal y chatarra · 18/10/2026
+## Mandato vigente — capítulo uno vivo, casco y Atlas · 18/10/2026
+
+El propietario aprobó implementar la revisión conversada: **el nivel uno completo va desde la cinemática del sabotaje de Chronos hasta desactivar Atlas y obtener autorización orbital de Gaia**. Sus diez etapas son tramos del mismo viaje. Nunca se aterriza; conservar origen que se aleja, tránsito y destino que gana escala, C9 y checkpoints. La historia incorpora operadora de Chronos, mecánica de C9 y mando orbital de Gaia con motivos distintos. Producir arte real y cinemáticas integradas; comprobar las capacidades/exportaciones de Canva y documentar límites sin atribuir vídeos o música inexistentes.
+
+Reducir ambos modelos clásicos **un 60 %** (quedan al **40 %** de anchura y altura), ajustar y probar sus colisiones, corregir motores en juego/menús y añadir inclinación lateral fluida. Sustituir el escudo temporizado clásico por refuerzo de casco inicial de 30 puntos consumido por daño, sin reloj; C9 puede ampliar capacidad. Phaser enemigo 10/15 son valores iniciales de equilibrio. Durante Atlas el Phaser básico no consume la batería de veinte. Añadir tres misiles físicos más potentes con reposición pagada en chatarra y guardado atómico. Mantener manual predeterminado y AUTO voluntario en ajustes.
+
+Atlas alterna ataque con blindaje cerrado y apertura animada del núcleo vulnerable; ataques básicos, medios y poderosos con respuesta posible, sin líneas que revelen la trayectoria futura. Su recompensa aumenta respecto a enemigos básicos. CRONIUM representa energía brillante, no chatarra. Toda cifra nueva es una decisión de trabajo reversible hasta probarla. Pulir el primer nivel antes de extender la metodología a los otros nueve; arsenal de 10–15 armas es objetivo de campaña, no contenido ya implementado.
+
+Esta orden sustituye sólo las reglas creativas incompatibles del historial siguiente (incluidos escudo de tres segundos y Atlas como cierre separado del nivel dos). Conservar guardados, recursos y pruebas históricas; registrar migraciones explícitas. Motor V1 sigue **false**, un único RAF, rama autorizada, sin main/PR #3/force push ni producción o gastos externos.
+
+---
+
+## Mandato anterior — entrada principal, arsenal y chatarra · 18/10/2026
 
 La petición actual del propietario prevalece sobre las instrucciones creativas históricas incompatibles que siguen. Presentar **un único viaje principal**, con CONTINUAR VIAJE dominante, progreso persistido y accesos secundarios a niveles, nave, ajustes y servicios. Retirar de la entrada jugable los archivos QA, variantes técnicas, selectores de prototipos, desbloqueos y etiquetas experimentales. Conservar sus fuentes, fixtures, paquetes y guardados recuperables; una portada con acabado comercial no certifica lanzamiento ni cien etapas terminadas.
 

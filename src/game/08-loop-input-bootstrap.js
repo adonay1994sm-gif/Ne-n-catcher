@@ -31,6 +31,7 @@
     drawRings();
     drawParts();
     drawCombo();
+    drawClassicChapterOpening();
     if (powers.slow > 0) {
       ctx.fillStyle = "rgba(75,125,255,.055)";
       ctx.fillRect(0, 0, W, H);
@@ -123,6 +124,7 @@
   }
 
   function moveClassicFlight(event) {
+    if(classicChapterControlsLocked())return;
     if (event.type.startsWith("touch") && window.PointerEvent) return;
     const press = event.type === "pointerdown" || event.type === "touchstart";
     let point = event;
@@ -266,7 +268,7 @@
 
   addEventListener("keydown", (event) => {
     if (isUnifiedClassic()) {
-      if (state === "playing" && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+      if (state === "playing" && !classicChapterControlsLocked() && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
         event.preventDefault();
         const bounds = classicFlightBounds || refreshClassicFlightBounds();
         if (bounds) {
@@ -284,6 +286,7 @@
       event.preventDefault();
       fireManualShot();
     }
+    if(event.key.toLowerCase()==="m"&&state==="playing"&&isUnifiedClassic())fireClassicMissile();
     if (event.key === "Escape") {
       resetGameInput();
       state === "paused" ? resumeGame() : pauseGame();
@@ -327,7 +330,7 @@
   ui.nextLevel.onclick = () => {
     if(isUnifiedClassic()&&currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
       startLevel(1);
-      showStoryTransmission("BALIZA GAIA","Estás en el perímetro Atlas. Recupera el rastro y evita que sus patrullas te encierren.",4.8);
+      showStoryTransmission("IRIA · MANDO GAIA","Tu autorización es válida. Sigue la señal por el corredor orbital; el registro apunta hacia Vulkar.",5.5);
       return;
     }
     prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");

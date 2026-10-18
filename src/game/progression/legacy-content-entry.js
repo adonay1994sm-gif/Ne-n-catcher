@@ -1,8 +1,13 @@
 import {AUTHORED_LEVELS} from './level-designs.js';
 export {createVoyageScore} from '../audio/voyage-score.js';
+export {createChapterScore} from '../audio/chapter-score.js';
+export {createChronosChapterStory, normalizeChronosChapterCheckpoint, CHRONOS_CHAPTER_VERSION,
+  CHRONOS_CHAPTER_STORY_KEY, CHRONOS_CHAPTER_OPENING_SECONDS, CHRONOS_CHAPTER_ACTORS,
+  CHRONOS_CHAPTER_DIALOGUES} from '../narrative/chronos-chapter.js';
+export {HULL_REINFORCEMENT_RULES, resolveHullReinforcement} from '../combat/hull-reinforcement.js';
 export {createCompletionJournal} from './completion-journal.js';
 export {SCRAP_ECONOMY_KEY, SCRAP_ECONOMY_RULES, SCRAP_REWARDS, SCRAP_UPGRADES,
-  createScrapLedger, rewardForEnemy, formatDenominations} from './scrap-economy.js';
+  createScrapLedger, rewardForEnemy, formatDenominations, hullReserveCapacity} from './scrap-economy.js';
 export {COMET_SHOWER_VERSION, createCometShower, advanceCometShower, advanceShowerComet,
   releaseCometShowerItem, showerCometIntersectsCircle, cometShowerSnapshot} from './comet-shower.js';
 export {createClassicEquipment,normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,canEquipClassicWeapon} from './classic-arsenal.js';
@@ -15,7 +20,8 @@ export {createJourneyDemo, JOURNEY_DEMO_SAVE_KEY, JOURNEY_DEMO_VERSION} from './
 export {GENERATOR_VERSION} from './generator.js';
 export {createGuardianAtlas, advanceGuardianAtlas, hitGuardianAtlas, GUARDIAN_ATLAS_RULES} from '../combat/guardian-atlas.js';
 export {guardianAtlasAnimation} from '../animation/guardian-atlas-animator.js';
-export {SHIP_FLEET, SHIP_FLEET_SAVE_KEY, normalizeShipLoadout, shipPartFrame, shipAssemblyPose} from '../ship/modular-ship.js';
+export {SHIP_FLEET, SHIP_FLEET_SAVE_KEY, normalizeShipLoadout, shipPartFrame, shipAssemblyPose,
+  shipNozzleAnchors, advanceShipBank} from '../ship/modular-ship.js';
 export {n7Dialogue} from '../narrative/n7-dialogues.js';
 
 const palettes = [
@@ -45,5 +51,6 @@ export {createChronosVoyage, CHRONOS_VOYAGE_VERSION, CHRONOS_VOYAGE_KEY,
 export {getChronosDestructionPose} from '../animation/chronos-destruction.js';
 export {CLASSIC_WEAPON_RULES, createClassicWeapons, triggerClassicWeapon, advanceClassicWeapons,
   hitClassicProjectile, unlockClassicWeapon, selectClassicWeapon, classicWeaponSnapshot,
-  setClassicRechargeInterval} from '../combat/classic-weapons.js';
+  setClassicRechargeInterval, setClassicUnlimitedFire, canTriggerClassicMissile,
+  triggerClassicMissile} from '../combat/classic-weapons.js';
 export {calculateFlightBounds, createRelativeFlightInput, beginFlightInput, moveFlightInput, endFlightInput} from '../ship/flight-controls.js';

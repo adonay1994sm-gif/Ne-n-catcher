@@ -1,0 +1,52 @@
+{
+  "kind": "audio-artifact-check",
+  "startedAt": "2026-10-18T10:20:10.439Z",
+  "limits": [
+    "Real Chromium AAC decoding/Web Audio graph; no physical audibility or human aesthetic review.",
+    "Not in-game integration, Safari/iPhone, or complete combat/music balance."
+  ],
+  "cases": [
+    {
+      "name": "decode chapter1_opening_score_v1",
+      "status": "passed",
+      "id": "chapter1_opening_score_v1",
+      "duration": 28,
+      "channels": 2,
+      "sampleRate": 44100,
+      "length": 1234800,
+      "bytes": 400143,
+      "sha256": "d01ec5d63a053aec7fd59c8cea92ce8620c40fb6ed8ba139ec328a0abca0f29f"
+    },
+    {
+      "name": "decode chapter1_voyage_score_v1",
+      "status": "passed",
+      "id": "chapter1_voyage_score_v1",
+      "duration": 48,
+      "channels": 2,
+      "sampleRate": 44100,
+      "length": 2116800,
+      "bytes": 683409,
+      "sha256": "5dbfb655178502c0e879613be0580b9849f4ea0de87504be946e193c38789368"
+    },
+    {
+      "name": "user gesture starts real decoded opening audio",
+      "status": "passed",
+      "state": "running",
+      "time": 0.8010884353741496,
+      "peak": 0.02157324180006981
+    },
+    {
+      "name": "real voyage graph supports authored 0–48s loop",
+      "status": "passed",
+      "loop": true,
+      "start": 0,
+      "end": 48,
+      "peak": 0.03572291135787964
+    }
+  ],
+  "errors": [],
+  "chromiumVersion": "154.0.8037.57",
+  "status": "passed",
+  "exitCode": 0,
+  "finishedAt": "2026-10-18T10:20:12.646Z"
+}

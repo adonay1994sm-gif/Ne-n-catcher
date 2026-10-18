@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "id": "chapter1.intro.v1",
+  "status": "IN_REVIEW",
+  "technicalAcceptance": "EXPORT_VALIDATED_GAMEPLAY_PENDING",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "runtime": "assets/chapter1_intro_atlas_v1.webp",
+  "master": "chapter1-intro-generated-master.png",
+  "packedMaster": "intro-packed-master.png",
+  "masterDimensions": {
+    "width": 1024,
+    "height": 1536
+  },
+  "dimensions": {
+    "width": 1024,
+    "height": 1536
+  },
+  "layout": {
+    "columns": 2,
+    "rows": 2,
+    "frameWidth": 512,
+    "frameHeight": 768
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "transparent": false,
+  "runtimeBytes": 490076,
+  "decodedRgbaBytes": 6291456,
+  "runtimeSha256": "231c0e399aca61b83582c456cf2eb992b605474f1329ee5faf4ddac2170bf724",
+  "masterSha256": "970004f0bccdd1ac9bf91b51c0fdd03975e5f4759d55ee729ca02c3a21525bb6",
+  "uniqueFrames": 4,
+  "animation": {
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "type": "Four distinct authored story states; timed transitions belong to game presentation",
+    "loop": false
+  },
+  "frames": [
+    {
+      "index": 0,
+      "kind": "chronos-active",
+      "source": "frames/00-chronos-active.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 0,
+        "width": 507,
+        "height": 740
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 512,
+        "height": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "e0fb5069e0d0795f3903c76b96aee2229c711e67fb48076d005dd2b8ac59d28f",
+      "alphaBounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 511,
+        "maxY": 767
+      },
+      "visiblePixels": 393216,
+      "transparentPixels": 0
+    },
+    {
+      "index": 1,
+      "kind": "convoy-attack",
+      "source": "frames/01-convoy-attack.png",
+      "sourceRect": {
+        "x": 518,
+        "y": 0,
+        "width": 506,
+        "height": 740
+      },
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 512,
+        "height": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "6ed9339afec5985d69cbca9cf9733779ffff5ef500465ba538926a90ba36bccc",
+      "alphaBounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 511,
+        "maxY": 767
+      },
+      "visiblePixels": 393216,
+      "transparentPixels": 0
+    },
+    {
+      "index": 2,
+      "kind": "evacuation",
+      "source": "frames/02-evacuation.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 749,
+        "width": 507,
+        "height": 787
+      },
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 512,
+        "height": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "435e9393d4509304d4b150c156917e75433e4fc8e740c16de325b4634b28d9e2",
+      "alphaBounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 511,
+        "maxY": 767
+      },
+      "visiblePixels": 393216,
+      "transparentPixels": 0
+    },
+    {
+      "index": 3,
+      "kind": "deep-space-route",
+      "source": "frames/03-deep-space-route.png",
+      "sourceRect": {
+        "x": 518,
+        "y": 749,
+        "width": 506,
+        "height": 787
+      },
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "width": 512,
+        "height": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "09a7a7a90ee6fd480f702939a57715c0a3daefc0dfa585456fb1f9ef3269e03e",
+      "alphaBounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 511,
+        "maxY": 767
+      },
+      "visiblePixels": 393216,
+      "transparentPixels": 0
+    }
+  ],
+  "provenance": {
+    "created": "2026-10-18",
+    "productionTool": "image_gen.imagegen",
+    "productionMode": "Original generation from a written brief, in parallel with Canva concept; no image-to-image reference supplied",
+    "sourceOriginal": "/workspace/generated_images/exec-082afceb-188a-4016-b4c9-b12d8caa86c5.png",
+    "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
+    "canvaConcept": {
+      "mediaId": "MAHYWkFSixE",
+      "retained": "canva-concept-thumbnail.jpg",
+      "link": "https://www.canva.com/M/MAHYWkFSixE?utm_source=OC-AaBlKrqBJJNF&utm_campaign=agent_connector_create_image_asset_opened",
+      "limitation": "Available Canva image connector returns a preview and MEDIA reference, without an original-byte export endpoint. No video export or paid capability was purchased."
+    },
+    "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
+  }
+}

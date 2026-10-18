@@ -53,6 +53,7 @@ const swContext = {
 vm.runInNewContext(`${serviceWorkerSource}\nglobalThis.__SW_TEST__ = { CACHE, CORE };`, swContext);
 
 await test("PWA precarga código, legales, sprites y fondo de Cronos", async () => {
+  assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-chapter-one-living-1");
   const paths = new Set(swContext.__SW_TEST__.CORE.map(withoutQuery));
   const manifest = JSON.parse(await text("ASSET_MANIFEST.json"));
   for (const path of [
@@ -119,8 +120,8 @@ function createCanvasContext() {
   });
 }
 
-async function loadHarness() {
-  const dom = new JSDOM(indexHtml, { url: "https://neon.test/", runScripts: "outside-only", pretendToBeVisual: true });
+async function loadHarness(campaign = "") {
+  const dom = new JSDOM(indexHtml, { url: `https://neon.test/${campaign ? "?campaign="+campaign : ""}`, runScripts: "outside-only", pretendToBeVisual: true });
   const { window } = dom;
   window.HTMLCanvasElement.prototype.getContext = () => createCanvasContext();
   window.HTMLCanvasElement.prototype.toDataURL = () => "data:image/png;base64,";
@@ -144,7 +145,7 @@ async function loadHarness() {
   const hooks = `
   window.__NEON_V7_TEST__ = {
     snapshot: () => ({
-      state, hull, score, collected, currentLevel, energyBudget, powerBudget, ammo, manualShotCooldown, warpTimer,
+      state, hull, hullReserve:classicHullReserve, score, collected, currentLevel, energyBudget, powerBudget, ammo, manualShotCooldown, warpTimer,
       displayedScore, hudScoreTarget, visualSpeed, shake, levelOneShockwave,
       weapons: classicWeapons ? NeonCampaign.classicWeaponSnapshot(classicWeapons) : null,
       player: { ...player }, powers: { ...powers },
@@ -154,7 +155,12 @@ async function loadHarness() {
     keys: { ...KEYS },
     collisionOutline: SHIP_COLLISION_OUTLINE.map((point) => [...point]),
     startLevel, damageShip, update, render, firePhaser, fireManualShot, pulseRing,
-    prepareWeaponFixture: () => { warpTimer = 0; spawnTimer = 999; classicScoutTimer = 999; items = []; gates = []; },
+    prepareWeaponFixture: () => {
+      // Explicit presentation-only skip in this controlled weapon fixture;
+      // route time, quotas, ammunition, damage and encounter clocks stay real.
+      classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;
+      warpTimer = 0; spawnTimer = 999; classicScoutTimer = 999; items = []; gates = [];
+    },
     advancePlayed: (seconds) => {
       for (let remaining = seconds; remaining > 1e-9; remaining -= Math.min(1/60, remaining)) {
         update(Math.min(1/60, remaining));
@@ -182,9 +188,21 @@ await test("campaña, guardados, balance y tamaño visual permanecen compatibles
   assert.match(gameSource, /SHIP_VISUAL_SCALE = 0\.8/);
 });
 
-await test("hitbox estable no fue modificada", async () => {
-  assert.equal(api.collisionOutline.length, 30);
-  assert.equal(sha256(JSON.stringify(api.collisionOutline)), "997fed2f9a050e08eca8c68d0b43486bc2f67a3243519e4f425bfb928ebb4841");
+await test("hitbox clásica al 40 % con ajuste interior conserva extremos visibles y variantes históricas", async () => {
+  const outline=Array.from(api.collisionOutline,point=>Array.from(point));
+  assert.equal(outline.length,30);
+  assert.equal(sha256(JSON.stringify(outline)), "e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865");
+  assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+47.36)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-39.24)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-30.08)<1e-9);
+  for(const campaign of ['n7','journey']){
+    const archived=await loadHarness(campaign);
+    try {
+      assert.equal(sha256(JSON.stringify(archived.api.collisionOutline)),
+        "997fed2f9a050e08eca8c68d0b43486bc2f67a3243519e4f425bfb928ebb4841",
+        `La geometría original de ${campaign} debe permanecer intacta`);
+    } finally {archived.dom.window.close();}
+  }
 });
 
 await test("arranque de nivel conserva presupuestos y estados limpios", async () => {
@@ -230,11 +248,12 @@ await test("el cargador canónico ofrece veinte proyectiles, se agota y recupera
   assert.equal(api.snapshot().weapons.shotSequence, emitted + 1);
 });
 
-await test("daño activa respuesta de cámara/HUD sin alterar la lógica de casco", async () => {
+await test("daño consume la reserva antes del casco y mantiene respuesta de cámara/HUD", async () => {
   let snapshot = api.snapshot();
-  api.damageShip(25, snapshot.player.x + 20, snapshot.player.y);
+  api.damageShip(35, snapshot.player.x + 20, snapshot.player.y);
   snapshot = api.snapshot();
-  assert.equal(snapshot.hull, 75);
+  assert.equal(snapshot.hullReserve, 0);
+  assert.equal(snapshot.hull, 95);
   assert.ok(snapshot.shake > 0);
 });
 

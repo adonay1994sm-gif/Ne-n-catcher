@@ -12,8 +12,13 @@
   const JOURNEY_DEMO = new URLSearchParams(location.search).get("campaign") === "journey";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
-  const SHIP_VISUAL_SCALE = 0.8;
+  const CLASSIC_SHIP_SCALE = !N7_CAMPAIGN && !JOURNEY_DEMO ? 0.4 : 1;
+  const SHIP_VISUAL_SCALE = 0.8 * CLASSIC_SHIP_SCALE;
   const SHIP_VISUAL = Object.freeze({
+    classicScale: CLASSIC_SHIP_SCALE,
+    assemblySize: 208 * CLASSIC_SHIP_SCALE,
+    muzzleOffset: 125 * CLASSIC_SHIP_SCALE,
+    bankStrength: !N7_CAMPAIGN && !JOURNEY_DEMO ? 1.8 : 1,
     scale: SHIP_VISUAL_SCALE,
     spriteSize: 248 * SHIP_VISUAL_SCALE,
     fallbackWidth: 232 * SHIP_VISUAL_SCALE,

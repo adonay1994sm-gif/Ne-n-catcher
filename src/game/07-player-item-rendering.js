@@ -65,7 +65,11 @@
       ctx.save(); ctx.translate(shot.x, shot.y);
       ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
       const age = shot.duration - shot.life;
-      if(!drawArcadePulse(shot.weapon,age,shot.weapon === "lance" ? 88 : 72))
+      if(shot.weapon==="missile" && spriteReady(SPRITES.chapterMissile)) {
+        const atlas=SPRITES.chapterMissile,cell=atlas.naturalWidth/4;
+        const row=age<.18?1:0,frame=Math.floor(age*14)%4,size=54;
+        ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
+      } else if(!drawArcadePulse(shot.weapon,age,shot.weapon === "lance" ? 88 : 72))
         drawAtlasVfx(1,shot.weapon === "twin" ? 16 : 23,68,1,.5);
       ctx.restore();
     }
@@ -136,13 +140,28 @@
       if (alpha <= 0) return;
       const pivot = ATLAS_FRAME_PIVOTS[frame];
       ctx.save(); ctx.globalAlpha *= alpha;
-      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth, Math.floor(frame / 4) * frameHeight,
-        frameWidth, frameHeight,
+      // Existing firing cells touch the next cell at their muzzle edge. Stay
+      // inside the authored cell to avoid bilinear sampling its neighbour.
+      ctx.drawImage(SPRITES.guardianAtlas, (frame % 4) * frameWidth+.5, Math.floor(frame / 4) * frameHeight+.5,
+        frameWidth-1, frameHeight-1,
         boss.x - size * pivot[0] / 443.5, boss.y - size * pivot[1] / 443.5, size, size);
       ctx.restore();
     };
     if (animation.previousFrame !== null) paint(animation.previousFrame, 1 - animation.blend);
     paint(animation.frame, animation.blend);
+    if(animation.coreCover>0 && animation.coverRect) {
+      const rect=animation.coverRect,frame=animation.coverFrame??0;
+      const scale=size/(rect.sourceCell||443.5),width=rect.width*scale,height=rect.height*scale;
+      const x=boss.x-rect.pivotX*scale,y=boss.y-rect.pivotY*scale;
+      const sx=frameWidth/(rect.sourceCell||443.5),sy=frameHeight/(rect.sourceCell||443.5);
+      ctx.save();ctx.globalAlpha*=Math.min(1,animation.coreCover);
+      ctx.beginPath();ctx.ellipse(x+width/2,y+height/2,width/2,height/2,0,0,Math.PI*2);ctx.clip();
+      // Reuse the real closed reactor plating while preserving each firing
+      // pose's articulated cannons. No visual open core can reject damage.
+      ctx.drawImage(SPRITES.guardianAtlas,(frame%4)*frameWidth+rect.x*sx,
+        Math.floor(frame/4)*frameHeight+rect.y*sy,rect.width*sx,rect.height*sy,x,y,width,height);
+      ctx.restore();
+    }
   }
 
   // Authored component crops share explicit mounting coordinates, not icon offsets.
@@ -169,16 +188,18 @@
     return true;
   }
 
-  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0, weaponFrame = null) {
+  function drawModularShip(target, loadout, size, time, steering = 0, health = 100, impact = 0, weaponFrame = null, bankStrength=1,reinforcement=0) {
     if (!spriteReady(SPRITES.modularShip)) return false;
-    const pose = NeonCampaign.shipAssemblyPose({elapsedSeconds: time, steering, hull: health, impactSeconds: impact});
+    const pose = NeonCampaign.shipAssemblyPose({elapsedSeconds: time, steering, hull: health, impactSeconds: impact,bankStrength});
     target.save();
     target.scale(size / 512, size / 512);
     target.rotate(pose.bankRotation);
     target.scale(pose.bankScaleX, 1);
     // Exhaust stretches from the nozzle, never from the centre of the ship.
-    target.save(); target.translate(0, 173);
-    target.scale(1, pose.enginePulse); target.translate(0, -173);
+    const nozzles=typeof NeonCampaign.shipNozzleAnchors==="function"?NeonCampaign.shipNozzleAnchors(loadout):[{y:173}];
+    const nozzleY=nozzles.reduce((sum,point)=>sum+point.y,0)/nozzles.length;
+    target.save(); target.translate(0, nozzleY);
+    target.scale(1, pose.enginePulse); target.translate(0, -nozzleY);
     drawShipComponent(target, loadout, "flames"); target.restore();
     if (weaponFrame !== null) drawClassicTwinMounts(target, weaponFrame);
     // A small articulated sweep pivots at each root, underneath the fuselage.
@@ -191,6 +212,13 @@
     }
     drawShipComponent(target, loadout, "engines");
     drawShipComponent(target, loadout, "hull");
+    if(reinforcement>0) {
+      // The reinforcement is part of the existing wing plating, not a floating
+      // shield bubble. A material flash marks absorbed damage on those panels.
+      target.save();target.globalCompositeOperation="screen";
+      target.globalAlpha*=Math.min(.5,reinforcement);
+      drawShipComponent(target,loadout,"wings");target.restore();
+    }
     target.restore();
     return true;
   }
@@ -305,21 +333,11 @@
     ctx.save();
     ctx.translate(player.x, player.y);
 
-    const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8;
+    const classic=typeof isUnifiedClassic==="function"&&isUnifiedClassic();
+    const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
+    const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8*shipScale;
 
-    if (powers.shield > 0) {
-      if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && spriteReady(SPRITES.forceShieldAtlas)) {
-        const atlas=SPRITES.forceShieldAtlas,cell=atlas.naturalWidth/4;
-        const size=435; // illustrated rim 190/384 -> 215 logical px around hull
-        const paint=(frame,alpha)=>{
-          ctx.save();ctx.globalAlpha*=alpha;
-          ctx.drawImage(atlas,frame*cell,0,cell,atlas.naturalHeight,-size/2,SHIP_VISUAL.centerYOffset-size/2,size,size);
-          ctx.restore();
-        };
-        if(classicShieldImpact>0)paint(3,.95);
-        else if(classicShieldAge<.20)paint(0,.70+classicShieldAge);
-        else {const mix=.5-.5*Math.cos((classicShieldAge-.2)*Math.PI*2/1.2);paint(1,1-mix);paint(2,mix);}
-      } else {
+    if (powers.shield > 0 && !classic) {
       const shieldFrame = Math.sin(t * 0.012) > 0.45 ? SPRITES.shieldEffect : SPRITES.shieldIdle;
       ctx.save();
       ctx.translate(0, -26 * SHIP_VISUAL.scale + bob);
@@ -328,25 +346,27 @@
       ctx.shadowColor = "#4cffe9";
       drawImageCentered(shieldFrame, SHIP_VISUAL.shieldSize, SHIP_VISUAL.shieldSize, elapsed * 0.08, 0.42);
       ctx.restore();
-      }
     }
 
     const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
       ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
-    const assembled = drawModularShip(ctx, assembledLoadout, 208, elapsed,
-      clamp((player.target + player.drift - player.x) / 95, -1, 1), hull, impactReactionTimer,
-      hasClassicTwinMounts() ? classicTwinFrame() : null);
+    const steering=classic&&Number.isFinite(player.visualBank)?player.visualBank:clamp((player.target+player.drift-player.x)/95,-1,1);
+    const reserve=classic&&typeof classicHullReserve==="number"&&classicHullReserve>0
+      ?.08+(typeof classicShieldImpact==="number"?classicShieldImpact:0):0;
+    const assembled = drawModularShip(ctx, assembledLoadout, assemblySize, elapsed,
+      steering, hull, impactReactionTimer,hasClassicTwinMounts()?classicTwinFrame():null,
+      SHIP_VISUAL.bankStrength??1,reserve);
     ctx.restore();
     if (!assembled) {
     ctx.save();
-    const criticalJitter = hull < 18 && state !== "destroying" ? Math.sin(elapsed * 19) * 1.6 : 0;
+    const criticalJitter = hull < 18 && state !== "destroying" ? Math.sin(elapsed * 19) * 1.6*shipScale : 0;
     ctx.translate(criticalJitter, bob + SHIP_VISUAL.centerYOffset);
     if (hasClassicTwinMounts()) {
-      ctx.save(); ctx.scale(208 / 512, 208 / 512);
+      ctx.save(); ctx.scale(assemblySize / 512, assemblySize / 512);
       drawClassicTwinMounts(ctx, classicTwinFrame()); ctx.restore();
     }
-    if (!drawShipIdentityFallback(ctx, 208)) {
+    if (!drawShipIdentityFallback(ctx, assemblySize)) {
         ctx.save();
         ctx.scale(SHIP_VISUAL.scale, SHIP_VISUAL.scale);
         const body = ctx.createLinearGradient(-75, -55, 75, 55);
@@ -367,8 +387,8 @@
     if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && classicWeapons && classicWeapons.cooldown > (classicEquipment.selected==="lance"?.38:.20)) {
       // Tiny flashes at the physical emitters; no diagonal fake convergence rays.
       for(const offset of classicEquipment.selected==="twin" ? [-10,10] : [0]) {
-        ctx.save();ctx.translate(offset,-125);
-        drawArcadePulse("impact",.035,24,.8);ctx.restore();
+        ctx.save();ctx.translate(offset*shipScale,-(SHIP_VISUAL.muzzleOffset??125));
+        drawArcadePulse("impact",.035,24*shipScale,.8);ctx.restore();
       }
     }
 
@@ -409,21 +429,36 @@
     return item.alpha * clamp((item.y - 95) / 85, 0, 1);
   }
 
+  let classicCroniumHalo=null;
+  function preparedCroniumHalo() {
+    if(classicCroniumHalo)return classicCroniumHalo;
+    if(typeof document==="undefined")return null;
+    const image=document.createElement("canvas");image.width=image.height=96;
+    const target=image.getContext("2d"),halo=target.createRadialGradient(48,48,2,48,48,48);
+    halo.addColorStop(0,"rgba(220,255,255,.9)");halo.addColorStop(.24,"rgba(76,241,255,.55)");
+    halo.addColorStop(.60,"rgba(28,139,255,.15)");halo.addColorStop(1,"rgba(12,64,255,0)");
+    target.fillStyle=halo;target.fillRect(0,0,96,96);classicCroniumHalo=image;return image;
+  }
+
   function drawEnergy(item) {
     if (typeof isUnifiedClassic === "function" && isUnifiedClassic()) {
-      // The authored core already contains its illumination. Repeated Canvas
-      // blur/gradients on every pickup cost a full software pass per object.
-      // Keep the same half-size appearance and physical collection radius.
+      // Reuse the authored animated energy center without its metal bezel.
+      // One prepared halo is shared by all orbs; never blur each pickup/frame.
       const sequence = [0,1,2,3,4,5,4,3,2,1];
       const phase = Number.isFinite(item.phase) ? item.phase : 0;
       const frame = frameFrom("core", sequence[Math.floor((elapsed * 9 + phase) % sequence.length)]);
       const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
       ctx.save(); ctx.translate(item.x, item.y);
       ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
-      ctx.shadowBlur = 0;
-      drawImageCentered(frame, item.r * 2.85, item.r * 2.85, -item.rot * .08);
+      ctx.shadowBlur = 0;ctx.globalCompositeOperation="screen";
+      const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*2.2;
+      if(halo)ctx.drawImage(halo,-glow/2,-glow/2,glow,glow);
+      if(spriteReady(frame)) {
+        const sourceWidth=frame.naturalWidth,sourceHeight=frame.naturalHeight;
+        ctx.drawImage(frame,sourceWidth*.27,sourceHeight*.27,sourceWidth*.46,sourceHeight*.46,-size/2,-size/2,size,size);
+      }
       if (spriteReady(SPRITES.croniumFragment))
-        drawImageCentered(SPRITES.croniumFragment, item.r * 2.10, item.r * 2.10, item.rot * .06, .72);
+        drawImageCentered(SPRITES.croniumFragment, item.r * 1.45, item.r * 1.45, elapsed*.20+phase, .42);
       ctx.restore(); return;
     }
     ctx.save();

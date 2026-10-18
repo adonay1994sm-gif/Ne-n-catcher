@@ -48,15 +48,16 @@ const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, v
  * report fits=false. The caller must adapt the layout instead of scaling the
  * collision shape or pretending the controls can be overlapped safely.
  */
-export function calculateFlightBounds({ width, height, hudBottom, controlsTop }) {
+export function calculateFlightBounds({ width, height, hudBottom, controlsTop, shipScale = 1 }) {
   finite(width, 'width'); finite(height, 'height');
   finite(hudBottom, 'hudBottom'); finite(controlsTop, 'controlsTop');
+  finite(shipScale, 'shipScale');
   if (width <= 0 || height <= 0 || hudBottom < 0 || controlsTop > height ||
-      hudBottom > controlsTop) {
+      hudBottom > controlsTop || shipScale<=0 || shipScale>4) {
     throw new RangeError('A positive viewport and ordered HUD/control boundaries are required');
   }
-  const firstX = SIDE_CLEARANCE, lastX = width - SIDE_CLEARANCE;
-  const firstY = hudBottom + NOSE_CLEARANCE, lastY = controlsTop - TAIL_CLEARANCE;
+  const firstX = SIDE_CLEARANCE*shipScale, lastX = width - SIDE_CLEARANCE*shipScale;
+  const firstY = hudBottom + NOSE_CLEARANCE*shipScale, lastY = controlsTop - TAIL_CLEARANCE*shipScale;
   const xFits = firstX <= lastX, yFits = firstY <= lastY;
   const centerY = clamp(firstY / 2 + lastY / 2, 0, height);
   return Object.freeze({

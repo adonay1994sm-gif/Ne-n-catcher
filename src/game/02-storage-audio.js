@@ -112,7 +112,7 @@
       if (crossesCanvas(rect)) hudBottomCss = Math.max(hudBottomCss, rect.bottom);
     }
     let controlsTopCss = canvasRect.bottom - 104;
-    for(const node of [ui.fire,ui.flightWeapon]) {
+    for(const node of [ui.fire,ui.flightWeapon,ui.classicMissile]) {
       const rect=visibleRect(node);
       if(crossesCanvas(rect))controlsTopCss=Math.min(controlsTopCss,rect.top);
     }
@@ -126,11 +126,11 @@
     }
     const hudBottom = clamp((hudBottomCss - canvasRect.top) * verticalScale, 0, H);
     const controlsTop = clamp((controlsTopCss - canvasRect.top) * verticalScale, hudBottom, H);
-    const base = NeonCampaign.calculateFlightBounds({ width: W, height: H, hudBottom, controlsTop });
+    const base = NeonCampaign.calculateFlightBounds({ width: W, height: H, hudBottom, controlsTop, shipScale: SHIP_VISUAL.classicScale });
     let minY = base.minY, maxY = base.maxY, yFits = base.yFits;
     if (atlasBoss) {
       const bossBottom = atlasBoss.targetY + (atlasBoss.visualSize || 350) * .52;
-      minY = Math.max(minY, bossBottom + 158);
+      minY = Math.max(minY, bossBottom + 158 * SHIP_VISUAL.classicScale);
       if (minY > maxY) {
         // Keep the ship within the measured UI envelope even if the boss must
         // be resized by its presentation owner; report that the arena is tight.
@@ -192,6 +192,7 @@
   // The score shares the legacy AudioContext. The existing frame owner calls
   // updateScore; no score timer, RAF or permanently running drone is created.
   let voyageScore = null;
+  let chapterScore = null;
   let voyageScoreContext = "transit";
   let scoreSuspended = false;
   const activeToneVoices = new Set();
@@ -217,6 +218,9 @@
       voyageScore = NeonCampaign.createVoyageScore({context: ac, output: musicGain});
       voyageScore.setContext(voyageScoreContext);
     }
+    if(!chapterScore&&isUnifiedClassic()&&ac.createMediaElementSource) {
+      try {chapterScore=NeonCampaign.createChapterScore({context:ac,output:musicGain});} catch {chapterScore=null;}
+    }
     scoreSuspended = false;
     updateAudioVolumes();
   }
@@ -229,7 +233,9 @@
 
   function updateScore(dt, paused = false) {
     if (!voyageScore) return;
-    voyageScore.setPaused(paused || scoreSuspended);
+    const rendered=chapterScore?.update({active:isUnifiedClassic()&&Boolean(classicChapterStory),
+      elapsed:classicFlightView?.elapsed||0,paused:paused||scoreSuspended,enabled:settings.music>0});
+    voyageScore.setPaused(paused || scoreSuspended || Boolean(rendered));
     voyageScore.advance(dt);
   }
 
@@ -242,6 +248,7 @@
 
   async function suspendAudio() {
     scoreSuspended = true;
+    chapterScore?.suspend();
     voyageScore?.setPaused(true);
     stopToneVoices();
     if (audioCtx?.state === "running") await audioCtx.suspend().catch(() => {});
@@ -258,6 +265,7 @@
   function updateAudioVolumes() {
     voyageScore?.setEnabled(settings.music > 0);
     if (settings.fx <= 0) stopToneVoices();
+    if(settings.music<=0)chapterScore?.suspend();
     if (musicGain && audioCtx) {
       const value = (settings.music / 100) * 0.26;
       musicGain.gain.setTargetAtTime(value, audioCtx.currentTime, 0.08);

@@ -5,16 +5,17 @@
  */
 export const SCRAP_ECONOMY_KEY = 'neonCatcher.classicSalvage.v1';
 export const SCRAP_ECONOMY_RULES = Object.freeze({
-  version: 1, silver: 100000, gold: 10000000, stellar: 100000000,
+  version: 1, revision: 2, silver: 100000, gold: 10000000, stellar: 100000000,
+  baseHullReserve: 30, reinforcedHullReserve: 45, maxMissiles: 3, missileUnitPrice: 6,
   maxDropReceipts: 512, maxPurchaseReceipts: 128, maxInvalidBackups: 8
 });
 
-export const SCRAP_REWARDS = Object.freeze({raider: 6, scout: 9, interceptor: 15, atlas: 180});
+export const SCRAP_REWARDS = Object.freeze({raider: 6, scout: 9, interceptor: 15, atlas: 600});
 export const SCRAP_UPGRADES = Object.freeze({
   'twin-preparation': Object.freeze({id: 'twin-preparation', price: 24,
     label: 'Preparar emisor', description: 'Prepara la pieza recuperada; Gemelo sigue requiriendo vencer a Atlas.'}),
-  'shield-cell': Object.freeze({id: 'shield-cell', price: 30,
-    label: 'Célula de escudo', description: 'Activa tres segundos de protección al salir de C9 o entrar en una etapa.'}),
+  'hull-reinforcement': Object.freeze({id: 'hull-reinforcement', price: 30,
+    label: 'Refuerzo de casco', description: 'Amplía la reserva de integridad de 30 a 45; absorbe daño sin temporizador.'}),
   'coolant-feed': Object.freeze({id: 'coolant-feed', price: 45,
     label: 'Alimentación refrigerada', description: 'Recupera un proyectil cada 1,5 segundos en lugar de cada dos.'})
 });
@@ -35,6 +36,22 @@ export function rewardForEnemy(type) {
   return name === null ? 0 : SCRAP_REWARDS[name];
 }
 
+export function hullReserveCapacity(record) {
+  return Array.isArray(record?.upgrades)&&record.upgrades.some(sku=>
+    sku==='hull-reinforcement'||sku==='shield-cell')
+    ? SCRAP_ECONOMY_RULES.reinforcedHullReserve : SCRAP_ECONOMY_RULES.baseHullReserve;
+}
+
+const upgradeName = sku => sku === 'shield-cell' ? 'hull-reinforcement' : sku;
+const historicalReward = (type, amount) => amount === SCRAP_REWARDS[type] || (type === 'atlas' && amount === 180);
+const operationSequence = (id, prefix) => {
+  if(typeof id!=='string'||!id.startsWith(prefix))return null;
+  const tail=id.slice(prefix.length);
+  if(!/^[1-9]\d*$/.test(tail))return null;
+  const sequence=Number(tail);
+  return Number.isSafeInteger(sequence)?sequence:null;
+};
+
 /** No rounded shorthand: the visible exchange rates always retain the base remainder. */
 export function formatDenominations(balance) {
   if (!integer(balance)) throw new TypeError('Salvage balance must be a nonnegative safe integer');
@@ -53,29 +70,52 @@ export function formatDenominations(balance) {
 }
 
 export function createScrapRecord() {
-  return {version: 1, balance: 0, earned: 0, spent: 0, runSequence: 0,
-    activeRun: null, upgrades: [], purchases: []};
+  return {version: 1, revision: 2, balance: 0, earned: 0, spent: 0, runSequence: 0,
+    activeRun: null, upgrades: [], purchases: [], missileAmmo: 3, missileShotsSpent: 0,
+    missileRoundsPurchased: 0, missileRefillSequence: 0, lastMissileRefill: null};
 }
 
 /** Unknown versions and malformed monetary relationships are never migrated by guessing. */
 export function normalizeScrapRecord(value) {
+  const legacy=object(value)&&!has(value,'revision')&&['missileAmmo','missileShotsSpent',
+    'missileRoundsPurchased','missileRefillSequence','lastMissileRefill'].every(key=>!has(value,key));
+  const upgrades=Array.isArray(value?.upgrades)?value.upgrades.map(upgradeName):[];
   if (!object(value) || value.version !== 1 ||
+      (!legacy&&value.revision!==SCRAP_ECONOMY_RULES.revision) ||
       !['balance', 'earned', 'spent', 'runSequence'].every(key => integer(value[key])) ||
       value.earned < value.spent || value.balance !== value.earned - value.spent ||
       !Array.isArray(value.upgrades) || value.upgrades.length > Object.keys(SCRAP_UPGRADES).length ||
-      value.upgrades.some(sku => typeof sku !== 'string' || !has(SCRAP_UPGRADES, sku)) ||
-      new Set(value.upgrades).size !== value.upgrades.length ||
+      upgrades.some(sku => typeof sku !== 'string' || !has(SCRAP_UPGRADES, sku)) ||
+      new Set(upgrades).size !== upgrades.length ||
       !Array.isArray(value.purchases) || value.purchases.length > SCRAP_ECONOMY_RULES.maxPurchaseReceipts) return null;
+  const missileAmmo=legacy?3:value.missileAmmo;
+  const missileShotsSpent=legacy?0:value.missileShotsSpent;
+  const missileRoundsPurchased=legacy?0:value.missileRoundsPurchased;
+  const missileRefillSequence=legacy?0:value.missileRefillSequence;
+  const lastMissileRefill=legacy?null:value.lastMissileRefill;
+  if(![missileAmmo,missileShotsSpent,missileRoundsPurchased,missileRefillSequence].every(integer)||
+    missileAmmo>SCRAP_ECONOMY_RULES.maxMissiles||
+    !Number.isSafeInteger(missileRoundsPurchased*SCRAP_ECONOMY_RULES.missileUnitPrice)||
+    !Number.isSafeInteger(SCRAP_ECONOMY_RULES.maxMissiles+missileRoundsPurchased)||
+    SCRAP_ECONOMY_RULES.maxMissiles+missileRoundsPurchased-missileShotsSpent!==missileAmmo||
+    missileRoundsPurchased<missileRefillSequence||missileRoundsPurchased>missileRefillSequence*3)return null;
+  if(missileRefillSequence===0) {
+    if(lastMissileRefill!==null)return null;
+  } else if(!object(lastMissileRefill)||lastMissileRefill.sequence!==missileRefillSequence||
+    lastMissileRefill.id!==`c9:missiles:${missileRefillSequence}`||!integer(lastMissileRefill.amount)||
+    lastMissileRefill.amount<1||lastMissileRefill.amount>3||
+    lastMissileRefill.price!==lastMissileRefill.amount*SCRAP_ECONOMY_RULES.missileUnitPrice)return null;
   const transactionIds = new Set(), purchased = new Set();
   let spent = 0;
   for (const receipt of value.purchases) {
+    const sku=upgradeName(receipt?.sku);
     if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) ||
-        typeof receipt.sku !== 'string' || !has(SCRAP_UPGRADES, receipt.sku) || purchased.has(receipt.sku) ||
-        receipt.price !== SCRAP_UPGRADES[receipt.sku].price) return null;
-    transactionIds.add(receipt.id); purchased.add(receipt.sku); spent += receipt.price;
+        typeof sku !== 'string' || !has(SCRAP_UPGRADES, sku) || purchased.has(sku) ||
+        receipt.price !== SCRAP_UPGRADES[sku].price) return null;
+    transactionIds.add(receipt.id); purchased.add(sku); spent += receipt.price;
   }
-  if (spent !== value.spent || value.upgrades.length !== purchased.size ||
-      value.upgrades.some(sku => !purchased.has(sku))) return null;
+  if (spent+missileRoundsPurchased*SCRAP_ECONOMY_RULES.missileUnitPrice !== value.spent || upgrades.length !== purchased.size ||
+      upgrades.some(sku => !purchased.has(sku))) return null;
   if (value.activeRun !== null) {
     const run = value.activeRun;
     if (!object(run) || run.sequence !== value.runSequence || run.sequence < 1 ||
@@ -86,19 +126,22 @@ export function normalizeScrapRecord(value) {
     for (const receipt of run.claimed) {
       if (!object(receipt) || !identifier(receipt.id) || dropIds.has(receipt.id) ||
           typeof receipt.enemyType !== 'string' || !has(SCRAP_REWARDS, receipt.enemyType) ||
-          receipt.amount !== SCRAP_REWARDS[receipt.enemyType]) return null;
+          !historicalReward(receipt.enemyType,receipt.amount)) return null;
       dropIds.add(receipt.id); earnedThisRun += receipt.amount;
     }
     if (earnedThisRun > value.earned) return null;
   } else if (value.runSequence !== 0) return null;
   // Preserve only the public v1 data, not caller prototypes or optional callbacks.
-  return {version: 1, balance: value.balance, earned: value.earned, spent: value.spent,
+  return {version: 1, revision: 2, balance: value.balance, earned: value.earned, spent: value.spent,
     runSequence: value.runSequence, activeRun: value.activeRun === null ? null : {
       id: value.activeRun.id, scope: value.activeRun.scope, sequence: value.activeRun.sequence,
       claimed: value.activeRun.claimed.map(receipt => ({id: receipt.id,
         enemyType: receipt.enemyType, amount: receipt.amount}))},
-    upgrades: [...value.upgrades], purchases: value.purchases.map(receipt => ({
-      id: receipt.id, sku: receipt.sku, price: receipt.price}))};
+    upgrades, purchases: value.purchases.map(receipt => ({
+      id: receipt.id, sku: upgradeName(receipt.sku), price: receipt.price})),
+    missileAmmo,missileShotsSpent,missileRoundsPurchased,missileRefillSequence,
+    lastMissileRefill:lastMissileRefill===null?null:{id:lastMissileRefill.id,
+      sequence:lastMissileRefill.sequence,amount:lastMissileRefill.amount,price:lastMissileRefill.price}};
 }
 
 /**
@@ -111,6 +154,7 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
   if (!storage || typeof storage.readRaw !== 'function' || typeof storage.setJSON !== 'function' ||
       !identifier(key)) throw new TypeError('Tagged readRaw/setJSON storage and a valid save key are required');
   const backupKey = `${key}:invalid-backups`;
+  const migrationBackupKey = `${key}:migration-backups`;
   let current = null;
   const blocked = (reason, extra = {}) => ({ok: false, status: 'blocked', reason, ...extra});
   const success = (status, extra = {}) => ({ok: true, status, state: copy(current), ...extra});
@@ -124,23 +168,30 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
   function writeJSON(target, value) {
     try { return storage.setJSON(target, value) === true; } catch { return false; }
   }
-  function preserveInvalid(raw) {
-    const loaded = read(backupKey);
-    if (!loaded.ok) return blocked('backup-read-denied', {key: backupKey});
+  function backupRaw(raw,target) {
+    const loaded = read(target);
+    if (!loaded.ok) return blocked('backup-read-denied', {key: target});
     let records = [];
     if (loaded.value !== null) {
       try {
         const backup = JSON.parse(loaded.value);
         if (!object(backup) || backup.version !== 1 || !Array.isArray(backup.records) ||
             backup.records.length > SCRAP_ECONOMY_RULES.maxInvalidBackups ||
-            backup.records.some(record => typeof record !== 'string')) return blocked('invalid-backup', {key: backupKey});
+            backup.records.some(record => typeof record !== 'string')) return blocked('invalid-backup', {key: target});
         records = backup.records;
-      } catch { return blocked('invalid-backup', {key: backupKey}); }
+      } catch { return blocked('invalid-backup', {key: target}); }
     }
-    if (records.includes(raw)) return blocked('invalid-save-backed-up', {key, backupKey});
-    if (records.length >= SCRAP_ECONOMY_RULES.maxInvalidBackups) return blocked('backup-capacity', {key: backupKey});
+    if (records.includes(raw)) return {ok:true};
+    if (records.length >= SCRAP_ECONOMY_RULES.maxInvalidBackups) return blocked('backup-capacity', {key: target});
     const snapshot = {version: 1, records: [...records, raw]};
-    if (!writeJSON(backupKey, snapshot)) return blocked('backup-write-denied', {key: backupKey});
+    writeJSON(target, snapshot);
+    const after=read(target);
+    return after.ok&&after.value===JSON.stringify(snapshot)?{ok:true}
+      :blocked('backup-write-denied',{key:target});
+  }
+  function preserveInvalid(raw) {
+    const saved=backupRaw(raw,backupKey);
+    if(!saved.ok)return saved;
     return blocked('invalid-save-backed-up', {key, backupKey});
   }
   function readState() {
@@ -156,8 +207,20 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
     if (object(parsed) && integer(parsed.version) && parsed.version !== 1) {
       return {error: blocked('unsupported-save-version', {key})};
     }
+    if(object(parsed)&&has(parsed,'revision')&&integer(parsed.revision)&&parsed.revision!==2) {
+      return {error:blocked('unsupported-save-revision',{key})};
+    }
     current = normalizeScrapRecord(parsed);
-    return current === null ? {error: preserveInvalid(loaded.value)} : {raw: loaded.value};
+    if(current===null)return {error:preserveInvalid(loaded.value)};
+    const migrating=!has(parsed,'revision')||parsed.upgrades.includes('shield-cell')||
+      parsed.purchases.some(receipt=>receipt.sku==='shield-cell');
+    if(migrating) {
+      const backup=backupRaw(loaded.value,migrationBackupKey);
+      if(!backup.ok){current=null;return {error:backup};}
+      const migrated=commit(current,loaded.value);
+      return migrated.ok?{raw:JSON.stringify(current),migrated:true}:{error:migrated};
+    }
+    return {raw:loaded.value};
   }
   function commit(next, beforeRaw, extra = {}) {
     const normalized = normalizeScrapRecord(next);
@@ -179,7 +242,7 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
   }
   function load() {
     const loaded = readState();
-    return loaded.error || success(loaded.raw === null ? 'new' : 'loaded');
+    return loaded.error || success(loaded.migrated?'migrated':loaded.raw === null ? 'new' : 'loaded');
   }
   function beginRun({scope, fresh = false} = {}) {
     if (!identifier(scope) || typeof fresh !== 'boolean') throw new TypeError('A stable run scope and boolean fresh flag are required');
@@ -213,8 +276,48 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
     next.activeRun.claimed.push({id: dropId, enemyType: type, amount});
     return commit(next, loaded.raw, {amount, duplicate: false, runId, dropId});
   }
-  function purchase({transactionId, sku} = {}) {
-    if (!identifier(transactionId) || typeof sku !== 'string' || !has(SCRAP_UPGRADES, sku)) throw new TypeError('A stable transaction ID and catalogue SKU are required');
+  function refillMissiles(transactionId) {
+    const sequence=operationSequence(transactionId,'c9:missiles:');
+    if(sequence===null)throw new TypeError('Missile refills require c9:missiles:<next sequence>');
+    const loaded = readState();
+    if (loaded.error) return loaded.error;
+    if(current.purchases.some(receipt=>receipt.id===transactionId))return blocked('transaction-id-conflict');
+    if(sequence<=current.missileRefillSequence)return success('duplicate',{duplicate:true,
+      sku:'missile-refill',price:0,amount:0,remaining:current.missileAmmo});
+    if(sequence!==current.missileRefillSequence+1)return blocked('refill-sequence-conflict');
+    const amount=SCRAP_ECONOMY_RULES.maxMissiles-current.missileAmmo;
+    if(amount===0)return {ok:false,status:'unavailable',reason:'missiles-full',state:copy(current)};
+    const price=amount*SCRAP_ECONOMY_RULES.missileUnitPrice;
+    if(current.balance<price)return {ok:false,status:'unavailable',reason:'insufficient-funds',price,
+      missing:price-current.balance,state:copy(current)};
+    if(!Number.isSafeInteger(current.missileRoundsPurchased+amount)||
+      !Number.isSafeInteger((current.missileRoundsPurchased+amount)*SCRAP_ECONOMY_RULES.missileUnitPrice))return blocked('missile-capacity');
+    const next=copy(current);
+    next.balance-=price;next.spent+=price;next.missileAmmo+=amount;
+    next.missileRoundsPurchased+=amount;next.missileRefillSequence=sequence;
+    next.lastMissileRefill={id:transactionId,sequence,amount,price};
+    return commit(next,loaded.raw,{sku:'missile-refill',price,amount,
+      remaining:next.missileAmmo,duplicate:false,transactionId});
+  }
+  function spendMissile({shotId}={}) {
+    const sequence=operationSequence(shotId,'missile:');
+    if(sequence===null)throw new TypeError('A durable missile:<next sequence> shot ID is required');
+    const loaded=readState();
+    if(loaded.error)return loaded.error;
+    if(sequence<=current.missileShotsSpent)return success('duplicate',{
+      duplicate:true,shotId,remaining:current.missileAmmo});
+    if(sequence!==current.missileShotsSpent+1)return blocked('missile-sequence-conflict');
+    if(current.missileAmmo===0)return {ok:false,status:'unavailable',reason:'missiles-empty',state:copy(current)};
+    const next=copy(current);
+    next.missileAmmo--;next.missileShotsSpent=sequence;
+    return commit(next,loaded.raw,{duplicate:false,shotId,remaining:next.missileAmmo});
+  }
+  function purchase({transactionId, sku:requestedSku} = {}) {
+    const sku=upgradeName(requestedSku);
+    if (!identifier(transactionId) || typeof sku !== 'string' ||
+      (!has(SCRAP_UPGRADES, sku)&&sku!=='missile-refill')) throw new TypeError('A stable transaction ID and catalogue SKU are required');
+    if(sku==='missile-refill')return refillMissiles(transactionId);
+    if(transactionId.startsWith('c9:missiles:'))throw new TypeError('Missile refill transaction IDs are reserved');
     const loaded = readState();
     if (loaded.error) return loaded.error;
     const prior = current.purchases.find(receipt => receipt.id === transactionId);
@@ -230,8 +333,11 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
     next.purchases.push({id: transactionId, sku, price});
     return commit(next, loaded.raw, {sku, price, duplicate: false});
   }
-  return Object.freeze({key, backupKey, load, beginRun, claimDrop,
+  return Object.freeze({key, backupKey, migrationBackupKey, load, beginRun, claimDrop,
     grant: ({runId, rewardId, enemyType} = {}) => claimDrop({runId, dropId: rewardId, enemyType}),
-    purchase, getState: () => current === null ? null : copy(current),
+    purchase,spendMissile,
+    nextMissileShotId:()=>current===null?null:`missile:${current.missileShotsSpent+1}`,
+    nextMissileRefillId:()=>current===null?null:`c9:missiles:${current.missileRefillSequence+1}`,
+    getState: () => current === null ? null : copy(current),
     getBalance: () => current?.balance ?? null});
 }

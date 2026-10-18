@@ -37,7 +37,7 @@ function rendered(reduceEffects) {
     shake: 20, flash: .8, W: 720, H: 1280, powers: {slow: 0}, gates: [], items: []};
   for (const name of ['syncShipPresentation', 'drawShipHangar', 'drawClassicDock', 'background', 'drawWarp',
     'drawTractorCable', 'drawGuardianAtlas', 'drawPlayer', 'drawShots', 'drawClassicProjectiles',
-    'drawExplosions', 'drawImpactEffects', 'drawRings', 'drawParts', 'drawCombo']) {
+    'drawExplosions', 'drawImpactEffects', 'drawRings', 'drawParts', 'drawCombo', 'drawClassicChapterOpening']) {
     sandbox[name] = () => calls.push({name});
   }
   vm.createContext(sandbox);
@@ -52,7 +52,7 @@ test('comfort rendering removes camera kicks, shake and full-screen damage flash
   assert.equal(regular.filter(call => call.name === 'fillRect').length, 1);
   assert.equal(reduced.filter(call => call.name === 'translate').length, 0);
   assert.equal(reduced.filter(call => call.name === 'fillRect').length, 0);
-  for (const name of ['background', 'drawGuardianAtlas', 'drawPlayer', 'drawClassicProjectiles', 'drawImpactEffects']) {
+  for (const name of ['background', 'drawGuardianAtlas', 'drawPlayer', 'drawClassicProjectiles', 'drawImpactEffects', 'drawClassicChapterOpening']) {
     assert.equal(reduced.filter(call => call.name === name).length, 1, `${name} remains visible`);
   }
 });

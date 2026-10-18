@@ -43,8 +43,8 @@ const FRAME_LAYOUTS=Object.freeze({
     {source:{x:961,y:618,width:306,height:265},destination:{x:-138,y:20,width:276,height:228}}
   ],
   flames:[
-    {source:{x:1455,y:143,width:210,height:300},destination:{x:-135,y:173,width:294,height:145}},
-    {source:{x:1450,y:518,width:216,height:369},destination:{x:-115,y:173,width:250,height:145}}
+    {source:{x:1455,y:143,width:210,height:300},destination:{x:-147.32568673290473,y:159.60669014084507,width:306.99152542372883,height:145}},
+    {source:{x:1450,y:518,width:216,height:369},destination:{x:-122.43519000520561,y:160.40309863475994,width:253.44299843831337,height:145}}
   ]
 });
 const FRAMES=Object.freeze(Object.fromEntries(['hull','wings','engines','flames'].map((part,column)=>[
@@ -68,6 +68,25 @@ export function shipPartFrame(loadout,part){
   return FRAMES[part][VARIANTS.indexOf(variant)];
 }
 
+/** Reviewed nozzle centers on the shared artboard, independent of render size. */
+export function shipNozzleAnchors(loadout){
+  const frame=shipPartFrame(loadout,'engines'),points=frame.row===0?[[1040,375],[1185,375]]:[[1042,799],[1189,799]];
+  return Object.freeze(points.map(([x,y])=>Object.freeze({
+    x:frame.destination.x+(x-frame.source.x)/frame.source.width*frame.destination.width,
+    y:frame.destination.y+(y-frame.source.y)/frame.source.height*frame.destination.height
+  })));
+}
+
+/** Visual response only; the existing update loop keeps full control accuracy. */
+export function advanceShipBank(current,target,delta){
+  if(!Number.isFinite(delta)||delta<0)throw new RangeError('Visual bank delta must be nonnegative');
+  const before=Number.isFinite(current)?Math.max(-1,Math.min(1,current)):0;
+  const desired=Number.isFinite(target)?Math.max(-1,Math.min(1,target)):0;
+  if(delta===0)return before;
+  const response=Math.abs(desired)>Math.abs(before)?8:5;
+  return before+(desired-before)*(1-Math.exp(-Math.min(delta,.1)*response));
+}
+
 const bounded=(value,fallback,min,max)=>Number.isFinite(value)?Math.max(min,Math.min(max,value)):fallback;
 
 /**
@@ -82,6 +101,7 @@ export function shipAssemblyPose(input={}){
   const steering=bounded(ownValue(input,'steering'),0,-1,1);
   const impact=bounded(ownValue(input,'impactSeconds'),0,0,1);
   const health=bounded(ownValue(input,'hull'),100,0,100);
+  const bankStrength=bounded(ownValue(input,'bankStrength'),1,1,2);
   // Reduce by each oscillation's period before multiplying, including unusually
   // large finite values from malformed input; no Infinity -> NaN intermediate.
   const wave=frequency=>Math.sin((elapsed%(Math.PI*2/frequency))*frequency);
@@ -89,7 +109,7 @@ export function shipAssemblyPose(input={}){
   const intensity=Math.abs(turn),damage=1-health/100;
   return Object.freeze({
     bankScaleX:1-intensity*.12,
-    bankRotation:turn*.10+wave(43)*impact*.018,
+    bankRotation:turn*.10*bankStrength+wave(43)*impact*.018,
     wingSweep:turn*.055,
     enginePulse:(1+wave(17)*.075+intensity*.12)*(1-damage*.08)
   });

@@ -28,6 +28,10 @@ const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expec
  * handlers/models, with a mocked Canvas and loaded images. Explicit collection,
  * target insertion and quiet frames isolate contracts; this is not natural
  * gameplay, a visual acceptance test or a physical iPhone certification.
+ * prepare() explicitly skips the opening through the story model so input and
+ * weapon tests start unlocked without advancing the route clock. Tests of the
+ * opening opt out. Boss fixtures use the actual route/model APIs to isolate
+ * chapter flow; injected model damage is never presented as a playable victory.
  */
 function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false,
   destructionAsset = 'loaded', rects = {}, unlocked = 2, savedVoyage, randomSeed, savedSalvage, failSalvageWrite = false} = {}) {
@@ -138,7 +142,21 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       update,render,background,startLevel,prepareLevel,pauseGame,resumeGame,goHome,completeLevel,fireManualShot,
       finishGame,resumeReward,
       refreshClassicFlightBounds,showStoryTransmission,hideStoryTransmission,syncClassicFlightHud,
-      prepare(index=0){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];},
+      skipIntro(){classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;syncClassicChapterPresentation();},
+      prepare(index=0,{skipOpening=true}={}){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];
+        if(skipOpening){classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;syncClassicChapterPresentation();}},
+      startBossFixture(){
+        startLevel(0);warpTimer=0;classicChapterStory?.skipIntro();
+        collected=level().goal;
+        classicFlight=NeonCampaign.createChronosVoyage({goal:level().goal,
+          checkpoint:NeonCampaign.createChronosVoyageCheckpoint(10,{goal:level().goal,collected})});
+        for(let frame=0;frame<60*40&&!classicFlight.snapshot().canFinish;frame++)classicFlight.advance(1/60,collected,classicFlightEvent);
+        classicFlightView=classicFlight.snapshot();
+        classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:true},classicChapterEvent);
+        classicChapterView=classicChapterStory.snapshot();items=[];gates=[];beginAtlasEncounter();
+      },
+      hitBossForFixture(){const result=NeonCampaign.hitGuardianAtlas(atlasBoss,1);for(const event of result.events)consumeAtlasEvent(event);return result.accepted;},
+      damageForFixture(amount){damageShip(amount,player.x,player.y);},
       patrolFrame(dt=1/60){
         // Isolate actual patrol scheduling from unrelated random meteors and
         // debris formations. Enemy timers, HP, collision, shots and animation
@@ -162,6 +180,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       seedTransitFixture(){items=[{id:'boundary-live-debris',type:'debris',x:W*.2,baseX:W*.2,y:H*.35,
         r:26,s:0,rot:0,rs:0,p:0,phase:0,amp:0,alpha:1,special:'',spriteKey:'debrisMetal',hp:2,maxHp:2,damage:16}];},
       snapshot:()=>({state,elapsed,score,hudScoreTarget,displayedScore,hull,ammo,collected,currentLevel,W,H,unlocked:getUnlocked(),
+        chapter:classicChapterView?JSON.parse(JSON.stringify(classicChapterView)):null,reserve:classicHullReserve,reserveCapacity:classicHullReserveCapacity,
         player:{...player},bounds:classicFlightBounds?{...classicFlightBounds}:null,input:{...classicFlightInput},
         weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
         route:classicFlight?.snapshot()||null,equipment:{...classicEquipment,unlocked:[...classicEquipment.unlocked]},
@@ -212,6 +231,17 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     assert.equal(snapshot().route.stageNumber, number);
     return snapshot();
   }
+  function resolveBossFixture() {
+    assert.ok(snapshot().boss,'The route must actually start its boss before model damage is injected');
+    let accepted=0;
+    for(let frame=0;frame<60*60&&!snapshot().boss.resolved;frame++) {
+      if(snapshot().boss.vulnerability&&api.hitBossForFixture())accepted++;
+      advance(1/60,true);
+    }
+    assert.ok(snapshot().boss.resolved,'The real boss model must resolve within its bounded encounter budget');
+    assert.ok(accepted>0,'A fixture cannot resolve Atlas without accepted damage');
+    return snapshot();
+  }
   function pointer(type, pointerId, clientX, clientY) {
     canvas.dispatchEvent(new window.PointerEvent(type, {pointerId, clientX, clientY,
       pointerType: 'touch', buttons: /up|cancel/.test(type) ? 0 : 1,
@@ -222,7 +252,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     Object.defineProperties(event, {touches: {value: all}, changedTouches: {value: changed}});
     canvas.dispatchEvent(event);
   }
-  return {window, api, snapshot, advance, advanceStage, reachStage, recoverStageQuota, pointer, touches, pending, drawCalls,
+  return {window, api, snapshot, advance, advanceStage, reachStage, recoverStageQuota,resolveBossFixture, pointer, touches, pending, drawCalls,
     setRect: (id, rect) => layoutRects.set(id, rect),
     rectReads: id => rectReadCounts.get(id) || 0,
     clearDrawCalls: () => { drawCalls.length = 0; },
@@ -236,6 +266,34 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     equipment: () => JSON.parse(window.localStorage.getItem(EQUIPMENT_KEY)),
     voyage: () => JSON.parse(window.localStorage.getItem(VOYAGE_KEY))};
 }
+
+test('the real opening locks pilot controls and fire for nine played seconds and freezes that lock during pause',t=>{
+  const h=harness(t);h.api.prepare(0,{skipOpening:false});
+  assert.equal(h.snapshot().chapter.opening.controlsLocked,true);
+  assert.equal(h.api.fireManualShot(),false);
+  const before=h.snapshot().player;
+  h.pointer('pointerdown',91,200,500);h.pointer('pointermove',91,240,460);
+  assert.equal(h.snapshot().input.active,false);assert.equal(h.snapshot().player.target,before.target);
+  h.advance(8.95);assert.equal(h.snapshot().chapter.opening.controlsLocked,true);
+  h.api.pauseGame();const paused=h.snapshot();h.advance(5);
+  assert.deepEqual(h.snapshot().chapter,paused.chapter);assert.deepEqual(h.snapshot().route,paused.route);
+  h.api.resumeGame();h.advance(.1);
+  assert.equal(h.snapshot().chapter.opening.controlsLocked,false);
+  assert.equal(h.api.fireManualShot(),true);
+  assert.equal(h.pending.size,1);
+});
+
+test('the classic thirty-point reinforcement absorbs damage, remains without a timer and refills only through its pickup',t=>{
+  const h=harness(t);h.api.prepare(2);
+  assert.equal(h.snapshot().reserve,30);assert.equal(h.snapshot().reserveCapacity,30);
+  h.api.damageForFixture(20);assert.equal(h.snapshot().reserve,10);assert.equal(h.snapshot().hull,100);
+  h.advance(12);assert.equal(h.snapshot().reserve,10);assert.equal(h.snapshot().hull,100);
+  h.api.collectPower('shield');assert.equal(h.snapshot().reserve,30);
+  assert.equal(h.node('powerShield').classList.contains('active'),false,'reinforcement is not a timed chip');
+  h.advance(9);assert.equal(h.snapshot().reserve,30);
+  h.api.damageForFixture(40);assert.equal(h.snapshot().reserve,0);assert.equal(h.snapshot().hull,90);
+  assert.equal(h.pending.size,1);
+});
 
 test('twenty classic rounds recharge from played time and freeze completely while paused without a HUD counter', t => {
   const h = harness(t); h.api.prepare();
@@ -380,7 +438,7 @@ test('the Safari touch fallback tracks the first finger and ignores a secondary 
   h.touches('touchcancel', [], [moved]); assert.equal(h.snapshot().input.active, false);
 });
 
-test('the first mission requires recovered CRONIUM, all ten visible stages and the service stop before Gaia unlocks', t => {
+test('the first mission requires recovered CRONIUM, ten stages, C9, Atlas and its actual aftermath before Gaia unlocks', t => {
   const h = harness(t, {unlocked: 1}); h.api.prepare();
   for (let fragment = 0; fragment < 36; fragment++) h.api.collectEnergy();
   let q = h.snapshot();
@@ -415,6 +473,13 @@ test('the first mission requires recovered CRONIUM, all ten visible stages and t
     }
   }
   q = h.snapshot();
+  assert.equal(q.state,'playing');assert.ok(q.boss,'The completed route starts its own guardian');
+  assert.equal(q.unlocked,1);assert.deepEqual(JSON.parse(h.stored('neon-stars-v2')),{});
+  h.resolveBossFixture();assert.equal(h.snapshot().state,'playing');
+  assert.equal(h.snapshot().chapter.aftermathReady,false);
+  h.api.completeLevel();assert.equal(h.snapshot().state,'playing','Resolving Atlas cannot skip its eight-second consequence');
+  h.advance(7.8);assert.equal(h.snapshot().state,'playing');assert.equal(h.snapshot().unlocked,1);
+  h.advance(.3);q=h.snapshot();
   assert.equal(q.state, 'complete'); assert.equal(q.route.canFinish, true);
   assert.equal(q.route.routeProgress, 1); assert.ok(JSON.parse(h.stored('neon-stars-v2'))['1'] >= 1);
   assert.equal(q.unlocked, 2); assert.equal(h.voyage().completed, true);
@@ -587,7 +652,8 @@ test('C9 requires earned salvage and purchases cooling once without granting wea
   h.node('c9BuyShield').click();
   const shield=JSON.parse(h.stored(SALVAGE_KEY));
   assert.equal(shield.balance,25);assert.equal(shield.spent,75);
-  assert.ok(shield.upgrades.includes('shield-cell'));
+  assert.ok(shield.upgrades.includes('hull-reinforcement'));
+  assert.equal(h.snapshot().reserveCapacity,45);assert.equal(h.snapshot().reserve,45);
   assert.equal(h.snapshot().weapons.charges,before.charges);
   const restored=harness(t,{savedSalvage:h.stored(SALVAGE_KEY)});restored.api.prepare();
   assert.equal(restored.snapshot().weapons.rechargeSeconds,1.5);
@@ -723,17 +789,16 @@ test('malformed lance unlocks are preserved as backups instead of granting uncal
   }
 });
 
-test('Atlas samples the movable ship and locks a ballistic salvo without an advertised safe lane', t => {
-  const h = harness(t); h.api.prepare(1);
-  for (let fragment = 0; fragment < 45; fragment++) h.api.collectEnergy();
-  if (h.snapshot().boss === null) assert.fail('Gaia did not start Atlas');
+test('the first chapter Atlas samples the movable ship and locks a ballistic salvo without an advertised safe lane', t => {
+  const h = harness(t);h.api.startBossFixture();
+  assert.ok(h.snapshot().boss,'A route/model fixture must start the first chapter guardian');
   assert.equal(h.node('atlasAutoFire'), null); assert.equal(h.snapshot().boss.phase, 1);
   h.pointer('pointerdown', 31, 250, 650); h.pointer('pointermove', 31, 290, 590);
   h.advance(.6); h.pointer('pointerup', 31, 290, 590);
   for (let frame = 0; frame < 600 && h.snapshot().boss.state !== 'charge'; frame++) h.api.frame(1 / 60, true);
   const warning = h.snapshot();
   assert.equal(warning.boss.state, 'charge');
-  assert.equal(warning.boss.telegraph.kind,'aimedSalvo');
+  assert.equal(warning.boss.telegraph.kind,'mechanicalDeployment');
   assert.equal(warning.boss.telegraph.pattern,'focusedSalvo');
   assert.equal(warning.boss.telegraph.safeGap,null);
   assert.ok(Math.abs(warning.boss.telegraph.targetX-warning.player.x)<2,'The first salvo samples actual X');
@@ -814,16 +879,16 @@ test('measured compact bounds release the former top reserve and ignore side con
   }});
   h.api.prepare(2); const first = h.snapshot(), scale = first.H / 844;
   assert.equal(first.bounds.fits, true);
-  closeTo((first.bounds.minY - 158) / scale, 120,
+  closeTo((first.bounds.minY - 158*.4) / scale, 120,
     'The upper boundary follows the actual comms slot rather than a 182px minimum');
-  closeTo((first.bounds.maxY + 104) / scale, 700,
+  closeTo((first.bounds.maxY + 104*.4) / scale, 700,
     'The complete ship tail must clear the measured weapon button');
   h.setRect('flightObjective', {left: 500, top: 400, width: 200, height: 34});
   h.setRect('flightWeapon', {left: 500, top: 200, width: 104, height: 48});
   h.api.refreshClassicFlightBounds(); const lateral = h.snapshot();
-  closeTo((lateral.bounds.minY - 158) / scale, 82,
+  closeTo((lateral.bounds.minY - 158*.4) / scale, 82,
     'An off-Canvas transmission must not lower the playable ceiling');
-  closeTo((lateral.bounds.maxY + 104) / scale, 740,
+  closeTo((lateral.bounds.maxY + 104*.4) / scale, 740,
     'An off-Canvas weapon must not constrain the lower boundary');
   assert.ok(lateral.bounds.minY < first.bounds.minY);
   assert.ok(lateral.bounds.maxY > first.bounds.maxY);
@@ -858,7 +923,7 @@ test('the compact HUD and weapon share menu, completion, death and Atlas visibil
     assert.equal(switched.recharge, fired.recharge);
     assert.equal(switched.cooldown, fired.cooldown);
     assert.equal(switched.projectiles.length, fired.projectiles.length);
-    assert.equal(h.node('flightWeaponName').textContent, selected === 'twin' ? 'GEMELO' : 'PULSO');
+    assert.equal(h.node('flightWeaponName').textContent, selected === 'twin' ? 'GEMELO' : 'PHASER');
     assert.equal(h.node('flightWeaponDamage').textContent, selected === 'twin' ? 'DAÑO ×2' : 'DAÑO ×1');
   }
   const normalBounds = h.snapshot().bounds;
@@ -877,9 +942,8 @@ test('the compact HUD and weapon share menu, completion, death and Atlas visibil
   for (let fragment = 0; fragment < 60; fragment++) h.api.collectEnergy();
   assert.equal(h.snapshot().state, 'complete'); hidden();
   h.api.goHome(); assert.equal(h.snapshot().state, 'menu'); hidden();
-  h.api.prepare(1);
-  for (let fragment = 0; fragment < 45; fragment++) h.api.collectEnergy();
-  assert.ok(h.snapshot().boss, 'The actual Gaia quota must enter Atlas');
+  h.api.startBossFixture();
+  assert.ok(h.snapshot().boss, 'The first chapter boundary must enter Atlas');
   assert.equal(h.node('flightHud').classList.contains('hidden'), false,
     'Atlas must retain the same weapon selector and damage explanation');
   assert.equal(h.node('flightRoute').classList.contains('hidden'), true,
@@ -910,28 +974,28 @@ test('power pickup and expiry update flight clearance only when chip visibility 
   };
   const h = harness(t, {unlocked: 3, rects}); h.api.prepare(2);
   const before = h.snapshot(), scale = before.H / 844;
-  closeTo((before.bounds.maxY + 104) / scale, 740);
+  closeTo((before.bounds.maxY + 104*.4) / scale, 740);
   const initialReads = h.rectReads('powerHud');
-  h.api.collectPower('shield'); const active = h.snapshot();
-  assert.equal(h.node('powerShield').classList.contains('active'), true);
+  h.api.collectPower('tractor'); const active = h.snapshot();
+  assert.equal(h.node('powerTractor').classList.contains('active'), true);
   assert.ok(h.rectReads('powerHud') > initialReads,
     'A real pickup must resample the newly visible chip row');
-  closeTo((active.bounds.maxY + 104) / scale, 712);
+  closeTo((active.bounds.maxY + 104*.4) / scale, 712);
   assert.ok(active.bounds.maxY < before.bounds.maxY);
-  assert.ok(active.player.y + 104 <= 712 * scale,
+  assert.ok(active.player.y + 104*.4 <= 712 * scale,
     'The complete ship tail must remain above the newly visible power chip');
   const activeReads = h.rectReads('powerHud');
   h.advance(.5);
   assert.equal(h.rectReads('powerHud'), activeReads,
     'An unchanged countdown must not trigger layout sampling every frame');
-  h.api.collectPower('shield');
+  h.api.collectPower('tractor');
   assert.equal(h.rectReads('powerHud'), activeReads,
     'Extending an already visible power must not resample unchanged geometry');
-  h.advance(6.9);
-  assert.equal(h.node('powerShield').classList.contains('active'), true);
+  h.advance(7.9);
+  assert.equal(h.node('powerTractor').classList.contains('active'), true);
   assert.equal(h.rectReads('powerHud'), activeReads);
   h.advance(.11);
-  assert.equal(h.node('powerShield').classList.contains('active'), false);
+  assert.equal(h.node('powerTractor').classList.contains('active'), false);
   assert.ok(h.rectReads('powerHud') > activeReads,
     'Expiry must release the measured chip clearance');
   assert.deepEqual(h.snapshot().bounds, before.bounds);
@@ -1196,8 +1260,10 @@ test('Gaia schedules CH-01 then a genuine CH-02 through the actual patrol update
 test('Chronos arrival enters Gaia through the actual next control without a duplicate briefing',t=>{
   const h=harness(t,{unlocked:1});h.api.prepare();
   for(let n=1;n<=10;n++)h.advanceStage({service:true});
+  assert.equal(h.snapshot().state,'playing');assert.ok(h.snapshot().boss);
+  h.resolveBossFixture();h.advance(8.1);
   assert.equal(h.snapshot().state,'complete');assert.equal(h.snapshot().unlocked,2);
-  assert.match(h.node('nextLevel').textContent,/GAIA NOVA/);
+  assert.match(h.node('nextLevel').textContent,/PERÍMETRO DE GAIA/);
   h.node('nextLevel').click();
   const q=h.snapshot();assert.equal(q.state,'playing');assert.equal(q.currentLevel,1);
   assert.equal(h.node('briefing').classList.contains('show'),false);

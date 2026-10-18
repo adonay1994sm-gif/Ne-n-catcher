@@ -1,3 +1,20 @@
+  function drawClassicChapterOpening() {
+    const opening=classicChapterView?.opening;
+    if(!isUnifiedClassic()||state!=="playing"||!opening?.active||opening.backgroundAlpha<=0||
+      !spriteReady(SPRITES.chapterIntro))return;
+    // Four authored shots precede the same live station, reactor and wave.
+    // The route snapshot owns all cuts and camera motion; pause freezes them.
+    const time=classicFlightView.elapsed;
+    const frame=time<2.25?0:time<6.3?1:time<9?2:3;
+    const image=SPRITES.chapterIntro,cw=image.naturalWidth/2,ch=image.naturalHeight/2;
+    const zoom=settings.reduceEffects?1:1.035+opening.shotProgress*.035;
+    const scale=Math.max(W/cw,H/ch)*zoom,width=cw*scale,height=ch*scale;
+    ctx.save();ctx.globalAlpha=opening.backgroundAlpha;
+    ctx.drawImage(image,frame%2*cw,Math.floor(frame/2)*ch,cw,ch,
+      (W-width)/2,(H-height)/2,width,height);
+    ctx.restore();
+  }
+
   function rounded(x, y, width, height, radius) {
     ctx.beginPath();
     ctx.roundRect(x, y, width, height, radius);
@@ -339,16 +356,16 @@
     drawChronosServiceRelay(view);
     drawChronosRouteCrossing(transition);
 
-    if (view.beacon.visible && spriteReady(SPRITES.satellite)) {
-      const size = Math.max(30, W * view.beacon.scale);
+    if (view.beacon.visible && !atlasBoss && spriteReady(SPRITES.guardianAtlas)) {
+      const size = Math.max(42, W * view.beacon.scale*1.5);
       ctx.save(); ctx.translate(W * view.beacon.x, H * view.beacon.y);
-      ctx.rotate(-.12 + Math.sin(clock * .08) * .04);
-      ctx.drawImage(SPRITES.satellite, -size / 2, -size / 2, size, size);
+      const atlas=SPRITES.guardianAtlas;
+      ctx.drawImage(atlas,0,0,atlas.naturalWidth/4,atlas.naturalHeight/2,-size/2,-size/2,size,size);
       ctx.restore();
       if (view.beacon.active) {
         ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 17px sans-serif";
         ctx.fillStyle = "#bcefff";
-        ctx.fillText("BALIZA GAIA", W * view.beacon.x, H * view.beacon.y + size * .65);
+        ctx.fillText("GUARDIAN ATLAS", W * view.beacon.x, H * view.beacon.y + size * .65);
         ctx.restore();
       }
     }

@@ -21,7 +21,10 @@ function initialSave() {
 
 /** Controlled integration: actual built handlers and models, mocked Canvas,
  * suppressed incidental threats, seeded already-reached last checkpoint.
- * Fault/recovery contract only; not natural gameplay, visuals or device QA. */
+ * Atlas takes real model damage only during its two exposure windows; the
+ * actual update loop resolves shutdown and the orbital aftermath. The fixed
+ * score isolates persistence from combat scoring. This is a fault/recovery
+ * contract, not natural gameplay, visuals, rewards, balance or device QA. */
 function harness(t, {saved = initialSave(), failTarget = null, denyRead = null,
   failReceipt = false} = {}) {
   const dom = new JSDOM(html, {url: 'https://neon.test/', runScripts: 'outside-only', pretendToBeVisual: true});
@@ -66,10 +69,26 @@ function harness(t, {saved = initialSave(), failTarget = null, denyRead = null,
     window.__COMPLETION_TEST__={
       finishChronos(){
         startLevel(0);warpTimer=0;
-        for(let n=0;n<1200&&state==='playing';n++){
-          items=[];gates=[];classicPatrolTimer=Infinity;classicVoyageSpawnTimer=Infinity;classicVoyageHazardTimer=Infinity;
+        let frames=0,hits=0,damage=0;const phases=new Set();
+        for(;frames<3600&&state==='playing';frames++){
+          items=[];gates=[];spawnTimer=999;classicScoutTimer=999;
+          classicPatrolTimer=Infinity;classicVoyageSpawnTimer=Infinity;classicVoyageHazardTimer=Infinity;
+          if(atlasBoss?.vulnerability){
+            phases.add(atlasBoss.phase);
+            const result=NeonCampaign.hitGuardianAtlas(atlasBoss,atlasBoss.maxHp/2);
+            if(!result.accepted)throw new Error('Exposed Atlas rejected fixture damage');
+            hits++;damage+=result.damage;
+            for(const event of result.events)consumeAtlasEvent(event);
+            // The journal tests deliberately own their score. In particular,
+            // normalize the real shutdown bonus before completion persists it.
+            score=777;
+          }
           update(1/30);
         }
+        return {frames,hits,damage,phases:[...phases],score,
+          bossResolved:!!atlasBoss?.resolved,
+          routeElapsed:classicFlightView?.elapsed,
+          aftermathReady:!!classicChapterView?.aftermathReady};
       },
       attemptCheckpoint(){return saveClassicVoyageCheckpoint(NeonCampaign.createChronosVoyageCheckpoint(1),false);},
       snapshot(){return {state,currentLevel,blocked:completionPersistenceBlocked,
@@ -77,6 +96,16 @@ function harness(t, {saved = initialSave(), failTarget = null, denyRead = null,
     };\n`;
   window.eval(game.replace(marker, hook + marker));
   return {window, api: window.__COMPLETION_TEST__, writes, fault, pending,
+    finishChronos() {
+      const result = plain(window.__COMPLETION_TEST__.finishChronos());
+      assert.equal(window.__COMPLETION_TEST__.snapshot().state, 'complete', JSON.stringify(result));
+      assert.equal(result.routeElapsed, 360);
+      assert.deepEqual(result.phases, [1, 2]);
+      assert.equal(result.hits, 2); assert.equal(result.damage, 96);
+      assert.equal(result.bossResolved, true); assert.equal(result.aftermathReady, true);
+      assert.equal(result.score, 777);
+      return result;
+    },
     snapshot: () => plain(window.__COMPLETION_TEST__.snapshot()),
     dump() {
       return new Map(Array.from({length: window.localStorage.length}, (_, index) => {
@@ -88,7 +117,7 @@ function harness(t, {saved = initialSave(), failTarget = null, denyRead = null,
 for (const target of [K.stars, K.levelBest, K.best, K.voyage, K.unlocked, 'receipt']) {
   test(`actual Chronos completion resumes its ${target} interrupted write before loading route/menu`, t => {
     const first = harness(t, {failTarget: target === 'receipt' ? null : target, failReceipt: target === 'receipt'});
-    first.fault.armed = true; first.api.finishChronos();
+    first.fault.armed = true; first.finishChronos();
     assert.equal(first.fault.triggered, true); assert.equal(first.snapshot().state, 'complete');
     assert.equal(first.snapshot().blocked, true);
     const interrupted = first.dump();
@@ -110,7 +139,7 @@ for (const target of [K.stars, K.levelBest, K.best, K.voyage, K.unlocked, 'recei
 }
 
 test('blocked startup recovery warns and forbids checkpoint writes over its pending durable intent', t => {
-  const first = harness(t, {failTarget: K.stars}); first.fault.armed = true; first.api.finishChronos();
+  const first = harness(t, {failTarget: K.stars}); first.fault.armed = true; first.finishChronos();
   const pending = first.dump(), restarted = harness(t, {saved: pending, denyRead: K.best});
   assert.equal(restarted.snapshot().blocked, true);
   assert.match(restarted.window.document.getElementById('toast').textContent, /Guardado pendiente/);
@@ -139,7 +168,7 @@ test('bootstrap with legacy 100 and current 9000 never rewrites an unreadable cu
 test('bootstrap migration cannot lower unreadable current 9000 before recovering a pending journal with legacy 100', t => {
   const saved = initialSave(); saved.set('neon-best-v1', '100'); saved.set(K.best, '9000');
   const first = harness(t, {saved, failTarget: K.stars});
-  first.fault.armed = true; first.api.finishChronos();
+  first.fault.armed = true; first.finishChronos();
   const pending = first.dump();
   assert.equal(JSON.parse(pending.get(K.journal)).phase, 'pending');
   assert.equal(pending.get(K.best), '9000');

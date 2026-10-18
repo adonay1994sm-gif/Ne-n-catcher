@@ -115,3 +115,14 @@ test('layout changes clamp stale desired positions and inactive pointers remain 
   const movement = moveFlightInput(state, { id: 1, x: 100, y: -1000, ...target, bounds: short });
   assert.equal(movement.targetY, short.minY); assert.equal(movement.targetY, short.maxY);
 });
+
+test('the smaller classic hull gains usable movement while historical campaign bounds retain their original defaults',()=>{
+  const small=calculateFlightBounds({...viewport,shipScale:.4});
+  assert.equal(small.minX,47.6);assert.equal(small.maxX,672.4);
+  assert.equal(small.minY,323.2);assert.equal(small.maxY,1258.4);
+  assert.ok(small.minX-109*.4>=4-.00001);
+  assert.ok(small.minY-148*.4>=viewport.hudBottom+4-.00001);
+  assert.ok(small.maxY+94*.4<=viewport.controlsTop-4+.00001);
+  assert.deepEqual(calculateFlightBounds(viewport),bounds);
+  for(const shipScale of [0,-1,Infinity,NaN,5])assert.throws(()=>calculateFlightBounds({...viewport,shipScale}),RangeError);
+});

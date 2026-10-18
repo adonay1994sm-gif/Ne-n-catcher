@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {JSDOM} from 'jsdom';
 import * as flight from '../src/game/ship/flight-controls.js';
+import {createChronosChapterStory} from '../src/game/narrative/chronos-chapter.js';
 
 // Execute the input/frame section of the actual source, not a stale generated
 // bundle. JSDOM simulates event dispatch; these are not physical Safari tests.
@@ -14,13 +15,13 @@ assert.ok(fireClickSource, 'The source retains an accessible click handler');
 const visibilitySource = source.match(/  document\.addEventListener\("visibilitychange", async \(\) => \{[\s\S]*?\n  \}\);/)?.[0];
 assert.ok(visibilitySource);
 
-function harness(t, {pointerEvents = true, mode = 'classic'} = {}) {
+function harness(t, {pointerEvents = true, mode = 'classic', introActive = false} = {}) {
   const dom = new JSDOM('<canvas id="canvas"></canvas><button id="fire">Disparar</button>', {
     runScripts: 'outside-only', pretendToBeVisual: true
   });
   const {window} = dom;
   t.after(() => window.close());
-  window.NeonCampaign = flight;
+  window.NeonCampaign = {...flight,createChronosChapterStory};
   const frames = new Map();
   let nextFrame = 0;
   window.requestAnimationFrame = callback => (frames.set(++nextFrame, callback), nextFrame);
@@ -49,10 +50,20 @@ function harness(t, {pointerEvents = true, mode = 'classic'} = {}) {
     const JOURNEY_DEMO=${JSON.stringify(mode === 'journey')};
     let journeyPointerLast=null,shotCount=0,charges=3,cooldown=0;
     function isUnifiedClassic(){return ${JSON.stringify(mode === 'classic')};}
+    const classicChapterStory=isUnifiedClassic()?NeonCampaign.createChronosChapterStory():null;
+    let classicChapterView=classicChapterStory?.snapshot()||null;
+    function classicChapterControlsLocked(){return Boolean(classicChapterView?.opening?.controlsLocked);}
+    function syncClassicChapterPresentation(){ui.fire.disabled=classicChapterControlsLocked();}
+    function skipIntroForControlFixture(){
+      classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;
+      syncClassicChapterPresentation();
+    }
+    // Isolate controls through the actual story API, never a route-clock jump.
+    if(!${JSON.stringify(introActive)})skipIntroForControlFixture();else syncClassicChapterPresentation();
     function refreshClassicFlightBounds(){return classicFlightBounds;}
     function clamp(n,lo,hi){return Math.min(hi,Math.max(lo,n));}
     function fireManualShot(){
-      if(state!=='playing'||charges===0||cooldown>1e-9)return false;
+      if(state!=='playing'||classicChapterControlsLocked()||charges===0||cooldown>1e-9)return false;
       shotCount++;charges--;cooldown=.32;return true;
     }
     function update(dt){cooldown=Math.max(0,cooldown-dt);}
@@ -68,9 +79,10 @@ function harness(t, {pointerEvents = true, mode = 'classic'} = {}) {
     ${visibilitySource}
     window.__input={
       snapshot:()=>({state,player:{...player},pilot:{...classicFlightInput},
-        fire:fireInput?{...fireInput}:null,legacyPilotId,journeyPointerLast,shotCount,charges,cooldown}),
+        fire:fireInput?{...fireInput}:null,legacyPilotId,journeyPointerLast,shotCount,charges,cooldown,
+        chapter:classicChapterView,controlsLocked:classicChapterControlsLocked()}),
       tick(dt=.034){last=0;frame(dt*1000);},
-      pause:pauseGame,resume:resumeGame,reset:resetGameInput,
+      pause:pauseGame,resume:resumeGame,reset:resetGameInput,skipIntro:skipIntroForControlFixture,
       restart(){resetGameInput();state='playing';charges=3;cooldown=0;},
       ready(){cooldown=0;}, state(value){state=value;}
     };
@@ -101,6 +113,25 @@ function harness(t, {pointerEvents = true, mode = 'classic'} = {}) {
   }
   return {window, api, canvas, fire, pointer, touch, tick, snapshot, frames, captures};
 }
+
+test('the real chapter introduction blocks pilot and fire until its explicit skip, without advancing route time', t => {
+  const h=harness(t,{introActive:true});
+  const before=h.snapshot();assert.equal(before.controlsLocked,true);assert.equal(before.chapter.routeElapsed,0);
+  h.pointer(h.canvas,'pointerdown',1,200,600);h.pointer(h.canvas,'pointermove',1,250,550);
+  h.pointer(h.fire,'pointerdown',2,350,750,{isPrimary:false});
+  h.fire.click();h.window.dispatchEvent(new h.window.KeyboardEvent('keydown',{key:' ',cancelable:true}));
+  h.window.dispatchEvent(new h.window.KeyboardEvent('keydown',{key:'ArrowRight',cancelable:true}));
+  const locked=h.snapshot();assert.equal(locked.shotCount,0);assert.equal(locked.pilot.active,false);
+  assert.equal(locked.fire,null);assert.deepEqual(locked.player,before.player);
+  assert.equal(locked.chapter.routeElapsed,0);
+  h.api.skipIntro();const skipped=h.snapshot();
+  assert.equal(skipped.controlsLocked,false);assert.equal(skipped.chapter.opening.active,false);
+  assert.equal(skipped.chapter.routeElapsed,0,'Skip changes presentation policy, never the route clock');
+  h.pointer(h.canvas,'pointerdown',3,200,600);h.pointer(h.canvas,'pointermove',3,220,580);
+  h.pointer(h.fire,'pointerdown',4,350,750,{isPrimary:false});
+  assert.equal(h.snapshot().pilot.id,3);assert.equal(h.snapshot().shotCount,1);
+  assert.ok(h.snapshot().player.target>before.player.target);assert.ok(h.snapshot().player.targetY<before.player.targetY);
+});
 
 test('pilot first: a nonprimary action pointer fires immediately and its release cannot cancel steering', t => {
   const h = harness(t);

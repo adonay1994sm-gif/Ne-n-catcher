@@ -161,7 +161,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-salvage-combat-2");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-chapter-one-living-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -281,7 +281,7 @@ async function loadGameHarness() {
   const hooks = `
   window.__NEON_TEST__ = {
     snapshot: () => ({
-      state, hull, currentLevel, score, collected, continued, supplyFailed, ammo, manualShotCooldown, warpTimer,
+      state, hull, hullReserve:classicHullReserve, currentLevel, score, collected, continued, supplyFailed, ammo, manualShotCooldown, warpTimer,
       destructionTimer, destructionStage, playerVisible, damageSmokeSide, damageSmokeLocked,
       impactReactionTimer, impactReactionSide, energyBudget, energySpawned, powerBudget, gateCountdown,
       elapsed, storyStep, storyTimer, levelOneShockwaveTriggered,
@@ -305,7 +305,12 @@ async function loadGameHarness() {
       collected = 0;
       items = [];
     },
-    prepareWeaponFixture: () => { warpTimer = 0; spawnTimer = 999; classicScoutTimer = 999; items = []; gates = []; },
+    prepareWeaponFixture: () => {
+      // Explicit presentation-only skip in this controlled weapon fixture;
+      // route time, quotas, ammunition, damage and encounter clocks stay real.
+      classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;
+      warpTimer = 0; spawnTimer = 999; classicScoutTimer = 999; items = []; gates = [];
+    },
     advancePlayed: (seconds) => {
       for (let remaining = seconds; remaining > 1e-9; remaining -= Math.min(1/60, remaining)) {
         update(Math.min(1/60, remaining));
@@ -428,10 +433,13 @@ await test("guardados corruptos se normalizan sin romper el menú ni el control"
   gameWindow.localStorage.setItem(api.keys.unlocked, "10");
 });
 
-await test("silueta de colisión V6.3/V6.4.3 permanece intacta", async () => {
+await test("silueta clásica al 40 % ajustada al material visible conserva treinta puntos y extremos probados", async () => {
   const outline = Array.from(api.collisionOutline, (point) => Array.from(point));
   assert.equal(outline.length, 30);
-  assert.equal(sha256(JSON.stringify(outline)), "997fed2f9a050e08eca8c68d0b43486bc2f67a3243519e4f425bfb928ebb4841");
+  assert.equal(sha256(JSON.stringify(outline)), "e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865");
+  assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+47.36)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-39.24)<1e-9);
+  assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-30.08)<1e-9);
 });
 
 function seededRandom(seed) {
@@ -535,10 +543,11 @@ await test("sector 10 conserva suministro y presupuesto alcanzables", async () =
   assert.equal(snapshot.powerBudget, 5);
 });
 
-await test("frame 05 reacciona al impacto y vuelve a neutro", async () => {
+await test("frame 05 reacciona al impacto que supera la reserva y vuelve a neutro", async () => {
   let snapshot = api.snapshot();
-  api.damageShip(40, snapshot.player.x + 30, snapshot.player.y);
+  api.damageShip(70, snapshot.player.x + 30, snapshot.player.y);
   snapshot = api.snapshot();
+  assert.equal(snapshot.hullReserve, 0);
   assert.equal(snapshot.hull, 60);
   assert.equal(snapshot.damageSmokeSide, 1);
   assert.equal(snapshot.damageSmokeLocked, true);
@@ -573,7 +582,8 @@ await test("continuación única limpia residuos y reaparece al 35 %", async () 
   assert.equal(snapshot.player.drift, 0);
   assert.equal(snapshot.impactReactionTimer, 0);
   assert.equal(snapshot.damageSmokeLocked, true);
-  assert.ok(snapshot.powers.shield >= 4);
+  assert.equal(snapshot.powers.shield, 0);
+  assert.equal(snapshot.hullReserve, 15);
   assert.equal(snapshot.counts.gates, 0);
   assert.equal(snapshot.counts.shots, 0);
   assert.equal(snapshot.counts.parts, 0);
@@ -586,11 +596,15 @@ await test("continuación única limpia residuos y reaparece al 35 %", async () 
   assert.equal(api.resumeReward(), false);
 });
 
-await test("escudo de reaparición impide daño inmediato", async () => {
+await test("la reserva de reaparición absorbe daño real sin conceder invulnerabilidad temporizada", async () => {
   const before = api.snapshot().hull;
   const player = api.snapshot().player;
-  api.damageShip(50, player.x, player.y);
-  assert.equal(api.snapshot().hull, before);
+  assert.equal(api.snapshot().hullReserve,15);
+  api.damageShip(10, player.x, player.y);
+  assert.equal(api.snapshot().hull,before);assert.equal(api.snapshot().hullReserve,5);
+  api.damageShip(10, player.x, player.y);
+  assert.equal(api.snapshot().hull,before-5);assert.equal(api.snapshot().hullReserve,0);
+  assert.equal(api.snapshot().powers.shield,0);
 });
 
 await test("reiniciar Vulkar invalida la derrota de suministro pendiente de los territorios con presupuesto finito", async () => {

@@ -35,6 +35,18 @@ const forceShieldAtlas = (cells, options = {}) => define(['assets/force_shield_a
 });
 
 export const ANIMATION_MAP = Object.freeze({
+  chapterOneOpening: Object.freeze({
+    cinematic: define(['assets/chapter1_intro_atlas_v1.webp'],{loop:false,
+      atlasColumns:2,atlasRows:2,cellWidth:512,cellHeight:768,
+      atlasCells:Object.freeze([0,1,2,3]),timing:'Existing route clock: cuts0/2.25/6.3/9s, reveal live station9–11.4s; dialogue continues to26s',
+      integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'})
+  }),
+  chapterOneMissile: Object.freeze(Object.fromEntries([
+    ['flight',0,true],['launch',1,false],['impact',2,false],['aftermath',3,false]
+  ].map(([name,row,loop])=>[name,define(['assets/chapter1_missile_atlas_v1.webp'],{
+    loop,frameMs:75,atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,
+    atlasCells:Object.freeze([0,1,2,3].map(column=>row*4+column)),pivot:Object.freeze({x:.5,y:.5}),
+    integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'})]))),
   arcadeCombat: Object.freeze(Object.fromEntries([
     ['pulse',0,60,true],['twin',1,50,true],['lance',2,55,true],['impact',3,35,false]
   ].map(([name,row,frameMs,loop]) => [name,define(['assets/arcade_pulse_atlas_v2.webp'],{

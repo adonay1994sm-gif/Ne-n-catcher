@@ -463,3 +463,21 @@ body.flight-mode .briefing-visual[data-scene="belt"]{background-image:linear-gra
 #flightDock .secondary:disabled{opacity:.45}
 #fire.empty{filter:saturate(.5);opacity:.72}
 @media(max-height:600px){#flightDock .c9-wallet{margin:3px 0}#flightDock .c9-services{margin:4px 0}#flightDock .c9-purchase-status{margin:2px 0}}
+
+/* Chapter one: a compact second action and character communications share the
+   existing safe-area layout. No separate overlay owns gameplay or animation. */
+.classic-missile{position:absolute;z-index:7;left:calc(50% - 31px);bottom:calc(max(22px,env(safe-area-inset-bottom)) + 4px);width:62px;min-height:64px;border:1px solid #b58b55;border-radius:16px;background:rgba(10,21,36,.91);color:#ffe4bf;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;touch-action:none;font-size:9px;letter-spacing:.08em}
+.classic-missile:disabled{opacity:.45}.classic-missile b{font-size:13px}.missile-symbol{display:block;width:22px;height:29px;background-image:url('assets/chapter1_missile_atlas_v1.webp');background-size:88px 116px;background-position:0 0;background-repeat:no-repeat}
+.chapter-skip{position:absolute;z-index:9;right:max(12px,env(safe-area-inset-right));bottom:calc(max(22px,env(safe-area-inset-bottom)) + 86px);min-height:44px;padding:9px 13px;border:1px solid #7996ad;border-radius:10px;background:rgba(4,11,24,.85);color:#e8faff;font-size:10px;letter-spacing:.06em;touch-action:manipulation}
+body.chapter-opening #fire,body.chapter-opening #classicMissile,body.chapter-opening #flightWeapon{visibility:hidden}
+body.flight-mode .flight-comms{display:flex;align-items:center;gap:7px}
+body.flight-mode #flightObjective{display:flex;align-items:center;gap:6px}
+body.flight-mode #flightObjective .chapter-face{flex-basis:26px;width:26px;height:26px;background-size:78px 26px}
+body.flight-mode #flightObjective .chapter-face[data-actor="mira"]{background-position:-26px 0}
+body.flight-mode #flightObjective .chapter-face[data-actor="iria"]{background-position:-52px 0}
+.chapter-face{flex:0 0 34px;width:34px;height:34px;display:inline-block;border:1px solid #63869c;border-radius:7px;background-image:url('assets/chapter1_portraits_v1.webp');background-size:102px 34px;background-repeat:no-repeat}
+.chapter-face[data-actor="mira"]{background-position:-34px 0}.chapter-face[data-actor="iria"]{background-position:-68px 0}
+#hullReserve{font-size:10px;font-weight:700;color:#b2c9ff;margin-left:3px;white-space:nowrap}
+body.flight-mode.atlas-combat .flight-comms{z-index:8;visibility:visible}
+@media(max-width:420px){body.flight-mode .flight-weapon{max-width:100px;min-width:88px;padding-left:10px;padding-right:10px}body.flight-mode .fire-control{min-width:102px;padding-left:9px;padding-right:9px;gap:5px}.classic-missile{left:calc(50% - 29px);width:58px}}
+@media(prefers-reduced-motion:reduce){.classic-missile,.chapter-skip{transition:none}}

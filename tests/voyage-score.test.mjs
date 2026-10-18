@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { createVoyageScore, VOYAGE_SCORE_PHRASES, SCORE_VOICE_LIMIT } from '../src/game/audio/voyage-score.js';
+import { createChapterScore } from '../src/game/audio/chapter-score.js';
 
 function fakeAudio() {
   const param = () => ({ value: 0, setValueAtTime(value) { this.value = value; },
@@ -137,13 +138,25 @@ test('score uses supplied simulation steps without a timer, random generator or 
 });
 
 const legacySource = await readFile(new URL('../src/game/02-storage-audio.js', import.meta.url), 'utf8');
-function legacyHarness(music = 35, fx = 70) {
+function legacyHarness(music = 35, fx = 70, {withMedia = false, story = false, autoplayReject = false} = {}) {
   const { ac, records } = fakeAudio();
+  let mediaSources=0,mediaPlays=0;
+  const media={paused:true,currentTime:0,duration:28,
+    play(){mediaPlays++;if(autoplayReject)return Promise.reject(Object.assign(new Error('gesture required'),{name:'NotAllowedError'}));
+      this.paused=false;return Promise.resolve();},
+    pause(){this.paused=true;},removeAttribute(){},load(){}};
+  if(withMedia)ac.createMediaElementSource=element=>{
+    assert.equal(element,media);mediaSources++;
+    return {connect(){},disconnect(){}};
+  };
   const h = vm.createContext({ settings: { music, fx }, musicGain: null, audioCtx: null,
     addEventListener() {}, window: { AudioContext: function AudioContext() { return ac; } },
-    NeonCampaign: { createVoyageScore } });
+    isUnifiedClassic:()=>true,classicChapterStory:story?{}:null,classicFlightView:null,
+    NeonCampaign: { createVoyageScore,createChapterScore:options=>createChapterScore({...options,createAudio:()=>media}) } });
   vm.runInContext(legacySource, h);
-  return { h, ac, records, snapshot: () => vm.runInContext('voyageScore?.snapshot()', h) };
+  return { h, ac, records,media,mediaSources:()=>mediaSources,mediaPlays:()=>mediaPlays,
+    chapterSnapshot:()=>vm.runInContext('chapterScore?.snapshot()',h),
+    snapshot: () => vm.runInContext('voyageScore?.snapshot()', h) };
 }
 
 test('legacy startMusic is one shared-context owner and no permanent drone is created', () => {
@@ -179,4 +192,34 @@ test('legacy volumes isolate music/FX, bound effects and suspend/resume safely',
   assert.equal(ac.state, 'running'); assert.equal(snapshot().enabled, false);
   h.settings.music = 35; h.updateAudioVolumes(); h.updateScore(.034);
   assert.ok(snapshot().beat > frozen);
+});
+
+test('actual legacy integration silences procedural voices when the rendered chapter score takes ownership',async()=>{
+  const {h,ac,records,media,mediaSources,mediaPlays,snapshot}=legacyHarness(35,70,{withMedia:true});
+  h.startMusic();h.startMusic();h.updateScore(1/60);
+  assert.equal(snapshot().activeVoices,3,'outside the chapter, the established fallback remains functional');
+  const prior=records.length;
+  h.classicChapterStory={};h.classicFlightView={elapsed:12};
+  h.updateScore(1/60);await Promise.resolve();await Promise.resolve();
+  assert.equal(snapshot().activeVoices,0,'the new score cannot overlap previously running procedural music');
+  assert.equal(media.paused,false);assert.equal(media.currentTime,12);
+  for(let frame=0;frame<120;frame++){ac.tick(1/60);h.updateScore(1/60);}
+  assert.equal(records.length,prior);assert.equal(mediaPlays(),1);assert.equal(mediaSources(),1);
+  h.classicFlightView={elapsed:28};h.updateScore(1/60);
+  assert.equal(media.loop,true);assert.match(media.src,/chapter1_voyage_score_v1\.m4a$/);
+  assert.equal(records.length,prior);assert.equal(snapshot().activeVoices,0);
+});
+
+test('actual legacy integration falls back after rejected rendered autoplay and never plays both score systems',async()=>{
+  const {h,records,mediaPlays,chapterSnapshot,snapshot}=legacyHarness(35,70,
+    {withMedia:true,story:true,autoplayReject:true});
+  h.startMusic();h.updateScore(1/60);
+  assert.equal(records.length,0,'fallback waits for the actual media rejection');
+  await Promise.resolve();await Promise.resolve();await Promise.resolve();
+  assert.equal(chapterSnapshot().failed,true);
+  h.updateScore(1/60);assert.equal(snapshot().activeVoices,3);
+  const prior=records.length;
+  for(let frame=0;frame<30;frame++)h.updateScore(1/60);
+  assert.equal(mediaPlays(),1,'autoplay failure is not retried every frame');
+  assert.ok(records.length>=prior);assert.ok(snapshot().activeVoices>0);
 });

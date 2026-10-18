@@ -1,0 +1,233 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-18T10:16:10.115Z",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/Ne-n-catcher/art-source/chapter1-rebirth/validate-browser.cjs"
+  ],
+  "scope": "Real Chromium asset decode and Canvas validation; no gameplay, physical-device or aesthetic certification",
+  "cases": [
+    {
+      "name": "chapter1.intro.v1 decodes at declared dimensions",
+      "status": "passed"
+    },
+    {
+      "name": "chapter1.intro.v1 distinct nonempty cells",
+      "status": "passed"
+    },
+    {
+      "name": "chapter1.portraits.v1 decodes at declared dimensions",
+      "status": "passed"
+    },
+    {
+      "name": "chapter1.portraits.v1 distinct nonempty cells and 16px alpha gutters",
+      "status": "passed"
+    },
+    {
+      "name": "chapter1.missile.v1 decodes at declared dimensions",
+      "status": "passed"
+    },
+    {
+      "name": "chapter1.missile.v1 distinct nonempty cells and 16px alpha gutters",
+      "status": "passed"
+    },
+    {
+      "name": "No Chromium JavaScript errors",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "assets": [
+    {
+      "id": "chapter1.intro.v1",
+      "runtime": "assets/chapter1_intro_atlas_v1.webp",
+      "sha256": "231c0e399aca61b83582c456cf2eb992b605474f1329ee5faf4ddac2170bf724",
+      "width": 1024,
+      "height": 1536,
+      "frames": [
+        {
+          "index": 0,
+          "signature": "0d0fc69c",
+          "maximumGutterAlpha": 255,
+          "visiblePixels": 393216,
+          "transparentPixels": 0
+        },
+        {
+          "index": 1,
+          "signature": "9eb66aaa",
+          "maximumGutterAlpha": 255,
+          "visiblePixels": 393216,
+          "transparentPixels": 0
+        },
+        {
+          "index": 2,
+          "signature": "f53d5ee7",
+          "maximumGutterAlpha": 255,
+          "visiblePixels": 393216,
+          "transparentPixels": 0
+        },
+        {
+          "index": 3,
+          "signature": "0a09f259",
+          "maximumGutterAlpha": 255,
+          "visiblePixels": 393216,
+          "transparentPixels": 0
+        }
+      ]
+    },
+    {
+      "id": "chapter1.portraits.v1",
+      "runtime": "assets/chapter1_portraits_v1.webp",
+      "sha256": "445980a34b7d2982a61632e2ac0ca73a2f48cd9906cba6c82996afc098b115f3",
+      "width": 768,
+      "height": 256,
+      "frames": [
+        {
+          "index": 0,
+          "signature": "c682544c",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 28969,
+          "transparentPixels": 34936
+        },
+        {
+          "index": 1,
+          "signature": "37f7685c",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 30167,
+          "transparentPixels": 34242
+        },
+        {
+          "index": 2,
+          "signature": "a91c3005",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 27268,
+          "transparentPixels": 37160
+        }
+      ]
+    },
+    {
+      "id": "chapter1.missile.v1",
+      "runtime": "assets/chapter1_missile_atlas_v1.webp",
+      "sha256": "8b4949b8e87b8b1e2c744ea9b3f227025ca21e365251d9266d4c09ee6f379a05",
+      "width": 1024,
+      "height": 1024,
+      "frames": [
+        {
+          "index": 0,
+          "signature": "87490e56",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 6632,
+          "transparentPixels": 56349
+        },
+        {
+          "index": 1,
+          "signature": "a5d7369d",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 6722,
+          "transparentPixels": 56011
+        },
+        {
+          "index": 2,
+          "signature": "67c8f752",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 6898,
+          "transparentPixels": 55806
+        },
+        {
+          "index": 3,
+          "signature": "395ced24",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 6698,
+          "transparentPixels": 55123
+        },
+        {
+          "index": 4,
+          "signature": "4808d904",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 11803,
+          "transparentPixels": 51650
+        },
+        {
+          "index": 5,
+          "signature": "c3f99277",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 12084,
+          "transparentPixels": 50381
+        },
+        {
+          "index": 6,
+          "signature": "99a44457",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 10529,
+          "transparentPixels": 50325
+        },
+        {
+          "index": 7,
+          "signature": "e2a46436",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 9819,
+          "transparentPixels": 50620
+        },
+        {
+          "index": 8,
+          "signature": "f72c3a96",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 9406,
+          "transparentPixels": 48531
+        },
+        {
+          "index": 9,
+          "signature": "d1cf3888",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 17195,
+          "transparentPixels": 41114
+        },
+        {
+          "index": 10,
+          "signature": "d81be4f7",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 20639,
+          "transparentPixels": 35042
+        },
+        {
+          "index": 11,
+          "signature": "80ab3528",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 14144,
+          "transparentPixels": 41463
+        },
+        {
+          "index": 12,
+          "signature": "0682aaff",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 11349,
+          "transparentPixels": 46782
+        },
+        {
+          "index": 13,
+          "signature": "607d8ab2",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 9731,
+          "transparentPixels": 47603
+        },
+        {
+          "index": 14,
+          "signature": "e064ad89",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 8636,
+          "transparentPixels": 48208
+        },
+        {
+          "index": 15,
+          "signature": "8e63bc83",
+          "maximumGutterAlpha": 0,
+          "visiblePixels": 4817,
+          "transparentPixels": 50788
+        }
+      ]
+    }
+  ],
+  "browser": "154.0.8037.57",
+  "exitCode": 0,
+  "finishedAt": "2026-10-18T10:16:11.159Z"
+}
