@@ -89,7 +89,7 @@ async function newPage() {
       if (/\/favicon\.ico(?:\?|$)/.test(entry.url)) report.incidentalBrowserRequests.push(entry);
       else report.failedRequests.push(entry);
     }
-    if (/\/assets\/(?:player_ship_identity_v1|ship_modular_atlas_v1)\.webp(?:\?|$)/.test(response.url()))
+    if (/\/assets\/(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2)\.webp(?:\?|$)/.test(response.url()))
       report.assetResponses.push({url: response.url(), status: response.status(), offline, fromServiceWorker: response.fromServiceWorker()});
   });
   return page;
