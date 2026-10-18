@@ -305,6 +305,20 @@ test('unit: Netlify production permits only the explicitly opted-in isolated tes
   }
 });
 
+test('unit: Netlify preview opt-in is scoped only to the authorized branch configuration', async () => {
+  const config = await text('netlify.toml');
+  const branchEnvironment = config.match(
+    /\[context\.continuity-assets-audit-20261013\.environment\]([\s\S]*?)(?=\n\[|$)/
+  );
+  assert.ok(branchEnvironment, 'authorized branch environment block');
+  assert.match(branchEnvironment[1], /\bNEON_PREVIEW_DEPLOY\s*=\s*"1"/);
+
+  const globalEnvironment = config.match(/\[build\.environment\]([\s\S]*?)(?=\n\[|$)/);
+  assert.ok(globalEnvironment, 'global build environment block');
+  assert.doesNotMatch(globalEnvironment[1], /\bNEON_PREVIEW_DEPLOY\b/,
+    'the preview opt-in must never be global');
+});
+
 test('built launcher has one canonical journey and resolving package paths without historical variant controls', async () => {
   const html = await readFile(join(dist, 'index.html'), 'utf8');
   const dom = new JSDOM(html);
