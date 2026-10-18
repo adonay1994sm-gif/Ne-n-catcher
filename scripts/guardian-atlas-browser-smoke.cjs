@@ -369,7 +369,7 @@ function combatTarget(q) {
             report.manualShots.push({elapsed:after.elapsed,before:before.weapons,after:after.weapons,
               boss:after.boss,powers:after.powers,player:after.player});
             for(const shot of after.weapons.projectiles.filter(shot=>!before.weapons.projectiles.some(old=>old.id===shot.id))) {
-              assert.equal(shot.vx,0,'Basic Pulse/Twin must fly straight');assert.ok(shot.vy<0);
+              assert.ok(Math.abs(shot.vx)<1e-9,'Basic Pulse/Twin must fly straight (floating-point tolerance)');assert.ok(shot.vy<0);
             }
             manualChecked=true;
           }
