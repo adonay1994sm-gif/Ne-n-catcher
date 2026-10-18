@@ -62,6 +62,7 @@ var NeonCampaign = (() => {
     canEquipClassicWeapon: () => canEquipClassicWeapon,
     canTriggerClassicMissile: () => canTriggerClassicMissile,
     classicWeaponSnapshot: () => classicWeaponSnapshot,
+    classicWorkshopState: () => classicWorkshopState,
     cometShowerSnapshot: () => cometShowerSnapshot,
     createCh02Animator: () => createCh02Animator,
     createChapterScore: () => createChapterScore,
@@ -104,55 +105,185 @@ var NeonCampaign = (() => {
     selectClassicWeapon: () => selectClassicWeapon,
     setClassicRechargeInterval: () => setClassicRechargeInterval,
     setClassicUnlimitedFire: () => setClassicUnlimitedFire,
+    setClassicWeaponTuning: () => setClassicWeaponTuning,
     shipAssemblyPose: () => shipAssemblyPose,
     shipNozzleAnchors: () => shipNozzleAnchors,
     shipPartFrame: () => shipPartFrame,
     showerCometIntersectsCircle: () => showerCometIntersectsCircle,
+    syncClassicWorkshopWeapons: () => syncClassicWorkshopWeapons,
     triggerClassicMissile: () => triggerClassicMissile,
     triggerClassicWeapon: () => triggerClassicWeapon,
     unlockClassicWeapon: () => unlockClassicWeapon
   });
 
   // src/game/narrative/flight-tutorial.js
-  var FLIGHT_TUTORIAL_VERSION = "flight-tutorial-v1";
+  var FLIGHT_TUTORIAL_VERSION = "flight-tutorial-v2";
   var FLIGHT_TUTORIAL_CUES = Object.freeze([
+    Object.freeze({
+      id: `${FLIGHT_TUTORIAL_VERSION}:pilot`,
+      at: 1,
+      until: 100,
+      seconds: 4,
+      text: "Desliza el pulgar izquierdo para maniobrar.",
+      target: 56
+    }),
     Object.freeze({
       id: `${FLIGHT_TUTORIAL_VERSION}:fire`,
       at: 27,
+      until: 140,
       seconds: 4,
-      text: "Un dedo pilota. Con otro, mant\xE9n DISPARAR para sostener el Phaser."
+      text: "Sin soltar el pilotaje, mant\xE9n DISPARAR con el otro pulgar.",
+      target: 1
     }),
     Object.freeze({
       id: `${FLIGHT_TUTORIAL_VERSION}:recovery`,
-      at: 52,
+      at: 40,
+      until: 170,
       seconds: 4,
-      text: "Recoge el CRONIUM brillante: es energ\xEDa. La chatarra paga tus mejoras."
+      text: "Ac\xE9rcate al CRONIUM brillante para recuperar su energ\xEDa.",
+      target: 1
+    }),
+    Object.freeze({
+      id: `${FLIGHT_TUTORIAL_VERSION}:missile`,
+      at: 80,
+      until: 320,
+      seconds: 4,
+      text: "MISIL da\xF1a m\xE1s. Res\xE9rvalo para una buena oportunidad; tienes tres.",
+      target: 1,
+      optional: true
     }),
     Object.freeze({
       id: `${FLIGHT_TUTORIAL_VERSION}:workshop`,
       at: 65,
+      until: 332,
       seconds: 4,
-      text: "C9, en el HUD: abre el taller para pausar y configurar la nave."
+      text: "Pieza recuperada. Abre C9 para ver las mejoras de tu nave.",
+      target: 1
     })
   ]);
-  var WINDOW_SECONDS = 12;
-  var validTime = (value) => Number.isFinite(value) && value >= 0;
-  var validCount = (value) => Number.isSafeInteger(value) && value >= 0;
   var NOOP = () => {
   };
-  function createFlightTutorial({ routeElapsed = 0 } = {}) {
-    if (!validTime(routeElapsed)) throw new RangeError("Finite nonnegative tutorial route time required");
-    let elapsed = routeElapsed;
-    const emitted = /* @__PURE__ */ new Set(), skipped = /* @__PURE__ */ new Set();
-    for (const cue2 of FLIGHT_TUTORIAL_CUES) if (cue2.at <= routeElapsed) skipped.add(cue2.id);
+  var validTime = (value) => Number.isFinite(value) && value >= 0;
+  var validCount = (value) => Number.isSafeInteger(value) && value >= 0;
+  var names = ["pilot", "fire", "recovery", "missile", "workshop"];
+  var cueById = new Map(FLIGHT_TUTORIAL_CUES.map((cue2) => [cue2.id, cue2]));
+  var cueFor = (name) => FLIGHT_TUTORIAL_CUES[names.indexOf(name)];
+  var listIsValid = (value) => Array.isArray(value) && new Set(value).size === value.length && value.every((id) => cueById.has(id));
+  var clamp = (value) => Math.max(0, Math.min(1, value));
+  function restoreCheckpoint(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value) || value.version !== 2 || value.contentVersion !== FLIGHT_TUTORIAL_VERSION || !listIsValid(value.completed) || !listIsValid(value.skipped) || !listIsValid(value.emitted) || value.completed.some((id) => value.skipped.includes(id))) {
+      return null;
+    }
+    return value;
+  }
+  function createFlightTutorial({
+    routeElapsed = 0,
+    checkpoint = null,
+    replay = false,
+    enabled = true
+  } = {}) {
+    if (!validTime(routeElapsed) || typeof replay !== "boolean" || typeof enabled !== "boolean") {
+      throw new RangeError("Valid tutorial route time and options required");
+    }
+    const restored = checkpoint === null ? null : restoreCheckpoint(checkpoint);
+    let elapsed = routeElapsed, suspended = false;
+    const completed = new Set(replay ? [] : restored?.completed || []);
+    const skipped = new Set(replay ? [] : restored?.skipped || []);
+    const emitted = new Set(replay ? [] : restored?.emitted || []);
+    const stats = {
+      pilotDistance: 0,
+      shots: 0,
+      collected: 0,
+      missilesFired: 0,
+      workshopOpened: false,
+      moduleRecovered: false
+    };
+    let context = {
+      playing: true,
+      channelBusy: false,
+      bossActive: false,
+      missileReady: false,
+      missileOpportunity: false
+    };
+    const offset = replay ? routeElapsed : 0;
+    if (routeElapsed > 0 && !restored && !replay) {
+      for (const cue2 of FLIGHT_TUTORIAL_CUES) if (cue2.at <= routeElapsed) skipped.add(cue2.id);
+    }
+    const done = (cue2) => completed.has(cue2.id) || skipped.has(cue2.id);
+    function reconcile() {
+      const successes = [
+        stats.pilotDistance >= cueFor("pilot").target,
+        stats.shots > 0,
+        stats.collected > 0,
+        stats.missilesFired > 0,
+        stats.workshopOpened
+      ];
+      for (let index = 0; index < successes.length; index++) {
+        const cue2 = FLIGHT_TUTORIAL_CUES[index];
+        if (successes[index] && !done(cue2)) completed.add(cue2.id);
+      }
+    }
+    function progress(cue2) {
+      if (completed.has(cue2.id)) return 1;
+      if (cue2 === cueFor("pilot")) return clamp(stats.pilotDistance / cue2.target);
+      return 0;
+    }
+    function currentCue() {
+      if (!enabled || !context.playing || context.bossActive) return null;
+      for (const cue2 of FLIGHT_TUTORIAL_CUES) {
+        if (done(cue2)) continue;
+        if (cue2.optional && !(context.missileReady && context.missileOpportunity)) continue;
+        if (cue2.optional && stats.moduleRecovered && !stats.workshopOpened) continue;
+        if (cue2 === cueFor("workshop") && !stats.moduleRecovered) return null;
+        if (elapsed < cue2.at + offset) return null;
+        return cue2;
+      }
+      return null;
+    }
+    function checkpointView() {
+      return Object.freeze({
+        version: 2,
+        contentVersion: FLIGHT_TUTORIAL_VERSION,
+        completed: Object.freeze([...completed]),
+        skipped: Object.freeze([...skipped]),
+        emitted: Object.freeze([...emitted])
+      });
+    }
     function snapshot() {
+      const cue2 = currentCue();
       return Object.freeze({
         version: FLIGHT_TUTORIAL_VERSION,
         elapsed,
+        enabled,
         emitted: Object.freeze([...emitted]),
+        completed: Object.freeze([...completed]),
         skipped: Object.freeze([...skipped]),
-        pending: Object.freeze(FLIGHT_TUTORIAL_CUES.filter((cue2) => !emitted.has(cue2.id) && !skipped.has(cue2.id)).map((cue2) => cue2.id))
+        pending: Object.freeze(FLIGHT_TUTORIAL_CUES.filter((item) => !done(item)).map((item) => item.id)),
+        active: cue2 ? Object.freeze({ ...cue2, progress: progress(cue2) }) : null,
+        complete: FLIGHT_TUTORIAL_CUES.filter((item) => !item.optional).every((item) => completed.has(item.id)),
+        finished: FLIGHT_TUTORIAL_CUES.every(done)
       });
+    }
+    function observe(action = {}) {
+      if (!action || typeof action !== "object" || ![
+        "pilot",
+        "fire",
+        "recovery",
+        "missile",
+        "module",
+        "workshop"
+      ].includes(action.type) || action.type === "pilot" && !validTime(action.distance)) {
+        throw new TypeError("Valid successful tutorial action required");
+      }
+      if (!enabled || suspended || !context.playing || context.bossActive) return snapshot();
+      if (action.type === "pilot") stats.pilotDistance += action.distance;
+      if (action.type === "fire") stats.shots++;
+      if (action.type === "recovery") stats.collected++;
+      if (action.type === "missile") stats.missilesFired++;
+      if (action.type === "module") stats.moduleRecovered = true;
+      if (action.type === "workshop") stats.workshopOpened = true;
+      reconcile();
+      return snapshot();
     }
     function advance({
       elapsed: next,
@@ -160,37 +291,58 @@ var NeonCampaign = (() => {
       shots = 0,
       collected = 0,
       workshopOpened = false,
-      channelBusy = false
+      channelBusy = false,
+      pilotDistance = 0,
+      missilesFired = 0,
+      moduleRecovered = false,
+      missileReady = false,
+      missileOpportunity = false,
+      bossActive = false
     } = {}, emit = NOOP) {
-      if (!validTime(next) || typeof playing !== "boolean" || !validCount(shots) || !validCount(collected) || typeof workshopOpened !== "boolean" || typeof channelBusy !== "boolean" || typeof emit !== "function") {
+      if (!validTime(next) || !validTime(pilotDistance) || !validCount(shots) || !validCount(collected) || !validCount(missilesFired) || [
+        playing,
+        workshopOpened,
+        channelBusy,
+        moduleRecovered,
+        missileReady,
+        missileOpportunity,
+        bossActive
+      ].some((value) => typeof value !== "boolean") || typeof emit !== "function") {
         throw new TypeError("Valid tutorial route view and event callback required");
       }
-      if (!playing) return [];
-      if (next < elapsed) throw new RangeError("Create a new tutorial when restoring an earlier route checkpoint");
-      if (next === elapsed) return [];
-      elapsed = next;
-      const events = [];
-      for (const cue2 of FLIGHT_TUTORIAL_CUES) {
-        if (emitted.has(cue2.id) || skipped.has(cue2.id) || elapsed < cue2.at) continue;
-        if (elapsed >= cue2.at + WINDOW_SECONDS || cue2.id === `${FLIGHT_TUTORIAL_VERSION}:workshop` && workshopOpened) {
-          skipped.add(cue2.id);
-          continue;
-        }
-        if (channelBusy) continue;
-        const event2 = Object.freeze({
-          type: "tutorial",
-          ...cue2,
-          expiresAt: cue2.at + WINDOW_SECONDS,
-          routeElapsed: elapsed
-        });
-        emitted.add(cue2.id);
-        events.push(event2);
-        emit(event2);
-        break;
+      if (!playing) {
+        suspended = true;
+        return [];
       }
-      return events;
+      if (next < elapsed) throw new RangeError("Create a new tutorial when restoring an earlier route checkpoint");
+      suspended = false;
+      context = { playing, channelBusy, bossActive, missileReady, missileOpportunity };
+      if (!enabled || next === elapsed) return [];
+      elapsed = next;
+      stats.pilotDistance = Math.max(stats.pilotDistance, pilotDistance);
+      stats.shots = Math.max(stats.shots, shots);
+      stats.collected = Math.max(stats.collected, collected);
+      stats.missilesFired = Math.max(stats.missilesFired, missilesFired);
+      stats.workshopOpened ||= workshopOpened;
+      stats.moduleRecovered ||= moduleRecovered;
+      reconcile();
+      for (const cue3 of FLIGHT_TUTORIAL_CUES) {
+        if (!done(cue3) && elapsed >= cue3.until + offset) skipped.add(cue3.id);
+      }
+      const cue2 = currentCue();
+      if (!cue2 || context.channelBusy || emitted.has(cue2.id)) return [];
+      const event2 = Object.freeze({
+        type: "tutorial",
+        ...cue2,
+        routeElapsed: elapsed,
+        expiresAt: cue2.until + offset,
+        progress: progress(cue2)
+      });
+      emitted.add(cue2.id);
+      emit(event2);
+      return [event2];
     }
-    return Object.freeze({ advance, snapshot });
+    return Object.freeze({ advance, observe, snapshot, checkpoint: checkpointView });
   }
 
   // src/game/progression/sectors.js
@@ -529,7 +681,7 @@ var NeonCampaign = (() => {
   var ROUTE_ID = "chronos-to-gaia";
   var NOOP2 = () => {
   };
-  var clamp = (value, low, high) => Math.max(low, Math.min(high, value));
+  var clamp2 = (value, low, high) => Math.max(low, Math.min(high, value));
   var finiteTime = (value) => Number.isFinite(value) && value >= 0;
   var freeze = (value) => Object.freeze(value);
   var CHRONOS_CHAPTER_ACTORS = freeze({
@@ -820,11 +972,11 @@ var NeonCampaign = (() => {
           canSkip: active && presentation === "cinematic",
           shotIndex: shot.shotIndex,
           visualCue: shot.visualCue,
-          progress: clamp(elapsed / CHRONOS_CHAPTER_OPENING_SECONDS, 0, 1),
-          shotProgress: clamp((elapsed - shot.at) / shot.duration, 0, 1),
+          progress: clamp2(elapsed / CHRONOS_CHAPTER_OPENING_SECONDS, 0, 1),
+          shotProgress: clamp2((elapsed - shot.at) / shot.duration, 0, 1),
           // The new opening illustration reveals the existing station and its
           // one authored wave; it never draws another reactor destruction.
-          backgroundAlpha: active && presentation === "cinematic" ? 1 - clamp((elapsed - 9) / 2.4, 0, 1) : 0,
+          backgroundAlpha: active && presentation === "cinematic" ? 1 - clamp2((elapsed - 9) / 2.4, 0, 1) : 0,
           dialogue: active ? shot : null
         }),
         aftermath: freeze({ active: aftermathActive, elapsed: aftermathElapsed, dialogue: line }),
@@ -917,6 +1069,7 @@ var NeonCampaign = (() => {
     maxHull: 100,
     baseCapacity: 30,
     reinforcedCapacity: 45,
+    advancedCapacity: 65,
     phaserDamage: 10,
     heavyPhaserDamage: 15,
     largeAsteroidHullDamage: 38,
@@ -934,7 +1087,7 @@ var NeonCampaign = (() => {
     finite(reserve, "reserve");
     finite(capacity, "capacity");
     finite(amount, "damage");
-    if (hull < 0 || hull > 100 || ![30, 45].includes(capacity) || reserve < 0 || reserve > capacity || amount < 0 || typeof largeAsteroid !== "boolean" || !["collision", "phaser", "heavyPhaser", "largeAsteroid"].includes(kind)) {
+    if (hull < 0 || hull > 100 || ![30, 45, 65].includes(capacity) || reserve < 0 || reserve > capacity || amount < 0 || typeof largeAsteroid !== "boolean" || !["collision", "phaser", "heavyPhaser", "largeAsteroid"].includes(kind)) {
       throw new RangeError("Invalid reinforced hull damage request");
     }
     let incoming = amount;
@@ -967,15 +1120,15 @@ var NeonCampaign = (() => {
     equipmentKey = null,
     validateEquipment = null
   } = {}) {
-    const names = ["stars", "unlocked", "best", "levelBest"];
+    const names2 = ["stars", "unlocked", "best", "levelBest"];
     if (!storage || !["readRaw", "set", "setJSON"].every((name) => typeof storage[name] === "function")) {
       throw new TypeError("Storage facade with tagged readRaw/set/setJSON required");
     }
-    if (!Number.isSafeInteger(levelCount) || levelCount < 1 || !keys || !names.every((name) => typeof keys[name] === "string" && keys[name])) {
+    if (!Number.isSafeInteger(levelCount) || levelCount < 1 || !keys || !names2.every((name) => typeof keys[name] === "string" && keys[name])) {
       throw new TypeError("Existing campaign keys and positive levelCount required");
     }
-    keys = Object.freeze(Object.fromEntries(names.map((name) => [name, keys[name]])));
-    const targets = names.map((name) => keys[name]);
+    keys = Object.freeze(Object.fromEntries(names2.map((name) => [name, keys[name]])));
+    const targets = names2.map((name) => keys[name]);
     const optionalKeys = [checkpointKey, equipmentKey].filter((key) => key !== null);
     if (optionalKeys.some((key) => typeof key !== "string" || !key) || (/* @__PURE__ */ new Set([...targets, ...optionalKeys])).size !== targets.length + optionalKeys.length) {
       throw new TypeError("Save keys must be distinct");
@@ -1047,7 +1200,7 @@ var NeonCampaign = (() => {
     }
     function readSave2() {
       const raw = {};
-      for (const name of names) {
+      for (const name of names2) {
         raw[name] = read(keys[name]);
         if (raw[name] === unreadable) return { error: blocked("storage-read-denied", keys[name]) };
       }
@@ -1058,7 +1211,7 @@ var NeonCampaign = (() => {
         unlocked: parseNumber(raw.unlocked, 1, 1),
         best: parseNumber(raw.best, 0)
       };
-      for (const name of names) if (save[name] === null) return { error: blocked("invalid-existing-save", keys[name]) };
+      for (const name of names2) if (save[name] === null) return { error: blocked("invalid-existing-save", keys[name]) };
       return save;
     }
     function validRecord(record) {
@@ -1219,25 +1372,96 @@ var NeonCampaign = (() => {
     maxPurchaseReceipts: 128,
     maxInvalidBackups: 8
   });
-  var SCRAP_REWARDS = Object.freeze({ raider: 6, scout: 9, interceptor: 15, atlas: 600 });
+  var SCRAP_REWARDS = Object.freeze({ raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18 });
+  var upgrade = (definition) => Object.freeze({
+    ...definition,
+    requires: Object.freeze([...definition.requires || []]),
+    receiptPrices: Object.freeze([...definition.receiptPrices || [definition.price]])
+  });
   var SCRAP_UPGRADES = Object.freeze({
-    "twin-preparation": Object.freeze({
+    "twin-preparation": upgrade({
       id: "twin-preparation",
       price: 24,
       label: "Preparar emisor",
       description: "Prepara la pieza recuperada; Gemelo sigue requiriendo vencer a Atlas."
     }),
-    "hull-reinforcement": Object.freeze({
+    "hull-reinforcement": upgrade({
       id: "hull-reinforcement",
       price: 30,
-      label: "Refuerzo de casco",
+      label: "Blindaje I",
+      branch: "defense",
+      rank: 1,
       description: "Ampl\xEDa la reserva de integridad de 30 a 45; absorbe da\xF1o sin temporizador."
     }),
-    "coolant-feed": Object.freeze({
+    "coolant-feed": upgrade({
       id: "coolant-feed",
       price: 45,
-      label: "Alimentaci\xF3n refrigerada",
+      label: "Refrigeraci\xF3n I",
+      branch: "cooling",
+      rank: 1,
       description: "Recupera un proyectil cada 1,5 segundos en lugar de cada dos."
+    }),
+    "hull-plating-ii": upgrade({
+      id: "hull-plating-ii",
+      price: 90,
+      branch: "defense",
+      rank: 2,
+      requires: ["hull-reinforcement"],
+      label: "Blindaje II",
+      description: "Ampl\xEDa la reserva de casco de 45 a 65. No repara la reserva ya consumida."
+    }),
+    "coolant-feed-ii": upgrade({
+      id: "coolant-feed-ii",
+      price: 110,
+      branch: "cooling",
+      rank: 2,
+      requires: ["coolant-feed"],
+      label: "Refrigeraci\xF3n II",
+      description: "Recupera un proyectil cada segundo de vuelo; conserva la carga y recuperaci\xF3n en curso."
+    }),
+    "weapon-scatter": upgrade({
+      id: "weapon-scatter",
+      price: 70,
+      weaponId: "scatter",
+      branch: "scatter",
+      rank: 1,
+      requires: ["twin-preparation"],
+      label: "Abanico I",
+      description: "Tres pulsos divergentes de 1 de da\xF1o; alcance corto para interceptar grupos cercanos.",
+      tradeoff: "Exige acercarse: sus pulsos se disipan antes que un Phaser."
+    }),
+    "scatter-focus": upgrade({
+      id: "scatter-focus",
+      price: 120,
+      weaponId: "scatter",
+      branch: "scatter",
+      rank: 2,
+      requires: ["weapon-scatter"],
+      label: "Abanico II \xB7 convergencia",
+      description: "Concentra la apertura de 18\xB0 a 13\xB0 y ampl\xEDa el alcance de 224 a 317; mantiene tres pulsos.",
+      tradeoff: "Gana alcance pero cubre menos anchura."
+    }),
+    "weapon-needle": upgrade({
+      id: "weapon-needle",
+      price: 95,
+      weaponId: "needle",
+      branch: "needle",
+      rank: 1,
+      requires: ["twin-preparation"],
+      label: "Aguja I",
+      description: "Proyectil estrecho de 2 de da\xF1o que perfora hasta tres objetivos alineados.",
+      tradeoff: "Menor anchura de impacto y cadencia m\xE1s lenta que el Phaser."
+    }),
+    "needle-resonance": upgrade({
+      id: "needle-resonance",
+      price: 140,
+      weaponId: "needle",
+      branch: "needle",
+      rank: 2,
+      requires: ["weapon-needle"],
+      label: "Aguja II \xB7 resonancia",
+      description: "Perfora cuatro objetivos y dispara cada 0,46 s en lugar de cada 0,56 s.",
+      tradeoff: "Mantiene el da\xF1o directo de 2: destaca frente a objetivos alineados."
     })
   });
   var integer = (value) => Number.isSafeInteger(value) && value >= 0;
@@ -1250,7 +1474,9 @@ var NeonCampaign = (() => {
     "ch01": "scout",
     "ch-02": "interceptor",
     "ch02": "interceptor",
-    "guardian-atlas": "atlas"
+    "guardian-atlas": "atlas",
+    "ship-fragment": "debris",
+    "satellite-fragment": "satellite"
   });
   var enemyName = (type) => typeof type !== "string" ? null : has(SCRAP_REWARDS, type) ? type : has(enemyAliases, type) ? enemyAliases[type] : null;
   function rewardForEnemy(type) {
@@ -1258,7 +1484,24 @@ var NeonCampaign = (() => {
     return name === null ? 0 : SCRAP_REWARDS[name];
   }
   function hullReserveCapacity(record) {
-    return Array.isArray(record?.upgrades) && record.upgrades.some((sku) => sku === "hull-reinforcement" || sku === "shield-cell") ? SCRAP_ECONOMY_RULES.reinforcedHullReserve : SCRAP_ECONOMY_RULES.baseHullReserve;
+    const upgrades = Array.isArray(record?.upgrades) ? record.upgrades : [];
+    return upgrades.includes("hull-plating-ii") ? 65 : upgrades.some((sku) => sku === "hull-reinforcement" || sku === "shield-cell") ? SCRAP_ECONOMY_RULES.reinforcedHullReserve : SCRAP_ECONOMY_RULES.baseHullReserve;
+  }
+  function classicWorkshopState(record) {
+    const saved = normalizeScrapRecord(record);
+    const upgrades = saved?.upgrades || [];
+    const owns2 = (sku) => upgrades.includes(sku);
+    return {
+      reserveCapacity: hullReserveCapacity(saved),
+      rechargeSeconds: owns2("coolant-feed-ii") ? 1 : owns2("coolant-feed") ? 1.5 : 2,
+      defenseRank: owns2("hull-plating-ii") ? 2 : owns2("hull-reinforcement") ? 1 : 0,
+      coolingRank: owns2("coolant-feed-ii") ? 2 : owns2("coolant-feed") ? 1 : 0,
+      weaponIds: ["scatter", "needle"].filter((id) => owns2(`weapon-${id}`)),
+      weaponRanks: {
+        scatter: owns2("scatter-focus") ? 2 : owns2("weapon-scatter") ? 1 : 0,
+        needle: owns2("needle-resonance") ? 2 : owns2("weapon-needle") ? 1 : 0
+      }
+    };
   }
   var upgradeName = (sku) => sku === "shield-cell" ? "hull-reinforcement" : sku;
   var historicalReward = (type, amount) => amount === SCRAP_REWARDS[type] || type === "atlas" && amount === 180;
@@ -1327,11 +1570,12 @@ var NeonCampaign = (() => {
     let spent = 0;
     for (const receipt of value.purchases) {
       const sku = upgradeName(receipt?.sku);
-      if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) || typeof sku !== "string" || !has(SCRAP_UPGRADES, sku) || purchased.has(sku) || receipt.price !== SCRAP_UPGRADES[sku].price) return null;
+      if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) || typeof sku !== "string" || !has(SCRAP_UPGRADES, sku) || purchased.has(sku) || !SCRAP_UPGRADES[sku].receiptPrices.includes(receipt.price)) return null;
       transactionIds.add(receipt.id);
       purchased.add(sku);
       spent += receipt.price;
     }
+    if ([...purchased].some((sku) => SCRAP_UPGRADES[sku].requires.some((required) => !purchased.has(required)))) return null;
     if (spent + missileRoundsPurchased * SCRAP_ECONOMY_RULES.missileUnitPrice !== value.spent || upgrades.length !== purchased.size || upgrades.some((sku) => !purchased.has(sku))) return null;
     if (value.activeRun !== null) {
       const run = value.activeRun;
@@ -1588,6 +1832,14 @@ var NeonCampaign = (() => {
       if (prior) return prior.sku === sku ? success("duplicate", { duplicate: true, sku, price: 0 }) : blocked("transaction-id-conflict");
       if (current.upgrades.includes(sku)) return { ok: false, status: "unavailable", reason: "already-owned", state: copy(current) };
       if (current.purchases.length >= SCRAP_ECONOMY_RULES.maxPurchaseReceipts) return blocked("purchase-receipt-capacity");
+      const requires = SCRAP_UPGRADES[sku].requires.filter((required) => !current.upgrades.includes(required));
+      if (requires.length) return {
+        ok: false,
+        status: "unavailable",
+        reason: "prerequisite-required",
+        requires,
+        state: copy(current)
+      };
       const price = SCRAP_UPGRADES[sku].price;
       if (current.balance < price) return {
         ok: false,
@@ -1636,7 +1888,7 @@ var NeonCampaign = (() => {
     boundsMargin: 128,
     burstStarts: Object.freeze([7, 16, 25])
   });
-  var clamp2 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var clamp3 = (value, low, high) => Math.max(low, Math.min(high, value));
   var finite2 = (value, label) => {
     if (!Number.isFinite(value)) throw new RangeError(`${label} must be finite`);
     return value;
@@ -1665,7 +1917,7 @@ var NeonCampaign = (() => {
     const maximum = width - minimum;
     const random = randomFor(seed ^ Math.imul(burst + 3, 2654435769));
     const side = random() < 0.5 ? -1 : 1;
-    const center = clamp2(width * (side < 0 ? 0.22 + random() * 0.15 : 0.63 + random() * 0.15), minimum, maximum);
+    const center = clamp3(width * (side < 0 ? 0.22 + random() * 0.15 : 0.63 + random() * 0.15), minimum, maximum);
     return Object.freeze({
       center,
       width: corridorWidth,
@@ -1727,7 +1979,7 @@ var NeonCampaign = (() => {
     } else {
       const laneMinimum = dangerSide < 0 ? 24 : corridor.right + 42;
       const laneMaximum = dangerSide < 0 ? corridor.left - 42 : width - 24;
-      const referenceX = laneMinimum <= laneMaximum ? clamp2(width * (0.4 + random() * 0.2), laneMinimum, laneMaximum) : width / 2;
+      const referenceX = laneMinimum <= laneMaximum ? clamp3(width * (0.4 + random() * 0.2), laneMinimum, laneMaximum) : width / 2;
       y = mode === 1 ? -margin : height + margin;
       entryEdge = mode === 1 ? "top" : "bottom";
       const verticalDirection = mode === 1 ? 1 : -1;
@@ -1736,7 +1988,7 @@ var NeonCampaign = (() => {
       const referenceY = height * (0.6 + random() * 0.24);
       const referenceTime = Math.abs(referenceY - y) / speed;
       vx = dangerSide * (18 + random() * 130) - ax * referenceTime;
-      vx = clamp2(vx, -speed * 0.32, speed * 0.32);
+      vx = clamp3(vx, -speed * 0.32, speed * 0.32);
       vy = verticalDirection * Math.sqrt(speed * speed - vx * vx);
       const time = (-Math.abs(vy) + Math.sqrt(vy * vy + 2 * Math.abs(ay) * Math.abs(referenceY - y))) / Math.abs(ay);
       x = referenceX - vx * time - ax * time * time / 2;
@@ -1941,7 +2193,7 @@ var NeonCampaign = (() => {
     const startX = item.previousX ?? item.x, startY = item.previousY ?? item.y;
     const dx = item.x - startX, dy = item.y - startY;
     const denominator = dx * dx + dy * dy;
-    const t = denominator > 0 ? clamp2(((circle.x - startX) * dx + (circle.y - startY) * dy) / denominator, 0, 1) : 0;
+    const t = denominator > 0 ? clamp3(((circle.x - startX) * dx + (circle.y - startY) * dy) / denominator, 0, 1) : 0;
     const x = startX + t * dx, y = startY + t * dy;
     return Math.hypot(circle.x - x, circle.y - y) <= item.r * 0.94 + circle.r;
   }
@@ -1959,7 +2211,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/classic-arsenal.js
-  var WEAPON_IDS = Object.freeze(["pulse", "twin", "lance"]);
+  var WEAPON_IDS = Object.freeze(["pulse", "twin", "lance", "scatter", "needle"]);
   var BOSS_WEAPONS = Object.freeze({ "guardian-atlas": "twin" });
   var owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
   function createClassicEquipment() {
@@ -2009,6 +2261,13 @@ var NeonCampaign = (() => {
   function canEquipClassicWeapon(equipment, id) {
     if (!WEAPON_IDS.includes(id)) throw new RangeError("Unknown classic weapon");
     return equipmentCopy(equipment).unlocked.includes(id);
+  }
+  function syncClassicWorkshopWeapons(equipment, record) {
+    const next = equipmentCopy(equipment);
+    for (const weaponId of classicWorkshopState(record).weaponIds) {
+      if (!next.unlocked.includes(weaponId)) next.unlocked.push(weaponId);
+    }
+    return next;
   }
 
   // src/core/player-model.js
@@ -2114,10 +2373,10 @@ var NeonCampaign = (() => {
   }
   function bossForLevel(level) {
     if (!Number.isInteger(level) || level < 10 || level > 100 || level % 10 !== 0) throw new RangeError("Boss level must be a multiple of ten");
-    const names = ["Centinela Prisma", "Guardi\xE1n del Umbral", "Firewall Viviente", "Arquitecto de Datos", "Forjador de Silicio", "Tit\xE1n de Procesos", "Supervisor de Nodos", "Matriz Centinela", "Eco del Abismo", "N-7: N\xFAcleo Corrupto"];
+    const names2 = ["Centinela Prisma", "Guardi\xE1n del Umbral", "Firewall Viviente", "Arquitecto de Datos", "Forjador de Silicio", "Tit\xE1n de Procesos", "Supervisor de Nodos", "Matriz Centinela", "Eco del Abismo", "N-7: N\xFAcleo Corrupto"];
     return Object.freeze({
       id: "boss-" + level,
-      name: names[level / 10 - 1],
+      name: names2[level / 10 - 1],
       level,
       phases: Object.freeze([
         Object.freeze({ id: 1, pattern: "spread-shot", invulnerable: false, healthThreshold: 1 }),
@@ -2602,7 +2861,7 @@ var NeonCampaign = (() => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
-  var clamp3 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp4 = (value, min, max) => Math.max(min, Math.min(max, value));
   var rectangles = Object.freeze(ch01_atlas_v1_default.frames.map((frame) => {
     const { x, y, width, height } = frame.rect;
     if (![x, y, width, height].every(Number.isFinite) || x < 0 || y < 0 || width <= 0 || height <= 0 || x + width > ch01_atlas_v1_default.dimensions.width || y + height > ch01_atlas_v1_default.dimensions.height) {
@@ -2658,7 +2917,7 @@ var NeonCampaign = (() => {
       throw new RangeError("Invalid CH-01 animator bounds");
     }
     if (!Object.hasOwn(animations, initialState)) throw new RangeError("Unknown CH-01 initial state");
-    let health = clamp3(hp, 0, maxHp), maximumHealth = maxHp;
+    let health = clamp4(hp, 0, maxHp), maximumHealth = maxHp;
     let state = health === 0 ? "destroy" : initialState;
     if (state === "destroy") health = 0;
     let elapsedMs = 0, eventCursor = 0, done = false;
@@ -2711,7 +2970,7 @@ var NeonCampaign = (() => {
       if (dt < 0) throw new RangeError("dt must be nonnegative");
       const nextMax = sample.maxHp === void 0 ? maximumHealth : finite3(sample.maxHp, "maxHp");
       if (nextMax <= 0) throw new RangeError("maxHp must be positive");
-      const nextHealth = clamp3(sample.hp === void 0 ? health : finite3(sample.hp, "hp"), 0, nextMax);
+      const nextHealth = clamp4(sample.hp === void 0 ? health : finite3(sample.hp, "hp"), 0, nextMax);
       const nextVx = sample.vx === void 0 ? vx : finite3(sample.vx, "vx");
       const nextVy = sample.vy === void 0 ? vy : finite3(sample.vy, "vy");
       if (dt === 0) return [];
@@ -2785,7 +3044,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/encounter-director.js
-  var clamp4 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp5 = (value, min, max) => Math.max(min, Math.min(max, value));
   var EncounterDirector = class {
     constructor(level, options) {
       this.plan = generateLevel(level, options);
@@ -2869,10 +3128,10 @@ var NeonCampaign = (() => {
       const mid = (bounds.min + bounds.max) / 2;
       item.x = mid + Math.sin(behavior.age * 2.2 + behavior.phase) * (bounds.max - bounds.min) / 2;
     } else if (behavior.pattern === "chaser" && item.y < player.y - 230) {
-      const target = clamp4(player.x, bounds.min, bounds.max);
-      item.x += clamp4(target - item.x, -100 * dt, 100 * dt);
+      const target = clamp5(player.x, bounds.min, bounds.max);
+      item.x += clamp5(target - item.x, -100 * dt, 100 * dt);
     }
-    item.x = clamp4(item.x, bounds.min, bounds.max);
+    item.x = clamp5(item.x, bounds.min, bounds.max);
     if (behavior.pattern !== "shooter") return;
     const animator = behavior.ch01Animator;
     const inRange = item.y >= 0 && item.y <= player.y - 260;
@@ -2890,7 +3149,7 @@ var NeonCampaign = (() => {
       behavior.telegraph = 0;
       return;
     }
-    behavior.telegraph = clamp4(1 - (behavior.nextFire - behavior.age) / behavior.telegraphSeconds, 0, 1);
+    behavior.telegraph = clamp5(1 - (behavior.nextFire - behavior.age) / behavior.telegraphSeconds, 0, 1);
     if (behavior.fired >= 3 || animator && !animationEvents.some((event2) => event2.name === "fire") || !animator && behavior.age + 1e-9 < behavior.nextFire) return;
     spawnProjectile({
       id: `${item.id}:shot:${++behavior.fired}`,
@@ -2921,7 +3180,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/classic-scout.js
-  var clamp5 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var clamp6 = (value, low, high) => Math.max(low, Math.min(high, value));
   function createClassicScout({ x, phase = 0, width = 720 } = {}) {
     if (![x, phase, width].every(Number.isFinite) || width < 250) throw new RangeError("Invalid scout spawn");
     return {
@@ -2944,7 +3203,7 @@ var NeonCampaign = (() => {
     if (!scout || dt === 0) return;
     scout.age += dt;
     const previousX = item.x;
-    item.x = clamp5(
+    item.x = clamp6(
       scout.baseX + Math.sin(scout.age * 1.35 + scout.phase) * 28,
       52,
       scout.width - 52
@@ -2965,7 +3224,7 @@ var NeonCampaign = (() => {
         scout.nextFire = scout.age + 1.1;
       }
     }
-    scout.telegraph = inRange && scout.attackScheduled ? clamp5(1 - (scout.nextFire - scout.age) / 0.46, 0, 1) : 0;
+    scout.telegraph = inRange && scout.attackScheduled ? clamp6(1 - (scout.nextFire - scout.age) / 0.46, 0, 1) : 0;
     if (!inRange || scout.fired >= 2 || !events.some((event2) => event2.name === "fire")) return;
     spawnProjectile({
       type: "meteor",
@@ -2994,8 +3253,8 @@ var NeonCampaign = (() => {
 
   // src/game/combat/classic-pursuit.js
   var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v4";
-  var clamp6 = (value, low, high) => Math.max(low, Math.min(high, value));
-  var approach = (value, target, amount) => value + clamp6(target - value, -amount, amount);
+  var clamp7 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var approach = (value, target, amount) => value + clamp7(target - value, -amount, amount);
   var profiles = Object.freeze({
     raider: Object.freeze({
       warning: 0.32,
@@ -3049,8 +3308,8 @@ var NeonCampaign = (() => {
   function observePlayer(enemy, player, interval) {
     if (enemy.age + 1e-9 < enemy.nextObservationAt) return;
     const prior = enemy.observation, elapsed = prior ? enemy.age - prior.at : 0;
-    const vx = elapsed > 0 ? clamp6((player.x - prior.x) / elapsed, -720, 720) : 0;
-    const vy = elapsed > 0 ? clamp6((player.y - prior.y) / elapsed, -560, 560) : 0;
+    const vx = elapsed > 0 ? clamp7((player.x - prior.x) / elapsed, -720, 720) : 0;
+    const vy = elapsed > 0 ? clamp7((player.y - prior.y) / elapsed, -560, 560) : 0;
     enemy.observation = {
       x: player.x,
       y: player.y,
@@ -3098,8 +3357,8 @@ var NeonCampaign = (() => {
       state: "entry",
       stage: "entry",
       stateAge: 0,
-      baseX: clamp6(x, combatMargin, width - combatMargin),
-      targetX: clamp6(x, combatMargin + entryInset, width - combatMargin - entryInset),
+      baseX: clamp7(x, combatMargin, width - combatMargin),
+      targetX: clamp7(x, combatMargin + entryInset, width - combatMargin - entryInset),
       vx: 0,
       combatMinX: combatMargin,
       combatMaxX: width - combatMargin,
@@ -3145,12 +3404,12 @@ var NeonCampaign = (() => {
       enemy.state = enemy.stage = state;
       enemy.stateAge = 0;
     };
-    const combatX = (value) => clamp6(value, enemy.combatMinX, enemy.combatMaxX);
+    const combatX = (value) => clamp7(value, enemy.combatMinX, enemy.combatMaxX);
     const minimumHoldY = enemy.minAttackY + 52;
     const maximumHoldY = Math.max(minimumHoldY, Math.min(enemy.height * 0.52, player.y - 350));
     const flightPhase = enemy.phase + enemy.age * profile.orbitRate * enemy.manoeuvreRate;
     const depthArc = Math.cos(flightPhase) * profile.depthSweep * (["charge", "fire"].includes(enemy.state) ? 0.35 : 1);
-    enemy.holdY = clamp6(
+    enemy.holdY = clamp7(
       enemy.height * profile.depth + depthArc + Math.sin(enemy.phase) * 12,
       minimumHoldY,
       maximumHoldY
@@ -3163,7 +3422,7 @@ var NeonCampaign = (() => {
     };
     const laneTarget = () => {
       const sample = enemy.observation;
-      const observedX = combatX(sample.x + clamp6(sample.vx * 0.18, -64, 64));
+      const observedX = combatX(sample.x + clamp7(sample.vx * 0.18, -64, 64));
       const span = Math.min(enemy.width * 0.24, 140);
       const sweep = Math.sin(flightPhase) * span * profile.lateralSweep * enemy.sweepScale;
       return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span * 0.68 + sweep : enemy.role === "scout" ? enemy.baseX * 0.45 + observedX * 0.55 + enemy.side * span * 0.2 + sweep : observedX + enemy.side * span * 0.42 + sweep);
@@ -3219,11 +3478,11 @@ var NeonCampaign = (() => {
       }
       if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
         const sample = enemy.observation;
-        enemy.leadOffset = clamp6(sample.vx * profile.leadSeconds, -110, 110);
+        enemy.leadOffset = clamp7(sample.vx * profile.leadSeconds, -110, 110);
         enemy.observedTarget = Object.freeze({ ...sample });
         enemy.lockedTarget = Object.freeze({
-          x: clamp6(sample.x + enemy.leadOffset, 24, enemy.width - 24),
-          y: clamp6(sample.y + clamp6(sample.vy * 0.12, -48, 48), item.y + 268, enemy.height - 24)
+          x: clamp7(sample.x + enemy.leadOffset, 24, enemy.width - 24),
+          y: clamp7(sample.y + clamp7(sample.vy * 0.12, -48, 48), item.y + 268, enemy.height - 24)
         });
         enemy.targetX = item.x;
         enemy.chargeStartedAt = enemy.age;
@@ -3233,19 +3492,19 @@ var NeonCampaign = (() => {
     }
     if (enemy.state === "charge") {
       const warningElapsed = enemy.age - enemy.chargeStartedAt;
-      enemy.telegraph = clamp6(warningElapsed / profile.warning, 0, 1);
+      enemy.telegraph = clamp7(warningElapsed / profile.warning, 0, 1);
       if (warningElapsed >= profile.warning && !enemy.attackScheduled) {
         enemy.attackScheduled = enemy.animator.request("attack");
       }
     }
     const previousX = item.x;
-    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp6((enemy.targetX - item.x) * 2.8, -profile.lateralSpeed, profile.lateralSpeed);
+    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp7((enemy.targetX - item.x) * 2.8, -profile.lateralSpeed, profile.lateralSpeed);
     enemy.vx = approach(enemy.vx, desiredVelocity, profile.acceleration * step);
     const minimumX = enemy.state === "retreat" ? 52 : Math.min(item.x, enemy.combatMinX);
     const maximumX = enemy.state === "retreat" ? enemy.width - 52 : Math.max(item.x, enemy.combatMaxX);
-    item.x = clamp6(item.x + enemy.vx * step, minimumX, maximumX);
+    item.x = clamp7(item.x + enemy.vx * step, minimumX, maximumX);
     enemy.vx = (item.x - previousX) / step;
-    const desiredVertical = enemy.state === "destroyed" ? 0 : enemy.state === "retreat" ? enemy.baseSpeed * 1.35 : clamp6((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
+    const desiredVertical = enemy.state === "destroyed" ? 0 : enemy.state === "retreat" ? enemy.baseSpeed * 1.35 : clamp7((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
     item.s = approach(item.s, desiredVertical, enemy.baseSpeed * 1.8 * step);
     const events = enemy.animator.update(step, { hp, maxHp, vx: enemy.vx, vy: item.s });
     for (const event2 of events) {
@@ -3253,7 +3512,7 @@ var NeonCampaign = (() => {
       if (event2.name !== "fire" || enemy.state !== "charge" || !enemy.attackScheduled || enemy.firedSerial === enemy.chargeSerial || !canAttack()) continue;
       const aim = enemy.lockedTarget;
       const dy = Math.max(1, aim.y - (item.y + 38));
-      const dx = clamp6(aim.x - item.x, -dy * 0.65, dy * 0.65);
+      const dx = clamp7(aim.x - item.x, -dy * 0.65, dy * 0.65);
       const length = Math.hypot(dx, dy), speed = profile.projectileSpeed;
       const shot = {
         type: "meteor",
@@ -3907,7 +4166,7 @@ var NeonCampaign = (() => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
-  var clamp7 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp8 = (value, min, max) => Math.max(min, Math.min(max, value));
   var rectangles2 = Object.freeze(ch02_atlas_v1_default.frames.map((frame) => {
     const { x, y, width, height } = frame.rect;
     if (![x, y, width, height].every(Number.isFinite) || x < 0 || y < 0 || width <= 0 || height <= 0 || x + width > ch02_atlas_v1_default.dimensions.width || y + height > ch02_atlas_v1_default.dimensions.height) {
@@ -3963,7 +4222,7 @@ var NeonCampaign = (() => {
       throw new RangeError("Invalid CH-02 animator bounds");
     }
     if (!Object.hasOwn(animations2, initialState)) throw new RangeError("Unknown CH-02 initial state");
-    let health = clamp7(hp, 0, maxHp), maximumHealth = maxHp;
+    let health = clamp8(hp, 0, maxHp), maximumHealth = maxHp;
     let state = health === 0 ? "destroy" : initialState;
     if (state === "destroy") health = 0;
     let elapsedMs = 0, eventCursor = 0, done = false;
@@ -4016,7 +4275,7 @@ var NeonCampaign = (() => {
       if (dt < 0) throw new RangeError("dt must be nonnegative");
       const nextMax = sample.maxHp === void 0 ? maximumHealth : finite4(sample.maxHp, "maxHp");
       if (nextMax <= 0) throw new RangeError("maxHp must be positive");
-      const nextHealth = clamp7(sample.hp === void 0 ? health : finite4(sample.hp, "hp"), 0, nextMax);
+      const nextHealth = clamp8(sample.hp === void 0 ? health : finite4(sample.hp, "hp"), 0, nextMax);
       const nextVx = sample.vx === void 0 ? vx : finite4(sample.vx, "vx");
       const nextVy = sample.vy === void 0 ? vy : finite4(sample.vy, "vy");
       if (dt === 0) return [];
@@ -4093,9 +4352,9 @@ var NeonCampaign = (() => {
   var CHRONOS_FLIGHT_VERSION = "chronos-flight-v1";
   var CHRONOS_FLIGHT_MIN_DURATION = 60;
   var CHRONOS_FLIGHT_MAX_DELTA = 0.034;
-  var clamp8 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp9 = (value, min, max) => Math.max(min, Math.min(max, value));
   var smooth = (value, start, end) => {
-    const t = clamp8((value - start) / (end - start), 0, 1);
+    const t = clamp9((value - start) / (end - start), 0, 1);
     return t * t * (3 - 2 * t);
   };
   var immutable = (object2) => Object.freeze(object2);
@@ -4353,7 +4612,7 @@ var NeonCampaign = (() => {
       return entryCheckpoint;
     }
     function snapshot() {
-      const stage = CHRONOS_VOYAGE_STAGES[stageIndex], stageProgress = clamp8(stageElapsed / stage.duration, 0, 1);
+      const stage = CHRONOS_VOYAGE_STAGES[stageIndex], stageProgress = clamp9(stageElapsed / stage.duration, 0, 1);
       const elapsed = stage.offset + stageElapsed, p = elapsed / CHRONOS_VOYAGE_MIN_DURATION;
       const departure = smooth(p, 0.025, 0.43), approach2 = smooth(p, 0.7, 1), stageGoal = voyageGoal(stage, goal);
       const attackApproach = smooth(elapsed, 1.35, 4.95), attackExit = smooth(elapsed, 10.8, 21.6);
@@ -4530,18 +4789,18 @@ var NeonCampaign = (() => {
 
   // src/game/presentation/voyage-transitions.js
   var VOYAGE_CROSSING_SECONDS = 1.6;
-  var clamp9 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp10 = (value, min, max) => Math.max(min, Math.min(max, value));
   var smooth2 = (value) => value * value * (3 - 2 * value);
   var mix = (from, to, amount) => from + (to - from) * amount;
   function getVoyageTransitionPresentation(view, { reducedEffects = false } = {}) {
     if (!view || view.version && view.version !== CHRONOS_VOYAGE_VERSION || !Number.isInteger(view.stageNumber) || view.stageNumber < 1 || view.stageNumber > 10 || !Number.isFinite(view.stageElapsed) || !Number.isFinite(view.stageDuration) || view.stageDuration <= 0) return null;
     const number = view.stageNumber;
-    const seconds = clamp9(view.stageElapsed, 0, view.stageDuration);
+    const seconds = clamp10(view.stageElapsed, 0, view.stageDuration);
     const definition = CHRONOS_VOYAGE_STAGES[number - 1];
     const previous = CHRONOS_VOYAGE_STAGES[Math.max(0, number - 2)];
-    const settled = number === 1 ? 1 : smooth2(clamp9(seconds / VOYAGE_CROSSING_SECONDS, 0, 1));
-    const targetNebula = Number.isFinite(view.deepSpace?.nebulaOpacity) ? clamp9(view.deepSpace.nebulaOpacity, 0, 1) : definition.nebulaOpacity;
-    const targetStars = Number.isFinite(view.deepSpace?.starDensity) ? clamp9(view.deepSpace.starDensity, 0, 1) : definition.starDensity;
+    const settled = number === 1 ? 1 : smooth2(clamp10(seconds / VOYAGE_CROSSING_SECONDS, 0, 1));
+    const targetNebula = Number.isFinite(view.deepSpace?.nebulaOpacity) ? clamp10(view.deepSpace.nebulaOpacity, 0, 1) : definition.nebulaOpacity;
+    const targetStars = Number.isFinite(view.deepSpace?.starDensity) ? clamp10(view.deepSpace.starDensity, 0, 1) : definition.starDensity;
     const environment = Object.freeze({
       // Do not swap a painting or dissolve the station/planet. Only the distant
       // ambient illumination and tiny star density settle into their next region.
@@ -4558,7 +4817,7 @@ var NeonCampaign = (() => {
     }
     const cueAllowed = boundary !== null && boundary !== 5 && boundary !== 6 && !reducedEffects;
     const side = boundary % 2 ? 1 : -1;
-    const depth = clamp9(progress, 0, 1);
+    const depth = clamp10(progress, 0, 1);
     const cue2 = cueAllowed ? Object.freeze({
       kind: boundary <= 3 ? "chronos-remnant" : "navigation-beacon",
       side,
@@ -4791,13 +5050,13 @@ var NeonCampaign = (() => {
   }
 
   // src/game/combat/guardian-atlas.js
-  var clamp10 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var clamp11 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   var finite5 = (value, name) => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
   var GUARDIAN_ATLAS_RULES = Object.freeze({
-    version: "guardian-atlas-v6",
+    version: "guardian-atlas-v7",
     maxHp: 96,
     maxDelta: 0.05,
     entrySeconds: 2.2,
@@ -4825,6 +5084,13 @@ var NeonCampaign = (() => {
       basic: Object.freeze({ chargeSeconds: 0.36, volleyTimes: Object.freeze([0]), damage: 13 }),
       medium: Object.freeze({ chargeSeconds: 0.52, volleyTimes: Object.freeze([0, 0.34]), damage: 15 }),
       superpower: Object.freeze({ chargeSeconds: 0.86, volleyTimes: Object.freeze([0, 0.45]), damage: 22 })
+    }),
+    patterns: Object.freeze({
+      duelBurst: Object.freeze({ volleyTimes: Object.freeze([0, 0.24]), projectiles: 2 }),
+      staggeredSalvo: Object.freeze({ volleyTimes: Object.freeze([0, 0.25, 0.58]), projectiles: 3 }),
+      flankSalvo: Object.freeze({ volleyTimes: Object.freeze([0, 0.36]), projectiles: 4 }),
+      reactorSweep: Object.freeze({ volleyTimes: Object.freeze([0, 0.34, 0.72]), projectiles: 3 }),
+      reactorPincer: Object.freeze({ volleyTimes: Object.freeze([0, 0.48]), projectiles: 5 })
     })
   });
   function createGuardianAtlas({
@@ -4879,6 +5145,8 @@ var NeonCampaign = (() => {
       nextObservationAt: 0,
       lastPattern: null,
       attackDecision: null,
+      previousPatterns: { basic: null, medium: null, superpower: null },
+      tacticalManeuver: "patrol",
       attacksSinceSuperpower: 0,
       motionDecision: 0,
       nextMotionAt: 0,
@@ -4903,17 +5171,19 @@ var NeonCampaign = (() => {
   }
   var phaseRules = (boss) => boss.phase === 1 ? GUARDIAN_ATLAS_RULES.phaseOne : GUARDIAN_ATLAS_RULES.phaseTwo;
   var attackRules = (boss) => GUARDIAN_ATLAS_RULES.attacks[boss.attackTier];
+  var patternRules = (boss) => GUARDIAN_ATLAS_RULES.patterns[boss.telegraph?.pattern];
+  var volleyTimes = (boss) => patternRules(boss)?.volleyTimes || attackRules(boss).volleyTimes;
   function updateCore(boss) {
     boss.vulnerability = boss.state === "exposed" && !boss.disabled;
-    boss.coreExposure = boss.state === "exposed" ? 1 : boss.state === "opening" ? clamp10(boss.stateTime / GUARDIAN_ATLAS_RULES.openingSeconds, 0, 1) : boss.state === "closing" ? 1 - clamp10(boss.stateTime / GUARDIAN_ATLAS_RULES.closingSeconds, 0, 1) : 0;
+    boss.coreExposure = boss.state === "exposed" ? 1 : boss.state === "opening" ? clamp11(boss.stateTime / GUARDIAN_ATLAS_RULES.openingSeconds, 0, 1) : boss.state === "closing" ? 1 - clamp11(boss.stateTime / GUARDIAN_ATLAS_RULES.closingSeconds, 0, 1) : 0;
     boss.armorClosed = !boss.vulnerability;
   }
   function observePlayer2(boss, player) {
     if (boss.age + 1e-9 < boss.nextObservationAt) return;
     const previous = boss.observation, elapsed = previous ? boss.age - previous.at : 0;
-    const x = clamp10(player.x, 24, boss.width - 24);
-    const y = clamp10(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 16);
-    const vx = elapsed > 0 ? clamp10((x - previous.x) / elapsed, -720, 720) : 0;
+    const x = clamp11(player.x, 24, boss.width - 24);
+    const y = clamp11(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 16);
+    const vx = elapsed > 0 ? clamp11((x - previous.x) / elapsed, -720, 720) : 0;
     boss.observation = { x, y, at: boss.age, vx: previous ? previous.vx * 0.4 + vx * 0.6 : 0 };
     boss.nextObservationAt = boss.age + GUARDIAN_ATLAS_RULES.motion.observationSeconds;
   }
@@ -4940,13 +5210,17 @@ var NeonCampaign = (() => {
     else if (!exposed && (underFire || Math.abs(boss.x - boss.motionX) < Math.min(26, space * 0.12))) {
       boss.motionSide = -boss.motionSide;
     }
+    const tacticalAttack = boss.state === "charge" || boss.state === "fire";
+    if (tacticalAttack && boss.tacticalManeuver === "flank") {
+      boss.motionSide = boss.telegraph.sweepDirection;
+    }
     const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom(boss) * 0.17);
-    const lead = clamp10(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
-    const target = exposed ? boss.x + boss.motionSide * flank : sample.x + lead + boss.motionSide * flank;
-    boss.motionX = clamp10(target, bounds.left, bounds.right);
+    const lead = clamp11(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
+    const target = exposed ? boss.x + boss.motionSide * flank : tacticalAttack && boss.tacticalManeuver === "withdraw" ? boss.width / 2 + boss.motionSide * space * 0.34 : sample.x + lead + boss.motionSide * flank;
+    boss.motionX = clamp11(target, bounds.left, bounds.right);
     const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
-    boss.motionY = clamp10(boss.targetY + Math.sin(verticalPhase) * 18, bounds.top, bounds.bottom);
-    boss.nextMotionAt = boss.age + (exposed ? 1.15 : 1.25 + nextRandom(boss) * 0.5);
+    boss.motionY = clamp11(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
+    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom(boss) * 0.5);
     boss.motionDecision++;
   }
   function moveAtlas(boss, dt) {
@@ -4955,13 +5229,13 @@ var NeonCampaign = (() => {
     const rules = GUARDIAN_ATLAS_RULES.motion, bounds = motionBounds(boss);
     const exposed = boss.state === "exposed";
     const maxSpeed = exposed ? boss.phase === 2 ? rules.exposedPhaseTwoSpeed : rules.exposedSpeed : boss.state === "opening" ? 68 : boss.phase === 2 ? rules.maxSpeed : 108;
-    const desiredVx = clamp10((boss.motionX - boss.x) * 2.4, -maxSpeed, maxSpeed);
-    const desiredVy = clamp10((boss.motionY - boss.y) * 2, -rules.maxVerticalSpeed, rules.maxVerticalSpeed);
-    boss.motionVx += clamp10(desiredVx - boss.motionVx, -rules.acceleration * dt, rules.acceleration * dt);
-    boss.motionVy += clamp10(desiredVy - boss.motionVy, -rules.acceleration * dt, rules.acceleration * dt);
+    const desiredVx = clamp11((boss.motionX - boss.x) * 2.4, -maxSpeed, maxSpeed);
+    const desiredVy = clamp11((boss.motionY - boss.y) * 2, -rules.maxVerticalSpeed, rules.maxVerticalSpeed);
+    boss.motionVx += clamp11(desiredVx - boss.motionVx, -rules.acceleration * dt, rules.acceleration * dt);
+    boss.motionVy += clamp11(desiredVy - boss.motionVy, -rules.acceleration * dt, rules.acceleration * dt);
     const x = boss.x + boss.motionVx * dt, y = boss.y + boss.motionVy * dt;
-    boss.x = clamp10(x, bounds.left, bounds.right);
-    boss.y = clamp10(y, bounds.top, bounds.bottom);
+    boss.x = clamp11(x, bounds.left, bounds.right);
+    boss.y = clamp11(y, bounds.top, bounds.bottom);
     if (boss.x !== x) boss.motionVx = 0;
     if (boss.y !== y) boss.motionVy = 0;
   }
@@ -5002,16 +5276,25 @@ var NeonCampaign = (() => {
     }
     boss.attacksSinceSuperpower = boss.attackTier === "superpower" ? 0 : boss.attacksSinceSuperpower + 1;
     const tier = boss.attackTier;
-    const pattern = tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
-    const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp10(sample.vx * 0.28, -100, 100);
+    let pattern = tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
+    if (boss.phaseAttacks > 3 || boss.phase === 2) {
+      const options = tier === "basic" ? ["duelBurst"] : tier === "medium" ? Math.abs(sample.vx) >= 85 ? ["flankSalvo", "staggeredSalvo"] : ["staggeredSalvo", "flankSalvo"] : ["reactorSweep", "reactorPincer"];
+      const candidates = options.filter((candidate) => candidate !== boss.previousPatterns[tier]);
+      pattern = candidates[Math.floor(nextRandom(boss) * candidates.length)] || options[0];
+    }
+    boss.previousPatterns[tier] = pattern;
+    const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp11(sample.vx * 0.28, -100, 100);
     const originY = boss.y + boss.r * 0.7;
     boss.lastPattern = pattern;
+    const sweepDirection = sample.vx ? Math.sign(sample.vx) : sample.x < boss.width / 2 ? 1 : -1;
+    boss.tacticalManeuver = pattern === "flankSalvo" || pattern === "staggeredSalvo" ? "flank" : tier === "superpower" ? "withdraw" : "pressure";
+    boss.nextMotionAt = boss.age;
     boss.telegraph = {
       kind: "mechanicalDeployment",
       pattern,
       attackTier: tier,
       progress: 0,
-      targetX: clamp10(sample.x + leadOffset, 24, boss.width - 24),
+      targetX: clamp11(sample.x + leadOffset, 24, boss.width - 24),
       // A pilot moving above the guns must not produce upward/negative-lifetime
       // ordnance. Arena layout remains the integration's responsibility.
       targetY: Math.max(originY + 180, sample.y),
@@ -5024,7 +5307,9 @@ var NeonCampaign = (() => {
       seconds: attackRules(boss).chargeSeconds,
       safeGap: null,
       attackId: boss.attackId,
-      decision: boss.attackDecision
+      decision: boss.attackDecision,
+      sweepDirection,
+      maneuver: boss.tacticalManeuver
     };
     transition(boss, "charge", events);
     events.push({ type: "warning", phase: boss.phase, ...boss.telegraph });
@@ -5071,16 +5356,19 @@ var NeonCampaign = (() => {
   }
   function fireVolley(boss, events, fireTime = boss.stateTime) {
     const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === "superpower";
-    const crossfire = aim.pattern === "crossfire";
-    const originX = boss.x + (crossfire ? (boss.volley === 0 ? -1 : 1) * boss.r * 0.72 : 0);
+    const crossfire = ["crossfire", "flankSalvo", "reactorPincer"].includes(aim.pattern);
+    const originSide = (boss.volley === 0 ? -1 : 1) * (aim.pattern === "crossfire" ? 1 : aim.sweepDirection);
+    const originX = boss.x + (crossfire ? originSide * boss.r * 0.72 : 0);
     const originY = boss.y + boss.r * 0.7;
     const targetY = Math.max(originY + 180, aim.targetY);
     const rake = Math.min(44, (targetY - originY) * 0.09);
-    const targetX = clamp10(aim.targetX + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
+    const sweep = aim.pattern === "staggeredSalvo" ? [-1, 1, 0][boss.volley] * boss.width * 0.065 : aim.pattern === "reactorSweep" ? (boss.volley - 1) * boss.width * 0.09 : aim.pattern === "reactorPincer" ? (boss.volley === 0 ? -1 : 1) * boss.width * 0.055 : aim.pattern === "flankSalvo" ? (boss.volley === 0 ? -0.025 : 0.04) * boss.width : aim.pattern === "duelBurst" ? (boss.volley === 0 ? -0.018 : 0.018) * boss.width : 0;
+    const targetX = clamp11(aim.targetX + sweep * aim.sweepDirection + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
     const distance = targetY - originY;
     const direction = Math.atan2(distance, targetX - originX);
-    const spread = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : 0.24), distance) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
-    const offsets = heavy || tier === "medium" && boss.phase === 2 ? [-spread, -spread / 2, 0, spread / 2, spread] : [-spread, 0, spread];
+    const spread = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : patternRules(boss) ? 0.12 : 0.24), distance) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
+    const count = patternRules(boss)?.projectiles;
+    const offsets = count ? Array.from({ length: count }, (_, index) => (index / (count - 1) * 2 - 1) * spread) : heavy || tier === "medium" && boss.phase === 2 ? [-spread, -spread / 2, 0, spread / 2, spread] : [-spread, 0, spread];
     const speed = heavy ? boss.phase === 1 ? 300 : 325 : phaseRules(boss).projectileSpeed;
     for (const [index, offset] of offsets.entries()) {
       const angle = direction + offset;
@@ -5117,7 +5405,7 @@ var NeonCampaign = (() => {
     if (boss.state === "closed") return rule.closedSeconds;
     if (boss.state === "charge") return attackRules(boss).chargeSeconds;
     if (boss.state === "fire") return Math.max(
-      attackRules(boss).volleyTimes.at(-1) + 0.08,
+      volleyTimes(boss).at(-1) + 0.08,
       boss.attackClearanceSeconds + 0.12
     );
     if (boss.state === "opening") return rule.openingSeconds;
@@ -5179,12 +5467,12 @@ var NeonCampaign = (() => {
       boss.stateTime += step;
       remaining -= step;
       if (boss.state === "entry") {
-        const progress = clamp10(boss.stateTime / duration, 0, 1);
+        const progress = clamp11(boss.stateTime / duration, 0, 1);
         boss.y = -boss.r * 1.6 + (boss.targetY + boss.r * 1.6) * (1 - (1 - progress) ** 3);
       } else moveAtlas(boss, step);
-      if (boss.state === "charge") boss.telegraph.progress = clamp10(boss.stateTime / duration, 0, 1);
+      if (boss.state === "charge") boss.telegraph.progress = clamp11(boss.stateTime / duration, 0, 1);
       else if (boss.state === "fire") {
-        const schedule = attackRules(boss).volleyTimes;
+        const schedule = volleyTimes(boss);
         while (boss.volley < schedule.length && before < schedule[boss.volley] + 1e-9 && boss.stateTime + 1e-9 >= schedule[boss.volley]) fireVolley(boss, events, schedule[boss.volley]);
       }
       updateCore(boss);
@@ -5231,9 +5519,9 @@ var NeonCampaign = (() => {
 
   // src/game/animation/guardian-atlas-animator.js
   var states = /* @__PURE__ */ new Set(["entry", "closed", "charge", "fire", "opening", "exposed", "closing", "phaseBreak", "disabled"]);
-  var clamp11 = (value) => Math.max(0, Math.min(1, value));
+  var clamp12 = (value) => Math.max(0, Math.min(1, value));
   function pose(frame, previousFrame = null, blend = 1) {
-    const opacity = clamp11(blend);
+    const opacity = clamp12(blend);
     return {
       frame,
       previousFrame: opacity < 1 ? previousFrame : null,
@@ -5249,8 +5537,8 @@ var NeonCampaign = (() => {
     }
     if (boss.phase !== 1 && boss.phase !== 2) throw new RangeError("Unknown Guardian Atlas animation phase");
     const { state, stateTime, phase } = boss, openFrame = phase === 2 ? 5 : 1;
-    const exposure = state === "disabled" ? 1 : Number.isFinite(boss.coreExposure) ? clamp11(boss.coreExposure) : state === "exposed" ? 1 : state === "opening" ? clamp11(stateTime / GUARDIAN_ATLAS_RULES.openingSeconds) : state === "closing" ? 1 - clamp11(stateTime / GUARDIAN_ATLAS_RULES.closingSeconds) : 0;
-    const impactFlash = clamp11((boss.flash || 0) / 0.14);
+    const exposure = state === "disabled" ? 1 : Number.isFinite(boss.coreExposure) ? clamp12(boss.coreExposure) : state === "exposed" ? 1 : state === "opening" ? clamp12(stateTime / GUARDIAN_ATLAS_RULES.openingSeconds) : state === "closing" ? 1 - clamp12(stateTime / GUARDIAN_ATLAS_RULES.closingSeconds) : 0;
+    const impactFlash = clamp12((boss.flash || 0) / 0.14);
     let result;
     if (state === "entry" || state === "closed") result = pose(0);
     else if (state === "charge" || state === "phaseBreak") result = pose(2, 0, stateTime / 0.18);
@@ -5300,7 +5588,7 @@ var NeonCampaign = (() => {
     } catch {
     }
   };
-  var clamp12 = (value, low, high) => Math.max(low, Math.min(high, Number(value) || 0));
+  var clamp13 = (value, low, high) => Math.max(low, Math.min(high, Number(value) || 0));
   function createCombatSfx({ context, output, fetchAsset = (...args) => fetch(...args) } = {}) {
     if (!context?.createBufferSource || !context?.decodeAudioData || !context?.createGain || !output) return null;
     const bus = context.createGain();
@@ -5413,7 +5701,7 @@ var NeonCampaign = (() => {
         source.connect(gain);
         if (context.createStereoPanner) {
           spatial = context.createStereoPanner();
-          spatial.pan.setValueAtTime(clamp12(pan, -0.75, 0.75), now);
+          spatial.pan.setValueAtTime(clamp13(pan, -0.75, 0.75), now);
           gain.connect(spatial);
           spatial.connect(bus);
         } else gain.connect(bus);
@@ -5461,7 +5749,7 @@ var NeonCampaign = (() => {
       },
       setVolume(value) {
         if (disposed) return;
-        volume = clamp12(value, 0, 1);
+        volume = clamp13(value, 0, 1);
         bus.gain.setTargetAtTime(volume, context.currentTime, 0.02);
         if (volume === 0) stopAll();
       },
@@ -5665,7 +5953,7 @@ var NeonCampaign = (() => {
   var WAVE_FRAME_DURATION = WAVE_DURATION / 4;
   var FRAME_ENDS = Object.freeze([0, 0.45, 1.25, 2.4, 4.4]);
   var STATES = Object.freeze(["intact", "impact", "fracture", "rupture", "dispersion", "aftermath"]);
-  var clamp13 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp14 = (value, min, max) => Math.max(min, Math.min(max, value));
   function getChronosDestructionPose(view) {
     const elapsed = Number.isFinite(view?.elapsed) && view.elapsed >= 0 ? view.elapsed : 0;
     const duration = view?.cinematicDuration ?? view?.minDuration;
@@ -5678,8 +5966,8 @@ var NeonCampaign = (() => {
     let waveFrame = 0;
     while (waveFrame < 3 && elapsed >= ruptureAt + (waveFrame + 1) * WAVE_FRAME_DURATION) waveFrame++;
     const waveVisible = !beforeRupture && elapsed < ruptureAt + WAVE_DURATION;
-    const waveProgress = clamp13(age / WAVE_DURATION, 0, 1);
-    const waveAlpha = waveVisible ? 0.55 * clamp13((WAVE_DURATION - age) / WAVE_FADE_DURATION, 0, 1) : 0;
+    const waveProgress = clamp14(age / WAVE_DURATION, 0, 1);
+    const waveAlpha = waveVisible ? 0.55 * clamp14((WAVE_DURATION - age) / WAVE_FADE_DURATION, 0, 1) : 0;
     return Object.freeze({
       frame,
       age,
@@ -5745,6 +6033,31 @@ var NeonCampaign = (() => {
         duration: 1.8,
         pierce: 2,
         barrels: [{ offset: 0, spread: 0 }]
+      }),
+      scatter: weapon({
+        id: "scatter",
+        label: "Abanico",
+        damageMultiplier: 3,
+        description: "Da\xF1o \xD73 si impactan los tres pulsos: abanico de corto alcance.",
+        cooldown: 0.4,
+        speed: 660,
+        damage: 1,
+        radius: 7,
+        duration: 0.34,
+        barrels: [{ offset: -5, spread: -0.16 }, { offset: 0, spread: 0 }, { offset: 5, spread: 0.16 }]
+      }),
+      needle: weapon({
+        id: "needle",
+        label: "Aguja",
+        damageMultiplier: 2,
+        description: "Da\xF1o \xD72 por objetivo: proyectil estrecho que perfora hasta tres objetivos.",
+        cooldown: 0.56,
+        speed: 1400,
+        damage: 2,
+        radius: 4,
+        duration: 1.6,
+        pierce: 3,
+        barrels: [{ offset: 0, spread: 0 }]
       })
     })
   });
@@ -5756,8 +6069,8 @@ var NeonCampaign = (() => {
   }
   function rechargeInterval(seconds) {
     finite6(seconds, "recharge interval");
-    if (seconds < 1.5 || seconds > CLASSIC_WEAPON_RULES.rechargeSeconds) {
-      throw new RangeError("Recharge interval must be between 1.5 and 2 seconds");
+    if (seconds < 1 || seconds > CLASSIC_WEAPON_RULES.rechargeSeconds) {
+      throw new RangeError("Recharge interval must be between 1 and 2 seconds");
     }
     return seconds;
   }
@@ -5784,6 +6097,7 @@ var NeonCampaign = (() => {
       height,
       selected: type,
       unlocked: available,
+      weaponRanks: { scatter: 1, needle: 1 },
       charges: CLASSIC_WEAPON_RULES.maxCharges,
       rechargeSeconds,
       recharge: 0,
@@ -5807,6 +6121,39 @@ var NeonCampaign = (() => {
     state.rechargeSeconds = seconds;
     state.recharge = state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 : Math.min(state.recharge, seconds - 1e-9);
     return seconds;
+  }
+  function setClassicWeaponTuning(state, ranks = {}) {
+    if (!ranks || typeof ranks !== "object" || Array.isArray(ranks) || Object.keys(ranks).some((id) => id !== "scatter" && id !== "needle")) {
+      throw new TypeError("Known weapon ranks required");
+    }
+    const next = {};
+    for (const id of ["scatter", "needle"]) {
+      const rank = ranks[id] ?? 1;
+      if (!Number.isInteger(rank) || rank < 0 || rank > 2) throw new RangeError("Weapon rank must be 0, 1 or 2");
+      next[id] = Math.max(1, rank);
+    }
+    state.weaponRanks = next;
+    return { ...next };
+  }
+  function tunedWeaponDefinition(state) {
+    const base = CLASSIC_WEAPON_RULES.types[state.selected];
+    if (state.selected === "scatter" && state.weaponRanks?.scatter === 2) {
+      return {
+        ...base,
+        duration: 0.48,
+        description: "Da\xF1o \xD73 si impactan los tres pulsos; apertura concentrada y alcance ampliado de 224 a 317.",
+        barrels: base.barrels.map((barrel) => ({ ...barrel, spread: barrel.spread * (0.11 / 0.16) }))
+      };
+    }
+    if (state.selected === "needle" && state.weaponRanks?.needle === 2) {
+      return {
+        ...base,
+        cooldown: 0.46,
+        pierce: 4,
+        description: "Da\xF1o \xD72 por objetivo: perfora hasta cuatro objetivos y dispara cada 0,46 s."
+      };
+    }
+    return base;
   }
   function setClassicUnlimitedFire(state, active) {
     if (typeof active !== "boolean") throw new TypeError("Unlimited fire flag must be boolean");
@@ -5872,7 +6219,7 @@ var NeonCampaign = (() => {
     finite6(angle, "angle");
     if (!state.unlimitedFire && state.charges === 0) return { accepted: false, reason: "empty", events: [], projectiles: [] };
     if (state.cooldown > 1e-9) return { accepted: false, reason: "cooldown", events: [], projectiles: [] };
-    const definition = CLASSIC_WEAPON_RULES.types[state.selected];
+    const definition = tunedWeaponDefinition(state);
     if (state.projectiles.length + definition.barrels.length > CLASSIC_WEAPON_RULES.maxProjectiles) {
       return { accepted: false, reason: "capacity", events: [], projectiles: [] };
     }
@@ -5978,10 +6325,11 @@ var NeonCampaign = (() => {
     };
   }
   function classicWeaponSnapshot(state) {
-    const definition = CLASSIC_WEAPON_RULES.types[state.selected];
+    const definition = tunedWeaponDefinition(state);
     return {
       ...state,
       unlocked: [...state.unlocked],
+      weaponRanks: { ...state.weaponRanks },
       label: definition.label,
       description: definition.description,
       damageMultiplier: definition.damageMultiplier,
@@ -6025,7 +6373,7 @@ var NeonCampaign = (() => {
     }
     return bounds;
   }
-  var clamp14 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var clamp15 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   function calculateFlightBounds({ width, height, hudBottom, controlsTop, shipScale = 1 }) {
     finite7(width, "width");
     finite7(height, "height");
@@ -6038,7 +6386,7 @@ var NeonCampaign = (() => {
     const firstX = SIDE_CLEARANCE * shipScale, lastX = width - SIDE_CLEARANCE * shipScale;
     const firstY = hudBottom + NOSE_CLEARANCE * shipScale, lastY = controlsTop - TAIL_CLEARANCE * shipScale;
     const xFits = firstX <= lastX, yFits = firstY <= lastY;
-    const centerY = clamp14(firstY / 2 + lastY / 2, 0, height);
+    const centerY = clamp15(firstY / 2 + lastY / 2, 0, height);
     return Object.freeze({
       minX: xFits ? firstX : width / 2,
       maxX: xFits ? lastX : width / 2,
@@ -6084,8 +6432,8 @@ var NeonCampaign = (() => {
     if (sensitivity <= 0) throw new RangeError("Sensitivity must be positive");
     if (!state.active || state.id !== id) {
       return {
-        targetX: clamp14(targetX, bounds.minX, bounds.maxX),
-        targetY: clamp14(targetY, bounds.minY, bounds.maxY),
+        targetX: clamp15(targetX, bounds.minX, bounds.maxX),
+        targetY: clamp15(targetY, bounds.minY, bounds.maxY),
         moved: false
       };
     }
@@ -6097,8 +6445,8 @@ var NeonCampaign = (() => {
     state.lastX = x;
     state.lastY = y;
     return {
-      targetX: clamp14(nextX, bounds.minX, bounds.maxX),
-      targetY: clamp14(nextY, bounds.minY, bounds.maxY),
+      targetX: clamp15(nextX, bounds.minX, bounds.maxX),
+      targetY: clamp15(nextY, bounds.minY, bounds.maxY),
       moved
     };
   }

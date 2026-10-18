@@ -104,6 +104,8 @@
   let legacyPilotId = null;
   let fireInput = null;
   let suppressNextFireClick = false;
+  let missileInput = null;
+  let suppressNextMissileClick = false;
   let pilotGuideOrigin = null;
 
   function hidePilotGuide() {
@@ -139,13 +141,16 @@
   function resetGameInput() {
     const pilotId = classicFlightInput.active ? classicFlightInput.id : legacyPilotId;
     const previousFire = fireInput;
+    const previousMissile = missileInput;
     legacyPilotId = null;
     journeyPointerLast = null;
     fireInput = null;
+    missileInput = null;
     NeonCampaign.endFlightInput(classicFlightInput);
     hidePilotGuide();
     releaseInputCapture(canvas, pilotId);
     if (previousFire?.kind === "pointer") releaseInputCapture(ui.fire, previousFire.id);
+    if (previousMissile?.kind === "pointer") releaseInputCapture(ui.classicMissile, previousMissile.id);
   }
 
   function moveClassicFlight(event) {
@@ -293,6 +298,57 @@
     if (event !== "lostpointercapture") addEventListener(event, finishFireInput, {capture: true});
   }
 
+  // Missiles are edge-triggered actions with their own contact owner. A second
+  // thumb launches on press while the pilot keeps its existing pointer; a held
+  // thumb never spends further paid rounds, even after the cooldown expires.
+  function startMissileInput(event) {
+    const touchFallback=event.type==="touchstart";
+    if(touchFallback&&window.PointerEvent)return;
+    if(!isUnifiedClassic()||state!=="playing"||classicChapterControlsLocked()||ui.classicMissile?.disabled)return;
+    if(!touchFallback&&event.pointerType==="mouse"&&event.button!==0)return;
+    const id=touchFallback?event.changedTouches?.[0]?.identifier:event.pointerId??"mouse";
+    if(id===undefined)return;
+    event.preventDefault();event.stopPropagation();
+    if(missileInput)return;
+    missileInput={id,kind:touchFallback?"touch":"pointer"};
+    suppressNextMissileClick=true;
+    if(!touchFallback&&event.pointerId!==undefined){
+      try{ui.classicMissile.setPointerCapture?.(event.pointerId);}catch{ /* Synthetic events cannot capture. */ }
+    }
+    fireClassicMissile();
+  }
+
+  function finishMissileInput(event) {
+    if(!missileInput)return;
+    const touchFallback=event.type.startsWith("touch");
+    if(touchFallback&&window.PointerEvent)return;
+    const ended=touchFallback
+      ? Array.from(event.changedTouches||[]).some(touch=>touch.identifier===missileInput.id)
+      : (event.pointerId??"mouse")===missileInput.id;
+    if(ended){
+      const previous=missileInput;missileInput=null;
+      if(previous.kind==="pointer")releaseInputCapture(ui.classicMissile,previous.id);
+    }
+  }
+
+  function setupClassicMissileInput() {
+    if(!ui.classicMissile)return;
+    ui.classicMissile.addEventListener("pointerdown",startMissileInput,{passive:false});
+    ui.classicMissile.addEventListener("touchstart",startMissileInput,{passive:false});
+    for(const event of ["pointerup","pointercancel","lostpointercapture","touchend","touchcancel"]){
+      ui.classicMissile.addEventListener(event,finishMissileInput);
+      if(event!=="lostpointercapture")addEventListener(event,finishMissileInput,{capture:true});
+    }
+    ui.classicMissile.onclick=event=>{
+      // Keyboard/assistive activation has detail=0. Pointer compatibility clicks
+      // have already launched on down (or were cancelled), so never launch again.
+      if(event?.detail&&(window.PointerEvent||suppressNextMissileClick)){
+        suppressNextMissileClick=false;return;
+      }
+      fireClassicMissile();
+    };
+  }
+
   addEventListener("keydown", (event) => {
     if (isUnifiedClassic()) {
       if (state === "playing" && !classicChapterControlsLocked() && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
@@ -313,7 +369,7 @@
       event.preventDefault();
       fireManualShot();
     }
-    if(event.key.toLowerCase()==="m"&&state==="playing"&&isUnifiedClassic())fireClassicMissile();
+    if(event.key.toLowerCase()==="m"&&state==="playing"&&isUnifiedClassic()&&!event.repeat){event.preventDefault();fireClassicMissile();}
     if (event.key === "Escape") {
       resetGameInput();
       state === "paused" ? resumeGame() : pauseGame();
@@ -461,6 +517,7 @@
   recoverCampaignCompletion();
   currentLevel=Math.max(0,Math.min(LEVELS.length-1,getUnlocked()-1));
   setupClassicFlight();
+  setupClassicMissileInput();
   resizeCanvas();
   syncSettingsUI();
   window.AnalyticsManager?.track("app_open", { build: BUILD_VERSION });

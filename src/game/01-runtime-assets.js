@@ -113,6 +113,8 @@
   let classicHullReserve = 30;
   let classicHullReserveCapacity = 30;
   let classicTutorial = null;
+  let classicTutorialAnchor = null;
+  let classicTutorialSignature = '';
   let classicWorkshopOpened = false;
   let classicChapterStory = null;
   let classicChapterView = null;

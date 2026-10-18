@@ -8,10 +8,10 @@ export {createChronosChapterStory, normalizeChronosChapterCheckpoint, CHRONOS_CH
 export {HULL_REINFORCEMENT_RULES, resolveHullReinforcement} from '../combat/hull-reinforcement.js';
 export {createCompletionJournal} from './completion-journal.js';
 export {SCRAP_ECONOMY_KEY, SCRAP_ECONOMY_RULES, SCRAP_REWARDS, SCRAP_UPGRADES,
-  createScrapLedger, rewardForEnemy, formatDenominations, hullReserveCapacity} from './scrap-economy.js';
+  createScrapLedger, rewardForEnemy, formatDenominations, hullReserveCapacity, classicWorkshopState} from './scrap-economy.js';
 export {COMET_SHOWER_VERSION, createCometShower, advanceCometShower, advanceShowerComet,
   releaseCometShowerItem, showerCometIntersectsCircle, cometShowerSnapshot} from './comet-shower.js';
-export {createClassicEquipment,normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,canEquipClassicWeapon} from './classic-arsenal.js';
+export {createClassicEquipment,normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,canEquipClassicWeapon,syncClassicWorkshopWeapons} from './classic-arsenal.js';
 export {EncounterDirector, advanceEnemy, makeLegacyEntity} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../combat/classic-pursuit.js';
@@ -53,6 +53,6 @@ export {createChronosVoyage, CHRONOS_VOYAGE_VERSION, CHRONOS_VOYAGE_KEY,
 export {getChronosDestructionPose} from '../animation/chronos-destruction.js';
 export {CLASSIC_WEAPON_RULES, createClassicWeapons, triggerClassicWeapon, advanceClassicWeapons,
   hitClassicProjectile, unlockClassicWeapon, selectClassicWeapon, classicWeaponSnapshot,
-  setClassicRechargeInterval, setClassicUnlimitedFire, canTriggerClassicMissile,
+  setClassicRechargeInterval, setClassicWeaponTuning, setClassicUnlimitedFire, canTriggerClassicMissile,
   triggerClassicMissile} from '../combat/classic-weapons.js';
 export {calculateFlightBounds, createRelativeFlightInput, beginFlightInput, moveFlightInput, endFlightInput} from '../ship/flight-controls.js';

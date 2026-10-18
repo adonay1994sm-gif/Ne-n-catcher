@@ -23,6 +23,14 @@ export const CLASSIC_WEAPON_RULES = Object.freeze({
     lance: weapon({id: 'lance', label: 'Lanza', damageMultiplier: 3,
       description: 'Daño ×3: una lanza de 3 de daño que atraviesa hasta dos objetivos distintos.',
       cooldown: .48, speed: 1280, damage: 3, radius: 6, duration: 1.8, pierce: 2,
+      barrels: [{offset: 0, spread: 0}]}),
+    scatter: weapon({id: 'scatter', label: 'Abanico', damageMultiplier: 3,
+      description: 'Daño ×3 si impactan los tres pulsos: abanico de corto alcance.',
+      cooldown: .4, speed: 660, damage: 1, radius: 7, duration: .34,
+      barrels: [{offset: -5, spread: -.16}, {offset: 0, spread: 0}, {offset: 5, spread: .16}]}),
+    needle: weapon({id: 'needle', label: 'Aguja', damageMultiplier: 2,
+      description: 'Daño ×2 por objetivo: proyectil estrecho que perfora hasta tres objetivos.',
+      cooldown: .56, speed: 1400, damage: 2, radius: 4, duration: 1.6, pierce: 3,
       barrels: [{offset: 0, spread: 0}]})
   })
 });
@@ -36,8 +44,8 @@ function knownType(type) {
 
 function rechargeInterval(seconds) {
   finite(seconds, 'recharge interval');
-  if (seconds < 1.5 || seconds > CLASSIC_WEAPON_RULES.rechargeSeconds) {
-    throw new RangeError('Recharge interval must be between 1.5 and 2 seconds');
+  if (seconds < 1 || seconds > CLASSIC_WEAPON_RULES.rechargeSeconds) {
+    throw new RangeError('Recharge interval must be between 1 and 2 seconds');
   }
   return seconds;
 }
@@ -59,7 +67,7 @@ export function createClassicWeapons({type = 'pulse', unlocked = ['pulse'],
   if (!available.includes(type)) throw new RangeError('Selected weapon must be unlocked');
   return {
     version: CLASSIC_WEAPON_RULES.version, width, height,
-    selected: type, unlocked: available, charges: CLASSIC_WEAPON_RULES.maxCharges,
+    selected: type, unlocked: available, weaponRanks: {scatter: 1, needle: 1}, charges: CLASSIC_WEAPON_RULES.maxCharges,
     rechargeSeconds, recharge: 0, cooldown: 0, elapsed: 0,
     unlimitedFire: false, missileCooldown: 0, missileSequence: 0,
     projectileSequence: 0, eventSequence: 0, shotSequence: 0, projectiles: []
@@ -82,6 +90,36 @@ export function setClassicRechargeInterval(state, seconds) {
   state.recharge = state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 :
     Math.min(state.recharge, seconds - 1e-9);
   return seconds;
+}
+
+/** Installing a paid rank affects future shots, never live bolts or a cooldown. */
+export function setClassicWeaponTuning(state, ranks = {}) {
+  if (!ranks || typeof ranks !== 'object' || Array.isArray(ranks) ||
+      Object.keys(ranks).some(id => id !== 'scatter' && id !== 'needle')) {
+    throw new TypeError('Known weapon ranks required');
+  }
+  const next = {};
+  for (const id of ['scatter', 'needle']) {
+    const rank = ranks[id] ?? 1;
+    if (!Number.isInteger(rank) || rank < 0 || rank > 2) throw new RangeError('Weapon rank must be 0, 1 or 2');
+    next[id] = Math.max(1, rank);
+  }
+  state.weaponRanks = next;
+  return {...next};
+}
+
+function tunedWeaponDefinition(state) {
+  const base = CLASSIC_WEAPON_RULES.types[state.selected];
+  if (state.selected === 'scatter' && state.weaponRanks?.scatter === 2) {
+    return {...base, duration: .48,
+      description: 'Daño ×3 si impactan los tres pulsos; apertura concentrada y alcance ampliado de 224 a 317.',
+      barrels: base.barrels.map(barrel => ({...barrel, spread: barrel.spread * (.11 / .16)}))};
+  }
+  if (state.selected === 'needle' && state.weaponRanks?.needle === 2) {
+    return {...base, cooldown: .46, pierce: 4,
+      description: 'Daño ×2 por objetivo: perfora hasta cuatro objetivos y dispara cada 0,46 s.'};
+  }
+  return base;
 }
 
 /** Atlas changes firing policy, never the stored magazine or its progress. */
@@ -153,7 +191,7 @@ export function triggerClassicWeapon(state, {x, y, angle = -Math.PI / 2} = {}) {
   finite(x, 'origin x'); finite(y, 'origin y'); finite(angle, 'angle');
   if (!state.unlimitedFire && state.charges === 0) return {accepted: false, reason: 'empty', events: [], projectiles: []};
   if (state.cooldown > 1e-9) return {accepted: false, reason: 'cooldown', events: [], projectiles: []};
-  const definition = CLASSIC_WEAPON_RULES.types[state.selected];
+  const definition = tunedWeaponDefinition(state);
   if (state.projectiles.length + definition.barrels.length > CLASSIC_WEAPON_RULES.maxProjectiles) {
     return {accepted: false, reason: 'capacity', events: [], projectiles: []};
   }
@@ -257,8 +295,8 @@ export function hitClassicProjectile(state, projectileId, targetId) {
 
 /** Deep copies of mutable arrays prevent HUD/diagnostics from changing combat. */
 export function classicWeaponSnapshot(state) {
-  const definition = CLASSIC_WEAPON_RULES.types[state.selected];
-  return {...state, unlocked: [...state.unlocked],
+  const definition = tunedWeaponDefinition(state);
+  return {...state, unlocked: [...state.unlocked], weaponRanks: {...state.weaponRanks},
     label: definition.label, description: definition.description,
     damageMultiplier: definition.damageMultiplier,
     rechargeProgress: state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 :

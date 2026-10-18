@@ -6,7 +6,7 @@ const finite = (value, name) => {
 /** Classic-only reserve points; the existing hull remains the hull authority. */
 export const HULL_REINFORCEMENT_RULES = Object.freeze({
   version: 'hull-reinforcement-v1', maxHull: 100, baseCapacity: 30,
-  reinforcedCapacity: 45, phaserDamage: 10, heavyPhaserDamage: 15,
+  reinforcedCapacity: 45, advancedCapacity: 65, phaserDamage: 10, heavyPhaserDamage: 15,
   largeAsteroidHullDamage: 38, protectedLargeAsteroidHullDamage: 20
 });
 
@@ -21,7 +21,7 @@ export function resolveHullReinforcement({hull, reserve, capacity = 30,
   amount, kind = 'collision', largeAsteroid = false} = {}) {
   finite(hull, 'hull'); finite(reserve, 'reserve'); finite(capacity, 'capacity');
   finite(amount, 'damage');
-  if (hull < 0 || hull > 100 || ![30, 45].includes(capacity) || reserve < 0 ||
+  if (hull < 0 || hull > 100 || ![30, 45, 65].includes(capacity) || reserve < 0 ||
       reserve > capacity || amount < 0 || typeof largeAsteroid !== 'boolean' ||
       !['collision', 'phaser', 'heavyPhaser', 'largeAsteroid'].includes(kind)) {
     throw new RangeError('Invalid reinforced hull damage request');

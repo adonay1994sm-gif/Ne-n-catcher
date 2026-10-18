@@ -1,4 +1,6 @@
-const WEAPON_IDS = Object.freeze(['pulse', 'twin', 'lance']);
+import {classicWorkshopState} from './scrap-economy.js';
+
+const WEAPON_IDS = Object.freeze(['pulse', 'twin', 'lance', 'scatter', 'needle']);
 const BOSS_WEAPONS = Object.freeze({'guardian-atlas': 'twin'});
 const owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 
@@ -66,4 +68,17 @@ export function awardClassicBossWeapon(equipment, bossId) {
 export function canEquipClassicWeapon(equipment, id) {
   if (!WEAPON_IDS.includes(id)) throw new RangeError('Unknown classic weapon');
   return equipmentCopy(equipment).unlocked.includes(id);
+}
+
+/**
+ * Money and ownership commit in the ledger first. Rebuilding this equipment
+ * projection after an interrupted UI save cannot charge twice or infer a boss
+ * victory. Purchases never change the player's equipped weapon.
+ */
+export function syncClassicWorkshopWeapons(equipment, record) {
+  const next = equipmentCopy(equipment);
+  for (const weaponId of classicWorkshopState(record).weaponIds) {
+    if (!next.unlocked.includes(weaponId)) next.unlocked.push(weaponId);
+  }
+  return next;
 }

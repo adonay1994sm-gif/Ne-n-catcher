@@ -1,3 +1,17 @@
+## Continuación vigente — FORJA_LEVEL_ONE_REMATES ·18/10/2026
+
+Leer [informe actual](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md), HEAD/remoto y registro único sin retroceder.
+
+1. Completar pruebas del paquete exacto y comprobar Actions/Netlify aislado. Conservar evidencia fallida y corregida; un smoke piloto+Phaser no certifica misil.
+2. Partida del propietario en teléfono: piloto+misil ambos órdenes, pausa/cancelación; guía interactiva; compras y rangos de Forja; Atlasv7. Mantener `IN_REVIEW` con arte/físico separados.
+3. Balancear las ramas y chatarra después de jugar. Los precios nuevos son provisionales y sus recibos históricos no se recalculan. Preparar arma no concede Gemelo antes deAtlas.
+4. Si se acepta la base, continuar Gaia→Vulkar con identidad propia. No extender este trabajo a cien etapas antes de cerrar el primer nivel.
+5. Preservar export de código y maestros: `scripts/export-review-source.py --output /ruta/externa/NUEVO.zip`. Editar fuentes, regenerar bundles; conservar motorfalse, únicoRAF, rama autorizada y restricciones de main/PR3/producción.
+
+El propietario aclaró que se continúe programando; no dejar sólo una lista ni esperar una reactivación sin bloqueo comprobado. Lo siguiente es historial.
+
+---
+
 ## Continuación vigente · revisión final del nivel 1 · 18/10/2026
 
 [Informe de mandos y puerta de cierre](production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md). Funcional `8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a`.

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {SCRAP_ECONOMY_KEY, SCRAP_ECONOMY_RULES, SCRAP_UPGRADES, SCRAP_REWARDS,
   createScrapRecord, normalizeScrapRecord, formatDenominations, rewardForEnemy,
-  createScrapLedger, hullReserveCapacity} from '../src/game/progression/scrap-economy.js';
+  createScrapLedger, hullReserveCapacity, classicWorkshopState} from '../src/game/progression/scrap-economy.js';
 
 function memory(map = new Map(), {failWrite = 0, afterWrite = false, denyReads = new Set(),
   throwRead = false, throwWrite = false, interceptRead = null} = {}) {
@@ -51,7 +51,7 @@ test('denominations exactly preserve the requested 100000 / 100 / 10 conversion 
 });
 
 test('enemy families drop different small scrap values, never minted silver or arbitrary terrain rewards', () => {
-  assert.deepEqual(SCRAP_REWARDS, {raider: 6, scout: 9, interceptor: 15, atlas: 600});
+  assert.deepEqual(SCRAP_REWARDS, {raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18});
   assert.equal(rewardForEnemy('ch-01'), 9);
   assert.equal(rewardForEnemy('ch-02'), 15);
   assert.equal(rewardForEnemy('guardian-atlas'), 600);
@@ -534,4 +534,86 @@ test('missile APIs reject malformed, unsafe, noncanonical or reserved operation 
   }
   assert.throws(()=>log.purchase({transactionId:'c9:missiles:1',sku:'hull-reinforcement'}),TypeError);
   assert.equal(device.writes.length,0);
+});
+
+test('salvage from ship fragments and satellites is a physical pickup receipt, once across reloads', () => {
+  assert.equal(rewardForEnemy('ship-fragment'), 6);
+  assert.equal(rewardForEnemy('satellite-fragment'), 18);
+  const device = memory(), log = ledger(device), run = start(log);
+  assert.equal(log.getBalance(), 0);
+  assert.equal(log.claimDrop({runId: run.runId, dropId: 'debris:4', enemyType: 'debris'}).amount, 6);
+  assert.equal(log.claimDrop({runId: run.runId, dropId: 'satellite:7', enemyType: 'satellite'}).amount, 18);
+  const restored = ledger(memory(device.map)); restored.load();
+  assert.equal(restored.claimDrop({runId: run.runId, dropId: 'debris:4', enemyType: 'ship-fragment'}).duplicate, true);
+  assert.equal(restored.claimDrop({runId: run.runId, dropId: 'satellite:7', enemyType: 'satellite-fragment'}).duplicate, true);
+  assert.equal(restored.getBalance(), 24);
+});
+
+test('workshop branches require their paid prerequisite and each rank changes an actual effect', () => {
+  const device = memory(), log = ledger(device), run = start(log); fund(log, run.runId, 100);
+  for (const sku of ['hull-plating-ii', 'coolant-feed-ii', 'weapon-scatter', 'weapon-needle', 'scatter-focus', 'needle-resonance']) {
+    const before = new Map(device.map);
+    assert.equal(log.purchase({transactionId: `try:${sku}`, sku}).reason, 'prerequisite-required');
+    assert.deepEqual(device.map, before);
+  }
+  assert.deepEqual(classicWorkshopState(log.getState()), {reserveCapacity: 30, rechargeSeconds: 2,
+    defenseRank: 0, coolingRank: 0, weaponIds: [], weaponRanks: {scatter: 0, needle: 0}});
+  for (const sku of ['twin-preparation', 'hull-reinforcement', 'coolant-feed', 'weapon-scatter', 'weapon-needle']) {
+    assert.equal(log.purchase({transactionId: `buy:${sku}`, sku}).ok, true);
+  }
+  const first = classicWorkshopState(log.getState());
+  assert.equal(first.reserveCapacity, 45); assert.equal(first.rechargeSeconds, 1.5);
+  assert.deepEqual(first.weaponIds, ['scatter', 'needle']);
+  assert.deepEqual(first.weaponRanks, {scatter: 1, needle: 1});
+  for (const sku of ['hull-plating-ii', 'coolant-feed-ii', 'scatter-focus', 'needle-resonance']) {
+    assert.equal(log.purchase({transactionId: `buy:${sku}`, sku}).ok, true);
+  }
+  const second = classicWorkshopState(log.getState());
+  assert.equal(second.reserveCapacity, 65); assert.equal(second.rechargeSeconds, 1);
+  assert.equal(second.defenseRank, 2); assert.equal(second.coolingRank, 2);
+  assert.deepEqual(second.weaponRanks, {scatter: 2, needle: 2});
+  const reload = ledger(memory(device.map)); assert.equal(reload.load().ok, true);
+  assert.deepEqual(classicWorkshopState(reload.getState()), second);
+  assert.equal(reload.getBalance(), 900 - 24 - 30 - 45 - 70 - 95 - 90 - 110 - 120 - 140);
+});
+
+for (const afterWrite of [false, true]) {
+  test(`new weapon purchase interruption ${afterWrite ? 'after' : 'before'} write keeps paid ownership and retry coherent`, () => {
+    const device = memory(), log = ledger(device), run = start(log); fund(log, run.runId, 20);
+    log.purchase({transactionId: 'prepare', sku: 'twin-preparation'});
+    const interrupted = ledger(memory(device.map, {failWrite: 1, afterWrite}));
+    assert.equal(interrupted.purchase({transactionId: 'buy-scatter', sku: 'weapon-scatter'}).ok, afterWrite);
+    const restored = ledger(memory(device.map)); restored.load();
+    assert.equal(restored.getBalance(), afterWrite ? 86 : 156);
+    assert.deepEqual(classicWorkshopState(restored.getState()).weaponIds, afterWrite ? ['scatter'] : []);
+    const retried = restored.purchase({transactionId: 'buy-scatter', sku: 'weapon-scatter'});
+    assert.equal(retried.ok, true); assert.equal(retried.duplicate, afterWrite);
+    assert.equal(restored.getBalance(), 86);
+    assert.deepEqual(classicWorkshopState(restored.getState()).weaponIds, ['scatter']);
+  });
+}
+
+test('unpaid or prerequisite-free skill data cannot become durable effects or pass normalization', () => {
+  const empty = createScrapRecord();
+  for (const record of [{...empty, upgrades: ['weapon-scatter']},
+    {...empty, balance: 0, earned: 120, spent: 120, upgrades: ['scatter-focus'],
+      purchases: [{id: 'forged', sku: 'scatter-focus', price: 120}]},
+    {...empty, balance: 0, earned: 90, spent: 90, upgrades: ['hull-plating-ii'],
+      purchases: [{id: 'forged', sku: 'hull-plating-ii', price: 90}]}]) {
+    assert.equal(normalizeScrapRecord(record), null);
+    assert.deepEqual(classicWorkshopState(record), classicWorkshopState(null));
+  }
+});
+
+test('the expanded catalogue loads old v2 profiles without rewriting or changing historical prices', () => {
+  const record = {...createScrapRecord(), balance: 1, earned: 100, spent: 99,
+    upgrades: ['twin-preparation', 'hull-reinforcement', 'coolant-feed'],
+    purchases: [{id: 'one', sku: 'twin-preparation', price: 24},
+      {id: 'two', sku: 'hull-reinforcement', price: 30}, {id: 'three', sku: 'coolant-feed', price: 45}]};
+  const raw = JSON.stringify(record), device = memory(new Map([[SCRAP_ECONOMY_KEY, raw]])), log = ledger(device);
+  assert.equal(log.load().status, 'loaded'); assert.equal(device.writes.length, 0);
+  assert.equal(device.map.get(SCRAP_ECONOMY_KEY), raw);
+  assert.equal(log.getBalance(), 1); assert.equal(log.getState().missileAmmo, 3);
+  assert.equal(log.purchase({transactionId: 'two', sku: 'hull-reinforcement'}).duplicate, true);
+  assert.equal(device.writes.length, 0);
 });

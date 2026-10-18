@@ -66,6 +66,22 @@
     return 1;
   }
 
+  // Wreckage is salvageable machinery, unlike CRONIUM, rock or an incoming
+  // projectile. Stamp its receipt when it enters the world, not when a shot
+  // happens to hit it: damage order and repeated death animation callbacks
+  // must never turn one physical fragment into several paid rewards.
+  function stampClassicWreckageSalvage(item) {
+    if (!isUnifiedClassic() || !["debris", "satellite"].includes(item.type) ||
+        !classicSalvageRunId || !classicSalvageState || item.salvageDropId) return item;
+    const stage = classicFlightView?.stageId || `${currentLevel + 1}.0`;
+    const ordinal = classicSalvageEnemySequence++;
+    item.salvageRole = item.type;
+    item.salvageRunId = classicSalvageRunId;
+    item.salvageDropId = `${stage}:wreck:${item.type}:${ordinal}`;
+    item.id = `wreck:${classicSalvageRunId}:${item.salvageDropId}`;
+    return item;
+  }
+
   function createThreat(type, lv) {
     const x = 55 + Math.random() * (W - 110);
     let radius = 36;
@@ -100,7 +116,7 @@
     const spriteKey = chooseThreatSprite(type, radius, special);
     const hitPoints = threatHitPoints(type, spriteKey, special);
 
-    return {
+    return stampClassicWreckageSalvage({
       type,
       x,
       baseX: x,
@@ -122,7 +138,7 @@
       craters: type === "meteor" ? makeCraters(radius) : null,
       variant: type === "debris" ? (Math.random() < 0.5 ? "panel" : "strut") : "",
       classicScout: type === "scout" ? NeonCampaign.createClassicScout({x, phase: Math.random() * Math.PI * 2, width: W}) : null
-    };
+    });
   }
 
   function addItem() {

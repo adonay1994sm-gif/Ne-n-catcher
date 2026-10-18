@@ -48,9 +48,9 @@ async function move(contact){activeContacts.set(contact.id,contact);await dispat
 // CDP touchEnd receives the ending contacts, not the remaining contacts.
 async function release(id){assert.ok(activeContacts.has(id),`Contact ${id} is not held`);await dispatch('touchEnd',[activeContacts.get(id)]);}
 async function cancel(){await dispatch('touchCancel',[]);}
-async function anchors(){const canvas=await page.locator('#canvas').boundingBox(),fire=await page.locator('#fire').boundingBox();
-  assert.ok(canvas&&fire);return{pilot:point(17,canvas.x+canvas.width*.46,canvas.y+canvas.height*.68),
-    fire:point(29,fire.x+fire.width*.5,fire.y+fire.height*.5),canvas,fireRect:fire};}
+async function anchors(){const canvas=await page.locator('#canvas').boundingBox(),fire=await page.locator('#fire').boundingBox(),missile=await page.locator('#classicMissile').boundingBox();
+  assert.ok(canvas&&fire&&missile);return{pilot:point(17,canvas.x+canvas.width*.46,canvas.y+canvas.height*.68),
+    fire:point(29,fire.x+fire.width*.5,fire.y+fire.height*.5),missile:point(37,missile.x+missile.width*.5,missile.y+missile.height*.5),canvas,fireRect:fire};}
 async function round(){if(activeContacts.size)await cancel();await page.goto(new URL('juego/index.html',server.url).href,{waitUntil:'load'});
   await wait(()=>typeof window.__TWO_TOUCH_QA__==='function'&&__TWO_TOUCH_QA__().state==='menu');
   await page.locator('#levels').click();await wait(()=>document.querySelectorAll('#levelGrid button').length===10);
@@ -67,6 +67,30 @@ async function check(name,operation){const entry={name,status:'running',assertio
   finally{try{if(activeContacts.size)await cancel();}catch{}entry.durationMs=Date.now()-began;await save();}
 }
 async function runControls(){
+  for(const missileFirst of [false,true])await check(`missile ${missileFirst?'first':'second'} launches on down while another contact pilots`,async(entry,expect)=>{
+    const a=await round(),before=await inspect();
+    if(missileFirst){await press(a.missile);await press(a.pilot);}else{await press(a.pilot);await press(a.missile);}
+    const down=await inspect();entry.samples.down=down;
+    expect('exactly one missile is durably spent on press',()=>{assert.equal(down.missileShotsSpent,before.missileShotsSpent+1);assert.equal(down.missileAmmo,before.missileAmmo-1);});
+    expect('missile and pilot keep independent ownership',()=>{assert.ok(down.missileInput);assert.equal(down.input.active,true);assert.notEqual(down.missileInput.id,down.input.id);assert.equal(down.fireInput,null);});
+    await move({...a.pilot,x:a.pilot.x-18,y:a.pilot.y-16});const moved=await inspect();entry.samples.moved=moved;
+    expect('pilot moves while missile contact remains held',()=>{assert.ok(moved.player.target<down.player.target-1);assert.ok(moved.player.targetY<down.player.targetY-1);});
+    await wait(start=>__TWO_TOUCH_QA__().weapons.elapsed>=start+.85,moved.weapons.elapsed);
+    const held=await inspect();entry.samples.held=held;
+    expect('holding beyond cooldown never repeats a missile',()=>assert.equal(held.missileShotsSpent,down.missileShotsSpent));
+    await release(a.missile.id);const released=await inspect();entry.samples.released=released;
+    expect('release emits no duplicate and preserves steering',()=>{assert.equal(released.missileShotsSpent,down.missileShotsSpent);assert.equal(released.missileInput,null);assert.equal(released.input.active,true);});
+    await move({...a.pilot,x:a.pilot.x-30,y:a.pilot.y-22});const after=await inspect();
+    expect('remaining pilot still responds after missile release',()=>assert.ok(after.player.target<moved.player.target-1));
+    await capture(missileFirst?'missile-first-two-fingers':'pilot-first-missile');await release(a.pilot.id);
+  });
+  await check('missile cancellation and pause clear action without a release launch',async(entry,expect)=>{
+    const a=await round();await press(a.pilot);await press(a.missile);const down=await inspect();entry.samples.down=down;
+    await cancel();const cancelled=await inspect();entry.samples.cancelled=cancelled;
+    expect('native cancellation clears missile and pilot owners without another spend',()=>{assert.equal(cancelled.input.active,false);assert.equal(cancelled.missileInput,null);assert.equal(cancelled.missileShotsSpent,down.missileShotsSpent);});
+    await page.keyboard.press('Escape');await page.keyboard.press('Escape');const resumed=await inspect();entry.samples.resumed=resumed;
+    expect('pause and resume cannot restore or spend the cancelled missile',()=>{assert.equal(resumed.missileInput,null);assert.equal(resumed.missileShotsSpent,down.missileShotsSpent);});
+  });
   await check('pilot first, second contact fires immediately while pilot moves and retains ownership',async(entry,expect)=>{
     const a=await round(),before=await inspect();await press(a.pilot);const anchored=await inspect();entry.samples.anchored=anchored;
     expect('first touch anchors relative flight without a jump',()=>{assert.equal(anchored.input.active,true);equalNear(anchored.player.target,before.player.target,'target x');equalNear(anchored.player.targetY,before.player.targetY,'target y');});
@@ -199,6 +223,7 @@ async function runControls(){
       assert.equal(sha256(body),report.packageFiles['game.js'].sha256);const marker='  legacyFrameId = requestAnimationFrame(frame);\n})();';assert.equal(source.split(marker).length,2);
       const hook=`window.__TWO_TOUCH_QA__=()=>({state,currentLevel,elapsed,hull,W,H,warpTimer,legacyRunning,runToken,player:{x:player.x,y:player.y,target:player.target,targetY:player.targetY},
         input:{...classicFlightInput},fireInput:typeof fireInput==='undefined'?null:fireInput?{...fireInput}:null,fireOwnershipAvailable:typeof fireInput!=='undefined',
+        missileInput:typeof missileInput==='undefined'?null:missileInput?{...missileInput}:null,missileAmmo:classicSalvageState?.missileAmmo??null,missileShotsSpent:classicSalvageState?.missileShotsSpent??null,
         weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge,rechargeSeconds:classicWeapons.rechargeSeconds,elapsed:classicWeapons.elapsed,
           shotSequence:classicWeapons.shotSequence,projectileSequence:classicWeapons.projectileSequence}:null,fireDisabled:ui.fire.disabled,fireAriaDisabled:ui.fire.getAttribute('aria-disabled'),ammoText:ui.ammo.textContent,fireAriaLabel:ui.fire.getAttribute('aria-label'),
         assets:Object.entries(SPRITES).filter(([,image])=>image.src).map(([id,image])=>({id,loaded:image.complete&&image.naturalWidth>0}))});\n`;

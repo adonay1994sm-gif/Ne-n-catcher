@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {CLASSIC_WEAPON_RULES, createClassicWeapons, selectClassicWeapon, unlockClassicWeapon,
   triggerClassicWeapon, advanceClassicWeapons, hitClassicProjectile,
   classicWeaponSnapshot, setClassicRechargeInterval, setClassicUnlimitedFire,
-  canTriggerClassicMissile, triggerClassicMissile} from '../src/game/combat/classic-weapons.js';
+  canTriggerClassicMissile, triggerClassicMissile, setClassicWeaponTuning} from '../src/game/combat/classic-weapons.js';
 
 const origin = {x: 360, y: 1000};
 const run = (state, seconds, events = []) => {
@@ -165,11 +165,81 @@ test('invalid cooling intervals reject before mutating the match or constructing
   triggerClassicWeapon(state, origin);
   run(state, .1);
   const before = classicWeaponSnapshot(state);
-  for (const invalid of [1.49, 2.01, -1, 0, NaN, Infinity, -Infinity, '1.5', null]) {
+  for (const invalid of [.99, 2.01, -1, 0, NaN, Infinity, -Infinity, '1.5', null]) {
     assert.throws(() => createClassicWeapons({rechargeSeconds: invalid}));
     assert.throws(() => setClassicRechargeInterval(state, invalid));
     assert.deepEqual(classicWeaponSnapshot(state), before);
   }
+});
+
+test('rank II cooling recovers one round per played second without granting a free refill', () => {
+  const state = createClassicWeapons();
+  triggerClassicWeapon(state, origin); run(state, .4);
+  const before = classicWeaponSnapshot(state);
+  setClassicRechargeInterval(state, 1);
+  assert.equal(state.charges, before.charges);
+  assert.equal(state.recharge, before.recharge);
+  advanceClassicWeapons(state, 0);
+  assert.equal(state.charges, 19);
+  run(state, .59); assert.equal(state.charges, 19);
+  run(state, .01); assert.equal(state.charges, 20);
+});
+
+test('Abanico is a short physical three-bolt cone that spends one charge and expires before a distant target', () => {
+  const state = createClassicWeapons({type: 'scatter', unlocked: ['pulse', 'scatter']});
+  const fired = triggerClassicWeapon(state, origin);
+  assert.equal(fired.projectiles.length, 3);
+  assert.equal(state.charges, 19);
+  assert.ok(fired.projectiles[0].vx < 0 && fired.projectiles[2].vx > 0);
+  assert.ok(Math.abs(fired.projectiles[1].vx) < 1e-9);
+  assert.equal(fired.projectiles.reduce((sum, bolt) => sum + bolt.damage, 0), 3);
+  run(state, .34);
+  assert.equal(state.projectiles.length, 0, 'short range is enforced by lifetime, not a cosmetic taper');
+});
+
+test('Abanico II changes future range and cone while already emitted bolts and recovery stay intact', () => {
+  const state = createClassicWeapons({type: 'scatter', unlocked: ['pulse', 'scatter']});
+  triggerClassicWeapon(state, origin);
+  const before = classicWeaponSnapshot(state);
+  const result = setClassicWeaponTuning(state, {scatter: 2});
+  result.scatter = 1;
+  assert.deepEqual(state.projectiles, before.projectiles);
+  assert.equal(state.charges, before.charges); assert.equal(state.cooldown, before.cooldown);
+  assert.equal(state.recharge, before.recharge); assert.equal(state.elapsed, before.elapsed);
+  run(state, .4);
+  const fired = triggerClassicWeapon(state, origin);
+  assert.equal(fired.projectiles[0].duration, .48);
+  assert.ok(Math.abs(fired.projectiles[0].vx) < Math.abs(before.projectiles[0].vx));
+  assert.match(classicWeaponSnapshot(state).description, /317/);
+});
+
+test('Aguja and resonance use distinct target receipts and bounded three/four-target penetration', () => {
+  for (const rank of [1, 2]) {
+    const state = createClassicWeapons({type: 'needle', unlocked: ['pulse', 'needle']});
+    setClassicWeaponTuning(state, {needle: rank});
+    const bolt = triggerClassicWeapon(state, origin).projectiles[0];
+    assert.equal(bolt.radius, 4); assert.equal(bolt.damage, 2);
+    assert.equal(state.cooldown, rank === 1 ? .56 : .46);
+    const targets = rank === 1 ? 3 : 4;
+    for (let index = 0; index < targets; index++) {
+      assert.equal(hitClassicProjectile(state, bolt.id, `enemy:${index}`).damage, 2);
+      if (index < targets - 1) assert.equal(hitClassicProjectile(state, bolt.id, `enemy:${index}`).reason, 'duplicate');
+    }
+    assert.equal(state.projectiles.length, 0);
+    assert.equal(hitClassicProjectile(state, bolt.id, 'another').reason, 'inactive');
+  }
+});
+
+test('tuning rejects invalid ranks atomically and snapshots cannot mutate installed ranks', () => {
+  const state = createClassicWeapons(), before = classicWeaponSnapshot(state);
+  for (const ranks of [null, [], {scatter: 3}, {scatter: 2, needle: -1}, {needle: 1.5}, {pulse: 2}]) {
+    assert.throws(() => setClassicWeaponTuning(state, ranks));
+    assert.deepEqual(classicWeaponSnapshot(state), before);
+  }
+  setClassicWeaponTuning(state, {scatter: 2, needle: 2});
+  const snapshot = classicWeaponSnapshot(state); snapshot.weaponRanks.scatter = 1;
+  assert.equal(state.weaponRanks.scatter, 2);
+  assert.deepEqual(state.unlocked, ['pulse'], 'tuning cannot grant weapon ownership');
 });
 
 test('zero delta freezes cooldown, charge recovery, projectile movement and event identity', () => {

@@ -71,6 +71,12 @@
         // row travels with this physical projectile, including its first frame.
         const frame=Math.floor(age*14)%4,size=54;
         ctx.drawImage(atlas,frame*cell,0,cell,cell,-size/2,-size/2,size,size);
+      } else if(shot.weapon==='needle') {
+        // The authored high-energy lance is compressed into a slender rail
+        // pulse; the physics, penetration and cooldown belong to Aguja.
+        ctx.scale(.48,1.28);drawArcadePulse('lance',age,80);
+      } else if(shot.weapon==='scatter') {
+        ctx.scale(.82,.72);drawArcadePulse('twin',age,66);
       } else if(!drawArcadePulse(shot.weapon,age,shot.weapon === "lance" ? 88 : 72))
         drawAtlasVfx(1,shot.weapon === "twin" ? 16 : 23,68,1,.5);
       ctx.restore();

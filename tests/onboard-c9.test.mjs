@@ -29,7 +29,7 @@ const fundedRecord = balance => {
  * projectiles. The long service-route case explicitly supplies its collection
  * quota and clears unrelated hazards to isolate continuity/repair/idempotency.
  */
-function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null, unlocked = 2} = {}) {
+function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null, unlocked = 2, equipment = null} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   t.after(() => dom.window.close());
@@ -76,6 +76,7 @@ function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null, 
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
   window.localStorage.setItem(SALVAGE_KEY, JSON.stringify(salvage));
+  if(equipment)window.localStorage.setItem('neonCatcher.flightEquipment.v1',JSON.stringify(equipment));
   if (voyage) window.localStorage.setItem(VOYAGE_KEY, JSON.stringify(voyage));
   const setItem = window.Storage.prototype.setItem;
   let blockSalvage = false;
@@ -349,4 +350,30 @@ test('archived N-7 and Journey cannot open the classic onboard workshop or touch
     assert.equal(h.stored(SALVAGE_KEY), before); assert.equal(h.stored('neon-n7-unlocked-v1'), n7Unlocked);
     assert.equal(h.pending.size, 1);
   }
+});
+
+test('Forja connects paid weapon ranks to real loadouts and preserves them after interruption', t => {
+  const equipment={version:1,recoveredTwin:true,unlocked:['pulse'],selected:'pulse'};
+  const h=harness(t,{salvage:fundedRecord(1000),equipment});h.api.prepare();h.node('classicC9').click();
+  const sku=id=>h.document.querySelector(`[data-c9-sku="${id}"]`);
+  assert.equal(h.node('c9Title').textContent,'FORJA C9');
+  assert.equal(sku('weapon-scatter').disabled,true,'recovered emitter must be prepared explicitly');
+  h.node('flightInstallTwin').click();
+  assert.equal(sku('weapon-scatter').disabled,false);
+  assert.equal(sku('scatter-focus').disabled,true,'rank II cannot skip its weapon');
+  sku('weapon-scatter').click();sku('scatter-focus').click();
+  h.document.querySelector('[data-flight-loadout="scatter"]').click();
+  assert.equal(h.snapshot().weapons.selected,'scatter');
+  assert.equal(h.snapshot().weapons.weaponRanks.scatter,2);
+  assert.equal(h.document.querySelector('[data-flight-loadout="twin"]').disabled,true,'Gemelo still belongs to Atlas');
+  h.node('c9BuyShield').click();sku('hull-plating-ii').click();
+  h.node('c9BuyCoolant').click();sku('coolant-feed-ii').click();
+  const q=h.snapshot();assert.equal(q.reserveCapacity,65);assert.equal(q.weapons.rechargeSeconds,1);
+  const raw=h.stored(SALVAGE_KEY);sku('scatter-focus').click();assert.equal(h.stored(SALVAGE_KEY),raw);
+  const resumed=harness(t,{salvage:JSON.parse(raw),equipment:JSON.parse(h.stored('neonCatcher.flightEquipment.v1'))});
+  resumed.api.prepare();assert.equal(resumed.snapshot().weapons.selected,'scatter');
+  assert.equal(resumed.snapshot().weapons.weaponRanks.scatter,2);
+  assert.equal(resumed.snapshot().reserveCapacity,65);assert.equal(resumed.snapshot().weapons.rechargeSeconds,1);
+  assert.equal(resumed.snapshot().salvage.balance,q.salvage.balance);
+  assert.equal(resumed.pending.size,1);
 });

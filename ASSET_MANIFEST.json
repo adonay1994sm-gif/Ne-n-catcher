@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 99,
-  "runtimeBytes": 12444076,
+  "assetCount": 100,
+  "runtimeBytes": 12705086,
   "audit": {
-    "reviewed": 99,
+    "reviewed": 100,
     "READY": 58,
-    "IN_REVIEW": 41,
+    "IN_REVIEW": 42,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -1259,6 +1259,26 @@
           "scope": "Recurso real usado en C9 o reproducción del banco de combate durante acciones; entrega offline con bytes/SHA comprobados. Escenas controladas y partida natural diferenciadas; no certifica estética/escucha ni iPhone."
         }
       ]
+    },
+    {
+      "id": "forja-modules-atlas-v1",
+      "path": "assets/forja_modules_atlas_v1.webp",
+      "master": "art-source/forja-c9/generated-master.png",
+      "metadata": "art-source/forja-c9/metadata.json",
+      "dimensions": "1024x1024",
+      "format": "webp-alpha",
+      "use": "Forja C9: illustrated Abanico, Aguja, armor II and cooling II modules",
+      "decodedRGBABytes": 4194304,
+      "size": 261010,
+      "sha256": "a0ec89e1f977830fc6d9a105bd1b64ee705e187a379c2e8fb9b3aeccfda928ae",
+      "status": "IN_REVIEW",
+      "activeRuntime": true,
+      "precache": true,
+      "technicalAcceptance": "PENDING_CURRENT_BROWSER",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original image generated with the available image_gen tool on 2026-10-18; no external purchased or third-party asset",
+      "version": 1
     }
   ],
   "project": "NEON CRONIUM"

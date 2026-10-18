@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T16:20:00Z",
+  "updatedAt": "2026-10-18T16:45:52.829961+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -6167,7 +6167,8 @@
         "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md"
       ],
       "openErrors": [
-        "Safari y prueba física iPhone pendientes; aceptación técnica Chromium no equivale a publicación comercial."
+        "Safari y prueba física iPhone pendientes; aceptación técnica Chromium no equivale a publicación comercial.",
+        "Propietario informa fallo simultáneo de misil/pilotaje: el lote FORJA lo corrige y añade pruebas específicas; no confundir los smokes históricos de Phaser con misil."
       ],
       "acceptance": [
         "Dos órdenes de contacto, fuego inmediato y movimiento continuo.",
@@ -6177,7 +6178,7 @@
       "acceptanceStatus": {
         "technical": "CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED",
         "artistic": "PENDING_OWNER",
-        "physical": "PENDING"
+        "physical": "PENDING_OWNER_MISSILE_RETEST"
       },
       "canonicalRelationship": {
         "extends": "P1-FLIGHT-01",
@@ -9547,6 +9548,301 @@
         }
       ],
       "netlifyDeploymentStatus": "PUBLIC_EXACT_SHA_VERIFIED"
+    },
+    {
+      "id": "P2-FORJA-ARSENAL-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Arsenal comprable Abanico y Aguja con equipamiento explícito",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Interfaz",
+        "Campaña clásica"
+      ],
+      "dependencies": [
+        "P2-ARSENAL-01"
+      ],
+      "files": [
+        "src/game/progression/classic-arsenal.js",
+        "src/game/progression/scrap-economy.js",
+        "src/game/combat/classic-weapons.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Pendiente completar verificación del paquete exacto.",
+        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Comprar no equipa ni concede Gemelo; ambos proyectiles tienen trayectorias y funciones diferentes."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P2-ARSENAL-01",
+        "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
+    },
+    {
+      "id": "P2-FORJA-TREE-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Forja C9 ilustrada con ramas, requisitos y navegación de taller",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Interfaz",
+        "Assets",
+        "Campaña clásica"
+      ],
+      "dependencies": [
+        "P1-DYNAMIC-C9"
+      ],
+      "files": [
+        "src/game/03-ui-game-flow.js",
+        "styles.css",
+        "assets/forja_modules_atlas_v1.webp",
+        "art-source/forja-c9/metadata.json"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Pendiente completar verificación del paquete exacto.",
+        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Mira, arsenal, evolución y suministros accesibles en320/390; requisito, coste y estado visibles; compras/retorno conservados."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-DYNAMIC-C9",
+        "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
+    },
+    {
+      "id": "P1-TUTORIAL-INTERACTIVE-02",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Guía del primer viaje que avanza por acciones reales",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-FLIGHT-01"
+      ],
+      "files": [
+        "src/game/narrative/flight-tutorial.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Pendiente completar verificación del paquete exacto.",
+        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Pilotaje, tiro y recuperación completan lecciones; misil es opcional; no pausa ni invade Atlas; checkpoint en ajustes y repetición."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-FLIGHT-01",
+        "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
+    },
+    {
+      "id": "P1-ATLAS-REPERTOIRE-07",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Atlas v7 con salvas adaptativas, flanqueo y repertorio ampliado",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jefes",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-DYNAMIC-ATLAS"
+      ],
+      "files": [
+        "src/game/combat/guardian-atlas.js",
+        "tests/guardian-atlas.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Pendiente completar verificación del paquete exacto.",
+        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Ventanas reales y cinco rutinas nuevas; tiros balísticos, objetivo comprometido, máximo10proyectiles y salida posible; balance humano pendiente."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-DYNAMIC-ATLAS",
+        "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
+    },
+    {
+      "id": "P1-MISSILE-MULTITOUCH-02",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Consola coherente y misil por contacto independiente del piloto",
+      "priority": "CRITICAL",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Interfaz",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-INPUT-02"
+      ],
+      "files": [
+        "src/game/08-loop-input-bootstrap.js",
+        "index.html",
+        "styles.css",
+        "scripts/two-touch-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Pendiente completar verificación del paquete exacto.",
+        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Pilotar y lanzar misil en ambos órdenes con pointer/touch, consumo único, click asistivo, cancelación/pausa/blur sin disparos fantasma."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P1-INPUT-02",
+        "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
+    },
+    {
+      "id": "P2-WEAPON-RANKS-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Subprogresión de arma, blindaje y refrigeración por rangos",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-FORJA-ARSENAL-01"
+      ],
+      "files": [
+        "src/game/progression/scrap-economy.js",
+        "src/game/combat/classic-weapons.js",
+        "src/game/combat/hull-reinforcement.js"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Pendiente completar verificación del paquete exacto.",
+        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Abanico y Aguja tienen rangoII funcional; defensa45→65, recarga1.5→1; requisitos y recibos atómicos conservan guardados."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P2-FORJA-ARSENAL-01",
+        "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
+    },
+    {
+      "id": "P2-WRECK-SALVAGE-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Restos de nave y satélites generan chatarra recuperable",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-SALVAGE-01"
+      ],
+      "files": [
+        "src/game/04-entities-collision-damage.js",
+        "src/game/03-ui-game-flow.js",
+        "tests/debris-salvage.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md"
+      ],
+      "openErrors": [
+        "Pendiente completar verificación del paquete exacto.",
+        "Aceptación artística, dificultad humana y Safari/iPhone físico pendientes."
+      ],
+      "acceptance": [
+        "Destrucción produce6/18físicos, recogida única; contacto/meteoro/proyectil no dan botín; límites y Atlas600 conservados."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CURRENT_PACKAGE",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "canonicalRelationship": {
+        "extends": "P2-SALVAGE-01",
+        "note": "Remates del propietario18/10/2026; no cierre automático del nivel1 ni expansión de los demás niveles."
+      }
     }
   ],
   "canonicalPlan": {
@@ -9584,12 +9880,18 @@
     "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion.",
     "latestFeedback": {
       "date": "2026-10-18",
-      "status": "IMPLEMENTED_AWAITING_OWNER_REVIEW",
-      "reference": "docs/PRODUCT_VISION.md",
-      "report": "docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md",
-      "batch": "LEVEL_ONE_DYNAMIC",
-      "priority": "Revisar primer nivel con Chronos jugable, tutorial, enemigos/Atlas móviles, audio enemigo, misil18, C9HUD y nave30%mayor antes de extender otros nueve territorios.",
-      "scope": "Integración técnica comprobada; aceptación artística, dificultad/sonido humano y dispositivo físico pendientes."
+      "batch": "FORJA_LEVEL_ONE_REMATES",
+      "source": "Petición del propietario: continuar los siete remates y preservar código; no parar por una supuesta reactivación.",
+      "scope": [
+        "P2-FORJA-ARSENAL-01",
+        "P2-FORJA-TREE-01",
+        "P1-TUTORIAL-INTERACTIVE-02",
+        "P1-ATLAS-REPERTOIRE-07",
+        "P1-MISSILE-MULTITOUCH-02",
+        "P2-WEAPON-RANKS-01",
+        "P2-WRECK-SALVAGE-01"
+      ],
+      "interpretation": "Punto6 «basares»: interpretación de trabajo Phaser/armas y rangos; no consta una orden confirmada de habilidades de cascos Aster/Bastion."
     },
     "latestClarification": {
       "date": "2026-10-18",
@@ -10023,6 +10325,6 @@
         "supersedesCreativeConstraintsFrom": "CHAPTER_ONE_LIVING_JOURNEY; SPECIALIST_POLISH; historical orbital C9 and cinematic-lock contract"
       }
     ],
-    "currentBatch": "LEVEL_ONE_DYNAMIC"
+    "currentBatch": "FORJA_LEVEL_ONE_REMATES"
   }
 }

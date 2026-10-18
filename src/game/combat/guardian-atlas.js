@@ -5,7 +5,7 @@ const finite = (value, name) => {
 };
 
 export const GUARDIAN_ATLAS_RULES = Object.freeze({
-  version: 'guardian-atlas-v6', maxHp: 96, maxDelta: .05,
+  version: 'guardian-atlas-v7', maxHp: 96, maxDelta: .05,
   entrySeconds: 2.2, closedSeconds: .85,
   openingSeconds: .65, exposedSeconds: 3.8, closingSeconds: .55,
   phaseBreakSeconds: 1.25, shutdownSeconds: 1.55, hurtSeconds: .16,
@@ -18,14 +18,22 @@ export const GUARDIAN_ATLAS_RULES = Object.freeze({
     basic: Object.freeze({chargeSeconds: .36, volleyTimes: Object.freeze([0]), damage: 13}),
     medium: Object.freeze({chargeSeconds: .52, volleyTimes: Object.freeze([0, .34]), damage: 15}),
     superpower: Object.freeze({chargeSeconds: .86, volleyTimes: Object.freeze([0, .45]), damage: 22})
+  }),
+  patterns: Object.freeze({
+    duelBurst: Object.freeze({volleyTimes: Object.freeze([0, .24]), projectiles: 2}),
+    staggeredSalvo: Object.freeze({volleyTimes: Object.freeze([0, .25, .58]), projectiles: 3}),
+    flankSalvo: Object.freeze({volleyTimes: Object.freeze([0, .36]), projectiles: 4}),
+    reactorSweep: Object.freeze({volleyTimes: Object.freeze([0, .34, .72]), projectiles: 3}),
+    reactorPincer: Object.freeze({volleyTimes: Object.freeze([0, .48]), projectiles: 5})
   })
 });
 
 /** One encounter driven by the existing update. It owns no clock, projectile
  * movement, rendering, save, money or reward. The core is damageable only in
- * EXPOSED, never while attacking, opening, closing or changing phase. Version 6
- * moves the physical core in every living combat state; the renderer and
- * collision integration both use the same x/y, never a decorative offset.
+ * EXPOSED, never while attacking, opening, closing or changing phase. Version 7
+ * keeps the three introductory routines, then varies sampled interception,
+ * staggered salvos and reactor sweeps. The renderer and collision integration
+ * both use the same moving x/y, never a decorative offset.
  */
 export function createGuardianAtlas({width = 720, height = 1280,
   playerY = height - 135, seed = 0x41544c41} = {}) {
@@ -46,6 +54,7 @@ export function createGuardianAtlas({width = 720, height = 1280,
     telegraph: null, disabled: false, resolved: false,
     attackId: 0, attackTier: null, volley: 0, attackClearanceSeconds: 0,
     observation: null, nextObservationAt: 0, lastPattern: null, attackDecision: null,
+    previousPatterns: {basic: null, medium: null, superpower: null}, tacticalManeuver: 'patrol',
     attacksSinceSuperpower: 0, motionDecision: 0, nextMotionAt: 0,
     motionX: width / 2, motionY: targetY, motionVx: 0, motionVy: 0,
     motionSide: seed % 2 ? -1 : 1,
@@ -62,6 +71,8 @@ function nextRandom(boss) {
 }
 const phaseRules = boss => boss.phase === 1 ? GUARDIAN_ATLAS_RULES.phaseOne : GUARDIAN_ATLAS_RULES.phaseTwo;
 const attackRules = boss => GUARDIAN_ATLAS_RULES.attacks[boss.attackTier];
+const patternRules = boss => GUARDIAN_ATLAS_RULES.patterns[boss.telegraph?.pattern];
+const volleyTimes = boss => patternRules(boss)?.volleyTimes || attackRules(boss).volleyTimes;
 
 function updateCore(boss) {
   boss.vulnerability = boss.state === 'exposed' && !boss.disabled;
@@ -98,14 +109,20 @@ function planMotion(boss) {
   else if (!exposed && (underFire || Math.abs(boss.x - boss.motionX) < Math.min(26, space * .12))) {
     boss.motionSide = -boss.motionSide;
   }
+  const tacticalAttack = boss.state === 'charge' || boss.state === 'fire';
+  if (tacticalAttack && boss.tacticalManeuver === 'flank') {
+    boss.motionSide = boss.telegraph.sweepDirection;
+  }
   const flank = exposed ? space * .24 : space * (.28 + nextRandom(boss) * .17);
   const lead = clamp(sample.vx * .24, -boss.width * .10, boss.width * .10);
   const target = exposed ? boss.x + boss.motionSide * flank
-    : sample.x + lead + boss.motionSide * flank;
+    : tacticalAttack && boss.tacticalManeuver === 'withdraw' ? boss.width / 2 + boss.motionSide * space * .34
+      : sample.x + lead + boss.motionSide * flank;
   boss.motionX = clamp(target, bounds.left, bounds.right);
   const verticalPhase = boss.motionDecision * 1.7 + boss.phase * .9;
-  boss.motionY = clamp(boss.targetY + Math.sin(verticalPhase) * 18, bounds.top, bounds.bottom);
-  boss.nextMotionAt = boss.age + (exposed ? 1.15 : 1.25 + nextRandom(boss) * .5);
+  boss.motionY = clamp(boss.targetY + (tacticalAttack && boss.tacticalManeuver === 'withdraw'
+    ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
+  boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? .8 : 1.25 + nextRandom(boss) * .5);
   boss.motionDecision++;
 }
 function moveAtlas(boss, dt) {
@@ -151,11 +168,25 @@ function beginCharge(boss, player, events) {
   }
   boss.attacksSinceSuperpower = boss.attackTier === 'superpower' ? 0 : boss.attacksSinceSuperpower + 1;
   const tier = boss.attackTier;
-  const pattern = tier === 'superpower' ? 'reactorBarrage' : tier === 'medium'
+  let pattern = tier === 'superpower' ? 'reactorBarrage' : tier === 'medium'
     ? boss.phase === 1 ? 'crossfire' : 'rakingSalvo' : boss.phase === 1 ? 'focusedSalvo' : 'leadSalvo';
+  if (boss.phaseAttacks > 3 || boss.phase === 2) {
+    const options = tier === 'basic' ? ['duelBurst'] : tier === 'medium'
+      ? Math.abs(sample.vx) >= 85 ? ['flankSalvo', 'staggeredSalvo'] : ['staggeredSalvo', 'flankSalvo']
+      : ['reactorSweep', 'reactorPincer'];
+    const candidates = options.filter(candidate => candidate !== boss.previousPatterns[tier]);
+    pattern = candidates[Math.floor(nextRandom(boss) * candidates.length)] || options[0];
+  }
+  boss.previousPatterns[tier] = pattern;
   const leadOffset = tier === 'basic' && boss.phase === 1 ? 0 : clamp(sample.vx * .28, -100, 100);
   const originY = boss.y + boss.r * .7;
   boss.lastPattern = pattern;
+  // A maneuver is committed with the attack. New samples cannot rotate an
+  // already emitted shot or move the sweep's destination under the player.
+  const sweepDirection = sample.vx ? Math.sign(sample.vx) : sample.x < boss.width / 2 ? 1 : -1;
+  boss.tacticalManeuver = pattern === 'flankSalvo' || pattern === 'staggeredSalvo' ? 'flank'
+    : tier === 'superpower' ? 'withdraw' : 'pressure';
+  boss.nextMotionAt = boss.age;
   boss.telegraph = {kind: 'mechanicalDeployment', pattern, attackTier: tier, progress: 0,
     targetX: clamp(sample.x + leadOffset, 24, boss.width - 24),
     // A pilot moving above the guns must not produce upward/negative-lifetime
@@ -163,7 +194,8 @@ function beginCharge(boss, player, events) {
     targetY: Math.max(originY + 180, sample.y), observedX: sample.x,
     observedVx: sample.vx, observedAt: sample.at, leadOffset,
     originX: boss.x, originY, seconds: attackRules(boss).chargeSeconds,
-    safeGap: null, attackId: boss.attackId, decision: boss.attackDecision};
+    safeGap: null, attackId: boss.attackId, decision: boss.attackDecision,
+    sweepDirection, maneuver: boss.tacticalManeuver};
   transition(boss, 'charge', events);
   // Animation-only compatibility event. Integration must not reveal aim or a
   // future safe lane through HUD warnings, reticles or helper lines.
@@ -183,21 +215,29 @@ function projectile(boss, x, y, vx, vy, ordinal, targetX) {
 }
 function fireVolley(boss, events, fireTime = boss.stateTime) {
   const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === 'superpower';
-  const crossfire = aim.pattern === 'crossfire';
-  const originX = boss.x + (crossfire ? (boss.volley === 0 ? -1 : 1) * boss.r * .72 : 0);
+  const crossfire = ['crossfire', 'flankSalvo', 'reactorPincer'].includes(aim.pattern);
+  const originSide = (boss.volley === 0 ? -1 : 1) * (aim.pattern === 'crossfire' ? 1 : aim.sweepDirection);
+  const originX = boss.x + (crossfire ? originSide * boss.r * .72 : 0);
   const originY = boss.y + boss.r * .7;
   const targetY = Math.max(originY + 180, aim.targetY);
   const rake = Math.min(44, (targetY - originY) * .09);
-  const targetX = clamp(aim.targetX + (aim.pattern === 'rakingSalvo'
+  const sweep = aim.pattern === 'staggeredSalvo' ? [-1, 1, 0][boss.volley] * boss.width * .065
+    : aim.pattern === 'reactorSweep' ? (boss.volley - 1) * boss.width * .09
+      : aim.pattern === 'reactorPincer' ? (boss.volley === 0 ? -1 : 1) * boss.width * .055
+        : aim.pattern === 'flankSalvo' ? (boss.volley === 0 ? -.025 : .04) * boss.width
+          : aim.pattern === 'duelBurst' ? (boss.volley === 0 ? -.018 : .018) * boss.width : 0;
+  const targetX = clamp(aim.targetX + sweep * aim.sweepDirection + (aim.pattern === 'rakingSalvo'
     ? (boss.volley === 0 ? -rake : rake) : 0), 24, boss.width - 24);
   const distance = targetY - originY;
   const direction = Math.atan2(distance, targetX - originX);
   // The heavy barrage occupies a wider observed sector, but is slower and
   // retains an escape outside that sector. Small fixture arenas use a narrow
   // fan rather than an unavoidable full-width wall. No safe corridor is stored.
-  const spread = heavy ? Math.atan2(boss.width * (boss.width < 440 ? .055 : .24), distance) :
+  const spread = heavy ? Math.atan2(boss.width * (boss.width < 440 ? .055 : patternRules(boss) ? .12 : .24), distance) :
     aim.pattern === 'rakingSalvo' ? .035 : .045;
-  const offsets = heavy || (tier === 'medium' && boss.phase === 2)
+  const count = patternRules(boss)?.projectiles;
+  const offsets = count ? Array.from({length: count}, (_, index) => (index / (count - 1) * 2 - 1) * spread)
+    : heavy || (tier === 'medium' && boss.phase === 2)
     ? [-spread, -spread / 2, 0, spread / 2, spread] : [-spread, 0, spread];
   const speed = heavy ? (boss.phase === 1 ? 300 : 325) : phaseRules(boss).projectileSpeed;
   for (const [index, offset] of offsets.entries()) {
@@ -218,7 +258,7 @@ function stateDuration(boss) {
   if (boss.state === 'entry') return rule.entrySeconds;
   if (boss.state === 'closed') return rule.closedSeconds;
   if (boss.state === 'charge') return attackRules(boss).chargeSeconds;
-  if (boss.state === 'fire') return Math.max(attackRules(boss).volleyTimes.at(-1) + .08,
+  if (boss.state === 'fire') return Math.max(volleyTimes(boss).at(-1) + .08,
     boss.attackClearanceSeconds + .12);
   if (boss.state === 'opening') return rule.openingSeconds;
   if (boss.state === 'exposed') return rule.exposedSeconds;
@@ -269,7 +309,7 @@ export function advanceGuardianAtlas(boss, dt, player, emit = () => {}) {
     } else moveAtlas(boss, step);
     if (boss.state === 'charge') boss.telegraph.progress = clamp(boss.stateTime / duration, 0, 1);
     else if (boss.state === 'fire') {
-      const schedule = attackRules(boss).volleyTimes;
+      const schedule = volleyTimes(boss);
       while (boss.volley < schedule.length && before < schedule[boss.volley] + 1e-9 &&
           boss.stateTime + 1e-9 >= schedule[boss.volley]) fireVolley(boss, events, schedule[boss.volley]);
     }

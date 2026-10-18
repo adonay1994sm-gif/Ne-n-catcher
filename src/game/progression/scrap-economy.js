@@ -10,14 +10,39 @@ export const SCRAP_ECONOMY_RULES = Object.freeze({
   maxDropReceipts: 512, maxPurchaseReceipts: 128, maxInvalidBackups: 8
 });
 
-export const SCRAP_REWARDS = Object.freeze({raider: 6, scout: 9, interceptor: 15, atlas: 600});
+export const SCRAP_REWARDS = Object.freeze({raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18});
+const upgrade = definition => Object.freeze({...definition,
+  requires: Object.freeze([...(definition.requires || [])]),
+  receiptPrices: Object.freeze([...(definition.receiptPrices || [definition.price])])});
 export const SCRAP_UPGRADES = Object.freeze({
-  'twin-preparation': Object.freeze({id: 'twin-preparation', price: 24,
+  'twin-preparation': upgrade({id: 'twin-preparation', price: 24,
     label: 'Preparar emisor', description: 'Prepara la pieza recuperada; Gemelo sigue requiriendo vencer a Atlas.'}),
-  'hull-reinforcement': Object.freeze({id: 'hull-reinforcement', price: 30,
-    label: 'Refuerzo de casco', description: 'Amplía la reserva de integridad de 30 a 45; absorbe daño sin temporizador.'}),
-  'coolant-feed': Object.freeze({id: 'coolant-feed', price: 45,
-    label: 'Alimentación refrigerada', description: 'Recupera un proyectil cada 1,5 segundos en lugar de cada dos.'})
+  'hull-reinforcement': upgrade({id: 'hull-reinforcement', price: 30,
+    label: 'Blindaje I', branch: 'defense', rank: 1, description: 'Amplía la reserva de integridad de 30 a 45; absorbe daño sin temporizador.'}),
+  'coolant-feed': upgrade({id: 'coolant-feed', price: 45,
+    label: 'Refrigeración I', branch: 'cooling', rank: 1, description: 'Recupera un proyectil cada 1,5 segundos en lugar de cada dos.'}),
+  'hull-plating-ii': upgrade({id: 'hull-plating-ii', price: 90, branch: 'defense', rank: 2,
+    requires: ['hull-reinforcement'], label: 'Blindaje II',
+    description: 'Amplía la reserva de casco de 45 a 65. No repara la reserva ya consumida.'}),
+  'coolant-feed-ii': upgrade({id: 'coolant-feed-ii', price: 110, branch: 'cooling', rank: 2,
+    requires: ['coolant-feed'], label: 'Refrigeración II',
+    description: 'Recupera un proyectil cada segundo de vuelo; conserva la carga y recuperación en curso.'}),
+  'weapon-scatter': upgrade({id: 'weapon-scatter', price: 70, weaponId: 'scatter', branch: 'scatter', rank: 1,
+    requires: ['twin-preparation'], label: 'Abanico I',
+    description: 'Tres pulsos divergentes de 1 de daño; alcance corto para interceptar grupos cercanos.',
+    tradeoff: 'Exige acercarse: sus pulsos se disipan antes que un Phaser.'}),
+  'scatter-focus': upgrade({id: 'scatter-focus', price: 120, weaponId: 'scatter', branch: 'scatter', rank: 2,
+    requires: ['weapon-scatter'], label: 'Abanico II · convergencia',
+    description: 'Concentra la apertura de 18° a 13° y amplía el alcance de 224 a 317; mantiene tres pulsos.',
+    tradeoff: 'Gana alcance pero cubre menos anchura.'}),
+  'weapon-needle': upgrade({id: 'weapon-needle', price: 95, weaponId: 'needle', branch: 'needle', rank: 1,
+    requires: ['twin-preparation'], label: 'Aguja I',
+    description: 'Proyectil estrecho de 2 de daño que perfora hasta tres objetivos alineados.',
+    tradeoff: 'Menor anchura de impacto y cadencia más lenta que el Phaser.'}),
+  'needle-resonance': upgrade({id: 'needle-resonance', price: 140, weaponId: 'needle', branch: 'needle', rank: 2,
+    requires: ['weapon-needle'], label: 'Aguja II · resonancia',
+    description: 'Perfora cuatro objetivos y dispara cada 0,46 s en lugar de cada 0,56 s.',
+    tradeoff: 'Mantiene el daño directo de 2: destaca frente a objetivos alineados.'})
 });
 
 const integer = value => Number.isSafeInteger(value) && value >= 0;
@@ -27,7 +52,8 @@ const identifier = value => typeof value === 'string' && value.length > 0 && val
 const copy = value => JSON.parse(JSON.stringify(value));
 const has = (value, key) => Object.hasOwn(value, key);
 const enemyAliases = Object.freeze({'ch-01': 'scout', 'ch01': 'scout', 'ch-02': 'interceptor',
-  'ch02': 'interceptor', 'guardian-atlas': 'atlas'});
+  'ch02': 'interceptor', 'guardian-atlas': 'atlas',
+  'ship-fragment': 'debris', 'satellite-fragment': 'satellite'});
 const enemyName = type => typeof type !== 'string' ? null : has(SCRAP_REWARDS, type) ? type :
   has(enemyAliases, type) ? enemyAliases[type] : null;
 
@@ -37,9 +63,24 @@ export function rewardForEnemy(type) {
 }
 
 export function hullReserveCapacity(record) {
-  return Array.isArray(record?.upgrades)&&record.upgrades.some(sku=>
-    sku==='hull-reinforcement'||sku==='shield-cell')
-    ? SCRAP_ECONOMY_RULES.reinforcedHullReserve : SCRAP_ECONOMY_RULES.baseHullReserve;
+  const upgrades = Array.isArray(record?.upgrades) ? record.upgrades : [];
+  return upgrades.includes('hull-plating-ii') ? 65 :
+    upgrades.some(sku => sku === 'hull-reinforcement' || sku === 'shield-cell')
+      ? SCRAP_ECONOMY_RULES.reinforcedHullReserve : SCRAP_ECONOMY_RULES.baseHullReserve;
+}
+
+/** Independent effect snapshots projected only from a complete paid ledger. */
+export function classicWorkshopState(record) {
+  const saved = normalizeScrapRecord(record);
+  const upgrades = saved?.upgrades || [];
+  const owns = sku => upgrades.includes(sku);
+  return {reserveCapacity: hullReserveCapacity(saved),
+    rechargeSeconds: owns('coolant-feed-ii') ? 1 : owns('coolant-feed') ? 1.5 : 2,
+    defenseRank: owns('hull-plating-ii') ? 2 : owns('hull-reinforcement') ? 1 : 0,
+    coolingRank: owns('coolant-feed-ii') ? 2 : owns('coolant-feed') ? 1 : 0,
+    weaponIds: ['scatter', 'needle'].filter(id => owns(`weapon-${id}`)),
+    weaponRanks: {scatter: owns('scatter-focus') ? 2 : owns('weapon-scatter') ? 1 : 0,
+      needle: owns('needle-resonance') ? 2 : owns('weapon-needle') ? 1 : 0}};
 }
 
 const upgradeName = sku => sku === 'shield-cell' ? 'hull-reinforcement' : sku;
@@ -111,9 +152,10 @@ export function normalizeScrapRecord(value) {
     const sku=upgradeName(receipt?.sku);
     if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) ||
         typeof sku !== 'string' || !has(SCRAP_UPGRADES, sku) || purchased.has(sku) ||
-        receipt.price !== SCRAP_UPGRADES[sku].price) return null;
+        !SCRAP_UPGRADES[sku].receiptPrices.includes(receipt.price)) return null;
     transactionIds.add(receipt.id); purchased.add(sku); spent += receipt.price;
   }
+  if ([...purchased].some(sku => SCRAP_UPGRADES[sku].requires.some(required => !purchased.has(required)))) return null;
   if (spent+missileRoundsPurchased*SCRAP_ECONOMY_RULES.missileUnitPrice !== value.spent || upgrades.length !== purchased.size ||
       upgrades.some(sku => !purchased.has(sku))) return null;
   if (value.activeRun !== null) {
@@ -325,6 +367,9 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
       : blocked('transaction-id-conflict');
     if (current.upgrades.includes(sku)) return {ok: false, status: 'unavailable', reason: 'already-owned', state: copy(current)};
     if (current.purchases.length >= SCRAP_ECONOMY_RULES.maxPurchaseReceipts) return blocked('purchase-receipt-capacity');
+    const requires = SCRAP_UPGRADES[sku].requires.filter(required => !current.upgrades.includes(required));
+    if (requires.length) return {ok: false, status: 'unavailable', reason: 'prerequisite-required',
+      requires, state: copy(current)};
     const price = SCRAP_UPGRADES[sku].price;
     if (current.balance < price) return {ok: false, status: 'unavailable', reason: 'insufficient-funds', price,
       missing: price - current.balance, state: copy(current)};

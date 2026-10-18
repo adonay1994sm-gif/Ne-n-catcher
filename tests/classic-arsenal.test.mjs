@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createClassicEquipment, normalizeClassicEquipment, prepareClassicTwin,
-  awardClassicBossWeapon, canEquipClassicWeapon} from '../src/game/progression/classic-arsenal.js';
+  awardClassicBossWeapon, canEquipClassicWeapon, syncClassicWorkshopWeapons} from '../src/game/progression/classic-arsenal.js';
+
+import {createScrapRecord, createScrapLedger} from '../src/game/progression/scrap-economy.js';
 
 const oldTwin = {version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin'], selected: 'twin'};
 const oldLance = {...oldTwin, unlocked: ['pulse', 'twin', 'lance'], selected: 'lance', lanceCalibrated: true};
@@ -141,4 +143,37 @@ test('unknown guardians and weapon IDs reject without inventing later boss rewar
 test('the arsenal model owns no storage, renderer, random source or update clock', async () => {
   const source = await readFile(new URL('../src/game/progression/classic-arsenal.js', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /requestAnimationFrame|setInterval|setTimeout|Math\.random|Date\.now|localStorage|document\.|window\./);
+});
+
+test('paid workshop weapons replay into equipment after interrupted projection without granting Gemelo or switching selection', () => {
+  const map = new Map(), log = createScrapLedger({storage: {
+    readRaw: key => ({ok: true, value: map.get(key) ?? null}),
+    setJSON: (key, value) => { map.set(key, JSON.stringify(value)); return true; }
+  }});
+  const run = log.beginRun({scope: 'classic:1'});
+  for (let index = 0; index < 25; index++) log.claimDrop({runId: run.runId, dropId: `enemy:${index}`, enemyType: 'scout'});
+  for (const sku of ['twin-preparation', 'weapon-scatter', 'weapon-needle']) {
+    assert.equal(log.purchase({transactionId: `buy:${sku}`, sku}).ok, true);
+  }
+  const fresh = createClassicEquipment(), paid = log.getState();
+  const projected = syncClassicWorkshopWeapons(fresh, paid);
+  assert.deepEqual(projected.unlocked, ['pulse', 'scatter', 'needle']);
+  assert.equal(projected.selected, 'pulse'); assert.equal(projected.recoveredTwin, false);
+  assert.deepEqual(projected.bossRewards, []);
+  assert.equal(canEquipClassicWeapon(projected, 'twin'), false);
+  assert.equal(canEquipClassicWeapon(projected, 'scatter'), true);
+  assert.equal(canEquipClassicWeapon(projected, 'needle'), true);
+  assert.deepEqual(syncClassicWorkshopWeapons(projected, paid), projected);
+  assert.deepEqual(normalizeClassicEquipment(projected), projected);
+  assert.deepEqual(fresh.unlocked, ['pulse']);
+  const selected = {...projected, selected: 'needle'};
+  assert.equal(syncClassicWorkshopWeapons(selected, paid).selected, 'needle');
+});
+
+test('missing or forged workshop rights never unlock new weapons and historical equipment remains recoverable', () => {
+  const fresh = createClassicEquipment();
+  for (const record of [null, undefined, {}, {...createScrapRecord(), upgrades: ['weapon-scatter']}]) {
+    assert.deepEqual(syncClassicWorkshopWeapons(fresh, record), fresh);
+    assert.deepEqual(syncClassicWorkshopWeapons(oldLance, record), oldLance);
+  }
 });

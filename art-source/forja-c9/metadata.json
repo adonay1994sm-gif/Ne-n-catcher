@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "origin": "Original image generated with the available image_gen tool on 2026-10-18; no external purchased or third-party asset",
+  "master": "art-source/forja-c9/generated-master.png",
+  "runtime": "assets/forja_modules_atlas_v1.webp",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "alpha": true,
+  "cells": [
+    "scatter",
+    "needle",
+    "hull-ii",
+    "coolant-ii"
+  ],
+  "cellSize": [
+    512,
+    512
+  ],
+  "pivot": [
+    0.5,
+    0.5
+  ],
+  "states": "Static hardware cards; gameplay projectiles use the existing animated pulse atlas. No claim of new gun animation frames.",
+  "bytes": 261010,
+  "decodedRGBABytes": 4194304,
+  "sha256": "a0ec89e1f977830fc6d9a105bd1b64ee705e187a379c2e8fb9b3aeccfda928ae",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING"
+}

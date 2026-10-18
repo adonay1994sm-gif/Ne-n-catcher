@@ -268,6 +268,10 @@
       player.y=clamp(player.y,classicFlightBounds.minY,classicFlightBounds.maxY);
     }
     engineTrail();
+    if(typeof classicTutorial!=='undefined'&&classicTutorial&&state==='playing') {
+      if(classicTutorialAnchor)classicTutorial.observe({type:'pilot',distance:Math.hypot(player.x-classicTutorialAnchor.x,player.y-classicTutorialAnchor.y)});
+      classicTutorialAnchor={x:player.x,y:player.y};
+    }
 
     if (warpTimer > 0) {
       warpTimer = Math.max(0, warpTimer - dt);

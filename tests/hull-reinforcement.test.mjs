@@ -32,6 +32,18 @@ test('the C9 capacity accepts forty-five points and damage never grants a free r
   const empty=damage({reserve:0,capacity:45,amount:10});assert.equal(empty.reserve,0);assert.equal(empty.hull,90);
 });
 
+test('Blindaje II accepts sixty-five reserve points and preserves exact normal/heavy overflow',()=>{
+  assert.equal(HULL_REINFORCEMENT_RULES.advancedCapacity,65);
+  let state={hull:100,reserve:65,capacity:65};
+  for(let hit=0;hit<4;hit++)state=resolveHullReinforcement({...state,amount:99,kind:'heavyPhaser'});
+  assert.equal(state.hull,100);assert.equal(state.reserve,5);
+  const overflow=resolveHullReinforcement({...state,amount:99,kind:'heavyPhaser'});
+  assert.equal(overflow.reserve,0);assert.equal(overflow.hull,90);
+  const broken=damage({reserve:65,capacity:65,amount:42,largeAsteroid:true});
+  assert.equal(broken.reserve,0);assert.equal(broken.hull,80);
+  assert.throws(()=>damage({reserve:66,capacity:65}));
+});
+
 test('large asteroids shatter all remaining reserve and deal twenty protected or thirty-eight bare hull damage',()=>{
   for(const reserve of [1,7,30]){
     const result=damage({reserve,largeAsteroid:true,amount:42});

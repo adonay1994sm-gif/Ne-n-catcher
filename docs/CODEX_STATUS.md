@@ -1,5 +1,17 @@
 # DIAGNÓSTICO
 
+18/10/2026 · Se preservó HEAD `34ae40f0717243c445ffdb967f835bddb8509751`. El propietario pide siete remates antes de cerrar el nivel1. El misil usaba onclick separado del multitoque y el tutorial sólo mostraba mensajes por tiempo; ambas carencias se abordan en este lote.
+
+# INFORME DE PRODUCCIÓN — FORJA_LEVEL_ONE_REMATES
+
+Armas Abanico/Aguja y rangosII, Forja C9 ilustrada con desarrollo, guía por acciones, Atlasv7 con cinco rutinas nuevas, consola/misil táctil independiente y botín de restos/satélites integrados en fuentes. [Informe, compatibilidad y criterios](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md). Verificación del paquete exacto en curso; las siete tareas y el nivel1 permanecen `IN_REVIEW`. Aceptación artística, balance humano e iPhone/Safari pendientes. MotorV1false; no expansión de los otros nueve niveles.
+
+Los informes siguientes conservan su SHA y son históricos frente a este cierre.
+
+---
+
+# DIAGNÓSTICO
+
 18/10/2026 · Revisión de cierre del nivel 1 sobre la rama `continuity-assets-audit-20261013`. Se preservó `70e518f`; el incremento funcional probado es `8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a`. El viaje Chronos→Gaia está integrado, pero los mandos seguían mezclando pilotaje, combate, arma y C9.
 
 # INFORME DE PRODUCCIÓN — LEVEL_ONE_CONTROLS_REVIEW

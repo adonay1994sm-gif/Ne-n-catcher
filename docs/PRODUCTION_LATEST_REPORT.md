@@ -1,5 +1,17 @@
 # DIAGNÓSTICO
 
+El propietario solicita continuar siete remates del primer viaje. Base preservada `34ae40f0717243c445ffdb967f835bddb8509751`; misil por onclick y tutorial por reloj confirmados como carencias reales.
+
+# INFORME DE PRODUCCIÓN — FORJA_LEVEL_ONE_REMATES
+
+[Informe detallado vigente](production-reports/FORJA_LEVEL_ONE_REMATES_2026-10-18.md). Forja con arsenal y árbol, nuevas armas y rangos, tutorial por acciones, Atlasv7, consola/misil multitoque y chatarra física de restos integrados. La verificación, SHA funcional, evidencia y publicación se completan en el cierre del lote; no declarar nivel1 `DONE` ni los diez niveles terminados. Arte, dificultad humana y Safari/iPhone siguen pendientes.
+
+Los cierres siguientes son históricos y conservan sus pruebas/identificadores originales.
+
+---
+
+# DIAGNÓSTICO
+
 Revisión del nivel 1 completada sobre `70e518f`; mandos rediseñados en `8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a`.
 
 # INFORME DE PRODUCCIÓN — LEVEL_ONE_CONTROLS_REVIEW

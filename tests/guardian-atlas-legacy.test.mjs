@@ -570,7 +570,7 @@ test('slow time shares the real Atlas and projectile clock before firing another
     }
   }
   assert.ok(measuredBulletStep, 'The test must observe actual projectile movement');
-  assert.deepEqual([...volleys].sort(), [0, 1], 'Both real phase-two salvos must be emitted');
+  assert.deepEqual([...volleys].sort(), [0, 1, 2], 'All three adaptive phase-two salvos must be emitted');
   assert.ok(nextWarning, 'The encounter must progress to its next attack preparation under slow time');
   assert.ok(emittedIds.size>0);
   assert.deepEqual([...clearedIds].sort(),[...emittedIds].sort(),

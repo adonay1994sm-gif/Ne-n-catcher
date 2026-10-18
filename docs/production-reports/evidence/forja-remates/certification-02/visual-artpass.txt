@@ -1,0 +1,20 @@
+✔ art pass preserves the nine-source game bundle (10.855482ms)
+✔ Chronos background uses the authored image and bounded readability veil (1.82876ms)
+✔ Chronos accident uses four authored atlas phases instead of a drawn ring (1.654273ms)
+✔ Atlas perimeter draws its own illustrated Gaia Nova environment (3.056147ms)
+✔ Vulkar level 3 uses separate illustrated space and planet layers with the played clock (3.633947ms)
+✔ Vulkar magma tunnel has a separate level 4 illustration and no purple ion overlay (3.597494ms)
+✔ Cryon whiteout has a dedicated illustrated classic level 5 scene (4.779662ms)
+✔ Cryon Leviathan rift has its own classic level 6 scene (4.26089ms)
+✔ Aether cemetery and phantom threshold are separate classic scenes (5.944947ms)
+✔ Titan Omega and final Chronos collapse use authored classic backgrounds (6.048098ms)
+✔ level one shockwave retains a graphical fallback while the atlas loads (0.807939ms)
+✔ visual pass does not change collision model or native bundle identifier (0.676726ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 104.939333

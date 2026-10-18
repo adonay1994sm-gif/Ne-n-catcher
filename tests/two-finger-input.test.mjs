@@ -16,7 +16,7 @@ const visibilitySource = source.match(/  document\.addEventListener\("visibility
 assert.ok(visibilitySource);
 
 function harness(t, {pointerEvents = true, mode = 'classic', introActive = false} = {}) {
-  const dom = new JSDOM('<canvas id="canvas"></canvas><button id="fire">Disparar</button>', {
+  const dom = new JSDOM('<canvas id="canvas"></canvas><button id="fire">Disparar</button><button id="classicMissile">Misil</button>', {
     runScripts: 'outside-only', pretendToBeVisual: true
   });
   const {window} = dom;
@@ -43,12 +43,13 @@ function harness(t, {pointerEvents = true, mode = 'classic', introActive = false
   } else window.PointerEvent = undefined;
   window.eval(`
     let state='playing', last=0, legacyRunning=true, legacyFrameId=null;
-    const W=720,H=1558,canvas=document.getElementById('canvas'),ui={fire:document.getElementById('fire')};
+    const W=720,H=1558,canvas=document.getElementById('canvas'),ui={fire:document.getElementById('fire'),classicMissile:document.getElementById('classicMissile')};
     const settings={sensitivity:100},player={x:360,y:1100,target:360,targetY:1100};
     const classicFlightInput=NeonCampaign.createRelativeFlightInput();
     const classicFlightBounds={minX:119,maxX:601,minY:350,maxY:1300};
     const JOURNEY_DEMO=${JSON.stringify(mode === 'journey')};
     let journeyPointerLast=null,shotCount=0,charges=3,cooldown=0;
+    let missileCount=0,missileAmmo=3;
     function isUnifiedClassic(){return ${JSON.stringify(mode === 'classic')};}
     const classicChapterStory=isUnifiedClassic()?NeonCampaign.createChronosChapterStory():null;
     let classicChapterView=classicChapterStory?.snapshot()||null;
@@ -66,6 +67,10 @@ function harness(t, {pointerEvents = true, mode = 'classic', introActive = false
       if(state!=='playing'||classicChapterControlsLocked()||charges===0||cooldown>1e-9)return false;
       shotCount++;charges--;cooldown=.32;return true;
     }
+    function fireClassicMissile(){
+      if(!isUnifiedClassic()||state!=='playing'||classicChapterControlsLocked()||missileAmmo===0)return false;
+      missileCount++;missileAmmo--;return true;
+    }
     function update(dt){cooldown=Math.max(0,cooldown-dt);}
     function render(){}
     const atlasBoss=null;
@@ -75,11 +80,12 @@ function harness(t, {pointerEvents = true, mode = 'classic', introActive = false
     function resumeGame(){state='playing';}
     async function suspendAudio(){}
     ${inputSource}
+    setupClassicMissileInput();
     ${fireClickSource}
     ${visibilitySource}
     window.__input={
       snapshot:()=>({state,player:{...player},pilot:{...classicFlightInput},
-        fire:fireInput?{...fireInput}:null,legacyPilotId,journeyPointerLast,shotCount,charges,cooldown,
+        fire:fireInput?{...fireInput}:null,missile:missileInput?{...missileInput}:null,missileCount,missileAmmo,legacyPilotId,journeyPointerLast,shotCount,charges,cooldown,
         chapter:classicChapterView,controlsLocked:classicChapterControlsLocked()}),
       tick(dt=.034){last=0;frame(dt*1000);},
       pause:pauseGame,resume:resumeGame,reset:resetGameInput,skipIntro:skipIntroForControlFixture,
@@ -90,6 +96,7 @@ function harness(t, {pointerEvents = true, mode = 'classic', introActive = false
   const api = window.__input;
   const canvas = window.document.getElementById('canvas');
   const fire = window.document.getElementById('fire');
+  const missile = window.document.getElementById('classicMissile');
   const snapshot = () => JSON.parse(JSON.stringify(api.snapshot()));
   function pointer(target, type, id, x = 250, y = 600, extra = {}) {
     const event = new window.PointerEvent(type, {pointerId: id, clientX: x, clientY: y,
@@ -111,8 +118,49 @@ function harness(t, {pointerEvents = true, mode = 'classic', introActive = false
       assert.equal(frames.size, 1, 'The existing frame schedules exactly one successor');
     }
   }
-  return {window, api, canvas, fire, pointer, touch, tick, snapshot, frames, captures};
+  return {window, api, canvas, fire, missile, pointer, touch, tick, snapshot, frames, captures};
 }
+
+for(const actionFirst of [false,true]){
+  test(`missile ${actionFirst?'first':'second'} launches once on down and leaves the other pilot contact intact`,t=>{
+    const h=harness(t);
+    if(actionFirst){h.pointer(h.missile,'pointerdown',91,310,750);h.pointer(h.canvas,'pointerdown',90,200,600,{isPrimary:false});}
+    else{h.pointer(h.canvas,'pointerdown',90,200,600);h.pointer(h.missile,'pointerdown',91,310,750,{isPrimary:false});}
+    const before=h.snapshot();assert.equal(before.missileCount,1);assert.equal(before.missileAmmo,2);
+    assert.equal(before.pilot.id,90);assert.equal(before.missile.id,91);assert.equal(before.fire,null);
+    h.pointer(h.canvas,'pointermove',90,225,575,{isPrimary:!actionFirst});
+    assert.ok(h.snapshot().player.target>before.player.target);assert.ok(h.snapshot().player.targetY<before.player.targetY);
+    h.tick(30);assert.equal(h.snapshot().missileCount,1,'Holding beyond missile cooldown never repeats');
+    h.pointer(h.missile,'pointerup',91);h.missile.dispatchEvent(new h.window.MouseEvent('click',{detail:1}));
+    assert.equal(h.snapshot().missileCount,1);assert.equal(h.snapshot().missile,null);assert.equal(h.snapshot().pilot.id,90);
+    h.pointer(h.canvas,'pointermove',90,240,560);assert.ok(h.snapshot().player.target>before.player.target+30);
+  });
+  test(`missile touch fallback ${actionFirst?'first':'second'} owns changed touch and suppresses its compatibility click`,t=>{
+    const h=harness(t,{pointerEvents:false});
+    const pilot={identifier:94,clientX:200,clientY:600},action={identifier:95,clientX:310,clientY:750};
+    if(actionFirst){h.touch(h.missile,'touchstart',[action],[action]);h.touch(h.canvas,'touchstart',[action,pilot],[pilot]);}
+    else{h.touch(h.canvas,'touchstart',[pilot],[pilot]);h.touch(h.missile,'touchstart',[pilot,action],[action]);}
+    assert.equal(h.snapshot().missileCount,1);assert.equal(h.snapshot().pilot.id,94);assert.equal(h.snapshot().missile.id,95);
+    const before=h.snapshot();h.touch(h.canvas,'touchmove',[action,{...pilot,clientX:225}],[{...pilot,clientX:225}]);
+    assert.ok(h.snapshot().player.target>before.player.target);
+    h.touch(h.missile,'touchend',[pilot],[action]);h.missile.dispatchEvent(new h.window.MouseEvent('click',{detail:1}));
+    assert.equal(h.snapshot().missileCount,1);assert.equal(h.snapshot().missile,null);assert.equal(h.snapshot().pilot.id,94);
+  });
+}
+
+test('missile cancellation, pause and blur never launch a release shot; assistive click and M launch once',t=>{
+  const h=harness(t);h.pointer(h.canvas,'pointerdown',100);h.pointer(h.missile,'pointerdown',101);
+  h.pointer(h.missile,'pointercancel',101);assert.equal(h.snapshot().missile,null);assert.equal(h.snapshot().pilot.id,100);
+  h.missile.dispatchEvent(new h.window.MouseEvent('click',{detail:1}));assert.equal(h.snapshot().missileCount,1);
+  h.pointer(h.missile,'pointerdown',102);h.api.pause();assert.equal(h.snapshot().missile,null);assert.equal(h.captures.size,0);
+  h.api.resume();h.missile.dispatchEvent(new h.window.MouseEvent('click',{detail:1}));assert.equal(h.snapshot().missileCount,2);
+  h.missile.click();assert.equal(h.snapshot().missileCount,3,'Assistive detail-zero click remains available');
+  const keyboard=harness(t);keyboard.window.dispatchEvent(new keyboard.window.KeyboardEvent('keydown',{key:'m',cancelable:true}));
+  keyboard.window.dispatchEvent(new keyboard.window.KeyboardEvent('keydown',{key:'m',repeat:true,cancelable:true}));
+  assert.equal(keyboard.snapshot().missileCount,1,'Held M cannot repeat paid ammunition');
+  keyboard.pointer(keyboard.missile,'pointerdown',103);keyboard.window.dispatchEvent(new keyboard.window.Event('blur'));
+  assert.equal(keyboard.snapshot().missile,null);assert.equal(keyboard.captures.size,0);
+});
 
 test('the real chapter introduction blocks pilot and fire until its explicit skip, without advancing route time', t => {
   const h=harness(t,{introActive:true});

@@ -161,7 +161,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-level-one-dynamic-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-forja-controls-2");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -424,7 +424,7 @@ await test("guardados corruptos se normalizan sin romper el menú ni el control"
   assert.deepEqual({ ...api.getStars() }, { 1: 3, 3: 2 });
   assert.deepEqual({ ...api.getLevelBest() }, { 2: 900 });
   assert.deepEqual({ ...api.loadSettings() }, {
-    music: 100, fx: 0, sensitivity: 100, autoFire: false, vibration: true, reduceEffects: false, effectsQuality: "normal", effects: true
+    music: 100, fx: 0, sensitivity: 100, autoFire: false, vibration: true, reduceEffects: false, effectsQuality: "normal", flightTutorial: null, effects: true
   });
   gameWindow.localStorage.setItem("neonCatcher.atlasAutoFire.v1", "true");
   assert.equal(api.loadSettings().autoFire, false, "El antiguo AUTO predeterminado no autoriza el nuevo ajuste");

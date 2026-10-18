@@ -26,7 +26,7 @@ const HULL={half:47.6*1.3,top:63.2*1.3,bottom:41.6*1.3};
 
 test('entry arrives closed, identifies the falsified ID and exposes no free initial damage',()=>{
   const boss=createGuardianAtlas(),initial=boss.y;
-  assert.equal(boss.version,'guardian-atlas-v6');assert.equal(boss.hp,96);
+  assert.equal(boss.version,'guardian-atlas-v7');assert.equal(boss.hp,96);
   assert.equal(hitGuardianAtlas(boss,10).reason,'armored');
   const events=runFor(boss,1);assert.ok(boss.y>initial&&boss.y<boss.targetY);
   assert.equal(events.some(e=>e.type==='projectile'),false);
@@ -100,9 +100,10 @@ test('basic, medium and superpower are distinct closed-armored routines in both 
     for(const warning of deployments){
       assert.equal(warning.safeGap,null);
       const shots=events.filter(e=>e.type==='projectile'&&e.projectile.attackId===warning.attackId).map(e=>e.projectile);
-      assert.equal(shots.length,warning.attackTier==='basic'?3:warning.attackTier==='superpower'||phase===2?10:6);
+      const pattern=R.patterns[warning.pattern],schedule=pattern?.volleyTimes||R.attacks[warning.attackTier].volleyTimes;
+      assert.equal(shots.length,pattern?pattern.projectiles*schedule.length:warning.attackTier==='basic'?3:warning.attackTier==='superpower'?10:6);
       assert.equal(new Set(shots.map(s=>s.projectileId)).size,shots.length);
-      assert.deepEqual([...new Set(shots.map(s=>s.volley))],warning.attackTier==='basic'?[0]:[0,1]);
+      assert.deepEqual([...new Set(shots.map(s=>s.volley))],schedule.map((_,index)=>index));
       assert.ok(shots.every(s=>s.attackTier===warning.attackTier&&s.damage>0));
       if(warning.attackTier==='superpower'){
         assert.ok(shots.every(s=>s.heavy&&s.r===14&&s.damage===22));
@@ -273,6 +274,66 @@ test('after introducing routines, adaptive decisions intercept flanks and still 
   assert.ok(later(centreEvents).some(event=>event.decision==='pressure-observed-lane'));
   assert.ok(later(flankEvents).some(event=>event.decision==='reactor-recharged'&&event.attackTier==='superpower'));
   assert.notDeepEqual(later(flankEvents).map(e=>e.attackTier),later(centreEvents).map(e=>e.attackTier));
+});
+
+test('adaptive Atlas uses five distinct follow-up routines with staggered emissions and no projectile wall',()=>{
+  const boss=ready({seed:17}),events=[];
+  until(boss,b=>b.phaseAttacks>=15&&b.state==='exposed',player,events);
+  const deployments=events.filter(event=>event.type==='warning');
+  assert.deepEqual(deployments.slice(0,3).map(event=>event.pattern),['focusedSalvo','crossfire','reactorBarrage']);
+  const followups=deployments.slice(3),seen=new Set(followups.map(event=>event.pattern));
+  assert.deepEqual([...seen].sort(),Object.keys(R.patterns).sort());
+  const previous=new Map();
+  for(const attack of followups){
+    const rule=R.patterns[attack.pattern];
+    assert.ok(rule);assert.equal(attack.safeGap,null);
+    const shots=events.filter(event=>event.type==='projectile'&&event.projectile.attackId===attack.attackId).map(event=>event.projectile);
+    assert.equal(shots.length,rule.projectiles*rule.volleyTimes.length);
+    assert.ok(shots.length<=R.maxProjectilesPerAttack);
+    assert.equal(new Set(shots.map(shot=>shot.projectileId)).size,shots.length);
+    assert.ok(shots.every(shot=>shot.safeGap===null&&shot.vy>0&&Number.isFinite(shot.vx)));
+    assert.deepEqual([...new Set(shots.map(shot=>shot.volley))],rule.volleyTimes.map((_,index)=>index));
+    assert.equal(attack.maneuver,attack.attackTier==='superpower'?'withdraw':attack.attackTier==='medium'?'flank':'pressure');
+    if(attack.attackTier!=='basic')assert.notEqual(previous.get(attack.attackTier),attack.pattern);
+    previous.set(attack.attackTier,attack.pattern);
+  }
+});
+
+test('phase two deploys upgraded routines immediately and keeps every scheduled volley frozen while paused',()=>{
+  const boss=expose();hitGuardianAtlas(boss,boss.maxHp/2);
+  const events=[];until(boss,b=>b.phaseAttacks===1&&b.state==='fire',player,events);
+  assert.equal(boss.attackTier,'medium');assert.ok(R.patterns[boss.telegraph.pattern]);
+  const first=structuredClone(events.filter(event=>event.type==='projectile').map(event=>event.projectile));
+  const snapshot=structuredClone(boss);assert.deepEqual(advanceGuardianAtlas(boss,0,{x:130,y:800}),[]);
+  assert.deepEqual(boss,snapshot);assert.equal(boss.volley,1);
+  const rule=R.patterns[boss.telegraph.pattern],attackId=boss.attackId;
+  until(boss,b=>b.state==='opening',{x:130,y:800},events);
+  const shots=events.filter(event=>event.type==='projectile'&&event.projectile.attackId===attackId).map(event=>event.projectile);
+  assert.equal(shots.length,rule.projectiles*rule.volleyTimes.length);
+  assert.equal(new Set(shots.map(shot=>shot.projectileId)).size,shots.length);
+  assert.deepEqual(shots.filter(shot=>shot.volley===0),first,'later pilot input cannot retarget existing ammunition');
+  assert.ok(shots.every(shot=>shot.observedX===first[0].observedX&&shot.observedVx===first[0].observedVx));
+});
+
+test('new reactor sweeps and flanking salvos leave a reachable full-hull escape before every core opening',()=>{
+  for(const height of [568,1280])for(const targetX of [145,360,575])for(const phase of [1,2]){
+    const playerY=height===568?450:height-135,pilot={x:targetX,y:playerY};
+    const boss=ready({height,playerY,seed:17});if(phase===2){expose(boss);hitGuardianAtlas(boss,boss.maxHp/2);}
+    const events=[];until(boss,b=>b.phaseAttacks>=15&&b.state==='exposed',pilot,events);
+    const attacks=events.filter(event=>event.type==='warning'&&R.patterns[event.pattern]);
+    for(const attack of attacks){
+      const shots=events.filter(event=>event.type==='projectile'&&event.projectile.attackId===attack.attackId).map(event=>event.projectile);
+      const candidates=[];for(let x=HULL.half;x<=720-HULL.half;x+=4)candidates.push(x);
+      candidates.sort((a,b)=>Math.abs(a-targetX)-Math.abs(b-targetX));
+      const escape=candidates.find(x=>shots.every(shot=>[playerY-HULL.top-shot.r,playerY+HULL.bottom+shot.r].every(y=>{
+        const crossing=shot.x+shot.vx*((y-shot.y)/shot.vy);return Math.abs(crossing-x)>HULL.half+shot.r+2;
+      })));
+      assert.notEqual(escape,undefined,`${height}/${targetX}/${phase}/${attack.pattern}: a final guardian must never make a complete wall`);
+      const firstContact=Math.min(...shots.map(shot=>(playerY-HULL.top-shot.r-shot.y)/shot.vy));
+      assert.ok(Math.abs(escape-targetX)/720<attack.seconds+firstContact,
+        `${height}/${targetX}/${phase}/${attack.pattern}: the visible hull can reach the escape before contact`);
+    }
+  }
 });
 
 test('lead uses sampled prior velocity, is capped and does not consult a later input reversal',()=>{

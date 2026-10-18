@@ -13,6 +13,8 @@ const report={status:'running',exitCode:null,command:process.argv,sourceRoot:roo
   executionKind:'CONTROLLED_REAL_RENDERER_UI_AUDIO_AND_PHYSICAL_MISSILE_NOT_NATURAL',profiles:[],limits:[
     'Fresh contexts at390x844 and320x568. The opening, workshop, purchases, focus, escape and re-entry use real UI controls.',
     'C9 is an explicit declared stage-three fixture with recovered emitter, hull62, reserve12,48 fixture scrap and one missile; amounts are granted through the real ledger and never described as earned.',
+    'The additional Forja scene explicitly resets this isolated browser ledger and grants 160 raider receipts (960 scrap), then buys nine upgrades through UI. No fixture money is represented as natural income or economy-balance evidence.',
+    'Abanico and Aguja are bought and equipped through the actual Forja UI; the existing RAF is frozen immediately after their real fire button emits ammunition, then actual update steps prove ballistic movement.',
     'Atlas is established from a valid stage-ten checkpoint with unrelated ambient spawn/hazard schedules explicitly suppressed. The single legacy RAF is then stopped for controlled model/update steps and restarted once per profile at the end.',
     'Accepted model hits resolve phase contracts for the conclusion fixture; they do not certify balance. The missile test launches a real physical projectile and advances actual collision/update before reading its impact.',
     'Only a temporary HTTP response receives the fixture and observation API. Original package files are hashed before and after. No production file, second RAF or original save is modified.',
@@ -122,17 +124,20 @@ function guardianBounds(q,positions){
               version:atlasBoss.version,hp:atlasBoss.hp,maxHp:atlasBoss.maxHp,phase:atlasBoss.phase,vulnerability:atlasBoss.vulnerability,
               disabled:atlasBoss.disabled,age:atlasBoss.age,attackTier:atlasBoss.attackTier,motionVx:atlasBoss.motionVx,
               motionDecision:atlasBoss.motionDecision,paintBounds:qaBounds()}:null}),
-          prepareC9(){
+          prepareC9({drops=8,resetEconomy=false}={}){
             goHome();classicEquipment={version:1,recoveredTwin:true,unlocked:['pulse'],selected:'pulse'};
+            if(resetEconomy){storage.remove(NeonCampaign.SCRAP_ECONOMY_KEY);classicSalvageLedger=null;classicSalvageState=null;}
             storage.setJSON(CLASSIC_EQUIPMENT_KEY,classicEquipment);loadClassicSalvage();
             const run=classicSalvageLedger.beginRun({scope:'classic:1',fresh:true});if(!run.ok)throw Error('Declared fixture run failed');
-            for(let n=0;n<8;n++){const result=classicSalvageLedger.claimDrop({runId:run.runId,dropId:'current-visual:'+n,enemyType:'raider'});if(!result.ok)throw Error('Declared fixture grant failed');}
+            for(let n=0;n<drops;n++){const result=classicSalvageLedger.claimDrop({runId:run.runId,dropId:'current-visual:'+n,enemyType:'raider'});if(!result.ok)throw Error('Declared fixture grant failed');}
             for(let n=0;n<2;n++){const result=classicSalvageLedger.spendMissile({shotId:classicSalvageLedger.nextMissileShotId()});if(!result.ok)throw Error('Declared fixture missile spend failed');}
             classicSalvageState=classicSalvageLedger.getState();
             const checkpoint=NeonCampaign.createChronosVoyageCheckpoint(3,{goal:36,collected:8});
             storage.setJSON(NeonCampaign.CHRONOS_VOYAGE_KEY,{version:2,checkpoint,entry:{hull:62,reserve:12,score:160,maxCombo:1,collected:8},unlockedStage:3,completed:false});
             loadClassicVoyage();startLevel(0);warpTimer=0;render(performance.now());
           },
+          prepareForja(){this.prepareC9({drops:160,resetEconomy:true});},
+          freezeForjaShot(){stopLegacyLoop();qaPaint.length=0;render(performance.now());},
           prepareAtlas(){
             goHome();const checkpoint=NeonCampaign.createChronosVoyageCheckpoint(10,{goal:36,collected:36});
             storage.setJSON(NeonCampaign.CHRONOS_VOYAGE_KEY,{version:2,checkpoint,entry:{hull:100,reserve:30,score:160,maxCombo:1,collected:36},unlockedStage:10,completed:false});
@@ -203,16 +208,63 @@ function guardianBounds(q,positions){
       await page.locator('#flightDockHome').focus();await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>!!document.activeElement?.closest('#flightDock')),true);
       await page.locator('#c9BuyShield').click();const reinforced=await snapshot();assert.equal(reinforced.capacity,45);assert.equal(reinforced.reserve,27);assert.equal(reinforced.salvage.balance,18);
       await page.locator('#c9BuyMissiles').click();const refilled=await snapshot();assert.equal(refilled.salvage.balance,6);assert.equal(refilled.salvage.missileAmmo,3);
-      const art=await page.locator('.c9-upgrade-art').evaluateAll(nodes=>nodes.map(n=>({size:n.getBoundingClientRect().width,image:getComputedStyle(n).backgroundImage})));
+      const art=await page.locator('#flightInstallTwin .c9-upgrade-art, #c9BuyShield .c9-upgrade-art, #c9BuyMissiles .c9-upgrade-art, #c9BuyCoolant .c9-upgrade-art').evaluateAll(nodes=>nodes.map(n=>({size:n.getBoundingClientRect().width,image:getComputedStyle(n).backgroundImage})));
       assert.equal(art.length,4);assert.ok(art.every(a=>a.size>0&&a.image!=='none'),'Every C9 upgrade needs its authored artwork');
       await capture('onboard-c9-paid-upgrades');await page.keyboard.press('Escape');await wait(()=>window.__CURRENT_LEVEL_QA__.snapshot().state==='playing');
       const resumed=await snapshot();assert.ok(resumed.flight.elapsed>=q.flight.elapsed&&resumed.flight.elapsed-q.flight.elapsed<.5);assert.equal(resumed.hull,62);
       assert.equal(await page.evaluate(()=>document.activeElement?.id),'classicC9');return{before:q,reinforced,refilled,resumed,art};
     });
-    await check('Atlas uses the moving v6 collider and emits audible basic and heavy attacks',async()=>{
+    await check('declared Forja budget buys a real branching arsenal, preserves receipts and emits both equipped weapons',async()=>{
+      await fixture('prepareForja');await page.locator('#classicC9').click();await wait(()=>document.querySelector('#flightDock.show'));
+      const initial=await snapshot();assert.equal(initial.state,'paused');assert.equal(initial.salvage.balance,960);
+      assert.equal(initial.salvage.earned,960);assert.equal(initial.salvage.purchases.length,0);assert.equal(initial.salvage.activeRun.claimed.length,160);
+      assert.equal(initial.equipment.selected,'pulse');assert.deepEqual(initial.equipment.unlocked,['pulse']);
+      assert.equal(await page.locator('#c9Title').textContent(),'FORJA C9');
+      const skus=['twin-preparation','weapon-scatter','scatter-focus','weapon-needle','needle-resonance',
+        'hull-reinforcement','hull-plating-ii','coolant-feed','coolant-feed-ii'];
+      const prices=[24,70,120,95,140,30,90,45,110];let balance=960;
+      for(let index=0;index<skus.length;index++){
+        const sku=skus[index],selector=sku==='twin-preparation'?'#flightInstallTwin':sku==='hull-reinforcement'?'#c9BuyShield':
+          sku==='coolant-feed'?'#c9BuyCoolant':'[data-c9-sku="'+sku+'"]';
+        const button=page.locator(selector);await button.scrollIntoViewIfNeeded();assert.equal(await button.isEnabled(),true,sku);
+        await button.click();const q=await snapshot();balance-=prices[index];
+        assert.equal(q.salvage.balance,balance,sku+' exact price');assert.equal(q.salvage.purchases.length,index+1);
+        assert.equal(q.salvage.purchases.filter(receipt=>receipt.sku===sku).length,1,sku+' unique receipt');
+        assert.equal(await button.isDisabled(),true,sku+' installed state');assert.equal(q.equipment.selected,'pulse','Buying must not auto-equip');
+        assert.equal(q.equipment.unlocked.includes('twin'),false,'Preparation never replaces the Atlas authorization');
+      }
+      const upgraded=await snapshot();assert.equal(upgraded.salvage.balance,236);assert.equal(upgraded.salvage.spent,724);
+      assert.equal(new Set(upgraded.salvage.purchases.map(receipt=>receipt.id)).size,9);
+      assert.equal(upgraded.capacity,65);assert.equal(upgraded.reserve,47,'Installed extra plating preserves previously spent reinforcement');
+      assert.equal(upgraded.weapons.rechargeSeconds,1);assert.deepEqual(upgraded.weapons.weaponRanks,{scatter:2,needle:2});
+      assert.deepEqual(upgraded.equipment.unlocked,['pulse','scatter','needle']);
+      const art=await page.locator('.c9-upgrade-art').evaluateAll(nodes=>nodes.map(node=>({image:getComputedStyle(node).backgroundImage,width:node.getBoundingClientRect().width})));
+      assert.ok(art.length>4&&art.every(item=>item.width>0&&item.image!=='none'),'Every new branch needs its own visible authored art');
+      await page.locator('.c9-skill-tree').scrollIntoViewIfNeeded();await capture('forja-evolution-tree');
+      await page.locator('#c9-arsenal').scrollIntoViewIfNeeded();await capture('forja-arsenal');
+      const emitted={};
+      for(const weapon of ['scatter','needle']){
+        if(weapon==='needle'){await page.locator('#classicC9').click();await wait(()=>document.querySelector('#flightDock.show'));}
+        const equip=page.locator('[data-flight-loadout="'+weapon+'"]');await equip.scrollIntoViewIfNeeded();await equip.click();
+        assert.equal(await equip.getAttribute('aria-pressed'),'true');assert.equal((await snapshot()).equipment.selected,weapon);
+        const receipts=JSON.stringify((await snapshot()).salvage.purchases);
+        await page.locator('#flightDockContinue').click();await wait(()=>window.__CURRENT_LEVEL_QA__.snapshot().state==='playing');
+        if(weapon==='needle')await fixture('advance',.5);
+        await page.locator('#fire').click();await fixture('freezeForjaShot');const fired=await snapshot();
+        assert.equal(fired.weapons.selected,weapon);assert.equal(fired.salvage.balance,236);assert.equal(JSON.stringify(fired.salvage.purchases),receipts);
+        const shots=fired.weapons.projectiles.filter(shot=>shot.weapon===weapon);assert.equal(shots.length,weapon==='scatter'?3:1);
+        if(weapon==='scatter'){assert.ok(shots.every(shot=>shot.duration===.48&&shot.damage===1));assert.ok(shots.some(shot=>shot.vx<0)&&shots.some(shot=>shot.vx>0));}
+        else{assert.equal(shots[0].pierce,4);assert.equal(shots[0].damage,2);assert.equal(fired.weapons.cooldown,.46);}
+        await capture('forja-'+weapon+'-physical-fire');await fixture('advance',.068);const moved=await snapshot();
+        for(const shot of shots){const live=moved.weapons.projectiles.find(candidate=>candidate.id===shot.id);assert.ok(live&&live.y<shot.y,'Real update advances '+weapon+' projectile');}
+        emitted[weapon]={fired,moved};
+      }
+      return{fixture:{kind:'CONTROLLED_UI_SCENE',grantedRaiderReceipts:160,grantedScrap:960,naturallyEarned:false},initial,upgraded,art,emitted};
+    });
+    await check('Atlas uses the moving v7 collider and emits audible basic and heavy attacks',async()=>{
       await wait(()=>['guardianAtlas','chapterMissile','flightKit'].every(key=>window.__CURRENT_LEVEL_QA__.snapshot().assets[key].ready));
       await fixture('prepareAtlas');await wait(()=>window.__CURRENT_LEVEL_QA__.snapshot().combat?.ready);
-      await fixture('bossUntil','fire');const basic=await snapshot();assert.equal(basic.boss.version,'guardian-atlas-v6');
+      await fixture('bossUntil','fire');const basic=await snapshot();assert.equal(basic.boss.version,'guardian-atlas-v7');
       assert.ok(basic.combat.playedByCue['enemy-phaser']>0);const samples=await fixture('motionSamples',7);
       assert.ok(Math.max(...samples.map(s=>s.x))-Math.min(...samples.map(s=>s.x))>40,'Boss must visibly change its physical lane');
       await page.waitForTimeout(250);await fixture('nextHeavy');const heavy=await snapshot();assert.ok(heavy.combat.playedByCue['enemy-heavy']>0);

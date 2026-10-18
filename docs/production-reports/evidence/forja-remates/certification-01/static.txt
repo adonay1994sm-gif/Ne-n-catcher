@@ -1,0 +1,33 @@
+
+> neon-cronium@7.2.0 test:static
+> node tests/run-static-tests.mjs
+
+PASS 01 · versión interna 7.2.0 compatible y portada canónica sin distintivos técnicos
+PASS 02 · dependencias exactas y reproducibles
+PASS 03 · JavaScript y JSON con sintaxis válida
+PASS 04 · game.js coincide con los 9 módulos ordenados
+PASS 05 · sin latest, TODO ni identificadores publicitarios ficticios
+PASS 06 · manifiesto y archivos conservados coinciden exactamente con el disco
+PASS 07 · todos los assets de juego están documentados y precargados
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'neon-cronium-pre-release-7-2-0-forja-controls-2'
+- 'neon-cronium-pre-release-7-2-0-level-one-dynamic-1'
+
+    at file:///workspace/Ne-n-catcher/tests/run-static-tests.mjs:149:10
+    at test (file:///workspace/Ne-n-catcher/tests/run-static-tests.mjs:12:9)
+    at file:///workspace/Ne-n-catcher/tests/run-static-tests.mjs:139:7 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'neon-cronium-pre-release-7-2-0-forja-controls-2',
+  expected: 'neon-cronium-pre-release-7-2-0-level-one-dynamic-1',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
