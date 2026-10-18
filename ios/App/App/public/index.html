@@ -37,9 +37,9 @@
       <div id="powerPhaser" class="power-chip"><span>ϟ</span><b>PHASER</b><em>0</em></div>
     </div>
 
-    <button id="fire" class="fire-control hidden" type="button" aria-label="Disparar. Munición 3 de 3">
+    <button id="fire" class="fire-control hidden" type="button" aria-label="Disparar">
       <span class="fire-reticle" aria-hidden="true">✦</span>
-      <span><b>DISPARAR</b><small id="ammo">3/3</small></span>
+      <span><b>DISPARAR</b><small id="ammo" hidden aria-hidden="true"></small></span>
     </button>
 
     <div id="levelBanner" class="level-banner">
@@ -60,22 +60,18 @@
 
     <div id="menu" class="overlay show">
       <div class="menu-topline">
-        <div><small>CAPÍTULO I · EL INCIDENTE CRONOS</small><strong>NEON CRONIUM</strong><span class="build-version">V7.2.0</span></div>
+        <div><small>EL VIAJE DE CHRONOS</small><strong>NEON CRONIUM</strong></div>
         <button id="quickSettings" class="icon" type="button" aria-label="Abrir configuración">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l2-1.5-2-3.4-2.4 1a8.4 8.4 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.6A8.4 8.4 0 0 0 7 6.6l-2.4-1-2 3.4 2 1.5a7.8 7.8 0 0 0 0 3l-2 1.5 2 3.4 2.4-1a8.4 8.4 0 0 0 2.6 1.5l.4 2.6h4l.4-2.6a8.4 8.4 0 0 0 2.6-1.5l2.4 1 2-3.4-2-1.5Z"/></svg>
         </button>
       </div>
 
       <div class="panel menu-panel">
-        <div class="brand-mark" aria-label="Logotipo Neon Cronium">
-          <span class="brand-orbit orbit-one"></span>
-          <span class="brand-orbit orbit-two"></span>
-          <span class="brand-core">N</span>
-        </div>
-        <h2>Un ataque.<br>Un rastro entre las estrellas.</h2>
-        <p>Chronos ha sido atacado. Recupera el CRONIUM disperso y sigue su rastro por diez territorios hasta descubrir quién provocó el desastre.</p>
+        <small class="menu-chapter">CHRONOS → GAIA NOVA</small>
+        <h2>El rastro comienza<br>entre las estrellas.</h2>
+        <p>Chronos ha sido atacado. Recupera el CRONIUM disperso y descubre quién rompió el equilibrio.</p>
 
-        <div class="menu-stats">
+        <div class="menu-stats hidden" aria-hidden="true">
           <div class="stat-card" data-icon="◆"><span>RÉCORD</span><b id="best">0</b></div>
           <div class="stat-card" data-icon="◫"><span>DESBLOQUEADO</span><b id="unlockedText">1/10</b></div>
           <div class="stat-card" data-icon="★"><span>ESTRELLAS</span><b id="totalStars">0/30</b></div>
@@ -91,7 +87,6 @@
         <div class="menu-actions">
           <button id="levels" class="secondary" type="button"><span class="button-glyph">▦</span>NIVELES</button>
           <button id="settings" class="secondary" type="button"><span class="button-glyph">⚙</span>AJUSTES</button>
-          <button id="how" class="secondary" type="button"><span class="button-glyph">?</span>AYUDA</button>
         </div>
       </div>
 
@@ -99,7 +94,7 @@
         <img class="menu-ship-image" src="assets/player_ship_identity_v1.webp" alt="">
       </div>
 
-      <div class="menu-legal"><a href="privacy.html">Privacidad</a><a href="terms.html">Términos</a><button id="install" class="link hidden" type="button">Instalar</button></div>
+      <div class="menu-legal"><button id="how" class="link" type="button">Cómo jugar</button><a href="privacy.html">Privacidad</a><a href="terms.html">Términos</a><a href="privacy.html#contacto">Soporte</a><button id="install" class="link hidden" type="button">Instalar</button></div>
     </div>
 
 
@@ -161,7 +156,7 @@
             <option value="high">ALTO</option>
           </select>
         </label>
-        <p class="settings-build">Compilación V7.2.0 · Pre-Release</p>
+
         <button id="settingsBack" class="primary" type="button">GUARDAR Y VOLVER</button>
       </div>
     </div>
@@ -171,7 +166,7 @@
         <h2>Cómo se juega</h2>
         <div class="rules">
           <p><span><b>Pilotaje:</b> arrastra con un dedo para mover la nave y mantén DISPARAR con el otro. Cada dedo conserva su control. Con teclado, usa las cuatro flechas y espacio.</span></p>
-          <p><span><b>Pulso:</b> tres cargas; recuperas una cada 3,6 segundos de vuelo. Rescata el emisor gemelo de Chronos e instálalo en C9 para alternar dos trayectorias por carga.</span></p>
+          <p><span><b>Pulso:</b> un cargador de veinte disparos que se repone durante el vuelo. Vence a Atlas para desbloquear el segundo cañón; en C9 puedes preparar y mejorar tu nave.</span></p>
           <p><i class="energy"></i><span><b>Núcleo:</b> alimenta la nave y completa el objetivo. Cada nivel tiene una cantidad limitada.</span></p>
           <p><i class="meteor"></i><span><b>Amenazas:</b> meteoritos, restos metálicos y satélites dañan distintos porcentajes del casco.</span></p>
           <p><i class="debris-corridor"></i><span><b>Formación de basura espacial:</b> cruza por el pasillo cian. Las amenazas no pueden aparecer dentro mientras esté protegido.</span></p>

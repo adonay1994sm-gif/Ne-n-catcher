@@ -12,7 +12,7 @@ const {parseArgs} = require('node:util');
 const {startStaticServer, prepareEvidence, saveEvidence, sha256, errorText} = require('./browser-qa-helpers.cjs');
 const {values} = parseArgs({options: {root: {type: 'string'}, previous: {type: 'string'}, output: {type: 'string'}, timeout: {type: 'string'}}});
 const root = path.resolve(values.root || 'preview-dist');
-const previous = path.resolve(values.previous || '/workspace/sites/neon-catcher-pruebas/dist');
+const previous = path.resolve(values.previous || '/workspace/sites/neon-catcher-pruebas/dist/clasico-actual');
 const output = path.resolve(values.output || 'docs/production-reports/evidence/rebrand/browser-01');
 const timeout = Number(values.timeout || 120000);
 assert.ok(Number.isFinite(timeout) && timeout >= 30000 && timeout <= 180000);
@@ -23,10 +23,10 @@ const report = {status: 'running', exitCode: null, command: process.argv, starte
   screenshots: [], assetResponses: [],
   limits: ['Real Chromium native service workers on a temporary same-origin HTTP copy; not an installed iPhone PWA or Safari.',
     'Previous package is read only. Current package and historical package are hashed before and after this run.',
-    'Prior save data is an explicitly seeded controlled compatibility fixture, not progress earned in a natural playthrough.',
+    'Prior save data is an explicitly seeded controlled compatibility fixture, not progress earned in a natural playthrough. The salvage fixture is an empty validated ledger; no money or purchase receipt is invented.',
     'No source hooks, request interception, entity insertion, clock acceleration or in-flight counter changes.',
     'RAF and drawImage observers call the original functions unchanged and do not create another animation loop.',
-    'Checks brand, worker upgrade, offline restart, checkpoint UI and ship rendering; not chapter balance or aesthetic acceptance.']};
+    'Checks canonical entry, worker upgrade, offline restart, checkpoint UI, ship/player projectile rendering and hash-verified cached hostile artwork; not natural enemy combat, chapter balance or aesthetic acceptance.']};
 let browser, context, server, temp, evidenceReady = false, offline = false;
 const save = () => saveEvidence(output, report);
 const bounded = (promise, milliseconds, label) => {
@@ -89,7 +89,7 @@ async function newPage() {
       if (/\/favicon\.ico(?:\?|$)/.test(entry.url)) report.incidentalBrowserRequests.push(entry);
       else report.failedRequests.push(entry);
     }
-    if (/\/assets\/(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2)\.webp(?:\?|$)/.test(response.url()))
+    if (/\/assets\/(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2|gaia_pulse_atlas_v3|hostile_ordnance_atlas_v1)\.webp(?:\?|$)/.test(response.url()))
       report.assetResponses.push({url: response.url(), status: response.status(), offline, fromServiceWorker: response.fromServiceWorker()});
   });
   return page;
@@ -122,13 +122,19 @@ async function launcherBrand(page) {
   const layout = await page.locator('h1').evaluate(element => {
     const r = element.getBoundingClientRect(), image = document.querySelector('.hero img').getBoundingClientRect();
     return {text: element.innerText, x: r.x, right: r.right, width: r.width, height: r.height,
+      top:r.top,bottom:r.bottom,imageTop:image.top,imageBottom:image.bottom,imageRight:image.right,
       scrollWidth: element.scrollWidth, clientWidth: element.clientWidth, viewport: innerWidth,
       documentWidth: document.documentElement.scrollWidth, imageLeft: image.left};
   });
   assert.ok(layout.x >= 0 && layout.right <= layout.viewport + 1, 'Brand heading extends beyond the viewport');
   assert.ok(layout.scrollWidth <= layout.clientWidth + 1, 'Brand letters overflow their heading box');
   assert.ok(layout.documentWidth <= layout.viewport + 1, 'Launcher creates horizontal scrolling');
-  assert.ok(layout.right <= layout.imageLeft + 1, 'Brand heading overlaps the portrait');
+  assert.ok(layout.right <= layout.imageLeft + 1 || layout.imageRight <= layout.x + 1 ||
+    layout.bottom <= layout.imageTop + 1 || layout.imageBottom <= layout.top + 1, 'Brand heading overlaps the portrait');
+  assert.equal(await page.locator('#qaArchive,#n7link,#journeylink,#unlockClassic,#unlock').count(),0,
+    'The current entry cannot expose archived variants or QA unlocks');
+  assert.equal(await page.locator('a[href*="campaign="]').count(),0);
+  assert.doesNotMatch(await page.locator('body').innerText(),/ARCHIVO DE PRUEBAS|VERSIÓN EXPERIMENTAL|PRUEBA EXPERIMENTAL|V7\.2\.0/i);
   const manifests = await page.evaluate(async () => {
     const results = [];
     for (const file of ['manifest.webmanifest']) {
@@ -138,7 +144,7 @@ async function launcherBrand(page) {
     return results;
   });
   for (const item of manifests) { assert.equal(item.status, 200); brand(item.value.name); brand(item.value.short_name); }
-  return {title: await page.title(), layout, manifests, worker: await workerState(page)};
+  return {title: await page.title(), layout, manifests, worker: await workerState(page),canonicalEntry:true,legacyControls:0};
 }
 async function gameBrandAndSave(page, fixture) {
   await page.locator('#menu.show').waitFor(); brand(await page.title());
@@ -179,6 +185,9 @@ async function gameBrandAndSave(page, fixture) {
   const model = await import(pathToFileURL(path.resolve(__dirname, '../src/game/progression/chronos-flight.js')).href);
   const checkpoint = model.createChronosVoyageCheckpoint(3, {goal: 36});
   const prefix = report.previousInfo.storagePrefix;
+  const economy=await import(pathToFileURL(path.resolve(__dirname,'../src/game/progression/scrap-economy.js')).href);
+  const emptySalvage=economy.createScrapRecord();
+  assert.ok(economy.normalizeScrapRecord(emptySalvage));
   const fixture = report.seededPreviousSaveFixture = {
     [`${prefix}neon-best-v2`]: '1739', [`${prefix}neon-unlocked-v2`]: '1',
     [`${prefix}neon-n7-unlocked-v1`]: '37',
@@ -186,6 +195,7 @@ async function gameBrandAndSave(page, fixture) {
     [`${prefix}neonCatcher.flightEquipment.v1`]: JSON.stringify({version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin'], selected: 'twin'}),
     [`${prefix}${model.CHRONOS_VOYAGE_KEY}`]: JSON.stringify({version: 2, checkpoint,
       entry: {hull: 74, score: 160, maxCombo: 3, collected: checkpoint.collected}, unlockedStage: 3, completed: false}),
+    [`${prefix}${economy.SCRAP_ECONOMY_KEY}`]:JSON.stringify(emptySalvage),
     'neon-unlocked-v2': '7', 'neon-best-v2': '25000', 'neon-n7-unlocked-v1': '42'
   };
   temp = await fs.mkdtemp(path.join(os.tmpdir(), 'neon-cronium-rebrand-'));
@@ -298,16 +308,29 @@ async function gameBrandAndSave(page, fixture) {
     assert.equal((await page.locator('#flightWeaponName').innerText()).trim(), 'GEMELO');
     const running = await observer(page); assert.equal(running.raf.maximum, 1); assert.deepEqual(running.raf.errors, []);
     assert.ok(report.assetResponses.some(item => item.offline && item.fromServiceWorker && item.url.endsWith('/ship_modular_atlas_v1.webp')));
-    const offlinePulse = await page.evaluate(async () => {
-      const response=await fetch('assets/arcade_pulse_atlas_v2.webp');
-      const bytes=await response.arrayBuffer();
-      const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');
-      return {status:response.status,bytes:bytes.byteLength,sha256:digest,online:navigator.onLine};
-    });
-    assert.equal(offlinePulse.online,false);assert.equal(offlinePulse.status,200);
-    assert.equal(offlinePulse.sha256,sha256(await fs.readFile(path.join(root,'juego/assets/arcade_pulse_atlas_v2.webp'))));
-    assert.ok(report.assetResponses.some(item=>item.offline&&item.fromServiceWorker&&item.url.endsWith('/arcade_pulse_atlas_v2.webp')));
-    report.offlinePulse=offlinePulse;
+    assert.equal((await page.locator('#ammo').textContent()).trim(),'');
+    assert.equal(await page.locator('#ammo').getAttribute('aria-hidden'),'true');
+    assert.doesNotMatch(await page.locator('#fire').getAttribute('aria-label'),/\d|cargas|segundos/i);
+    await page.locator('#fire').click();
+    await waitAsync(page,()=>window.__REBRAND_OBSERVER__.draw['gaia_pulse_atlas_v3.webp']>=1);
+    report.offlineCombatAssets=[];
+    for(const file of ['gaia_pulse_atlas_v3.webp','hostile_ordnance_atlas_v1.webp','arcade_pulse_atlas_v2.webp']) {
+      const cached=await page.evaluate(async file=>{
+        const response=await fetch('assets/'+file),bytes=await response.arrayBuffer();
+        const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');
+        const image=new Image();image.src='assets/'+file;await image.decode();
+        return {file,status:response.status,bytes:bytes.byteLength,sha256:digest,online:navigator.onLine,
+          width:image.naturalWidth,height:image.naturalHeight};
+      },file);
+      const expected=await fs.readFile(path.join(root,'juego/assets',file));
+      assert.equal(cached.online,false);assert.equal(cached.status,200);
+      assert.equal(cached.sha256,sha256(expected));assert.equal(cached.bytes,expected.length);
+      assert.equal(cached.width,1024);assert.equal(cached.height,1024);
+      assert.ok(report.assetResponses.some(item=>item.offline&&item.fromServiceWorker&&item.url.endsWith('/'+file)),
+        file+' must come from its actual current service worker cache');
+      report.offlineCombatAssets.push(cached);
+    }
+    report.offlinePulse=report.offlineCombatAssets.find(item=>item.file==='gaia_pulse_atlas_v3.webp');
     await capture(page, 'current-offline-continuation-playing');
     // The existing HUD counts up to the restored score across render frames.
     // Wait for its known checkpoint target before measuring a paused HUD;
@@ -319,9 +342,15 @@ async function gameBrandAndSave(page, fixture) {
     const frozen = await hud(); await page.waitForTimeout(600); assert.deepEqual(await hud(), frozen);
     const afterLaunch = await storage(page);
     for (const [key, value] of Object.entries(fixture)) {
-      if (key.endsWith(model.CHRONOS_VOYAGE_KEY)) continue;
+      if (key.endsWith(model.CHRONOS_VOYAGE_KEY)||key===prefix+economy.SCRAP_ECONOMY_KEY) continue;
       assert.equal(afterLaunch[key], value, `Unrelated saved field changed while continuing: ${key}`);
     }
+    const salvage=economy.normalizeScrapRecord(JSON.parse(afterLaunch[prefix+economy.SCRAP_ECONOMY_KEY]));
+    assert.ok(salvage,'Offline launch retains a coherent salvage ledger');
+    for(const field of ['balance','earned','spent'])assert.equal(salvage[field],emptySalvage[field]);
+    assert.deepEqual(salvage.upgrades,emptySalvage.upgrades);assert.deepEqual(salvage.purchases,emptySalvage.purchases);
+    assert.ok(salvage.activeRun,'A resumed checkpoint establishes one coherent persistent salvage expedition');
+    report.offlineSalvage={before:emptySalvage,after:salvage,fixture:'Empty valid ledger; no rewards or purchases injected'};
     const voyage = JSON.parse(afterLaunch[prefix + model.CHRONOS_VOYAGE_KEY]);
     assert.equal(voyage.checkpoint.stageNumber, 3); assert.equal(voyage.checkpoint.collected, checkpoint.collected);
     assert.equal(voyage.entry.hull, 74); assert.equal(voyage.entry.score, 160);
