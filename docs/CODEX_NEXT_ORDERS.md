@@ -1,3 +1,17 @@
+## Continuación vigente ·18/10/2026 · CHAPTER_ONE_LIVING_JOURNEY
+
+Leer el [último cierre](production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md) y `production-tasks.json`, preservar HEAD/remoto posteriores. Runtime publicado **f634a46**, Site20. El primer nivel termina después deAtlas y el epílogo; Gaia continúa como nivel2. No volver a insertar un segundoAtlas enGaia ni confundir etapas1.1–1.10 con diez niveles completos.
+
+1. Revisar el capítulo jugando con el propietario: tamaño40%, llamas, CRONIUM, relato, ritmoC9 y ventanasAtlas. Comparar capturas naturales frente a fixtures; la aprobación artística no la concede Chromium.
+2. Integrar y verificar las poses8–15 de impacto/restosdelmisil o rehacerlas según revisión. Hoy sólo lanzamiento/vuelo del atlas propio funcionan; el impacto usa VFXGaia existentes. Repack de bordesAtlas dedicado sigue pendiente.
+3. Realizar audición humana y mezcla; Safari/iPhone físico con dosdedos, interrupción, orientación, memoria y FPS. Mantener abiertos esos límites y no reciclar cifras de equipos distintos como certificación actual.
+4. Equilibrar con jugadores:130 de integridad inicial(100+30), misiles6daño, Atlas96HP, reserva45por30chatarra y reposición6/unidad son decisiones de trabajo reversibles. Batería20fuera del jefe, ilimitada duranteAtlas, AUTOopt-inAjustes.
+5. Tras revisión, continuar **Gaiaorbital nivel2**, reddefensiva/CH-03 y conexioneshaciaVulkar. No ampliar100etapas antes de cerrar referencia. Preservar claves/recibos/migraciones, N7/Journeyhistóricos y el MotorV1 desactivado.
+
+Correo público aplazado por el propietario; no volver a solicitarlo. Web privadaautorizada, sin Netlifyproducción/AppStore/TestFlight. Órdenes siguientes conservadas como historial.
+
+---
+
 ## Cierre posterior vigente ·18/10/2026 · Site19
 
 Runtime **49e4e59e7f5301d2b44e929755b4895f5b830212**, limpio al empaquetar, publicado en la web privada. Cometasv2 elimina el refugio fijo del centro; avisos indican entrada real, sin retícula.643 casos finales y CI39114083326 success; Chromiumcometas2/2 y offline18→19 cinco de cinco. [Informe y adenda](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). Fuente Site49fa305aca7f804166d44f9f8b689df288149a08. Sin producción Netlify; motorV1=false. Las pruebas naturales anteriores conservan el SHAb2 y no se reetiquetan como49; sólo cambió el encuentro de cometas y su caché. Aceptación humana/artística/iPhone pendiente.

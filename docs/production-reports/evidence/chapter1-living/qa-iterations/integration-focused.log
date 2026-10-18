@@ -1,0 +1,61 @@
+✔ the empty transit composes one distant plate and a separate tiny, opaque Gaia (3.83453ms)
+✔ star and ambient-dust density are bounded at both effects qualities (2.903711ms)
+✔ middle stages remain sparse without optional density fields and old flights retain their scenery (1.279171ms)
+✔ paused snapshots freeze every parallax layer and the relay without acquiring a render clock (3.035625ms)
+✔ C9 preserves its illustrated download-failure fallback and active-only service label (1.027221ms)
+✔ Gaia grows below the measured HUD without changing its route coordinates or hitboxes (5.183324ms)
+✔ the independent C9 atlas shows four real route/service states from a shared centre pivot (1.95813ms)
+✔ the actual short C9 approach, immediate dock and undock select the four illustrated machine states (11.600832ms)
+✔ a failed space plate still renders the independent stars and planet (1.220595ms)
+✔ reduced effects removes the actual full-screen storm flash without changing storm state (2.73282ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ chapter one gates Atlas behind both recovered CRONIUM and the real route arrival (1367.787148ms)
+✔ the actual legacy pause freezes Atlas and resume continues without a duplicate loop (910.22858ms)
+✔ the final quota capture and route arrival keep the actual collision loop safe (681.443024ms)
+✔ Atlas deactivation completes before a single persisted victory and preserves N-7 saves (2123.795984ms)
+✔ death, a rewarded continuation and retry cannot bypass or prematurely save Atlas (1045.609214ms)
+✔ twenty rounds refill in played time outside Atlas while only the boss permits unlimited basic fire (937.363397ms)
+✔ Atlas receives the advertised ×1, ×2 and ×3 damage only when physical projectiles reach its core (2667.581813ms)
+✔ closed armor rejects physical fire and an exposed small core does not accept a wing hit (787.492742ms)
+✔ three persistent special missiles deal six damage and a failed debit cannot emit one (145.953935ms)
+✔ manual is the default and automatic fire is an explicit persistent setting outside the encounter (754.379827ms)
+✔ a manual off-axis shot keeps its own trajectory and misses Atlas instead of homing or applying instant damage (759.291676ms)
+✔ an interrupted chapter-one Atlas reward replays before unlocking Gaia and is idempotent after reload (1959.343253ms)
+✔ a corrupt equipment record with a durable backup can receive the Atlas reward without losing its original data (1652.05795ms)
+✔ leaving the encounter does not mutate saves and N-7 cannot start classic Atlas (668.329209ms)
+✔ Gaia remains playable without spawning a second copy of the chapter-one guardian (68.944699ms)
+✔ slow time shares the real Atlas and projectile clock before firing another aimed pattern (1635.233321ms)
+✔ enemy artwork follows the physical velocity, renders no aim guide and cannot emit another shot (3.633775ms)
+✔ Scout, Interceptor and Atlas have four actual frame crops without moving the physics pivot (6.441384ms)
+✔ raw scrap uses the copper token, not a misleading stellar or gold denomination (0.6115ms)
+✔ classic CRONIUM uses authored animated sprites without live per-orb blur/gradient passes (1.042613ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19218.544928

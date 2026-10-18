@@ -1,0 +1,18 @@
+PASS 01 · JavaScript principal, runtime y service worker tienen sintaxis válida
+PASS 02 · versión interna y caché conservan compatibilidad sin insignia técnica en portada
+PASS 03 · HTML conserva todas sus referencias locales
+PASS 04 · PWA precarga código, legales, sprites y fondo de Cronos
+PASS 05 · parallax V7 reemplaza la antigua rejilla
+PASS 06 · núcleo, tractor, phaser, pulso, motores y HUD tienen respuesta multietapa
+[NEON CRONIUM] build 7.2.0
+PASS 07 · campaña, guardados, balance y tamaño visual permanecen compatibles
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+PASS 08 · hitbox clásica al 40 % con ajuste interior conserva extremos visibles y variantes históricas
+PASS 09 · arranque de nivel conserva presupuestos y estados limpios
+PASS 10 · el cargador canónico ofrece veinte proyectiles, se agota y recupera uno sin contador ni disparos fantasma
+PASS 11 · daño consume la reserva antes del casco y mantiene respuesta de cámara/HUD
+PASS 12 · phaser y pulso V7 se ejecutan sin errores en el Canvas
+PASS 13 · simulación prolongada mantiene efectos y entidades bajo control
+
+RESULTADO V7: 13 pruebas aprobadas.

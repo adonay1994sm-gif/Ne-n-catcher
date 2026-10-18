@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "chapter1.intro.v1",
   "status": "IN_REVIEW",
-  "technicalAcceptance": "EXPORT_VALIDATED_GAMEPLAY_PENDING",
+  "technicalAcceptance": "GAMEPLAY_AND_VISUAL_CHROMIUM_PASSED",
   "artisticAcceptance": "PENDING_OWNER",
   "physicalAcceptance": "PENDING",
   "runtime": "assets/chapter1_intro_atlas_v1.webp",
@@ -177,5 +177,6 @@
       "limitation": "Available Canva image connector returns a preview and MEDIA reference, without an original-byte export endpoint. No video export or paid capability was purchased."
     },
     "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
-  }
+  },
+  "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
 }

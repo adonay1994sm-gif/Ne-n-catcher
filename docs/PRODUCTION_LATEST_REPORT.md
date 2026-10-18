@@ -1,11 +1,13 @@
-# Informe de producción vigente · NEON CRONIUM
+# DIAGNÓSTICO
 
-18/10/2026 · [DIAGNÓSTICO, informe y adenda final](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md).
+Se conservó HEAD2dcad16 y el clásico existente. Faltaba un argumento integrado yAtlas como cierre del primer viaje. Se reconstruyó ese cierre sin activar MotorV1 ni descartar campañas/guardados.
 
-Runtime limpio probado/publicado: **49e4e59e7f5301d2b44e929755b4895f5b830212**. [Site privado19](https://neon-catcher-pruebas.chictide18.chatgpt.site), fuente49fa305aca7f804166d44f9f8b689df288149a08; HTTP7/7. No producción Netlify.
+# INFORME DE PRODUCCIÓN — NEON CRONIUM
 
-Entrada única; cargador20 sin contador; chatarra recogible y C9 pagado; IA/Atlas más activos; pulsos ilustrados y cometasv2 que obligan a dejar el centro. **643 casos finales/CI39114083326 success**. Cometas actuales2/2 y offline18→19 cinco de cinco. La integración anteriorb2 conserva sus pruebas deAtlas,C9,dos dedos y la partida desde0→48ganados→pago24→salida guardada; sus sistemas no cambiaron y sus SHA no se falsifican como49.
+18/10/2026 · [Cierre completo, resultados y capturas](production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). **[Web privada20](https://neon-catcher-pruebas.chictide18.chatgpt.site)**, runtime limpio **f634a4635c4faacd33d19390706e0a97d1198662** y fuenteSitea5c735e2c034f8fe81b288d52b290292a712c362. Publicación succeeded; HTTP12/12 comprueba huellas remotas. CI39120714906 completed/success.
 
-Ocho tareas técnicamente comprobadas siguenIN_REVIEW por aceptación artística/dispositivo.333tareas de seguimiento incluyendo159entradas del catálogo; no es porcentaje comercial. El informe conserva ZIP/hashes, límites, fallos, correcciones, capturas y siguiente prioridad exacta. Rendimiento medido enb2:Gaia11,56→59,17callbacks/s en este host, no iPhone.
+Nivel1:26s de apertura ilustrada, personajesLira/Mira/Iria, diez etapas espaciales existentes, C9pagado y Atlas96HP blindaje/núcleoexpuesto, epílogo8s y llegadaGaia persistida. Dosnaves al40%, reserva30/45, tresmisiles y básico ilimitado sóloanteAtlas. Cincoassetsoriginales nuevos integrados; poses8–15 de impacto/restosdelmisil aúnpendientes.
 
-Cierres anteriores conservados: [integraciónb2 y adendas](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md), [pulido previo](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md).
+Certificación35411/11 fases y553/553 contenido; partida natural3544/4; visualfinalf6346/6 en390×844 y320×568. Partida natural final4/4 y actualización/offline7/7, sin atribuir pruebas históricas al nuevoSHA. Sietetareas actuales IN_REVIEW; arsenal futuro PENDING; registro346tareas/catálogo164, sin porcentaje comercial. Arte, audiciónhumana, balance ySafari/iPhone pendientes; no se declaran completos cienetapas o diezniveles.
+
+El informe enlazado es referencia vigente. [Cierre anterior, histórico](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). No producciónNetlify,main,PR3,MotorV1 ni tiendas.

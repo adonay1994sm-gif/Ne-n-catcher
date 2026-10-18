@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "chapter1.missile.v1",
   "status": "IN_REVIEW",
-  "technicalAcceptance": "EXPORT_VALIDATED_GAMEPLAY_PENDING",
+  "technicalAcceptance": "LAUNCH_FLIGHT_CHROMIUM_PASSED_IMPACT_POSES_PENDING",
   "artisticAcceptance": "PENDING_OWNER",
   "physicalAcceptance": "PENDING",
   "runtime": "assets/chapter1_missile_atlas_v1.webp",
@@ -587,5 +587,12 @@
     "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
     "canvaConcept": null,
     "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
+  },
+  "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+  "runtimeStateIntegration": {
+    "launch": "INTEGRATED",
+    "flight": "INTEGRATED",
+    "impact": "PENDING_OWN_ATLAS_POSES_USES_EXISTING_GAIA_VFX",
+    "aftermath": "PENDING_OWN_ATLAS_POSES"
   }
 }

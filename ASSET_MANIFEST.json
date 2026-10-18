@@ -911,11 +911,12 @@
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
-      "technicalAcceptance": "CHROMIUM_ASSET_DECODE_PASSED_GAMEPLAY_PENDING",
+      "technicalAcceptance": "IN_GAME_CHROMIUM_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
-      "version": 1
+      "version": 1,
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
     },
     {
       "id": "chapter1-portraits-v1",
@@ -937,11 +938,12 @@
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
-      "technicalAcceptance": "CHROMIUM_ASSET_DECODE_PASSED_GAMEPLAY_PENDING",
+      "technicalAcceptance": "IN_GAME_CHROMIUM_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
-      "version": 1
+      "version": 1,
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
     },
     {
       "id": "chapter1-missile-v1",
@@ -1004,11 +1006,13 @@
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
-      "technicalAcceptance": "CHROMIUM_ASSET_DECODE_PASSED_GAMEPLAY_PENDING",
+      "technicalAcceptance": "LAUNCH_FLIGHT_CHROMIUM_PASSED_IMPACT_POSES_PENDING",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
-      "version": 1
+      "version": 1,
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+      "integration": "Launch/flight frames0–7 integrated and verified; impact uses existing Gaia VFX. Dedicated impact/aftermath frames8–15 remain pending."
     },
     {
       "id": "chapter1-opening-score-v1",
@@ -1026,10 +1030,11 @@
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
-      "technicalAcceptance": "CHROMIUM_AUDIO_PLAYBACK_PASSED_GAMEPLAY_PENDING",
+      "technicalAcceptance": "IN_GAME_AAC_PLAYBACK_CHROMIUM_PASSED_HUMAN_LISTENING_PENDING",
       "artisticAcceptance": "PENDING_OWNER_LISTENING",
       "physicalAcceptance": "PENDING",
-      "origin": "Original offline synthesis and composition; no third-party samples or soundfont; see PROVENANCE.md"
+      "origin": "Original offline synthesis and composition; no third-party samples or soundfont; see PROVENANCE.md",
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
     },
     {
       "id": "chapter1-voyage-score-v1",
@@ -1047,10 +1052,11 @@
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
-      "technicalAcceptance": "CHROMIUM_AUDIO_PLAYBACK_PASSED_GAMEPLAY_PENDING",
+      "technicalAcceptance": "IN_GAME_AAC_PLAYBACK_CHROMIUM_PASSED_HUMAN_LISTENING_PENDING",
       "artisticAcceptance": "PENDING_OWNER_LISTENING",
       "physicalAcceptance": "PENDING",
-      "origin": "Original offline synthesis and composition; no third-party samples or soundfont; see PROVENANCE.md"
+      "origin": "Original offline synthesis and composition; no third-party samples or soundfont; see PROVENANCE.md",
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
     }
   ],
   "project": "NEON CRONIUM"

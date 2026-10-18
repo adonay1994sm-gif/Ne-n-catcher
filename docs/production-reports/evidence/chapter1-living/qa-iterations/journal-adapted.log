@@ -1,0 +1,43 @@
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ actual Chronos completion resumes its neon-stars-v2 interrupted write before loading route/menu (820.613325ms)
+✔ actual Chronos completion resumes its neon-level-best-v2 interrupted write before loading route/menu (521.668013ms)
+✔ actual Chronos completion resumes its neon-best-v2 interrupted write before loading route/menu (432.221838ms)
+✔ actual Chronos completion resumes its neonCatcher.chronosVoyage.v2 interrupted write before loading route/menu (418.835365ms)
+✔ actual Chronos completion resumes its neon-unlocked-v2 interrupted write before loading route/menu (395.49923ms)
+✔ actual Chronos completion resumes its receipt interrupted write before loading route/menu (380.941539ms)
+✔ blocked startup recovery warns and forbids checkpoint writes over its pending durable intent (462.77397ms)
+✔ bootstrap with legacy 100 and current 9000 never rewrites an unreadable current best without a journal (62.031017ms)
+✔ bootstrap migration cannot lower unreadable current 9000 before recovering a pending journal with legacy 100 (446.692042ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4494.289872

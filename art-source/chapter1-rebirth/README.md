@@ -1,3 +1,5 @@
+> Integration update18/10/2026: the four opening states, portraits and missile launch/flight are now in the actual game, verified by natural chapter4/4 and visual scenes6/6 at `f634a46`. [Report and screenshots](../../docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). Missile impact/aftermath poses8–15 remain unconnected; existing Gaia VFX handle impacts. Owner art and physical-device review remain pending. The original export handoff below is historical.
+
 # Chapter 1 Rebirth · illustrated opening, characters and missile
 
 Generated 2026-10-18 for **NEON CRONIUM**. Status: **IN_REVIEW**. Export validation does not certify game integration, artistic acceptance, Safari or a physical iPhone.

@@ -1,3 +1,5 @@
+> Integración18/10/2026: ambas exportaciones están en `assets/` y el bus musical del juego. ReproducciónAAC nativa con gesto verificada en ambos viewports Chromium del SHA`f634a46`, con pausa/volumen/fallback cubiertos por pruebas. [Informe y evidencia](../../../docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). Audiciónhumana, mezcla final ySafari/iPhone siguen pendientes. Las recomendaciones originales de entrega siguientes se conservan como historial.
+
 # Capítulo 1 · música original v1
 
 Producción: 18/10/2026, por Codex para NEON CRONIUM. **IN_REVIEW**: archivos reales, composición y decodificación verificadas; aceptación musical del propietario, mezcla dentro del juego y certificación física pendientes. No se ha realizado una audición humana en esta sesión.

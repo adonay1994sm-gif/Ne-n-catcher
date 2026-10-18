@@ -17,7 +17,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-02 / P1 | Revisión estética del primer viaje antes de multiplicar contenido | IN_PROGRESS | NOT_APPLICABLE | CHANGES_REQUESTED | PENDING |
 | P2-01 / P2 | Consolidar dos configuraciones viables y economía breve segura | PENDING | PENDING | PENDING | PENDING |
 | PM-01 / M | Decisión técnica reservada sobre Motor V1 | BLOCKED | PENDING_OWNER | NOT_APPLICABLE | PENDING |
-| P3-01 / P3 | Completar diez etapas conectadas del capítulo Chronos-Gaia | IN_PROGRESS | PARTIAL_TEN_TRANSIT_STAGES | PENDING | PENDING |
+| P3-01 / P3 | Completar diez etapas conectadas del capítulo Chronos-Gaia | IN_REVIEW | TEN_STAGES_ATLAS_STORY_PASSED_CHROMIUM_OWNER_REVIEW_PENDING | PENDING | PENDING |
 | P4-01 / P4 | Expandir la campaña espacial a diez capítulos de diez etapas | PENDING | PENDING | PENDING | PENDING |
 | P5-01 / P5 | Certificar calidad móvil y preparar distribución autorizada | PENDING | PENDING | PENDING | PENDING |
 | P1-SHIP-01 / P1 | Nave ensamblada, dos configuraciones y hangar dentro del clásico | IN_REVIEW | PASSED | PENDING_OWNER | PENDING |
@@ -69,6 +69,14 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-ATLAS-TACTICS-03 / P1 | Integrar Atlas de dos fases con patrones observados y 36 HP frente al cargador nuevo | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
 | P3-COMET-SHOWER-01 / P3 | Convertir el gran vacío en cruces rápidos y lluvia de cometas transitables | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
 | P2-HOSTILE-ART-01 / P2 | Integrar proyectiles hostiles animados y fichas físicas de chatarra originales | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P1-CH1-STORY-01 / P1 | Conectar sabotaje, registro, C9 y autorización Gaia mediante historia contextual | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
+| P1-CH1-CINEMATIC-01 / P1 | Integrar planos ilustrados, retratos y misil animado del primer capítulo | IN_REVIEW | INTRO_PORTRAITS_MISSILE_LAUNCH_FLIGHT_INTEGRATED_IMPACT_POSES_PENDING | PENDING_OWNER | PENDING |
+| P1-CH1-SHIP-01 / P1 | Reducir naves clásicas al 40 % e integrar reserva de casco sin temporizador | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
+| P2-CH1-MISSILE-01 / P2 | Persistir tres misiles, refuerzo de casco y reposición pagada en C9 | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
+| P1-CH1-ATLAS-01 / P1 | Cerrar el primer nivel con Atlas blindado, núcleo expuesto y verificación Iria | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
+| P1-CH1-QA-01 / P1 | Verificar el bucle completo del primer capítulo en una compilación recuperable | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
+| P1-CH1-AUDIO-01 / P1 | Integrar música original de apertura y viaje con controles de reproducción | IN_REVIEW | CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING | PENDING_OWNER | PENDING |
+| P4-ARSENAL-10-15-01 / P4 | Diseñar y producir un arsenal de 10–15 armas con identidad a lo largo de la campaña | PENDING | NOT_IMPLEMENTED | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -83,36 +91,36 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 8/81 (9.9%) | 35 | 1 | 1 | 36 |
-| Campaña clásica | 5/48 (10.4%) | 3 | 2 | 0 | 38 |
+| Jugabilidad | 8/87 (9.2%) | 36 | 0 | 1 | 42 |
+| Campaña clásica | 5/56 (8.9%) | 4 | 1 | 0 | 46 |
 | Campaña N-7 | 4/42 (9.5%) | 35 | 1 | 0 | 2 |
 | Enemigos | 5/81 (6.2%) | 57 | 0 | 0 | 19 |
-| Jefes | 0/17 (0.0%) | 13 | 0 | 0 | 4 |
-| Assets | 2/187 (1.1%) | 123 | 3 | 1 | 58 |
-| Animaciones | 5/151 (3.3%) | 108 | 1 | 0 | 37 |
-| Narrativa | 0/19 (0.0%) | 17 | 1 | 0 | 1 |
-| Audio | 0/15 (0.0%) | 12 | 0 | 1 | 2 |
-| Interfaz | 5/36 (13.9%) | 9 | 1 | 0 | 21 |
-| Rendimiento | 1/14 (7.1%) | 11 | 1 | 0 | 1 |
-| QA | 21/95 (22.1%) | 19 | 3 | 5 | 47 |
+| Jefes | 0/18 (0.0%) | 13 | 0 | 0 | 5 |
+| Assets | 2/194 (1.0%) | 124 | 3 | 1 | 64 |
+| Animaciones | 5/155 (3.2%) | 109 | 1 | 0 | 40 |
+| Narrativa | 0/23 (0.0%) | 17 | 0 | 0 | 6 |
+| Audio | 0/16 (0.0%) | 12 | 0 | 1 | 3 |
+| Interfaz | 5/40 (12.5%) | 9 | 1 | 0 | 25 |
+| Rendimiento | 1/16 (6.3%) | 11 | 1 | 0 | 3 |
+| QA | 21/103 (20.4%) | 20 | 3 | 5 | 54 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 20/31 (64.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 9 · DONE: 20 |
-| 04 · Jugabilidad procedural | 1/48 (2.1%) | PENDING: 18 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 27 · DONE: 1 |
-| 05 · Producción visual y 150 assets | 5/183 (2.7%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 55 · DONE: 5 |
-| 06 · Diez jefes | 0/12 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 2 · DONE: 0 |
-| 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
-| 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
+| 03 · Prueba integrada y cierre técnico | 20/32 (62.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 10 · DONE: 20 |
+| 04 · Jugabilidad procedural | 1/51 (2.0%) | PENDING: 19 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 30 · DONE: 1 |
+| 05 · Producción visual y 150 assets | 5/189 (2.6%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 61 · DONE: 5 |
+| 06 · Diez jefes | 0/13 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 3 · DONE: 0 |
+| 07 · Narrativa completa | 0/15 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
+| 08 · Audio y experiencia sensorial | 0/15 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 2 · DONE: 0 |
 | 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 14 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
 | 10 · Preparación para lanzamiento | 0/15 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0 |
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 41; PLANNED: 116; IMPLEMENTED_CODE: 2**; 159 identificadores. Cierre de los doce requisitos: **0/159 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 46; PLANNED: 116; IMPLEMENTED_CODE: 2**; 164 identificadores. Cierre de los doce requisitos: **0/164 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 

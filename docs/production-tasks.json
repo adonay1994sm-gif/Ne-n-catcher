@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T10:25:39.852247+00:00",
+  "updatedAt": "2026-10-18",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -321,7 +321,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 159,
+    "expectedCount": 164,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -982,9 +982,130 @@
           "artistic": "PENDING_OWNER",
           "physical": "PENDING"
         }
+      },
+      "chapter1-intro-v1": {
+        "status": "IN_REVIEW",
+        "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+        "files": [
+          "ASSET_PRODUCTION_150.json",
+          "assets/chapter1_intro_atlas_v1.webp",
+          "art-source/chapter1-rebirth/intro/chapter1-intro-generated-master.png"
+        ],
+        "tests": [
+          "Chromium visualf6346/6 y GitHub Actions39120714906success; audición humana/dispositivo pendientes."
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+          "docs/production-reports/evidence/chapter1-living/site-http/results.json"
+        ],
+        "openErrors": [
+          "Aceptación artística y Safari/iPhone físico pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "IN_GAME_CHROMIUM_PASSED",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
+      },
+      "chapter1-portraits-v1": {
+        "status": "IN_REVIEW",
+        "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+        "files": [
+          "ASSET_PRODUCTION_150.json",
+          "assets/chapter1_portraits_v1.webp",
+          "art-source/chapter1-rebirth/portraits/chapter1-portraits-generated-master.png"
+        ],
+        "tests": [
+          "Chromium visualf6346/6 y GitHub Actions39120714906success; audición humana/dispositivo pendientes."
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+          "docs/production-reports/evidence/chapter1-living/site-http/results.json"
+        ],
+        "openErrors": [
+          "Aceptación artística y Safari/iPhone físico pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "IN_GAME_CHROMIUM_PASSED",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
+      },
+      "chapter1-missile-v1": {
+        "status": "IN_REVIEW",
+        "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+        "files": [
+          "ASSET_PRODUCTION_150.json",
+          "assets/chapter1_missile_atlas_v1.webp",
+          "art-source/chapter1-rebirth/missile/chapter1-missile-generated-master.png"
+        ],
+        "tests": [
+          "Chromium visualf6346/6 y GitHub Actions39120714906success; audición humana/dispositivo pendientes."
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+          "docs/production-reports/evidence/chapter1-living/site-http/results.json"
+        ],
+        "openErrors": [
+          "Aceptación artística y Safari/iPhone físico pendientes.",
+          "Impacto/restosdelatlas8–15 pendientes; lanzamiento/vuelo sí integrados."
+        ],
+        "acceptanceStatus": {
+          "technical": "LAUNCH_FLIGHT_CHROMIUM_PASSED_IMPACT_POSES_PENDING",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
+      },
+      "chapter1-opening-score-v1": {
+        "status": "IN_REVIEW",
+        "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+        "files": [
+          "ASSET_PRODUCTION_150.json",
+          "assets/chapter1_opening_score_v1.m4a",
+          "art-source/audio/chapter1-score/chapter1_opening_score_v1.wav"
+        ],
+        "tests": [
+          "Chromium visualf6346/6 y GitHub Actions39120714906success; audición humana/dispositivo pendientes."
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+          "docs/production-reports/evidence/chapter1-living/site-http/results.json"
+        ],
+        "openErrors": [
+          "Aceptación artística y Safari/iPhone físico pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "IN_GAME_AAC_PLAYBACK_CHROMIUM_PASSED_HUMAN_LISTENING_PENDING",
+          "artistic": "PENDING_OWNER_LISTENING",
+          "physical": "PENDING"
+        }
+      },
+      "chapter1-voyage-score-v1": {
+        "status": "IN_REVIEW",
+        "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+        "files": [
+          "ASSET_PRODUCTION_150.json",
+          "assets/chapter1_voyage_score_v1.m4a",
+          "art-source/audio/chapter1-score/chapter1_voyage_score_v1.wav"
+        ],
+        "tests": [
+          "Chromium visualf6346/6 y GitHub Actions39120714906success; audición humana/dispositivo pendientes."
+        ],
+        "evidence": [
+          "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+          "docs/production-reports/evidence/chapter1-living/site-http/results.json"
+        ],
+        "openErrors": [
+          "Aceptación artística y Safari/iPhone físico pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "IN_GAME_AAC_PLAYBACK_CHROMIUM_PASSED_HUMAN_LISTENING_PENDING",
+          "artistic": "PENDING_OWNER_LISTENING",
+          "physical": "PENDING"
+        }
       }
     },
-    "note": "Se genera una tarea por sequence estable del catálogo (157 entradas, incluidos los atlas C9 y arcade-pulse-v2). READY/IN_REVIEW/IMPLEMENTED_CODE exige verificación técnica y aceptación artística separadas; no equivale a DONE.",
+    "note": "Una tarea por sequence estable del catálogo:164 entradas. Los cinco recursos añadidos del capítulo1 están en revisión; las16poses del misil no equivalen a16estados runtime integrados. Ninguna exportación o prueba aislada concede DONE.",
     "scopeHistory": [
       {
         "date": "2026-10-18",
@@ -992,6 +1113,19 @@
         "expectedCount": 157,
         "addedId": "shared-arcade-pulse-v2",
         "reason": "Atlas de proyectiles e impactos real con maestro y exportación presentes; IN_REVIEW, no entrega certificada."
+      },
+      {
+        "date": "2026-10-18",
+        "previousExpectedCount": 159,
+        "expectedCount": 164,
+        "addedIds": [
+          "chapter1-intro-v1",
+          "chapter1-portraits-v1",
+          "chapter1-missile-v1",
+          "chapter1-opening-score-v1",
+          "chapter1-voyage-score-v1"
+        ],
+        "reason": "Tres atlas y dos pistas originales con maestros, exportaciones e integración. Estado IN_REVIEW; se amplía el catálogo con IDs estables, sin borrar historial ni declarar terminado el catálogo."
       }
     ]
   },
@@ -4891,16 +5025,18 @@
         "src/game/03-ui-game-flow.js",
         "src/game/06-world-rendering.js"
       ],
-      "commit": "9946e29e009fe7dc5a89109bada3b8c88a490c8e",
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
       "tests": [
-        "Diez etapas de tránsito integradas; Chromium natural 4/4 y simulación de contratos25/25. El cierre de todo el capítulo sigue separado."
+        "Diez etapas de tránsito integradas; Chromium natural 4/4 y simulación de contratos25/25. El cierre de todo el capítulo sigue separado.",
+        "Partida naturalfinalf634a46:4/4 con diez etapas, C9, Atlas y llegada persistida; no certifica arte/dispositivo."
       ],
       "evidence": [
         "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
-        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json"
+        "docs/production-reports/evidence/chronos-voyage/browser-02/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json"
       ],
       "openErrors": [
-        "Diez etapas de tránsito de la orden actual implementadas; aceptación artística/física y cierre fronterizo del capítulo completo pendientes."
+        "Aceptación artística, balance humano y dispositivo físico pendientes."
       ],
       "acceptance": [
         "Diez etapas con viaje, arte, encuentros, objetivo, frontera, recompensa y guardado integrados"
@@ -4909,14 +5045,14 @@
       "block": "04",
       "canonicalPhase": "P3",
       "name": "Completar diez etapas conectadas del capítulo Chronos-Gaia",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "Jugabilidad",
         "Campaña clásica",
         "Narrativa"
       ],
       "acceptanceStatus": {
-        "technical": "PARTIAL_TEN_TRANSIT_STAGES",
+        "technical": "TEN_STAGES_ATLAS_STORY_PASSED_CHROMIUM_OWNER_REVIEW_PENDING",
         "artistic": "PENDING",
         "physical": "PENDING"
       },
@@ -5104,7 +5240,11 @@
             "scope": "Atlas pasa a ser el cierre orbital del primer nivel tras 360 s y 36 CRONIUM, no un encuentro duplicado del segundo territorio."
           }
         ]
-      }
+      },
+      "supersededBy": [
+        "P1-CH1-ATLAS-01"
+      ],
+      "supersessionScope": "Se reutiliza el arte y animador. La ubicaciónGaia/nivel2 se sustituye por cierre del nivel1, sin duplicar jefe."
     },
     {
       "id": "P0-DESIGN-100",
@@ -5643,7 +5783,11 @@
             "scope": "El escudo temporizado clásico se sustituye por reserva de casco consumida por daño; conservar sin cambios accidentales las variantes antiguas."
           }
         ]
-      }
+      },
+      "supersededBy": [
+        "P1-CH1-SHIP-01"
+      ],
+      "supersessionScope": "El escudo clásico temporizado queda sustituido por reserva de casco; arte/QA anteriores se conservan como historial y variantes históricas no se migran."
     },
     {
       "id": "P1-VULKAR-01",
@@ -7677,7 +7821,11 @@
             "scope": "La reserva 20/2 s permanece fuera del jefe; sólo el básico de Atlas es ilimitado con cadencia, sin tocar la reserva finita."
           }
         ]
-      }
+      },
+      "supersededBy": [
+        "P2-CH1-MISSILE-01"
+      ],
+      "supersessionScope": "Sustitución parcial:20cargas/recarga fuera deAtlas se conservan; duranteAtlas básico ilimitado y misiles persistidos separados."
     },
     {
       "id": "P2-SALVAGE-01",
@@ -7920,7 +8068,11 @@
             "scope": "La revisión 36 HP se sustituye por v5/96 HP y un núcleo 42vulnerable sólo en exposición; requiere nueva verificación de juego real."
           }
         ]
-      }
+      },
+      "supersededBy": [
+        "P1-CH1-ATLAS-01"
+      ],
+      "supersessionScope": "36HP/v4 sustituido por96HP/v5 con blindaje y núcleo vulnerable. Se conserva la evidencia anterior bajo su SHA."
     },
     {
       "id": "P3-COMET-SHOWER-01",
@@ -8074,16 +8226,30 @@
         "tests/chronos-chapter.test.mjs",
         "docs/design/CHAPTER_01_CHRONOS_GAIA.md"
       ],
-      "commit": null,
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
       "tests": [
-        "node --test tests/chronos-chapter.test.mjs: 17/17, salida 0, pruebas puras del controlador; no acredita integración ni partida."
+        "node --test tests/chronos-chapter.test.mjs: 17/17, salida 0, pruebas puras del controlador; no acredita integración ni partida.",
+        "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
+        "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
+        "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "docs/production-reports/evidence/chapter1-living/certification-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
+        "docs/production-reports/evidence/chapter1-living/site-http/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
+      ],
       "openErrors": [
-        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+        "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios."
       ],
       "acceptanceStatus": {
-        "technical": "PURE_MODEL_17_CASES_PASSED_INTEGRATION_PENDING",
+        "technical": "CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8094,8 +8260,8 @@
         "La reentrada conserva checkpoints, no reproduce todas las transmisiones pasadas y no mantiene señales futuras de un intento anterior.",
         "El epílogo de 8 segundos sólo empieza tras Atlas resuelto; la integración verifica pausa, desbloqueo y continuidad mediante controles reales."
       ],
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED"
     },
     {
       "id": "P1-CH1-CINEMATIC-01",
@@ -8130,19 +8296,33 @@
         "ASSET_PRODUCTION_150.json",
         "sw.js"
       ],
-      "commit": null,
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
       "tests": [
-        "node art-source/chapter1-rebirth/validate-browser.cjs: 7/7, salida 0 segúnJSON conservado; decodificación/dibujo de recursos, no gameplay."
+        "node art-source/chapter1-rebirth/validate-browser.cjs: 7/7, salida 0 segúnJSON conservado; decodificación/dibujo de recursos, no gameplay.",
+        "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
+        "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
+        "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
       ],
       "evidence": [
         "art-source/chapter1-rebirth/chromium-asset-qa.json",
-        "art-source/chapter1-rebirth/asset-summary.json"
+        "art-source/chapter1-rebirth/asset-summary.json",
+        "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "docs/production-reports/evidence/chapter1-living/certification-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
+        "docs/production-reports/evidence/chapter1-living/site-http/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
       ],
       "openErrors": [
-        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+        "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios.",
+        "Misil: poses propias de impacto/restos8–15 producidas, pendientes de conectar; actualmente reutiliza VFXGaia. Canva sólo suministra concepto, sin exportación de vídeo disponible."
       ],
       "acceptanceStatus": {
-        "technical": "ASSET_EXPORT_CHROMIUM_7_CASES_PASSED_GAMEPLAY_PENDING",
+        "technical": "INTRO_PORTRAITS_MISSILE_LAUNCH_FLIGHT_INTEGRATED_IMPACT_POSES_PENDING",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8153,8 +8333,8 @@
         "La presentación revela el paisaje real después del incidente; es legible con pilotaje, orientación vertical/horizontal y reducción de efectos.",
         "Loader, inventario y caché contienen los recursos utilizados; capturas del juego acreditan integración aparte del QA de exportación."
       ],
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED",
       "externalDependencies": [
         {
           "capability": "Canva original image / video export",
@@ -8171,7 +8351,7 @@
       "canonicalPhase": "P1",
       "name": "Reducir naves clásicas al 40 % e integrar reserva de casco sin temporizador",
       "priority": "HIGH",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "Jugabilidad",
         "Campaña clásica",
@@ -8193,14 +8373,29 @@
         "tests/hull-reinforcement.test.mjs",
         "tests/ship-scale-energy.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "tests": [
+        "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
+        "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
+        "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
+      ],
+      "evidence": [
+        "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "docs/production-reports/evidence/chapter1-living/certification-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
+        "docs/production-reports/evidence/chapter1-living/site-http/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
+      ],
       "openErrors": [
-        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+        "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8211,8 +8406,8 @@
         "Los guardados y derechos antiguos de shield-cell se conservan mediante migración explícita; pausa, entrada de etapa, daño, muerte y reaparición no rellenan reservas por error.",
         "Chromium y pruebas humanas revisan visibilidad, control a dos dedos y lectura de CRONIUM brillante; la certificación física permanece separada."
       ],
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED"
     },
     {
       "id": "P2-CH1-MISSILE-01",
@@ -8221,7 +8416,7 @@
       "canonicalPhase": "P2",
       "name": "Persistir tres misiles, refuerzo de casco y reposición pagada en C9",
       "priority": "HIGH",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "Jugabilidad",
         "Campaña clásica",
@@ -8244,14 +8439,29 @@
         "tests/unified-flight-legacy.test.mjs",
         "tests/guardian-atlas-legacy.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "tests": [
+        "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
+        "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
+        "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
+      ],
+      "evidence": [
+        "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "docs/production-reports/evidence/chapter1-living/certification-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
+        "docs/production-reports/evidence/chapter1-living/site-http/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
+      ],
       "openErrors": [
-        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+        "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8262,8 +8472,8 @@
         "El refuerzo de casco cuesta 30 y sustituye el escudo de tiempo; preparación 24 y refrigeración 45 conservan sus requisitos, con reparación de emergencia gratuita.",
         "Fallos antes/después de la escritura, doble clic, secuencias antiguas y recarga no generan saldos negativos, inventario gratis o cargos duplicados."
       ],
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED"
     },
     {
       "id": "P1-CH1-ATLAS-01",
@@ -8272,7 +8482,7 @@
       "canonicalPhase": "P1",
       "name": "Cerrar el primer nivel con Atlas blindado, núcleo expuesto y verificación Iria",
       "priority": "HIGH",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "Jefes",
         "Jugabilidad",
@@ -8296,14 +8506,30 @@
         "tests/guardian-atlas-legacy.test.mjs",
         "scripts/guardian-atlas-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "tests": [
+        "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
+        "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
+        "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
+      ],
+      "evidence": [
+        "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "docs/production-reports/evidence/chapter1-living/certification-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
+        "docs/production-reports/evidence/chapter1-living/site-http/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
+      ],
       "openErrors": [
-        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+        "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios.",
+        "Bordes del atlas anterior: sampling corregido mediante inset; repack artístico dedicado y revisión física aún pendientes."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8315,8 +8541,8 @@
         "Desactivación, epílogo 8 segundos, Gemelo, estrellas del nivel 1, acceso al nivel 2 y chatarra física 600 se producen con sus condiciones una sola vez.",
         "Se comprueban partida real, derrota, continuación, reintento, pausa, interrupción del journal y conservación de N-7; el balance humano sigue siendo una revisión independiente."
       ],
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED"
     },
     {
       "id": "P1-CH1-QA-01",
@@ -8325,7 +8551,7 @@
       "canonicalPhase": "P1",
       "name": "Verificar el bucle completo del primer capítulo en una compilación recuperable",
       "priority": "HIGH",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "areas": [
         "QA",
         "Rendimiento",
@@ -8350,14 +8576,29 @@
         "tests/guardian-atlas-legacy.test.mjs",
         "tests/chronos-chapter.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "tests": [
+        "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
+        "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
+        "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
+      ],
+      "evidence": [
+        "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "docs/production-reports/evidence/chapter1-living/certification-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
+        "docs/production-reports/evidence/chapter1-living/site-http/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
+      ],
       "openErrors": [
-        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado."
+        "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8368,8 +8609,8 @@
         "Comprobar actualización de caché/offline, errores de recursos, orientación, tiempos de carga y memoria real o estimada con límites explícitos.",
         "Publicar sólo una preview privada autorizada con revisión comprobada y CI completa; no confundir Chromium, fuente publicada y dispositivo físico."
       ],
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED"
     },
     {
       "id": "P1-CH1-AUDIO-01",
@@ -8401,20 +8642,33 @@
         "src/game/02-storage-audio.js",
         "tests/audio-lifecycle.test.mjs"
       ],
-      "commit": null,
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
       "tests": [
-        "node art-source/audio/chapter1-score/check-audio-browser.cjs: 4/4, salida 0 segúnJSON conservado; AAC/WebAudio con gesto, no audición humana ni integración final."
+        "node art-source/audio/chapter1-score/check-audio-browser.cjs: 4/4, salida 0 segúnJSON conservado; AAC/WebAudio con gesto, no audición humana ni integración final.",
+        "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
+        "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
+        "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
+        "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
       ],
       "evidence": [
         "art-source/audio/chapter1-score/browser-audio-results.json",
-        "art-source/audio/chapter1-score/inventory.json"
+        "art-source/audio/chapter1-score/inventory.json",
+        "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "docs/production-reports/evidence/chapter1-living/certification-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-3547147/results.json",
+        "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
+        "docs/production-reports/evidence/chapter1-living/site-http/results.json",
+        "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
       ],
       "openErrors": [
-        "Integración y QA conjunta del lote pendientes; aceptación del propietario y dispositivo físico se evalúan por separado.",
-        "Audición humana, mezcla final y Safari/iPhone físico pendientes; el recurso decodificado no demuestra aceptación musical."
+        "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios.",
+        "Audición humana y mezcla final no realizadas; reproducción nativa AAC verificada en juego Chromium, no garantía de satisfacción musical."
       ],
       "acceptanceStatus": {
-        "technical": "AUDIO_ARTIFACT_CHROMIUM_4_CASES_PASSED_GAMEPLAY_PENDING",
+        "technical": "CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8425,8 +8679,8 @@
         "La mezcla con radio, armas y amenazas se escucha y revisa por personas; señal no nula y LUFS no sustituyen una audición o aceptación musical.",
         "Safari/iPhone físico y el comportamiento del bucle se evalúan aparte; no se atribuyen capacidades de vídeo/exportación de Canva no disponibles."
       ],
-      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
-      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+      "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED"
     },
     {
       "id": "P4-ARSENAL-10-15-01",
@@ -8512,26 +8766,28 @@
       "scope": "Dirección aprobada para implementación; cifras, nombres, textos y presentación son decisiones de trabajo. No equivale a aceptación estética, cien etapas ni certificación física."
     },
     "latestClarification": {
-      "date": "2026-10-17",
-      "report": "docs/production-reports/CHRONOS_GAIA_10_STAGES_2026-10-17.md",
-      "scope": "Implementar diez etapas del trayecto Chronos–Gaia que representen el espacio vacío y el viaje. Orden reanuda este alcance; conserva los otros nueve territorios, N-7 y motor legacy."
+      "date": "2026-10-18",
+      "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+      "scope": "Nivel1 incluye diez tramos espaciales y termina tras Atlas y verificación Iria; Gaia posterior es nivel2, nunca aterrizaje.",
+      "decisions": [
+        "Naves clásicas al40% de ancho/alto anteriores; colisiones específicas probadas.",
+        "Reserva de casco30 sin temporizador, capacidad45 por30chatarra; no burbuja temporizada.",
+        "Tres misiles físicos persistidos; reposición6porunidad enC9; básico ilimitado sólo anteAtlas.",
+        "Atlas96HP, blindaje cerrado y núcleo expuesto; tres intensidades de ataque;600chatarra física.",
+        "Arco Lira→Mira→Atlas→Iria con prueba del sabotaje, apertura26s y epílogo8s."
+      ]
     },
     "latestVerification": {
       "date": "2026-10-18",
-      "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
-      "commit": "d39ed440740b094f9dddb588c540c537f4499215",
-      "functionalCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-      "naturalPlayedCommit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
-      "integratedCH02CombatPlayedCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
-      "workflowRun": 39105045562,
+      "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "certifiedCommit": "35471470cb94a2ba1ec37e230c95646b189a06fe",
+      "workflowRun": 39120714906,
       "conclusion": "success",
-      "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
-      "scope": "Paquete limpio d39: certificate-03 11/11, contenido 329/329, preview 23/23, reentrada Chromium 2/2, actualización/offline 5/5 y N-7 una sesión/seis pasos. HUD reproducido rojo sobre 332 y verde sobre d39. Gaia-05 combate/destrucción 4/4 se ejecutó sobre 332; Gaia-06 sobre d39 acabó por timeout del piloto y no valida otra muerte. IA/arte equivalentes en 114 archivos runtime. Partida completa Chronos 4/4 sobre 612a. Aceptación artística, balance humano e iPhone pendientes.",
-      "privateSiteVersion": 16,
+      "privateSiteVersion": 20,
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
-      "privateSiteSourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
-      "privateSiteVerifiedAt": "2026-10-18T06:48:49Z",
-      "scopeStatus": "VERIFIED_WITH_EXPLICIT_PRIOR_COMBAT_PROVENANCE_AND_FAILED_REPEAT_RETAINED"
+      "privateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
+      "scope": "Primer capítulo integrado: certificación11/11 a354, naturalfinalf6344/4, visual6/6, actualización/offline7/7, Site20HTTP12/12 y CI39120714906success. Artística/humana/física pendientes."
     },
     "productName": "NEON CRONIUM",
     "brandChange": {
@@ -8670,6 +8926,14 @@
         "batch": "MAIN_SALVAGE_COMBAT",
         "priority": "Un único avance principal con portada pulida; veinte disparos recargables sin contador; enemigos que interceptan sin revelar apuntado; chatarra física y mejoras pagadas C9; Atlas36HP y cometas rápidos en el vacío.",
         "scope": "Integración del clásico actual y sus diez etapas Chronos→Gaia; variantes históricas recuperables sin exposición en el menú, aceptación estética y dispositivos pendientes."
+      },
+      {
+        "date": "2026-10-18",
+        "status": "IMPLEMENTED_AWAITING_REVIEW",
+        "reference": "docs/PRODUCT_VISION.md",
+        "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "batch": "CHAPTER_ONE_LIVING_JOURNEY",
+        "scope": "Usuario autoriza implementar historia viva, arte integrado, naves40%, reserva30, misiles y Atlas como cierre del nivel1. Propietario revisa antes de expandir."
       }
     ],
     "verificationHistory": [
@@ -8714,6 +8978,18 @@
           "status": "UNDER_REPAIR"
         },
         "scopeStatus": "GAMEPLAY_VERIFIED_LATEST_CI_UNDER_REPAIR"
+      },
+      {
+        "date": "2026-10-18",
+        "report": "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
+        "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+        "certifiedCommit": "35471470cb94a2ba1ec37e230c95646b189a06fe",
+        "workflowRun": 39120714906,
+        "conclusion": "success",
+        "privateSiteVersion": 20,
+        "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+        "privateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
+        "scope": "Primer capítulo integrado: certificación11/11 a354, naturalfinalf6344/4, visual6/6, actualización/offline7/7, Site20HTTP12/12 y CI39120714906success. Artística/humana/física pendientes."
       }
     ],
     "decisionHistory": [

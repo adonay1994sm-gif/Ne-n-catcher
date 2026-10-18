@@ -1,0 +1,18 @@
+{
+  "applicationCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+  "revision": "1d3776f68358c21fb98c39b99842d0e170f715a8a92f0b82f5b817fb4ba2e83e",
+  "dirty": false,
+  "protectedFiles": 146,
+  "changedOutsideAllowedScope": [],
+  "hostingUnchanged": true,
+  "gameSha256": "083fb72aecee43ea7452c3b5ce9d56facaf97697ea0b2578a29787e1fa855b60",
+  "allowedRootChanges": [
+    "README.md",
+    "dist/build-info.json",
+    "dist/index.html",
+    "dist/launcher-sw.js",
+    "dist/manifest.webmanifest"
+  ],
+  "package": "/tmp/neon-chapter-playtest-f634a46",
+  "preparedAt": "2026-10-18T10:52:57.896654+00:00"
+}

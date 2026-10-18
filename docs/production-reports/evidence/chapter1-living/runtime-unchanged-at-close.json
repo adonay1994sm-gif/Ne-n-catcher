@@ -1,0 +1,22 @@
+{
+  "baselineRuntimeCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+  "runtimePathsChecked": [
+    "src",
+    "assets",
+    "engine",
+    "js",
+    "render",
+    "game.js",
+    "core-runtime.js",
+    "content-runtime.js",
+    "styles.css",
+    "index.html",
+    "sw.js",
+    "package.json",
+    "package-lock.json",
+    "www",
+    "ios/App/App/public"
+  ],
+  "changedRuntimePaths": [],
+  "workingTree": "Documentation, provenance, asset acceptance metadata, offline QA script and evidence only; runtime package remains f634a46 clean."
+}

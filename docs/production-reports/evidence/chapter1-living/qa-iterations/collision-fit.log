@@ -1,0 +1,11 @@
+✔ the classic nose, wings and tail collide on visible material without an enlarged invisible envelope (2.710026ms)
+✔ fast hostile projectiles sweep across the smaller physical nose while a parallel near miss stays clear (1.820957ms)
+✔ the unchanged original contact envelope remains available in both archived campaigns (2.192414ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65.652102

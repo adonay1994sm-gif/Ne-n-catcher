@@ -33,14 +33,21 @@
     "ruptureSeconds": 9,
     "voyageLoopStart": 0,
     "voyageLoopEnd": 48,
-    "runtimeCopiedByIntegrator": false,
-    "inGameVerification": "Pending integrator evidence; this directory certifies the audio artifacts only."
+    "runtimeCopiedByIntegrator": true,
+    "inGameVerification": {
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+      "result": "Native AAC playback in both controlled game viewports; readyState4/currentTime>0.9/errornull; human listening and physical Safari pending."
+    }
   },
   "evidence": {
     "inventory": "inventory.json",
     "browser": "browser-audio-results.json",
     "render": "render-measurements.jsonl",
-    "loudness": ["opening-loudness.txt", "voyage-loudness.txt"],
+    "loudness": [
+      "opening-loudness.txt",
+      "voyage-loudness.txt"
+    ],
     "humanListening": "Not performed in this session",
     "physicalSafariIPhone": "Not performed"
   }

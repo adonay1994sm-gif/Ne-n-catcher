@@ -1,0 +1,30 @@
+PASS 01 · JavaScript principal, runtime y service worker tienen sintaxis válida
+PASS 02 · versión interna y caché conservan compatibilidad sin insignia técnica en portada
+PASS 03 · HTML conserva todas sus referencias locales
+PASS 04 · PWA precarga código, legales, sprites y fondo de Cronos
+PASS 05 · parallax V7 reemplaza la antigua rejilla
+PASS 06 · núcleo, tractor, phaser, pulso, motores y HUD tienen respuesta multietapa
+[NEON CRONIUM] build 7.2.0
+PASS 07 · campaña, guardados, balance y tamaño visual permanecen compatibles
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865'
+- '997fed2f9a050e08eca8c68d0b43486bc2f67a3243519e4f425bfb928ebb4841'
+
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:187:10
+    at test (file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:16:9)
+    at file:///workspace/Ne-n-catcher/tests/run-v7-web-tests.mjs:185:7 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'e01b3c893511eeb7fea83d983685a352c65b96b2f975c367b31b4eb1e7e1b865',
+  expected: '997fed2f9a050e08eca8c68d0b43486bc2f67a3243519e4f425bfb928ebb4841',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

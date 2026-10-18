@@ -1,0 +1,19 @@
+✔ the real chapter introduction blocks pilot and fire until its explicit skip, without advancing route time (85.016371ms)
+✔ pilot first: a nonprimary action pointer fires immediately and its release cannot cancel steering (12.068751ms)
+✔ fire first: the secondary pilot remains independent while a held action repeats through the existing frame (10.414888ms)
+✔ touch fallback pilot first tracks identifiers when touches[0] belongs to the other control (8.95465ms)
+✔ touch fallback fire first tracks identifiers when touches[0] belongs to the other control (10.036802ms)
+✔ pause, restart, blur and nonplaying frame clear held fire without resurrecting it on resume (10.739495ms)
+✔ cancellation and lost capture only clear their own control; a third contact cannot take either control (10.200243ms)
+✔ background visibility stops both contacts immediately and returning does not resume held fire (15.675275ms)
+✔ keyboard and assistive click remain single-shot alternatives while right mouse and compatibility touch events are ignored (10.767747ms)
+✔ n7 keeps its historical movement rule while a second action contact starts and ends (10.27366ms)
+✔ journey keeps its historical movement rule while a second action contact starts and ends (8.878449ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 707.207653

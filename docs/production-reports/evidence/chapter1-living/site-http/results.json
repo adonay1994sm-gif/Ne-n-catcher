@@ -1,0 +1,99 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 4603,
+      "sha256": "8cee7cfbb15eb59674fee2bbc36d3d0610daa2a41c1249f926df13302244eb42",
+      "result": "passed"
+    },
+    {
+      "path": "/manifest.webmanifest",
+      "status": 200,
+      "bytes": 649,
+      "sha256": "2d143777ea25bd8265d85626a0a35669052c2b309216e47f30226a12b79fd191",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/build-info.json",
+      "status": 200,
+      "bytes": 33807,
+      "sha256": "3bbe1010182db675bd32aea96bf1eef3866a22c0f72b6f101e98f7453177e1b6",
+      "result": "passed",
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "revision": "1d3776f68358c21fb98c39b99842d0e170f715a8a92f0b82f5b817fb4ba2e83e",
+      "dirty": false
+    },
+    {
+      "path": "/clasico-actual/juego/game.js",
+      "status": 200,
+      "bytes": 290067,
+      "sha256": "083fb72aecee43ea7452c3b5ce9d56facaf97697ea0b2578a29787e1fa855b60",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/content-runtime.js",
+      "status": 200,
+      "bytes": 228506,
+      "sha256": "c6035d8a7f778706440bf3a1efbf1116ab27abe64fecdbc78efa3d89932c5be0",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/gaia_pulse_atlas_v3.webp",
+      "status": 200,
+      "bytes": 256162,
+      "sha256": "8dda1bfa8100ce607386ae5c345fc8350987e1651b5f856f499a16b0fc12ad48",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/hostile_ordnance_atlas_v1.webp",
+      "status": 200,
+      "bytes": 237838,
+      "sha256": "24caa31504a647907f22f18f539e7de3170d7d4eaf7918104664921df631a0bf",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_intro_atlas_v1.webp",
+      "status": 200,
+      "bytes": 490076,
+      "sha256": "231c0e399aca61b83582c456cf2eb992b605474f1329ee5faf4ddac2170bf724",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_missile_atlas_v1.webp",
+      "status": 200,
+      "bytes": 246250,
+      "sha256": "8b4949b8e87b8b1e2c744ea9b3f227025ca21e365251d9266d4c09ee6f379a05",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_portraits_v1.webp",
+      "status": 200,
+      "bytes": 67988,
+      "sha256": "445980a34b7d2982a61632e2ac0ca73a2f48cd9906cba6c82996afc098b115f3",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_opening_score_v1.m4a",
+      "status": 200,
+      "bytes": 400143,
+      "sha256": "d01ec5d63a053aec7fd59c8cea92ce8620c40fb6ed8ba139ec328a0abca0f29f",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_voyage_score_v1.m4a",
+      "status": 200,
+      "bytes": 683409,
+      "sha256": "5dbfb655178502c0e879613be0580b9849f4ea0de87504be946e193c38789368",
+      "result": "passed"
+    }
+  ],
+  "observedAt": "2026-10-18T10:54:23.114689+00:00",
+  "site": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "applicationCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
+  "revision": "1d3776f68358c21fb98c39b99842d0e170f715a8a92f0b82f5b817fb4ba2e83e",
+  "method": "Real authenticated HTTP with configured environment transport",
+  "errors": [],
+  "exitCode": 0
+}

@@ -1,0 +1,22 @@
+✔ stops legacy scheduling and cancels its RAF before new RAF starts (2.356438ms)
+✔ repeated start does not schedule a second RAF (0.304728ms)
+✔ stop cancels engine RAF and is idempotent (0.1701ms)
+✔ invalid legacy RAF ID blocks engine startup (0.42841ms)
+✔ async legacy stop blocks engine startup (0.243308ms)
+✔ legacy cancellation failure blocks engine startup (0.189008ms)
+✔ seeded RNG and starfield are reproducible (3.127673ms)
+✔ quality controls bounded particle pools (0.782782ms)
+✔ draw methods operate with minimal Canvas 2D context (0.525063ms)
+✔ invalid quality and dimensions rejected (0.464964ms)
+✔ animation frames are deterministic and loop correctly (0.727301ms)
+✔ non-looping animation holds last frame (0.125034ms)
+✔ animator preserves playback when same state repeats (0.180736ms)
+✔ invalid animation is rejected (0.349665ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 185.862727

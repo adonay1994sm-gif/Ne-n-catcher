@@ -1,0 +1,5 @@
+[Chapter offline upgrade] install the actual previous launcher/game workers and seed declared prior-save fixtures
+[Chapter offline upgrade] replace only the temporary package, update both native workers and retire the old generations
+[Chapter offline upgrade] new online launcher/manifests fit 390px without booting the upgraded game yet
+[Chapter offline upgrade] offline first boot retains prior progress and migrates the zero-money historical wallet with backup
+{"status":"failed","exitCode":1,"durationMs":17240,"passed":3,"failed":1,"error":"AssertionError [ERR_ASSERTION]: A real atlas must decode\n    at verifyChapterAssetsOffline (/workspace/Ne-n-catcher/scripts/chapter-one-offline-smoke.cjs:157:38)\n    at async /workspace/Ne-n-catcher/scripts/chapter-one-offline-smoke.cjs:345:33\n    at async step (/workspace/Ne-n-catcher/scripts/chapter-one-offline-smoke.cjs:57:24)\n    at async /workspace/Ne-n-catcher/scripts/chapter-one-offline-smoke.cjs:336:3","output":"/tmp/neon-chapter-qa-f634/offline-01"}

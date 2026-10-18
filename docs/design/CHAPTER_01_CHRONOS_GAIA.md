@@ -1,6 +1,6 @@
 # Capítulo 01 — El registro de Chronos
 
-Fecha: 18/10/2026. Estado: **IN_REVIEW**. Este guion y el controlador puro están implementados; su integración completa, arte, audio, partida Chromium y aceptación del propietario se registran por separado. No declara terminado el capítulo ni los diez territorios.
+Fecha: 18/10/2026. Estado: **IN_REVIEW**. Guion, controlador, arte, audio y combate están integrados en el ciclo actual. [El cierre](../production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md) distingue partida natural, escenas controladas, CI y aceptación artística/física. No declara terminado el capítulo ni los diez territorios.
 
 ## Dirección vigente y decisiones de trabajo
 

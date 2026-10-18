@@ -1,0 +1,15 @@
+PASS 01 · versión interna 7.2.0 compatible y portada canónica sin distintivos técnicos
+PASS 02 · dependencias exactas y reproducibles
+PASS 03 · JavaScript y JSON con sintaxis válida
+PASS 04 · game.js coincide con los 9 módulos ordenados
+PASS 05 · sin latest, TODO ni identificadores publicitarios ficticios
+PASS 06 · manifiesto y archivos conservados coinciden exactamente con el disco
+PASS 07 · todos los assets de juego están documentados y precargados
+PASS 08 · service worker incluye recursos activos y excluye referencias visuales retiradas
+PASS 09 · todas las referencias locales de HTML existen
+PASS 10 · www es un paquete limpio y coincide con los archivos públicos
+PASS 11 · proyecto iOS real conserva bundle, versión y orientación vertical
+PASS 12 · recursos iOS y web sincronizado son coherentes
+PASS 13 · puente nativo conserva callbacks y listeners únicos
+
+RESULTADO ESTÁTICO: 13 pruebas aprobadas.

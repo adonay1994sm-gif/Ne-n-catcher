@@ -1,3 +1,5 @@
+> **Referencia vigente18/10/2026:** [CapítuloChronos–Gaia, Site20, pruebas y capturas](../production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). Este documento conserva historial. El primer nivel está integrado y en revisión; no se certifican los diez territorios ni dispositivo físico. Registro único: `docs/production-tasks.json`.
+
 > **Cierre posterior vigente ·18/10/2026:** [MAIN_SALVAGE_COMBAT](../production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). Site19/runtime49e4e59 y643 casos finales; ver adenda de cometasv2. El contenido siguiente es histórico. Se actualizaron el viaje clásico/combate/arte y el Site privado; no se certifican diez mundos completos por este incremento.
 
 ## Continuación vigente ·18/10/2026

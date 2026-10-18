@@ -1,3 +1,13 @@
+## Web vigente ·18/10/2026 · versión20
+
+**[Abrir NEON CRONIUM](https://neon-catcher-pruebas.chictide18.chatgpt.site)** → CONTINUAR VIAJE. Si ya tenías una partida avanzada, **NIVELES → La Onda de Choque →1.1** permite repetir la apertura. Recarga una pestaña antigua para recibir la actualización; el origen y los guardados se conservan.
+
+Runtime limpio **f634a46**, revisión1d3776f68358c21fb98c39b99842d0e170f715a8a92f0b82f5b817fb4ba2e83e. FuenteSitea5c735e2c034f8fe81b288d52b290292a712c362; despliegue succeeded y HTTP12/12 verifican archivosyassets. Privado para el propietario, sin visitantes externos; no requiere entrar enNetlify.
+
+Incluye relatoChronos→C9→Atlas→Gaia, nave40%, reserva de casco sin temporizador, tres misiles pagados y núcleoAtlas por ventanas. Básico manual mantenido; AUTO sóloAjustes. [Informe, partida real, capturas, ZIP y límites](production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md). Aceptación artística, balancehumano y dispositivo físico pendientes. Los146archivoshistóricos ajenos al paquete actual permanecen idénticos y recuperables. Versiones siguientes son historial.
+
+---
+
 ## Web vigente · 18/10/2026 · versión 17
 
 https://neon-catcher-pruebas.chictide18.chatgpt.site

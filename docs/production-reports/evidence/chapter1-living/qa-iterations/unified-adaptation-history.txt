@@ -1,0 +1,7 @@
+Controlled fixture adaptation, 2026-10-18.
+Initial full-suite failures are preserved in content.log.
+First adapted focused run: 35 tests, 34 pass, 1 fail. Failure:
+AssertionError: The input did not match /GAIA NOVA/.
+Actual next control: 'CONTINUAR POR EL PERÍMETRO DE GAIA →'.
+This was an obsolete presentation assertion, updated to /PERÍMETRO DE GAIA/.
+No runtime behavior changed. Two new integration tests were then added for the real nine-second input lock and persistent thirty-point reinforcement before the final 37-case run.

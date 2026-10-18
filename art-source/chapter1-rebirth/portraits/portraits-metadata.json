@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "chapter1.portraits.v1",
   "status": "IN_REVIEW",
-  "technicalAcceptance": "EXPORT_VALIDATED_GAMEPLAY_PENDING",
+  "technicalAcceptance": "GAMEPLAY_AND_VISUAL_CHROMIUM_PASSED",
   "artisticAcceptance": "PENDING_OWNER",
   "physicalAcceptance": "PENDING",
   "runtime": "assets/chapter1_portraits_v1.webp",
@@ -139,5 +139,6 @@
     "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
     "canvaConcept": null,
     "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
-  }
+  },
+  "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
 }
