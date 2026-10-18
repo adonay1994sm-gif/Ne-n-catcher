@@ -272,7 +272,7 @@ function guardianBounds(q,positions){
     });
     await check('closed, opening and exposed Atlas poses fit below the HUD at both viewport sizes',async()=>{
       const states=[];for(const state of ['closed','opening','exposed']){
-        await fixture('bossUntil',state);const q=await snapshot(),positions=await layout();controls(positions,{hint:false});
+        await fixture('bossUntil',state);const q=await snapshot(),positions=await layout();controls(positions,{hint:false,weapon:q.equipment.unlocked.length>1});
         assert.equal(q.boss.vulnerability,state==='exposed');assert.equal(positions.classicC9.disabled,true);
         states.push({state,bounds:guardianBounds(q,positions),snapshot:q,layout:positions});await capture('atlas-'+state);
       }return states;

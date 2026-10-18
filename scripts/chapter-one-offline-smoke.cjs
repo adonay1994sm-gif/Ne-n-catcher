@@ -91,7 +91,7 @@ async function newPage() {
       if (/\/favicon\.ico(?:\?|$)/.test(entry.url)) report.incidentalBrowserRequests.push(entry);
       else report.failedRequests.push(entry);
     }
-    if (/\/assets\/(?:(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2|gaia_pulse_atlas_v3|hostile_ordnance_atlas_v1|c9_upgrade_icons_v1|chapter1_portraits_v1|chapter1_missile_atlas_v1|guardian_atlas_states_v2|cronium_energy_atlas_v2)\.webp|chapter1_(?:opening|voyage)_score_v1\.m4a|combat_sfx_atlas_v2\.(?:m4a|json))(?:\?|$)/.test(response.url()))
+    if (/\/assets\/(?:(?:player_ship_identity_v1|ship_modular_atlas_v1|arcade_pulse_atlas_v2|gaia_pulse_atlas_v3|hostile_ordnance_atlas_v1|c9_upgrade_icons_v1|forja_modules_atlas_v1|chapter1_portraits_v1|chapter1_missile_atlas_v1|guardian_atlas_states_v2|cronium_energy_atlas_v2)\.webp|chapter1_(?:opening|voyage)_score_v1\.m4a|combat_sfx_atlas_v2\.(?:m4a|json))(?:\?|$)/.test(response.url()))
       report.assetResponses.push({url: response.url(), status: response.status(), offline, fromServiceWorker: response.fromServiceWorker()});
   });
   return page;
@@ -129,7 +129,7 @@ function savedBytesEqual(actual, fixture, allowEconomyMigration=false) {
   }
 }
 
-const chapterAssets=['c9_upgrade_icons_v1.webp','chapter1_portraits_v1.webp',
+const chapterAssets=['c9_upgrade_icons_v1.webp','forja_modules_atlas_v1.webp','chapter1_portraits_v1.webp',
   'chapter1_missile_atlas_v1.webp','chapter1_opening_score_v1.m4a','chapter1_voyage_score_v1.m4a',
   'guardian_atlas_states_v2.webp','cronium_energy_atlas_v2.webp','combat_sfx_atlas_v2.m4a','combat_sfx_atlas_v2.json'];
 async function verifyChapterAssetsOffline(page) {
@@ -160,7 +160,7 @@ async function verifyChapterAssetsOffline(page) {
     assert.equal(item.online,false);assert.equal(item.status,200);
     assert.equal(item.bytes,disk.length);assert.equal(item.sha256,sha256(disk));
     if(file.endsWith('.webp')) {
-      const dimensions={'c9_upgrade_icons_v1.webp':[1024,1024],
+      const dimensions={'c9_upgrade_icons_v1.webp':[1024,1024],'forja_modules_atlas_v1.webp':[1024,1024],
         'chapter1_portraits_v1.webp':[768,256],'chapter1_missile_atlas_v1.webp':[1024,1024],
         'guardian_atlas_states_v2.webp':[2048,1024],'cronium_energy_atlas_v2.webp':[512,512]};
       assert.deepEqual([item.width,item.height],dimensions[file],`${file} must decode at its actual registered dimensions`);
@@ -373,7 +373,7 @@ async function prepareContext() {
     const game = await gameBrandAndSave(page, fixture); await capture(page, 'current-offline-menu');
     assert.equal((await workerState(page)).online, false);
     report.chapterAssetsOffline=await verifyChapterAssetsOffline(page);
-    assert.equal(report.chapterAssetsOffline.length,9);
+    assert.equal(report.chapterAssetsOffline.length,10);
     report.offlineStorageBeforeLaunch = await storage(page);
     await page.close(); return {launcher, game};
   });
@@ -418,6 +418,14 @@ async function prepareContext() {
     }
     report.offlinePulse=report.offlineCombatAssets.find(item=>item.file==='gaia_pulse_atlas_v3.webp');
     await capture(page, 'current-offline-continuation-playing');
+    assert.equal(await page.locator('#classicC9').isVisible(),true,'Recovered C9 is available offline');
+    const hullBeforeC9=(await page.locator('#hull').innerText()).trim();
+    await page.locator('#classicC9').click();await page.locator('#flightDock.show').waitFor();
+    assert.equal(await page.locator('#c9Title').textContent(),'FORJA C9');
+    assert.equal(await page.evaluate(()=>document.activeElement?.id),'flightDockContinue');
+    assert.equal((await page.locator('#hull').innerText()).trim(),hullBeforeC9,'HUD workshop cannot heal on every open');
+    await capture(page,'recovered-offline-forja-c9');
+    await page.locator('#flightDockContinue').click();await page.locator('#flightDock.show').waitFor({state:'hidden'});
     // The existing HUD counts up to the restored score across render frames.
     // Wait for its known checkpoint target before measuring a paused HUD;
     // otherwise the presentation tween (159 -> 160) is mistaken for simulation.
@@ -500,18 +508,13 @@ async function prepareContext() {
     const owned=JSON.parse((await storage(page))[prefix+economy.SCRAP_ECONOMY_KEY]);
     assert.equal(owned.balance,0);assert.equal(owned.earned,0);assert.equal(owned.spent,0);
     assert.equal(owned.missileAmmo,3);assert.deepEqual(owned.upgrades,[]);
-    assert.equal(await page.locator('#classicC9').isVisible(),true);
-    const hullBeforeC9=(await page.locator('#hull').innerText()).trim();
-    await page.locator('#classicC9').click();await page.locator('#flightDock.show').waitFor();
-    assert.equal(await page.evaluate(()=>document.activeElement?.id),'flightDockContinue');
-    assert.equal((await page.locator('#hull').innerText()).trim(),hullBeforeC9,'HUD workshop cannot heal on every open');
-    await capture(page,'fresh-offline-onboard-c9');
-    await page.locator('#flightDockContinue').click();await page.locator('#flightDock.show').waitFor({state:'hidden'});
+    assert.equal(await page.locator('#classicC9').isVisible(),false,'Fresh flight must recover its module before C9 enters the HUD');
+    assert.equal(await page.locator('#flightDock.show').count(),0,'No premature workshop overlay');
     const audit=await observer(page);assert.equal(audit.raf.maximum,1);assert.deepEqual(audit.raf.errors,[]);
     await page.locator('#pause').click();await page.locator('#paused.show').waitFor();
     await capture(page,'fresh-offline-first-chapter-playing-paused');
     await page.close();return {fixtures:false,offline:true,stage:'1.1',wallet:owned,audit,
-      scope:'Natural first launch, in-world Chronos and optional HUD workshop only; no forced orbital stop or full level/boss balance claim'};
+      scope:'Natural first launch and in-world Chronos; C9 remains hidden until recovery and is tested in the resumed recovered profile. No full level/boss balance claim'};
   });
   clean(); report.status = 'passed'; report.exitCode = 0;
 })().catch(async error => {

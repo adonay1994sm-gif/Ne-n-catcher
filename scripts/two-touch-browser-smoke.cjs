@@ -137,21 +137,43 @@ async function runControls(){
     const empty=await inspect();entry.samples.empty=empty;
     const emptySequence=empty.weapons.shotSequence;
     const nextRecovery=empty.weapons.elapsed+empty.weapons.rechargeSeconds-empty.weapons.recharge;
+    // CDP delivery can legitimately cross a recharge boundary between two
+    // observations. Assert conservation against actual played time rather than
+    // treating an old "empty" observation as frozen during contact dispatch.
+    const conserved=sample=>{
+      const recovered=Math.floor((empty.weapons.recharge+sample.elapsed-empty.weapons.elapsed+1e-7)/empty.weapons.rechargeSeconds);
+      assert.equal(sample.shotSequence-emptySequence+sample.charges,recovered,
+        `Ammunition must balance at played time ${sample.elapsed}`);
+    };
     expect('holding empties the initial magazine plus rounds recovered during firing',()=>{assert.ok(emptySequence>=20&&emptySequence<40);assert.equal(empty.weapons.charges,0);assert.ok(empty.fireInput);});
     expect('ammo stays out of the tactical HUD and accessible fire label',()=>{assert.equal(empty.ammoText,'');assert.doesNotMatch(empty.fireAriaLabel,/\d|cargas|segundos/i);});
     await release(a.fire.id);const releasedEmpty=await inspect();entry.samples.releasedWhileEmpty=releasedEmpty;
     expect('release while empty clears only the action contact',()=>{assert.equal(releasedEmpty.fireInput,null);assert.equal(releasedEmpty.input.active,true);});
     await press(a.fire);const pressedEmpty=await inspect();entry.samples.startedWhileEmpty=pressedEmpty;
-    expect('pressing an empty battery stores held intent without granting a charge',()=>{assert.equal(pressedEmpty.fireDisabled,false);assert.equal(pressedEmpty.fireAriaDisabled,'true');
-      assert.ok(pressedEmpty.fireInput);assert.equal(pressedEmpty.weapons.charges,0);assert.equal(pressedEmpty.weapons.shotSequence,emptySequence);});
+    expect('pressing an empty battery stores held intent and spends only played-time recovery',()=>{assert.equal(pressedEmpty.fireDisabled,false);
+      assert.ok(pressedEmpty.fireInput);conserved(pressedEmpty.weapons);});
     await wait(target=>__TWO_TOUCH_QA__().weapons.elapsed>=target,nextRecovery-.12);
     const noFreeShot=await inspect();entry.samples.beforeRecharge=noFreeShot;
-    expect('holding cannot create free shots before recharge',()=>{assert.equal(noFreeShot.weapons.shotSequence,emptySequence);assert.equal(noFreeShot.weapons.charges,0);});
     await move({...a.pilot,x:a.pilot.x+16,y:a.pilot.y-16});const moving=await inspect();entry.samples.moving=moving;
     expect('pilot remains usable with an empty held battery',()=>{assert.equal(moving.input.active,true);assert.ok(moving.player.target>empty.player.target+1);});
     await wait(target=>__TWO_TOUCH_QA__().weapons.elapsed>=target,nextRecovery+.08);
     const recharged=await inspect();entry.samples.afterRecharge=recharged;
-    expect('one played-time recharge yields one further held shot',()=>{assert.equal(recharged.weapons.shotSequence,emptySequence+1);assert.equal(recharged.weapons.charges,0);assert.ok(recharged.weapons.cooldown>=0);});
+    const rechargeTrace=await page.evaluate(start=>window.__TWO_TOUCH_WEAPON_TRACE__.filter(sample=>sample.elapsed>=start),empty.weapons.elapsed);
+    entry.samples.rechargeTrace=rechargeTrace;
+    expect('holding cannot create free shots before recharge',()=>{
+      const predeadline=rechargeTrace.filter(sample=>sample.elapsed<nextRecovery-1e-7);
+      assert.ok(predeadline.length,'Record actual simulation frames before the deadline');
+      for(const sample of predeadline){assert.equal(sample.shotSequence,emptySequence);assert.equal(sample.charges,0);}
+      for(const sample of rechargeTrace)conserved(sample);
+      conserved(noFreeShot.weapons);
+    });
+    expect('one played-time recharge yields exactly one further held shot',()=>{
+      const firstShot=rechargeTrace.find(sample=>sample.shotSequence>emptySequence);
+      assert.ok(firstShot,'A held action consumes the first recovered round');
+      assert.ok(firstShot.elapsed>=nextRecovery-1e-7,'Recovered shot cannot precede its played-time deadline');
+      assert.equal(firstShot.shotSequence,emptySequence+1);assert.equal(firstShot.charges,0);
+      conserved(recharged.weapons);assert.ok(recharged.weapons.cooldown>=0);
+    });
     await capture('held-recharge');await release(a.fire.id);const afterRelease=await inspect();entry.samples.released=afterRelease;
     expect('release while the battery button is disabled still clears action',()=>{assert.equal(afterRelease.fireInput,null);assert.equal(afterRelease.input.active,true);});
     await release(a.pilot.id);
@@ -211,7 +233,15 @@ async function runControls(){
       if(fixture){Object.defineProperty(window,'PointerEvent',{value:undefined,writable:true,configurable:true});
         for(const type of ['pointerdown','pointermove','pointerup','pointercancel','lostpointercapture'])window.addEventListener(type,event=>{if(event.pointerType==='touch')event.stopImmediatePropagation();},true);}
       const request=window.requestAnimationFrame.bind(window),cancel=window.cancelAnimationFrame.bind(window),audit=window.__TWO_TOUCH_RAF__={pending:new Set(),maximum:0,frames:0,errors:[]};
-      window.requestAnimationFrame=callback=>{const id=request(now=>{audit.pending.delete(id);audit.frames++;try{callback(now);}catch(error){audit.errors.push(error.stack||String(error));throw error;}});audit.pending.add(id);audit.maximum=Math.max(audit.maximum,audit.pending.size);return id;};
+      const weaponTrace=window.__TWO_TOUCH_WEAPON_TRACE__=[];
+      window.requestAnimationFrame=callback=>{const id=request(now=>{audit.pending.delete(id);audit.frames++;try{
+        callback(now);
+        // Read after the existing simulation owner; never inject ammo, clocks,
+        // contacts or another RAF. Retain frames so CDP latency cannot erase the
+        // evidence on either side of a real recharge boundary.
+        const q=window.__TWO_TOUCH_QA__?.();
+        if(q?.state==='playing'&&q.weapons){weaponTrace.push({...q.weapons});if(weaponTrace.length>6000)weaponTrace.shift();}
+      }catch(error){audit.errors.push(error.stack||String(error));throw error;}});audit.pending.add(id);audit.maximum=Math.max(audit.maximum,audit.pending.size);return id;};
       window.cancelAnimationFrame=id=>{audit.pending.delete(id);cancel(id);};
       const delivery=window.__TWO_TOUCH_DELIVERY__={touchstart:0,touchmove:0,touchend:0,touchcancel:0};
       for(const type of Object.keys(delivery))window.addEventListener(type,()=>{delivery[type]++;},true);

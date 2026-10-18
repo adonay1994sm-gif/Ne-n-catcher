@@ -1381,8 +1381,12 @@
     loadClassicSalvage();
     const installed=classicEquipment.unlocked.includes("twin");
     const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
-    ui.flightDockStatus.textContent=installed
-      ? `${weapon.label} equipado. ${weapon.description} La energía del arma se recupera durante el vuelo. Tus armas anteriores se conservan.`
+    const ownedUpgrades=classicSalvageState?.upgrades||[];
+    const tuning={scatter:ownedUpgrades.includes('scatter-focus'),needle:ownedUpgrades.includes('needle-resonance')};
+    const selectedUpgrade=tuning[classicEquipment.selected]?NeonCampaign.SCRAP_UPGRADES[classicEquipment.selected==='scatter'?'scatter-focus':'needle-resonance']:null;
+    const purchasedWeapon=classicEquipment.unlocked.some(id=>id==='scatter'||id==='needle');
+    ui.flightDockStatus.textContent=installed||purchasedWeapon
+      ? `${weapon.label}${selectedUpgrade?' II':''} equipado. ${selectedUpgrade?.description||weapon.description} Puedes cambiar de arma antes de volver al vuelo.`
       : classicEquipment.twinPrepared ? "Emisor preparado. Conservas Pulso hasta vencer a Atlas: su autorización desbloquea el segundo cañón."
       : classicEquipment.recoveredTwin ? "Emisor rescatado. Mira prepara sus anclajes por 24 de chatarra; necesitarás superar a Atlas para activar el segundo cañón. La reparación de emergencia se efectúa una vez al alcanzar el enlace del corredor."
       : "Taller conectado. Tu pulso central se recarga en vuelo. Recupera la pieza de Chronos; Atlas custodia el segundo cañón.";
@@ -1392,6 +1396,11 @@
       button.title=unlocked?NeonCampaign.CLASSIC_WEAPON_RULES.types[type].description:type==="twin"?"Supera a Guardian Atlas":"Una frontera posterior desbloquea esta arma";
       button.classList.toggle('hidden',type==='lance'&&!unlocked);
       button.title=type==='scatter'||type==='needle' ? unlocked?NeonCampaign.CLASSIC_WEAPON_RULES.types[type].description:'Disponible en el arsenal de la Forja':button.title;
+      if(type==='scatter'||type==='needle') {
+        button.querySelector('b').textContent=`${NeonCampaign.CLASSIC_WEAPON_RULES.types[type].label}${tuning[type]?' II':''} ×${NeonCampaign.CLASSIC_WEAPON_RULES.types[type].damageMultiplier}`;
+        button.querySelector('small').textContent=type==='scatter'?(tuning[type]?'Tres pulsos · alcance ampliado':'Tres pulsos · corta distancia'):
+          tuning[type]?'Perfora cuatro · cadencia mejorada':'Perfora tres objetivos';
+      }
     }
     const balance=classicSalvageState?.balance??0,upgrades=classicSalvageState?.upgrades||[];
     ui.c9Balance.textContent=classicSalvageState ? NeonCampaign.formatDenominations(balance).label : "Bodega no disponible · compras protegidas";

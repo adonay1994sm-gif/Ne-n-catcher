@@ -365,6 +365,8 @@ test('Forja connects paid weapon ranks to real loadouts and preserves them after
   h.document.querySelector('[data-flight-loadout="scatter"]').click();
   assert.equal(h.snapshot().weapons.selected,'scatter');
   assert.equal(h.snapshot().weapons.weaponRanks.scatter,2);
+  assert.match(h.node('flightDockStatus').textContent,/Abanico II equipado/);
+  assert.match(h.document.querySelector('[data-flight-loadout="scatter"] small').textContent,/alcance ampliado/);
   assert.equal(h.document.querySelector('[data-flight-loadout="twin"]').disabled,true,'Gemelo still belongs to Atlas');
   h.node('c9BuyShield').click();sku('hull-plating-ii').click();
   h.node('c9BuyCoolant').click();sku('coolant-feed-ii').click();
