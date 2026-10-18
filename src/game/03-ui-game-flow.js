@@ -188,6 +188,8 @@
       <section id="flightRoute" class="flight-route hidden" aria-label="Trayecto espacial"><div><small id="flightDestination">CHRONOS → GAIA NOVA</small><b id="flightStage">Recupera el CRONIUM</b></div><progress id="flightDistance" max="1" value="0" aria-label="Recorrido hasta el destino"></progress></section>
       <p id="flightObjective" class="flight-comms" role="status" aria-live="polite" data-active="false"></p>
       <button id="flightWeapon" class="flight-weapon" type="button"><small id="flightWeaponDamage">DAÑO ×1</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
+      <div id="flightPilotHint" class="flight-pilot-hint" aria-hidden="true"><span></span>DESLIZA PARA MOVER</div>
+      <div id="flightPilotStick" class="flight-pilot-stick hidden" aria-hidden="true"><span id="flightPilotKnob"></span></div>
       </div>
       <div id="flightDock" class="overlay" role="dialog" aria-modal="true" aria-labelledby="c9Title"><section class="panel flight-dock"><header class="c9-header"><span class="chapter-face" data-actor="mira" aria-hidden="true"></span><div><small>C9 · MIRA</small><h2 id="c9Title">Taller de a bordo</h2></div></header><div class="c9-preview"><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p></div><p id="c9Balance" class="c9-wallet" aria-label="Chatarra disponible">0 chatarra</p><div class="c9-upgrades"><button id="flightInstallTwin" class="primary" type="button"><span class="c9-upgrade-art" data-upgrade="emitter" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>PREPARAR EMISOR · 24 CHATARRA</b><small>Segundo cañón · autorización tras Atlas</small></span></button><button id="c9BuyShield" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="hull" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFUERZO DE CASCO · 30 CHATARRA</b><small>15 puntos de blindaje adicionales</small></span></button><button id="c9BuyMissiles" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="missiles" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REPONER MISILES</b><small>18 de daño · 6 de chatarra por unidad</small></span></button><button id="c9BuyCoolant" class="secondary" type="button"><span class="c9-upgrade-art" data-upgrade="coolant" aria-hidden="true"></span><span class="c9-upgrade-copy"><b data-c9-label>REFRIGERACIÓN · 45 CHATARRA</b><small>Recuperación de energía un 25 % más rápida</small></span></button></div><p id="c9PurchaseStatus" class="c9-purchase-status" role="status"></p><div class="c9-actions"><button id="flightDockContinue" class="secondary" type="button">VOLVER A PILOTAR</button><button id="flightDockHome" class="secondary" type="button">GUARDAR Y VOLVER AL MENÚ</button></div></section></div>`;
     canvas.parentElement.append(mount);
@@ -198,7 +200,7 @@
     ui.chapterSkip=$("chapterSkip");ui.classicMissile=$("classicMissile");ui.classicMissileCount=$("classicMissileCount");
     ui.chapterSkip.onclick=()=>{classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot();syncClassicChapterPresentation();};
     ui.classicMissile.onclick=()=>fireClassicMissile();
-    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin","c9Balance","c9BuyShield","c9BuyMissiles","c9BuyCoolant","c9PurchaseStatus"]) ui[id] = $(id);
+    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightPilotHint","flightPilotStick","flightPilotKnob","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin","c9Balance","c9BuyShield","c9BuyMissiles","c9BuyCoolant","c9PurchaseStatus"]) ui[id] = $(id);
     const calibrate=document.createElement("button");calibrate.id="flightCalibrateLance";calibrate.className="secondary";calibrate.type="button";
     ui.flightInstallTwin.after(calibrate);ui.flightCalibrateLance=calibrate;
     const loadout = document.createElement("div");
@@ -428,7 +430,13 @@
     if (!isUnifiedClassic() || !ui.flightRoute) return;
     $("openFlightDock")?.classList.toggle("hidden",!classicEquipment.recoveredTwin);
     const view=classicFlightView;
-    if(ui.classicC9){ui.classicC9.disabled=state!=="playing"||Boolean(atlasBoss);ui.classicC9.title=atlasBoss?"C9 no está disponible durante el bloqueo de Atlas":"Taller C9 · pausa el viaje para configurar tu nave";}
+    if(ui.classicC9){
+      const c9Recovered=Boolean(classicEquipment.recoveredTwin),c9Blocked=Boolean(atlasBoss);
+      ui.classicC9.disabled=state!=="playing"||c9Blocked;
+      ui.classicC9.classList.toggle("hidden",!c9Recovered||c9Blocked||ui.flightHud.classList.contains("hidden"));
+      ui.classicC9.title=!c9Recovered?"Recupera primero el módulo C9":c9Blocked?"C9 no está disponible durante el bloqueo de Atlas":"Taller C9 · pausa el viaje para configurar tu nave";
+    }
+    ui.flightPilotHint?.classList.toggle("hidden",Boolean(classicEquipment.recoveredTwin));
     const stage=atlasBoss ? "ACCESO ATLAS" : view?.stageNumber ? `${view.stageId} · ${view.stageName}` : view?.stageName || level().name;
     // The primary HUD already shows the quota. This reserved, transparent slot
     // is used only for brief contextual comms; it never repeats the counters.
@@ -455,6 +463,7 @@
     ui.flightWeaponDamage.textContent=`DAÑO ×${weapon.damageMultiplier}`;
     ui.flightWeapon.title=weapon.description;
     ui.flightWeapon.dataset.switchable=String(classicEquipment.unlocked.length>1);
+    ui.flightWeapon.classList.toggle("hidden",classicEquipment.unlocked.length<2);
     ui.flightWeapon.setAttribute("aria-label",`Cambiar arma. ${weapon.label}. ${weapon.description}`);
     updateAmmoHud();
   }
@@ -462,7 +471,9 @@
   function setClassicFlightHudVisible(visible) {
     ui.flightHud?.classList.toggle("hidden",!visible);
     ui.classicMissile?.classList.toggle("hidden",!visible);
-    ui.classicC9?.classList.toggle("hidden",!visible);
+    ui.classicC9?.classList.toggle("hidden",!visible||!classicEquipment.recoveredTwin||Boolean(atlasBoss));
+    ui.flightWeapon?.classList.toggle("hidden",!visible||classicEquipment.unlocked.length<2);
+    ui.flightPilotHint?.classList.toggle("hidden",!visible||Boolean(classicEquipment.recoveredTwin));
     if(!visible)ui.chapterSkip?.classList.add("hidden");
     ui.flightRoute?.classList.toggle("hidden",!visible || Boolean(atlasBoss));
   }
@@ -1172,6 +1183,7 @@
       ui.fire.classList.toggle("empty",!classicWeapons.unlimitedFire&&ammo<=0);
       syncClassicMissileHud();
       const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
+      if(ui.fireWeapon)ui.fireWeapon.textContent=weapon.label.toUpperCase();
       ui.fire.setAttribute("aria-label",ammo>0?`Mantener para disparar ${weapon.label}. La energía se recupera durante el vuelo.`:"El arma está recuperando energía. Mantén para disparar cuando esté disponible.");
       return;
     }

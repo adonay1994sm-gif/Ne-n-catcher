@@ -104,6 +104,30 @@
   let legacyPilotId = null;
   let fireInput = null;
   let suppressNextFireClick = false;
+  let pilotGuideOrigin = null;
+
+  function hidePilotGuide() {
+    pilotGuideOrigin=null;
+    ui.flightPilotStick?.classList.add("hidden");
+    if(ui.flightPilotKnob)ui.flightPilotKnob.style.transform="translate(0px, 0px)";
+  }
+
+  function beginPilotGuide(point,id) {
+    if(!ui.flightPilotStick||!point||!Number.isFinite(point.clientX)||!Number.isFinite(point.clientY))return;
+    const rect=canvas.parentElement.getBoundingClientRect();
+    pilotGuideOrigin={id,x:point.clientX,y:point.clientY};
+    ui.flightPilotStick.style.left=`${point.clientX-rect.left}px`;
+    ui.flightPilotStick.style.top=`${point.clientY-rect.top}px`;
+    ui.flightPilotStick.classList.remove("hidden");
+    ui.flightPilotHint?.classList.add("used");
+  }
+
+  function movePilotGuide(point,id) {
+    if(!pilotGuideOrigin||pilotGuideOrigin.id!==id||!ui.flightPilotKnob||!point)return;
+    const dx=point.clientX-pilotGuideOrigin.x,dy=point.clientY-pilotGuideOrigin.y;
+    const distance=Math.hypot(dx,dy),limit=24,scale=distance>limit?limit/distance:1;
+    ui.flightPilotKnob.style.transform=`translate(${(dx*scale).toFixed(1)}px, ${(dy*scale).toFixed(1)}px)`;
+  }
 
   function releaseInputCapture(element, id) {
     if (typeof id !== "number") return;
@@ -119,6 +143,7 @@
     journeyPointerLast = null;
     fireInput = null;
     NeonCampaign.endFlightInput(classicFlightInput);
+    hidePilotGuide();
     releaseInputCapture(canvas, pilotId);
     if (previousFire?.kind === "pointer") releaseInputCapture(ui.fire, previousFire.id);
   }
@@ -144,6 +169,7 @@
       // A press only anchors relative input, regardless of where the finger
       // touches. Captured movement remains continuous outside the canvas.
       const started = NeonCampaign.beginFlightInput(classicFlightInput, { id, x, y });
+      if(started)beginPilotGuide(point,id);
       if (started && event.pointerId !== undefined) {
         try { canvas.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
       }
@@ -164,6 +190,7 @@
     });
     player.target = next.targetX;
     player.targetY = next.targetY;
+    if(next.moved)movePilotGuide(point,id);
   }
 
   function move(event) {
@@ -220,7 +247,7 @@
         legacyPilotId = null;
         journeyPointerLast = null;
       }
-      NeonCampaign.endFlightInput(classicFlightInput, id);
+      if(NeonCampaign.endFlightInput(classicFlightInput, id))hidePilotGuide();
     }
   }
   for (const event of ["pointerup", "pointercancel", "lostpointercapture", "touchend", "touchcancel"]) {

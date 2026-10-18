@@ -29,7 +29,7 @@ const fundedRecord = balance => {
  * projectiles. The long service-route case explicitly supplies its collection
  * quota and clears unrelated hazards to isolate continuity/repair/idempotency.
  */
-function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null} = {}) {
+function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null, unlocked = 2} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   t.after(() => dom.window.close());
@@ -71,7 +71,7 @@ function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null} 
   window.requestAnimationFrame = callback => (pending.set(++frameId, callback), frameId);
   window.cancelAnimationFrame = id => pending.delete(id);
   window.navigator.vibrate = () => true;
-  window.localStorage.setItem('neon-unlocked-v2', '2');
+  window.localStorage.setItem('neon-unlocked-v2', String(unlocked));
   window.localStorage.setItem('neon-stars-v2', '{}');
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
@@ -152,15 +152,17 @@ const gameplay = snapshot => {
 };
 
 test('fresh classic launch stays in the Chronos world with immediate controls and no cinematic image request', t => {
-  const h = harness(t); h.api.prepare();
+  const h = harness(t, {unlocked: 1}); h.api.prepare();
   const q = h.snapshot();
   assert.equal(q.state, 'playing'); assert.equal(q.route.elapsed, 0);
   assert.equal(q.chapter.opening.active, false); assert.equal(q.controlsLocked, false);
   assert.equal(h.document.body.classList.contains('chapter-opening'), false);
   assert.equal(h.node('chapterSkip').classList.contains('hidden'), true);
   assert.equal(h.loaded.has(INTRO_PATH), false, 'retained historical opening art is not requested');
-  assert.equal(h.node('classicC9').classList.contains('hidden'), false);
-  assert.equal(h.node('classicC9').disabled, false);
+  assert.equal(h.node('classicC9').classList.contains('hidden'), true, 'C9 waits for its recovered module');
+  assert.equal(h.node('flightWeapon').classList.contains('hidden'), true, 'one owned weapon needs no selector');
+  assert.equal(h.node('fireWeapon').textContent, 'PHASER');
+  assert.equal(h.node('flightPilotHint').textContent.includes('DESLIZA'), true);
   assert.equal(h.api.fireManualShot(), true, 'manual combat works at route time zero');
   h.api.render(0);
   assert.equal(h.drawCalls.includes(INTRO_PATH), false, 'rendering does not sneak the cinematic back in');

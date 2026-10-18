@@ -70,6 +70,11 @@ async function runControls(){
   await check('pilot first, second contact fires immediately while pilot moves and retains ownership',async(entry,expect)=>{
     const a=await round(),before=await inspect();await press(a.pilot);const anchored=await inspect();entry.samples.anchored=anchored;
     expect('first touch anchors relative flight without a jump',()=>{assert.equal(anchored.input.active,true);equalNear(anchored.player.target,before.player.target,'target x');equalNear(anchored.player.targetY,before.player.targetY,'target y');});
+    const pilotGuideVisible=await page.evaluate(()=>{
+      const stick=document.querySelector('#flightPilotStick'),hint=document.querySelector('#flightPilotHint');
+      return !stick.classList.contains('hidden')&&hint.classList.contains('used');
+    });
+    expect('pilot contact exposes its local direction control and retires the initial hint',()=>assert.equal(pilotGuideVisible,true));
     await press(a.fire);const down=await inspect();entry.samples.secondDown=down;
     expect('secondary action contact fires on pointer/touch down',()=>assert.equal(down.weapons.shotSequence,before.weapons.shotSequence+1));
     expect('action contact has independent ownership',()=>{assert.ok(down.fireInput);assert.notEqual(down.fireInput.id,down.input.id);assert.equal(down.input.id,anchored.input.id);});
@@ -81,6 +86,8 @@ async function runControls(){
     expect('remaining pilot still moves after action release',()=>assert.ok(after.player.target<moved.player.target-1));
     await release(a.pilot.id);
     const released=await inspect();entry.samples.last=released;expect('released pilot is inactive',()=>assert.equal(released.input.active,false));
+    const pilotGuideReleased=await page.locator('#flightPilotStick').isVisible();
+    expect('pilot direction control disappears on release',()=>assert.equal(pilotGuideReleased,false));
   });
   await check('action first, secondary pilot anchors independently and release cannot transfer control',async(entry,expect)=>{
     const a=await round(),before=await inspect();await press(a.fire);const fireFirst=await inspect();entry.samples.fireFirst=fireFirst;

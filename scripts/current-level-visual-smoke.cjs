@@ -34,16 +34,19 @@ async function layout(){return page.evaluate(()=>{
     return{id,x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom,
       visible:!e.classList.contains('hidden')&&s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0,
       opacity:Number(s.opacity),disabled:!!e.disabled};};
-  const ids=['canvas','hud','fire','classicMissile','flightWeapon','classicC9','flightObjective','atlasEncounter','flightDock','flightDockContinue'];
+  const ids=['canvas','hud','fire','classicMissile','flightWeapon','classicC9','flightPilotHint','flightPilotStick','flightObjective','atlasEncounter','flightDock','flightDockContinue'];
   const rects=Object.fromEntries(ids.map(id=>[id,rect(id)]));
   return{...rects,viewport:{width:innerWidth,height:innerHeight},documentWidth:document.documentElement.scrollWidth,
     activeId:document.activeElement?.id,overlayVisible:document.querySelector('#flightDock')?.classList.contains('show'),
     comms:document.querySelector('#flightObjective')?.textContent};
 });}
-function controls(positions){
-  const ids=['fire','classicMissile','flightWeapon','classicC9'];
+function controls(positions,{c9=false,weapon=false}={}){
+  const ids=['fire','classicMissile'];
   for(const id of ids){const r=positions[id];assert.ok(r?.visible,id+' must be visible');assert.ok(r.width>=44&&r.height>=44,id+' touch target <44px');
     assert.ok(r.x>=0&&r.right<=positions.viewport.width+1&&r.y>=0&&r.bottom<=positions.viewport.height+1,id+' outside viewport');}
+  assert.equal(positions.classicC9.visible,c9,'C9 visibility must follow recovered equipment and combat lock');
+  assert.equal(positions.flightWeapon.visible,weapon,'Weapon switch must exist only with multiple owned weapons');
+  assert.ok(positions.flightPilotHint?.visible,'Fresh fixture must explain the invisible relative-flight surface');
   for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const a=positions[ids[i]],b=positions[ids[j]];
     assert.ok(a.right<=b.x+1||b.right<=a.x+1||a.bottom<=b.y+1||b.bottom<=a.y+1,'Overlapping touch controls '+ids[i]+'/'+ids[j]);}
   assert.ok(positions.documentWidth<=positions.viewport.width+1,'Horizontal overflow');

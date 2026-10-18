@@ -888,7 +888,7 @@ test('compact comms do not repeat the quota and expire only with played time wit
   assert.equal(h.pending.size, 1);
 });
 
-test('measured compact bounds release the former top reserve and ignore side controls outside the Canvas', t => {
+test('measured compact bounds ignore the hidden one-weapon switch and side controls outside the Canvas', t => {
   const h = harness(t, {unlocked: 3, rects: {
     hud: {left: 10, top: 10, width: 370, height: 44},
     flightRoute: {left: 10, top: 58, width: 370, height: 24},
@@ -898,19 +898,21 @@ test('measured compact bounds release the former top reserve and ignore side con
   }});
   h.api.prepare(2); const first = h.snapshot(), scale = first.H / 844;
   assert.equal(first.bounds.fits, true);
+  assert.equal(h.node('flightWeapon').classList.contains('hidden'), true,
+    'A single owned weapon must not reserve an inactive touch target');
   closeTo((first.bounds.minY - 158*.52) / scale, 120,
     'The upper boundary follows the actual comms slot rather than a 182px minimum');
-  closeTo((first.bounds.maxY + 104*.52) / scale, 700,
-    'The complete ship tail must clear the measured weapon button');
+  closeTo((first.bounds.maxY + 104*.52) / scale, 740,
+    'The complete ship tail clears the compact bottom-control reserve');
   h.setRect('flightObjective', {left: 500, top: 400, width: 200, height: 34});
   h.setRect('flightWeapon', {left: 500, top: 200, width: 104, height: 48});
   h.api.refreshClassicFlightBounds(); const lateral = h.snapshot();
   closeTo((lateral.bounds.minY - 158*.52) / scale, 82,
     'An off-Canvas transmission must not lower the playable ceiling');
   closeTo((lateral.bounds.maxY + 104*.52) / scale, 740,
-    'An off-Canvas weapon must not constrain the lower boundary');
+    'A hidden weapon switch must not constrain the lower boundary');
   assert.ok(lateral.bounds.minY < first.bounds.minY);
-  assert.ok(lateral.bounds.maxY > first.bounds.maxY);
+  assert.equal(lateral.bounds.maxY, first.bounds.maxY);
   assert.equal(lateral.bounds.fits, true);
   assert.equal(h.pending.size, 1);
 });

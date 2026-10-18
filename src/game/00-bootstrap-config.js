@@ -40,6 +40,7 @@
     hullBar: $("hullBar"),
     hudLevel: $("hudLevel"),
     fire: $("fire"),
+    fireWeapon: $("fireWeapon"),
     ammo: $("ammo"),
     best: $("best"),
     unlockedText: $("unlockedText"),
