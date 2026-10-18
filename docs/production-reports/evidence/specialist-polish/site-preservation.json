@@ -1,0 +1,18 @@
+{
+  "applicationCommit": "99bf90b22a61cfd287393338fc55f65f3ba057a1",
+  "revision": "3f9e88e523149b2d4e7a230ee532547d0f9b0bb2ee54f6b20a93b9980acd2e98",
+  "dirty": false,
+  "protectedFiles": 146,
+  "changedOutsideAllowedScope": [],
+  "hostingUnchanged": true,
+  "gameSha256": "8a69fc915a94a9ba3b64655b91597295661559b521e20a748c6b6d171199d6d5",
+  "allowedRootChanges": [
+    "README.md",
+    "dist/build-info.json",
+    "dist/index.html",
+    "dist/launcher-sw.js",
+    "dist/manifest.webmanifest"
+  ],
+  "package": "/tmp/neon-specialist-playtest-99bf90b",
+  "preparedAt": "2026-10-18T12:16:51.729109+00:00"
+}

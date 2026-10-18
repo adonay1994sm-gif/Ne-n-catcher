@@ -1,10 +1,16 @@
 # DIAGNÓSTICO
 
-HEAD inicial/remoto50bc9ca conservado. Defectos de alpha, celdasAtlas y propulsión comprobados; seis especialistas aportan correcciones integradas sin cambiar reglas/guardados.
+HEAD/remoto inicial50bc9ca conservado; último runtime previoF634. Contornos truncados deAtlas, CRONIUMopaco, deformación de llama y lanzador pegado al misil reproducidos. Seis especialistas coordinaron correcciones sin cambiar reglas, economía o guardados.
 
 # INFORME DE PRODUCCIÓN — SPECIALIST_POLISH
 
-18/10/2026 · [Informe vigente](production-reports/SPECIALIST_POLISH_2026-10-18.md). IN_REVIEW: certificación y comprobación de paquete/publicación en curso. Arte y dispositivo pendientes. El contenido siguiente corresponde al cierre anterior y se conserva como historial.
+18/10/2026 · [Informe y limitaciones](production-reports/SPECIALIST_POLISH_2026-10-18.md) · [Galería antes/después](production-reports/evidence/specialist-polish/GALERIA.md).
+
+[Web privada21](https://neon-catcher-pruebas.chictide18.chatgpt.site) comprobada HTTP16/16; runtime limpio99bf90b, fuenteSite187261541dd7cb9d56132a68d956fe6e08bc2ea9. Actions39126299949success. Atlas/CRONIUM renovados, propulsión proporcionada, impactos de misil y banco original16variantes integrados. Dos skills locales y Pixelmatch con licencias fijadas; once departamentos lógicos, seis especialistas usados en este lote.
+
+Certificación11/11; contenido617, preview23, visual12, offline7. Partida natural4/4: dieztramos+C9+Atlas+reload, sininyecciones,469.492ms,casco100/refuerzo8 y saldo705. Arte/escucha/dispositivo pendientes. Equipo/procedimientos DONE y cuatro tareas artísticas IN_REVIEW; total355/catálogo168/inventario96 no equivale a terminación comercial. Siguiente: separación HUD/Atlas y contrasteGaia sin alterar física. MotorV1false, sin producciónNetlify/main/PR3/tiendas.
+
+Contenido siguiente histórico.
 
 ---
 

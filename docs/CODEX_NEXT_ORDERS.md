@@ -1,6 +1,14 @@
-## Lote vigente ·18/10/2026 · SPECIALIST_POLISH · IN_REVIEW
+## Continuación vigente ·18/10/2026 · SPECIALIST_POLISH
 
-Seis especialistas de sesión, dos skills locales validadas y Pixelmatch ISC fijado. Atlas/CRONIUM nuevos, propulsión proporcionada, impacto de misil y banco de combate integrados; certificación final/browser/publicación en curso. Leer [diagnóstico e informe](production-reports/SPECIALIST_POLISH_2026-10-18.md). No declarar cerrado ni atribuir al nuevo código pruebas del runtime anterior. Preservar las restricciones vigentes y revisar este lote antes de ampliar.
+Leer [cierre y evidencias](production-reports/SPECIALIST_POLISH_2026-10-18.md), `production-tasks.json` y [.agents/skills/neon-production/SKILL.md](../.agents/skills/neon-production/SKILL.md). Runtime webprivada21: `99bf90b22a61cfd287393338fc55f65f3ba057a1`, CI39126299949success. No volver a los recortes viejos ni cambiar el tamaño40% sin orden del propietario.
+
+1. Revisar con el propietario la [galería real](production-reports/evidence/specialist-polish/GALERIA.md) y sonidos de combate en la web. Los Atlas/CRONIUM nuevos y los efectos están integrados; no confundir atlas aislados con gameplay ni síntesis original con instrumentos grabados.
+2. Siguiente ajuste concreto: separación Atlas/transmisión en320×568 y contraste del jefe sobreGaia, conservando posición/núcleo/collider y legibilidad táctil. Añadir prueba de separación gráfica que reproduzca el defecto; actualmente los checks de estados no certifican toda la composición.
+3. Continuar apertura mecánica más fluida, daño modular ilustrado y montaje fijo de lanzamiento4–7 (vuelo0–3 eimpacto/restos8–15 ya funcionan; no pegar el lanzador al proyectil). C9pequeño necesita revisión de scroll.
+4. Audición humana/mezcla y Safari/iPhone físico: dos dedos, interrupción, memoria y rendimiento. No atribuir FPS/latencia o calidad estética a las pruebas headless.
+5. Tras cerrar la referencia1, continuar Gaia2/CH03 y conexioneshaciaVulkar. Conservar otros9territorios y campañasN7/Journey; no generalizar un estilo rechazado ni producir cienetapas ahora. Reservar decisión del MotorV1 al propietario; siguefalse, RAF único, ramaautorizada, no producción/tiendas/gastos.
+
+Las skills son instrucciones persistidas y los especialistas son procesos de sesión; no prometer reentrenamiento ni trabajo24h. No volver a pedir correo de soporte aplazado ni permisos técnicos rutinarios. Historial conservado.
 
 ---
 

@@ -98,7 +98,7 @@ function atlasFrames(snapshot){return draws(snapshot,'guardianAtlas').map(call=>
             spawnTimer=classicScoutTimer=classicPatrolTimer=999;gateCountdown=999;
             qaRender();
           },
-          energy(time){elapsed=time;items=[{type:'energy',x:W*.32,y:H*.42,r:22,phase:0,p:0,alpha:1,rot:0}];qaRender();},
+          energy(time){elapsed=time;items=[{type:'energy',x:W*.75,y:H*.62,r:22,phase:0,p:0,alpha:1,rot:0}];qaRender();},
           projectile(age){items=[];impactEffects=[];classicWeapons.projectiles=[{id:'specialist-missile-fixture',weapon:'missile',x:W*.5,y:H*.49,vx:0,vy:-760,duration:3.2,life:3.2-age,radius:10,damage:6}];qaRender();},
           impact(age){items=[];classicWeapons.projectiles=[];impactEffects=[];addMissileImpact(W*.5,H*.49);
             if(impactEffects.length!==1)throw new Error('Real missile-impact helper did not emit its effect');

@@ -1009,12 +1009,12 @@
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
-      "technicalAcceptance": "PENDING_CURRENT_BROWSER",
+      "technicalAcceptance": "FLIGHT_IMPACT_AFTERMATH_CHROMIUM_PASSED_LAUNCH_MOUNT_PENDING",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Canva original opening concept plus original imagegen production masters; see metadata for precise provenance; no Canva video export.",
       "version": 1,
-      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json",
       "integration": "Physical flight cells0–3; launch hardware4–7 retained as authoring reference. Impact8–11 and aftermath12–15 use existing impact lifetime without extra damage/reward."
     },
     {
@@ -1075,12 +1075,13 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original authored production; retained masters and precise tool/source provenance in metadata",
       "version": 2,
-      "decodedRGBABytes": 8388608
+      "decodedRGBABytes": 8388608,
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
     },
     {
       "id": "cronium-energy-v2",
@@ -1096,12 +1097,13 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original authored production; retained masters and precise tool/source provenance in metadata",
       "version": 2,
-      "decodedRGBABytes": 1048576
+      "decodedRGBABytes": 1048576,
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
     },
     {
       "id": "combat-sfx-atlas-v1",
@@ -1117,12 +1119,14 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original authored production; retained masters and precise tool/source provenance in metadata",
       "version": 1,
-      "decodedPCMBytesAt48000": 2626560
+      "decodedPCMBytesAt48000": 2626560,
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json",
+      "decodedPCMBytesMeasuredChromium44100": 2413152
     },
     {
       "id": "combat-sfx-map-v1",
@@ -1138,11 +1142,12 @@
       "status": "IN_REVIEW",
       "activeRuntime": true,
       "precache": true,
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
       "origin": "Original authored production; retained masters and precise tool/source provenance in metadata",
-      "version": 1
+      "version": 1,
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
     }
   ],
   "project": "NEON CRONIUM"

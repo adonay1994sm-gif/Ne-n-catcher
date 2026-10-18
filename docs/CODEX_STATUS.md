@@ -1,6 +1,10 @@
-## Lote vigente ·18/10/2026 · SPECIALIST_POLISH · IN_REVIEW
+## Cierre vigente ·18/10/2026 · SPECIALIST_POLISH
 
-Seis especialistas de sesión, dos skills locales validadas y Pixelmatch ISC fijado. Atlas/CRONIUM nuevos, propulsión proporcionada, impacto de misil y banco de combate integrados; certificación final/browser/publicación en curso. Leer [diagnóstico e informe](production-reports/SPECIALIST_POLISH_2026-10-18.md). No declarar cerrado ni atribuir al nuevo código pruebas del runtime anterior. Preservar las restricciones vigentes y revisar este lote antes de ampliar.
+[Informe detallado](production-reports/SPECIALIST_POLISH_2026-10-18.md) · [Galería real antes/después](production-reports/evidence/specialist-polish/GALERIA.md) · [Web privada21](https://neon-catcher-pruebas.chictide18.chatgpt.site).
+
+Runtime limpio publicado `99bf90b22a61cfd287393338fc55f65f3ba057a1`, Actions39126299949success y HTTP16/16. Seis especialistas efectivos, dos skills locales validadas y Pixelmatch ISC de QA. Atlas con atlas entero, CRONIUM energético, propulsión proporcionada, misil con impacto/restos y16efectos originales conectados al bus existente. Certificación11/11 fases, contenido617, preview23, visual12 y offline7; partida natural4/4 (469.492ms, diez tramos+C9+Atlas+reload, sininyecciones). Las capturas controladas no son balance ni aceptación artística.
+
+Equipo/procedimientos DONE; cuatro tareas artísticas IN_REVIEW. Registro355tareas/catálogo168/inventario96, sin porcentaje comercial. Mantener nave40%, guardados, campañas y MotorV1false. Estética, escucha humana, HUD/contrasteAtlas320 y Safari/iPhone pendientes; no declarar terminados los diez niveles. Contenido siguiente histórico.
 
 ---
 

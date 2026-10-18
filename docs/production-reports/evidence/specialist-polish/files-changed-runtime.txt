@@ -1,0 +1,185 @@
+commit 99bf90b22a61cfd287393338fc55f65f3ba057a1
+Author:     Adonay Sanchez melo <68jg9pdwmv@privaterelay.appleid.com>
+AuthorDate: Sun Oct 18 12:11:48 2026 +0000
+Commit:     Adonay Sanchez melo <68jg9pdwmv@privaterelay.appleid.com>
+CommitDate: Sun Oct 18 12:11:48 2026 +0000
+
+    Integrate specialist art repairs, anchored propulsion and original combat foley
+
+ .agents/skills/neon-production/SKILL.md            |  32 +
+ .agents/skills/neon-production/agents/openai.yaml  |   4 +
+ .agents/skills/neon-visual-qa/SKILL.md             |  37 +
+ .agents/skills/neon-visual-qa/agents/openai.yaml   |   4 +
+ AGENTS.md                                          |   6 +
+ ASSET_MANIFEST.json                                | 106 ++-
+ ASSET_PRODUCTION_150.json                          |  96 ++-
+ art-source/atlas-repair-v2/PROVENANCE.json         |  23 +
+ art-source/atlas-repair-v2/README.md               |  33 +
+ art-source/atlas-repair-v2/alpha-qa.json           | 403 +++++++++
+ art-source/atlas-repair-v2/audit-alpha.py          |  20 +
+ .../atlas-repair-v2/frames/00-arrival-closed.png   | Bin 0 -> 256818 bytes
+ art-source/atlas-repair-v2/frames/01-idle-open.png | Bin 0 -> 273483 bytes
+ .../frames/02-attack-windup-closed.png             | Bin 0 -> 272857 bytes
+ .../atlas-repair-v2/frames/03-fire-closed.png      | Bin 0 -> 282945 bytes
+ art-source/atlas-repair-v2/frames/04-hurt-open.png | Bin 0 -> 275691 bytes
+ .../frames/05-phase-break-open-ring.png            | Bin 0 -> 302135 bytes
+ .../frames/06-phase-two-fire-closed.png            | Bin 0 -> 304992 bytes
+ .../frames/07-disabled-restored.png                | Bin 0 -> 299807 bytes
+ .../guardian-atlas-generated-edit-master.png       | Bin 0 -> 2903039 bytes
+ .../guardian-atlas-packed-master.png               | Bin 0 -> 2263489 bytes
+ art-source/atlas-repair-v2/metadata.json           | 396 +++++++++
+ art-source/atlas-repair-v2/pack-atlas.py           |  53 ++
+ art-source/atlas-repair-v2/qa-contact-dark.jpg     | Bin 0 -> 556181 bytes
+ art-source/atlas-repair-v2/qa-contact-light.jpg    | Bin 0 -> 571976 bytes
+ art-source/audio/combat-sfx-v1/PROVENANCE.json     |  44 +
+ art-source/audio/combat-sfx-v1/README.md           |  95 +++
+ .../combat-sfx-v1/aac-decode-measurements.json     | 155 ++++
+ art-source/audio/combat-sfx-v1/audition.html       |  41 +
+ .../audio/combat-sfx-v1/combat_sfx_atlas_v1.wav    | Bin 0 -> 1969964 bytes
+ .../combat-sfx-v1/masters/atlas-charge-01.wav      | Bin 0 -> 126764 bytes
+ .../combat-sfx-v1/masters/atlas-charge-02.wav      | Bin 0 -> 126764 bytes
+ .../combat-sfx-v1/masters/atlas-collapse-01.wav    | Bin 0 -> 266444 bytes
+ .../combat-sfx-v1/masters/atlas-collapse-02.wav    | Bin 0 -> 266444 bytes
+ .../audio/combat-sfx-v1/masters/enemy-break-01.wav | Bin 0 -> 136844 bytes
+ .../audio/combat-sfx-v1/masters/enemy-break-02.wav | Bin 0 -> 136844 bytes
+ .../audio/combat-sfx-v1/masters/hull-hit-01.wav    | Bin 0 -> 83564 bytes
+ .../audio/combat-sfx-v1/masters/hull-hit-02.wav    | Bin 0 -> 83564 bytes
+ .../combat-sfx-v1/masters/impact-metal-01.wav      | Bin 0 -> 63404 bytes
+ .../combat-sfx-v1/masters/impact-metal-02.wav      | Bin 0 -> 63404 bytes
+ .../combat-sfx-v1/masters/impact-plasma-01.wav     | Bin 0 -> 57644 bytes
+ .../combat-sfx-v1/masters/impact-plasma-02.wav     | Bin 0 -> 57644 bytes
+ .../combat-sfx-v1/masters/missile-launch-01.wav    | Bin 0 -> 83564 bytes
+ .../combat-sfx-v1/masters/missile-launch-02.wav    | Bin 0 -> 83564 bytes
+ .../audio/combat-sfx-v1/masters/phaser-01.wav      | Bin 0 -> 28844 bytes
+ .../audio/combat-sfx-v1/masters/phaser-02.wav      | Bin 0 -> 28844 bytes
+ art-source/audio/combat-sfx-v1/measurements.json   | 173 ++++
+ art-source/audio/combat-sfx-v1/render_bank.py      | 190 +++++
+ .../audio/combat-sfx-v1/research/Tonejs-LICENSE.md |  21 +
+ .../audio/combat-sfx-v1/research/chr15m-UNLICENSE  |  25 +
+ .../combat-sfx-v1/research/goldfire-LICENSE.md     |  20 +
+ .../audio/combat-sfx-v1/research/sources.json      |  26 +
+ art-source/audio/combat-sfx-v1/unit-tests.txt      |  36 +
+ art-source/cronium-repair-v1/PROVENANCE.json       |  63 ++
+ art-source/cronium-repair-v1/README.md             |  35 +
+ art-source/cronium-repair-v1/atlas.json            | 131 +++
+ art-source/cronium-repair-v1/export-atlas.cjs      |  72 ++
+ .../cronium-repair-v1/frames/cronium_energy_00.png | Bin 0 -> 53027 bytes
+ .../cronium-repair-v1/frames/cronium_energy_01.png | Bin 0 -> 72607 bytes
+ .../cronium-repair-v1/frames/cronium_energy_02.png | Bin 0 -> 57802 bytes
+ .../cronium-repair-v1/frames/cronium_energy_03.png | Bin 0 -> 64524 bytes
+ .../masters/cronium_energy_atlas_generated_v2.png  | Bin 0 -> 1708798 bytes
+ .../masters/cronium_energy_atlas_normalized_v2.png | Bin 0 -> 247275 bytes
+ art-source/cronium-repair-v1/qa/black.png          | Bin 0 -> 228643 bytes
+ art-source/cronium-repair-v1/qa/gray.png           | Bin 0 -> 216190 bytes
+ .../qa/native-scale-24-32-40-48.png                | Bin 0 -> 25264 bytes
+ .../cronium-repair-v1/qa/static-asset-report.json  |  85 ++
+ art-source/cronium-repair-v1/qa/white.png          | Bin 0 -> 207398 bytes
+ art-source/cronium-repair-v1/verify-atlas.cjs      |  56 ++
+ assets/combat_sfx_atlas_v1.json                    | 138 +++
+ assets/combat_sfx_atlas_v1.m4a                     | Bin 0 -> 241003 bytes
+ assets/cronium_energy_atlas_v2.webp                | Bin 0 -> 72176 bytes
+ assets/guardian_atlas_states_v2.webp               | Bin 0 -> 656550 bytes
+ content-runtime.js                                 | 369 ++++++--
+ content-runtime.js.map                             |   8 +-
+ docs/CODEX_NEXT_ORDERS.md                          |   6 +
+ docs/CODEX_STATUS.md                               |   6 +
+ docs/PRODUCTION_LATEST_REPORT.md                   |  10 +
+ docs/PRODUCTION_MASTER_CHECKLIST.md                |  27 +-
+ docs/PRODUCTION_PROGRESS.md                        |  25 +-
+ docs/agents/OPEN_SOURCE_REVIEW.md                  |  48 ++
+ docs/agents/SPECIALIST_TEAM.md                     |  51 ++
+ .../SPECIALIST_POLISH_2026-10-18.md                |  37 +
+ .../specialist-polish/asset-qa/atlas-v2-black.png  | Bin 0 -> 2227893 bytes
+ .../asset-qa/atlas-v2-frame0-vs1-diff.png          | Bin 0 -> 49204 bytes
+ .../specialist-polish/asset-qa/atlas-v2-gray.png   | Bin 0 -> 2250610 bytes
+ .../specialist-polish/asset-qa/atlas-v2-white.png  | Bin 0 -> 2334515 bytes
+ .../asset-qa/cronium-core-frame00-v1-black.png     | Bin 0 -> 75921 bytes
+ .../asset-qa/cronium-core-frame00-v1-gray.png      | Bin 0 -> 76497 bytes
+ .../asset-qa/cronium-core-frame00-v1-white.png     | Bin 0 -> 77645 bytes
+ .../asset-qa/cronium-fragment-v1-black.png         | Bin 0 -> 41920 bytes
+ .../asset-qa/cronium-fragment-v1-gray.png          | Bin 0 -> 40812 bytes
+ .../asset-qa/cronium-fragment-v1-white.png         | Bin 0 -> 41524 bytes
+ .../asset-qa/cronium-v2-black.png                  | Bin 0 -> 212012 bytes
+ .../asset-qa/cronium-v2-frame0-vs1-diff.png        | Bin 0 -> 7235 bytes
+ .../specialist-polish/asset-qa/cronium-v2-gray.png | Bin 0 -> 207139 bytes
+ .../asset-qa/cronium-v2-white.png                  | Bin 0 -> 206196 bytes
+ .../specialist-polish/asset-qa/results.json        | 688 +++++++++++++++
+ .../certification-01/architecture.txt              |  12 +
+ .../certification-01/audio-lifecycle.txt           |  11 +
+ .../specialist-polish/certification-01/build.txt   |  24 +
+ .../content-integration-assets.txt                 | 931 +++++++++++++++++++++
+ .../specialist-polish/certification-01/engine.txt  |  72 ++
+ .../experimental-render-adapter.txt                |  22 +
+ .../certification-01/inventory.txt                 |  13 +
+ .../certification-01/regression.txt                |  34 +
+ .../certification-01/results.json                  | 154 ++++
+ .../specialist-polish/certification-01/static.txt  |  33 +
+ .../certification-01/visual-artpass.txt            |  20 +
+ .../specialist-polish/certification-01/web.txt     |  25 +
+ .../certification-02/architecture.txt              |  12 +
+ .../certification-02/audio-lifecycle.txt           |  11 +
+ .../specialist-polish/certification-02/build.txt   |  24 +
+ .../content-integration-assets.txt                 | 750 +++++++++++++++++
+ .../specialist-polish/certification-02/engine.txt  |  72 ++
+ .../experimental-render-adapter.txt                |  22 +
+ .../certification-02/inventory.txt                 |  13 +
+ .../certification-02/regression.txt                |  41 +
+ .../certification-02/results.json                  | 154 ++++
+ .../specialist-polish/certification-02/static.txt  |  19 +
+ .../certification-02/visual-artpass.txt            |  20 +
+ .../specialist-polish/certification-02/web.txt     |  18 +
+ .../specialist-polish/skill-validation.json        |  22 +
+ docs/production-tasks.json                         | 264 +++++-
+ game.js                                            | 141 ++--
+ ios/App/App/public/content-runtime.js              | 369 ++++++--
+ ios/App/App/public/content-runtime.js.map          |   8 +-
+ ios/App/App/public/game.js                         | 141 ++--
+ ios/App/App/public/sw.js                           |   7 +-
+ package.json                                       |   2 +-
+ scripts/chapter-one-offline-smoke.cjs              |  14 +-
+ scripts/specialist-game-smoke.cjs                  | 234 ++++++
+ scripts/specialist-visual-assets.mjs               | 173 ++++
+ src/game/01-runtime-assets.js                      |   3 +-
+ src/game/02-storage-audio.js                       |  24 +
+ src/game/03-ui-game-flow.js                        |  26 +-
+ src/game/04-entities-collision-damage.js           |  10 +-
+ src/game/07-player-item-rendering.js               |  77 +-
+ src/game/08-loop-input-bootstrap.js                |   1 +
+ src/game/animation/animation-map.js                |  13 +
+ src/game/animation/guardian-atlas-animator.js      |  36 +-
+ src/game/audio/combat-sfx.js                       | 168 ++++
+ src/game/progression/legacy-content-entry.js       |   1 +
+ src/game/ship/modular-ship.js                      |  49 +-
+ sw.js                                              |   7 +-
+ tests/combat-sfx-legacy.test.mjs                   | 279 ++++++
+ tests/combat-sfx.test.mjs                          | 261 ++++++
+ tests/guardian-atlas-animation.test.mjs            | 107 ++-
+ tests/hostile-ordnance-rendering.test.mjs          |  11 +-
+ tests/hull-reinforcement.test.mjs                  |   2 +-
+ tests/modular-propulsion.test.mjs                  |  75 ++
+ tests/product-brand.test.mjs                       |   2 +-
+ tests/run-static-tests.mjs                         |   2 +-
+ tests/run-tests.mjs                                |   2 +-
+ tests/run-v7-web-tests.mjs                         |   5 +-
+ tests/ship-render-fallback.test.mjs                |  40 +-
+ tests/ship-scale-energy.test.mjs                   | 119 ++-
+ tests/visual-polish-assets.test.mjs                |  63 ++
+ tools/third-party/pixelmatch/LICENSE               |  15 +
+ tools/third-party/pixelmatch/README.md             |   7 +
+ tools/third-party/pixelmatch/SOURCE.json           |  32 +
+ tools/third-party/pixelmatch/index.js              | 605 +++++++++++++
+ tools/third-party/skills/SOURCES.json              |  96 +++
+ .../skills/anthropic-webapp-testing/LICENSE.txt    | 202 +++++
+ .../skills/anthropic-webapp-testing/SKILL.md       |  96 +++
+ .../scripts/with_server.py                         | 106 +++
+ .../skills/openai-skill-creator/LICENSE.txt        | 202 +++++
+ .../skills/openai-skill-creator/SKILL.md           | 368 ++++++++
+ .../openai-skill-creator/references/openai_yaml.md |  43 +
+ .../scripts/generate_openai_yaml.py                | 225 +++++
+ .../openai-skill-creator/scripts/init_skill.py     | 397 +++++++++
+ .../openai-skill-creator/scripts/quick_validate.py | 101 +++
+ www/content-runtime.js                             | 369 ++++++--
+ www/content-runtime.js.map                         |   8 +-
+ www/game.js                                        | 141 ++--
+ www/sw.js                                          |   7 +-
+ 176 files changed, 11609 insertions(+), 570 deletions(-)

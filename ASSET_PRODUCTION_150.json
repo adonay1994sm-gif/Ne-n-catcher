@@ -2943,10 +2943,10 @@
       "sha256": "8b4949b8e87b8b1e2c744ea9b3f227025ca21e365251d9266d4c09ee6f379a05",
       "decodedRGBABytes": 4194304,
       "integration": "Launch/flight frames0–7 integrated and verified; impact uses existing Gaia VFX. Dedicated impact/aftermath frames8–15 remain pending.",
-      "technicalAcceptance": "LAUNCH_FLIGHT_CHROMIUM_PASSED_IMPACT_POSES_PENDING",
+      "technicalAcceptance": "FLIGHT_IMPACT_AFTERMATH_CHROMIUM_PASSED_LAUNCH_MOUNT_PENDING",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
-      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
     },
     {
       "sequence": 163,
@@ -3014,9 +3014,10 @@
       "masterPath": "art-source/atlas-repair-v2/guardian-atlas-packed-master.png",
       "bytes": 656550,
       "sha256": "6ddaa0d7c9d97b23430829b9470b06da0ad30d395fc7f4e8dbd320dbcf989da5",
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
-      "physicalAcceptance": "PENDING"
+      "physicalAcceptance": "PENDING",
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
     },
     {
       "sequence": 166,
@@ -3036,9 +3037,10 @@
       "masterPath": "art-source/cronium-repair-v1/masters/cronium_energy_atlas_normalized_v2.png",
       "bytes": 72176,
       "sha256": "3b374f972a69d13f9ec11436c8a6221d970b66d31eeb39cb64af61d344820a15",
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
-      "physicalAcceptance": "PENDING"
+      "physicalAcceptance": "PENDING",
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
     },
     {
       "sequence": 167,
@@ -3058,9 +3060,11 @@
       "masterPath": "art-source/audio/combat-sfx-v1/combat_sfx_atlas_v1.wav",
       "bytes": 241003,
       "sha256": "c3edcbbe73aad99123c3ea0647b2d8cfdc43732fe746a6e172cbb008adaeaff8",
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
-      "physicalAcceptance": "PENDING"
+      "physicalAcceptance": "PENDING",
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json",
+      "decodedPCMBytesMeasuredChromium44100": 2413152
     },
     {
       "sequence": 168,
@@ -3080,9 +3084,10 @@
       "masterPath": "art-source/audio/combat-sfx-v1/PROVENANCE.json",
       "bytes": 2463,
       "sha256": "ad287afd6e0102b5d1575042372983fa6cf38e671f680e9245b0c88210cbbeed",
-      "technicalAcceptance": "PENDING_INTEGRATED_BROWSER",
+      "technicalAcceptance": "CURRENT_CHROMIUM_INTEGRATION_PASSED",
       "artisticAcceptance": "PENDING_OWNER",
-      "physicalAcceptance": "PENDING"
+      "physicalAcceptance": "PENDING",
+      "evidence": "docs/production-reports/evidence/specialist-polish/game-02/results.json"
     }
   ]
 }

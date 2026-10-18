@@ -1,0 +1,127 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 4603,
+      "sha256": "91da9d939abab8f465f50c4c78d443851690a36706913f5f276cf6ec77fbec66",
+      "result": "passed"
+    },
+    {
+      "path": "/manifest.webmanifest",
+      "status": 200,
+      "bytes": 649,
+      "sha256": "2d143777ea25bd8265d85626a0a35669052c2b309216e47f30226a12b79fd191",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/build-info.json",
+      "status": 200,
+      "bytes": 34904,
+      "sha256": "6280050179beaad6e334e3917aec1647e7b55c32106421f4442355cfc63440d2",
+      "result": "passed",
+      "commit": "99bf90b22a61cfd287393338fc55f65f3ba057a1",
+      "revision": "3f9e88e523149b2d4e7a230ee532547d0f9b0bb2ee54f6b20a93b9980acd2e98",
+      "dirty": false
+    },
+    {
+      "path": "/clasico-actual/juego/game.js",
+      "status": 200,
+      "bytes": 291205,
+      "sha256": "8a69fc915a94a9ba3b64655b91597295661559b521e20a748c6b6d171199d6d5",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/content-runtime.js",
+      "status": 200,
+      "bytes": 237974,
+      "sha256": "17c3cd1674c05a4b5dd80203190e02efa8ebd0540778f80e6e61192bcbaf2de1",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/guardian_atlas_states_v2.webp",
+      "status": 200,
+      "bytes": 656550,
+      "sha256": "6ddaa0d7c9d97b23430829b9470b06da0ad30d395fc7f4e8dbd320dbcf989da5",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/cronium_energy_atlas_v2.webp",
+      "status": 200,
+      "bytes": 72176,
+      "sha256": "3b374f972a69d13f9ec11436c8a6221d970b66d31eeb39cb64af61d344820a15",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/combat_sfx_atlas_v1.m4a",
+      "status": 200,
+      "bytes": 241003,
+      "sha256": "c3edcbbe73aad99123c3ea0647b2d8cfdc43732fe746a6e172cbb008adaeaff8",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/combat_sfx_atlas_v1.json",
+      "status": 200,
+      "bytes": 2463,
+      "sha256": "ad287afd6e0102b5d1575042372983fa6cf38e671f680e9245b0c88210cbbeed",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/gaia_pulse_atlas_v3.webp",
+      "status": 200,
+      "bytes": 256162,
+      "sha256": "8dda1bfa8100ce607386ae5c345fc8350987e1651b5f856f499a16b0fc12ad48",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/hostile_ordnance_atlas_v1.webp",
+      "status": 200,
+      "bytes": 237838,
+      "sha256": "24caa31504a647907f22f18f539e7de3170d7d4eaf7918104664921df631a0bf",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_intro_atlas_v1.webp",
+      "status": 200,
+      "bytes": 490076,
+      "sha256": "231c0e399aca61b83582c456cf2eb992b605474f1329ee5faf4ddac2170bf724",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_missile_atlas_v1.webp",
+      "status": 200,
+      "bytes": 246250,
+      "sha256": "8b4949b8e87b8b1e2c744ea9b3f227025ca21e365251d9266d4c09ee6f379a05",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_portraits_v1.webp",
+      "status": 200,
+      "bytes": 67988,
+      "sha256": "445980a34b7d2982a61632e2ac0ca73a2f48cd9906cba6c82996afc098b115f3",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_opening_score_v1.m4a",
+      "status": 200,
+      "bytes": 400143,
+      "sha256": "d01ec5d63a053aec7fd59c8cea92ce8620c40fb6ed8ba139ec328a0abca0f29f",
+      "result": "passed"
+    },
+    {
+      "path": "/clasico-actual/juego/assets/chapter1_voyage_score_v1.m4a",
+      "status": 200,
+      "bytes": 683409,
+      "sha256": "5dbfb655178502c0e879613be0580b9849f4ea0de87504be946e193c38789368",
+      "result": "passed"
+    }
+  ],
+  "observedAt": "2026-10-18T12:18:25.420189+00:00",
+  "site": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+  "applicationCommit": "99bf90b22a61cfd287393338fc55f65f3ba057a1",
+  "revision": "3f9e88e523149b2d4e7a230ee532547d0f9b0bb2ee54f6b20a93b9980acd2e98",
+  "method": "Real authenticated HTTP with configured environment transport",
+  "errors": [],
+  "exitCode": 0
+}

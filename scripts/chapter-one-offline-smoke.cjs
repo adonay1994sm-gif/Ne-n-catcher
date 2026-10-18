@@ -1,4 +1,4 @@
-// Real same-origin Chromium upgrade from deployed49 to the chapter-one build.
+// Real same-origin Chromium upgrade between two exact preserved preview packages.
 // Only a temporary serving fixture and explicitly declared prior-save fixtures
 // are written. No game-source hooks, response routing or simulation changes.
 const {chromium} = require('playwright');
@@ -10,9 +10,11 @@ const {pathToFileURL} = require('node:url');
 const {execFileSync} = require('node:child_process');
 const {parseArgs} = require('node:util');
 const {startStaticServer, prepareEvidence, saveEvidence, sha256, errorText} = require('./browser-qa-helpers.cjs');
-const {values} = parseArgs({options: {root: {type: 'string'}, previous: {type: 'string'}, output: {type: 'string'}, timeout: {type: 'string'}, 'expected-commit': {type: 'string'}}});
+const {values} = parseArgs({options: {root: {type: 'string'}, previous: {type: 'string'}, output: {type: 'string'}, timeout: {type: 'string'}, 'expected-commit': {type: 'string'}, 'previous-commit': {type:'string'}}});
 const root = path.resolve(values.root || 'preview-dist');
 const previous = path.resolve(values.previous || '/tmp/neon-chapter-previous49');
+const expectedPrevious=values['previous-commit']||'49e4e59e7f5301d2b44e929755b4895f5b830212';
+assert.match(expectedPrevious,/^[a-f0-9]{40}$/,'Require the exact previous package commit');
 const output = path.resolve(values.output || 'docs/production-reports/evidence/chapter-one/offline-01');
 const timeout = Number(values.timeout || 120000);
 assert.ok(Number.isFinite(timeout) && timeout >= 30000 && timeout <= 180000);
@@ -22,7 +24,7 @@ const report = {status: 'running', exitCode: null, command: process.argv, starte
   root, previous, cases: [], errors: [], consoleErrors: [], failedRequests: [], incidentalBrowserRequests: [],
   screenshots: [], assetResponses: [],
   limits: ['Real Chromium native service workers on a temporary same-origin HTTP copy; not an installed iPhone PWA or Safari.',
-    'Previous49 is an immutable copy of the actual prior deployed package. Both inputs are hashed before/after; only a temporary same-origin serving copy is replaced.',
+    'Previous is an immutable copy of the explicitly identified prior package. Both inputs are hashed before/after; only a temporary same-origin serving copy is replaced.',
     'Upgrade scenario seeds declared compatibility saves, including an authentic old-schema empty salvage ledger: zero money, zero purchases. These are fixtures, not progress earned in play. A separate fresh context launches the naturally unlocked chapter without any seeded save.',
     'No source hooks, request interception, entity insertion, clock acceleration or in-flight counter changes.',
     'RAF and drawImage observers call the original functions unchanged and do not create another animation loop.',
@@ -260,7 +262,9 @@ async function prepareContext() {
   report.currentInfo = JSON.parse(await fs.readFile(path.join(root, 'build-info.json'), 'utf8'));
   assert.equal(report.currentInfo.dirty, false, 'Upgrade certification requires a clean final package');
   if(values['expected-commit'])assert.equal(report.currentInfo.commit,values['expected-commit'],'Wrong immutable package for this QA');
-  assert.equal(report.previousInfo.commit,'49e4e59e7f5301d2b44e929755b4895f5b830212','Preserve the actual prior49 package');
+  assert.equal(report.previousInfo.commit,expectedPrevious,'Preserve and identify the actual prior package');
+  assert.equal(report.previousInfo.dirty,false,'The prior input must also be a clean preserved build');
+  assert.equal(report.previousInfo.engineV1,false);
   assert.notEqual(report.previousInfo.revision, report.currentInfo.revision, 'Build the new preview before running this test');
   assert.equal(report.previousInfo.storagePrefix, report.currentInfo.storagePrefix, 'This chapter update must not change save isolation');
   assert.equal(report.currentInfo.engineV1, false);
@@ -307,7 +311,12 @@ async function prepareContext() {
     await page.evaluate(async () => { const cache = await caches.open('chapter-offline-unrelated-app'); await cache.put('/keep', new Response('untouched')); });
     await page.reload({waitUntil: 'load'}); await page.locator('#menu.show').waitFor();
     assert.match(await page.locator('#playSector').innerText(), /ETAPA 1\.3\/10/);
-    savedBytesEqual(await storage(page), fixture);
+    const priorStorage=await storage(page);
+    // A newer prior package may already migrate this historical fixture on
+    // boot. Verify its exact backup and zero-money balances now, then verify
+    // that the current package preserves that same migration idempotently.
+    const priorWallet=JSON.parse(priorStorage[`${prefix}${economy.SCRAP_ECONOMY_KEY}`]);
+    savedBytesEqual(priorStorage,fixture,priorWallet.revision===2);
     await capture(page, 'previous-menu-checkpoint-1-3');
     report.previousStorage = await storage(page);
     const old = await workerState(page); assert.equal(old.registrations.length, 2);
@@ -331,7 +340,8 @@ async function prepareContext() {
     const current = await workerState(page);
     assert.ok(!current.caches.some(key => key.endsWith(report.previousInfo.revision)));
     assert.ok(current.caches.includes('chapter-offline-unrelated-app'));
-    savedBytesEqual(await storage(page), fixture);
+    const preservedPrior=Object.fromEntries(Object.keys(fixture).map(key=>[key,report.previousStorage[key]]));
+    savedBytesEqual(await storage(page),preservedPrior);
     await page.close(); return current;
   });
   await step('new online launcher/manifests fit 390px without booting the upgraded game yet', async () => {
