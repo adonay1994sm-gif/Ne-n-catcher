@@ -479,5 +479,13 @@ body.flight-mode #flightObjective .chapter-face[data-actor="iria"]{background-po
 .chapter-face[data-actor="mira"]{background-position:-34px 0}.chapter-face[data-actor="iria"]{background-position:-68px 0}
 #hullReserve{font-size:10px;font-weight:700;color:#b2c9ff;margin-left:3px;white-space:nowrap}
 body.flight-mode.atlas-combat .flight-comms{z-index:8;visibility:visible}
+/* The guardian identity replaces the route strip. Its old briefing panel
+   covered the character channel; the encounter itself communicates its core. */
+body.flight-mode.atlas-combat .atlas-encounter{top:calc(max(6px,env(safe-area-inset-top)) + 52px);left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));padding:4px 7px;gap:0;border-radius:5px;box-shadow:none;background:rgba(5,13,25,.78)}
+body.flight-mode.atlas-combat .atlas-identity{grid-template-columns:1fr auto;gap:3px 6px}
+body.flight-mode.atlas-combat .atlas-identity b{font-size:10px}
+body.flight-mode.atlas-combat .atlas-identity progress{height:3px}
+body.flight-mode.atlas-combat #atlasStatus{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+body.flight-mode.atlas-combat #flightObjective{top:calc(max(6px,env(safe-area-inset-top)) + 89px)}
 @media(max-width:420px){body.flight-mode .flight-weapon{max-width:100px;min-width:88px;padding-left:10px;padding-right:10px}body.flight-mode .fire-control{min-width:102px;padding-left:9px;padding-right:9px;gap:5px}.classic-missile{left:calc(50% - 29px);width:58px}}
 @media(prefers-reduced-motion:reduce){.classic-missile,.chapter-skip{transition:none}}

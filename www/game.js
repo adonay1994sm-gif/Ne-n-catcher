@@ -1581,7 +1581,7 @@
     if (!ui.atlasEncounter) return;
     if (!atlasBoss) return;
     const health = atlasBoss.hp / atlasBoss.maxHp;
-    const phaseLabel = atlasBoss.disabled ? "PROTOCOLO RESTAURADO" : `FASE ${atlasBoss.phase} · ${atlasBoss.vulnerability ? "NÚCLEO EXPUESTO" : "BLINDAJE CERRADO"}`;
+    const phaseLabel = atlasBoss.disabled ? "ENLACE RESTAURADO" : `FASE ${atlasBoss.phase}`;
     if (ui.atlasHealth.value !== health) ui.atlasHealth.value = health;
     let layoutChanged = false;
     if (ui.atlasPhase.textContent !== phaseLabel) { ui.atlasPhase.textContent = phaseLabel; layoutChanged = true; }
