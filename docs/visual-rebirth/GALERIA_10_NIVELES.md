@@ -1,3 +1,5 @@
+> **Cierre posterior vigente ·18/10/2026:** [MAIN_SALVAGE_COMBAT](../production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). El contenido siguiente es histórico. Se actualizaron el viaje clásico/combate/arte y el Site privado; no se certifican diez mundos completos por este incremento.
+
 ## Continuación vigente ·18/10/2026
 
 [Cierre Chronos–Gaia](../production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md): versión privada16/paquete d39ed44, CI39105045562success. Diez etapas del primer territorio con cruces/persecución; Gaia multicapa y CH-02 de16poses, ciclo completo natural4/4en332, arte/IAidénticos en d39, que corrige el refresco de puntos. Intento06actual por timeout conservado; no se presenta como otro kill. Arte/humanos/iPhone y resto deGaia pendientes; MotorV1apagado. Registro único actualizado; cifras/capturas siguientes son históricas.

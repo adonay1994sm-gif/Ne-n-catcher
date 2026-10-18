@@ -256,11 +256,11 @@ function combatTarget(q) {
   await check('navigate from the preview selector into classic Gaia using the real level menu', async () => {
     await page.goto(server.url, {waitUntil: 'load'});
     if (nested) {
-      // Read hrefs instead of guessing a new hosting URL or campaign parameter.
-      const href = await page.locator('a.card').evaluateAll(nodes => nodes.map(node => node.getAttribute('href'))
-        .find(value => value && !value.includes('campaign=')));
-      assert.ok(href, 'The preview selector has no classic-campaign link');
-      await page.locator(`a.card[href="${href}"]`).click();
+      // The production-style launcher has one explicit continuing route;
+      // inspect that real link instead of relying on an archived card class.
+      const href=await page.locator('#classiclink').getAttribute('href');
+      assert.ok(href && !href.includes('campaign='),'The launcher must link to the main classic journey');
+      await page.locator('#classiclink').click();
     }
     await wait(() => typeof __ATLAS_QA__ === 'function' && __ATLAS_QA__().state === 'menu');
     if (values['profile-cpu']) {

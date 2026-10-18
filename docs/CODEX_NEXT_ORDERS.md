@@ -1,3 +1,17 @@
+## Continuación vigente ·18/10/2026 · MAIN_SALVAGE_COMBAT
+
+Leer primero el [cierre con evidencia](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md) y su adenda final. No volver a introducir selector técnico, contador de munición, retícula de aim ni20→3 cargas. Preservar `neonCatcher.classicSalvage.v1`, sus recibos y las claves/checkpoints anteriores.
+
+1. Revisar la partida natural desde cero y cualquier incidencia registrada al ganar chatarra antes deC9; no confundir el fixture24 con dinero ganado en ruta.
+2. Validación del propietario: pulsoGaia, presión/legibilidad, cometas y economía. Ajustar balance con pruebas, sin multiplicar este estilo por cien etapas antes de revisión.
+3. CertificarSafari/iPhone, fluidez prolongada, suspensión y memoria decodificada. B09-01 conserva su alcance aunque Gaia mejore enChromium.
+4. Consolidar dos configuraciones y el ritmo deGaia/Atlas; después Gaia→Vulkar y producción de los demás territorios. La moneda estelar tiene conversión exacta100M, pero todavía falta balance de su obtención al final del juego.
+5. MotorV1 sigue reservado/desactivado. Sólo rama `continuity-assets-audit-20261013`; sinmain/PR3/forcepush/producción/AppStore.
+
+La web privada18 sirve runtimeb2a89f6; los commits documentales posteriores no implican un despliegue diferente. El informe indica los hashes del ZIP y el source commit del Site. Historial anterior conservado abajo.
+
+---
+
 ## Continuación vigente · 18/10/2026 · Site 17
 
 [Último cierre](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md). Juego 8d651b5; fuente del sitio 6d5c560, versión 17. Comprobar HEAD y remoto posteriores sin retroceder.

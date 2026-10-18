@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "CONTINUAR VIAJE opens the only visible canonical journey",
+      "status": "passed"
+    },
+    {
+      "name": "Actual Chronos start in the exact Site source distribution, no injected diagnostics",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "scope": "Local exact pushed Site distribution; no game diagnostics or saved-game fixtures; Chromium 390x844 DPR1, service workers blocked.",
+  "exitCode": 0
+}

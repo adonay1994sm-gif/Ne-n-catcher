@@ -1,9 +1,11 @@
 # Informe de producción vigente · NEON CRONIUM
 
-18/10/2026 · [Diagnóstico, informe completo y capturas](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md).
+18/10/2026 · [DIAGNÓSTICO e informe completo](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md).
 
-Runtime limpio probado/publicado: 8d651b51453c143d395d3feb8c0d5629066a72c9; rama continuity-assets-audit-20261013. Site privado 17: https://neon-catcher-pruebas.chictide18.chatgpt.site; fuente: 6d5c560ddc80daee30dcff0c30cd1f5b3f5eb9b4. HTTP real 4/4, sin producción Netlify.
+Runtime limpio probado/publicado: **b2a89f694215bddba3a5ba2f6d1a68a03c70cccd**. [Site privado18](https://neon-catcher-pruebas.chictide18.chatgpt.site), fuente37c1ce5722f34c57c60779a975d6348f911e4955; HTTP6/6. No producción Netlify.
 
-Seis mejoras integradas en revisión: C9 rápida, daño sin nubarrón, disparos animados y alineados, IA que mantiene el combate, Atlas manual con AUTO opcional, y arsenal por victoria. Se aprobaron 551 casos de suites y 23 de preview, con CI en verde; Atlas natural 4/4, C9 dirigida 4/4, observación de Gaia 4/4 y offline 5/5. Quedan pendientes la aceptación artística, las pruebas humanas y el iPhone físico. El rendimiento del campo durante la recogida requiere perfilado (B09-01).
+Entrada única, cargador20 sin contador, pagos con chatarra enC9, enemigos/Atlas más activos, lluvia de cometas y pulsosGaia ilustrados. Suites641 casos finales; CI39112642373 success. Chromium: Atlasmanual4/4,C9dirigida4/4,Gaia4/4,offline5/5,dosdedos7/7,cometas2/2 y rendimiento2/2. No son pruebas físicas ni aceptación estética.
 
-Seguimiento único: [production-tasks.json](production-tasks.json). Informes anteriores conservados en production-reports/; el cierre Chronos–Gaia previo es histórico. El informe incluye SHA del paquete, ZIP y hash, commits, errores conservados, pruebas y su alcance, y la continuación exacta.
+Ocho tareas nuevas con técnica verificada/IN_REVIEW; 333tareas de seguimiento incluyendo159 entradas del catálogo. No se expresa como porcentaje comercial. El informe distingue snapshots, SHA del paquete/ZIP, pruebas naturales/fixtures, fallos y correcciones. Consultar su adenda para la comprobación adicional de chatarra ganada desde cero antes deC9.
+
+Informe anterior histórico: [pulido y progresión](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md).

@@ -1,0 +1,10 @@
+✔ Gaia pulse production contains sixteen distinct transparent poses and a recoverable master (2.845896ms)
+✔ actual gameplay renderer chooses Gaia artwork for every weapon and contact impact, with historical fallback retained (1.507157ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.614476

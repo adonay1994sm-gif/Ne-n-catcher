@@ -1,3 +1,13 @@
+## Estado vigente ·18/10/2026 · entrada, combate y chatarra
+
+Runtime publicado y probado: `b2a89f694215bddba3a5ba2f6d1a68a03c70cccd`, limpio al empaquetar; Site privado18: https://neon-catcher-pruebas.chictide18.chatgpt.site. Fuente Site37c1ce5722f34c57c60779a975d6348f911e4955; HTTP remoto6/6 y distribución local2/2. [Informe completo y diagnóstico](production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md).
+
+Entrada principal única,20 cargas sin contador/recarga2s, chatarra recogible/pagosC9, IA v3/Atlasv4, cometas1.5/1.9 y dos atlas originales. MotorV1=false; saves y campañas preservados. Suites641 casos finales y CI39112642373 success; Chromium28 casos del juego, además deSite. Rendimiento Gaia11,56→59,17callbacks/s en este host; no es certificación iPhone. Ocho tareas técnicamente verificadas continúanIN_REVIEW por aceptación artística y física. Ver adenda del recorrido nuevo desde cero antes de afirmar economía naturalChronos→C9.
+
+El contenido anterior permanece como historial; sus cifras y mandatos sustituidos no describen el runtime actual.
+
+---
+
 ## Estado vigente · 18/10/2026 · pulido arcade
 
 [Informe completo](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md). Juego probado y publicado: **8d651b5**. Web privada: **versión 17**, fuente **6d5c560**. GitHub Actions funcional y QA aprobados.

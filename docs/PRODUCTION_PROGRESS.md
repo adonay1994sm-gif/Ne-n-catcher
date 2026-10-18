@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-18T08:38:18.172501+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-18**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -61,14 +61,14 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P2-ENEMY-COMBAT-01 / P2 | Mantener intención y respuesta de combate de los enemigos activos | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
 | P1-ATLAS-MANUAL-01 / P1 | Validar Atlas como reto manual con AUTO apagado y opt-in sólo en Ajustes | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
 | P2-ARSENAL-01 / P2 | Vincular Pulso→Atlas→Gemelo a victoria persistida y conservar armamento antiguo | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
-| P2-ENTRY-CANON-01 / P2 | Presentar una entrada definitiva con un único viaje principal | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
-| P2-MAGAZINE-20-01 / P2 | Integrar cargador de veinte disparos y recarga progresiva sin contador HUD | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
-| P2-SALVAGE-01 / P2 | Recuperar chatarra física y persistir denominaciones sin duplicaciones | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
-| P2-C9-TRADE-01 / P2 | Comprar mejoras C9 con chatarra y efecto visible persistido | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
-| P2-HOSTILE-PURSUIT-02 / P2 | Dar intención de interceptación a enemigos sin revelar el apuntado en el HUD | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
-| P1-ATLAS-TACTICS-03 / P1 | Integrar Atlas de dos fases con patrones observados y 36 HP frente al cargador nuevo | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
-| P3-COMET-SHOWER-01 / P3 | Convertir el gran vacío en cruces rápidos y lluvia de cometas transitables | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
-| P2-HOSTILE-ART-01 / P2 | Integrar proyectiles hostiles animados y fichas físicas de chatarra originales | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P2-ENTRY-CANON-01 / P2 | Presentar una entrada definitiva con un único viaje principal | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P2-MAGAZINE-20-01 / P2 | Integrar cargador de veinte disparos y recarga progresiva sin contador HUD | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P2-SALVAGE-01 / P2 | Recuperar chatarra física y persistir denominaciones sin duplicaciones | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P2-C9-TRADE-01 / P2 | Comprar mejoras C9 con chatarra y efecto visible persistido | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P2-HOSTILE-PURSUIT-02 / P2 | Dar intención de interceptación a enemigos sin revelar el apuntado en el HUD | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P1-ATLAS-TACTICS-03 / P1 | Integrar Atlas de dos fases con patrones observados y 36 HP frente al cargador nuevo | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P3-COMET-SHOWER-01 / P3 | Convertir el gran vacío en cruces rápidos y lluvia de cometas transitables | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
+| P2-HOSTILE-ART-01 / P2 | Integrar proyectiles hostiles animados y fichas físicas de chatarra originales | IN_REVIEW | VERIFIED_CHROMIUM | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 

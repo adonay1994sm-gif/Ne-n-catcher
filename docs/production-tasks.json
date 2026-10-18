@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T08:38:18.172501+00:00",
+  "updatedAt": "2026-10-18",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -3369,13 +3369,16 @@
       ],
       "commit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "tests": [
-        "Chromium aislado software: recogida10,36–11,22RAF/s vsAtlas59,91; no son mediciones de dispositivo. Falta perfilCPU/raster yA/B."
+        "Chromium aislado software: recogida10,36–11,22RAF/s vsAtlas59,91; no son mediciones de dispositivo. Falta perfilCPU/raster yA/B.",
+        "Chromium390x844/DPR1, manual en reposo, ventana12s:11.56→59.17callbacks/s;p95 116.7→16.8ms"
       ],
       "evidence": [
-        "docs/production-reports/evidence/arcade-polish/neon-polish-performance-observations.md"
+        "docs/production-reports/evidence/arcade-polish/neon-polish-performance-observations.md",
+        "docs/production-reports/evidence/main-salvage-combat/perf-before/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/perf-after/results.json"
       ],
       "openErrors": [
-        "Lentitud reproducible durante recogida incluso sin concurrencia; causa pendiente de perfilado. No se certifican60FPS generales."
+        "CampoGaia mejora medida tras retirar blur/gradientes por orbe. Falta perfilado prolongado en dispositivos físicos; no se certifican60FPS generales."
       ],
       "acceptance": [
         "Mediana/p95/p99, duración y dispositivo; no declarar60FPS sin trazas."
@@ -7555,14 +7558,21 @@
         "tests/product-brand.test.mjs",
         "tests/preview-build.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/offline/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/site-http/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7601,14 +7611,21 @@
         "tests/run-tests.mjs",
         "tests/run-v7-web-tests.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/two-touch/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7647,14 +7664,22 @@
         "tests/scrap-economy.test.mjs",
         "tests/unified-flight-legacy.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/atlas-manual-02/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/gaia/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7695,14 +7720,21 @@
         "tests/scrap-economy.test.mjs",
         "tests/unified-flight-legacy.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/c9/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7743,14 +7775,21 @@
         "tests/classic-pursuit.test.mjs",
         "scripts/gaia-interceptor-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/gaia/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/atlas-manual-02/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7793,14 +7832,20 @@
         "tests/guardian-atlas-legacy.test.mjs",
         "scripts/guardian-atlas-browser-smoke.cjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/atlas-manual-02/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7841,14 +7886,21 @@
         "tests/comet-shower.test.mjs",
         "tests/unified-flight-legacy.test.mjs"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/comets/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/certification-01/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -7900,14 +7952,22 @@
         "art-source/vfx/gaia-pulse-v3/gaia-pulse-atlas-v3.json",
         "art-source/vfx/gaia-pulse-v3/README.md"
       ],
-      "commit": null,
-      "tests": [],
-      "evidence": [],
+      "commit": "b2a89f694215bddba3a5ba2f6d1a68a03c70cccd",
+      "tests": [
+        "npm run test:content (463/463)",
+        "npm run test:preview (23/23)",
+        "Chromium del lote: ver evidencias y alcance"
+      ],
+      "evidence": [
+        "docs/production-reports/evidence/main-salvage-combat/gaia/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/c9/results.json",
+        "docs/production-reports/evidence/main-salvage-combat/offline/results.json"
+      ],
       "openErrors": [
-        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+        "Aceptación artística del propietario pendiente; Safari/iPhone físico sin ejecutar."
       ],
       "acceptanceStatus": {
-        "technical": "PENDING_INTEGRATED_QA",
+        "technical": "VERIFIED_CHROMIUM",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },

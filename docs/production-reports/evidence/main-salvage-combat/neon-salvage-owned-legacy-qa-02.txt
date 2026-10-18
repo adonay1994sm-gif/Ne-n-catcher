@@ -1,0 +1,140 @@
+✔ arcade VFX atlas on disk matches the registered hash and sixteen padded distinct decoded poses (3.80025ms)
+✔ actual projectile renderer selects four distinct authored cells without moving the center in any weapon (2.657619ms)
+✔ contact impact advances at registered boundaries and remains centered after its last pose (0.942677ms)
+✔ Pulse, Twin and Lance ascend with rotation zero and render at their physics positions without mutation (4.188011ms)
+✔ unavailable new artwork preserves a centered historical projectile fallback (1.293643ms)
+✔ assembled ship at 66 or 10 hull has no billboard damage smoke or fake converging wing rays (4.35082ms)
+✔ muzzle flashes are a short played-time reaction and repeated drawing never extends or repeats a shot (3.237253ms)
+✔ damage smoke is reserved for the historical fallback when modular assembly is unavailable (2.336928ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ Gaia keeps recovery meaningful and gates saved victory behind the real Atlas encounter (404.913435ms)
+✔ the actual legacy pause freezes Atlas and resume continues without a duplicate loop (217.812391ms)
+✔ the threshold capture can replace active items without crashing the real collision loop (134.170805ms)
+✔ Atlas deactivation completes before a single persisted victory and preserves N-7 saves (1173.127426ms)
+✔ death, a rewarded continuation and retry cannot bypass or prematurely save Atlas (179.395175ms)
+✔ Gaia and Chronos share twenty manual rounds with played-time recharge instead of unlimited boss ammunition (391.344206ms)
+✔ Atlas receives the advertised ×1, ×2 and ×3 damage only when physical projectiles reach its core (326.457808ms)
+✔ manual is the default and automatic fire is an explicit persistent setting outside the encounter (198.758739ms)
+✔ a manual off-axis shot keeps its own trajectory and misses Atlas instead of homing or applying instant damage (128.700899ms)
+✔ an interrupted Atlas equipment reward replays before unlocking Vulkar and is idempotent after reload (876.962617ms)
+✔ a corrupt equipment record with a durable backup can receive the Atlas reward without losing its original data (629.639081ms)
+✔ leaving the encounter does not mutate saves and N-7 cannot start classic Atlas (102.427699ms)
+✔ slow time shares the real Atlas and projectile clock before firing another aimed pattern (771.598304ms)
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+[NEON CRONIUM] build 7.2.0
+✔ twenty classic rounds recharge from played time and freeze completely while paused without a HUD counter (530.541192ms)
+✔ the opt-in general auto-fire uses the twenty-round magazine, survives a CRONIUM wait and freezes during pause and C9 (2346.238024ms)
+✔ a classic projectile travels before impact and applies damage and destruction reward only once (115.446105ms)
+✔ the actual PointerEvent handlers anchor without jumping and move both axes without a second finger stealing control (77.111461ms)
+✔ the Safari touch fallback tracks the first finger and ignores a secondary finger ending (78.161815ms)
+✔ the first mission requires recovered CRONIUM, all ten visible stages and the service stop before Gaia unlocks (2780.751172ms)
+✔ the Chronos attack and reactor rupture occur once in route order and cannot advance during pause (181.477666ms)
+✔ the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station (357.938434ms)
+✔ pause and repeated real background renders freeze the Chronos pose, clock and event stream (188.960034ms)
+✔ a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback (139.407261ms)
+✔ recovering and preparing the C9 emitter preserves the battery while keeping fresh pilots on Pulso until Atlas (154.438158ms)
+✔ C9 requires earned salvage and purchases cooling once without granting weapons or ammunition (270.185944ms)
+✔ a blocked C9 monetary write cannot grant its cooling entitlement or consume ammunition (43.743966ms)
+✔ historical twin owners keep their weapon and switching never duplicates ammunition or an emitted projectile (119.104548ms)
+✔ invalid equipment is backed up once before replacement and a failed backup blocks destructive recovery (167.029279ms)
+✔ C9 selects a genuinely owned historical lance without granting a new tier and cycling retains battery state (98.866359ms)
+✔ malformed lance unlocks are preserved as backups instead of granting uncalibrated weapons (239.490192ms)
+✔ Atlas samples the movable ship and locks a ballistic salvo without an advertised safe lane (151.082347ms)
+✔ the route bar advances between collections without a stage, ammunition or recharge change (40.632459ms)
+✔ compact comms do not repeat the quota and expire only with played time without moving the flight bounds (75.152747ms)
+✔ measured compact bounds release the former top reserve and ignore side controls outside the Canvas (33.820669ms)
+✔ the compact HUD and weapon share menu, completion, death and Atlas visibility while switching preserves ammunition (114.220434ms)
+✔ power pickup and expiry update flight clearance only when chip visibility changes and leave N-7 bounds alone (186.849088ms)
+✔ each Chronos stage gates its actual route on time and its cumulative recovery quota without replaying events (364.619181ms)
+✔ Chronos stage-entry checkpoints restore coherently after reload and retry without rewriting archived campaign saves (744.321224ms)
+✔ the in-route C9 stop prepares its recovered emitter and continues at stage 7 with Pulso and unchanged charges (1868.227839ms)
+✔ the archived N-7 mode neither loads nor modifies the new Chronos voyage record (482.989422ms)
+✔ a historical C9 end-of-stage waiting checkpoint retains its old immediate departure without losing recovered equipment (1634.186438ms)
+✔ the ten-stage selector exposes only persisted unlocked entries and an actual launch replays the chosen checkpoint (671.197157ms)
+✔ a malformed new voyage is backed up without inferring stages from old classic or N-7 progress (84.392557ms)
+✔ stage crossings retain live debris and genuine projectiles instead of resetting the scene (477.663208ms)
+✔ actual Chronos runtime introduces a hostile pursuer after rupture without N-7 metadata (215.340726ms)
+✔ Gaia schedules CH-01 then a genuine CH-02 through the actual patrol update (930.928664ms)
+✔ Chronos arrival enters Gaia through the actual next control without a duplicate briefing (2649.383547ms)
+✔ restored stage-entry checkpoints retain the same seven-second patrol grace without replaying their entry event (358.874899ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25915.289893

@@ -1,0 +1,44 @@
+✔ arcade VFX atlas on disk matches the registered hash and sixteen padded distinct decoded poses (3.165145ms)
+✔ new Gaia art preserves provenance and sixteen distinct padded cells and overrides the recoverable v2 fallback (2.660444ms)
+✔ actual projectile renderer selects four distinct authored cells without moving the center in any weapon (1.051157ms)
+✔ contact impact advances at registered boundaries and remains centered after its last pose (0.756713ms)
+✔ Pulse, Twin and Lance ascend with rotation zero and render at their physics positions without mutation (4.388375ms)
+✔ unavailable new artwork preserves a centered historical projectile fallback (0.825644ms)
+✔ assembled ship at 66 or 10 hull has no billboard damage smoke or fake converging wing rays (4.178026ms)
+✔ muzzle flashes are a short played-time reaction and repeated drawing never extends or repeats a shot (3.159097ms)
+✔ damage smoke is reserved for the historical fallback when modular assembly is unavailable (1.759608ms)
+✖ Gaia pulse production contains sixteen distinct transparent poses and a recoverable master (2.047261ms)
+✔ actual gameplay renderer chooses Gaia artwork for every weapon and contact impact, with historical fallback retained (1.336907ms)
+✔ enemy artwork follows the physical velocity, renders no aim guide and cannot emit another shot (3.199486ms)
+✔ Scout, Interceptor and Atlas have four actual frame crops without moving the physics pivot (8.194684ms)
+✔ raw scrap uses the copper token, not a misleading stellar or gold denomination (0.666771ms)
+✔ classic CRONIUM uses authored animated sprites without live per-orb blur/gradient passes (3.754683ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 14
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 219.041132
+
+✖ failing tests:
+
+test at tests/gaia-pulse-v3.test.mjs:8:1
+✖ Gaia pulse production contains sixteen distinct transparent poses and a recoverable master (2.047261ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/Ne-n-catcher/tests/gaia-pulse-v3.test.mjs:13:41)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

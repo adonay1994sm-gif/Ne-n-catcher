@@ -1,3 +1,5 @@
+> **Cierre posterior vigente ·18/10/2026:** [MAIN_SALVAGE_COMBAT](../production-reports/MAIN_SALVAGE_COMBAT_2026-10-18.md). El contenido siguiente es histórico. Se actualizaron el viaje clásico/combate/arte y el Site privado; no se certifican diez mundos completos por este incremento.
+
 > Estado histórico conservado. Cierre vigente18/10/2026: [pulido arcade, Site17 y pruebas](../production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md). Ningún territorio se declara visualmente completo por este lote; MotorV1 continúa desactivado.
 
 ## Continuación vigente ·18/10/2026
