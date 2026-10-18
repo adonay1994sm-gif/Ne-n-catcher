@@ -3100,7 +3100,9 @@
       tone(500 + combo * 28, 0.06, "triangle", 0.055);
       if (collected >= level().goal) completeLevel();
     } else if (isThreat(item)) {
-      const enemyPhaser=isUnifiedClassic()&&(item.guardianProjectile||item.classicScoutProjectile);
+      // Guardian weapons have authored tier damage (13/15/22). Only patrol
+      // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
+      const enemyPhaser=isUnifiedClassic()&&item.classicScoutProjectile&&!item.guardianProjectile;
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
         largeAsteroid:isUnifiedClassic()&&item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
     } else {
