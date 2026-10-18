@@ -1,41 +1,44 @@
 # Probar NEON CRONIUM en Netlify aislado
 
-Estado comprobado18/10/2026: existe configuración de preview en `netlify.toml` y `scripts/netlify-preview-gate.mjs`. No se encontró CLI Netlify en PATH ni `node_modules/.bin`, token de autenticación o SiteID en el entorno, enlace `.netlify/state.json` ni configuración habitual de usuario. Sólo se comprobaron presencia/ausencia; no se copiaron credenciales. **No se ha conectado ni desplegado ningún sitio Netlify en este lote.**
+## Sitio de pruebas del propietario: neonpreviewdeploy
 
-La compilación de prueba usa la misma línea del juego, una entrada principal y guardado con prefijo `neon-preview-v1:`. El arte, código y campañas recuperables proceden del repositorio actual; un paquete debe indicar el SHA limpio realmente construido. Las copias `www/`/iOS son salidas generadas, no fuentes alternativas.
+El propietario ha conectado un proyecto nuevo, **`neonpreviewdeploy`**, a `continuity-assets-audit-20261013`. Su captura del18/10/2026 confirma el fallo de `scripts/netlify-preview-gate.mjs --require-enabled`: Netlify llama **Production** al despliegue principal de este proyecto separado; la puerta anterior sólo admitía branch-deploy/local. El propietario confirma `NEON_PREVIEW_DEPLOY=1` en Production. El fallo ocurre antes de compilar el juego.
 
-## Opción inmediata: paquete ya construido
+La corrección admite ese contexto exclusivamente si coinciden todos estos datos:
 
-1. Usar el ZIP y SHA-256 del último informe de producción, con SHA funcional y estado limpio. Si se genera otro, ejecutar en checkout congelado `npm run build:preview`, `npm run test:preview` y las regresiones aplicables. El contenido publicable está en `preview-dist/`, no en la raíz completa del repositorio.
-2. Crear en Netlify **un sitio nuevo exclusivamente de pruebas**, con nombre distinto y destino identificable. No seleccionar el sitio principal ni reutilizar su SiteID. El ZIP debe descomprimirse para que `index.html`, `build-info.json`, `_headers` y la carpeta `juego/` estén en la raíz de la carpeta subida.
-3. Subir esa carpeta al sitio de pruebas. No introducir el token en código o documentación. El sitio aislado sirve para QA; no certifica publicación comercial, AppStore o Safari físico.
-4. Abrir la URL que Netlify devuelva realmente. Revisar `build-info.json`, SHA/revisión, recursos200, iniciar partida, abrir C9, probar disparo/pausa, recargar y verificar el guardado aislado. Registrar URL, ID de despliegue, SHA y fecha sólo después de comprobarlos.
-
-No se indica una URL hipotética. El sitio privado existente conserva su identidad y no demuestra que Netlify sirva la misma revisión.
-
-## Actualización automática desde Git: sólo branch-deploy
-
-La configuración actual autoriza exclusivamente:
-
-| Campo | Valor permitido |
+| Dato | Valor requerido |
 | --- | --- |
-| Repositorio | `adonay1994sm-gif/Ne-n-catcher` |
-| Rama de pruebas | `continuity-assets-audit-20261013` |
-| Contexto Netlify | `branch-deploy` |
-| Opt-in del sitio de pruebas para esa rama | `NEON_PREVIEW_DEPLOY=1` |
-| Directorio de publicación | `preview-dist` |
-| Node | `22.13.0` |
+| Rama | `continuity-assets-audit-20261013` |
+| Opt-in | `NEON_PREVIEW_DEPLOY=1` en el contexto que se construye |
+| Marca del proveedor | `NETLIFY=true` |
+| Proyecto | `SITE_NAME=neonpreviewdeploy` |
+| URL principal del proyecto | HTTPS, host exacto `neonpreviewdeploy.netlify.app`, sin credenciales ni puerto distinto del estándar |
+| Contexto | `production` exclusivamente para ese proyecto; branch-deploy/local conservan su contrato anterior |
 
-Antes de conectar Git, confirmar que el SiteID pertenece al sitio de pruebas y configurar su despliegue de rama sin activar builds del sitio principal. No habilitar automáticamente `main`, PRs o todos los branches. No abrir un asistente que vaya a publicar inmediatamente otra rama antes de revisar esos ajustes.
+`NETLIFY`, `SITE_NAME` y `URL` los proporciona Netlify; **no son variables que haya que inventar o sobrescribir manualmente**. La URL anterior define la identidad permitida, no afirma que ya exista una publicación accesible. Verificar una publicación exige HTTP real y `build-info.json` del SHA esperado.
 
-El `command` de la rama ya exige la puerta, construye preview y ejecuta pruebas estáticas/preview. `--ignore` devuelve0para omitir y1para proceder, conforme al convenio de Netlify; `--require-enabled` devuelve0sólo cuando rama, contexto y opt-in coinciden. **No poner esta rama como rama de producción para sortear el bloqueo:** `CONTEXT=production` se rechaza deliberadamente incluso con el opt-in. Si la interfaz de Netlify sólo ofrece producción, usar la opción manual del sitio aislado o documentar que falta configurar branch-deploy; no debilitar la puerta.
+En este proyecto de pruebas la rama principal del proyecto puede ser la rama autorizada, sin fusionarla con `main` de GitHub. El sitio original `neoncatcheroriginal`, otros dominios/proyectos, `main` y las PR no quedan autorizados para producción por esta excepción. La prohibición de publicar el juego comercial o modificar su sitio principal sigue vigente.
 
-Con permisos disponibles en una sesión futura, comprobar primero la identidad del sitio, audiencia y contexto. Después lanzar un branch-deploy, esperar finalización completa y comprobar contenido real en la URL devuelta. `netlify deploy --prod` y cualquier cambio del sitio principal quedan fuera de esta guía.
+## Configuración que debe conservarse en el proyecto nuevo
 
-## Limpieza reproducible del repositorio
+1. Repositorio `adonay1994sm-gif/Ne-n-catcher`; rama del proyecto de pruebas `continuity-assets-audit-20261013`.
+2. Variable `NEON_PREVIEW_DEPLOY` con valor `1`, disponible para **Production de neonpreviewdeploy**. Una variable limitada a Branch deploys no llega a ese contexto.
+3. Usar la configuración de `netlify.toml`: Node22.13, puerta de seguridad, `npm run build:preview`, pruebas estáticas/preview y carpeta `preview-dist`. La captura del fallo confirma que Netlify ya selecciona ese comando desde el TOML; no hace falta sustituir la configuración global.
+4. Tras recibir el commit corregido, el enlace Git puede arrancar el build. Si se reintenta desde el panel, elegir el **último commit de esta rama**, no repetir el SHA8c5b44e que contiene la puerta anterior.
+5. Esperar publicación completa; abrir la URL que muestre Netlify, comprobar `build-info.json` con SHA/revisión/dirtyfalse/MotorV1false, recursos200, inicio, C9, disparo, pausa y guardado. Registrar el resultado real; un build local o GitHub Actions verde no certifica Netlify.
 
-- Fuentes: `src/`; arte runtime: `assets/`; maestros: `art-source/`; instrucciones locales: `.agents/skills/`; tooling: `scripts/`; evidencia histórica: `docs/production-reports/` y `docs/visual-rebirth/`.
-- Regenerar bundles raíz mediante `npm run build`; no editar copias de `www/` o iOS. `preview-dist/`, `node_modules/` y `.netlify/` son estado local y no deben versionarse.
-- Ejecutar `node scripts/repository-hygiene.mjs --duplicates --output /tmp/neon-hygiene-nuevo.json` para obtener inventario sin borrados. El informe debe usar una ruta nueva.
-- La limpieza autorizada de28copias generadas es retirar del índice sus rutas exactas con `git rm --cached -- <rutas-revisadas>`, preservando disco, fuentes e historial. El integrador registra su lista y verifica que `npm run build` vuelve a producirlas. No ejecutar `git clean`, borrados masivos, reset o reescritura histórica.
-- Los paquetes y capturas anteriores son evidencia y pueden seguir siendo útiles aunque pesen. Archivos idénticos en distintos informes no son necesariamente descartables: sus enlaces prueban condiciones y fallos diferentes. Optimizar la producción futura con logs, capturas necesarias y ZIP fuera del árbol cuando exista respaldo; no fingir que el histórico desapareció.
+No tocar ajustes del proyecto original ni PR3/main para conseguir esta preview. Sin acceso autenticado al panel desde la sesión, los cambios de variables del proyecto pertenecen al propietario; GitHub, pruebas locales y HTTP público sí se pueden comprobar desde Codex.
+
+## Alternativa: branch deploy
+
+La configuración anterior sigue disponible: habilitar exclusivamente la rama autorizada en Branch deploys y definir `NEON_PREVIEW_DEPLOY=1` para ese contexto. No seleccionarla como producción de un destino desconocido para saltar la puerta. `--ignore` usa el convenio Netlify:0omite,1continúa; `--require-enabled`:0autoriza,1rechaza. Los errores ahora distinguen falta de opt-in, rama y contexto/identidad.
+
+## Paquete manual y limpieza
+
+El ZIP limpio da3 del informe [LEVEL_ONE_DYNAMIC](../production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md) sigue siendo una versión jugable verificada. Descomprimir el contenido para que `index.html`, `build-info.json`, `_headers` y `juego/` estén en la raíz que se sube al sitio de pruebas. Un nuevo build tiene su propio SHA y no debe atribuirse al paquete anterior.
+
+Fuentes en `src/`, recursos en `assets/`, maestros en `art-source/` y evidencia en `docs/production-reports/`. Regenerar con el pipeline, no editar copias web/iOS. `preview-dist/`, `node_modules/` y `.netlify/` no se versionan; `npm run audit:repository` sólo inventaría. Se conservaron28copias generadas en disco e historial al retirarlas del índice. No purgar recursos, maestros, pruebas ni guardados.
+
+## Historial y alcance comprobado
+
+GitHub ya estaba conectado a Netlify: el sitio principal publica archivos coincidentes con `main` y la previewPR3 corresponde a `production-100-development`. La falta de acceso autenticado de Codex no significaba falta de conexión del propietario. La excepción nueva corrige el proyecto de pruebas identificado por sus capturas. [Informe de corrección](../production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md) distingue pruebas de puerta, CI y publicación realmente observada.

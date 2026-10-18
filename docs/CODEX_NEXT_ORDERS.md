@@ -1,3 +1,9 @@
+## Continuación Netlify aislado ·18/10/2026
+
+Leer [corrección de puerta](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md) y [guía actual](agents/NETLIFY_TEST_SETUP.md). El propietario creó `neonpreviewdeploy`, con opt-in1 en Production. Preservar la excepción estricta sólo para ese sitio/rama/hostNetlify; no volver a confundir Production del proyecto de pruebas con el sitio principal ni permitir destinos genéricos. Comprobar commit/CI y publicación real de build-info antes de cerrar P1-NETLIFY-ISOLATED-01. No cambiar gameplay, main, PR3, sitio original o MotorV1 para resolver esta incidencia. Los resultados anteriores conservan sus SHA.
+
+---
+
 ## Continuación vigente ·18/10/2026 · LEVEL_ONE_DYNAMIC
 
 Leer [cierre, capturas y límites](production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md) y `production-tasks.json`. Runtime actual **da3f4b839744940fee1032a8b637d5c3266c862f**, web privada22, Actions39131063614success. Conservar cualquier HEAD remoto posterior; no restaurar intro bloqueante, nave40% o parada orbitalC9.

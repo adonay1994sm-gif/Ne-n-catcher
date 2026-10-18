@@ -1,3 +1,11 @@
+## Corrección Netlify aislado ·18/10/2026
+
+[Diagnóstico y corrección](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md): el propietario conectó `neonpreviewdeploy`; la puerta rechazaba su contexto Production aunque era un proyecto de pruebas. Se admite únicamente esa identidad Netlify/hostHTTPS/rama/opt-in, manteniendo producción original/main/PRs bloqueados. Build local y preview24/24, estáticas13/13 y arquitectura6/6 aprobados. Publicación real y CI del nuevo commit todavía pendientes de comprobación. La variable1 en Production del sitio de pruebas fue confirmada por el propietario.
+
+El juego no cambia: web privada22 y runtime da3 conservan su evidencia. Registrar resultado Netlify antes de afirmar que el sitio nuevo está actualizado; una URL permitida en la puerta no es una URL desplegada.
+
+---
+
 # DIAGNÓSTICO
 
 SHA inicial local/remoto limpio **d4b08dcb2f22268944aa73fc4b71bca5f3496c7e**, preservado. Se confirmó audio ausente en emisión enemiga, movimiento Atlas limitado por estado/layout, C9 orbital obligatorio y copias generadas indexadas. Se corrigieron conservando el primer viaje, campañas, guardados y MotorV1false.

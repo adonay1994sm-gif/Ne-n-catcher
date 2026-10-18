@@ -232,11 +232,20 @@ test('unit: offline navigation uses only the scoped cache and ignores foreign pa
   worker.handlers.fetch({request: {method: 'GET', url: 'https://preview.test/index.html'}, respondWith() {assert.fail('Foreign path must not be intercepted');}});
 });
 
-test('unit: Netlify opt-in cannot authorize main or PR deploy contexts', () => {
+function runNetlifyPreviewGate({mode, flag = '1', branch = PREVIEW_BRANCH,
+  context = 'branch-deploy', netlify = '', siteName = '', siteId = '', url = ''} = {}) {
   const script = join(root, 'scripts/netlify-preview-gate.mjs');
-  const run = (mode, flag, branch = PREVIEW_BRANCH, context = 'branch-deploy') => spawnSync(process.execPath, [script, mode], {
-    encoding: 'utf8', env: {...process.env, NEON_PREVIEW_DEPLOY: flag, BRANCH: branch, CONTEXT: context}
+  return spawnSync(process.execPath, [script, mode], {
+    // Never inherit the build machine's Netlify identity: on the isolated test
+    // project those values are legitimate, but cannot contaminate deny cases.
+    encoding: 'utf8', env: {...process.env, NETLIFY: netlify, SITE_NAME: siteName,
+      SITE_ID: siteId, URL: url, NEON_PREVIEW_DEPLOY: flag, BRANCH: branch, CONTEXT: context}
   });
+}
+
+test('unit: Netlify opt-in cannot authorize main or PR deploy contexts', () => {
+  const run = (mode, flag, branch = PREVIEW_BRANCH, context = 'branch-deploy') =>
+    runNetlifyPreviewGate({mode, flag, branch, context});
   assert.equal(run('--ignore', '').status, 0);
   assert.equal(run('--require-enabled', '').status, 1);
   assert.equal(run('--ignore', '1').status, 1);
@@ -245,7 +254,52 @@ test('unit: Netlify opt-in cannot authorize main or PR deploy contexts', () => {
     assert.equal(run('--require-enabled', '1', branch, context).status, 1, `${branch}/${context}`);
     assert.equal(run('--ignore', '1', branch, context).status, 0, `${branch}/${context}`);
   }
+  assert.equal(run('--require-enabled', '1', PREVIEW_BRANCH, 'local').status, 0);
+  assert.equal(run('--ignore', '1', PREVIEW_BRANCH, 'local').status, 1);
   assert.equal(run('--unknown', '1').status, 2);
+});
+
+test('unit: Netlify production permits only the explicitly opted-in isolated test site and exact HTTPS origin', () => {
+  const isolated = {context: 'production', netlify: 'true', siteName: 'neonpreviewdeploy',
+    siteId: '', url: 'https://neonpreviewdeploy.netlify.app', flag: '1', branch: PREVIEW_BRANCH};
+  for (const mode of ['--require-enabled', '--ignore']) {
+    const result = runNetlifyPreviewGate({...isolated, mode});
+    assert.equal(result.status, mode === '--ignore' ? 1 : 0,
+      `the owner-designated test site must build in its production context: ${mode}\n${result.stderr}`);
+  }
+  const rejected = [
+    ['missing opt-in', {flag: ''}],
+    ['wrong opt-in', {flag: 'true'}],
+    ['protected main branch', {branch: 'main'}],
+    ['another branch', {branch: 'another-preview'}],
+    ['PR deployment context', {context: 'deploy-preview'}],
+    ['unknown context', {context: 'preview'}],
+    ['missing Netlify marker', {netlify: ''}],
+    ['wrong Netlify marker', {netlify: '1'}],
+    ['missing site name', {siteName: ''}],
+    ['original site', {siteName: 'neoncatcheroriginal', url: 'https://neoncatcheroriginal.netlify.app'}],
+    ['original site with copied preview URL', {siteName: 'neoncatcheroriginal'}],
+    ['unknown site', {siteName: 'some-other-test-site'}],
+    ['site name suffix', {siteName: 'neonpreviewdeploy-copy'}],
+    ['missing URL', {url: ''}],
+    ['malformed URL', {url: 'not-a-url'}],
+    ['original host', {url: 'https://neoncatcheroriginal.netlify.app'}],
+    ['unknown host', {url: 'https://some-other-test-site.netlify.app'}],
+    ['host suffix spoof', {url: 'https://neonpreviewdeploy.netlify.app.example.invalid'}],
+    ['host prefix spoof', {url: 'https://copy-neonpreviewdeploy.netlify.app'}],
+    ['HTTP transport', {url: 'http://neonpreviewdeploy.netlify.app'}],
+    ['userinfo', {url: 'https://user@neonpreviewdeploy.netlify.app'}],
+    ['username and password', {url: 'https://user:password@neonpreviewdeploy.netlify.app'}],
+    ['userinfo host confusion', {url: 'https://neonpreviewdeploy.netlify.app@example.invalid'}],
+    ['non-default port', {url: 'https://neonpreviewdeploy.netlify.app:8443'}]
+  ];
+  for (const [label, overrides] of rejected) {
+    for (const mode of ['--require-enabled', '--ignore']) {
+      const result = runNetlifyPreviewGate({...isolated, ...overrides, mode});
+      assert.equal(result.status, mode === '--ignore' ? 0 : 1,
+        `${label} cannot authorize production: ${mode}\n${result.stdout}\n${result.stderr}`);
+    }
+  }
 });
 
 test('built launcher has one canonical journey and resolving package paths without historical variant controls', async () => {

@@ -90,6 +90,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-DYNAMIC-AUDIO / P1 | Emisiones enemigas con sonidos originales y pausa/mute | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
 | P1-DYNAMIC-FLIGHT / P1 | Nave30% mayor y cometas con trayectorias variadas transitables | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
 | P1-DYNAMIC-TOOLS / P1 | Skills útiles, higiene recuperable y Netlify QA preparado | DONE | PROCEDURE_SKILL_HYGIENE_AND_PREVIEW_GATE_PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
+| P1-NETLIFY-ISOLATED-01 / P1 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | IN_REVIEW | LOCAL_GATE_AND_PREVIEW_PASSED_REMOTE_PENDING | NOT_APPLICABLE | NOT_APPLICABLE |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -115,7 +116,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Audio | 1/19 (5.3%) | 12 | 0 | 1 | 5 |
 | Interfaz | 5/41 (12.2%) | 9 | 1 | 0 | 26 |
 | Rendimiento | 1/16 (6.3%) | 11 | 1 | 0 | 3 |
-| QA | 23/113 (20.4%) | 20 | 3 | 5 | 62 |
+| QA | 23/114 (20.2%) | 20 | 3 | 5 | 63 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
@@ -129,7 +130,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | 07 · Narrativa completa | 0/15 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/15 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 2 · DONE: 0 |
 | 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 14 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
-| 10 · Preparación para lanzamiento | 0/15 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 0 |
+| 10 · Preparación para lanzamiento | 0/16 (0.0%) | PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 1 · DONE: 0 |
 
 ## Assets: catálogo frente a entrega
 

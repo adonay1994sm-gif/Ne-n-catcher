@@ -1,3 +1,9 @@
+## Corrección de preview Netlify aislada ·18/10/2026
+
+El propietario creó el proyecto de pruebas `neonpreviewdeploy`, conectado a la rama autorizada. Su despliegue principal usa el contexto técnico `production`; eso no autoriza producción del juego ni del sitio original. Admitirlo exclusivamente con opt-in1, rama autorizada, marcaNetlifytrue, SITE_NAMEexacto y URLHTTPS del host exacto `neonpreviewdeploy.netlify.app`. Mantener rechazados main/PRs/destinos desconocidos/producción de neoncatcheroriginal. Variables de identidad las proporciona Netlify, no falsificarlas. Esta excepción sustituye el rechazo incondicional de contexto production de la guía anterior; no cambia las demás protecciones. Ver `docs/agents/NETLIFY_TEST_SETUP.md` y el informe de corrección. No confundir pruebas locales o CI con un despliegue Netlify comprobado.
+
+---
+
 ## Prioridad vigente — nivel uno dinámico y C9 a bordo · 18/10/2026
 
 Última orden del propietario: continuar investigando e integrando skills útiles; retirar las láminas cinematográficas de apertura y conservar la destrucción animada de Chronos dentro de la partida. Añadir un tutorial breve y aumentar la presencia enemiga. Perseguidores y Atlas deben maniobrar con variación procedural reproducible, ataques físicos y respuesta posible; emisiones enemigas con sonido propio. Mejorar misiles con explosión visible y daño de trabajo18, conservando tres unidades, pago/recibos e inmunidad de placas cerradas. Atlas conserva96HP pero utiliza movimiento y decisiones más exigentes.

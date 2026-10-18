@@ -9468,6 +9468,52 @@
       "verificationNote": "Skills GitHub fijadas y adaptadas, higiene no destructiva verificada y preparación Netlify QA documentada; despliegue Netlify fuera del criterio de cierre de esta tarea.",
       "packageStatus": "CLEAN_SHA_DA3F4B8_BUILT",
       "netlifyDeploymentStatus": "PREPARED_NOT_DEPLOYED_AUTHENTICATION_AND_ISOLATED_TEST_DESTINATION_REQUIRED"
+    },
+    {
+      "id": "P1-NETLIFY-ISOLATED-01",
+      "batch": "NETLIFY_ISOLATED_PREVIEW_FIX",
+      "block": "10",
+      "canonicalPhase": "P1",
+      "name": "Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "QA"
+      ],
+      "dependencies": [],
+      "files": [
+        "scripts/netlify-preview-gate.mjs",
+        "tests/preview-build.test.mjs",
+        "netlify.toml",
+        "docs/agents/NETLIFY_TEST_SETUP.md"
+      ],
+      "commit": null,
+      "tests": [
+        "npm run build:preview (exit0, dirty snapshot8c)",
+        "node --test --test-name-pattern=unit:Netlify tests/preview-build.test.mjs (2/2; exact command in local-checks.json)",
+        "npm run test:preview (24/24)",
+        "npm run test:static (13/13)",
+        "npm run test:architecture (6/6)"
+      ],
+      "evidence": [
+        "docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md",
+        "docs/production-reports/evidence/netlify-isolated-fix/local-checks.json",
+        "docs/production-reports/evidence/netlify-isolated-fix/reported-error.md"
+      ],
+      "openErrors": [
+        "Commit, GitHub Actions y publicación real del sitio Netlify pendientes de comprobación."
+      ],
+      "acceptanceStatus": {
+        "technical": "LOCAL_GATE_AND_PREVIEW_PASSED_REMOTE_PENDING",
+        "artistic": "NOT_APPLICABLE",
+        "physical": "NOT_APPLICABLE"
+      },
+      "acceptance": [
+        "Rama autorizada y opt-in obligatorios; Production sólo en Netlify/neonpreviewdeploy/HTTPS host exacto.",
+        "Producción original, main, PRs e identidades/dominios desconocidos siguen rechazados.",
+        "Pruebas de los dos modos y pipeline preview aprobados; commit publicado y CI comprobada.",
+        "Distinguir publicación Netlify realmente observada de corrección local o acceso pendiente."
+      ]
     }
   ],
   "canonicalPlan": {
