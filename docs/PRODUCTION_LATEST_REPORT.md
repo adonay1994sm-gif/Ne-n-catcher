@@ -1,3 +1,9 @@
+## Publicación Netlify aislada verificada ·18/10/2026
+
+El build Production del proyecto de pruebas no recibía `NEON_PREVIEW_DEPLOY` desde el panel. Se definió el indicador no secreto sólo para `context.continuity-assets-audit-20261013.environment`; las comprobaciones estrictas del proyecto/rama/host permanecen. Commit funcional `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`; [Actions39140857478](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39140857478) completed/success. [Netlify](https://neon-preview-deploy.netlify.app/) sirve raíz, procedencia y recursos clave con HTTP200; build-info confirma SHA exacto, dirtyfalse, revision0aec5924, MotorV1false y134archivos. Chromium táctil390x844 abrió el único viaje, mostró10tramos, inició vuelo y comprobó HUD/disparo/pausa, sin errores HTTP o de página. [Evidencia](production-reports/evidence/netlify-branch-opt-in-fix/public-verification.json). No cambió gameplay ni el sitio original.
+
+---
+
 ## Identidad exacta del sitio de pruebas ·18/10/2026
 
 La última captura muestra **neon-preview-deploy**, con guiones, y fallo82c3311. La puerta anterior permitía neonpreviewdeploy; se corrige el nombre/host exactos sin autorizar destinos adicionales. [Adenda y reproducción antes/después](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md). Local:buildpreview0,preview24/24,static13/13;27variantesnegativas×2modos. Commit/CI/publicación del destino corregido aún pendientes de comprobación. Los registros siguientes son históricos y conservan sus nombres y SHA.

@@ -9476,7 +9476,7 @@
       "canonicalPhase": "P1",
       "name": "Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego",
       "priority": "HIGH",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "areas": [
         "QA"
       ],
@@ -9487,7 +9487,7 @@
         "netlify.toml",
         "docs/agents/NETLIFY_TEST_SETUP.md"
       ],
-      "commit": "82c3311c147fb71da4ff93348a105bbf148c2828",
+      "commit": "4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20",
       "tests": [
         "npm run build:preview (exit0, dirty snapshot8c)",
         "node --test --test-name-pattern=unit:Netlify tests/preview-build.test.mjs (2/2; exact command in local-checks.json)",
@@ -9495,7 +9495,10 @@
         "npm run test:static (13/13)",
         "npm run test:architecture (6/6)",
         "GitHub Actions39134274955 completed/success on82c3311",
-        "Site-name correction: npm run build:preview exit0, npm run test:preview24/24, npm run test:static13/13;27negativeidentityvariants bothmodes"
+        "Site-name correction: npm run build:preview exit0, npm run test:preview24/24, npm run test:static13/13;27negativeidentityvariants bothmodes",
+        "Branch opt-in correction: build:preview0, preview25/25, static13/13, architecture6/6, engine60/60, npm test34/34, content and asset inventory passed",
+        "GitHub Actions39140857478 completed/success on4b4d4aa",
+        "Public Netlify root/build-info/key resources HTTP200; Chromium390x844 canonical journey,10stages,HUD,fire,pause passed without page/HTTP errors"
       ],
       "evidence": [
         "docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md",
@@ -9504,18 +9507,17 @@
         "docs/production-reports/evidence/netlify-isolated-fix/remote-state-before-retry.json",
         "docs/production-reports/evidence/netlify-isolated-fix/retry-request.json",
         "docs/production-reports/evidence/netlify-site-name-fix/before-after-gate.json",
-        "docs/production-reports/evidence/netlify-site-name-fix/local-checks.json"
+        "docs/production-reports/evidence/netlify-site-name-fix/local-checks.json",
+        "docs/production-reports/evidence/netlify-branch-opt-in-fix/public-verification.json"
       ],
-      "openErrors": [
-        "Identidad corregida a neon-preview-deploy y pruebas locales aprobadas; falta comprobar el nuevo commit, CI y publicación Netlify."
-      ],
+      "openErrors": [],
       "acceptanceStatus": {
-        "technical": "EXACT_HYPHENATED_SITE_GATE_AND_PREVIEW_PASSED_REMOTE_PENDING",
+        "technical": "PUBLIC_PREVIEW_EXACT_COMMIT_VERIFIED",
         "artistic": "NOT_APPLICABLE",
         "physical": "NOT_APPLICABLE"
       },
       "acceptance": [
-        "Rama autorizada y opt-in obligatorios; Production sólo en Netlify/neonpreviewdeploy/HTTPS host exacto.",
+        "Rama autorizada y opt-in obligatorios; Production sólo en Netlify/neon-preview-deploy/HTTPS host exacto.",
         "Producción original, main, PRs e identidades/dominios desconocidos siguen rechazados.",
         "Pruebas de los dos modos y pipeline preview aprobados; commit publicado y CI comprobada.",
         "Distinguir publicación Netlify realmente observada de corrección local o acceso pendiente."
@@ -9524,8 +9526,13 @@
         {
           "previousImplementationCommit": "82c3311c147fb71da4ff93348a105bbf148c2828",
           "reason": "Owner screenshot identifies hyphenated project neon-preview-deploy; previous allowlist named neonpreviewdeploy. Preserve prior CI evidence under its original SHA."
+        },
+        {
+          "previousImplementationCommit": "edaa73a21b3e47c8b6dfcb3180e193117e61df79",
+          "reason": "Exact site identity passed, but Netlify did not provide the UI-defined opt-in to the build. Scope the non-secret flag to the authorized branch in netlify.toml and preserve all identity checks."
         }
-      ]
+      ],
+      "netlifyDeploymentStatus": "PUBLIC_EXACT_SHA_VERIFIED"
     }
   ],
   "canonicalPlan": {

@@ -1,3 +1,9 @@
+## Netlify aislado operativo ·18/10/2026
+
+La causa final era el alcance de `NEON_PREVIEW_DEPLOY`: el panel no lo entregaba al build Production del proyecto aislado. `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20` lo define únicamente en el entorno de la rama autorizada; la puerta conserva identidad exacta, host HTTPS, marca Netlify y rechazo de main/PR/sitio original. [Actions39140857478](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39140857478) terminó success. [Preview pública](https://neon-preview-deploy.netlify.app/) y `build-info.json` responden200 con SHA exacto, dirtyfalse, MotorV1false y134archivos. Chromium móvil abrió el viaje canónico, diez tramos, HUD, disparo y pausa sin errores. Tarea P1-NETLIFY-ISOLATED-01 DONE por su alcance técnico; el juego conserva sus revisiones artísticas/físicas pendientes.
+
+---
+
 ## Identidad exacta del sitio de pruebas ·18/10/2026
 
 La última captura muestra **neon-preview-deploy**, con guiones, y fallo82c3311. La puerta anterior permitía neonpreviewdeploy; se corrige el nombre/host exactos sin autorizar destinos adicionales. [Adenda y reproducción antes/después](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md). Local:buildpreview0,preview24/24,static13/13;27variantesnegativas×2modos. Commit/CI/publicación del destino corregido aún pendientes de comprobación. Los registros siguientes son históricos y conservan sus nombres y SHA.

@@ -1,3 +1,9 @@
+## Preview Netlify publicada · 18/10/2026
+
+El proyecto aislado **neon-preview-deploy** publica la rama autorizada en `https://neon-preview-deploy.netlify.app/`. El indicador no secreto `NEON_PREVIEW_DEPLOY=1` está limitado en `netlify.toml` al bloque `context.continuity-assets-audit-20261013.environment`; no moverlo a `build.environment`. La puerta conserva validación de rama, `NETLIFY=true`, nombre exacto y host HTTPS exacto, por lo que main, PR, el sitio original y otros destinos siguen rechazados. Publicación funcional verificada en `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`, `dirty=false`, MotorV1false, Actions39140857478success. El smoke remoto canónico abre diez tramos, HUD, disparo y pausa sin errores; `preview-offline-smoke.cjs` conserva una deuda independiente porque todavía busca el selector de dos campañas retirado. Informe y evidencia en `docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md`.
+
+---
+
 ## Identidad Netlify vigente ·18/10/2026
 
 La última captura del propietario muestra el proyecto de pruebas **neon-preview-deploy**, con guiones, y ejecución fallida82c3311. El nombre anterior sin guiones no identifica ese destino. La puerta debe admitir únicamente SITE_NAME=neon-preview-deploy y URLHTTPS del hostexacto neon-preview-deploy.netlify.app, además de Netlifytrue/ramaautorizada/opt-in1. Conservar rechazo de nombre/hostviejos, combinacionesmezcladas, main/PRs y producción del sitiooriginal. Esta identidad sustituye la de las notas anteriores; no modifica las demás protecciones. Fuente y evidencia: docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md.

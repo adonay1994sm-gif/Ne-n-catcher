@@ -1,3 +1,9 @@
+## Continuación tras publicación Netlify ·18/10/2026
+
+Usar `https://neon-preview-deploy.netlify.app/` para la revisión del propietario. Antes de atribuir cambios futuros, comprobar `build-info.json` contra el último SHA de `continuity-assets-audit-20261013`. No mover `NEON_PREVIEW_DEPLOY` al entorno global ni debilitar la validación de identidad. Corregir como deuda de QA `scripts/preview-offline-smoke.cjs`, que aún busca el selector de dos campañas retirado, conservando la portada canónica de un solo viaje. Después continuar la revisión humana del nivel uno y preparar una auditoría no destructiva del repositorio antes de proponer integración en main; ninguna limpieza o cambio de rama principal está autorizado todavía.
+
+---
+
 ## Continuación — sitio con guiones ·18/10/2026
 
 Prioridad: comprobar el ajuste de identidad **neon-preview-deploy / neon-preview-deploy.netlify.app**. Captura fallida82c demuestra que se ejecutó la corrección, pero el nombre sin guiones del allowlist no coincide. Leer adenda de [Netlify](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md), no atribuir ese fallo de82c a registroantiguo. La puerta/pruebas se actualizan; conservar rechazo del nombre anterior,main,PRs,producciónoriginalyhostsmezclados. ComprobarCIyHTTP/build-infodelnuevoSHAantesdecerrar. Runtimejuego/guardados/MotorV1sin cambios.

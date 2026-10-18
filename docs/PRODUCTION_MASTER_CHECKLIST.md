@@ -90,7 +90,7 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P1-DYNAMIC-AUDIO / P1 | Emisiones enemigas con sonidos originales y pausa/mute | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
 | P1-DYNAMIC-FLIGHT / P1 | Nave30% mayor y cometas con trayectorias variadas transitables | IN_REVIEW | CURRENT_CHROMIUM_INTEGRATION_OFFLINE_AND_CI_PASSED | PENDING_OWNER | PENDING |
 | P1-DYNAMIC-TOOLS / P1 | Skills útiles, higiene recuperable y Netlify QA preparado | DONE | PROCEDURE_SKILL_HYGIENE_AND_PREVIEW_GATE_PASSED | NOT_APPLICABLE | NOT_APPLICABLE |
-| P1-NETLIFY-ISOLATED-01 / P1 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | IN_REVIEW | EXACT_HYPHENATED_SITE_GATE_AND_PREVIEW_PASSED_REMOTE_PENDING | NOT_APPLICABLE | NOT_APPLICABLE |
+| P1-NETLIFY-ISOLATED-01 / P1 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | DONE | PUBLIC_PREVIEW_EXACT_COMMIT_VERIFIED | NOT_APPLICABLE | NOT_APPLICABLE |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -174,7 +174,7 @@ Este registro cubre los Bloques 03–10 del mandato. Los avances históricos per
 
 ## Resumen de estados
 
-PENDING: 200 · IN_PROGRESS: 5 · BLOCKED: 8 · IN_REVIEW: 126 · DONE: 28. Total: 367 tareas.
+PENDING: 200 · IN_PROGRESS: 5 · BLOCKED: 8 · IN_REVIEW: 125 · DONE: 29. Total: 367 tareas.
 
 ## Bloque 03 — Prueba integrada y cierre técnico
 
@@ -790,7 +790,7 @@ PENDING: 14 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0.
 
 ## Bloque 10 — Preparación para lanzamiento
 
-PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 1 · DONE: 0.
+PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 0 · DONE: 1.
 
 | ID | Nombre | Prioridad | Estado | Dependencias | Archivos | Commit implementación | Pruebas ejecutadas | Evidencia | Errores pendientes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -809,7 +809,7 @@ PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 1 · DONE: 0.
 | B10-13 | Preparar clasificación y metadatos | HIGH | PENDING | B10-01<br>B10-07 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
 | B10-14 | Completar checklist App Store sin publicar | HIGH | PENDING | B10-10<br>B10-12<br>B10-13 | [capacitor.config.ts](../capacitor.config.ts)<br>[ios/App/App](../ios/App/App)<br>[src/native-admob-entry.js](../src/native-admob-entry.js) | — | — | — | — |
 | P5-01 | Certificar calidad móvil y preparar distribución autorizada | CRITICAL | PENDING | P4-01 | — |  | — | — | Sin certificación física ni autorización de distribución. |
-| P1-NETLIFY-ISOLATED-01 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | HIGH | IN_REVIEW | — | [scripts/netlify-preview-gate.mjs](../scripts/netlify-preview-gate.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs)<br>[netlify.toml](../netlify.toml)<br>[docs/agents/NETLIFY_TEST_SETUP.md](agents/NETLIFY_TEST_SETUP.md) | 82c3311c147fb71da4ff93348a105bbf148c2828 | npm run build:preview (exit0, dirty snapshot8c)<br>node --test --test-name-pattern=unit:Netlify tests/preview-build.test.mjs (2/2; exact command in local-checks.json)<br>npm run test:preview (24/24)<br>npm run test:static (13/13)<br>npm run test:architecture (6/6)<br>GitHub Actions39134274955 completed/success on82c3311<br>Site-name correction: npm run build:preview exit0, npm run test:preview24/24, npm run test:static13/13;27negativeidentityvariants bothmodes | [docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md)<br>[docs/production-reports/evidence/netlify-isolated-fix/local-checks.json](production-reports/evidence/netlify-isolated-fix/local-checks.json)<br>[docs/production-reports/evidence/netlify-isolated-fix/reported-error.md](production-reports/evidence/netlify-isolated-fix/reported-error.md)<br>[docs/production-reports/evidence/netlify-isolated-fix/remote-state-before-retry.json](production-reports/evidence/netlify-isolated-fix/remote-state-before-retry.json)<br>[docs/production-reports/evidence/netlify-isolated-fix/retry-request.json](production-reports/evidence/netlify-isolated-fix/retry-request.json)<br>[docs/production-reports/evidence/netlify-site-name-fix/before-after-gate.json](production-reports/evidence/netlify-site-name-fix/before-after-gate.json)<br>[docs/production-reports/evidence/netlify-site-name-fix/local-checks.json](production-reports/evidence/netlify-site-name-fix/local-checks.json) | Identidad corregida a neon-preview-deploy y pruebas locales aprobadas; falta comprobar el nuevo commit, CI y publicación Netlify. |
+| P1-NETLIFY-ISOLATED-01 | Permitir el sitio Netlify de pruebas identificado sin habilitar producción del juego | HIGH | DONE | — | [scripts/netlify-preview-gate.mjs](../scripts/netlify-preview-gate.mjs)<br>[tests/preview-build.test.mjs](../tests/preview-build.test.mjs)<br>[netlify.toml](../netlify.toml)<br>[docs/agents/NETLIFY_TEST_SETUP.md](agents/NETLIFY_TEST_SETUP.md) | 4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20 | npm run build:preview (exit0, dirty snapshot8c)<br>node --test --test-name-pattern=unit:Netlify tests/preview-build.test.mjs (2/2; exact command in local-checks.json)<br>npm run test:preview (24/24)<br>npm run test:static (13/13)<br>npm run test:architecture (6/6)<br>GitHub Actions39134274955 completed/success on82c3311<br>Site-name correction: npm run build:preview exit0, npm run test:preview24/24, npm run test:static13/13;27negativeidentityvariants bothmodes<br>Branch opt-in correction: build:preview0, preview25/25, static13/13, architecture6/6, engine60/60, npm test34/34, content and asset inventory passed<br>GitHub Actions39140857478 completed/success on4b4d4aa<br>Public Netlify root/build-info/key resources HTTP200; Chromium390x844 canonical journey,10stages,HUD,fire,pause passed without page/HTTP errors | [docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md](production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md)<br>[docs/production-reports/evidence/netlify-isolated-fix/local-checks.json](production-reports/evidence/netlify-isolated-fix/local-checks.json)<br>[docs/production-reports/evidence/netlify-isolated-fix/reported-error.md](production-reports/evidence/netlify-isolated-fix/reported-error.md)<br>[docs/production-reports/evidence/netlify-isolated-fix/remote-state-before-retry.json](production-reports/evidence/netlify-isolated-fix/remote-state-before-retry.json)<br>[docs/production-reports/evidence/netlify-isolated-fix/retry-request.json](production-reports/evidence/netlify-isolated-fix/retry-request.json)<br>[docs/production-reports/evidence/netlify-site-name-fix/before-after-gate.json](production-reports/evidence/netlify-site-name-fix/before-after-gate.json)<br>[docs/production-reports/evidence/netlify-site-name-fix/local-checks.json](production-reports/evidence/netlify-site-name-fix/local-checks.json)<br>[docs/production-reports/evidence/netlify-branch-opt-in-fix/public-verification.json](production-reports/evidence/netlify-branch-opt-in-fix/public-verification.json) | — |
 
 ### Criterios verificables
 
@@ -828,7 +828,7 @@ PENDING: 11 · IN_PROGRESS: 0 · BLOCKED: 4 · IN_REVIEW: 1 · DONE: 0.
 - **B10-13:** Metadatos y clasificación reflejan contenido y monetización reales..
 - **B10-14:** Requisitos listos; envío/publicación permanecen pendientes de autorización..
 - **P5-01:** Rendimiento, memoria, accesibilidad y dispositivos reales; Distribución sólo con autorización específica.
-- **P1-NETLIFY-ISOLATED-01:** Rama autorizada y opt-in obligatorios; Production sólo en Netlify/neonpreviewdeploy/HTTPS host exacto.; Producción original, main, PRs e identidades/dominios desconocidos siguen rechazados.; Pruebas de los dos modos y pipeline preview aprobados; commit publicado y CI comprobada.; Distinguir publicación Netlify realmente observada de corrección local o acceso pendiente..
+- **P1-NETLIFY-ISOLATED-01:** Rama autorizada y opt-in obligatorios; Production sólo en Netlify/neon-preview-deploy/HTTPS host exacto.; Producción original, main, PRs e identidades/dominios desconocidos siguen rechazados.; Pruebas de los dos modos y pipeline preview aprobados; commit publicado y CI comprobada.; Distinguir publicación Netlify realmente observada de corrección local o acceso pendiente..
 
 ## Cómo cerrar una tarea
 

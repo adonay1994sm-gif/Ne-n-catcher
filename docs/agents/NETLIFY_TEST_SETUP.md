@@ -4,7 +4,7 @@
 
 **Identidad vigente confirmada en la última captura del propietario: `neon-preview-deploy`, con guiones.** La corrección82c y su cierre9f94 habían quedado vinculados al nombre sin guiones `neonpreviewdeploy`; la ejecución82c que aparece en la captura falla al no coincidir esa identidad. Se corrige sólo el destino permitido y se añaden rechazos del nombre anterior y de identidades mezcladas.
 
-El propietario ha conectado un proyecto nuevo, **`neon-preview-deploy`**, a `continuity-assets-audit-20261013`. Su captura del18/10/2026 confirma el fallo de `scripts/netlify-preview-gate.mjs --require-enabled`: Netlify llama **Production** al despliegue principal de este proyecto separado; la puerta anterior sólo admitía branch-deploy/local. El propietario confirma `NEON_PREVIEW_DEPLOY=1` en Production. El fallo ocurre antes de compilar el juego.
+El propietario ha conectado un proyecto nuevo, **`neon-preview-deploy`**, a `continuity-assets-audit-20261013`. Netlify llama **Production** al despliegue principal de este proyecto separado. Una ejecución posterior confirmó que la variable creada en la interfaz no llegaba al build y la puerta informó `Falta NEON_PREVIEW_DEPLOY=1`. Como el indicador no es secreto, queda definido exclusivamente en el bloque de entorno de esta rama dentro de `netlify.toml`; la identidad real del proyecto continúa validándose antes de compilar.
 
 La corrección admite ese contexto exclusivamente si coinciden todos estos datos:
 
@@ -24,12 +24,12 @@ En este proyecto de pruebas la rama principal del proyecto puede ser la rama aut
 ## Configuración que debe conservarse en el proyecto nuevo
 
 1. Repositorio `adonay1994sm-gif/Ne-n-catcher`; rama del proyecto de pruebas `continuity-assets-audit-20261013`.
-2. Variable `NEON_PREVIEW_DEPLOY` con valor `1`, disponible para **Production de neon-preview-deploy**. Una variable limitada a Branch deploys no llega a ese contexto.
+2. Conservar `[context.continuity-assets-audit-20261013.environment]` con `NEON_PREVIEW_DEPLOY="1"`. No copiarlo a `build.environment` ni a otros contextos. La variable de la interfaz deja de ser necesaria para esta rama y puede permanecer sin efecto o retirarse más adelante desde el panel.
 3. Usar la configuración de `netlify.toml`: Node22.13, puerta de seguridad, `npm run build:preview`, pruebas estáticas/preview y carpeta `preview-dist`. La captura del fallo confirma que Netlify ya selecciona ese comando desde el TOML; no hace falta sustituir la configuración global.
-4. Tras recibir el commit corregido, el enlace Git puede arrancar el build. Si se reintenta desde el panel, elegir el **último commit de esta rama**, no repetir el SHA8c5b44e que contiene la puerta anterior.
-5. Esperar publicación completa; abrir la URL que muestre Netlify, comprobar `build-info.json` con SHA/revisión/dirtyfalse/MotorV1false, recursos200, inicio, C9, disparo, pausa y guardado. Registrar el resultado real; un build local o GitHub Actions verde no certifica Netlify.
+4. La publicación comprobada corresponde al commit `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`; cualquier reintento posterior debe usar el último commit de esta rama.
+5. Comprobar siempre `build-info.json` con SHA/revisión/dirtyfalse/MotorV1false y recursos200. La verificación del18/10/2026 abrió el viaje canónico, diez tramos, HUD, disparo y pausa en Chromium móvil sin errores HTTP o JavaScript.
 
-No tocar ajustes del proyecto original ni PR3/main para conseguir esta preview. Sin acceso autenticado al panel desde la sesión, los cambios de variables del proyecto pertenecen al propietario; GitHub, pruebas locales y HTTP público sí se pueden comprobar desde Codex.
+No tocar ajustes del proyecto original ni PR3/main para conseguir esta preview. La sesión no dispone de acceso autenticado al panel, pero la publicación pública, su procedencia y GitHub Actions ya quedaron comprobados.
 
 ## Alternativa: branch deploy
 
