@@ -488,4 +488,7 @@ body.flight-mode.atlas-combat .atlas-identity progress{height:3px}
 body.flight-mode.atlas-combat #atlasStatus{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 body.flight-mode.atlas-combat #flightObjective{top:calc(max(6px,env(safe-area-inset-top)) + 89px)}
 @media(max-width:420px){body.flight-mode .flight-weapon{max-width:100px;min-width:88px;padding-left:10px;padding-right:10px}body.flight-mode .fire-control{min-width:102px;padding-left:9px;padding-right:9px;gap:5px}.classic-missile{left:calc(50% - 29px);width:58px}}
+/* Reserve a separate thumb zone for each action on the smallest phones.
+   The fire label's intrinsic width must not expand into the missile target. */
+@media(max-width:360px){body.flight-mode .fire-control{right:max(12px,env(safe-area-inset-right));width:106px;min-width:106px;max-width:106px;box-sizing:border-box}body.flight-mode .fire-reticle{width:24px;height:24px;flex:0 0 24px}body.flight-mode .fire-control b{font-size:9px;letter-spacing:.08em}}
 @media(prefers-reduced-motion:reduce){.classic-missile,.chapter-skip{transition:none}}
