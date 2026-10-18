@@ -188,6 +188,8 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     advance(remaining + .04);
     if (snapshot().route.waitingFor === 'service' && service) {
       window.document.getElementById('flightDockContinue').click();
+      const departing=snapshot();
+      if(departing.route.stageNumber===6)advance(departing.route.stageDuration-departing.route.stageElapsed+.04);
     }
     return snapshot();
   }
@@ -244,6 +246,45 @@ test('three classic charges recharge from played time and freeze completely whil
   h.advance(.04); assert.equal(h.snapshot().weapons.charges, 1);
   assert.equal(h.api.fireManualShot(), true, 'The fourth shot must become available without a purchase or restart');
   assert.equal(h.pending.size, 1);
+});
+
+test('the opt-in general auto-fire uses the shared battery, survives a CRONIUM wait and freezes during pause and C9', t => {
+  const h=harness(t,{unlocked:1});h.api.prepare();
+  const checkbox=h.node('autoFire');assert.ok(checkbox);assert.equal(checkbox.checked,false);
+  h.advance(.5);
+  assert.equal(h.snapshot().weapons.shotSequence,0,'A fresh route has no implicit automatic shots');
+  assert.equal(h.snapshot().weapons.charges,3);
+  checkbox.click();assert.equal(checkbox.checked,true);
+  assert.equal(JSON.parse(h.stored('neon-settings-v5')).autoFire,true);
+  h.advance(.8);const depleted=h.snapshot();
+  assert.equal(depleted.weapons.shotSequence,3);assert.equal(depleted.weapons.charges,0);
+  h.api.pauseGame();h.advance(12);
+  assert.deepEqual(h.snapshot().weapons,depleted.weapons);
+  assert.deepEqual(h.snapshot().route,depleted.route);
+  assert.equal(h.pending.size,1);
+  h.api.resumeGame();
+  h.advance(3.6-depleted.weapons.recharge-.03);
+  assert.equal(h.snapshot().weapons.shotSequence,3);
+  assert.equal(h.snapshot().weapons.charges,0);
+  h.advance(.04);
+  assert.equal(h.snapshot().weapons.shotSequence,4,
+    'The fourth automatic shot waits for the actual 3.6-second played-time recharge');
+  assert.equal(h.snapshot().weapons.charges,0,'Auto-fire spends the recovered charge instead of inventing ammunition');
+  h.advance(h.snapshot().route.stageDuration-h.snapshot().route.stageElapsed+.05);
+  const waiting=h.snapshot();
+  assert.equal(waiting.route.waitingFor,'cronium');assert.equal(waiting.state,'playing');
+  h.advance(3.65);const stillRecovering=h.snapshot();
+  assert.equal(stillRecovering.route.waitingFor,'cronium');
+  assert.ok(stillRecovering.weapons.shotSequence>waiting.weapons.shotSequence,
+    'A missing recovery quota must not silently suspend the enabled weapon');
+  h.reachStage(6);h.recoverStageQuota();h.advance(1.3);
+  const docked=h.snapshot();
+  assert.equal(docked.state,'paused');assert.equal(docked.route.waitingFor,'service');
+  assert.equal(checkbox.checked,true,'Servicing does not overwrite the explicit accessibility preference');
+  h.advance(8);
+  assert.deepEqual(h.snapshot().weapons,docked.weapons);
+  assert.deepEqual(h.snapshot().route,docked.route);
+  assert.equal(h.pending.size,1,'The accessibility preference never creates another update owner');
 });
 
 test('a classic projectile travels before impact and applies damage and destruction reward only once', t => {
@@ -329,6 +370,16 @@ test('the first mission requires recovered CRONIUM, all ten visible stages and t
   h.api.completeLevel(); assert.equal(h.snapshot().state, 'playing');
   for (let number = 1; number <= 10; number++) {
     q = h.snapshot(); assert.equal(q.route.stageNumber, number);
+    if(number===6) {
+      h.advance(1.25);const docked=h.snapshot();
+      assert.equal(docked.state,'paused');assert.equal(docked.route.waitingFor,'service');
+      assert.ok(h.node('flightDock').classList.contains('show'));
+      assert.equal(docked.route.canFinish,false);assert.equal(docked.unlocked,1);
+      h.node('flightDockContinue').click();q=h.snapshot();
+      assert.equal(q.state,'playing');assert.equal(q.route.stageNumber,6,
+        'Fresh service completion resumes the physical departure leg instead of skipping to 1.7');
+      assert.equal(q.route.waitingFor,null);
+    }
     h.advance(q.route.stageDuration - q.route.stageElapsed - .05);
     q = h.snapshot();
     assert.equal(q.state, 'playing'); assert.equal(q.route.canFinish, false);
@@ -337,14 +388,7 @@ test('the first mission requires recovered CRONIUM, all ten visible stages and t
     h.api.completeLevel(); assert.equal(h.snapshot().state, 'playing');
     if (number === 10) assert.ok(q.route.routeProgress > .9 && q.route.routeProgress < 1);
     h.advance(.06); q = h.snapshot();
-    if (number === 6) {
-      assert.equal(q.state, 'paused'); assert.equal(q.route.waitingFor, 'service');
-      assert.ok(h.node('flightDock').classList.contains('show'));
-      assert.equal(q.route.canFinish, false);
-      h.node('flightDockContinue').click();
-      assert.equal(h.snapshot().state, 'playing');
-      assert.equal(h.snapshot().route.stageNumber, 7);
-    } else if (number < 10) {
+    if (number < 10) {
       assert.equal(q.state, 'playing'); assert.equal(q.route.stageNumber, number + 1);
       assert.equal(q.route.canFinish, false);
     }
@@ -456,7 +500,7 @@ test('a pending destruction atlas holds the flight clock and an actual load erro
   assert.equal(h.pending.size, 1);
 });
 
-test('recovering, installing and switching a real weapon preserve ammunition and separate campaign saves', t => {
+test('recovering and preparing the C9 emitter preserves the battery while keeping fresh pilots on Pulso until Atlas', t => {
   const h = harness(t); h.api.prepare(); h.api.fireManualShot(); h.advance(.3);
   h.api.collectModule();
   assert.equal(h.snapshot().equipment.recoveredTwin, true);
@@ -466,30 +510,48 @@ test('recovering, installing and switching a real weapon preserve ammunition and
   const ammunition = h.snapshot().weapons;
   h.api.goHome(); h.node('openFlightDock').click();
   assert.ok(h.node('flightDock').classList.contains('show'));
-  h.node('flightInstallTwin').click(); const installed = h.snapshot();
-  assert.deepEqual(h.equipment(), {version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin'], selected: 'twin'});
-  assert.equal(installed.weapons.charges, ammunition.charges);
-  assert.equal(installed.weapons.recharge, ammunition.recharge);
-  assert.equal(installed.weapons.cooldown, ammunition.cooldown);
+  h.node('flightInstallTwin').click(); const prepared = h.snapshot();
+  assert.equal(h.equipment().twinPrepared, true);
+  assert.equal(h.equipment().selected, 'pulse');
+  assert.deepEqual(h.equipment().unlocked, ['pulse']);
+  assert.equal(prepared.weapons.charges, ammunition.charges);
+  assert.equal(prepared.weapons.recharge, ammunition.recharge);
+  assert.equal(prepared.weapons.cooldown, ammunition.cooldown);
   assert.equal(h.node('flightInstallTwin').disabled, true);
-  const save = h.stored(EQUIPMENT_KEY); h.node('flightInstallTwin').click(); assert.equal(h.stored(EQUIPMENT_KEY), save);
-  h.api.prepare(1); assert.equal(h.snapshot().weapons.selected, 'twin');
+  assert.equal(h.node('flightCalibrateLance').classList.contains('hidden'), true);
+  const save = h.stored(EQUIPMENT_KEY);
+  h.node('flightInstallTwin').click(); h.node('flightCalibrateLance').click();
+  assert.equal(h.stored(EQUIPMENT_KEY), save, 'Preparing and hidden historical controls cannot duplicate a reward');
+  h.api.prepare(1); assert.equal(h.snapshot().weapons.selected, 'pulse');
   assert.equal(h.api.fireManualShot(), true); const fired = h.snapshot().weapons;
-  assert.equal(fired.charges, 2); assert.equal(fired.projectiles.length, 2);
-  h.node('flightWeapon').click(); let switched = h.snapshot().weapons;
-  assert.equal(switched.selected, 'pulse'); assert.equal(switched.charges, 2);
-  assert.equal(switched.cooldown, fired.cooldown); assert.equal(switched.recharge, fired.recharge);
-  h.node('flightWeapon').click(); switched = h.snapshot().weapons;
-  assert.equal(switched.selected, 'twin'); assert.equal(switched.charges, 2);
-  assert.equal(switched.projectiles.length, 2, 'Switching cannot duplicate a trigger event');
-  const restored = harness(t, {saved: h.stored(EQUIPMENT_KEY)}); restored.api.prepare();
-  assert.equal(restored.snapshot().equipment.selected, 'twin');
-  assert.equal(restored.snapshot().weapons.selected, 'twin');
+  assert.equal(fired.charges, 2); assert.equal(fired.projectiles.length, 1);
+  h.node('flightWeapon').click();
+  assert.deepEqual(h.snapshot().weapons, fired, 'Cycling cannot unlock the unavailable second cannon');
+  const restored = harness(t, {saved: save}); restored.api.prepare();
+  assert.equal(restored.snapshot().equipment.twinPrepared, true);
+  assert.equal(restored.snapshot().weapons.selected, 'pulse');
+  assert.deepEqual(restored.snapshot().weapons.unlocked, ['pulse']);
   assert.equal(h.stored('neon-n7-unlocked-v1'), '37'); assert.equal(h.stored('neon-n7-best-v1'), '2037');
   const n7 = harness(t, {campaign: 'n7', saved: save}); n7.api.prepare();
   assert.equal(n7.snapshot().weapons, null); assert.equal(n7.snapshot().route, null);
   assert.equal(n7.stored(EQUIPMENT_KEY), save); assert.equal(n7.node('flightRoute'), null);
   assert.equal(h.pending.size, 1); assert.equal(restored.pending.size, 1); assert.equal(n7.pending.size, 1);
+});
+
+test('historical twin owners keep their weapon and switching never duplicates ammunition or an emitted projectile', t => {
+  const saved=JSON.stringify({version:1,recoveredTwin:true,unlocked:['pulse','twin'],selected:'twin'});
+  const h=harness(t,{saved});h.api.prepare(1);
+  assert.equal(h.snapshot().weapons.selected,'twin');
+  assert.equal(h.api.fireManualShot(),true);const fired=h.snapshot().weapons;
+  assert.equal(fired.charges,2);assert.equal(fired.projectiles.length,2);
+  for(const selected of ['pulse','twin']) {
+    h.node('flightWeapon').click();const switched=h.snapshot().weapons;
+    assert.equal(switched.selected,selected);assert.equal(switched.charges,fired.charges);
+    assert.equal(switched.cooldown,fired.cooldown);assert.equal(switched.recharge,fired.recharge);
+    assert.equal(switched.shotSequence,fired.shotSequence);assert.deepEqual(switched.projectiles,fired.projectiles);
+  }
+  const restored=harness(t,{saved:h.stored(EQUIPMENT_KEY)});restored.api.prepare();
+  assert.equal(restored.snapshot().weapons.selected,'twin');assert.equal(restored.pending.size,1);assert.equal(h.pending.size,1);
 });
 
 test('invalid equipment is backed up once before replacement and a failed backup blocks destructive recovery', t => {
@@ -514,38 +576,30 @@ test('invalid equipment is backed up once before replacement and a failed backup
   assert.equal(blocked.stored('neon-n7-unlocked-v1'), '37');
 });
 
-test('C9 calibrates the recovered twin into a persistent lance and cycling ×1/×2/×3 never grants ammunition', t => {
-  const h = harness(t); h.api.prepare();
-  assert.equal(h.node('flightWeaponDamage').textContent, 'DAÑO ×1');
-  h.api.fireManualShot(); h.advance(.3);
-  h.api.collectModule(); h.api.goHome(); h.node('openFlightDock').click();
-  assert.equal(h.node('flightCalibrateLance').disabled, true,
-    'Recovering a piece alone must not skip its installation');
-  h.node('flightCalibrateLance').click();
-  assert.deepEqual(h.equipment().unlocked, ['pulse']);
-  const beforeInstallation = h.snapshot().weapons;
-  h.node('flightInstallTwin').click();
-  assert.equal(h.node('flightCalibrateLance').disabled, false);
-  assert.equal(h.equipment().lanceCalibrated, undefined,
-    'The optional extension must not rewrite an old v1 profile before calibration');
-  h.node('flightCalibrateLance').click();
-  const calibrated = h.snapshot();
-  assert.deepEqual(h.equipment(), {version: 1, recoveredTwin: true,
-    unlocked: ['pulse', 'twin', 'lance'], selected: 'lance', lanceCalibrated: true});
-  assert.equal(calibrated.weapons.charges, beforeInstallation.charges);
-  assert.equal(calibrated.weapons.recharge, beforeInstallation.recharge);
-  assert.equal(calibrated.weapons.cooldown, beforeInstallation.cooldown);
-  assert.equal(h.node('flightCalibrateLance').disabled, true);
-  const saved = h.stored(EQUIPMENT_KEY);
-  h.node('flightCalibrateLance').click();
-  assert.equal(h.stored(EQUIPMENT_KEY), saved, 'Repeating calibration cannot duplicate an unlock');
+test('C9 selects a genuinely owned historical lance without granting a new tier and cycling retains battery state', t => {
+  const savedProfile=JSON.stringify({version:1,recoveredTwin:true,unlocked:['pulse','twin','lance'],
+    selected:'pulse',lanceCalibrated:true});
+  const h=harness(t,{saved:savedProfile});h.api.prepare();
+  assert.equal(h.node('flightWeaponDamage').textContent,'DAÑO ×1');
+  h.api.fireManualShot();h.advance(.3);const beforeEquipment=h.snapshot().weapons;
+  h.api.goHome();h.node('openFlightDock').click();
+  assert.equal(h.node('flightCalibrateLance').classList.contains('hidden'),false);
+  h.node('flightCalibrateLance').click();const equipped=h.snapshot();
+  assert.equal(h.equipment().selected,'lance');assert.equal(h.equipment().lanceCalibrated,true);
+  assert.deepEqual(h.equipment().unlocked,['pulse','twin','lance']);
+  assert.equal(equipped.weapons.charges,beforeEquipment.charges);
+  assert.equal(equipped.weapons.recharge,beforeEquipment.recharge);
+  assert.equal(equipped.weapons.cooldown,beforeEquipment.cooldown);
+  assert.equal(h.node('flightCalibrateLance').disabled,true);
+  const saved=h.stored(EQUIPMENT_KEY);h.node('flightCalibrateLance').click();
+  assert.equal(h.stored(EQUIPMENT_KEY),saved,'Selecting the same historical weapon is idempotent');
   const choices=h.node('flightLoadoutChoices');
   for(const type of ['pulse','twin','lance']) {
     choices.querySelector(`[data-flight-loadout="${type}"]`).click();
     assert.equal(h.equipment().selected,type,'C9 selection persists the actual weapon');
     assert.equal(choices.querySelector(`[data-flight-loadout="${type}"]`).getAttribute('aria-pressed'),'true');
-    assert.equal(h.snapshot().weapons.charges,calibrated.weapons.charges,'C9 comparison cannot manufacture ammunition');
-    assert.equal(h.snapshot().weapons.recharge,calibrated.weapons.recharge);
+    assert.equal(h.snapshot().weapons.charges,equipped.weapons.charges,'C9 comparison cannot manufacture ammunition');
+    assert.equal(h.snapshot().weapons.recharge,equipped.weapons.recharge);
   }
 
   h.api.prepare(1);
@@ -602,7 +656,7 @@ test('Atlas locks its warning and actual projectile trajectory to the movable sh
   const h = harness(t); h.api.prepare(1);
   for (let fragment = 0; fragment < 45; fragment++) h.api.collectEnergy();
   if (h.snapshot().boss === null) assert.fail('Gaia did not start Atlas');
-  h.node('atlasAutoFire').click(); assert.equal(h.snapshot().boss.phase, 1);
+  assert.equal(h.node('atlasAutoFire'), null); assert.equal(h.snapshot().boss.phase, 1);
   h.pointer('pointerdown', 31, 250, 650); h.pointer('pointermove', 31, 290, 590);
   h.advance(.6); h.pointer('pointerup', 31, 290, 590);
   for (let frame = 0; frame < 600 && h.snapshot().boss.state !== 'charge'; frame++) h.api.frame(1 / 60, true);
@@ -888,13 +942,12 @@ test('Chronos stage-entry checkpoints restore coherently after reload and retry 
   }
 });
 
-test('the in-route C9 stop pauses the same flight, installs its recovered emitter and continues at stage 7 without granting charges', t => {
+test('the in-route C9 stop prepares its recovered emitter and continues at stage 7 with Pulso and unchanged charges', t => {
   const h = harness(t, {unlocked: 1}); h.api.prepare(); h.api.collectModule(); h.reachStage(6);
   assert.equal(h.snapshot().route.stageNumber, 6);
   assert.equal(h.snapshot().equipment.recoveredTwin, true);
   h.recoverStageQuota();
-  const remaining = h.snapshot().route.stageDuration - h.snapshot().route.stageElapsed;
-  h.advance(remaining - .3); assert.equal(h.api.fireManualShot(), true);
+  h.advance(.9); assert.equal(h.api.fireManualShot(), true);
   h.advance(.35); const docked = h.snapshot();
   assert.equal(docked.state, 'paused'); assert.equal(docked.route.waitingFor, 'service');
   assert.equal(docked.route.stageNumber, 6); assert.ok(h.node('flightDock').classList.contains('show'));
@@ -906,25 +959,31 @@ test('the in-route C9 stop pauses the same flight, installs its recovered emitte
   assert.equal(h.snapshot().state, 'paused', 'The ordinary resume action must not bypass the service interaction');
   assert.deepEqual(h.snapshot().route, route);
   h.node('flightInstallTwin').click();
-  assert.equal(h.equipment().selected, 'twin');
-  assert.deepEqual(h.equipment().unlocked, ['pulse', 'twin']);
+  assert.equal(h.equipment().selected, 'pulse');
+  assert.equal(h.equipment().twinPrepared, true);
+  assert.deepEqual(h.equipment().unlocked, ['pulse']);
   const equipped = h.snapshot().weapons;
   assert.equal(equipped.charges, ammunition.charges);
   assert.equal(equipped.recharge, ammunition.recharge);
   assert.equal(equipped.cooldown, ammunition.cooldown);
   h.node('flightDockContinue').click(); const continued = h.snapshot();
   assert.equal(continued.state, 'playing'); assert.equal(continued.currentLevel, 0);
-  assert.equal(continued.route.stageNumber, 7); assert.equal(continued.route.stageElapsed, 0);
+  assert.equal(continued.route.stageNumber, 6); closeTo(continued.route.stageElapsed,1.2);
   assert.equal(continued.route.waitingFor, null);
   assert.equal(h.node('flightDock').classList.contains('show'), false);
-  assert.equal(continued.weapons.selected, 'twin');
+  assert.equal(continued.weapons.selected, 'pulse');
   assert.equal(continued.weapons.charges, ammunition.charges);
   assert.equal(continued.weapons.recharge, ammunition.recharge);
   assert.equal(continued.weapons.cooldown, ammunition.cooldown);
   assert.equal(continued.events.filter(event => event.type === 'service').length, 1);
   assert.equal(continued.events.filter(event => event.type === 'service-complete').length, 1);
-  assert.equal(h.voyage().checkpoint.stageNumber, 7);
+  assert.equal(h.voyage().checkpoint.stageNumber, 6);
+  assert.ok(h.voyage().checkpoint.eventIds.includes('chronos-voyage:1.6:service-complete'));
   assert.equal(h.voyage().entry.collected, 18);
+  h.advance(31);
+  assert.equal(h.snapshot().route.stageNumber,7);
+  assert.ok(h.snapshot().route.stageElapsed<.3);
+  assert.equal(h.voyage().checkpoint.stageNumber,7);
   assert.equal(continued.unlocked, 1);
   assert.equal(h.pending.size, 1);
 });
@@ -940,6 +999,28 @@ test('the archived N-7 mode neither loads nor modifies the new Chronos voyage re
   assert.equal(archived.stored('neon-n7-unlocked-v1'), '37');
   assert.equal(archived.stored('neon-n7-best-v1'), '2037');
   assert.equal(archived.pending.size, 1);
+});
+
+test('a historical C9 end-of-stage waiting checkpoint retains its old immediate departure without losing recovered equipment', t => {
+  const original=harness(t,{unlocked:1});original.api.prepare();original.api.collectModule();original.reachStage(6);
+  original.recoverStageQuota();original.advance(1.25);
+  assert.equal(original.snapshot().state,'paused');
+  const record=original.voyage();
+  record.checkpoint.eventIds=[...new Set([...record.checkpoint.eventIds,'chronos-voyage:1.6:complete'])];
+  const h=harness(t,{unlocked:1,savedVoyage:record,saved:original.stored(EQUIPMENT_KEY)});h.api.prepare();
+  assert.equal(h.snapshot().state,'paused');assert.equal(h.snapshot().route.stageNumber,6);
+  assert.equal(h.snapshot().route.stageElapsed,h.snapshot().route.stageDuration,
+    'The explicit historical completion milestone must not be moved backward to the new early dock');
+  assert.equal(h.snapshot().route.waitingFor,'service');
+  h.node('flightDockContinue').click();
+  const departed=h.snapshot();
+  assert.equal(departed.state,'playing');assert.equal(departed.route.stageNumber,7);
+  assert.equal(departed.route.stageElapsed,0);assert.equal(departed.collected,18);
+  assert.equal(departed.equipment.recoveredTwin,true);
+  assert.deepEqual(departed.equipment.unlocked,['pulse']);
+  assert.equal(departed.events.filter(event=>event.type==='service-complete').length,1);
+  assert.equal(h.voyage().checkpoint.stageNumber,7);
+  assert.equal(h.stored('neon-n7-unlocked-v1'),'37');assert.equal(h.pending.size,1);
 });
 
 test('the ten-stage selector exposes only persisted unlocked entries and an actual launch replays the chosen checkpoint', t => {
@@ -998,7 +1079,7 @@ test('actual Chronos runtime introduces an announced pursuer after rupture witho
   for(let n=0;n<Math.ceil(12/.034);n++)h.api.update(.034);
   assert.equal(h.snapshot().targets.some(item=>item.tactics),false);
   for(let n=0;n<Math.ceil(9/.034);n++)h.api.update(.034);
-  const q=h.snapshot(),raiders=q.targets.filter(item=>item.tactics==='classic-pursuit-v1');
+  const q=h.snapshot(),raiders=q.targets.filter(item=>item.tactics===h.window.NeonCampaign.CLASSIC_PURSUIT_VERSION);
   assert.ok(raiders.length>=1&&raiders.length<=1);
   assert.equal(raiders[0].role,'raider');
   assert.ok(q.events.some(event=>event.type==='rupture'));
@@ -1019,7 +1100,7 @@ test('Gaia schedules CH-01 then a genuine CH-02 through the actual patrol update
     for (let frame = 0; frame < Math.ceil(17 / .034) && interceptors.length === 0; frame++) {
       h.api.patrolFrame(.034);
       q = h.snapshot();
-      for (const item of q.targets.filter(item => item.tactics === 'classic-pursuit-v1')) {
+      for (const item of q.targets.filter(item => item.tactics === h.window.NeonCampaign.CLASSIC_PURSUIT_VERSION)) {
         if (!observed.has(item.id)) observed.set(item.id, {...item, firstSeenAt: q.elapsed});
       }
       interceptors = q.targets.filter(item => item.role === 'interceptor');
@@ -1054,7 +1135,7 @@ test('restored stage-entry checkpoints retain the same seven-second patrol grace
   for(let n=0;n<Math.floor(6.7/.034);n++)restored.api.update(.034);
   assert.equal(restored.snapshot().targets.some(item=>item.tactics),false);
   for(let n=0;n<Math.ceil(.6/.034);n++)restored.api.update(.034);
-  assert.equal(restored.snapshot().targets.filter(item=>item.tactics==='classic-pursuit-v1').length,1);
+  assert.equal(restored.snapshot().targets.filter(item=>item.tactics===restored.window.NeonCampaign.CLASSIC_PURSUIT_VERSION).length,1);
   assert.equal(restored.snapshot().route.stageNumber,2);
   assert.equal(restored.snapshot().events.filter(event=>event.type==='attack'||event.type==='rupture').length,0);
   assert.equal(restored.pending.size,1);

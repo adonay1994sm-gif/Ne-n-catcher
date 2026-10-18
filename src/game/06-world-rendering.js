@@ -214,13 +214,16 @@
     const x = clamp(W * relay.x, size * .56, W - size * .56);
     const y = Math.max(frame.top + frame.gap + relay.y * (H - frame.top),
       frame.top + frame.gap + size * .56);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, frame.top, W, frame.height); ctx.clip();
     ctx.save(); ctx.translate(x, y);
     ctx.rotate(-.08 + Math.sin(view.elapsed * .06) * .035);
     if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
     if (illustratedStation) {
       // Four real machine states, 2x2, one shared centre pivot. Rendering a
       // repair pose does not install anything or replay a gameplay event.
-      const pose = view.stageNumber >= 7 ? 3 : relay.active ? 2 : view.stageNumber === 6 ? 1 : 0;
+      const poses = {approach: 0, docking: 1, service: 2, departing: 3};
+      const pose = Object.hasOwn(poses, relay.state) ? poses[relay.state]
+        : view.stageNumber >= 7 ? 3 : relay.active ? 2 : view.stageNumber === 6 ? 1 : 0;
       const cellWidth = image.naturalWidth / 2, cellHeight = image.naturalHeight / 2;
       ctx.drawImage(image, pose % 2 * cellWidth, Math.floor(pose / 2) * cellHeight,
         cellWidth, cellHeight, -size / 2, -size / 2, size, size);
@@ -236,6 +239,7 @@
       ctx.fillText("SERVICIO C9", x, y + size * .56 + frame.gap);
       ctx.restore();
     }
+    ctx.restore();
   }
 
   function drawChronosRouteCrossing(transition) {

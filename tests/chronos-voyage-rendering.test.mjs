@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {getChronosDestructionPose} from '../src/game/animation/chronos-destruction.js';
+import {createChronosVoyage,createChronosVoyageCheckpoint} from '../src/game/progression/chronos-flight.js';
 
 const source = await readFile(new URL('../src/game/06-world-rendering.js', import.meta.url), 'utf8');
 
@@ -186,6 +187,39 @@ test('the independent C9 atlas shows four real route/service states from a share
   assert.deepEqual(h.view, before);
   h.SPRITES.c9Station.naturalWidth = 0;
   assert.equal(images(h.draw()).filter(call => call.args[0].name === 'satellite').length, 1);
+});
+
+test('the actual short C9 approach, immediate dock and undock select the four illustrated machine states',()=>{
+  const model=createChronosVoyage({checkpoint:createChronosVoyageCheckpoint(5)});
+  const advance=seconds=>{
+    for(let step=0;step<Math.ceil(seconds/.02);step++)model.advance(.02,18);
+    return model.snapshot();
+  };
+  const approaching=advance(36.82);
+  assert.equal(approaching.relay.visible,true);assert.equal(approaching.relay.state,'approach');
+  while(model.snapshot().stageNumber===5)model.advance(.02,18);
+  const docking=advance(.6);assert.equal(docking.relay.state,'docking');
+  const docked=advance(.6);assert.equal(docked.waitingFor,'service');
+  const departing=model.resolveService();
+  assert.equal(departing.stageNumber,6);assert.equal(departing.relay.state,'departing');
+  const geometry={classicFlightBounds:{presentationTop:122,presentationBottom:730}};
+  const h=harness(approaching,'high',geometry);
+  h.SPRITES.c9Station={name:'c9',naturalWidth:1024,naturalHeight:1024};
+  for(const [view,column,row] of [[approaching,0,0],[docking,512,0],[docked,0,512],[departing,512,512]]){
+    Object.assign(h.view,view);
+    const before=structuredClone(view),calls=h.draw();
+    const drawn=images(calls).find(call=>call.args[0].name==='c9');
+    assert.ok(drawn);assert.deepEqual(drawn.args.slice(1,5),[column,row,512,512]);
+    assert.equal(drawn.alpha,1,'A service state uses an opaque machine, never a fade');
+    assert.ok(calls.some(call=>call.method==='rect'&&call.args.join()==='0,122,390,608'));
+    assert.ok(calls.some(call=>call.method==='clip'));
+    assert.deepEqual(h.draw(),calls,'Paused route snapshots cannot rotate or change the pose');
+    assert.deepEqual(view,before,'Scenery cannot advance the service or install equipment');
+  }
+  const gone=advance(2.4);assert.equal(gone.relay.visible,false);
+  assert.equal(gone.stageNumber,6);assert.equal(gone.stageGoal,18);
+  Object.assign(h.view,gone);
+  assert.equal(images(h.draw()).some(call=>call.args[0].name==='c9'),false);
 });
 
 test('a failed space plate still renders the independent stars and planet', () => {

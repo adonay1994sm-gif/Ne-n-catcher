@@ -41,13 +41,13 @@ test('charge fixes the observed aim and waits for a complete warning plus the an
   const chargedAt = item.classicScout.age, lock = item.classicScout.lockedTarget;
   assert.deepEqual(lock, {x: 510, y: 1080});
   player.x = 80;
-  for (let index = 0; index < 35; index++) {
+  for (let index = 0; index < 40; index++) {
     step(item, player, shots);
-    assert.equal(shots.length, 0, 'no shot before the .72 second warning');
+    assert.equal(shots.length, 0, 'no shot before the .82 second warning');
     assert.deepEqual(item.classicScout.lockedTarget, lock, 'aim does not follow later input');
   }
   until(item, player, () => shots.length > 0, shots);
-  assert.ok(shots[0].at - chargedAt >= .72);
+  assert.ok(shots[0].at - chargedAt >= .82);
   assert.ok(shots[0].vx > 0, 'shot travels toward the observed right-hand target, not the new left position');
   assert.ok(shots[0].vy > 0);
   assert.ok(Math.abs(Math.hypot(shots[0].vx, shots[0].vy) - 295) < 1e-8);
@@ -64,7 +64,7 @@ test('damage cancels charging with real hurt frames and no hidden projectile or 
   assert.equal(shots.length, 0);
   item.hp = 1;
   step(item, player, shots);
-  assert.equal(item.classicScout.state, 'break-away');
+  assert.equal(item.classicScout.state, 'reposition');
   assert.equal(item.classicScout.animator.getFrame().state, 'hurt');
   assert.equal(item.classicScout.telegraph, 0);
   assert.equal(item.classicScout.lockedTarget, null);
@@ -79,7 +79,7 @@ test('a close approach or a player crossing above the enemy cancels the locked a
     until(item, player, () => item.classicScout.state === 'charge', shots);
     player.y = y;
     step(item, player, shots);
-    assert.equal(item.classicScout.state, 'break-away');
+    assert.equal(item.classicScout.state, 'reposition');
     for (let index = 0; index < 100; index++) step(item, player, shots);
     assert.equal(shots.length, 0, 'never fires from close range or behind the player');
   }
@@ -96,18 +96,22 @@ test('death stops attacks and plays the terminal produced animation', () => {
   assert.equal(item.classicScout.animator.getFrame().done, true);
 });
 
-test('roles produce distinct tracking decisions with bounded velocity and deterministic replay', () => {
-  const player = {x: 530, y: 1100};
-  const results = {};
+test('roles choose distinct interior repositioning lanes with bounded movement and deterministic replay', () => {
+  const player = {x: 530, y: 1100}, results = {};
   for (const role of ['raider', 'scout', 'interceptor']) {
     const item = enemyAt({x: 190, role}), replay = enemyAt({x: 190, role});
-    for (let frame = 0; frame < 70; frame++) {
+    let frames = 0;
+    while (item.classicScout.state !== 'reposition' && frames++ < 600) {
       step(item, player, []); step(replay, player, []);
       assert.equal(item.x, replay.x);
+      assert.equal(item.y, replay.y);
       assert.equal(item.classicScout.state, replay.classicScout.state);
       assert.ok(Math.abs(item.classicScout.vx) <= 148 + 1e-8);
     }
+    assert.equal(item.classicScout.state, 'reposition');
     results[role] = item.classicScout.targetX;
+    assert.ok(results[role] >= item.classicScout.combatMinX);
+    assert.ok(results[role] <= item.classicScout.combatMaxX);
   }
   assert.notEqual(results.scout, results.raider);
   assert.notEqual(results.interceptor, results.raider);
@@ -137,16 +141,16 @@ test('100 seeds across three roles keep readable, finite, bounded attacks and an
       }
       assert.ok(item.x >= 52 && item.x <= width - 52);
       assert.ok(Math.abs(item.x - previousX) <= 148 * DT + 1e-8);
-      assert.ok(Number.isFinite(item.s) && item.s > 0);
+      assert.ok(Number.isFinite(item.s) && item.s >= -82 && item.s <= 202.5);
     }
     assert.ok(shots.length > 0, `${role}/${seed} presents an actual attack`);
-    assert.ok(shots.length <= (role === 'raider' ? 3 : 2));
+    assert.ok(shots.length <= (role === 'interceptor' ? 4 : 3));
     assert.equal(new Set(shots.map(shot => shot.attackSerial)).size, shots.length);
     for (const shot of shots) {
       totalShots++;
       assert.ok(shot.y <= player.y - 230 + 1e-8, 'minimum reaction distance');
       assert.ok(shot.y >= 135 + 38, 'weapon is visible below the HUD');
-      assert.ok(shot.at - charges.get(shot.attackSerial) >= .72 - 1e-8);
+      assert.ok(shot.at - charges.get(shot.attackSerial) >= .82 - 1e-8);
       // Even the minimum vertical spacing permits a 180 px/s player to clear
       // a 38+9px combined collision radius before this non-homing shot arrives.
       const travelTime = (player.y - shot.y) / shot.vy;
@@ -155,4 +159,97 @@ test('100 seeds across three roles keep readable, finite, bounded attacks and an
     }
   }
   assert.ok(totalShots >= 100);
+});
+
+
+test('a surviving opponent brakes into a visible band and re-engages instead of merely crossing the screen', () => {
+  for (const role of ['raider', 'scout', 'interceptor']) {
+    const item = enemyAt({role}), player = {x: 360, y: 1080}, shots = [], held = [], states = new Set();
+    for (let frame = 0; frame < 1300 && item.classicScout.state !== 'retreat'; frame++) {
+      step(item, player, shots);
+      const enemy = item.classicScout;
+      states.add(enemy.state);
+      if (enemy.combatStartedAt !== null && enemy.state !== 'retreat') {
+        held.push({age: enemy.age, y: item.y, speed: item.s, x: item.x});
+        assert.ok(item.y >= enemy.minAttackY, 'enemy remains visible below the HUD');
+        assert.ok(item.y + 38 < player.y - 230, 'combat band leaves a reaction corridor');
+        assert.ok(item.x >= enemy.combatMinX && item.x <= enemy.combatMaxX,
+          'active opponent does not hide in the old inaccessible edge lane');
+      }
+    }
+    for (const state of ['entry', 'brake', 'charge', 'fire', 'reposition', 'retreat']) {
+      assert.ok(states.has(state), `${role} actually traverses ${state}`);
+    }
+    assert.ok(shots.length >= 3, `${role} completes repeated attacks with real animation events`);
+    assert.ok(shots.at(-1).at - shots[0].at >= 6, 'multiple combat opportunities span several seconds');
+    assert.ok(held.at(-1).age - held[0].age >= 7, 'the enemy persists as a fightable opponent');
+    assert.ok(Math.max(...held.map(q => q.y)) - Math.min(...held.map(q => q.y)) < 45,
+      'combat does not continue descending past the ship');
+    assert.ok(held.some(q => Math.abs(q.speed) < 1), 'vertical velocity genuinely settles');
+    assert.equal(item.hp, 2, 'persistence does not inflate HP');
+    assert.ok(['attack-budget', 'time-limit'].includes(item.classicScout.retreatReason));
+  }
+});
+
+test('height corrections use the existing speed field and never integrate Y twice', () => {
+  const item = enemyAt(), player = {x: 360, y: 1080}, shots = [];
+  until(item, player, () => item.classicScout.state === 'charge', shots);
+  const y = item.y;
+  advanceClassicPursuer(item, .02, player, shot => shots.push(shot));
+  assert.equal(item.y, y, 'only the legacy caller owns positional Y integration');
+  // A vertical player manoeuvre moves the legal combat band; the opponent
+  // corrects gradually with negative speed rather than snapping to that band.
+  player.y = 570;
+  for (let frame = 0; frame < 50; frame++) step(item, player, shots);
+  assert.ok(item.s < 0, 'the opponent can back up to keep a safe visible band');
+  assert.ok(item.s >= -82);
+  assert.ok(item.y < y && item.y > item.classicScout.minAttackY);
+});
+
+test('an interrupted opponent reloads and resumes the fight after hurt without becoming invulnerable', () => {
+  const item = enemyAt(), player = {x: 360, y: 1080}, shots = [];
+  until(item, player, () => item.classicScout.attackScheduled, shots);
+  const interruptedSerial = item.classicScout.chargeSerial;
+  item.hp = 1;
+  step(item, player, shots);
+  assert.equal(item.classicScout.state, 'reposition');
+  assert.equal(item.classicScout.animator.getFrame().state, 'hurt');
+  until(item, player, () => shots.length > 0, shots);
+  assert.ok(shots[0].attackSerial > interruptedSerial);
+  assert.equal(shots.filter(shot => shot.attackSerial === interruptedSerial).length, 0);
+  assert.equal(item.hp, 1, 'the policy never heals or grants temporary HP');
+  assert.equal(item.classicScout.animator.getFrame().hp, 1);
+});
+
+test('small widths preserve reachable fighting lanes, pause freezes the whole engagement, and retreat is bounded', () => {
+  for (const width of [250, 320, 390, 720]) {
+    for (const role of ['raider', 'scout', 'interceptor']) {
+      const item = enemyAt({x: width * .25, width, role, height: 844, minAttackY: 115});
+      const player = {x: width * .5, y: 720}, shots = [];
+      until(item, player, () => item.classicScout.state === 'charge', shots);
+      const enemy = item.classicScout;
+      assert.ok(enemy.targetX >= enemy.combatMinX && enemy.targetX <= enemy.combatMaxX);
+      const paused = {x: item.x, y: item.y, s: item.s, age: enemy.age, stateAge: enemy.stateAge,
+        telegraph: enemy.telegraph, lock: enemy.lockedTarget, frame: enemy.animator.getFrame().frameIndex};
+      for (let count = 0; count < 200; count++) advanceClassicPursuer(item, 0, player, () => assert.fail('paused emission'));
+      assert.deepEqual({x: item.x, y: item.y, s: item.s, age: enemy.age, stateAge: enemy.stateAge,
+        telegraph: enemy.telegraph, lock: enemy.lockedTarget, frame: enemy.animator.getFrame().frameIndex}, paused);
+      until(item, player, () => enemy.state === 'retreat', shots, 1400);
+      const atRetreat = enemy.age, fired = shots.length;
+      until(item, player, () => item.y - item.r > 844, shots, 1000);
+      assert.ok(enemy.age - atRetreat < 7, 'retirement exits through the legacy removal boundary');
+      assert.equal(shots.length, fired, 'retreat is communicated by cessation of attacks');
+      assert.ok(enemy.age < 32, 'a surviving opponent cannot hold a stage spawn slot forever');
+    }
+  }
+});
+
+test('a ship too close to the HUD cannot provoke an unavoidable shot or an endless stationary enemy', () => {
+  const item = enemyAt({role: 'interceptor'}), player = {x: 360, y: 180}, shots = [];
+  until(item, player, () => item.classicScout.state === 'retreat', shots, 1600);
+  assert.equal(shots.length, 0);
+  assert.equal(item.classicScout.retreatReason, 'time-limit');
+  until(item, player, () => item.y - item.r > 1280, shots, 1200);
+  assert.equal(shots.length, 0);
+  assert.ok(item.classicScout.age < 35);
 });

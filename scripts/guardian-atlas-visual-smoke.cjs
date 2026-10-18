@@ -14,13 +14,13 @@ const root = path.resolve(values.root || 'preview-dist');
 const output = path.resolve(values.output || `docs/production-reports/evidence/guardian-atlas/visual-${new Date().toISOString().replace(/[:.]/g, '-')}`);
 const profiles = [{width: 390, height: 844}, {width: 320, height: 568}, {width: 844, height: 390}];
 const poses = [
-  {name: 'arrival-pose', state: 'entry', phase: 1, stateTime: 1.8, hp: 36, frame: 0},
-  {name: 'idle-open', state: 'idle', phase: 1, stateTime: .8, hp: 36, frame: 1},
-  {name: 'attack-windup', state: 'charge', phase: 1, stateTime: .8, hp: 36, frame: 2},
-  {name: 'first-volley', state: 'fire', phase: 1, stateTime: .1, hp: 36, frame: 3},
-  {name: 'impact-hurt', state: 'hurt', phase: 1, stateTime: .08, hp: 30, frame: 4},
-  {name: 'phase-two-warning', state: 'charge', phase: 2, stateTime: .8, hp: 18, frame: 5},
-  {name: 'phase-two-volley', state: 'fire', phase: 2, stateTime: .1, hp: 15, frame: 6},
+  {name: 'arrival-pose', state: 'entry', phase: 1, stateTime: 1.8, hp: 24, frame: 0},
+  {name: 'idle-open', state: 'idle', phase: 1, stateTime: .8, hp: 24, frame: 1},
+  {name: 'attack-windup', state: 'charge', phase: 1, stateTime: .8, hp: 24, frame: 2},
+  {name: 'first-volley', state: 'fire', phase: 1, stateTime: .1, hp: 24, frame: 3},
+  {name: 'impact-hurt', state: 'hurt', phase: 1, stateTime: .08, hp: 20, frame: 4},
+  {name: 'phase-two-warning', state: 'charge', phase: 2, stateTime: .8, hp: 12, frame: 5},
+  {name: 'phase-two-volley', state: 'fire', phase: 2, stateTime: .1, hp: 10, frame: 6},
   {name: 'restored-disabled', state: 'disabled', phase: 2, stateTime: 1, hp: 0, frame: 7}
 ];
 const began = Date.now();
@@ -80,29 +80,32 @@ async function layout(page) {
     const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
     const inViewport = r => r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1;
     const controls = {};
-    for (const selector of ['#hud', '#atlasEncounter', '#atlasAutoFire', '#pause', '#fire']) {
+    for (const selector of ['#hud', '#atlasEncounter', '#pause', '#fire']) {
       const node = document.querySelector(selector);
       if (!node) { issues.push(`Missing ${selector}`); continue; }
       const r = controls[selector] = rect(node);
       if (!r.width || !r.height || !inViewport(r)) issues.push(`Outside viewport: ${selector}`);
-      if (['#atlasAutoFire', '#pause', '#fire'].includes(selector)) {
+      if (['#pause', '#fire'].includes(selector)) {
         const at = document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
         if (!at || !node.contains(at)) issues.push(`Occluded control: ${selector}`);
       }
     }
-    const auto = controls['#atlasAutoFire'];
-    const minimumAutoHeight = innerHeight < 500 ? 35 : 44;
-    if (auto && (auto.width < 94 || auto.height < minimumAutoHeight)) issues.push('Automatic-fire control is smaller than its defined touch target');
+    if (document.querySelector('#atlasAutoFire')) issues.push('Obsolete encounter AUTO control is still present');
+    const minimumControlHeight = innerHeight < 500 ? 35 : 44;
+    for (const selector of ['#pause','#fire']) {
+      const control=controls[selector];
+      if(control && (control.width<44 || control.height<minimumControlHeight)) issues.push(`Touch target is too small: ${selector}`);
+    }
     const boss = project(q.bossBounds), ship = project(q.shipBounds);
     const headerBottom = Math.max(controls['#hud']?.bottom || 0, controls['#atlasEncounter']?.bottom || 0);
     if (boss.top < headerBottom - 1) issues.push('Guardian artwork overlaps the actual HUD bottom');
     if (boss.bottom > ship.top + 1) issues.push('Guardian artwork overlaps the ship flight area');
     if (!inViewport(boss)) issues.push('Guardian artwork is clipped by viewport');
     if (boss.left < canvas.left - 1 || boss.right > canvas.right + 1) issues.push('Guardian artwork is clipped by canvas sides');
-    for (const selector of ['#atlasEncounter', '#atlasAutoFire', '#pause', '#fire']) {
+    for (const selector of ['#atlasEncounter', '#pause', '#fire']) {
       if (controls[selector] && overlaps(ship, controls[selector])) issues.push(`Ship overlaps ${selector}`);
     }
-    for (const selector of ['#atlasPhase', '#atlasStatus', '#atlasAutoFire']) {
+    for (const selector of ['#atlasPhase', '#atlasStatus']) {
       const node = document.querySelector(selector), r = rect(node);
       if (node.scrollWidth > node.clientWidth + 1 || node.scrollHeight > node.clientHeight + 1) issues.push(`Text is clipped: ${selector}`);
       if (!inViewport(r)) issues.push(`Text outside viewport: ${selector}`);
@@ -124,7 +127,7 @@ async function layout(page) {
       if (clipped) issues.push(`HUD text is clipped: ${node.textContent}`);
     }
     return {issues, canvas, logical: {width: q.W, height: q.H}, boss, ship, headerBottom,
-      controls, hudText, minimumAutoHeight, minimumAutoHeightReason: 'Existing responsive CSS contract; 44px portrait, 35px compact landscape'};
+      controls, hudText, minimumControlHeight, minimumControlHeightReason: 'Existing responsive CSS contract; 44px portrait, 35px compact landscape'};
   });
 }
 
@@ -162,7 +165,7 @@ async function runProfile(profile) {
         prepare(pose) {
           // Explicit, local-only scene setup. This is not a natural completion.
           startLevel(1); warpTimer=0; collected=level().goal; completeLevel();
-          atlasAutoFire=false; player.x=player.target=W/2;
+          settings.autoFire=false; player.x=player.target=W/2;
           atlasBoss.y=atlasBoss.targetY; atlasBoss.x=W/2; atlasBoss.age=8;
           Object.assign(atlasBoss,{phase:pose.phase,state:pose.state,stateTime:pose.stateTime,
             hp:pose.hp,disabled:pose.state==='disabled',resolved:false,
@@ -179,7 +182,7 @@ async function runProfile(profile) {
             NeonCampaign.advanceGuardianAtlas(atlasBoss,.016,player,consumeAtlasEvent);
             atlasBoss.stateTime=pose.stateTime;
             fireAtlasPulse('pulse');
-            const pulse=shots.find(shot=>shot.atlasPulse);if(pulse)pulse.life=pulse.duration/2;
+            const pulse=classicWeapons?.projectiles.at(-1);if(pulse)pulse.y=(player.y-125+atlasBoss.y)/2;
           }
           if(pose.state==='hurt') impactEffects.push({x:atlasBoss.x,y:atlasBoss.y,angle:0,scale:1,life:.18,duration:.24,atlasImpact:true});
           state='paused';overlay(null);syncAtlasHud();updateAmmoHud();render(performance.now());
@@ -192,7 +195,7 @@ async function runProfile(profile) {
           const bounds=frames.map(frame=>{const pivot=ATLAS_FRAME_PIVOTS[frame];return {
             left:atlasBoss.x-size*pivot[0]/443.5,right:atlasBoss.x+size*(1-pivot[0]/443.5),
             top:atlasBoss.y-size*pivot[1]/443.5,bottom:atlasBoss.y+size*(1-pivot[1]/443.5)};});
-          return {state,W,H,collected,goal:level().goal,unlocked:getUnlocked(),atlasAutoFire,legacyRunning,
+          return {state,W,H,collected,goal:level().goal,unlocked:getUnlocked(),settingsAutoFire:settings.autoFire,legacyRunning,
             shipRenderMode,player:{x:player.x,y:player.y},
             shipBounds:{left:player.x-110,right:player.x+110,top:player.y-150,bottom:player.y+110},
             boss:atlasBoss?JSON.parse(JSON.stringify(atlasBoss)):null,animation,
@@ -200,7 +203,7 @@ async function runProfile(profile) {
               top:Math.min(...bounds.map(b=>b.top)),bottom:Math.max(...bounds.map(b=>b.bottom))}:null,
             assetsReady:spriteReady(SPRITES.guardianAtlas)&&spriteReady(SPRITES.atlasVfx)&&spriteReady(SPRITES.modularShip)&&spriteReady(SPRITES.atlasBackground),
             projectiles:items.filter(item=>item.guardianProjectile).map(item=>({x:item.x,y:item.y,rot:item.rot,attackId:item.attackId,volley:item.volley})),
-            illustratedPulses:shots.filter(shot=>shot.atlasPulse).length};
+            illustratedPulses:(classicWeapons?.projectiles.length||0)+shots.filter(shot=>shot.atlasPulse).length};
         }
       };\n`;
       await route.fulfill({response, body: source.replace(marker, hook + marker)});
@@ -236,11 +239,16 @@ async function runProfile(profile) {
       scene.status = 'passed'; await save();
     }
     const before = await inspect(page);
-    await page.locator('#atlasAutoFire').click();
-    const after = await inspect(page);
-    assert.equal(after.atlasAutoFire, !before.atlasAutoFire, 'The real automatic-fire control is not clickable');
-    assert.equal(await page.locator('#atlasAutoFire').getAttribute('aria-pressed'), String(after.atlasAutoFire));
-    clean(result, after); result.automaticFireControlClickable = true; result.status = 'passed';
+    assert.equal(await page.locator('#atlasAutoFire').count(),0,'AUTO belongs only to settings');
+    assert.equal(before.settingsAutoFire,false);
+    // Controls remain real DOM buttons in the controlled frozen scene. Natural
+    // pause/resume and emitted fire are covered by the separate gameplay pilot.
+    await page.locator('#fire').focus(); await page.keyboard.press('Enter');
+    await page.locator('#pause').click();
+    const after = await inspect(page); clean(result,after);
+    assert.equal(after.boss.age,before.boss.age,'Paused visual fixture must not advance through controls');
+    assert.equal(after.settingsAutoFire,false);
+    result.manualControlsPresent=true; result.obsoleteAutoAbsent=true; result.status='passed';
   } catch (error) {
     result.status = 'failed'; result.error = errorText(error);
     const activeScene = result.scenes.at(-1);

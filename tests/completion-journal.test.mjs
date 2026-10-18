@@ -177,3 +177,205 @@ test('invalid requests fail before writes and caller checkpoint objects cannot m
   assert.equal(journal(memory(waiting.map)).recover().ok, true);
   assert.equal(JSON.parse(waiting.map.get(CHECKPOINT)).completed, true);
 });
+
+const EQUIPMENT = 'neonCatcher.flightEquipment.v1';
+const equipment = (rewarded = false) => ({version: 1, recoveredTwin: rewarded,
+  unlocked: rewarded ? ['pulse', 'twin'] : ['pulse'], selected: 'pulse'});
+const validateEquipment = value => Boolean(value?.version === 1 &&
+  typeof value.recoveredTwin === 'boolean' && Array.isArray(value.unlocked) &&
+  value.unlocked.includes('pulse') && value.unlocked.every(name => ['pulse', 'twin', 'lance'].includes(name)) &&
+  value.unlocked.includes(value.selected) && (!value.unlocked.includes('twin') || value.recoveredTwin));
+const equipmentSeed = () => new Map([...seed(), [EQUIPMENT, JSON.stringify(equipment(false))]]);
+const rewardJournal = device => createCompletionJournal({storage: device.storage, keys: KEYS, levelCount: 10,
+  checkpointKey: CHECKPOINT, validateCheckpoint, equipmentKey: EQUIPMENT, validateEquipment});
+const rewardCompletion = (extra = {}) => completion({equipment: equipment(true), ...extra});
+function assertRewardComplete(map) {
+  assertComplete(map);
+  assert.deepEqual(JSON.parse(map.get(EQUIPMENT)), equipment(true));
+}
+
+test('optional equipment reward shares the v1 scope and writes its snapshot before campaign unlock', () => {
+  const device = memory(equipmentSeed()), log = rewardJournal(device);
+  assert.equal(log.complete(rewardCompletion()).ok, true);
+  assertRewardComplete(device.map);
+  assert.deepEqual(device.writes.map(write => write.key), [log.journalKey, KEYS.stars, KEYS.levelBest,
+    KEYS.best, CHECKPOINT, EQUIPMENT, KEYS.unlocked, log.journalKey]);
+  const intent = JSON.parse(device.writes[0].value);
+  assert.equal(intent.version, 1);
+  assert.equal(intent.scope, JSON.stringify([...Object.values(KEYS), CHECKPOINT, 10]));
+  assert.equal(intent.equipment.before, JSON.stringify(equipment(false)));
+  assert.deepEqual(intent.equipment.after, equipment(true));
+  assert.equal(device.map.size, equipmentSeed().size + 1, 'one bounded existing journal, no second save subsystem');
+});
+
+for (const after of [false, true]) for (let point = 1; point <= 8; point++) {
+  test(`recover equipment and progress together: ${after ? 'after' : 'before'} atomic write ${point}/8`, () => {
+    const device = memory(equipmentSeed(), {failWrite: point, after}), log = rewardJournal(device);
+    assert.equal(log.complete(rewardCompletion()).ok, false);
+    const fresh = memory(device.map), restored = rewardJournal(fresh), recovery = restored.recover();
+    assert.equal(recovery.ok, true);
+    if (point === 1 && !after) {
+      assert.equal(recovery.status, 'idle');
+      assert.deepEqual(device.map, equipmentSeed(), 'no reward is fabricated without a durable intent');
+      assert.equal(restored.complete(rewardCompletion()).ok, true);
+    }
+    assertRewardComplete(device.map);
+    const bytes = new Map(device.map), count = fresh.writes.length;
+    assert.equal(restored.recover().ok, true);
+    assert.equal(restored.complete(rewardCompletion()).duplicate, true);
+    assert.deepEqual(device.map, bytes);
+    assert.equal(fresh.writes.length, count, 'completion retry cannot grant or replace the reward twice');
+  });
+}
+
+test('old pending v1 intents recover with new equipment configuration without reading or inventing a reward', () => {
+  const old = memory(seed(), {failWrite: 2}), oldLog = journal(old);
+  assert.equal(oldLog.complete(completion()).status, 'pending');
+  const oldIntent = JSON.parse(old.map.get(oldLog.journalKey));
+  assert.equal(Object.hasOwn(oldIntent, 'equipment'), false);
+  old.map.set(EQUIPMENT, '{unrelated invalid profile');
+  const fresh = memory(old.map, {denyReads: new Set([EQUIPMENT])}), restored = rewardJournal(fresh);
+  assert.equal(restored.journalKey, oldLog.journalKey);
+  assert.equal(restored.recover().ok, true);
+  assertComplete(old.map);
+  const receipt = JSON.parse(old.map.get(oldLog.journalKey));
+  assert.equal(receipt.scope, oldIntent.scope);
+  assert.equal(Object.hasOwn(receipt, 'equipment'), false, 'historical record shape is preserved');
+  assert.equal(old.map.get(EQUIPMENT), '{unrelated invalid profile');
+  assert.equal(fresh.writes.some(write => write.key === EQUIPMENT), false);
+});
+
+test('gearless completion remains byte-compatible and does not access an optional equipment key', () => {
+  const without = memory(seed()), withConfig = memory(seed(), {denyReads: new Set([EQUIPMENT])});
+  assert.equal(journal(without).complete(completion()).ok, true);
+  assert.equal(rewardJournal(withConfig).complete(completion()).ok, true);
+  assert.deepEqual(withConfig.map, without.map);
+  assert.deepEqual(withConfig.writes, without.writes);
+  assert.equal(Object.hasOwn(JSON.parse(withConfig.map.get(journal(without).journalKey)), 'equipment'), false);
+});
+
+test('equipment read denial and invalid existing profiles block before intent or progress writes', () => {
+  for (const invalid of [null, '{bad', '[]', JSON.stringify({...equipment(false), version: 7})]) {
+    const device = memory(equipmentSeed(), invalid === null ? {denyReads: new Set([EQUIPMENT])} : {});
+    if (invalid !== null) device.map.set(EQUIPMENT, invalid);
+    const before = new Map(device.map), result = rewardJournal(device).complete(rewardCompletion());
+    assert.equal(result.ok, false);
+    assert.equal(result.reason, invalid === null ? 'storage-read-denied' : 'invalid-existing-equipment');
+    assert.equal(result.key, EQUIPMENT);
+    assert.deepEqual(device.map, before);
+    assert.equal(device.writes.length, 0);
+  }
+});
+
+test('an absent equipment profile accepts a validated first snapshot and preserves the null CAS origin', () => {
+  const device = memory(seed()), log = rewardJournal(device);
+  assert.equal(log.complete(rewardCompletion()).ok, true);
+  const intent = JSON.parse(device.writes[0].value);
+  assert.equal(intent.equipment.before, null);
+  assertRewardComplete(device.map);
+});
+
+test('conflicting equipment blocks pending replay before any other key is mutated', () => {
+  const old = memory(equipmentSeed(), {failWrite: 2}); rewardJournal(old).complete(rewardCompletion());
+  const newer = {...equipment(true), selected: 'twin'};
+  old.map.set(EQUIPMENT, JSON.stringify(newer));
+  const fresh = memory(old.map), before = new Map(old.map), result = rewardJournal(fresh).recover();
+  assert.equal(result.ok, false); assert.equal(result.reason, 'equipment-conflict');
+  assert.equal(result.key, EQUIPMENT);
+  assert.deepEqual(old.map, before);
+  assert.equal(fresh.writes.length, 0);
+});
+
+test('recovery recognizes equipment already written before an unlock interruption and never rewrites it', () => {
+  const old = memory(equipmentSeed(), {failWrite: 7});
+  assert.equal(rewardJournal(old).complete(rewardCompletion()).status, 'pending');
+  assert.equal(old.map.get(KEYS.unlocked), '1');
+  assert.deepEqual(JSON.parse(old.map.get(EQUIPMENT)), equipment(true));
+  const fresh = memory(old.map);
+  assert.equal(rewardJournal(fresh).recover().ok, true);
+  assertRewardComplete(old.map);
+  assert.equal(fresh.writes.some(write => write.key === EQUIPMENT), false);
+});
+
+test('read denial during a pending reward keeps the intent and every progress byte untouched', () => {
+  const old = memory(equipmentSeed(), {failWrite: 2}); rewardJournal(old).complete(rewardCompletion());
+  const fresh = memory(old.map, {denyReads: new Set([EQUIPMENT])}), before = new Map(old.map);
+  const result = rewardJournal(fresh).recover();
+  assert.equal(result.ok, false); assert.equal(result.reason, 'storage-read-denied');
+  assert.deepEqual(old.map, before); assert.equal(fresh.writes.length, 0);
+});
+
+test('committed completion retries preserve a later player equipment selection without reapplying the reward', () => {
+  const device = memory(equipmentSeed()), log = rewardJournal(device);
+  assert.equal(log.complete(rewardCompletion()).ok, true);
+  const selected = {...equipment(true), selected: 'twin'};
+  device.map.set(EQUIPMENT, JSON.stringify(selected));
+  const before = new Map(device.map), count = device.writes.length;
+  assert.equal(log.complete(rewardCompletion()).duplicate, true);
+  assert.deepEqual(device.map, before); assert.equal(device.writes.length, count);
+});
+
+test('equipment payloads are validated as JSON snapshots and cannot mutate a durable pending intent', () => {
+  const device = memory(equipmentSeed()), log = rewardJournal(device);
+  const circular = equipment(true); circular.cycle = circular;
+  for (const payload of [{version: 8}, circular, {...equipment(true), toJSON() { return {version: 8}; }}]) {
+    assert.throws(() => log.complete(rewardCompletion({equipment: payload})), TypeError);
+  }
+  assert.equal(device.writes.length, 0);
+  const waiting = memory(equipmentSeed(), {failWrite: 2}), payload = rewardCompletion();
+  rewardJournal(waiting).complete(payload);
+  payload.equipment.unlocked.splice(1); payload.equipment.recoveredTwin = false;
+  assert.equal(rewardJournal(memory(waiting.map)).recover().ok, true);
+  assertRewardComplete(waiting.map);
+});
+
+test('equipment-bearing intents require configured validation; malformed records remain intact', () => {
+  for (const invalid of [false, [], {before: '{bad', after: equipment(true)},
+    {before: null, after: {version: 8}}, {before: 7, after: equipment(true)}]) {
+    const old = memory(equipmentSeed(), {failWrite: 2}), log = rewardJournal(old);
+    log.complete(rewardCompletion());
+    const record = JSON.parse(old.map.get(log.journalKey)); record.equipment = invalid;
+    old.map.set(log.journalKey, JSON.stringify(record));
+    const fresh = memory(old.map), before = new Map(old.map), result = rewardJournal(fresh).recover();
+    assert.equal(result.ok, false); assert.equal(result.reason, 'invalid-journal');
+    assert.deepEqual(old.map, before); assert.equal(fresh.writes.length, 0);
+  }
+  const old = memory(equipmentSeed(), {failWrite: 2}); rewardJournal(old).complete(rewardCompletion());
+  const fresh = memory(old.map), before = new Map(old.map), result = journal(fresh).recover();
+  assert.equal(result.reason, 'invalid-journal');
+  assert.deepEqual(old.map, before); assert.equal(fresh.writes.length, 0);
+});
+
+test('equipment key collisions and missing runtime validators are rejected without writes', () => {
+  const device = memory(equipmentSeed());
+  for (const key of [...Object.values(KEYS), CHECKPOINT, `${KEYS.unlocked}:completion-journal:v1`, '', 7]) {
+    assert.throws(() => createCompletionJournal({storage: device.storage, keys: KEYS, levelCount: 10,
+      checkpointKey: CHECKPOINT, validateCheckpoint, equipmentKey: key, validateEquipment}), TypeError);
+  }
+  assert.throws(() => createCompletionJournal({storage: device.storage, keys: KEYS, levelCount: 10,
+    equipmentKey: EQUIPMENT}), /runtime validator/);
+  assert.throws(() => journal(device).complete(rewardCompletion()), /Invalid completion equipment/);
+  assert.equal(device.writes.length, 0);
+});
+
+test('an Atlas-style reward without a Chronos checkpoint recovers equipment before opening the next territory', () => {
+  const map = equipmentSeed(); map.set(KEYS.unlocked, '2');
+  const priorCheckpoint = map.get(CHECKPOINT);
+  const device = memory(map, {failWrite: 6}), log = rewardJournal(device);
+  const atlas = rewardCompletion({completionId: 'classic:atlas-resolved:run-12', level: 2,
+    score: 850, checkpoint: null});
+  assert.equal(log.complete(atlas).status, 'pending');
+  assert.deepEqual(device.writes.map(write => write.key), [log.journalKey, KEYS.stars,
+    KEYS.levelBest, KEYS.best, EQUIPMENT]);
+  assert.equal(map.get(KEYS.unlocked), '2', 'the frontier must not open before the reward is durable');
+  assert.deepEqual(JSON.parse(map.get(EQUIPMENT)), equipment(true));
+  const fresh = memory(map), restored = rewardJournal(fresh);
+  assert.equal(restored.recover().ok, true);
+  assert.equal(map.get(KEYS.unlocked), '3');
+  assert.equal(map.get(CHECKPOINT), priorCheckpoint, 'Gaia completion cannot replace the Chronos checkpoint');
+  assert.deepEqual(JSON.parse(map.get(KEYS.stars)), {'1': 1, '2': 3});
+  assert.deepEqual(JSON.parse(map.get(KEYS.levelBest)), {'1': 100, '2': 850});
+  const before = new Map(map), count = fresh.writes.length;
+  assert.equal(restored.complete(atlas).duplicate, true);
+  assert.deepEqual(map, before); assert.equal(fresh.writes.length, count);
+});

@@ -12,6 +12,7 @@
       music: Math.round(finite(source.music, DEFAULT_SETTINGS.music, 0, 100)),
       fx: Math.round(finite(source.fx, DEFAULT_SETTINGS.fx, 0, 100)),
       sensitivity: Math.round(finite(source.sensitivity, DEFAULT_SETTINGS.sensitivity, 60, 150) / 5) * 5,
+      autoFire: source.autoFire === true,
       vibration: typeof source.vibration === "boolean" ? source.vibration : DEFAULT_SETTINGS.vibration,
       reduceEffects: typeof source.reduceEffects === "boolean" ? source.reduceEffects
         : Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches),
@@ -299,6 +300,7 @@
     ui.vibration.checked = settings.vibration;
     ui.effectsQuality.value = settings.effectsQuality;
     ui.reduceEffects.checked = settings.reduceEffects;
+    ui.autoFire.checked = settings.autoFire;
     ui.musicValue.textContent = `${settings.music}%`;
     ui.fxValue.textContent = `${settings.fx}%`;
     ui.sensitivityValue.textContent = `${settings.sensitivity}%`;

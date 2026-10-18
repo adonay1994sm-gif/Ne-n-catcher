@@ -1,12 +1,12 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 84,
-  "runtimeBytes": 8524914,
+  "assetCount": 85,
+  "runtimeBytes": 8644764,
   "audit": {
-    "reviewed": 84,
+    "reviewed": 85,
     "READY": 58,
-    "IN_REVIEW": 26,
+    "IN_REVIEW": 27,
     "NEEDS_OPTIMIZATION": 0,
     "NEEDS_CLEANUP": 0,
     "PLACEHOLDER": 0,
@@ -812,6 +812,29 @@
       "physicalAcceptance": "PENDING",
       "origin": "Original OpenAI image_gen production; preserved masters and provenance",
       "version": "ch02-art-v1"
+    },
+    {
+      "id": "arcade-pulse-v2",
+      "path": "assets/arcade_pulse_atlas_v2.webp",
+      "master": "art-source/vfx/arcade-combat-v2/arcade-pulse-master-v2.png",
+      "metadata": "art-source/vfx/arcade-combat-v2/arcade-pulse-atlas-v2.json",
+      "dimensions": "1024x1024",
+      "format": "webp-alpha",
+      "size": 119850,
+      "sha256": "f76d93ddc2f23fde7f70f7bf6d423c5566d81721f049b2316b7a91c4c3604cb9",
+      "decodedRGBABytes": 4194304,
+      "pivot": "0.5,0.5 per 256x256 cell",
+      "level": "1-10",
+      "use": "Four authored poses each: Pulse/Twin/Lance/impact; physical projectiles in field and Guardian Atlas",
+      "animation": "4x4 atlas; rows0/1/2 projectile cycles60/50/55ms, impact35/55/75/95ms once. No gameplay events emitted by render.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "EXPORT_ALPHA_VERIFIED; INTEGRATED_QA_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original built-in OpenAI image generation, preserved master and provenance",
+      "version": "arcade-pulse-v2"
     }
   ],
   "project": "NEON CRONIUM"

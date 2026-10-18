@@ -106,7 +106,7 @@ test('repeated rendering is read-only, emits no combat events, and stays frozen 
 test('real encounter transitions select phase-two hurt geometry and terminal art consistently', () => {
   const boss = createGuardianAtlas();
   until(boss, unit => unit.state === 'idle');
-  hitGuardianAtlas(boss, 18);
+  hitGuardianAtlas(boss, boss.maxHp / 2);
   until(boss, unit => unit.state === 'idle');
   hitGuardianAtlas(boss, 1);
   assert.equal(boss.state, 'hurt');

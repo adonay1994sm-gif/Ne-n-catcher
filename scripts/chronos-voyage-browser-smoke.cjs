@@ -18,7 +18,7 @@ assert.ok(Number.isFinite(timeout) && timeout >= 30000 && timeout <= 1200000, 'T
 const began = Date.now();
 const report = {status: 'running', exitCode: null, command: process.argv, sourceRoot: root,
   startedAt: new Date().toISOString(), browser: 'Real Chromium, 390x844, DPR 1',
-  pilotVersion: 'natural-chronos-ten-stages-pursuit-v2', checks: [], errors: [], consoleErrors: [],
+  pilotVersion: 'natural-chronos-pulse-prepared-c9-pursuit-v2', checks: [], errors: [], consoleErrors: [],
   failedRequests: [], screenshots: [], samples: [], damageObservations: [], boundaryObservations: [],
   pursuitObservations: [], enemyShotCounts: {raider: 0, scout: 0, interceptor: 0},
   qaScriptSha256: sha256(require('node:fs').readFileSync(__filename)),
@@ -184,6 +184,7 @@ async function touch(type, x, y) {
         shots:classicWeapons?.projectiles.map(shot=>({id:shot.id,x:shot.x,y:shot.y,life:shot.life}))||[]});
       window.__FLIGHT_QA__ = () => ({state,currentLevel,elapsed,hull,score,collected,goal:level().goal,W,H,
       energySpawned,energyBudget,warpTimer,manualShotCooldown,legacyRunning,legacyFrameId,
+      settingsAutoFire:settings.autoFire,
       player:{x:player.x,y:player.y,w:player.w,h:player.h,target:player.target,targetY:player.targetY},
       bounds:classicFlightBounds?{...classicFlightBounds}:null,
       follow:9+settings.sensitivity/100*8,outline:SHIP_COLLISION_OUTLINE,
@@ -198,6 +199,9 @@ async function touch(type, x, y) {
         classicScout:item.classicScout?{tacticsVersion:item.classicScout.tacticsVersion,role:item.classicScout.role,
           state:item.classicScout.state,age:item.classicScout.age,vx:item.classicScout.vx,fired:item.classicScout.fired,
           telegraph:item.classicScout.telegraph,chargeSerial:item.classicScout.chargeSerial,
+          firedSerial:item.classicScout.firedSerial,holdY:item.classicScout.holdY,
+          combatStartedAt:item.classicScout.combatStartedAt,retreatReason:item.classicScout.retreatReason,
+          repositionCount:item.classicScout.repositionCount,
           lockedTarget:item.classicScout.lockedTarget?{...item.classicScout.lockedTarget}:null,
           frame:item.classicScout.animator?.getFrame()}:null})),
       boundaries:[...window.__FLIGHT_RAF_QA__.boundaries],
@@ -211,6 +215,8 @@ async function touch(type, x, y) {
     await wait(() => typeof __FLIGHT_QA__ === 'function' && __FLIGHT_QA__().state === 'menu');
     const menu = await inspect(); report.initialSaves = menu.saves; report.gameURL = page.url();
     assert.equal(menu.unlocked, 1); assert.equal(menu.equipment.recoveredTwin, false);
+    assert.equal(menu.settingsAutoFire,false,'Fresh saves start with manual fire');
+    assert.deepEqual(menu.equipment.unlocked,['pulse']);
     await page.locator('#play').click();
     assert.equal(await page.locator('[data-voyage-stage]').count(), 10);
     assert.equal(await page.locator('[data-voyage-stage]:disabled').count(), 9);
@@ -248,7 +254,7 @@ async function touch(type, x, y) {
   const observedPursuers = new Map(), observedShots = new Set();
   const observePursuit = q => {
     for (const item of q.items) {
-      if (item.classicScout?.tacticsVersion !== 'classic-pursuit-v1') continue;
+      if (item.classicScout?.tacticsVersion !== 'classic-pursuit-v2') continue;
       const id = `${documentGeneration}:${item.qaId}`;
       let record = observedPursuers.get(id);
       if (!record) {
@@ -265,7 +271,10 @@ async function touch(type, x, y) {
       }
       const fired = item.classicScout.fired;
       assert.ok(fired >= record.fired, 'An existing enemy fire count regressed');
-      assert.ok(fired <= (record.role === 'raider' ? 3 : 2), 'Enemy exceeded its finite attack budget');
+      assert.ok(fired <= (record.role === 'interceptor' ? 4 : 3), 'Enemy exceeded the pursuit-v2 attack budget');
+      assert.ok(item.classicScout.firedSerial<=item.classicScout.chargeSerial,'Fire serial exceeds announced charges');
+      if(item.classicScout.state==='retreat')assert.ok(['time-limit','attack-budget'].includes(item.classicScout.retreatReason),
+        'A final retreat must have a bounded, documented cause');
       report.enemyShotCounts[record.role] += fired - record.fired; record.fired = fired;
     }
     for (const shot of q.items.filter(item => item.classicScoutProjectile)) {
@@ -357,16 +366,27 @@ async function touch(type, x, y) {
         assert.equal(n,6);assert.equal(q.state,'paused');assert.equal(serviceVerified,false);
         assert.equal(await page.locator('#flightDock').evaluate(node=>node.classList.contains('show')),true);
         assert.equal(q.equipment.recoveredTwin,true,'The real recovery pilot missed the recoverable emitter');
-        await capture('c9-before-installation',q);
+        assert.ok(Math.abs(q.flight.elapsed-183.2)<.06,'C9 must open at the short authored approach, not at the old end-of-stage boundary');
+        assert.equal(q.equipment.selected,'pulse');assert.deepEqual(q.equipment.unlocked,['pulse']);
+        assert.equal(q.hull,100,'The genuine C9 service repairs the ship');
+        await capture('c9-before-preparation',q);
         await page.waitForTimeout(900);const frozen=await inspect();
         assert.deepEqual(frozen.flight,q.flight);assert.equal(frozen.elapsed,q.elapsed);
         await page.locator('#flightInstallTwin').click();const mounted=await inspect();
-        assert.equal(mounted.equipment.selected,'twin');assert.ok(mounted.equipment.unlocked.includes('twin'));
-        await capture('c9-emitter-installed',mounted);
+        assert.equal(mounted.equipment.twinPrepared,true,'C9 prepares the recovered hardware');
+        assert.equal(mounted.equipment.selected,'pulse');assert.deepEqual(mounted.equipment.unlocked,['pulse'],
+          'Preparing a part must not grant Twin or Lance before Atlas');
+        assert.equal(mounted.weapons.charges,frozen.weapons.charges,'Preparation must not secretly refill weapon charges');
+        assert.equal(await page.locator('[data-flight-loadout="twin"]').isDisabled(),true);
+        assert.equal(await page.locator('[data-flight-loadout="lance"]').isDisabled(),true);
+        await capture('c9-emitter-prepared-pulse-retained',mounted);
         await page.locator('#flightDockContinue').click();
-        await wait(()=>__FLIGHT_QA__().state==='playing'&&__FLIGHT_QA__().flight.stageNumber===7);
-        const resumed=await inspect();assert.equal(resumed.weapons.selected,'twin');
-        assert.equal(resumed.voyageSave.checkpoint.stageNumber,7);
+        await wait(()=>__FLIGHT_QA__().state==='playing'&&__FLIGHT_QA__().flight.stageNumber===6&&
+          __FLIGHT_QA__().flight.waitingFor!=='service');
+        const resumed=await inspect();assert.equal(resumed.weapons.selected,'pulse');
+        assert.equal(resumed.voyageSave.checkpoint.stageNumber,6);
+        assert.equal(resumed.equipment.twinPrepared,true);
+        assert.equal(resumed.flight.relay.state,'departing');
         report.service={before:q.flight,frozen:frozen.flight,equipment:mounted.equipment,resumed:resumed.flight};
         serviceVerified=true;previous=undefined;continue;
       }
@@ -431,23 +451,25 @@ async function touch(type, x, y) {
     const handoff=await inspect();
     assert.equal(await page.locator('#briefing').evaluate(node=>node.classList.contains('show')),false,
       'Continuing directly to Gaia must not require a duplicate briefing');
-    assert.equal(handoff.flight,null);assert.equal(handoff.weapons.selected,'twin');
+    assert.equal(handoff.flight,null);assert.equal(handoff.weapons.selected,'pulse');
+    assert.deepEqual(handoff.equipment.unlocked,['pulse']);assert.equal(handoff.equipment.twinPrepared,true);
     await capture('chronos-to-gaia-direct-handoff',handoff);report.directHandoff=handoff;
     await page.reload({waitUntil:'load'});
     documentGeneration++;
     await wait(()=>typeof __FLIGHT_QA__==='function'&&__FLIGHT_QA__().state==='menu');
     const reloaded=await inspect();
     assert.equal(reloaded.unlocked,2);assert.equal(reloaded.voyageSave.completed,true);
-    assert.equal(reloaded.voyageSave.unlockedStage,10);assert.equal(reloaded.equipment.selected,'twin');
+    assert.equal(reloaded.voyageSave.unlockedStage,10);assert.equal(reloaded.equipment.selected,'pulse');
+    assert.deepEqual(reloaded.equipment.unlocked,['pulse']);assert.equal(reloaded.equipment.twinPrepared,true);
     assert.equal(reloaded.equipment.recoveredTwin,true);
     const historical=saves=>Object.fromEntries(Object.entries(saves).filter(([key])=>/n7|journey/i.test(key)));
     assert.deepEqual(historical(reloaded.saves),historical(report.initialSaves));
     await page.locator('#play').click();await page.locator('#launch').click();
     await wait(()=>__FLIGHT_QA__().currentLevel===1&&__FLIGHT_QA__().state==='playing'&&__FLIGHT_QA__().warpTimer===0);
-    const gaia=await inspect();assert.equal(gaia.flight,null);assert.equal(gaia.weapons.selected,'twin');
+    const gaia=await inspect();assert.equal(gaia.flight,null);assert.equal(gaia.weapons.selected,'pulse');
     const charge=gaia.weapons.charges;await page.locator('#fire').click();const fired=await inspect();
-    assert.equal(fired.weapons.charges,charge-1);assert.equal(fired.weapons.projectiles.length,2);
-    await capture('gaia-next-territory-twin-flight',fired);
+    assert.equal(fired.weapons.charges,charge-1);assert.equal(fired.weapons.projectiles.length,1);
+    await capture('gaia-next-territory-pulse-flight',fired);
     report.reloaded=reloaded;report.gaia=gaia;report.gaiaShot=fired.weapons;
     report.persistedComparison={arrival:before.voyageSave,reloaded:reloaded.voyageSave};
   });

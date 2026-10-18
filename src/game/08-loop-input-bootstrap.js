@@ -347,6 +347,14 @@
     settings.sensitivity = +event.target.value;
     ui.sensitivityValue.textContent = `${settings.sensitivity}%`;
   };
+  ui.autoFire.onchange = (event) => {
+    const previous = settings.autoFire;
+    settings.autoFire = event.target.checked;
+    if (!saveSettings()) {
+      settings.autoFire = previous; event.target.checked = previous;
+      toast("No se pudo guardar el modo de disparo");
+    }
+  };
   ui.vibration.onchange = (event) => {
     settings.vibration = event.target.checked;
     if (settings.vibration) vibrate(20);

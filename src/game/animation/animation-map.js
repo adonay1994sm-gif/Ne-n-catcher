@@ -35,6 +35,14 @@ const forceShieldAtlas = (cells, options = {}) => define(['assets/force_shield_a
 });
 
 export const ANIMATION_MAP = Object.freeze({
+  arcadeCombat: Object.freeze(Object.fromEntries([
+    ['pulse',0,60,true],['twin',1,50,true],['lance',2,55,true],['impact',3,35,false]
+  ].map(([name,row,frameMs,loop]) => [name,define(['assets/arcade_pulse_atlas_v2.webp'],{
+    frameMs,loop,atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,
+    atlasCells:Object.freeze([0,1,2,3].map(column=>row*4+column)),
+    ...(name==='impact'?{durationMs:Object.freeze([35,55,75,95])}:{}),
+    pivot:Object.freeze({x:.5,y:.5}),integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'
+  })]))),
   ch02Interceptor: Object.freeze(Object.fromEntries(Object.entries(ch02.animations).map(([name,animation])=>
     [name,define([ch02.proposedRuntimeImage],{frameMs:animation.durationMs[0],loop:animation.loop,
       atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,

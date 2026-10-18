@@ -1,3 +1,15 @@
+## Orden vigente de pulido arcade · 18/10/2026
+
+El último mandato del propietario concentra el trabajo en integración y combate: C9 debe abrir el taller al llegar, el humo no puede quedar como una imagen pegada a la nave, los tiros deben corresponder a proyectiles verticales reales, los enemigos mantienen intención de combate y Atlas debe plantear un reto manual aprendible. No ampliar ahora las grandes cinemáticas Gaia→Vulkar.
+
+Decisiones de implementación de este lote: aproximación C9 de 2,4 s y apertura a los 183,2 s de ruta (1,2 s dentro de 1.6); al salir del taller se vuela el resto de 1.6, conservando los 360 s, cuotas, offsets y guardados v2. El ataque básico empieza en **Pulso**. Vencer a **Guardian Atlas** autoriza **Gemelo**; C9 prepara la pieza y repara, pero no regala Gemelo ni Lanza. Conservar las armas que ya poseen los guardados antiguos y la batería de tres cargas con recarga.
+
+**AUTO empieza desactivado y sólo se habilita voluntariamente en Ajustes.** El disparo manual, incluidos pilotaje y disparo con dos dedos, es la referencia de verificación; no colocar una activación automática en el HUD ni convertir los ataques en apuntado invisible. La IA sigue anunciando sus ataques y ofreciendo respuesta; persistencia de combate no significa saturación ni daño inevitable.
+
+Esta orden sustituye las directrices creativas incompatibles sobre instalación gratuita de Gemelo/Lanza en C9 y el automático como valor predeterminado. El historial siguiente y las armas antiguas se conservan; no se reinterpretan como autorización para duplicar recompensas. Informe del lote: [ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md](docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md). Las nuevas tareas permanecen IN_REVIEW hasta comprobar el ejecutable y separar aceptación técnica, artística y física. Motor V1 desactivado, rama autorizada, guardados y demás restricciones siguen vigentes.
+
+---
+
 ## Prioridad vigente ·18/10/2026
 
 El propietario considera el primer nivel casi terminado y pide transiciones continuas, presión moderada tras la ruptura y enemigos con intención. Leer docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md: privado16/paquete d39ed44/Actions39105045562success. Viaje y CH-02 tienen evidencia natural con sus SHA separados; el HUD de puntos y el fixture de patrullas se corrigieron después. Continuar Gaia completa, viabilidad Pulso/Gemelo y CH-03; aceptación humana/artística/física pendientes. No activar MotorV1 ni sustituir el clásico; restricciones siguientes vigentes.

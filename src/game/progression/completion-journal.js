@@ -6,7 +6,8 @@
  * No clock, browser global, reward callback, analytics or campaign migration.
  */
 export function createCompletionJournal({storage, keys, levelCount,
-  checkpointKey = null, validateCheckpoint = null} = {}) {
+  checkpointKey = null, validateCheckpoint = null,
+  equipmentKey = null, validateEquipment = null} = {}) {
   const names = ['stars', 'unlocked', 'best', 'levelBest'];
   if (!storage || !['readRaw', 'set', 'setJSON'].every(name => typeof storage[name] === 'function')) {
     throw new TypeError('Storage facade with tagged readRaw/set/setJSON required');
@@ -17,15 +18,21 @@ export function createCompletionJournal({storage, keys, levelCount,
   }
   keys = Object.freeze(Object.fromEntries(names.map(name => [name, keys[name]])));
   const targets = names.map(name => keys[name]);
-  if (new Set(targets).size !== names.length ||
-      (checkpointKey !== null && (typeof checkpointKey !== 'string' || !checkpointKey || targets.includes(checkpointKey)))) {
+  const optionalKeys = [checkpointKey, equipmentKey].filter(key => key !== null);
+  if (optionalKeys.some(key => typeof key !== 'string' || !key) ||
+      new Set([...targets, ...optionalKeys]).size !== targets.length + optionalKeys.length) {
     throw new TypeError('Save keys must be distinct');
   }
   if (checkpointKey !== null && typeof validateCheckpoint !== 'function') {
     throw new TypeError('Checkpoint writes require the runtime validator');
   }
+  if (equipmentKey !== null && typeof validateEquipment !== 'function') {
+    throw new TypeError('Equipment writes require the runtime validator');
+  }
   const journalKey = `${keys.unlocked}:completion-journal:v1`;
-  if (targets.includes(journalKey) || checkpointKey === journalKey) throw new TypeError('Journal key collision');
+  if ([...targets, ...optionalKeys].includes(journalKey)) throw new TypeError('Journal key collision');
+  // Keep v1's exact scope: enabling an optional reward must not strand an
+  // already-persisted completion from an earlier application version.
   const scope = JSON.stringify([...targets, checkpointKey, levelCount]);
   const unreadable = Object.freeze({});
   const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
@@ -43,6 +50,14 @@ export function createCompletionJournal({storage, keys, levelCount,
   };
   const checkpointValid = value => {
     try { return validateCheckpoint(value) === true; } catch { return false; }
+  };
+  const equipmentValid = value => {
+    try { return validateEquipment(value) === true; } catch { return false; }
+  };
+  const equipmentBeforeValid = raw => {
+    if (raw === null) return true;
+    if (typeof raw !== 'string') return false;
+    try { return equipmentValid(JSON.parse(raw)); } catch { return false; }
   };
   function parseNumber(raw, fallback, min = 0) {
     if (raw === null || raw === '') return fallback;
@@ -73,10 +88,14 @@ export function createCompletionJournal({storage, keys, levelCount,
         record.id.length < 1 || record.id.length > 200 || !integer(record.level, 1) || record.level > levelCount ||
         !integer(record.stars, 1) || record.stars > 3 || !integer(record.score) ||
         !integer(record.unlockTo, 1) || record.unlockTo > levelCount) return false;
-    if (record.checkpoint === null) return true;
-    return checkpointKey !== null && record.checkpoint &&
+    if (record.checkpoint !== null && !(checkpointKey !== null && record.checkpoint &&
       (record.checkpoint.before === null || typeof record.checkpoint.before === 'string') &&
-      checkpointValid(record.checkpoint.after);
+      checkpointValid(record.checkpoint.after))) return false;
+    // Missing is the historical v1 format. Do not add a field while replaying
+    // that record; there is no equipment target to infer or reward to invent.
+    if (record.equipment === undefined || record.equipment === null) return true;
+    return equipmentKey !== null && record.equipment && !Array.isArray(record.equipment) &&
+      equipmentBeforeValid(record.equipment.before) && equipmentValid(record.equipment.after);
   }
   function readRecord() {
     const raw = read(journalKey);
@@ -105,6 +124,15 @@ export function createCompletionJournal({storage, keys, levelCount,
         return blocked('checkpoint-conflict', checkpointKey);
       }
     }
+    let equipmentRaw = null;
+    if (record.equipment !== undefined && record.equipment !== null) {
+      equipmentRaw = read(equipmentKey);
+      if (equipmentRaw === unreadable) return blocked('storage-read-denied', equipmentKey);
+      const equipmentAfter = JSON.stringify(record.equipment.after);
+      if (equipmentRaw !== record.equipment.before && equipmentRaw !== equipmentAfter) {
+        return blocked('equipment-conflict', equipmentKey);
+      }
+    }
     const stars = {...save.stars, [key]: Math.max(oldStars, record.stars)};
     const bests = {...save.levelBest, [key]: Math.max(oldBest, record.score)};
     const writes = [
@@ -112,6 +140,8 @@ export function createCompletionJournal({storage, keys, levelCount,
       [keys.levelBest, bests, true, save.raw.levelBest],
       [keys.best, Math.max(save.best, record.score), false, save.raw.best],
       ...(record.checkpoint === null ? [] : [[checkpointKey, record.checkpoint.after, true, checkpointRaw]]),
+      ...(record.equipment === undefined || record.equipment === null ? []
+        : [[equipmentKey, record.equipment.after, true, equipmentRaw]]),
       [keys.unlocked, Math.max(save.unlocked, record.unlockTo), false, save.raw.unlocked]
     ];
     for (const [target, value, json, current] of writes) {
@@ -132,7 +162,7 @@ export function createCompletionJournal({storage, keys, levelCount,
       completionId: loaded.record.id, duplicate: true});
     return {...replay(loaded.record), recovered: true};
   }
-  function complete({completionId, level, stars, score, checkpoint = null} = {}) {
+  function complete({completionId, level, stars, score, checkpoint = null, equipment = null} = {}) {
     if (typeof completionId !== 'string' || !completionId || completionId.length > 200 ||
         !integer(level, 1) || level > levelCount || !integer(stars, 1) || stars > 3 || !integer(score)) {
       throw new TypeError('Valid completionId, campaign level, stars and score required');
@@ -159,9 +189,20 @@ export function createCompletionJournal({storage, keys, levelCount,
       if (!checkpointValid(after)) throw new TypeError('Invalid JSON checkpoint');
       checkpointIntent = {before, after};
     }
+    let equipmentIntent = null;
+    if (equipment !== null) {
+      if (!equipmentKey || !equipmentValid(equipment)) throw new TypeError('Invalid completion equipment');
+      const before = read(equipmentKey);
+      if (before === unreadable) return blocked('storage-read-denied', equipmentKey);
+      if (!equipmentBeforeValid(before)) return blocked('invalid-existing-equipment', equipmentKey);
+      let after;
+      try { after = JSON.parse(JSON.stringify(equipment)); } catch { throw new TypeError('Equipment must be JSON data'); }
+      if (!equipmentValid(after)) throw new TypeError('Invalid JSON equipment');
+      equipmentIntent = {before, after};
+    }
     const record = {version: 1, scope, phase: 'pending', id: completionId, level, stars, score,
       unlockTo: save.unlocked === level ? Math.min(levelCount, level + 1) : save.unlocked,
-      checkpoint: checkpointIntent};
+      checkpoint: checkpointIntent, ...(equipmentIntent === null ? {} : {equipment: equipmentIntent})};
     // No target key is changed unless this write-ahead record was accepted.
     if (!write(journalKey, record, true)) return result(false, 'blocked', {
       reason: 'intent-write-denied', key: journalKey, completionId});

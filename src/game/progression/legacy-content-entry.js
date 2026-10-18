@@ -1,6 +1,7 @@
 import {AUTHORED_LEVELS} from './level-designs.js';
 export {createVoyageScore} from '../audio/voyage-score.js';
 export {createCompletionJournal} from './completion-journal.js';
+export {createClassicEquipment,normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,canEquipClassicWeapon} from './classic-arsenal.js';
 export {EncounterDirector, advanceEnemy, makeLegacyEntity} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../combat/classic-pursuit.js';

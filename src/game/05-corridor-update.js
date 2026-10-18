@@ -333,6 +333,7 @@
     if (powers.tractor > 0 && (!tractorTarget || !items.includes(tractorTarget))) selectTractorTarget();
 
     advanceClassicWeaponField(dt);
+    if (isUnifiedClassic() && settings.autoFire && !atlasBoss && classicFlightView?.waitingFor!=="service") fireManualShot();
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
@@ -370,7 +371,7 @@
       if (item.type === "journeyPart") item.y = Math.min(item.y, player.y - 65);
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
-      if (wave && isThreat(item)) {
+      if (wave && isThreat(item) && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
       if (lv.hazard === "phantom" && isThreat(item)) {

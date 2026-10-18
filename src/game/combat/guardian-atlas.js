@@ -5,13 +5,15 @@ const finite = (value, name) => {
 };
 
 export const GUARDIAN_ATLAS_RULES = Object.freeze({
-  version: 'guardian-atlas-v2', maxHp: 36, maxDelta: .05,
+  version: 'guardian-atlas-v3', maxHp: 24, maxDelta: .05,
   entrySeconds: 2.2, arrivalSeconds: 1.35, phaseBreakSeconds: 1.65,
   shutdownSeconds: 1.55, hurtSeconds: .16,
-  phaseOne: Object.freeze({chargeSeconds: 1.05, fireSeconds: .28, recoverySeconds: 1.25,
+  phaseOne: Object.freeze({chargeSeconds: 1.05, fireSeconds: .28, recoverySeconds: 2.4,
+    repositionSeconds: 1.05, counterattackSeconds: 1.8,
     projectileSpeed: 340, projectileDamage: 14}),
   phaseTwo: Object.freeze({chargeSeconds: 1.2, fireSeconds: .64, secondVolleyAt: .36,
-    recoverySeconds: 1.45, projectileSpeed: 315, projectileDamage: 12})
+    recoverySeconds: 2.5, repositionSeconds: .95, counterattackSeconds: 2,
+    projectileSpeed: 315, projectileDamage: 12})
 });
 
 /**
@@ -38,6 +40,7 @@ export function createGuardianAtlas({width = 720, height = 1280,
     vulnerability: false, telegraph: null, disabled: false, resolved: false,
     attackId: 0, volley: 0, lastGapIndex: -1, phaseTwoAttacks: 0,
     attackClearanceSeconds: 0, flash: 0,
+    patrolFromX: width / 2, patrolToX: width / 2,
     resumeState: null, resumeTime: 0
   };
 }
@@ -53,10 +56,28 @@ function rules(boss) {
   return boss.phase === 1 ? GUARDIAN_ATLAS_RULES.phaseOne : GUARDIAN_ATLAS_RULES.phaseTwo;
 }
 
-function transition(boss, next, events) {
+function updateVulnerability(boss) {
+  const recoveryTime = boss.state === 'hurt' ? boss.resumeTime : boss.stateTime;
+  const effectiveState = boss.state === 'hurt' ? boss.resumeState : boss.state;
+  boss.vulnerability = effectiveState === 'fire' || (effectiveState === 'idle' &&
+    (boss.attackId === 0 || recoveryTime >= rules(boss).repositionSeconds));
+}
+
+function transition(boss, next, events, resume = false) {
   boss.state = next;
   boss.stateTime = 0;
-  boss.vulnerability = next === 'idle' || next === 'fire' || next === 'hurt';
+  if (next === 'idle' && !resume) {
+    boss.patrolFromX = boss.x;
+    const desiredOffset = boss.width * (boss.phase === 1 ? .22 : .26);
+    const approachDistance = boss.playerY - (boss.targetY + boss.r * .7);
+    // A short arena cannot safely accommodate a very oblique crossfire across
+    // the full ship length. Scale the flank distance, never the ship hitbox.
+    const offset = Math.min(desiredOffset, Math.max(0, approachDistance * .2));
+    boss.patrolToX = boss.attackId === 0 ? boss.width / 2 : clamp(
+      boss.width / 2 + (boss.attackId % 2 ? offset : -offset),
+      boss.r + 12, boss.width - boss.r - 12);
+  }
+  updateVulnerability(boss);
   events.push({type: 'state', state: next, phase: boss.phase, attackId: boss.attackId});
 }
 
@@ -115,7 +136,7 @@ function projectile(boss, x, y, vx, vy, ordinal) {
   };
 }
 
-function fireVolley(boss, events) {
+function fireVolley(boss, events, fireTime = boss.stateTime) {
   const timing = rules(boss);
   const aim = boss.telegraph;
   const shots = [];
@@ -144,7 +165,7 @@ function fireVolley(boss, events) {
     // Wait until the tail, not only the ship centre, is clear before preparing
     // another attack. Use the actual vertical speed, including oblique fans.
     boss.attackClearanceSeconds = Math.max(boss.attackClearanceSeconds,
-      boss.stateTime + (boss.playerY + 104 + shot.r - shot.y) / shot.vy);
+      fireTime + (boss.playerY + 104 + shot.r - shot.y) / shot.vy);
     events.push({type: 'projectile', projectile: shot});
   }
   events.push({type: 'volley', attackId: boss.attackId, phase: boss.phase, volley: boss.volley});
@@ -160,10 +181,11 @@ function stateDuration(boss) {
   if (boss.state === 'fire') return rules(boss).fireSeconds;
   if (boss.attackId === 0) return GUARDIAN_ATLAS_RULES.arrivalSeconds;
   const timing = rules(boss);
-  // A newly aimed pattern must not force the pilot across an earlier curtain.
-  // This scales with the actual projectile trajectories and tall viewports.
+  // After avoiding a curtain, a manual pilot needs time to re-align and let a
+  // real projectile travel to the core. An exposed pose while the ship is
+  // trapped in a different lane is not a usable counterattack opportunity.
   return Math.max(timing.recoverySeconds,
-    boss.attackClearanceSeconds + .3 - timing.fireSeconds);
+    boss.attackClearanceSeconds + timing.counterattackSeconds - timing.fireSeconds);
 }
 
 function finishState(boss, player, events) {
@@ -183,12 +205,13 @@ function finishState(boss, player, events) {
   } else if (boss.state === 'phaseBreak') {
     transition(boss, 'idle', events);
   } else if (boss.state === 'hurt') {
-    // Hit animation does not reset the combat clock; rapid fire cannot lock the
-    // guardian forever in its first vulnerable pose.
-    transition(boss, boss.resumeState || 'idle', events);
+    // The underlying combat clock keeps advancing through the visual recoil;
+    // repeated impacts cannot extend a vulnerability window or delay an attack.
+    transition(boss, boss.resumeState || 'idle', events, true);
     boss.stateTime = boss.resumeTime;
     boss.resumeState = null;
     boss.resumeTime = 0;
+    updateVulnerability(boss);
   } else if (boss.state === 'disabled' && !boss.resolved) {
     boss.resolved = true;
     events.push({type: 'disabled', phase: boss.phase, rewardId: 'guardian-atlas-access'});
@@ -221,14 +244,27 @@ export function advanceGuardianAtlas(boss, dt, player, emit = () => {}) {
       const progress = clamp(boss.stateTime / duration, 0, 1);
       boss.y = -boss.r * 1.6 + (boss.targetY + boss.r * 1.6) * (1 - (1 - progress) ** 3);
     } else if (boss.state === 'idle' || boss.state === 'hurt') {
-      boss.x = clamp(boss.width / 2 + Math.sin(boss.age * .64) * boss.width * .11,
-        boss.r + 12, boss.width - boss.r - 12);
+      if (boss.state === 'hurt') {
+        const resumedBefore = boss.resumeTime;
+        boss.resumeTime += step;
+        if (boss.resumeState === 'fire' && boss.phase === 2 && boss.volley === 1 &&
+          resumedBefore < rules(boss).secondVolleyAt && boss.resumeTime >= rules(boss).secondVolleyAt) {
+          fireVolley(boss, events, boss.resumeTime);
+        }
+      }
+      const recoveryTime = boss.state === 'hurt' ? boss.resumeTime : boss.stateTime;
+      if (boss.state === 'idle' || boss.resumeState === 'idle') {
+        const progress = clamp(recoveryTime / rules(boss).repositionSeconds, 0, 1);
+        const smooth = progress * progress * (3 - 2 * progress);
+        boss.x = boss.patrolFromX + (boss.patrolToX - boss.patrolFromX) * smooth;
+      }
     } else if (boss.state === 'charge') {
       boss.telegraph.progress = clamp(boss.stateTime / duration, 0, 1);
     } else if (boss.state === 'fire' && boss.phase === 2 && boss.volley === 1 &&
       before < rules(boss).secondVolleyAt && boss.stateTime >= rules(boss).secondVolleyAt) {
       fireVolley(boss, events);
     }
+    updateVulnerability(boss);
     if (boss.stateTime + 1e-10 >= duration) finishState(boss, player, events);
     else break;
   }

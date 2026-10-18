@@ -158,6 +158,12 @@ const VOYAGE_EVENTS=immutable([
 ]);
 const SERVICE_EVENT_ID='chronos-voyage:1.6:service';
 const SERVICE_COMPLETE_ID='chronos-voyage:1.6:service-complete';
+// Dock when the short, visible approach reaches the hangar, not thirty seconds
+// after the station is already in front of the pilot. The remaining authored
+// stage time is the departure leg after servicing; no route seconds are skipped.
+const SERVICE_APPROACH_SECONDS=1.2;
+const SERVICE_VISIBLE_APPROACH_SECONDS=2.4;
+const SERVICE_DEPARTURE_SECONDS=2.4;
 const ARRIVAL_EVENT_ID='chronos-voyage-arrival';
 const validVoyageEventIds=new Set([
   ...VOYAGE_EVENTS.map(event=>event.id),SERVICE_EVENT_ID,SERVICE_COMPLETE_ID,ARRIVAL_EVENT_ID,
@@ -204,9 +210,21 @@ export function normalizeChronosVoyageCheckpoint(value,{goal=36}={}){
   const minimum=value.stageNumber===1?0:voyageGoal(CHRONOS_VOYAGE_STAGES[value.stageNumber-2],goal);
   if(collected<minimum||(value.serviceWaiting&&collected<voyageGoal(CHRONOS_VOYAGE_STAGES[5],goal)))return null;
   // Rebuild known history from geography rather than trusting supplied IDs to
-  // suppress a future attack, module or arrival. Only current entry IDs survive.
+  // suppress a future attack, module or arrival. Current entry IDs and the
+  // coherent current C9 milestone below are the only supplied IDs retained.
   const canonical=createChronosVoyageCheckpoint(value.stageNumber,{goal,collected});
   const currentIds=value.eventIds.filter(id=>id===entryEventId(value.stageNumber)||id===checkpointEventId(value.stageNumber));
+  // Existing IDs also describe the new early dock/undock checkpoint. Preserve
+  // their valid pair only in1.6; arbitrary future events still cannot hide a
+  // module or arrival. Old waiting saves include1.6:complete and retain their
+  // old end-of-stage boundary rather than being moved backward on reload.
+  if(value.stageNumber===6){
+    const completedServicePair=value.eventIds.includes(SERVICE_EVENT_ID)&&value.eventIds.includes(SERVICE_COMPLETE_ID);
+    if((value.serviceWaiting||completedServicePair)&&value.eventIds.includes(completionEventId(6)))currentIds.push(completionEventId(6));
+    if(!value.serviceWaiting&&completedServicePair){
+      currentIds.push(SERVICE_EVENT_ID,SERVICE_COMPLETE_ID);
+    }
+  }
   return checkpointForStage(value.stageNumber,goal,collected,[...canonical.eventIds,...currentIds,
     ...(value.serviceWaiting?[SERVICE_EVENT_ID]:[])],Boolean(value.serviceWaiting));
 }
@@ -217,7 +235,11 @@ export function createChronosVoyage({goal=36,checkpoint=null}={}){
   const restored=checkpoint===null?null:normalizeChronosVoyageCheckpoint(checkpoint,{goal});
   if(checkpoint!==null&&!restored)throw new TypeError('Invalid Chronos voyage checkpoint');
   let stageIndex=restored?.stageIndex||0,collected=restored?.collected||0;
-  let stageElapsed=restored?.serviceWaiting?CHRONOS_VOYAGE_STAGES[stageIndex].duration:0;
+  const restoredServiceCompleted=stageIndex===5&&restored?.eventIds.includes(SERVICE_COMPLETE_ID);
+  const restoredLegacyService=stageIndex===5&&restored?.eventIds.includes(completionEventId(6))&&
+    (restored.serviceWaiting||restoredServiceCompleted);
+  let stageElapsed=restoredLegacyService?CHRONOS_VOYAGE_STAGES[stageIndex].duration:
+    restored?.serviceWaiting||restoredServiceCompleted?SERVICE_APPROACH_SECONDS:0;
   let serviceWaiting=Boolean(restored?.serviceWaiting),arrived=false;
   const fired=new Set(restored?.eventIds||[]);
   let entryCheckpoint=restored||createChronosVoyageCheckpoint(1,{goal});
@@ -237,12 +259,20 @@ export function createChronosVoyage({goal=36,checkpoint=null}={}){
     const attackerState=elapsed<4.95?'approach':elapsed<6.3?'charge':elapsed<9?'fire':'retreat';
     const phase=arrived?'arrived':stageIndex===0?(elapsed<9?'emergency':'recovery'):
       stageIndex<3?'recovery':stageIndex===3?'departure':stageIndex<7?'deep-space':'gaia-approach';
-    const relayArrival=smooth(p,.45,.53),relayExit=smooth(p,.58,.65);
+    const serviceCompleted=fired.has(SERVICE_COMPLETE_ID);
+    const serviceAt=CHRONOS_VOYAGE_STAGES[5].offset+SERVICE_APPROACH_SECONDS;
+    const relayArrival=smooth(elapsed,serviceAt-SERVICE_VISIBLE_APPROACH_SECONDS,serviceAt);
+    const relayExit=serviceCompleted&&stageIndex===5
+      ?smooth(stageElapsed,SERVICE_APPROACH_SECONDS,SERVICE_APPROACH_SECONDS+SERVICE_DEPARTURE_SECONDS):0;
+    const relayVisible=stageIndex<=5&&elapsed>=serviceAt-SERVICE_VISIBLE_APPROACH_SECONDS&&
+      (!serviceCompleted||relayExit<1);
+    const relayState=serviceWaiting?'service':serviceCompleted?'departing':relayArrival<.48?'approach':'docking';
     return immutable({version:CHRONOS_VOYAGE_VERSION,contentVersion:CHRONOS_VOYAGE_VERSION,
       routeId:CHRONOS_VOYAGE_ROUTE_ID,chapter:1,elapsed,minDuration:CHRONOS_VOYAGE_MIN_DURATION,
       cinematicDuration:90,routeProgress:p,phase,stageId:stage.id,stageNumber:stage.number,
-      stageName:stage.name,stageProgress,stageElapsed,stageDuration:stage.duration,
-      stageGoal,stageObjective:stage.objective,stageOrigin:stage.origin,stageDestination:stage.destination,
+      stageName:stageIndex===5&&serviceCompleted?'Salida de C9':stage.name,stageProgress,stageElapsed,stageDuration:stage.duration,
+      stageGoal,stageObjective:stageIndex===5&&serviceCompleted?'Abandona el atraque y prueba tu nave en el corredor de salida':stage.objective,
+      stageOrigin:stage.origin,stageDestination:stage.destination,
       stageEvent:stage.event,stageQuotaComplete:quotaComplete,threatRate:stage.threatRate,
       origin:'Centro Chronos',destination:'Baliza de acceso a Gaia Nova',
       collected,goal,remaining:Math.max(0,goal-collected),collectionFraction:collected/goal,
@@ -255,8 +285,9 @@ export function createChronosVoyage({goal=36,checkpoint=null}={}){
         scale:.014+.71*approach*approach,rotation:.06*p,visible:true,alpha:1}),
       beacon:immutable({x:.54+.08*(1-approach),y:.16+.10*approach,
         scale:.012+.216*approach,visible:p>=.80,alpha:1,active:p>=292/360}),
-      relay:immutable({visible:p>=.45&&p<.65,x:.68-.48*relayExit,y:.24+.84*relayExit,
-        scale:(.035+.14*relayArrival)*(1-.85*relayExit),alpha:1,active:serviceWaiting}),
+      relay:immutable({visible:relayVisible,x:.77-.09*relayArrival-.48*relayExit,
+        y:.08+.16*relayArrival+.84*relayExit,
+        scale:(.025+.15*relayArrival)*(1-.85*relayExit),alpha:1,active:serviceWaiting,state:relayState}),
       attacker:immutable({x:1.12-.48*attackApproach-.95*attackExit,
         y:.13+.11*attackApproach-.15*attackExit,
         scale:.10+.07*attackApproach-.05*attackExit,
@@ -274,6 +305,7 @@ export function createChronosVoyage({goal=36,checkpoint=null}={}){
     if(fired.has(event.id))return;
     fired.add(event.id);
     if(event.type==='checkpoint')entryCheckpoint=checkpointForStage(stageIndex+1,goal,collected,[...fired]);
+    if(event.type==='service-complete')entryCheckpoint=checkpointForStage(stageIndex+1,goal,collected,[...fired]);
     emit(immutable({...event,version:CHRONOS_VOYAGE_VERSION,stageId:`1.${stageIndex+1}`,
       stageNumber:stageIndex+1,elapsed:CHRONOS_VOYAGE_STAGES[stageIndex].offset+stageElapsed,
       routeProgress:snapshot().routeProgress,...(event.type==='checkpoint'?{checkpoint:entryCheckpoint}:{})}));
@@ -295,7 +327,9 @@ export function createChronosVoyage({goal=36,checkpoint=null}={}){
     if(!serviceWaiting)return snapshot();
     serviceWaiting=false;
     emitOnce({id:SERVICE_COMPLETE_ID,type:'service-complete'},emit);
-    enterNextStage(emit);
+    // Old saves docked at the original end of1.6. Their confirmation still
+    // enters1.7 immediately. Fresh early arrivals first fly the departure leg.
+    if(stageElapsed===CHRONOS_VOYAGE_STAGES[stageIndex].duration)enterNextStage(emit);
     return snapshot();
   }
 
@@ -313,12 +347,18 @@ export function createChronosVoyage({goal=36,checkpoint=null}={}){
     for(const event of VOYAGE_EVENTS){
       if(elapsed+1e-10>=event.at)emitOnce(event,emit);
     }
+    if(stage.number===6&&!fired.has(SERVICE_COMPLETE_ID)&&stageElapsed+1e-10>=SERVICE_APPROACH_SECONDS&&
+      collected>=voyageGoal(stage,goal)){
+      // Snap the reached dock to its exact geographical boundary. Each update
+      // is capped; no unseen frame may add delay before opening the real UI.
+      stageElapsed=SERVICE_APPROACH_SECONDS;
+      serviceWaiting=true;
+      emitOnce({id:SERVICE_EVENT_ID,type:'service',stationId:'c9'},emit);
+      return snapshot();
+    }
     if(stageElapsed===stage.duration&&collected>=voyageGoal(stage,goal)){
       emitOnce({id:completionEventId(stage.number),type:'stage-complete'},emit);
-      if(stage.number===6){
-        serviceWaiting=true;
-        emitOnce({id:SERVICE_EVENT_ID,type:'service',stationId:'c9'},emit);
-      }else if(stage.number===10){
+      if(stage.number===10){
         arrived=true;
         emitOnce({id:ARRIVAL_EVENT_ID,type:'arrival',destinationId:'gaia-atlas-approach'},emit);
       }else enterNextStage(emit);

@@ -298,6 +298,16 @@ async function gameBrandAndSave(page, fixture) {
     assert.equal((await page.locator('#flightWeaponName').innerText()).trim(), 'GEMELO');
     const running = await observer(page); assert.equal(running.raf.maximum, 1); assert.deepEqual(running.raf.errors, []);
     assert.ok(report.assetResponses.some(item => item.offline && item.fromServiceWorker && item.url.endsWith('/ship_modular_atlas_v1.webp')));
+    const offlinePulse = await page.evaluate(async () => {
+      const response=await fetch('assets/arcade_pulse_atlas_v2.webp');
+      const bytes=await response.arrayBuffer();
+      const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(v=>v.toString(16).padStart(2,'0')).join('');
+      return {status:response.status,bytes:bytes.byteLength,sha256:digest,online:navigator.onLine};
+    });
+    assert.equal(offlinePulse.online,false);assert.equal(offlinePulse.status,200);
+    assert.equal(offlinePulse.sha256,sha256(await fs.readFile(path.join(root,'juego/assets/arcade_pulse_atlas_v2.webp'))));
+    assert.ok(report.assetResponses.some(item=>item.offline&&item.fromServiceWorker&&item.url.endsWith('/arcade_pulse_atlas_v2.webp')));
+    report.offlinePulse=offlinePulse;
     await capture(page, 'current-offline-continuation-playing');
     // The existing HUD counts up to the restored score across render frames.
     // Wait for its known checkpoint target before measuring a paused HUD;

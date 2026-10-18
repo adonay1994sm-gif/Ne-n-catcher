@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T06:50:52.052Z",
+  "updatedAt": "2026-10-18T07:31:46.464Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -321,7 +321,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 156,
+    "expectedCount": 157,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -957,9 +957,43 @@
           },
           "acceptanceProvenance": "CH-02 integrado aprobado en gaia-05 sobre 33263c5; equivalencia de IA/arte registrada frente a d39; aceptación artística, humana y física pendientes."
         }
+      },
+      "shared-arcade-pulse-v2": {
+        "status": "IN_REVIEW",
+        "commit": null,
+        "files": [
+          "assets/arcade_pulse_atlas_v2.webp",
+          "art-source/vfx/arcade-combat-v2/arcade-pulse-master-v2.png",
+          "art-source/vfx/arcade-combat-v2/arcade-pulse-atlas-v2.json",
+          "art-source/vfx/arcade-combat-v2/PROVENANCE.md",
+          "src/game/07-player-item-rendering.js",
+          "tests/arcade-pulse-rendering.test.mjs"
+        ],
+        "tests": [],
+        "evidence": [
+          "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+          "docs/production-reports/evidence/arcade-polish/"
+        ],
+        "openErrors": [
+          "Recurso e integración en revisión; prueba Chromium de juego real, aceptación artística y dispositivo pendientes."
+        ],
+        "acceptanceStatus": {
+          "technical": "PENDING_CHROMIUM",
+          "artistic": "PENDING_OWNER",
+          "physical": "PENDING"
+        }
       }
     },
-    "note": "Se genera una tarea por sequence estable del catálogo (156 entradas, incluido el atlas C9). READY/IN_REVIEW/IMPLEMENTED_CODE exige verificación técnica y aceptación artística separadas; no equivale a DONE."
+    "note": "Se genera una tarea por sequence estable del catálogo (157 entradas, incluidos los atlas C9 y arcade-pulse-v2). READY/IN_REVIEW/IMPLEMENTED_CODE exige verificación técnica y aceptación artística separadas; no equivale a DONE.",
+    "scopeHistory": [
+      {
+        "date": "2026-10-18",
+        "previousExpectedCount": 156,
+        "expectedCount": 157,
+        "addedId": "shared-arcade-pulse-v2",
+        "reason": "Atlas de proyectiles e impactos real con maestro y exportación presentes; IN_REVIEW, no entrega certificada."
+      }
+    ]
   },
   "tasks": [
     {
@@ -7093,6 +7127,316 @@
         "equivalenceEvidence": "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
         "limitation": "La aceptación técnica acotada de CH-02 se apoya en gaia-05 sobre 33263c5 y equivalencia explícita. No se atribuye un combate de destrucción 4/4 al SHA d39 ni se certifica todo Gaia."
       }
+    },
+    {
+      "id": "P2-C9-FAST-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Abrir C9 al alcanzar el atraque y conservar salida, pausas y guardados",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-PRESENTATION-01",
+        "P3-TRANSIT-01"
+      ],
+      "files": [
+        "src/game/progression/chronos-flight.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/06-world-rendering.js",
+        "tests/chronos-voyage.test.mjs",
+        "tests/chronos-voyage-rendering.test.mjs",
+        "tests/unified-flight-legacy.test.mjs",
+        "scripts/chronos-voyage-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "docs/production-reports/evidence/arcade-polish/"
+      ],
+      "openErrors": [
+        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CHROMIUM",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "C9 aparece sólo durante los 2,4 s de aproximación y abre el taller a 183,2 s de ruta sin espera adicional frente al hangar.",
+        "Continuar conserva 1.6 como salida, retira la estación en un máximo de 2,4 s y mantiene los 360 s, cuotas y offsets.",
+        "Servicio único, pausa y recarga de checkpoints antiguos/nuevos y salida confirmada se verifican sin duplicar taller, piezas u orbes."
+      ],
+      "relations": {
+        "extends": "P2-PRESENTATION-01"
+      },
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-SHIP-CLEAN-01",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Integrar propulsión y daño sin una imagen de humo pegada a la nave",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-SHIP-01"
+      ],
+      "files": [
+        "src/game/07-player-item-rendering.js",
+        "src/game/ship/modular-ship.js",
+        "tests/arcade-pulse-rendering.test.mjs",
+        "tests/ship-render-fallback.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "docs/production-reports/evidence/arcade-polish/"
+      ],
+      "openErrors": [
+        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CHROMIUM",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "La nave modular mantiene su silueta y sus piezas visibles en navegación, disparo y daño; no aparece una columna de humo fija superpuesta al fuselaje.",
+        "Impactos, propulsión y estados de daño conservan anclajes, duración y transparencia apropiados, sin ocultar controles o amenazas.",
+        "Los recursos anteriores quedan recuperables y se comprueba la representación en el ejecutable, no sólo la ausencia de una llamada en la fuente."
+      ],
+      "relations": {
+        "extends": "P1-SHIP-01"
+      },
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-PULSE-VISUAL-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Alinear los proyectiles verticales reales con su nuevo arte e impactos",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Jugabilidad",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-IDENTITY-02"
+      ],
+      "files": [
+        "assets/arcade_pulse_atlas_v2.webp",
+        "art-source/vfx/arcade-combat-v2/arcade-pulse-master-v2.png",
+        "art-source/vfx/arcade-combat-v2/arcade-pulse-atlas-v2.json",
+        "art-source/vfx/arcade-combat-v2/PROVENANCE.md",
+        "src/game/01-runtime-assets.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/07-player-item-rendering.js",
+        "src/game/combat/classic-weapons.js",
+        "tests/arcade-pulse-rendering.test.mjs",
+        "tests/classic-weapons.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "docs/production-reports/evidence/arcade-polish/"
+      ],
+      "openErrors": [
+        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CHROMIUM",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Pulso, Gemelo y Lanza mantienen el eje visual y el centro de sus proyectiles reales, con avance vertical y emisores coherentes.",
+        "No hay trazos falsos de convergencia que parezcan disparos distintos de la física; Gemelo conserva dos cañones centrados.",
+        "Atlas real con maestro, exportación, transparencia, pivote, animación e impacto registrado; batería de tres cargas, daño y colisiones siguen comprobados."
+      ],
+      "relations": {
+        "extends": "P2-PRESENTATION-01"
+      },
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-ENEMY-COMBAT-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Mantener intención y respuesta de combate de los enemigos activos",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Enemigos",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P3-PURSUIT-01",
+        "P1-GAIA-02"
+      ],
+      "files": [
+        "src/game/combat/classic-pursuit.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js",
+        "tests/classic-pursuit.test.mjs",
+        "tests/unified-flight-legacy.test.mjs",
+        "scripts/gaia-interceptor-browser-smoke.cjs",
+        "scripts/pursuit-resume-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "docs/production-reports/evidence/arcade-polish/"
+      ],
+      "openErrors": [
+        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CHROMIUM",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "La búsqueda, fijación, preparación, disparo, respuesta al daño y retirada forman un comportamiento legible mientras el enemigo está activo.",
+        "Los cambios de fase no dejan unidades decorativas sin intención de combatir; sus avisos, límites y ventanas permiten esquivar y responder.",
+        "La pausa no adelanta ataques y los eventos de animación no duplican proyectiles; se conserva recuperación entre encuentros, sin saturación permanente."
+      ],
+      "relations": {
+        "extends": "P3-PURSUIT-01"
+      },
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-ATLAS-MANUAL-01",
+      "block": "04",
+      "canonicalPhase": "P1",
+      "name": "Validar Atlas como reto manual con AUTO apagado y opt-in sólo en Ajustes",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Jefes",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-ATLAS-01",
+        "P2-PULSE-VISUAL-01",
+        "P2-ENEMY-COMBAT-01"
+      ],
+      "files": [
+        "src/game/combat/guardian-atlas.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/02-storage-audio.js",
+        "src/game/08-loop-input-bootstrap.js",
+        "index.html",
+        "tests/guardian-atlas.test.mjs",
+        "tests/guardian-atlas-legacy.test.mjs",
+        "tests/unified-flight-legacy.test.mjs",
+        "scripts/guardian-atlas-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "docs/production-reports/evidence/arcade-polish/"
+      ],
+      "openErrors": [
+        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CHROMIUM",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Un perfil nuevo empieza con AUTO desactivado; sólo Ajustes permite activarlo y persiste una elección explícita sin accesos de AUTO en el HUD.",
+        "Una partida real con Pulso manual verifica entrada, ataques anunciados, fases, ventanas de vulnerabilidad, daño, derrota/resolución y recompensa.",
+        "Mayor exigencia procede de patrones y decisiones aprendibles, no de daño inevitable; dos dedos y batería de tres cargas funcionan durante el jefe."
+      ],
+      "relations": {
+        "extends": "P1-ATLAS-01"
+      },
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-ARSENAL-01",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Vincular Pulso→Atlas→Gemelo a victoria persistida y conservar armamento antiguo",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-ATLAS-MANUAL-01",
+        "P2-C9-FAST-01",
+        "P2-SAVE-01"
+      ],
+      "files": [
+        "src/game/progression/classic-arsenal.js",
+        "src/game/progression/completion-journal.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/progression/legacy-content-entry.js",
+        "tests/classic-arsenal.test.mjs",
+        "tests/completion-journal.test.mjs",
+        "tests/completion-journal-legacy.test.mjs",
+        "tests/unified-flight-legacy.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [
+        "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "docs/production-reports/evidence/arcade-polish/"
+      ],
+      "openErrors": [
+        "Implementación del lote en curso de integración; verificación Chromium, revisión artística del propietario y prueba física pendientes."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_CHROMIUM",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Una partida nueva usa Pulso; C9 prepara el emisor recuperado sin desbloquear Gemelo ni Lanza gratis.",
+        "Vencer a Guardian Atlas concede Gemelo exactamente una vez mediante guardado coherente, con elección de equipamiento y sin duplicación al recargar o repetir.",
+        "Los guardados antiguos válidos conservan Gemelo/Lanza, preferencias y progreso; una nueva Lanza no se concede sin un encuentro posterior implementado.",
+        "Las tres cargas, recarga, selección y daño permanecen comprensibles y se prueban con los estados de equipo nuevo y antiguo."
+      ],
+      "relations": {
+        "extends": "P2-SAVE-01"
+      },
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
     }
   ],
   "canonicalPlan": {
@@ -7114,19 +7458,21 @@
     ],
     "demoMap": "Centro Chronos -> Baliza C9 -> aproximación Gaia -> acceso Atlas",
     "decisions": [
-      "64-second compressed demonstration; final stages target 2-4 minutes only after playtesting",
-      "Configurable automatic basic fire with unlimited manual alternative",
-      "Shield and tractor as the two initial active abilities",
-      "Recovered vector fin: free installation and hull repair at Mira service relay C9",
-      "New campaign save key; old campaigns retained without numerical equivalence"
+      "Partida nueva con disparo manual y tres cargas recargables; AUTO empieza apagado y sólo se habilita expresamente en Ajustes.",
+      "Progresión nueva: Pulso, victoria ante Guardian Atlas y después autorización de Gemelo. Conservar Gemelo/Lanza adquiridos en guardados antiguos.",
+      "C9 prepara la pieza recuperada y repara; no concede Gemelo ni Lanza gratis. Lanza nueva requiere un guardián posterior realmente integrado.",
+      "Decisión reversible de implementación: aproximación C9 de 2,4 s y taller a 183,2 s; salida dentro de 1.6, conservando 360 s, offsets, cuotas y checkpoints v2.",
+      "La nave modular conserva su silueta sin humo superpuesto; arte de proyectiles e impactos alineado con su trayectoria real.",
+      "Enemigos con intención persistente y avisos transitables; Atlas se verifica con Pulso manual antes de atribuir balance o dificultad adecuados.",
+      "Aplazar grandes cinemáticas Gaia→Vulkar; Motor V1 desactivado y campañas/guardados anteriores preservados."
     ],
     "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion.",
     "latestFeedback": {
       "date": "2026-10-18",
       "status": "CHANGES_REQUESTED",
-      "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
-      "priority": "El propietario considera el primer nivel casi terminado: mejorar transiciones, subir levemente la dificultad tras la explosión de Chronos, dar lógica comprensible a los perseguidores y continuar con Gaia.",
-      "scope": "Primer territorio Chronos→Gaia y segundo territorio Gaia; no equivale a aceptación artística completa ni a finalizar cien etapas."
+      "report": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+      "priority": "C9 sin demora, nave sin humo pegado, tiros verticales reales, enemigos con intención de combate y Atlas manual retador. AUTO apagado y opt-in sólo en Ajustes; progresión Pulso→Atlas→Gemelo.",
+      "scope": "Pulido integrado del clásico y sus guardados. Se aplazan las grandes cinemáticas Gaia→Vulkar; aceptación estética y dispositivo pendientes."
     },
     "latestClarification": {
       "date": "2026-10-17",
@@ -7184,10 +7530,14 @@
       "initialHead": "827c1b5f50d88cbca5f68924d6ffc71f0794074e",
       "audit": "docs/production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md",
       "currentBatch": [
-        "P3-PURSUIT-01",
-        "P1-GAIA-02"
+        "P2-C9-FAST-01",
+        "P1-SHIP-CLEAN-01",
+        "P2-PULSE-VISUAL-01",
+        "P2-ENEMY-COMBAT-01",
+        "P1-ATLAS-MANUAL-01",
+        "P2-ARSENAL-01"
       ],
-      "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+      "report": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
       "note": "Se ejecuta por dependencias; aprobación del plan no equivale a terminar100etapas ni autoriza MotorV1, producción, beta o tiendas.",
       "operatorPreparation": {
         "name": "Adonay Sánchez Melo",
@@ -7212,12 +7562,22 @@
           "report": "docs/production-reports/SCORE_READ_GUARD_2026-10-17.md",
           "functionalCommit": "f39082f04667d7dc18ceba17705095bacb30806e",
           "privateVersion": 14
+        },
+        {
+          "date": "2026-10-18",
+          "tasks": [
+            "P3-PURSUIT-01",
+            "P1-GAIA-02"
+          ],
+          "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+          "functionalCommit": "d39ed440740b094f9dddb588c540c537f4499215",
+          "privateVersion": 16
         }
       ],
       "currentPrivateCommit": "d39ed440740b094f9dddb588c540c537f4499215",
-      "currentBatchPackageStatus": "VERIFIED_CLEAN",
-      "currentBatchPrivateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
-      "pendingFunctionalVerification": "Continuar Gaia con CH-03 y revisar ritmo con jugadores humanos. CH-02 tiene combate completo gaia-05 sobre 332 y equivalencia IA/arte con d39; gaia-06 sobre d39 conserva timeout del piloto, sin nueva destrucción validada. Aceptación artística e iPhone físico pendientes.",
+      "currentBatchPackageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "currentBatchPrivateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION",
+      "pendingFunctionalVerification": "Las seis tareas del nuevo lote permanecen IN_REVIEW con técnica PENDING_CHROMIUM; arte y prueba física pendientes. Mantener como histórica la certificación y web del lote anterior.",
       "currentVerifiedPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
       "currentPrivateSiteSourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
       "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
@@ -7241,8 +7601,9 @@
         "fixedByCommit": "d39ed440740b094f9dddb588c540c537f4499215",
         "passedWorkflowRun": 39105045562
       },
-      "nextPriority": "CH-03 integrado en Gaia, ritmo de encuentros y pruebas humanas; conservar el intento fallido gaia-06 y la procedencia exacta del combate aprobado.",
-      "currentPackageRevision": "458f6dcf810bc827aad45191b5d46b4862d47cfa83329e163e6f321b97a7b11f"
+      "nextPriority": "Integrar y probar el pulido arcade, C9, combate manual y progresión del arsenal antes de ampliar contenido o cinemáticas.",
+      "currentPackageRevision": "458f6dcf810bc827aad45191b5d46b4862d47cfa83329e163e6f321b97a7b11f",
+      "currentBatchVerification": "PENDING_CHROMIUM; las pruebas y la web anteriores no certifican este lote en desarrollo."
     },
     "feedbackHistory": [
       {
@@ -7250,6 +7611,13 @@
         "status": "CHANGES_REQUESTED",
         "report": "docs/production-reports/NAVES_MODULARES_2026-10-17.md",
         "priority": "Recuperar ritmo clásico e integración; no expandir el prototipo corto."
+      },
+      {
+        "date": "2026-10-18",
+        "status": "CHANGES_REQUESTED",
+        "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
+        "priority": "El propietario considera el primer nivel casi terminado: mejorar transiciones, subir levemente la dificultad tras la explosión de Chronos, dar lógica comprensible a los perseguidores y continuar con Gaia.",
+        "scope": "Primer territorio Chronos→Gaia y segundo territorio Gaia; no equivale a aceptación artística completa ni a finalizar cien etapas."
       }
     ],
     "verificationHistory": [
@@ -7294,6 +7662,20 @@
           "status": "UNDER_REPAIR"
         },
         "scopeStatus": "GAMEPLAY_VERIFIED_LATEST_CI_UNDER_REPAIR"
+      }
+    ],
+    "decisionHistory": [
+      {
+        "date": "2026-10-18",
+        "decisions": [
+          "64-second compressed demonstration; final stages target 2-4 minutes only after playtesting",
+          "Configurable automatic basic fire with unlimited manual alternative",
+          "Shield and tractor as the two initial active abilities",
+          "Recovered vector fin: free installation and hull repair at Mira service relay C9",
+          "New campaign save key; old campaigns retained without numerical equivalence"
+        ],
+        "supersededBy": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "note": "Decisiones históricas; automático predeterminado, arma ilimitada y desbloqueos gratuitos de C9 no prevalecen sobre el nuevo mandato."
       }
     ]
   }

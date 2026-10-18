@@ -97,6 +97,7 @@
     vibration: $("vibration"),
     effectsQuality: $("effectsQuality"),
     reduceEffects: $("reduceEffects"),
+    autoFire: $("autoFire"),
     musicValue: $("musicValue"),
     fxValue: $("fxValue"),
     sensitivityValue: $("sensitivityValue")
@@ -201,4 +202,4 @@
     for (const key of Object.keys(KEYS)) KEYS[key] = `neon-journey-demo-${key}-v1`;
   }
   const LEGACY_KEYS = { best: "neon-best-v1" };
-  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, effectsQuality: "normal", effects: true };
+  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true };

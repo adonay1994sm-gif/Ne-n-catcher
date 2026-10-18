@@ -40,13 +40,16 @@ var NeonCampaign = (() => {
     advanceClassicWeapons: () => advanceClassicWeapons,
     advanceEnemy: () => advanceEnemy,
     advanceGuardianAtlas: () => advanceGuardianAtlas,
+    awardClassicBossWeapon: () => awardClassicBossWeapon,
     beginFlightInput: () => beginFlightInput,
     calculateFlightBounds: () => calculateFlightBounds,
+    canEquipClassicWeapon: () => canEquipClassicWeapon,
     classicWeaponSnapshot: () => classicWeaponSnapshot,
     createCh02Animator: () => createCh02Animator,
     createChronosFlight: () => createChronosFlight,
     createChronosVoyage: () => createChronosVoyage,
     createChronosVoyageCheckpoint: () => createChronosVoyageCheckpoint,
+    createClassicEquipment: () => createClassicEquipment,
     createClassicPursuer: () => createClassicPursuer,
     createClassicScout: () => createClassicScout,
     createClassicWeapons: () => createClassicWeapons,
@@ -65,7 +68,9 @@ var NeonCampaign = (() => {
     moveFlightInput: () => moveFlightInput,
     n7Dialogue: () => n7Dialogue,
     normalizeChronosVoyageCheckpoint: () => normalizeChronosVoyageCheckpoint,
+    normalizeClassicEquipment: () => normalizeClassicEquipment,
     normalizeShipLoadout: () => normalizeShipLoadout,
+    prepareClassicTwin: () => prepareClassicTwin,
     selectClassicWeapon: () => selectClassicWeapon,
     shipAssemblyPose: () => shipAssemblyPose,
     shipPartFrame: () => shipPartFrame,
@@ -340,7 +345,9 @@ var NeonCampaign = (() => {
     keys,
     levelCount,
     checkpointKey = null,
-    validateCheckpoint = null
+    validateCheckpoint = null,
+    equipmentKey = null,
+    validateEquipment = null
   } = {}) {
     const names = ["stars", "unlocked", "best", "levelBest"];
     if (!storage || !["readRaw", "set", "setJSON"].every((name) => typeof storage[name] === "function")) {
@@ -351,14 +358,18 @@ var NeonCampaign = (() => {
     }
     keys = Object.freeze(Object.fromEntries(names.map((name) => [name, keys[name]])));
     const targets = names.map((name) => keys[name]);
-    if (new Set(targets).size !== names.length || checkpointKey !== null && (typeof checkpointKey !== "string" || !checkpointKey || targets.includes(checkpointKey))) {
+    const optionalKeys = [checkpointKey, equipmentKey].filter((key) => key !== null);
+    if (optionalKeys.some((key) => typeof key !== "string" || !key) || (/* @__PURE__ */ new Set([...targets, ...optionalKeys])).size !== targets.length + optionalKeys.length) {
       throw new TypeError("Save keys must be distinct");
     }
     if (checkpointKey !== null && typeof validateCheckpoint !== "function") {
       throw new TypeError("Checkpoint writes require the runtime validator");
     }
+    if (equipmentKey !== null && typeof validateEquipment !== "function") {
+      throw new TypeError("Equipment writes require the runtime validator");
+    }
     const journalKey = `${keys.unlocked}:completion-journal:v1`;
-    if (targets.includes(journalKey) || checkpointKey === journalKey) throw new TypeError("Journal key collision");
+    if ([...targets, ...optionalKeys].includes(journalKey)) throw new TypeError("Journal key collision");
     const scope = JSON.stringify([...targets, checkpointKey, levelCount]);
     const unreadable = Object.freeze({});
     const integer = (value, min = 0) => Number.isSafeInteger(value) && value >= min;
@@ -382,6 +393,22 @@ var NeonCampaign = (() => {
     const checkpointValid = (value) => {
       try {
         return validateCheckpoint(value) === true;
+      } catch {
+        return false;
+      }
+    };
+    const equipmentValid = (value) => {
+      try {
+        return validateEquipment(value) === true;
+      } catch {
+        return false;
+      }
+    };
+    const equipmentBeforeValid = (raw) => {
+      if (raw === null) return true;
+      if (typeof raw !== "string") return false;
+      try {
+        return equipmentValid(JSON.parse(raw));
       } catch {
         return false;
       }
@@ -418,8 +445,9 @@ var NeonCampaign = (() => {
     }
     function validRecord(record) {
       if (!record || typeof record !== "object" || record.version !== 1 || record.scope !== scope || !["pending", "committed"].includes(record.phase) || typeof record.id !== "string" || record.id.length < 1 || record.id.length > 200 || !integer(record.level, 1) || record.level > levelCount || !integer(record.stars, 1) || record.stars > 3 || !integer(record.score) || !integer(record.unlockTo, 1) || record.unlockTo > levelCount) return false;
-      if (record.checkpoint === null) return true;
-      return checkpointKey !== null && record.checkpoint && (record.checkpoint.before === null || typeof record.checkpoint.before === "string") && checkpointValid(record.checkpoint.after);
+      if (record.checkpoint !== null && !(checkpointKey !== null && record.checkpoint && (record.checkpoint.before === null || typeof record.checkpoint.before === "string") && checkpointValid(record.checkpoint.after))) return false;
+      if (record.equipment === void 0 || record.equipment === null) return true;
+      return equipmentKey !== null && record.equipment && !Array.isArray(record.equipment) && equipmentBeforeValid(record.equipment.before) && equipmentValid(record.equipment.after);
     }
     function readRecord() {
       const raw = read(journalKey);
@@ -449,6 +477,15 @@ var NeonCampaign = (() => {
           return blocked("checkpoint-conflict", checkpointKey);
         }
       }
+      let equipmentRaw = null;
+      if (record.equipment !== void 0 && record.equipment !== null) {
+        equipmentRaw = read(equipmentKey);
+        if (equipmentRaw === unreadable) return blocked("storage-read-denied", equipmentKey);
+        const equipmentAfter = JSON.stringify(record.equipment.after);
+        if (equipmentRaw !== record.equipment.before && equipmentRaw !== equipmentAfter) {
+          return blocked("equipment-conflict", equipmentKey);
+        }
+      }
       const stars = { ...save.stars, [key]: Math.max(oldStars, record.stars) };
       const bests = { ...save.levelBest, [key]: Math.max(oldBest, record.score) };
       const writes = [
@@ -456,6 +493,7 @@ var NeonCampaign = (() => {
         [keys.levelBest, bests, true, save.raw.levelBest],
         [keys.best, Math.max(save.best, record.score), false, save.raw.best],
         ...record.checkpoint === null ? [] : [[checkpointKey, record.checkpoint.after, true, checkpointRaw]],
+        ...record.equipment === void 0 || record.equipment === null ? [] : [[equipmentKey, record.equipment.after, true, equipmentRaw]],
         [keys.unlocked, Math.max(save.unlocked, record.unlockTo), false, save.raw.unlocked]
       ];
       for (const [target, value, json, current] of writes) {
@@ -480,7 +518,7 @@ var NeonCampaign = (() => {
       });
       return { ...replay(loaded.record), recovered: true };
     }
-    function complete({ completionId, level, stars, score, checkpoint = null } = {}) {
+    function complete({ completionId, level, stars, score, checkpoint = null, equipment = null } = {}) {
       if (typeof completionId !== "string" || !completionId || completionId.length > 200 || !integer(level, 1) || level > levelCount || !integer(stars, 1) || stars > 3 || !integer(score)) {
         throw new TypeError("Valid completionId, campaign level, stars and score required");
       }
@@ -510,6 +548,21 @@ var NeonCampaign = (() => {
         if (!checkpointValid(after)) throw new TypeError("Invalid JSON checkpoint");
         checkpointIntent = { before, after };
       }
+      let equipmentIntent = null;
+      if (equipment !== null) {
+        if (!equipmentKey || !equipmentValid(equipment)) throw new TypeError("Invalid completion equipment");
+        const before = read(equipmentKey);
+        if (before === unreadable) return blocked("storage-read-denied", equipmentKey);
+        if (!equipmentBeforeValid(before)) return blocked("invalid-existing-equipment", equipmentKey);
+        let after;
+        try {
+          after = JSON.parse(JSON.stringify(equipment));
+        } catch {
+          throw new TypeError("Equipment must be JSON data");
+        }
+        if (!equipmentValid(after)) throw new TypeError("Invalid JSON equipment");
+        equipmentIntent = { before, after };
+      }
       const record = {
         version: 1,
         scope,
@@ -519,7 +572,8 @@ var NeonCampaign = (() => {
         stars,
         score,
         unlockTo: save.unlocked === level ? Math.min(levelCount, level + 1) : save.unlocked,
-        checkpoint: checkpointIntent
+        checkpoint: checkpointIntent,
+        ...equipmentIntent === null ? {} : { equipment: equipmentIntent }
       };
       if (!write(journalKey, record, true)) return result(false, "blocked", {
         reason: "intent-write-denied",
@@ -529,6 +583,59 @@ var NeonCampaign = (() => {
       return replay(record);
     }
     return Object.freeze({ complete, recover, journalKey });
+  }
+
+  // src/game/progression/classic-arsenal.js
+  var WEAPON_IDS = Object.freeze(["pulse", "twin", "lance"]);
+  var BOSS_WEAPONS = Object.freeze({ "guardian-atlas": "twin" });
+  var owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
+  function createClassicEquipment() {
+    return {
+      version: 1,
+      recoveredTwin: false,
+      unlocked: ["pulse"],
+      selected: "pulse",
+      twinPrepared: false,
+      bossRewards: []
+    };
+  }
+  function normalizeClassicEquipment(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value) || value.version !== 1 || typeof value.recoveredTwin !== "boolean" || !Array.isArray(value.unlocked) || !value.unlocked.includes("pulse") || [...value.unlocked].some((id) => !WEAPON_IDS.includes(id)) || !WEAPON_IDS.includes(value.selected) || !value.unlocked.includes(value.selected) || value.unlocked.includes("twin") && !value.recoveredTwin || owns(value, "lanceCalibrated") && typeof value.lanceCalibrated !== "boolean" || value.unlocked.includes("lance") && (!value.lanceCalibrated || !value.unlocked.includes("twin")) || owns(value, "twinPrepared") && typeof value.twinPrepared !== "boolean" || value.twinPrepared && !value.recoveredTwin || owns(value, "bossRewards") && (!Array.isArray(value.bossRewards) || [...value.bossRewards].some((id) => typeof id !== "string" || !owns(BOSS_WEAPONS, id)))) return null;
+    if (value.bossRewards?.some((id) => !value.unlocked.includes(BOSS_WEAPONS[id]))) return null;
+    return {
+      version: 1,
+      recoveredTwin: value.recoveredTwin,
+      unlocked: [...new Set(value.unlocked)],
+      selected: value.selected,
+      ...owns(value, "lanceCalibrated") ? { lanceCalibrated: value.lanceCalibrated } : {},
+      ...owns(value, "twinPrepared") ? { twinPrepared: value.twinPrepared } : {},
+      ...owns(value, "bossRewards") ? { bossRewards: [...new Set(value.bossRewards)] } : {}
+    };
+  }
+  function equipmentCopy(equipment) {
+    const normalized = normalizeClassicEquipment(equipment);
+    if (!normalized) throw new RangeError("Invalid classic equipment");
+    return normalized;
+  }
+  function prepareClassicTwin(equipment) {
+    const next = equipmentCopy(equipment);
+    if (next.recoveredTwin) next.twinPrepared = true;
+    return next;
+  }
+  function awardClassicBossWeapon(equipment, bossId) {
+    if (typeof bossId !== "string" || !owns(BOSS_WEAPONS, bossId)) throw new RangeError("Unknown classic boss");
+    const next = equipmentCopy(equipment);
+    const weaponId = BOSS_WEAPONS[bossId];
+    const granted = !next.unlocked.includes(weaponId);
+    next.bossRewards = [.../* @__PURE__ */ new Set([...next.bossRewards || [], bossId])];
+    next.recoveredTwin = true;
+    next.twinPrepared = true;
+    if (granted) next.unlocked.push(weaponId);
+    return { equipment: next, granted, weaponId };
+  }
+  function canEquipClassicWeapon(equipment, id) {
+    if (!WEAPON_IDS.includes(id)) throw new RangeError("Unknown classic weapon");
+    return equipmentCopy(equipment).unlocked.includes(id);
   }
 
   // src/core/player-model.js
@@ -1513,38 +1620,41 @@ var NeonCampaign = (() => {
   }
 
   // src/game/combat/classic-pursuit.js
-  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v1";
+  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v2";
   var clamp4 = (value, low, high) => Math.max(low, Math.min(high, value));
   var approach = (value, target, amount) => value + clamp4(target - value, -amount, amount);
   var profiles = Object.freeze({
     raider: Object.freeze({
-      entry: 0.8,
-      warning: 0.72,
-      recovery: 1.45,
+      warning: 0.82,
+      recovery: 2.05,
       maxAttacks: 3,
-      lateralSpeed: 124,
-      acceleration: 230,
-      sampleInterval: 0.32,
+      holdSeconds: 13,
+      depth: 0.26,
+      lateralSpeed: 110,
+      acceleration: 215,
+      sampleInterval: 0.42,
       damage: 14
     }),
     scout: Object.freeze({
-      entry: 1,
-      warning: 0.88,
-      recovery: 2.2,
-      maxAttacks: 2,
+      warning: 0.96,
+      recovery: 2.35,
+      maxAttacks: 3,
+      holdSeconds: 14.5,
+      depth: 0.28,
       lateralSpeed: 78,
       acceleration: 145,
-      sampleInterval: 0.55,
+      sampleInterval: 0.6,
       damage: 12
     }),
     interceptor: Object.freeze({
-      entry: 0.8,
-      warning: 0.76,
-      recovery: 1.8,
-      maxAttacks: 2,
+      warning: 0.82,
+      recovery: 1.85,
+      maxAttacks: 4,
+      holdSeconds: 15.5,
+      depth: 0.24,
       lateralSpeed: 148,
       acceleration: 250,
-      sampleInterval: 0.44,
+      sampleInterval: 0.4,
       damage: 14
     })
   });
@@ -1561,6 +1671,8 @@ var NeonCampaign = (() => {
       throw new RangeError("Invalid classic pursuer spawn");
     }
     const side = Math.abs(Math.trunc(seed)) % 2 ? -1 : 1;
+    const combatMargin = Math.min(width * 0.32, Math.max(80, width * 0.18));
+    const entryInset = Math.min(16, (width - combatMargin * 2) * 0.15);
     return {
       tacticsVersion: CLASSIC_PURSUIT_VERSION,
       role,
@@ -1574,12 +1686,18 @@ var NeonCampaign = (() => {
       state: "entry",
       stage: "entry",
       stateAge: 0,
-      baseX: clamp4(x, 52, width - 52),
-      targetX: clamp4(x, 52, width - 52),
+      baseX: clamp4(x, combatMargin, width - combatMargin),
+      targetX: clamp4(x, combatMargin + entryInset, width - combatMargin - entryInset),
       vx: 0,
+      combatMinX: combatMargin,
+      combatMaxX: width - combatMargin,
+      holdY: null,
+      combatStartedAt: null,
+      retreatReason: null,
+      repositionCount: 0,
       baseSpeed,
       nextTargetAt: 0,
-      nextFire: profiles[role].entry + 0.3,
+      nextFire: 1.25,
       fired: 0,
       telegraph: 0,
       lockedTarget: null,
@@ -1606,50 +1724,80 @@ var NeonCampaign = (() => {
     enemy.stateAge += step;
     const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
     enemy.previousHp = hp;
-    const canAttack = () => hp > 0 && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 && enemy.fired < profile.maxAttacks;
     const enter = (state) => {
       enemy.state = enemy.stage = state;
       enemy.stateAge = 0;
     };
-    const breakAway = () => {
+    const combatX = (value) => clamp4(value, enemy.combatMinX, enemy.combatMaxX);
+    const minimumHoldY = enemy.minAttackY + 52;
+    const maximumHoldY = Math.max(minimumHoldY, Math.min(enemy.height * 0.52, player.y - 350));
+    enemy.holdY = clamp4(
+      enemy.height * profile.depth + Math.sin(enemy.phase) * 22,
+      minimumHoldY,
+      maximumHoldY
+    );
+    const canAttack = () => hp > 0 && enemy.state !== "retreat" && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 && enemy.fired < profile.maxAttacks;
+    const clearCharge = () => {
       enemy.telegraph = 0;
       enemy.attackScheduled = false;
       enemy.lockedTarget = null;
-      enemy.targetX = enemy.side > 0 ? enemy.width - 66 : 66;
+    };
+    const laneTarget = () => {
+      const observedX = combatX(player.x);
+      const span = Math.min(enemy.width * 0.22, 128);
+      return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span : enemy.role === "scout" ? enemy.baseX * 0.5 + observedX * 0.5 + enemy.side * span * 0.32 : observedX + enemy.side * span * 0.48);
+    };
+    const reposition = () => {
+      clearCharge();
+      enemy.side *= -1;
+      enemy.repositionCount++;
+      enemy.targetX = laneTarget();
+      enemy.nextTargetAt = enemy.age + profile.sampleInterval;
       enemy.nextFire = enemy.age + profile.recovery;
-      enter("break-away");
+      enter("reposition");
+    };
+    const retreat = (reason) => {
+      clearCharge();
+      enemy.retreatReason = reason;
+      enemy.targetX = player.x < enemy.width / 2 ? enemy.width - 56 : 56;
+      enter("retreat");
     };
     if (hp <= 0) {
-      enemy.telegraph = 0;
-      enemy.attackScheduled = false;
-      enemy.lockedTarget = null;
-      enter("destroyed");
-    } else if (lostHealth && enemy.state === "charge") {
-      breakAway();
-    } else if (enemy.state === "charge" && !canAttack()) {
-      breakAway();
+      clearCharge();
+      if (enemy.state !== "destroyed") enter("destroyed");
+    } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
+      const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
+      if (heldFor >= profile.holdSeconds || enemy.age >= profile.holdSeconds + 8) {
+        retreat("time-limit");
+      } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {
+        reposition();
+      } else if (enemy.state === "charge" && !canAttack()) {
+        reposition();
+      }
     }
-    if (enemy.state === "entry" && enemy.age >= profile.entry) enter("track");
-    if (enemy.state === "break-away" && enemy.stateAge >= 0.75 && enemy.age >= enemy.nextFire && canAttack()) enter("track");
-    if (enemy.state === "fire" && enemy.stateAge >= 0.34) breakAway();
+    if (enemy.state === "entry" && item.y >= enemy.holdY - 110) enter("brake");
+    if (enemy.state === "brake" && Math.abs(item.y - enemy.holdY) <= 32 && Math.abs(item.s) <= 62 && item.x >= enemy.combatMinX && item.x <= enemy.combatMaxX) {
+      enemy.combatStartedAt ??= enemy.age;
+      enemy.targetX = laneTarget();
+      enemy.nextTargetAt = enemy.age + profile.sampleInterval;
+      enter("track");
+    }
+    if (enemy.state === "fire" && enemy.stateAge >= 0.34) {
+      if (enemy.fired >= profile.maxAttacks) retreat("attack-budget");
+      else reposition();
+    }
+    if (enemy.state === "reposition" && enemy.age >= enemy.nextFire) enter("track");
     if (enemy.state === "track") {
       if (enemy.age >= enemy.nextTargetAt) {
-        const observedX = clamp4(player.x, 52, enemy.width - 52);
-        enemy.targetX = clamp4(
-          enemy.role === "interceptor" ? observedX + enemy.side * 118 : enemy.role === "scout" ? enemy.baseX * 0.65 + observedX * 0.35 : observedX,
-          52,
-          enemy.width - 52
-        );
+        enemy.targetX = laneTarget();
         enemy.nextTargetAt = enemy.age + profile.sampleInterval;
       }
-      if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth) {
+      if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
         enemy.lockedTarget = Object.freeze({ x: player.x, y: player.y });
         enemy.targetX = item.x;
         enemy.chargeStartedAt = enemy.age;
         enemy.chargeSerial++;
         enter("charge");
-      } else if (item.y + 38 > player.y - 230) {
-        breakAway();
       }
     }
     if (enemy.state === "charge") {
@@ -1660,17 +1808,17 @@ var NeonCampaign = (() => {
       }
     }
     const previousX = item.x;
-    const desiredVelocity = enemy.state === "charge" || enemy.state === "fire" || enemy.state === "destroyed" ? 0 : clamp4((enemy.targetX - item.x) * 2.8, -profile.lateralSpeed, profile.lateralSpeed);
+    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp4((enemy.targetX - item.x) * 2.8, -profile.lateralSpeed, profile.lateralSpeed);
     enemy.vx = approach(enemy.vx, desiredVelocity, profile.acceleration * step);
-    item.x = clamp4(item.x + enemy.vx * step, 52, enemy.width - 52);
+    const minimumX = enemy.state === "retreat" ? 52 : Math.min(item.x, enemy.combatMinX);
+    const maximumX = enemy.state === "retreat" ? enemy.width - 52 : Math.max(item.x, enemy.combatMaxX);
+    item.x = clamp4(item.x + enemy.vx * step, minimumX, maximumX);
     enemy.vx = (item.x - previousX) / step;
-    const speedFactor = enemy.state === "charge" || enemy.state === "fire" ? 0.32 : enemy.state === "track" ? 0.52 : 1;
-    item.s = approach(item.s, enemy.baseSpeed * speedFactor, enemy.baseSpeed * 1.8 * step);
+    const desiredVertical = enemy.state === "destroyed" ? 0 : enemy.state === "retreat" ? enemy.baseSpeed * 1.35 : clamp4((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
+    item.s = approach(item.s, desiredVertical, enemy.baseSpeed * 1.8 * step);
     const events = enemy.animator.update(step, { hp, maxHp, vx: enemy.vx, vy: item.s });
     for (const event2 of events) {
-      if (event2.name === "attackCanceled" && enemy.state === "charge") {
-        breakAway();
-      }
+      if (event2.name === "attackCanceled" && enemy.state === "charge") reposition();
       if (event2.name !== "fire" || enemy.state !== "charge" || !enemy.attackScheduled || enemy.firedSerial === enemy.chargeSerial || !canAttack()) continue;
       const aim = enemy.lockedTarget;
       const dy = Math.max(1, aim.y - (item.y + 38));
@@ -2697,6 +2845,9 @@ var NeonCampaign = (() => {
   ]);
   var SERVICE_EVENT_ID = "chronos-voyage:1.6:service";
   var SERVICE_COMPLETE_ID = "chronos-voyage:1.6:service-complete";
+  var SERVICE_APPROACH_SECONDS = 1.2;
+  var SERVICE_VISIBLE_APPROACH_SECONDS = 2.4;
+  var SERVICE_DEPARTURE_SECONDS = 2.4;
   var ARRIVAL_EVENT_ID = "chronos-voyage-arrival";
   var validVoyageEventIds = /* @__PURE__ */ new Set([
     ...VOYAGE_EVENTS.map((event2) => event2.id),
@@ -2740,6 +2891,13 @@ var NeonCampaign = (() => {
     if (collected < minimum || value.serviceWaiting && collected < voyageGoal(CHRONOS_VOYAGE_STAGES[5], goal)) return null;
     const canonical = createChronosVoyageCheckpoint(value.stageNumber, { goal, collected });
     const currentIds = value.eventIds.filter((id) => id === entryEventId(value.stageNumber) || id === checkpointEventId(value.stageNumber));
+    if (value.stageNumber === 6) {
+      const completedServicePair = value.eventIds.includes(SERVICE_EVENT_ID) && value.eventIds.includes(SERVICE_COMPLETE_ID);
+      if ((value.serviceWaiting || completedServicePair) && value.eventIds.includes(completionEventId(6))) currentIds.push(completionEventId(6));
+      if (!value.serviceWaiting && completedServicePair) {
+        currentIds.push(SERVICE_EVENT_ID, SERVICE_COMPLETE_ID);
+      }
+    }
     return checkpointForStage(value.stageNumber, goal, collected, [
       ...canonical.eventIds,
       ...currentIds,
@@ -2751,7 +2909,9 @@ var NeonCampaign = (() => {
     const restored = checkpoint === null ? null : normalizeChronosVoyageCheckpoint(checkpoint, { goal });
     if (checkpoint !== null && !restored) throw new TypeError("Invalid Chronos voyage checkpoint");
     let stageIndex = restored?.stageIndex || 0, collected = restored?.collected || 0;
-    let stageElapsed = restored?.serviceWaiting ? CHRONOS_VOYAGE_STAGES[stageIndex].duration : 0;
+    const restoredServiceCompleted = stageIndex === 5 && restored?.eventIds.includes(SERVICE_COMPLETE_ID);
+    const restoredLegacyService = stageIndex === 5 && restored?.eventIds.includes(completionEventId(6)) && (restored.serviceWaiting || restoredServiceCompleted);
+    let stageElapsed = restoredLegacyService ? CHRONOS_VOYAGE_STAGES[stageIndex].duration : restored?.serviceWaiting || restoredServiceCompleted ? SERVICE_APPROACH_SECONDS : 0;
     let serviceWaiting = Boolean(restored?.serviceWaiting), arrived = false;
     const fired = new Set(restored?.eventIds || []);
     let entryCheckpoint = restored || createChronosVoyageCheckpoint(1, { goal });
@@ -2768,7 +2928,12 @@ var NeonCampaign = (() => {
       const reactorState = elapsed < 6.3 ? "stable" : elapsed < 9 ? "struck" : "ruptured";
       const attackerState = elapsed < 4.95 ? "approach" : elapsed < 6.3 ? "charge" : elapsed < 9 ? "fire" : "retreat";
       const phase = arrived ? "arrived" : stageIndex === 0 ? elapsed < 9 ? "emergency" : "recovery" : stageIndex < 3 ? "recovery" : stageIndex === 3 ? "departure" : stageIndex < 7 ? "deep-space" : "gaia-approach";
-      const relayArrival = smooth(p, 0.45, 0.53), relayExit = smooth(p, 0.58, 0.65);
+      const serviceCompleted = fired.has(SERVICE_COMPLETE_ID);
+      const serviceAt = CHRONOS_VOYAGE_STAGES[5].offset + SERVICE_APPROACH_SECONDS;
+      const relayArrival = smooth(elapsed, serviceAt - SERVICE_VISIBLE_APPROACH_SECONDS, serviceAt);
+      const relayExit = serviceCompleted && stageIndex === 5 ? smooth(stageElapsed, SERVICE_APPROACH_SECONDS, SERVICE_APPROACH_SECONDS + SERVICE_DEPARTURE_SECONDS) : 0;
+      const relayVisible = stageIndex <= 5 && elapsed >= serviceAt - SERVICE_VISIBLE_APPROACH_SECONDS && (!serviceCompleted || relayExit < 1);
+      const relayState = serviceWaiting ? "service" : serviceCompleted ? "departing" : relayArrival < 0.48 ? "approach" : "docking";
       return immutable({
         version: CHRONOS_VOYAGE_VERSION,
         contentVersion: CHRONOS_VOYAGE_VERSION,
@@ -2781,12 +2946,12 @@ var NeonCampaign = (() => {
         phase,
         stageId: stage.id,
         stageNumber: stage.number,
-        stageName: stage.name,
+        stageName: stageIndex === 5 && serviceCompleted ? "Salida de C9" : stage.name,
         stageProgress,
         stageElapsed,
         stageDuration: stage.duration,
         stageGoal,
-        stageObjective: stage.objective,
+        stageObjective: stageIndex === 5 && serviceCompleted ? "Abandona el atraque y prueba tu nave en el corredor de salida" : stage.objective,
         stageOrigin: stage.origin,
         stageDestination: stage.destination,
         stageEvent: stage.event,
@@ -2828,12 +2993,13 @@ var NeonCampaign = (() => {
           active: p >= 292 / 360
         }),
         relay: immutable({
-          visible: p >= 0.45 && p < 0.65,
-          x: 0.68 - 0.48 * relayExit,
-          y: 0.24 + 0.84 * relayExit,
-          scale: (0.035 + 0.14 * relayArrival) * (1 - 0.85 * relayExit),
+          visible: relayVisible,
+          x: 0.77 - 0.09 * relayArrival - 0.48 * relayExit,
+          y: 0.08 + 0.16 * relayArrival + 0.84 * relayExit,
+          scale: (0.025 + 0.15 * relayArrival) * (1 - 0.85 * relayExit),
           alpha: 1,
-          active: serviceWaiting
+          active: serviceWaiting,
+          state: relayState
         }),
         attacker: immutable({
           x: 1.12 - 0.48 * attackApproach - 0.95 * attackExit,
@@ -2868,6 +3034,7 @@ var NeonCampaign = (() => {
       if (fired.has(event2.id)) return;
       fired.add(event2.id);
       if (event2.type === "checkpoint") entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
+      if (event2.type === "service-complete") entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
       emit(immutable({
         ...event2,
         version: CHRONOS_VOYAGE_VERSION,
@@ -2893,7 +3060,7 @@ var NeonCampaign = (() => {
       if (!serviceWaiting) return snapshot();
       serviceWaiting = false;
       emitOnce({ id: SERVICE_COMPLETE_ID, type: "service-complete" }, emit);
-      enterNextStage(emit);
+      if (stageElapsed === CHRONOS_VOYAGE_STAGES[stageIndex].duration) enterNextStage(emit);
       return snapshot();
     }
     function advance(dt, collectionCount = collected, emit = NOOP) {
@@ -2910,12 +3077,15 @@ var NeonCampaign = (() => {
       for (const event2 of VOYAGE_EVENTS) {
         if (elapsed + 1e-10 >= event2.at) emitOnce(event2, emit);
       }
+      if (stage.number === 6 && !fired.has(SERVICE_COMPLETE_ID) && stageElapsed + 1e-10 >= SERVICE_APPROACH_SECONDS && collected >= voyageGoal(stage, goal)) {
+        stageElapsed = SERVICE_APPROACH_SECONDS;
+        serviceWaiting = true;
+        emitOnce({ id: SERVICE_EVENT_ID, type: "service", stationId: "c9" }, emit);
+        return snapshot();
+      }
       if (stageElapsed === stage.duration && collected >= voyageGoal(stage, goal)) {
         emitOnce({ id: completionEventId(stage.number), type: "stage-complete" }, emit);
-        if (stage.number === 6) {
-          serviceWaiting = true;
-          emitOnce({ id: SERVICE_EVENT_ID, type: "service", stationId: "c9" }, emit);
-        } else if (stage.number === 10) {
+        if (stage.number === 10) {
           arrived = true;
           emitOnce({ id: ARRIVAL_EVENT_ID, type: "arrival", destinationId: "gaia-atlas-approach" }, emit);
         } else enterNextStage(emit);
@@ -3194,8 +3364,8 @@ var NeonCampaign = (() => {
     return value;
   };
   var GUARDIAN_ATLAS_RULES = Object.freeze({
-    version: "guardian-atlas-v2",
-    maxHp: 36,
+    version: "guardian-atlas-v3",
+    maxHp: 24,
     maxDelta: 0.05,
     entrySeconds: 2.2,
     arrivalSeconds: 1.35,
@@ -3205,7 +3375,9 @@ var NeonCampaign = (() => {
     phaseOne: Object.freeze({
       chargeSeconds: 1.05,
       fireSeconds: 0.28,
-      recoverySeconds: 1.25,
+      recoverySeconds: 2.4,
+      repositionSeconds: 1.05,
+      counterattackSeconds: 1.8,
       projectileSpeed: 340,
       projectileDamage: 14
     }),
@@ -3213,7 +3385,9 @@ var NeonCampaign = (() => {
       chargeSeconds: 1.2,
       fireSeconds: 0.64,
       secondVolleyAt: 0.36,
-      recoverySeconds: 1.45,
+      recoverySeconds: 2.5,
+      repositionSeconds: 0.95,
+      counterattackSeconds: 2,
       projectileSpeed: 315,
       projectileDamage: 12
     })
@@ -3264,6 +3438,8 @@ var NeonCampaign = (() => {
       phaseTwoAttacks: 0,
       attackClearanceSeconds: 0,
       flash: 0,
+      patrolFromX: width / 2,
+      patrolToX: width / 2,
       resumeState: null,
       resumeTime: 0
     };
@@ -3279,10 +3455,26 @@ var NeonCampaign = (() => {
   function rules(boss) {
     return boss.phase === 1 ? GUARDIAN_ATLAS_RULES.phaseOne : GUARDIAN_ATLAS_RULES.phaseTwo;
   }
-  function transition(boss, next, events) {
+  function updateVulnerability(boss) {
+    const recoveryTime = boss.state === "hurt" ? boss.resumeTime : boss.stateTime;
+    const effectiveState = boss.state === "hurt" ? boss.resumeState : boss.state;
+    boss.vulnerability = effectiveState === "fire" || effectiveState === "idle" && (boss.attackId === 0 || recoveryTime >= rules(boss).repositionSeconds);
+  }
+  function transition(boss, next, events, resume = false) {
     boss.state = next;
     boss.stateTime = 0;
-    boss.vulnerability = next === "idle" || next === "fire" || next === "hurt";
+    if (next === "idle" && !resume) {
+      boss.patrolFromX = boss.x;
+      const desiredOffset = boss.width * (boss.phase === 1 ? 0.22 : 0.26);
+      const approachDistance = boss.playerY - (boss.targetY + boss.r * 0.7);
+      const offset = Math.min(desiredOffset, Math.max(0, approachDistance * 0.2));
+      boss.patrolToX = boss.attackId === 0 ? boss.width / 2 : clamp8(
+        boss.width / 2 + (boss.attackId % 2 ? offset : -offset),
+        boss.r + 12,
+        boss.width - boss.r - 12
+      );
+    }
+    updateVulnerability(boss);
     events.push({ type: "state", state: next, phase: boss.phase, attackId: boss.attackId });
   }
   function beginCharge(boss, player, events) {
@@ -3360,7 +3552,7 @@ var NeonCampaign = (() => {
       maxHp: 1
     };
   }
-  function fireVolley(boss, events) {
+  function fireVolley(boss, events, fireTime = boss.stateTime) {
     const timing = rules(boss);
     const aim = boss.telegraph;
     const shots = [];
@@ -3391,7 +3583,7 @@ var NeonCampaign = (() => {
     for (const shot of shots) {
       boss.attackClearanceSeconds = Math.max(
         boss.attackClearanceSeconds,
-        boss.stateTime + (boss.playerY + 104 + shot.r - shot.y) / shot.vy
+        fireTime + (boss.playerY + 104 + shot.r - shot.y) / shot.vy
       );
       events.push({ type: "projectile", projectile: shot });
     }
@@ -3409,7 +3601,7 @@ var NeonCampaign = (() => {
     const timing = rules(boss);
     return Math.max(
       timing.recoverySeconds,
-      boss.attackClearanceSeconds + 0.3 - timing.fireSeconds
+      boss.attackClearanceSeconds + timing.counterattackSeconds - timing.fireSeconds
     );
   }
   function finishState(boss, player, events) {
@@ -3429,10 +3621,11 @@ var NeonCampaign = (() => {
     } else if (boss.state === "phaseBreak") {
       transition(boss, "idle", events);
     } else if (boss.state === "hurt") {
-      transition(boss, boss.resumeState || "idle", events);
+      transition(boss, boss.resumeState || "idle", events, true);
       boss.stateTime = boss.resumeTime;
       boss.resumeState = null;
       boss.resumeTime = 0;
+      updateVulnerability(boss);
     } else if (boss.state === "disabled" && !boss.resolved) {
       boss.resolved = true;
       events.push({ type: "disabled", phase: boss.phase, rewardId: "guardian-atlas-access" });
@@ -3459,16 +3652,25 @@ var NeonCampaign = (() => {
         const progress = clamp8(boss.stateTime / duration, 0, 1);
         boss.y = -boss.r * 1.6 + (boss.targetY + boss.r * 1.6) * (1 - (1 - progress) ** 3);
       } else if (boss.state === "idle" || boss.state === "hurt") {
-        boss.x = clamp8(
-          boss.width / 2 + Math.sin(boss.age * 0.64) * boss.width * 0.11,
-          boss.r + 12,
-          boss.width - boss.r - 12
-        );
+        if (boss.state === "hurt") {
+          const resumedBefore = boss.resumeTime;
+          boss.resumeTime += step;
+          if (boss.resumeState === "fire" && boss.phase === 2 && boss.volley === 1 && resumedBefore < rules(boss).secondVolleyAt && boss.resumeTime >= rules(boss).secondVolleyAt) {
+            fireVolley(boss, events, boss.resumeTime);
+          }
+        }
+        const recoveryTime = boss.state === "hurt" ? boss.resumeTime : boss.stateTime;
+        if (boss.state === "idle" || boss.resumeState === "idle") {
+          const progress = clamp8(recoveryTime / rules(boss).repositionSeconds, 0, 1);
+          const smooth3 = progress * progress * (3 - 2 * progress);
+          boss.x = boss.patrolFromX + (boss.patrolToX - boss.patrolFromX) * smooth3;
+        }
       } else if (boss.state === "charge") {
         boss.telegraph.progress = clamp8(boss.stateTime / duration, 0, 1);
       } else if (boss.state === "fire" && boss.phase === 2 && boss.volley === 1 && before < rules(boss).secondVolleyAt && boss.stateTime >= rules(boss).secondVolleyAt) {
         fireVolley(boss, events);
       }
+      updateVulnerability(boss);
       if (boss.stateTime + 1e-10 >= duration) finishState(boss, player, events);
       else break;
     }

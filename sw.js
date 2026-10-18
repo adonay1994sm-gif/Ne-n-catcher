@@ -69,6 +69,7 @@ const CORE = [
   "assets/ch02_interceptor_atlas_v1.webp",
   "assets/guardian_atlas_states_v1.webp",
   "assets/atlas_combat_vfx_v1.webp",
+  "assets/arcade_pulse_atlas_v2.webp",
   "assets/debris_metal.webp",
   "assets/debris_panel.webp",
   "assets/debris_hot_00.webp",

@@ -61,7 +61,7 @@ async function check(name,action){
     const hook=`window.__RESUME_QA__=()=>({state,elapsed,hull,classicPatrolTimer,legacyRunning,
       stage:classicFlightView?.stageNumber,routeElapsed:classicFlightView?.elapsed,
       stageElapsed:classicFlightView?.stageElapsed,
-      pursuers:items.filter(i=>i.classicScout?.tacticsVersion==='classic-pursuit-v1')
+      pursuers:items.filter(i=>i.classicScout?.tacticsVersion==='classic-pursuit-v2')
         .map(i=>({id:i.id,x:i.x,y:i.y,age:i.classicScout.age,state:i.classicScout.state,fired:i.classicScout.fired}))});\n`;
     await route.fulfill({response,body:source.replace(marker,hook+marker)});
   });

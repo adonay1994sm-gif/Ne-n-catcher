@@ -45,7 +45,8 @@
   let classicScoutTimer = 0;
   let classicScoutAnnounced = false;
   let atlasBoss = null;
-  let atlasAutoFire = storage.getJSON("neonCatcher.atlasAutoFire.v1", true) !== false;
+  // Old Atlas AUTO was on by default, so its key is not evidence of consent.
+  // Explicit opt-in now belongs to Settings; no encounter-local override.
   let atlasFireTimer = 0;
   let atlasReentryGrace = 0;
   let atlasLastStatus = "";
@@ -234,6 +235,7 @@
     shipIdentity: loadSprite("assets/player_ship_identity_v1.webp", true),
     guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
     atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
+    arcadePulse: loadSprite("assets/arcade_pulse_atlas_v2.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v2.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),

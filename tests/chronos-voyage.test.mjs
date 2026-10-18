@@ -57,13 +57,13 @@ test('an early complete quota must still travel all ten stages and cannot bypass
   const controller=createChronosVoyage(),events=[];
   fly(controller,360,36,events);
   let view=controller.snapshot();
-  assert.equal(view.stageNumber,6);assert.equal(view.waitingFor,'service');assert.equal(view.elapsed,214);
+  assert.equal(view.stageNumber,6);assert.equal(view.waitingFor,'service');assert.equal(view.elapsed,183.2);
   assert.equal(view.canFinish,false);assert.equal(view.relay.active,true);
   const waiting=view;
   fly(controller,600,36,events);assert.deepEqual(controller.snapshot(),waiting);
   controller.resolveService(event=>events.push(event));
-  assert.equal(controller.snapshot().stageNumber,7);assert.equal(controller.snapshot().elapsed,214);
-  fly(controller,145.8,36,events);assert.equal(controller.snapshot().canFinish,false);
+  assert.equal(controller.snapshot().stageNumber,6);assert.equal(controller.snapshot().elapsed,183.2);
+  fly(controller,176.6,36,events);assert.equal(controller.snapshot().canFinish,false);
   fly(controller,1,36,events);view=controller.snapshot();
   assert.equal(view.stageNumber,10);assert.equal(view.phase,'arrived');assert.equal(view.canFinish,true);
   assert.equal(view.elapsed,360);assert.equal(view.routeProgress,1);
@@ -83,7 +83,10 @@ test('each quota gate advances one stage, with no teleport and monotonically ret
     fly(controller,entry.stageDuration+.1,entry.stageGoal,events);
     const after=controller.snapshot();
     assert.ok(after.routeProgress>=before.routeProgress);
-    if(number===6){assert.equal(after.waitingFor,'service');controller.resolveService(event=>events.push(event));}
+    if(number===6){
+      assert.equal(after.waitingFor,'service');controller.resolveService(event=>events.push(event));
+      finishCurrentStage(controller,events);
+    }
     else if(number<10)assert.equal(after.stageNumber,number+1);
     controller.advance(.02,0);assert.ok(controller.snapshot().collected>=entry.collected);
   }
@@ -95,7 +98,9 @@ test('stage entry checkpoints reproduce a coherent boundary rather than a mid-co
   for(let number=1;number<=10;number++){
     const boundary=controller.snapshot(),entry=controller.exportCheckpoint();
     assert.equal(entry.stageNumber,number);
-    fly(controller,7,boundary.stageGoal,events);
+    //1.6 now reaches its real service checkpoint after1.2s. Sample its ordinary
+    // entry before docking; the dedicated tests below cover dock/undock saves.
+    fly(controller,number===6?.6:7,boundary.stageGoal,events);
     const checkpoint=controller.exportCheckpoint();
     // The first positive update records the initial entry event IDs. It still
     // stores the same geographical boundary and never the seven combat seconds.
@@ -107,7 +112,7 @@ test('stage entry checkpoints reproduce a coherent boundary rather than a mid-co
     assert.equal(restored.snapshot().station.scale,boundary.station.scale);
     assert.equal(restored.snapshot().planet.scale,boundary.planet.scale);
     finishCurrentStage(controller,events);
-    if(number===6)controller.resolveService(event=>events.push(event));
+    if(number===6){controller.resolveService(event=>events.push(event));finishCurrentStage(controller,events);}
   }
   const checkpointEvents=events.filter(event=>event.type==='checkpoint');
   assert.equal(checkpointEvents.length,10);
@@ -118,7 +123,7 @@ test('resuming a checkpoint never repeats earlier attacks, salvage markers, serv
   const events=[];let controller=createChronosVoyage();
   for(let number=1;number<8;number++){
     finishCurrentStage(controller,events);
-    if(number===6)controller.resolveService(event=>events.push(event));
+    if(number===6){controller.resolveService(event=>events.push(event));finishCurrentStage(controller,events);}
     controller=createChronosVoyage({checkpoint:controller.exportCheckpoint()});
   }
   const before=new Set(events.map(event=>event.id));
@@ -128,7 +133,7 @@ test('resuming a checkpoint never repeats earlier attacks, salvage markers, serv
   assert.equal(events.filter(event=>event.type==='service').length,1);
 });
 
-test('a saved service boundary remains docked and an idempotent confirmation enters 1.7 once',()=>{
+test('a saved early service boundary remains docked and confirmation resumes the departure leg once',()=>{
   const controller=createChronosVoyage({checkpoint:createChronosVoyageCheckpoint(6)}),events=[];
   finishCurrentStage(controller,events);
   const checkpoint=controller.exportCheckpoint();assert.equal(checkpoint.serviceWaiting,true);
@@ -136,8 +141,81 @@ test('a saved service boundary remains docked and an idempotent confirmation ent
   assert.equal(before.waitingFor,'service');fly(restored,100,36,events);assert.deepEqual(restored.snapshot(),before);
   restored.resolveService(event=>events.push(event));const after=restored.snapshot();
   restored.resolveService(event=>events.push(event));assert.deepEqual(restored.snapshot(),after);
-  assert.equal(after.stageId,'1.7');assert.equal(after.elapsed,before.elapsed);
+  assert.equal(after.stageId,'1.6');assert.equal(after.elapsed,before.elapsed);
+  assert.equal(after.stageElapsed,1.2);assert.equal(after.relay.state,'departing');
+  assert.equal(after.stageName,'Salida de C9');
   assert.equal(events.filter(event=>event.type==='service-complete').length,1);
+  const departedCheckpoint=restored.exportCheckpoint();
+  assert.ok(departedCheckpoint.eventIds.includes('chronos-voyage:1.6:service-complete'));
+  const reentered=createChronosVoyage({checkpoint:departedCheckpoint});
+  assert.equal(reentered.snapshot().waitingFor,null);
+  assert.equal(reentered.snapshot().stageElapsed,1.2);
+  assert.equal(reentered.snapshot().relay.state,'departing');
+  fly(reentered,3,18,events);
+  assert.equal(reentered.snapshot().relay.visible,false);
+  assert.equal(reentered.snapshot().stageId,'1.6');
+  assert.equal(events.filter(event=>event.type==='service').length,1);
+  finishCurrentStage(reentered,events);
+  assert.equal(reentered.snapshot().stageId,'1.7');assert.equal(reentered.snapshot().elapsed,214);
+});
+
+test('C9 appears only for its short approach and opens as the illustrated hangar is reached',()=>{
+  const controller=createChronosVoyage({checkpoint:createChronosVoyageCheckpoint(5)}),events=[];
+  fly(controller,36.78,18,events);
+  assert.equal(controller.snapshot().relay.visible,false);
+  fly(controller,.04,18,events);
+  const distant=controller.snapshot();assert.equal(distant.relay.visible,true);
+  assert.equal(distant.relay.state,'approach');assert.equal(distant.relay.active,false);
+  finishCurrentStage(controller,events);
+  assert.equal(controller.snapshot().stageId,'1.6');
+  fly(controller,1.18,18,events);
+  const approaching=controller.snapshot();
+  assert.equal(approaching.waitingFor,null);assert.equal(approaching.relay.state,'docking');
+  assert.ok(approaching.relay.scale>distant.relay.scale*4);
+  controller.advance(.02,18,event=>events.push(event));
+  const docked=controller.snapshot();
+  assert.equal(docked.stageElapsed,1.2);assert.equal(docked.elapsed,183.2);
+  assert.equal(docked.waitingFor,'service');assert.equal(docked.relay.state,'service');
+  assert.equal(docked.relay.scale,.175);assert.equal(docked.relay.active,true);
+  assert.equal(events.filter(event=>event.type==='service').length,1);
+  const before=structuredClone(docked);
+  for(let index=0;index<100;index++)controller.advance(0,36,event=>events.push(event));
+  assert.deepEqual(controller.snapshot(),before);
+  assert.equal(docked.collected,18,'Docking cannot manufacture the remaining18fragments');
+});
+
+test('old version2 end-of-stage service saves keep their original geography and next-stage confirmation',()=>{
+  const base=createChronosVoyageCheckpoint(6);
+  const old={...base,eventIds:[...base.eventIds,'chronos-voyage:1.6:complete','chronos-voyage:1.6:service'],serviceWaiting:true};
+  const normalized=normalizeChronosVoyageCheckpoint(old);
+  assert.deepEqual(normalizeChronosVoyageCheckpoint(normalized),normalized);
+  const controller=createChronosVoyage({checkpoint:normalized}),events=[];
+  assert.equal(controller.snapshot().elapsed,214);assert.equal(controller.snapshot().stageElapsed,32);
+  assert.equal(controller.snapshot().relay.visible,true);assert.equal(controller.snapshot().relay.active,true);
+  controller.resolveService(event=>events.push(event));
+  assert.equal(controller.snapshot().stageId,'1.7');assert.equal(controller.snapshot().elapsed,214);
+  assert.equal(events.filter(event=>event.type==='service-complete').length,1);
+  assert.equal(CHRONOS_VOYAGE_MIN_DURATION,360);
+  assert.deepEqual(CHRONOS_VOYAGE_STAGES.map(stage=>stage.offset),[0,36,72,108,144,182,214,252,288,324]);
+  const confirmedAtOldBoundary={...old,serviceWaiting:false,
+    eventIds:[...old.eventIds,'chronos-voyage:1.6:service-complete']};
+  const confirmed=createChronosVoyage({checkpoint:confirmedAtOldBoundary});
+  assert.equal(confirmed.snapshot().elapsed,214,'An interrupted old confirmation cannot rewind the origin');
+  confirmed.advance(.02,18);
+  assert.equal(confirmed.snapshot().stageId,'1.7');
+});
+
+test('the completed dock milestone survives a throwing UI callback without re-opening the service',()=>{
+  const controller=createChronosVoyage({checkpoint:createChronosVoyageCheckpoint(6)});
+  finishCurrentStage(controller);
+  assert.throws(()=>controller.resolveService(()=>{throw new Error('panel callback failed');}),/panel callback failed/);
+  assert.equal(controller.snapshot().waitingFor,null);
+  const checkpoint=controller.exportCheckpoint();
+  assert.ok(checkpoint.eventIds.includes('chronos-voyage:1.6:service-complete'));
+  const restored=createChronosVoyage({checkpoint}),events=[];
+  fly(restored,10,18,events);
+  assert.equal(restored.snapshot().waitingFor,null);
+  assert.equal(events.some(event=>event.type==='service'||event.type==='service-complete'),false);
 });
 
 test('checkpoint validation rejects incompatible saves without changing them and clamps safe numeric excess',()=>{

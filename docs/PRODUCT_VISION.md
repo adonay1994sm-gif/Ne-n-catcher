@@ -1,3 +1,19 @@
+## Mandato vigente de pulido, armas y frontera Atlas · 18/10/2026
+
+El propietario pide cerrar la experiencia del juego actual antes de ampliar sus cinemáticas: llegada ágil al centro de mejoras, nave sin efectos superpuestos como pegatinas, proyectiles verticales coherentes con su trayectoria, adversarios que mantienen una intención de combate y un Atlas que exija pilotaje y disparo manual. Se aplazan las grandes secuencias Gaia→Vulkar. Este alcance no equivale a terminar Gaia ni los otros territorios.
+
+Las siguientes decisiones de implementación concretan esa dirección y son reversibles: C9 aparece durante una aproximación de **2,4 s** y abre a los **183,2 s de ruta**, a los 1,2 s de la etapa 1.6. La salida del atraque dura hasta 2,4 s; después continúa el tramo tranquilo restante de 1.6. Se conservan los **360 s**, los offsets, las cuotas, la recuperación de orbes y el formato de guardado v2; los guardados antiguos del taller mantienen su frontera geográfica anterior.
+
+La progresión de una partida nueva es **Pulso → victoria sobre Guardian Atlas → Gemelo**. Recuperar el emisor y prepararlo en C9 no concede el arma antes del jefe. C9 mantiene reparación y preparación, y deja de conceder gratis Gemelo o Lanza. Lanza y Gemelo ya adquiridos en guardados antiguos se conservan; una nueva autorización de Lanza requiere un encuentro posterior realmente diseñado e integrado, no un botón de calibración gratuito. Victoria y equipo se guardan de forma coherente y sin duplicar recompensas.
+
+Se mantienen **tres cargas y recarga**, con proyectiles que salen de sus emisores, centro y orientación coincidentes con la trayectoria. El arte y los impactos deben comunicar el disparo sin líneas falsas de convergencia ni una columna de humo pegada al fuselaje. La nave modular sigue siendo la identidad vigente; efectos de propulsión, daño y destrucción no justifican recubrirla con una imagen fija.
+
+**Disparo manual por defecto. AUTO apagado en un perfil nuevo, disponible únicamente como elección expresa desde Ajustes.** Preservar las preferencias explícitas y los guardados compatibles; verificar ambos controles y su consumo real de batería. Atlas se evalúa primero con Pulso manual, con ataques anunciados, fases, espacios transitables y ventanas que requieran actuar. Los enemigos activos conservan búsqueda, preparación, ataque y retirada comprensibles; los espacios de recuperación siguen formando parte del ritmo.
+
+Esta orden sustituye expresamente las decisiones históricas incompatibles sobre automático predeterminado, arma básica ilimitada y desbloqueo gratuito de Gemelo/Lanza en C9. No borra el historial ni retira armas válidas de partidas anteriores. Seguimiento único: [production-tasks.json](production-tasks.json). Evidencias del lote en [ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md](production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md). La implementación y las pruebas de este lote están en revisión; no se declara aceptación artística ni prueba física. Las restricciones de rama, Motor V1, RAF y distribución permanecen vigentes.
+
+---
+
 ## Ejecución autorizada del plan de publicación ·17/10/2026
 
 El propietario acepta ejecutar las metas de la [auditoría de publicación](production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md). Cerrar incrementos integrados y comprobables antes de expandir: primero Chronos–Gaia/Atlas, presentación de C9, audio contextual, accesibilidad y persistencia ante interrupciones. Las metas de contenido, pruebas humanas, dispositivos y distribución no se consideran terminadas por aprobar el plan. Motor V1 reservado/desactivado; historial y límites siguientes vigentes.

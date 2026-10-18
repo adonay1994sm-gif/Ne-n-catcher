@@ -18,16 +18,25 @@
     ctx.restore();
   }
 
+  function drawArcadePulse(kind, age = 0, size = 72, alpha = 1) {
+    if (!spriteReady(SPRITES.arcadePulse)) return false;
+    const row = kind === "impact" ? 3 : kind === "lance" ? 2 : kind === "twin" ? 1 : 0;
+    const frame = kind === "impact" ? (age < .035 ? 0 : age < .09 ? 1 : age < .165 ? 2 : 3)
+      : Math.floor(age / (row === 0 ? .06 : row === 1 ? .05 : .055)) % 4;
+    const atlas=SPRITES.arcadePulse,cell=atlas.naturalWidth/4;
+    ctx.save();ctx.globalAlpha*=alpha;
+    ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
+    ctx.restore();return true;
+  }
+
   function drawClassicProjectiles() {
-    if (!isUnifiedClassic() || !classicWeapons || atlasBoss) return;
+    if (!isUnifiedClassic() || !classicWeapons) return;
     for (const shot of classicWeapons.projectiles) {
       ctx.save(); ctx.translate(shot.x, shot.y);
       ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
-      if(shot.weapon === "lance") {
-        // Existing authored six-pose energy sequence, not a recoloured line.
-        drawImageCentered(frameFrom("phaser",Math.floor(elapsed*18)),30,105,0,1);
-      } else drawAtlasVfx(1, shot.weapon === "twin" ? 16 : 23,
-        shot.weapon === "twin" ? 58 : 68, 1, .10);
+      const age = shot.duration - shot.life;
+      if(!drawArcadePulse(shot.weapon,age,shot.weapon === "lance" ? 88 : 72))
+        drawAtlasVfx(1,shot.weapon === "twin" ? 16 : 23,68,1,.5);
       ctx.restore();
     }
   }
@@ -84,6 +93,11 @@
       }
     }
     const animation = NeonCampaign.guardianAtlasAnimation(boss);
+    // The existing closed plating pose communicates the protected movement,
+    // instead of showing an apparently exposed core while rejecting damage.
+    if (boss.state === "idle" && !boss.vulnerability) {
+      animation.frame=boss.phase===1?2:5;animation.previousFrame=null;animation.blend=1;
+    }
     const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
     const frameHeight = SPRITES.guardianAtlas.naturalHeight / 2;
     const size = boss.visualSize || 350;
@@ -319,19 +333,15 @@
 
     }
 
-    if(hasClassicTwinMounts() && (classicWeapons?.cooldown||0)>.12) {
-      // Two physical wing emitters converge ahead of the nose. The projectiles
-      // then travel parallel through the centre, rather than missing a target
-      // sitting directly in front of the ship.
-      for(const side of [-1,1]) {
-        const x1=side*42,y1=-55+SHIP_VISUAL.centerYOffset,x2=side*10,y2=-125;
-        ctx.save();ctx.translate((x1+x2)/2,(y1+y2)/2);
-        ctx.rotate(Math.atan2(y2-y1,x2-x1)+Math.PI/2);
-        drawAtlasVfx(1,12,Math.hypot(x2-x1,y2-y1),.75);ctx.restore();
+    if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && classicWeapons && classicWeapons.cooldown > (classicEquipment.selected==="lance"?.38:.20)) {
+      // Tiny flashes at the physical emitters; no diagonal fake convergence rays.
+      for(const offset of classicEquipment.selected==="twin" ? [-10,10] : [0]) {
+        ctx.save();ctx.translate(offset,-125);
+        drawArcadePulse("impact",.035,24,.8);ctx.restore();
       }
     }
 
-    if (hull < 67 && state !== "destroying") {
+    if (!assembled && hull < 67 && state !== "destroying") {
       // Los tres fotogramas comparten anclaje y estilo. El daño progresa mediante
       // tamaño/opacidad y una animación lenta que no cambia de motor.
       const smokeSequence = [0, 1, 2, 1];
@@ -775,7 +785,7 @@
       const progress = 1 - effect.life / effect.duration;
       if (effect.atlasImpact) {
         ctx.save(); ctx.translate(effect.x, effect.y);
-        drawAtlasVfx(2, 58 + progress * 45, 52 + progress * 40, 1 - progress);
+        if(!drawArcadePulse("impact",effect.duration-effect.life,60,1-progress*.4))drawAtlasVfx(2,58,52,1-progress);
         ctx.restore(); continue;
       }
       const frame = frameFrom("impact", effect.variant);

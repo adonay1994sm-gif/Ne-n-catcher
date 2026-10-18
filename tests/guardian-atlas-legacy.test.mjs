@@ -16,7 +16,7 @@ const plain = value => JSON.parse(JSON.stringify(value));
  * obstacles and pilots the ship in memory to isolate boss lifecycle/save rules.
  * The separate Chromium test never uses these mutations.
  */
-function harness(t, campaign = '', {saved} = {}) {
+function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], failEquipmentWrite = false} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   t.after(() => dom.window.close());
@@ -43,7 +43,15 @@ function harness(t, campaign = '', {saved} = {}) {
   window.localStorage.setItem('neon-stars-v2', '{"1":2}');
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
+  for(const [key,value] of storageEntries)window.localStorage.setItem(key,value);
   if (saved !== undefined) window.localStorage.setItem('neonCatcher.flightEquipment.v1', saved);
+  if (savedSettings !== undefined) window.localStorage.setItem('neon-settings-v5', savedSettings);
+  const storageWrite = window.Storage.prototype.setItem;
+  let equipmentWriteBlocked = failEquipmentWrite;
+  window.Storage.prototype.setItem = function(key, value) {
+    if (equipmentWriteBlocked && key === 'neonCatcher.flightEquipment.v1') throw new Error('Fixture: equipment save interrupted');
+    return storageWrite.call(this, key, value);
+  };
   window.eval(core); window.eval(content);
   const marker = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
   assert.equal(game.split(marker).length, 2, 'Legacy bootstrap marker changed');
@@ -69,6 +77,16 @@ function harness(t, campaign = '', {saved} = {}) {
       if(atlasBoss){player.x=player.target=atlasBoss.x;}
       update(dt);
     },
+    manualAtlasFrame(dt=1/60) {
+      // Deliberately instrumented lifecycle fixture: suppress unrelated
+      // obstacles and issue explicit manual triggers at the real core.
+      // This is not a balance or natural-input certification.
+      items=[];gates=[];spawnTimer=999;classicScoutTimer=999;
+      if(atlasBoss){player.x=player.target=atlasBoss.x;
+        if(atlasBoss.vulnerability)fireManualShot();}
+      update(dt);
+    },
+    placeShip(x){player.x=player.target=x;},
     setSlow(seconds) { powers.slow=seconds; },
     pilotedAtlasFrame(dt=1/60) {
       // Keep the actual emitted curtains in the real collision/update loop.
@@ -79,7 +97,8 @@ function harness(t, campaign = '', {saved} = {}) {
       update(dt);
     },
     snapshot:()=>({state,hull,score,collected,ammo,manualShotCooldown,currentLevel,runToken,
-      elapsed,unlocked:getUnlocked(),stars:getStars(),continued,atlasAutoFire,slow:powers.slow,
+      elapsed,unlocked:getUnlocked(),stars:getStars(),continued,autoFire:settings.autoFire,slow:powers.slow,
+      equipment:{...classicEquipment,unlocked:[...classicEquipment.unlocked]},
       player:{x:player.x,y:player.y},
       weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
       shots:shots.map(shot=>({kind:shot.kind,damage:shot.damage,atlasPulse:shot.atlasPulse,
@@ -99,15 +118,16 @@ function harness(t, campaign = '', {saved} = {}) {
   // Shared three-charge batteries intentionally replace the former unlimited
   // boss pulse. Allow its real 3.6-second recharge while retaining a finite
   // failure bound; this lifecycle fixture does not certify natural balance.
-  function until(predicate, maximum = 60 * 240) {
+  function until(predicate, maximum = 60 * 240, shoot = false) {
     for (let frame = 0; frame < maximum; frame++) {
       const q = snapshot(); if (predicate(q)) return q;
       assert.ok(q.state === 'playing' || q.state === 'destroying', `Unexpected fixture state ${q.state}`);
-      api.isolatedFrame(1 / 60);
+      if(shoot)api.manualAtlasFrame(1 / 60);else api.isolatedFrame(1 / 60);
     }
     assert.fail(`Fixture condition not reached: ${JSON.stringify(snapshot())}`);
   }
   return {window, api, pending, snapshot, collectGoal, until,
+    setEquipmentWriteBlocked: value => { equipmentWriteBlocked = value; },
     stars: () => JSON.parse(window.localStorage.getItem('neon-stars-v2') || '{}')};
 }
 
@@ -155,11 +175,15 @@ test('the threshold capture can replace active items without crashing the real c
 
 test('Atlas deactivation completes before a single persisted victory and preserves N-7 saves', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal();
-  const terminal = h.until(q => q.boss?.disabled);
+  const terminal = h.until(q => q.boss?.disabled, 60 * 240, true);
   assert.equal(terminal.state, 'playing', 'Shutdown animation must finish before victory');
   assert.equal(terminal.unlocked, 2); assert.deepEqual(h.stars(), {'1': 2});
+  assert.deepEqual(terminal.equipment.unlocked, ['pulse'], 'The reward must wait for the authored terminal event');
   const finished = h.until(q => q.state === 'complete');
   assert.equal(finished.unlocked, 3); assert.ok(h.stars()['2'] >= 1);
+  assert.ok(finished.equipment.unlocked.includes('twin'), 'Atlas grants the actual Gemelo reward');
+  assert.equal(finished.equipment.unlocked.includes('lance'), false, 'Atlas does not grant every future weapon');
+  const equipmentSave = h.window.localStorage.getItem('neonCatcher.flightEquipment.v1');
   const score = finished.score;
   const games = h.window.localStorage.getItem('neon-games-v2');
   const stars = h.window.localStorage.getItem('neon-stars-v2');
@@ -168,6 +192,8 @@ test('Atlas deactivation completes before a single persisted victory and preserv
   assert.equal(h.snapshot().score, score);
   assert.equal(h.window.localStorage.getItem('neon-games-v2'), games);
   assert.equal(h.window.localStorage.getItem('neon-stars-v2'), stars);
+  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'), equipmentSave,
+    'Repeated completion cannot duplicate or reselect the weapon reward');
   assert.equal(h.window.localStorage.getItem('neon-n7-unlocked-v1'), '37');
   assert.equal(h.window.localStorage.getItem('neon-n7-best-v1'), '2037');
   assert.equal(h.pending.size, 1);
@@ -195,10 +221,9 @@ test('death, a rewarded continuation and retry cannot bypass or prematurely save
 
 test('Gaia and Chronos share three manual charges with played-time recharge instead of unlimited boss ammunition', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal();
-  const toggle = h.window.document.getElementById('atlasAutoFire');
-  assert.ok(toggle, 'The encounter must expose the automatic/manual fire choice');
-  if (h.snapshot().atlasAutoFire) toggle.click();
-  assert.equal(h.snapshot().atlasAutoFire, false);
+  assert.equal(h.window.document.getElementById('atlasAutoFire'), null,
+    'The encounter must not turn an opt-in accessibility setting into a prominent battle button');
+  assert.equal(h.snapshot().autoFire, false);
   for (let shot = 0; shot < 3; shot++) {
     assert.equal(h.api.fireManualShot(), true, `Manual pulse ${shot + 1} was unavailable`);
     for (let frame = 0; frame < 20; frame++) h.api.isolatedFrame(1 / 60);
@@ -247,13 +272,13 @@ test('Gaia and Chronos share three manual charges with played-time recharge inst
   assert.equal(h.snapshot().ammo, 0); assert.equal(h.snapshot().weapons.shotSequence, 4);
 });
 
-test('Atlas receives the advertised ×1, ×2 and ×3 damage once and converts each trigger into beams without duplicate projectiles', t => {
+test('Atlas receives the advertised ×1, ×2 and ×3 damage only when physical projectiles reach its core', t => {
   for (const [selected, multiplier, bolts] of [['pulse', 1, 1], ['twin', 2, 2], ['lance', 3, 1]]) {
     const saved = JSON.stringify({version: 1, recoveredTwin: selected !== 'pulse',
       unlocked: selected === 'pulse' ? ['pulse'] : selected === 'twin' ? ['pulse', 'twin'] : ['pulse', 'twin', 'lance'],
       selected, ...(selected === 'lance' ? {lanceCalibrated: true} : {})});
     const h = harness(t, '', {saved}); h.api.prepare(); h.collectGoal();
-    if (h.snapshot().atlasAutoFire) h.window.document.getElementById('atlasAutoFire').click();
+    assert.equal(h.snapshot().autoFire, false);
     h.until(q => q.boss.state === 'idle');
     const before = h.snapshot();
     assert.equal(before.weapons.damageMultiplier, multiplier);
@@ -262,23 +287,126 @@ test('Atlas receives the advertised ×1, ×2 and ×3 damage once and converts ea
     assert.equal(h.window.document.getElementById('flightRoute').classList.contains('hidden'), true);
     assert.equal(h.api.fireManualShot(), true);
     const fired = h.snapshot();
-    assert.equal(fired.boss.hp, before.boss.hp, 'Damage must wait for the actual beam impact');
-    assert.equal(fired.shots.filter(shot => shot.atlasPulse).length, bolts);
-    assert.equal(fired.shots.reduce((total, shot) => total + shot.damage, 0), multiplier);
+    assert.equal(fired.boss.hp, before.boss.hp, 'Damage must wait for the actual projectile impact');
+    assert.equal(fired.shots.filter(shot => shot.atlasPulse).length, 0,
+      'A physical trigger must not also create a homing ray');
+    assert.equal(fired.weapons.projectiles.length, bolts);
+    assert.equal(fired.weapons.projectiles.reduce((total, shot) => total + shot.damage, 0), multiplier);
     assert.equal(fired.weapons.charges, before.weapons.charges - 1);
     assert.equal(fired.weapons.shotSequence, before.weapons.shotSequence + 1);
-    assert.equal(fired.weapons.projectiles.length, 0,
-      'Converted beams must not retain a second physical projectile representation');
+    for(const shot of fired.weapons.projectiles) {
+      assert.ok(shot.vy<0);assert.ok(Math.abs(shot.vx)<1e-6);
+    }
     assert.equal(h.api.fireManualShot(), false, 'A second same-frame trigger cannot duplicate the volley');
     const impact = h.until(q => q.boss.hp < before.boss.hp, 120);
     assert.equal(impact.boss.hp, before.boss.hp - multiplier);
     assert.equal(impact.shots.length, 0);
-    assert.equal(impact.weapons.projectiles.length, 0);
+    assert.equal(impact.weapons.projectiles.length, selected==='lance'?1:0);
+    if(selected==='lance') {
+      assert.equal(impact.weapons.projectiles[0].pierce,1);
+      assert.equal(impact.weapons.projectiles[0].hitTargets.length,1,
+        'A piercing lance remembers Atlas so crossing its circle cannot apply damage twice');
+    }
     for (let frame = 0; frame < 30; frame++) h.api.isolatedFrame(1 / 60);
-    assert.equal(h.snapshot().boss.hp, impact.boss.hp, 'A completed beam cannot apply its damage again');
+    assert.equal(h.snapshot().boss.hp, impact.boss.hp, 'A completed projectile cannot apply its damage again');
     assert.equal(h.snapshot().weapons.shotSequence, fired.weapons.shotSequence);
     assert.equal(h.pending.size, 1);
   }
+});
+
+test('manual is the default and automatic fire is an explicit persistent setting outside the encounter', t => {
+  const h=harness(t);h.api.prepare();h.collectGoal();
+  assert.equal(h.snapshot().autoFire,false);
+  assert.equal(h.window.document.getElementById('atlasAutoFire'),null);
+  const setting=h.window.document.getElementById('autoFire');
+  assert.ok(setting,'Settings retains the opt-in accessible automatic-fire choice');
+  assert.equal(setting.checked,false);
+  h.until(q=>q.boss.age>6);
+  assert.equal(h.snapshot().weapons.shotSequence,0,'Waiting in front of the guardian must not fire automatically');
+  assert.equal(h.snapshot().boss.hp,h.snapshot().boss.maxHp);
+  setting.click();assert.equal(h.snapshot().autoFire,true);
+  const savedSettings=h.window.localStorage.getItem('neon-settings-v5');
+  assert.equal(JSON.parse(savedSettings).autoFire,true);
+  const reloaded=harness(t,'',{savedSettings});
+  assert.equal(reloaded.snapshot().autoFire,true);
+  assert.equal(reloaded.window.document.getElementById('autoFire').checked,true);
+  reloaded.window.document.getElementById('autoFire').click();
+  assert.equal(reloaded.snapshot().autoFire,false);
+  assert.equal(JSON.parse(reloaded.window.localStorage.getItem('neon-settings-v5')).autoFire,false);
+});
+
+test('a manual off-axis shot keeps its own trajectory and misses Atlas instead of homing or applying instant damage', t => {
+  const h=harness(t);h.api.prepare();h.collectGoal();h.until(q=>q.boss.vulnerability);
+  h.api.placeShip(119);const before=h.snapshot();
+  assert.ok(Math.abs(before.player.x-before.boss.x)>115);
+  assert.equal(h.api.fireManualShot(),true,'Firing is not disabled by an artificial boss-alignment gate');
+  const fired=h.snapshot();assert.equal(fired.weapons.charges,2);
+  assert.equal(fired.boss.hp,before.boss.hp);assert.equal(fired.shots.length,0);
+  assert.equal(fired.weapons.projectiles.length,1);
+  const origin=fired.weapons.projectiles[0];
+  for(let frame=0;frame<12;frame++)h.api.isolatedFrame(1/60);
+  const travelling=h.snapshot();
+  assert.ok(travelling.weapons.projectiles[0].y<origin.y-100);
+  assert.ok(Math.abs(travelling.weapons.projectiles[0].x-origin.x)<1e-6,
+    'Moving the ship back toward Atlas cannot steer an already fired projectile');
+  for(let frame=0;frame<100;frame++)h.api.isolatedFrame(1/60);
+  assert.equal(h.snapshot().boss.hp,before.boss.hp);
+  assert.equal(h.snapshot().weapons.shotSequence,1);
+});
+
+test('an interrupted Atlas equipment reward replays before unlocking Vulkar and is idempotent after reload', t => {
+  const h=harness(t,'',{failEquipmentWrite:true});h.api.prepare();h.collectGoal();
+  h.until(q=>q.boss?.disabled,60*240,true);
+  h.until(q=>q.state==='complete');
+  assert.equal(h.snapshot().unlocked,2,'Failed equipment persistence cannot unlock the next territory');
+  assert.deepEqual(h.snapshot().equipment.unlocked,['pulse']);
+  const journalKey='neon-unlocked-v2:completion-journal:v1';
+  const pending=JSON.parse(h.window.localStorage.getItem(journalKey));
+  assert.equal(pending.phase,'pending');assert.ok(pending.equipment.after.unlocked.includes('twin'));
+  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),null);
+  const storageEntries=Object.entries(h.window.localStorage);
+  const restored=harness(t,'',{storageEntries});
+  assert.equal(restored.snapshot().unlocked,3);
+  assert.ok(restored.snapshot().equipment.unlocked.includes('twin'));
+  const receipt=JSON.parse(restored.window.localStorage.getItem(journalKey));
+  assert.equal(receipt.phase,'committed');assert.equal(receipt.id,pending.id);
+  const saved=Object.fromEntries(Object.entries(restored.window.localStorage));
+  const again=harness(t,'',{storageEntries:Object.entries(saved)});
+  assert.equal(again.snapshot().unlocked,3);
+  assert.equal(again.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),saved['neonCatcher.flightEquipment.v1']);
+  assert.equal(again.window.localStorage.getItem(journalKey),saved[journalKey]);
+  assert.equal(again.window.localStorage.getItem('neon-n7-unlocked-v1'),'37');
+  assert.equal(again.window.localStorage.getItem('neon-n7-best-v1'),'2037');
+  assert.equal(again.pending.size,1);
+});
+
+test('a corrupt equipment record with a durable backup can receive the Atlas reward without losing its original data', t => {
+  const corrupt='{interrupted equipment record';
+  const h=harness(t,'',{saved:corrupt});
+  const equipmentKey='neonCatcher.flightEquipment.v1',backupKey=equipmentKey+':invalid-backups';
+  assert.equal(h.window.localStorage.getItem(equipmentKey),corrupt,
+    'Boot must preserve the damaged record until its recovery is needed');
+  assert.deepEqual(JSON.parse(h.window.localStorage.getItem(backupKey)),[corrupt]);
+  h.api.prepare();h.collectGoal();
+  h.until(q=>q.boss?.disabled,60*240,true);
+  assert.equal(h.snapshot().unlocked,2);
+  assert.equal(h.window.localStorage.getItem(equipmentKey),corrupt,
+    'The protected terminal animation must not grant or replace equipment early');
+  const victory=h.until(q=>q.state==='complete');
+  assert.equal(victory.unlocked,3);
+  assert.ok(victory.equipment.unlocked.includes('twin'));
+  const saved=JSON.parse(h.window.localStorage.getItem(equipmentKey));
+  assert.equal(saved.version,1);assert.ok(saved.unlocked.includes('twin'));
+  assert.deepEqual(JSON.parse(h.window.localStorage.getItem(backupKey)),[corrupt],
+    'Recovery must retain the exact original damaged record, once');
+  const receipt=JSON.parse(h.window.localStorage.getItem('neon-unlocked-v2:completion-journal:v1'));
+  assert.equal(receipt.phase,'committed');
+  assert.deepEqual(JSON.parse(receipt.equipment.before).unlocked,['pulse'],
+    'The journal compares against a valid recovery baseline, not an invented pre-awarded weapon');
+  assert.ok(receipt.equipment.after.unlocked.includes('twin'));
+  assert.equal(h.window.localStorage.getItem('neon-n7-unlocked-v1'),'37');
+  assert.equal(h.window.localStorage.getItem('neon-n7-best-v1'),'2037');
+  assert.equal(h.pending.size,1);
 });
 
 test('leaving the encounter does not mutate saves and N-7 cannot start classic Atlas', t => {
@@ -293,8 +421,7 @@ test('leaving the encounter does not mutate saves and N-7 cannot start classic A
 
 test('slow time shares the real Atlas and projectile clock before announcing another corridor', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal();
-  h.until(q => q.boss.phase === 2);
-  if (h.snapshot().atlasAutoFire) h.window.document.getElementById('atlasAutoFire').click();
+  h.until(q => q.boss.phase === 2, 60 * 240, true);
   h.api.setSlow(120);
   const initial = h.snapshot();
   for (let frame = 0; frame < 60; frame++) h.api.pilotedAtlasFrame(1 / 60);
@@ -304,7 +431,7 @@ test('slow time shares the real Atlas and projectile clock before announcing ano
     'The existing slow ability must slow the encounter clock as well as its bullets');
 
   let firstAttack = null, nextWarning = null, measuredBulletStep = false;
-  const volleys = new Set();
+  const volleys = new Set(), emittedIds = new Set(), clearedIds = new Set();
   for (let frame = 0; frame < 60 * 35 && !nextWarning; frame++) {
     const before = h.snapshot();
     h.api.pilotedAtlasFrame(1 / 60);
@@ -312,7 +439,10 @@ test('slow time shares the real Atlas and projectile clock before announcing ano
     assert.equal(after.state, 'playing', 'The announced corridor must remain usable');
     for (const bullet of after.projectiles) {
       if (firstAttack === null) firstAttack = bullet.attackId;
-      if (bullet.attackId === firstAttack) volleys.add(bullet.volley);
+      if (bullet.attackId === firstAttack) {
+        volleys.add(bullet.volley);emittedIds.add(bullet.id);
+        if(bullet.y-bullet.r>after.player.y+104)clearedIds.add(bullet.id);
+      }
       const earlier = before.projectiles.find(item => item.id === bullet.id);
       if (earlier) {
         assert.ok(Math.abs(bullet.y - earlier.y - bullet.vy / 120) < 1e-8,
@@ -327,9 +457,8 @@ test('slow time shares the real Atlas and projectile clock before announcing ano
   assert.ok(measuredBulletStep, 'The test must observe actual projectile movement');
   assert.deepEqual([...volleys].sort(), [0, 1], 'Both real curtains must be emitted');
   assert.ok(nextWarning, 'The encounter must progress to its next warning under slow time');
-  const previousCurtain = nextWarning.projectiles.filter(bullet => bullet.attackId === firstAttack);
-  assert.ok(previousCurtain.length > 0, 'Do not replace the integration check by deleting old bullets');
-  assert.ok(previousCurtain.every(bullet => bullet.y - bullet.r > nextWarning.player.y + 100),
-    'A new escape corridor must wait until the slowed previous curtain has passed the full ship');
+  assert.ok(emittedIds.size>0);
+  assert.deepEqual([...clearedIds].sort(),[...emittedIds].sort(),
+    'Every actual previous projectile must be observed passing the full tail before another pattern is announced; normal offscreen expiry is allowed');
   assert.equal(h.pending.size, 1);
 });

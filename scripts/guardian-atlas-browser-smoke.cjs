@@ -10,19 +10,22 @@ const {parseArgs} = require('node:util');
 const {startStaticServer, prepareEvidence, saveEvidence, sha256, errorText} = require('./browser-qa-helpers.cjs');
 
 const {values} = parseArgs({options: {root: {type: 'string'}, output: {type: 'string'}, timeout: {type: 'string'}, weapon: {type: 'string'},
-  'profile-cpu': {type: 'boolean'}}});
+  'profile-cpu': {type: 'boolean'},'expected-commit':{type:'string'},'fire-mode':{type:'string'}}});
 const root = path.resolve(values.root || 'preview-dist');
 const output = path.resolve(values.output || `docs/production-reports/evidence/guardian-atlas/browser-${new Date().toISOString().replace(/[:.]/g, '-')}`);
 const timeout = Number(values.timeout || 600000);
 assert.ok(Number.isFinite(timeout) && timeout >= 30000 && timeout <= 900000, 'Timeout must be 30000–900000 ms');
-const equippedWeapon = values.weapon || 'twin';
+const equippedWeapon = values.weapon || 'pulse';
+const fireMode=values['fire-mode']||'manual';
+assert.ok(['manual','auto'].includes(fireMode),'Fire mode must be manual or explicit opt-in auto');
 assert.ok(['pulse', 'twin'].includes(equippedWeapon), 'Weapon profile must be pulse or twin');
-const equipmentProfile = {version: 1, recoveredTwin: equippedWeapon === 'twin',
-  unlocked: equippedWeapon === 'twin' ? ['pulse', 'twin'] : ['pulse'], selected: equippedWeapon};
+const equipmentProfile = {version: 1, recoveredTwin:true,
+  unlocked: equippedWeapon === 'twin' ? ['pulse', 'twin'] : ['pulse'], selected: equippedWeapon,
+  ...(equippedWeapon==='pulse'?{twinPrepared:true}:{})};
 const began = Date.now();
 const report = {status: 'running', exitCode: null, command: process.argv, sourceRoot: root,
   startedAt: new Date().toISOString(), browser: 'Real Chromium, 390x844, DPR 1', checks: [],
-  qaPilotVersion: 'observed-projectile-swept-collision-v3', qaScriptSha256: sha256(require('node:fs').readFileSync(__filename)),
+  qaPilotVersion: 'manual-physical-projectile-settings-opt-in-v4',fireMode, qaScriptSha256: sha256(require('node:fs').readFileSync(__filename)),
   initialEquipmentFixture: equipmentProfile,
   errors: [], consoleErrors: [], failedRequests: [], screenshots: [], samples: [],
   limits: ['Automatic QA pilot uses real pointer and button inputs; this is not a human playtest.',
@@ -174,6 +177,12 @@ function combatTarget(q) {
 
 (async () => {
   await prepareEvidence(output); evidenceReady = true;
+  await fs.copyFile(__filename,path.join(output,'qa-script-used.cjs'));
+  report.buildInfo=JSON.parse(await fs.readFile(path.join(root,'build-info.json'),'utf8'));
+  if(values['expected-commit']) {
+    assert.equal(report.buildInfo.commit,values['expected-commit'],'Unexpected package commit');
+    assert.equal(report.buildInfo.dirty,false,'Certification requires a clean package');
+  }
   server = await startStaticServer(root);
   browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
     headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage']});
@@ -212,21 +221,24 @@ function combatTarget(q) {
     const marker = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
     assert.equal(source.split(marker).length, 2, 'Legacy bootstrap marker changed');
     const hook = `window.__ATLAS_QA__ = () => ({state,elapsed,hull,score,collected,goal:level().goal,W,H,currentLevel,pendingLevel,continued,
-      player:{x:player.x,y:player.y,w:player.w,h:player.h,target:player.target},
+      player:{x:player.x,y:player.y,w:player.w,h:player.h,target:player.target,targetY:player.targetY},
+      equipment:JSON.parse(JSON.stringify(classicEquipment)),settingsAutoFire:settings.autoFire,
+      powers:{...powers},supplyFailed,resultText:ui.result?.textContent||null,
       follow:9+settings.sensitivity/100*8,inputGain:settings.sensitivity/100,outline:SHIP_COLLISION_OUTLINE,
       bounds:classicFlightBounds?{...classicFlightBounds}:null,
       boss:atlasBoss ? {x:atlasBoss.x,y:atlasBoss.y,r:atlasBoss.r,state:atlasBoss.state,
-        phase:atlasBoss.phase,hp:atlasBoss.hp,maxHp:atlasBoss.maxHp,age:atlasBoss.age,
+        version:atlasBoss.version,phase:atlasBoss.phase,hp:atlasBoss.hp,maxHp:atlasBoss.maxHp,age:atlasBoss.age,
         stateTime:atlasBoss.stateTime,disabled:atlasBoss.disabled,vulnerability:atlasBoss.vulnerability,
         attackId:atlasBoss.attackId} : null,
-      items:items.map(item=>({type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,vx:item.vx,vy:item.vy,
+      items:items.map(item=>({type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,vx:item.classicScout?.vx??item.vx,vy:item.vy,
         rot:item.rot,rs:item.rs,circles:collisionCircles(item),
         guardianProjectile:Boolean(item.guardianProjectile),projectileId:item.projectileId,
         attackId:item.attackId,scout:Boolean(item.classicScout)})),
       weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,
-        cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge,shotSequence:classicWeapons.shotSequence}:null,
+        cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge,shotSequence:classicWeapons.shotSequence,
+        projectiles:classicWeapons.projectiles.map(shot=>({...shot}))}:null,
       scoreAudio: typeof voyageScore!=="undefined" ? voyageScore?.snapshot() : null,
-      legacyRunning,legacyFrameId,atlasAutoFire,manualShotCooldown,
+      legacyRunning,legacyFrameId,manualShotCooldown,
       unlocked:getUnlocked(),keys:{...KEYS}});\n`;
     await route.fulfill({response, body: source.replace(marker, hook + marker)});
   });
@@ -264,6 +276,22 @@ function combatTarget(q) {
           .sort((a, b) => b.sampledSelfMs - a.sampledSelfMs).slice(0, 18)};
       await cdp.detach(); await save();
     }
+    assert.equal((await inspect()).settingsAutoFire,false,'New settings default to manual fire');
+    assert.equal(await page.locator('#atlasAutoFire').count(),0,'AUTO must not be an encounter control');
+    const settingObservations=[];
+    for(const enabled of [true,false,...(fireMode==='auto'?[true]:[])]) {
+      await page.locator('#settings').click();
+      const checkbox=page.locator('#autoFire');
+      if(await checkbox.isChecked()!==enabled)await checkbox.locator('xpath=ancestor::label[1]').click();
+      assert.equal(await checkbox.isChecked(),enabled);
+      await page.locator('#settingsBack').click();
+      await wait(()=>__ATLAS_QA__().state==='menu');
+      await page.reload({waitUntil:'load'});
+      await wait(()=>typeof __ATLAS_QA__==='function'&&__ATLAS_QA__().state==='menu');
+      const reloaded=await inspect();assert.equal(reloaded.settingsAutoFire,enabled,'Fire setting must persist across reload');
+      settingObservations.push({enabled,settingsAutoFire:reloaded.settingsAutoFire});
+    }
+    report.settingsObservations=settingObservations;
     await page.locator('#levels').click();
     await page.locator('#levelGrid button').nth(1).click();
     await page.locator('#launch').click();
@@ -273,7 +301,7 @@ function combatTarget(q) {
     report.gameURL = page.url(); await capture('gaia-recovery', q);
   });
   const box = await page.locator('#canvas').boundingBox();
-  let paused = false, manualChecked = false, manualStarted = false,
+  let paused = false, manualChecked = false,
     maxCollected = 0, minX = Infinity, maxX = -Infinity;
   let previous = null;
   const bossStates = new Set(), bossPhases = new Set(), observedProjectileIds = new Set();
@@ -298,11 +326,15 @@ function combatTarget(q) {
           boss: q.boss && {state: q.boss.state, phase: q.boss.phase, hp: q.boss.hp, age: q.boss.age}});
         lastSample = Date.now(); await save();
       }
-      assert.ok(!['destroying', 'gameover'].includes(q.state), `Natural QA pilot failed: ${JSON.stringify(q)}`);
+      assert.ok(!['destroying','gameover'].includes(q.state),
+        `Natural QA pilot ended: state=${q.state}, reason=${q.supplyFailed?'finite supply':q.hull<=0?'hull':'see evidence'}, hull=${q.hull}, CRONIUM=${q.collected}/${q.goal}`);
+      assert.equal(q.settingsAutoFire,fireMode==='auto','Fire mode changed outside the settings UI');
       if (q.state === 'complete') { report.finalSnapshot = q; await capture('gaia-victory', q); break; }
       assert.equal(q.unlocked, 2, 'Gaia was unlocked before the boss finished');
       if (q.boss) {
         assert.ok(q.collected >= q.goal, 'Atlas appeared before the recovery objective');
+        assert.equal(q.boss.version,'guardian-atlas-v3');assert.equal(q.boss.maxHp,24);
+        if(!q.boss.disabled&&equippedWeapon==='pulse')assert.deepEqual(q.equipment.unlocked,['pulse'],'Fresh Twin reward must wait for victory');
         bossStates.add(q.boss.state); bossPhases.add(q.boss.phase);
         if (q.boss.state === 'entry') await capture('atlas-entry', q);
         if (q.boss.state === 'charge') await capture('atlas-warning', q);
@@ -313,34 +345,34 @@ function combatTarget(q) {
           await page.waitForTimeout(350); const after = await inspect();
           assert.equal(after.state, 'paused'); assert.equal(after.boss.age, before.boss.age);
           assert.equal(after.boss.stateTime, before.boss.stateTime); assert.equal(after.boss.hp, before.boss.hp);
-          assert.equal(after.elapsed, before.elapsed); assert.equal(after.unlocked, 2);
+          assert.equal(after.elapsed,before.elapsed);assert.equal(after.unlocked,2);
+          assert.deepEqual(after.items,before.items,'Projectiles must freeze during pause');
+          assert.deepEqual(after.weapons,before.weapons,'Battery and player projectiles must freeze during pause');
           await page.locator('#resume').click(); paused = true;
           await wait(age => __ATLAS_QA__().boss.age > age, before.boss.age);
           continue; // Re-inspect current bullet positions after interacting.
         }
-        if (!manualStarted && q.boss.vulnerability && !q.boss.disabled) {
-          const control = page.locator('#atlasAutoFire');
-          assert.equal(await control.getAttribute('aria-pressed'), 'true');
-          await control.click(); assert.equal((await inspect()).atlasAutoFire, false);
-          manualStarted = true;
-          // The previous snapshot predates disabling automatic fire. Re-read
-          // the actual battery before making any single-shot assertion.
-          continue;
-        }
-        if (manualStarted && !manualChecked && q.boss.vulnerability && !q.boss.disabled &&
-          q.weapons.charges > 0 && q.weapons.recharge < 2.4 && q.manualShotCooldown <= 0 && Math.abs(q.player.x - q.boss.x) < 105) {
-          const charges = q.weapons.charges;
-          // Keyboard activation is a discrete accessible shot. A pointer click
-          // held by a busy browser can legitimately repeat through the RAF.
-          await page.locator('#fire').focus();
-          await page.keyboard.press('Enter');
-          const after = await inspect();
-          assert.ok(after.manualShotCooldown > 0, 'Manual button did not emit a pulse');
-          assert.equal(after.weapons.charges, charges - 1, 'Manual fire must spend one shared battery charge');
-          assert.equal(after.weapons.shotSequence,q.weapons.shotSequence+1,'Discrete activation emits exactly one shot');
-          assert.equal(after.scoreAudio.context,'atlas','The actual guardian selects its musical phrase');
-          await page.locator('#atlasAutoFire').click(); assert.equal((await inspect()).atlasAutoFire, true);
-          manualChecked = true;
+        if(fireMode==='manual' && q.boss.vulnerability && !q.boss.disabled &&
+          q.boss.state==='idle' && q.weapons.charges>0 && q.weapons.recharge<2.6 &&
+          q.manualShotCooldown<=0 && Math.abs(q.player.x-q.boss.x)<55) {
+          // The physical shot must cross the actual arena; no hidden gap or
+          // target coordinates, homing, forced hits or health writes are used.
+          const before=await inspect();
+          if(before.weapons.charges>0 && before.weapons.recharge<2.6 && before.manualShotCooldown<=0) {
+            await page.locator('#fire').focus();await page.keyboard.press('Enter');
+            const after=await inspect();
+            assert.equal(after.weapons.shotSequence,before.weapons.shotSequence+1,'Discrete activation emits exactly one shot');
+            assert.equal(after.weapons.charges,before.weapons.charges-1,'Manual fire spends one shared battery charge');
+            assert.equal(after.settingsAutoFire,false);
+            assert.equal(after.scoreAudio.context,'atlas','The real guardian selects its musical phrase');
+            report.manualShots??=[];
+            report.manualShots.push({elapsed:after.elapsed,before:before.weapons,after:after.weapons,
+              boss:after.boss,powers:after.powers,player:after.player});
+            for(const shot of after.weapons.projectiles.filter(shot=>!before.weapons.projectiles.some(old=>old.id===shot.id))) {
+              assert.equal(shot.vx,0,'Basic Pulse/Twin must fly straight');assert.ok(shot.vy<0);
+            }
+            manualChecked=true;
+          }
         }
       }
       const destination = q.boss && !q.boss.disabled ? combatTarget(q) : recoveryTarget(q);
@@ -352,7 +384,8 @@ function combatTarget(q) {
     assert.ok(bossStates.has('entry') && bossStates.has('charge'), 'Visible entry and warning were not observed');
     assert.ok(bossPhases.has(1) && bossPhases.has(2), 'Both boss phases were not observed');
     assert.ok(captured.has('atlas-disabled'), 'The deactivation sequence was not observed');
-    assert.equal(paused, true); assert.equal(manualChecked, true);
+    assert.equal(paused,true);
+    if(fireMode==='manual'){assert.equal(manualChecked,true);assert.ok(report.manualShots.length>=3,'Manual round must repeatedly spend/recharge the real battery');}
     assert.ok(observedProjectileIds.size >= 5, 'The pilot must actually face emitted attacks');
     report.naturalSession = {wallMs: Date.now() - sessionBegan, simulationSeconds: report.finalSnapshot.elapsed,
       maxCollected, movementRange: maxX - minX, bossStates: [...bossStates], bossPhases: [...bossPhases],
@@ -368,10 +401,16 @@ function combatTarget(q) {
     }), storagePrefix);
     assert.equal(saved.unlocked, '3'); assert.ok(saved.stars['2'] >= 1);
     assert.equal(saved.n7Unlocked, '37'); assert.equal(saved.n7Best, '2037');
-    assert.deepEqual(saved.equipment, equipmentProfile);
+    assert.ok(saved.equipment.unlocked.includes('twin'),'Atlas victory must grant the second cannon');
+    assert.equal(saved.equipment.unlocked.includes('lance'),false,'Atlas must not grant Lance');
+    assert.equal(saved.equipment.selected,equippedWeapon,'Reward must not automatically equip a weapon');
+    assert.equal(saved.equipment.recoveredTwin,true);assert.equal(saved.equipment.twinPrepared,true);
+    assert.deepEqual(saved.equipment.bossRewards,['guardian-atlas']);
+    if(equippedWeapon==='pulse')assert.deepEqual(saved.equipment.unlocked,['pulse','twin']);
     report.saved = saved; const before = await inspect();
     await page.waitForTimeout(450); const after = await inspect();
-    assert.equal(after.score, before.score); assert.equal(after.unlocked, before.unlocked);
+    assert.equal(after.score,before.score);assert.equal(after.unlocked,before.unlocked);
+    assert.deepEqual(after.equipment,before.equipment,'Waiting after victory cannot duplicate or change the equipment reward');
     assert.equal(await page.locator('#nextLevel').isVisible(), true);
   });
   await check('continue naturally into Vulkar and reload without losing victory or equipment', async () => {
@@ -384,7 +423,8 @@ function combatTarget(q) {
       __ATLAS_QA__().elapsed > 1.4);
     const inVulkar = await inspect();
     assert.equal(inVulkar.boss, null); assert.equal(inVulkar.unlocked, 3);
-    assert.equal(inVulkar.weapons.selected, equippedWeapon);
+    assert.equal(inVulkar.weapons.selected,report.saved.equipment.selected);
+    assert.deepEqual(inVulkar.equipment,report.saved.equipment);
     await capture('vulkar-after-atlas', inVulkar);
     await page.locator('#pause').click(); await page.locator('#quit').click();
     await wait(() => __ATLAS_QA__().state === 'menu');
@@ -399,7 +439,7 @@ function combatTarget(q) {
       n7Best: localStorage.getItem(prefix + 'neon-n7-best-v1')
     }), storagePrefix);
     assert.deepEqual(persisted.stars, report.saved.stars);
-    assert.deepEqual(persisted.equipment, equipmentProfile);
+    assert.deepEqual(persisted.equipment,report.saved.equipment);
     assert.equal(persisted.n7Unlocked, '37'); assert.equal(persisted.n7Best, '2037');
     report.continuation = {levelAfterAtlas: inVulkar.currentLevel + 1,
       unlockedAfterReload: afterReload.unlocked, persisted};
@@ -413,6 +453,8 @@ function combatTarget(q) {
   }
 }).finally(async () => {
   await browser?.close(); await server?.close(); report.durationMs = Date.now() - began;
+  if(report.buildInfo){const after=JSON.parse(await fs.readFile(path.join(root,'build-info.json'),'utf8'));
+    if(JSON.stringify(after)!==JSON.stringify(report.buildInfo)){report.status='failed';report.exitCode=1;process.exitCode=1;report.packageChangedDuringRun=true;}}
   if (evidenceReady) await save();
   console.log(JSON.stringify({status: report.status, exitCode: report.exitCode,
     checks: report.checks.map(entry => ({name: entry.name, status: entry.status})), output, error: report.error}));
