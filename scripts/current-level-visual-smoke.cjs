@@ -238,8 +238,10 @@ function guardianBounds(q,positions){
       assert.equal(upgraded.capacity,65);assert.equal(upgraded.reserve,47,'Installed extra plating preserves previously spent reinforcement');
       assert.equal(upgraded.weapons.rechargeSeconds,1);assert.deepEqual(upgraded.weapons.weaponRanks,{scatter:2,needle:2});
       assert.deepEqual(upgraded.equipment.unlocked,['pulse','scatter','needle']);
-      const art=await page.locator('.c9-upgrade-art').evaluateAll(nodes=>nodes.map(node=>({image:getComputedStyle(node).backgroundImage,width:node.getBoundingClientRect().width})));
+      const art=await page.locator('.c9-upgrades .c9-upgrade-art').evaluateAll(nodes=>nodes.map(node=>({image:getComputedStyle(node).backgroundImage,width:node.getBoundingClientRect().width})));
       assert.ok(art.length>4&&art.every(item=>item.width>0&&item.image!=='none'),'Every new branch needs its own visible authored art');
+      const loadoutArt=await page.locator('.cockpit-loadout-card:not(.hidden) .c9-upgrade-art').evaluateAll(nodes=>nodes.map(node=>({image:getComputedStyle(node).backgroundImage,width:node.getBoundingClientRect().width})));
+      assert.ok(loadoutArt.length>=4&&loadoutArt.every(item=>item.width>0&&item.image!=='none'),'Every visible loadout option retains authored hardware art; archived hidden weapons do not occupy layout');
       await page.locator('.c9-skill-tree').scrollIntoViewIfNeeded();await capture('forja-evolution-tree');
       await page.locator('#c9-arsenal').scrollIntoViewIfNeeded();await capture('forja-arsenal');
       const emitted={};

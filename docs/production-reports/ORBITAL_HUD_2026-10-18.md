@@ -35,3 +35,9 @@ La certificación01 conserva dos fases fallidas: el nuevo listener de foco se re
 La revisión cruzada detectó además una apertura manual del hangar que evitaba `overlay(hangar)` y dejaba el diálogo inerte; ahora usa el gestor común. El foco inicial omite controles ocultos, importante al completar el último territorio o esconder una reparación. Se amplía la prueba visual al hangar y se conserva su edición como borrador cancelable. Certificación02 en ejecución sobre las fuentes corregidas.
 
 La certificación02 conserva un único caso de contenido fallido (695/696): la ayuda omitía mencionar «veinte disparos», aunque la batería seguía intacta. Se restituye esa información útil al jugador sin cambiar la regla ni la aserción. Tras corregirla: producto/marca7/7, build:preview salida0 y preview25/25. El resto de las diez fases del certificado02 pasó. Las fuentes están congeladas para construir un snapshot limpio y comprobar UI real, Atlas, multitoque y offline.
+
+## Primer snapshot limpio y revisión de geometría
+
+Funcional42c1e4a01dd0e5f6f8e1b5b066fde33a4bf6c3a6: certificación03 **11/11 fases, salida0**, contenido696/696. Paquete separado `/tmp/neon-orbital-hud-42c1e4a/preview-dist`,dirtyfalse,MotorV1false. El primer smokeUI conserva un defecto real: enlaces legales de35–42px de ancho y rangos de36px de alto. Se amplían a44px sin tocar instrumentos, física ni economía.
+
+El primer smokevisual pasa apertura y compras, pero su selector de arte también cuenta la nueva miniatura de Lanza dentro de una opción histórica oculta. Se conserva el contrato de arte de todas las ramas mediante un selector específico y se añade otra aserción para todas las armas visibles, manteniendo la opción histórica oculta sin ocupar geometría. No se retira la prueba ni se muestra Lanza sin poseerla.
