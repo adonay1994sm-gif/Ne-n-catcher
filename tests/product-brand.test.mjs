@@ -35,10 +35,10 @@ test('package, install names and generated preview agree while application ident
   assert.equal(manifest.short_name, 'NEON CRONIUM');
   assert.equal(manifest.id, './');
   const html = await text('index.html');
-  assert.match(previewPage(html), /<title>NEON CRONIUM — Prueba experimental<\/title>/);
+  assert.match(previewPage(html), /<title>NEON CRONIUM<\/title>/);
   for (const nested of [false, true]) {
     const preview = JSON.parse(previewManifest(JSON.stringify(manifest), nested));
-    assert.equal(preview.name, 'NEON CRONIUM — Prueba experimental');
+    assert.equal(preview.name, 'NEON CRONIUM');
     assert.equal(preview.short_name, 'NEON CRONIUM');
     assert.equal(preview.id, (nested ? '../' : './') + '?edition=neon-preview-v1');
   }
@@ -75,8 +75,65 @@ test('renaming preserves existing preview saves and resumes a pre-rename voyage 
 });
 
 test('ordinary PWA gets a fresh branded cache and active art documentation resolves after the filename change', async () => {
-  assert.match(await text('sw.js'), /^const CACHE = "neon-cronium-pre-release-7-2-0-pursuit-1";/);
+  assert.match(await text('sw.js'), /^const CACHE = "neon-cronium-pre-release-7-2-0-salvage-combat-1";/);
   assert.match(await text('docs/PRODUCT_VISION.md'), /ART_DIRECTION_NEON_CRONIUM\.md/);
   assert.match(await text('ART_DIRECTION_NEON_CRONIUM.md'), /# NEON CRONIUM/);
   for (const path of ['ASSET_MANIFEST.json', 'ASSET_PRODUCTION_150.json']) assert.equal(JSON.parse(await text(path)).project, 'NEON CRONIUM');
+});
+
+
+test('principal entry exposes the continuing journey without prototypes or save manipulation', async () => {
+  const html = await text('preview/launcher.html');
+  const dom = new JSDOM(html, {url: 'https://entry.test/', runScripts: 'dangerously'});
+  try {
+    const document = dom.window.document;
+    assert.equal(document.title, 'NEON CRONIUM');
+    const routes = [...document.querySelectorAll('a[href^="juego/index.html"]')];
+    assert.equal(routes.length, 1);
+    assert.equal(routes[0].id, 'classiclink');
+    assert.equal(routes[0].getAttribute('href'), 'juego/index.html');
+    assert.match(routes[0].textContent, /CONTINUAR VIAJE/);
+    assert.equal(document.querySelector('details, input, [href*="campaign="]'), null);
+    assert.doesNotMatch(document.body.textContent, /experimental|archivo de pruebas|desbloque.*QA|compilaci[oó]n|reparaci[oó]n gratuita/i);
+    assert.equal(dom.window.localStorage.length, 0, 'Opening the launcher cannot alter or unlock saved progress');
+    assert.ok(document.querySelector('a[href="juego/privacy.html"]'));
+    assert.ok(document.querySelector('a[href="juego/terms.html"]'));
+    assert.ok(document.querySelector('a[href="juego/privacy.html#contacto"]'));
+    assert.doesNotMatch(html, /localStorage|location\.(?:replace|assign)/);
+  } finally { dom.window.close(); }
+});
+
+test('game main menu keeps existing journey controls with no visible charge counter or build badge', async () => {
+  const dom = new JSDOM(await text('index.html'));
+  try {
+    const document = dom.window.document;
+    assert.equal(document.getElementById('playLabel').textContent, 'CONTINUAR VIAJE');
+    for (const id of ['play','levels','settings','how','best','unlockedText','totalStars','campaignPercent','campaignFill','campaignNodes']) assert.ok(document.getElementById(id), id);
+    assert.equal(document.querySelector('#menu .build-version'), null);
+    assert.doesNotMatch(document.getElementById('menu').textContent, /experimental|archivo de pruebas|pre-release|V7\./i);
+    const isolated = new JSDOM(previewPage(await text('index.html')));
+    try {
+      assert.equal(isolated.window.document.title, 'NEON CRONIUM');
+      assert.doesNotMatch(isolated.window.document.getElementById('menu').textContent, /experimental|cambiar modo|archivo de pruebas|pre-release/i);
+      assert.equal(isolated.window.document.querySelector('#menu a[href="../index.html"]'), null);
+    } finally { isolated.window.close(); }
+    const ammo = document.getElementById('ammo');
+    assert.ok(ammo.hidden);
+    assert.equal(ammo.getAttribute('aria-hidden'), 'true');
+    assert.equal(ammo.textContent, '');
+    assert.equal(document.getElementById('fire').getAttribute('aria-label'), 'Disparar');
+    assert.ok(document.querySelector('#menu .menu-ship-image[src="assets/player_ship_identity_v1.webp"]'));
+    assert.match(document.getElementById('instructions').textContent, /veinte disparos/);
+    assert.doesNotMatch(document.getElementById('instructions').textContent, /tres cargas|3,6 segundos|inst[aá]lalo en C9/);
+  } finally { dom.window.close(); }
+});
+
+
+test('support entry resolves to a readable contact section without inventing a public address', async () => {
+  const dom = new JSDOM(await text('privacy.html'));
+  try {
+    assert.equal(dom.window.document.getElementById('contacto').textContent, 'Contacto');
+    assert.match(dom.window.document.getElementById('contacto').nextElementSibling.textContent, /canal p[uú]blico de soporte todav[ií]a no est[aá] definido/);
+    assert.match(dom.window.document.querySelector('style').textContent, /html,body\{[^}]*overflow:auto/);
+  } finally { dom.window.close(); }
 });

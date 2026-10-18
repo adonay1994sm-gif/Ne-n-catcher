@@ -401,3 +401,65 @@ body.flight-mode .briefing-visual[data-scene="belt"]{background-image:linear-gra
 .chronos-stage-grid button:disabled{opacity:.38}
 #chronosStagesNote{margin:10px 0 0;font-size:11px;line-height:1.4;color:#a9c2d6}
 @media(max-width:350px){.chronos-stage-grid button{font-size:10px;padding:6px}}
+
+/* Principal journey entry: the current ship and route own the screen. */
+#menu{display:block;background:linear-gradient(180deg,rgba(2,7,17,.18),rgba(3,9,19,.45) 42%,rgba(3,8,18,.97) 76%),url("assets/chronos_flight_space_v1.webp") center 42%/cover no-repeat}
+#menu .menu-topline{position:absolute;left:max(22px,env(safe-area-inset-left));right:max(22px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));width:auto}
+#menu .menu-topline small{color:#9cbecd;font-size:8px;font-weight:700;letter-spacing:.19em}
+#menu .menu-topline strong{margin-top:5px;font-size:21px;letter-spacing:.08em}
+#menu .menu-scene{left:50%;top:12%;bottom:auto;width:230px;height:30%;opacity:1;max-height:290px;animation:shipFloat 5s ease-in-out infinite}
+#menu .menu-ship-image{filter:drop-shadow(0 0 24px rgba(78,192,229,.35))}
+#menu .menu-panel{position:absolute;left:50%;top:auto;bottom:calc(max(28px,env(safe-area-inset-bottom)) + 34px);transform:translateX(-50%);display:block;width:calc(100% - 44px);max-width:430px;padding:12px 0 0;background:none;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;overflow:visible;max-height:none}
+#menu .menu-chapter{display:block;margin-bottom:10px;color:#98c7d7;font-size:9px;letter-spacing:.14em;font-weight:700}
+#menu .menu-panel h2{font-size:28px;line-height:1.08;letter-spacing:-.025em;margin:6px 0 13px;font-weight:800}
+#menu .menu-panel>p{margin:0 auto 18px;max-width:330px;font-size:13px;line-height:1.45;color:#b8cbd8}
+#menu .campaign-progress{margin:10px 0 16px}
+#menu .campaign-progress-head{font-size:8px;color:#8aabba;letter-spacing:.1em;font-weight:700}
+#menu .campaign-track{height:3px;margin:7px 0 9px}
+#menu .campaign-nodes span{width:4px;height:4px}
+#menu .hero-cta{min-height:62px;justify-content:center;gap:5px;border:1px solid #86eee9;border-radius:14px;background:linear-gradient(110deg,#a2fff0,#77dff0);font-size:15px;font-weight:850;box-shadow:0 8px 35px rgba(43,141,168,.18)}
+#menu .hero-cta small{font-size:8px;letter-spacing:.08em;opacity:.72}
+#menu .menu-actions,#menu .menu-actions.has-hangar{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#menu .menu-actions .secondary{padding:8px 5px;min-height:48px;border-radius:11px;font-weight:750;font-size:9px;border-color:rgba(139,190,209,.22);background:rgba(10,29,43,.65);box-shadow:none}
+#menu .menu-actions .button-glyph{font-size:13px;margin-bottom:4px;color:#9ccfdf}
+#menu .menu-legal{position:absolute;bottom:max(6px,env(safe-area-inset-bottom));left:16px;right:16px;width:auto;gap:14px;flex-wrap:wrap;align-items:center}
+#menu .menu-legal a,#menu .menu-legal button{padding:8px 0;min-height:30px;font-size:10px;line-height:14px;color:#91adbc;cursor:pointer}
+#menu button:focus-visible,#menu a:focus-visible{outline:2px solid #d1ffff;outline-offset:4px}
+.fire-control #ammo{display:none!important}
+.fire-control>span:last-child{justify-content:center;min-height:35px}
+.fire-control.empty .fire-reticle{border-color:#e2b467;color:#e2b467;box-shadow:0 0 10px rgba(226,180,103,.16)}
+@media(orientation:portrait) and (max-height:680px){
+  #menu .menu-scene{top:12%;height:26%;width:180px}
+  #menu .menu-panel{bottom:calc(max(20px,env(safe-area-inset-bottom)) + 30px)}
+  #menu .menu-panel h2{font-size:23px;margin:6px 0 10px}
+  #menu .menu-panel>p{font-size:12px;margin-bottom:11px}
+  #menu .menu-chapter{font-size:8px;margin-bottom:7px}
+  #menu .campaign-progress{margin:6px 0 10px}
+  #menu .hero-cta{min-height:56px;font-size:14px}
+  #menu .menu-actions .secondary{min-height:42px;padding:6px 4px}
+}
+@media(orientation:landscape) and (max-height:600px){
+  #menu .menu-topline{top:max(10px,env(safe-area-inset-top));left:max(22px,env(safe-area-inset-left));right:max(22px,env(safe-area-inset-right))}
+  #menu .menu-topline strong{font-size:18px}
+  #menu .menu-scene{display:block;left:24%;top:18%;height:65%;width:29%;max-height:none}
+  #menu .menu-panel{left:70%;top:51%;bottom:auto;transform:translate(-50%,-50%);width:43%;max-width:420px;padding:0}
+  #menu .menu-chapter{font-size:8px;margin-bottom:6px}
+  #menu .menu-panel h2{font-size:23px;margin:5px 0 9px}
+  #menu .menu-panel>p{font-size:11px;margin-bottom:8px;line-height:1.35}
+  #menu .campaign-progress{margin:6px 0 9px}
+  #menu .hero-cta{min-height:51px;font-size:13px;margin-top:7px;gap:3px}
+  #menu .menu-actions .secondary{min-height:44px;padding:5px 4px;margin-top:7px;font-size:8px}
+  #menu .menu-actions .button-glyph{font-size:11px;margin-bottom:2px}
+  #menu .menu-legal{bottom:max(2px,env(safe-area-inset-bottom));gap:18px}
+}
+@media(prefers-reduced-motion:reduce){#menu .menu-scene{animation:none}}
+
+/* C9 salvage services share the compact flight UI; no ammo count in combat. */
+.flight-salvage{position:absolute;left:var(--safe-left,16px);bottom:calc(env(safe-area-inset-bottom,0px) + 92px);font-size:11px;letter-spacing:.06em;color:#c9dce6;pointer-events:none;text-shadow:0 1px 4px #000}
+.c9-wallet{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;color:#f6d592;font-size:14px;font-weight:700}
+.c9-purchase-status{min-height:1.4em;font-size:12px;line-height:1.4;color:#d4e9ee;margin:6px 0}
+#flightDock .c9-services{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+#flightDock .c9-services button{min-height:44px;font-size:12px;padding:10px 8px}
+#flightDock .secondary:disabled{opacity:.45}
+#fire.empty{filter:saturate(.5);opacity:.72}
+@media(max-height:600px){#flightDock .c9-wallet{margin:3px 0}#flightDock .c9-services{margin:4px 0}#flightDock .c9-purchase-status{margin:2px 0}}

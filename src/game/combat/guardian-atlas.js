@@ -5,15 +5,15 @@ const finite = (value, name) => {
 };
 
 export const GUARDIAN_ATLAS_RULES = Object.freeze({
-  version: 'guardian-atlas-v3', maxHp: 24, maxDelta: .05,
-  entrySeconds: 2.2, arrivalSeconds: 1.35, phaseBreakSeconds: 1.65,
+  version: 'guardian-atlas-v4', maxHp: 36, maxDelta: .05,
+  entrySeconds: 2.2, arrivalSeconds: 1.1, phaseBreakSeconds: 1.35,
   shutdownSeconds: 1.55, hurtSeconds: .16,
-  phaseOne: Object.freeze({chargeSeconds: 1.05, fireSeconds: .28, recoverySeconds: 2.4,
-    repositionSeconds: 1.05, counterattackSeconds: 1.8,
-    projectileSpeed: 340, projectileDamage: 14}),
-  phaseTwo: Object.freeze({chargeSeconds: 1.2, fireSeconds: .64, secondVolleyAt: .36,
-    recoverySeconds: 2.5, repositionSeconds: .95, counterattackSeconds: 2,
-    projectileSpeed: 315, projectileDamage: 12})
+  phaseOne: Object.freeze({chargeSeconds: .38, fireSeconds: .28, recoverySeconds: 1.95,
+    repositionSeconds: .8, counterattackSeconds: 1.25,
+    projectileSpeed: 400, projectileDamage: 14}),
+  phaseTwo: Object.freeze({chargeSeconds: .34, fireSeconds: .56, secondVolleyAt: .30,
+    recoverySeconds: 1.8, repositionSeconds: .72, counterattackSeconds: 1.35,
+    projectileSpeed: 430, projectileDamage: 13})
 });
 
 /**
@@ -39,6 +39,7 @@ export function createGuardianAtlas({width = 720, height = 1280,
     age: 0, state: 'entry', stateTime: 0, phase: 1,
     vulnerability: false, telegraph: null, disabled: false, resolved: false,
     attackId: 0, volley: 0, lastGapIndex: -1, phaseTwoAttacks: 0,
+    observation: null, nextObservationAt: 0, lastPattern: null,
     attackClearanceSeconds: 0, flash: 0,
     patrolFromX: width / 2, patrolToX: width / 2,
     resumeState: null, resumeTime: 0
@@ -63,19 +64,34 @@ function updateVulnerability(boss) {
     (boss.attackId === 0 || recoveryTime >= rules(boss).repositionSeconds));
 }
 
+function observePlayer(boss, player) {
+  if (boss.age + 1e-9 < boss.nextObservationAt) return;
+  const prior = boss.observation, elapsed = prior ? boss.age - prior.at : 0;
+  const x = clamp(player.x, 24, boss.width - 24);
+  const y = clamp(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 24);
+  const vx = elapsed > 0 ? clamp((x - prior.x) / elapsed, -720, 720) : 0;
+  boss.observation = {x, y, at: boss.age, vx: prior ? prior.vx * .4 + vx * .6 : 0};
+  boss.nextObservationAt = boss.age + .22;
+}
+
 function transition(boss, next, events, resume = false) {
   boss.state = next;
   boss.stateTime = 0;
   if (next === 'idle' && !resume) {
     boss.patrolFromX = boss.x;
-    const desiredOffset = boss.width * (boss.phase === 1 ? .22 : .26);
+    const sample = boss.observation || {x: boss.width / 2, vx: 0};
     const approachDistance = boss.playerY - (boss.targetY + boss.r * .7);
-    // A short arena cannot safely accommodate a very oblique crossfire across
-    // the full ship length. Scale the flank distance, never the ship hitbox.
-    const offset = Math.min(desiredOffset, Math.max(0, approachDistance * .2));
+    const offset = Math.min(boss.width * .22, Math.max(0, approachDistance * .16));
+    // Cut toward an observed flank instead of alternating fixed screen lanes.
+    // Slow/stationary pilots are bracketed; a moving pilot can reverse direction.
+    const direction = Math.abs(sample.vx) > 50 ? Math.sign(sample.vx) :
+      sample.x < boss.width / 2 ? -1 : sample.x > boss.width / 2 ? 1 :
+        (nextRandom(boss) < .5 ? -1 : 1);
+    const lead = clamp(sample.vx * .2, -55, 55);
     boss.patrolToX = boss.attackId === 0 ? boss.width / 2 : clamp(
-      boss.width / 2 + (boss.attackId % 2 ? offset : -offset),
-      boss.r + 12, boss.width - boss.r - 12);
+      sample.x + direction * offset * .55 + lead,
+      Math.max(boss.r + 12, boss.width / 2 - offset),
+      Math.min(boss.width - boss.r - 12, boss.width / 2 + offset));
   }
   updateVulnerability(boss);
   events.push({type: 'state', state: next, phase: boss.phase, attackId: boss.attackId});
@@ -86,50 +102,40 @@ function beginCharge(boss, player, events) {
   boss.volley = 0;
   boss.attackClearanceSeconds = 0;
   const timing = rules(boss);
-  const originY = boss.y + boss.r * .7;
-  // Alternate readable weapon behaviours rather than showing a destination
-  // marker. Small fixture arenas retain the curtain: the unchanged full-size
-  // wings need enough room to evade a concentrated aimed attack laterally.
+  const sample = boss.observation || {x: player.x, y: boss.playerY, vx: 0, at: boss.age};
   if (boss.phase === 2) boss.phaseTwoAttacks++;
-  const curtain = boss.phase === 2 &&
-    (boss.width < 600 || boss.phaseTwoAttacks % 2 === 1);
-  let safeGap = null;
-  if (curtain) {
-    // The second volley repeats the SAME corridor. Changing it while bullets
-    // remain in flight would force a crossing through a curtain of fire.
-    let index = Math.floor(nextRandom(boss) * 3);
-    if (index === boss.lastGapIndex) index = (index + 1) % 3;
-    boss.lastGapIndex = index;
-    // Preserve the established ship outline (wings reach +/-119 logical
-    // pixels), plus an 11px projectile radius and 5px clearance. Do not shrink
-    // gameplay collisions to fit a visually narrow warning strip.
-    const halfWidth = Math.min(Math.max(135, boss.width * .17), boss.width / 2 - 14);
-    const center = clamp(boss.width * [.28, .5, .72][index],
-      halfWidth + 14, boss.width - halfWidth - 14);
-    safeGap = {left: center - halfWidth, right: center + halfWidth, center};
-  }
+  // Patterns describe physical cannon routines, not a HUD instruction or an
+  // advertised safe corridor. All projectiles remain ballistic after emission.
+  const pattern = boss.phase === 1 ? (boss.attackId % 2 ? 'focusedSalvo' : 'leadSalvo') :
+    ['crossfire', 'rakingSalvo', 'leadSalvo'][(boss.phaseTwoAttacks - 1) % 3];
+  const leadOffset = pattern === 'focusedSalvo' ? 0 : clamp(sample.vx * .3, -105, 105);
+  boss.lastPattern = pattern;
   boss.telegraph = {
-    kind: curtain ? 'openCorridor' : 'aimedSalvo',
-    pattern: curtain ? 'curtain' : boss.phase === 2 ? 'crossfire' : 'focusedSalvo',
-    progress: 0, targetX: clamp(player.x, 24, boss.width - 24), targetY: clamp(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height-24),
-    originX: boss.x, originY, seconds: timing.chargeSeconds,
-    safeGap, attackId: boss.attackId
+    kind: 'aimedSalvo', pattern, progress: 0,
+    targetX: clamp(sample.x + leadOffset, 24, boss.width - 24),
+    targetY: sample.y, observedX: sample.x, observedVx: sample.vx,
+    observedAt: sample.at, leadOffset,
+    originX: boss.x, originY: boss.y + boss.r * .7,
+    seconds: timing.chargeSeconds, safeGap: null, attackId: boss.attackId
   };
   transition(boss, 'charge', events);
-  events.push({type: 'warning', phase: boss.phase, ...boss.telegraph,
-    safeGap: safeGap && {...safeGap}});
+  // Kept as a model/animation event for integration compatibility. The game
+  // must not turn the short mechanical deployment into a target marker.
+  events.push({type: 'warning', phase: boss.phase, ...boss.telegraph});
 }
 
 function projectile(boss, x, y, vx, vy, ordinal) {
   const timing = rules(boss);
   return {
-    type: 'meteor', guardianProjectile: true, pattern: boss.telegraph.kind,
+    type: 'meteor', guardianProjectile: true, pattern: boss.telegraph.pattern,
     attackId: boss.attackId, volley: boss.volley,
     projectileId: `${boss.attackId}:${boss.volley}:${ordinal}`,
     x, baseX: x, y, vx, vy, s: vy,
     r: boss.phase === 1 ? 10 : 11,
     damage: timing.projectileDamage, duration: 7, life: 7,
-    telegraphSeconds: timing.chargeSeconds, safeGap: boss.telegraph.safeGap && {...boss.telegraph.safeGap},
+    telegraphSeconds: timing.chargeSeconds, safeGap: null,
+    observedX: boss.telegraph.observedX, observedVx: boss.telegraph.observedVx,
+    leadOffset: boss.telegraph.leadOffset,
     targetX: boss.telegraph.targetX, targetY: boss.telegraph.targetY,
     rot: Math.atan2(vy, vx) - Math.PI / 2, rs: 0,
     p: 0, phase: 0, amp: 0, special: '', alpha: 1, hp: 1, maxHp: 1
@@ -137,33 +143,27 @@ function projectile(boss, x, y, vx, vy, ordinal) {
 }
 
 function fireVolley(boss, events, fireTime = boss.stateTime) {
-  const timing = rules(boss);
-  const aim = boss.telegraph;
-  const shots = [];
-  if (aim.kind === 'aimedSalvo') {
-    // Crossfire alternates physical weapon origins while retaining the target
-    // fixed during the warning. It never follows a last-second dodge.
-    const originX = aim.originX + (boss.phase === 2 ?
-      (boss.volley === 0 ? -1 : 1) * boss.r * .72 : 0);
-    const direction = Math.atan2(aim.targetY - aim.originY, aim.targetX - originX);
-    const spread = boss.phase === 1 ? .085 : .075;
-    for (const [index, offset] of [-spread, -spread / 2, 0, spread / 2, spread].entries()) {
-      const angle = direction + offset;
-      const shot = projectile(boss, originX, aim.originY,
-        Math.cos(angle) * timing.projectileSpeed, Math.sin(angle) * timing.projectileSpeed, index);
-      shots.push(shot);
-    }
-  } else {
-    for (let index = 0; index < 9; index++) {
-      const x = 12 + (boss.width - 24) * index / 8;
-      if (x >= aim.safeGap.left - 12 && x <= aim.safeGap.right + 12) continue;
-      const shot = projectile(boss, x, aim.originY, 0, timing.projectileSpeed, index);
-      shots.push(shot);
-    }
-  }
+  const timing = rules(boss), aim = boss.telegraph;
+  const crossfire = aim.pattern === 'crossfire';
+  const originX = aim.originX + (crossfire ? (boss.volley === 0 ? -1 : 1) * boss.r * .72 : 0);
+  // Raking guns cross a small observed area in two successive volleys. The
+  // offset is limited on short arenas so the full unchanged hull can escape.
+  const rake = Math.min(54, Math.max(0, (aim.targetY - aim.originY) * .10));
+  const targetX = clamp(aim.targetX + (aim.pattern === 'rakingSalvo' ?
+    (boss.volley === 0 ? -rake : rake) : 0), 24, boss.width - 24);
+  const direction = Math.atan2(aim.targetY - aim.originY, targetX - originX);
+  const spread = aim.pattern === 'rakingSalvo' ? .024 : crossfire ? .045 : .055;
+  const offsets = crossfire ? [-spread, -spread / 2, 0, spread / 2, spread] : [-spread, 0, spread];
+  const shots = offsets.map((offset, index) => {
+    const angle = direction + offset;
+    const shot = projectile(boss, originX, aim.originY,
+      Math.cos(angle) * timing.projectileSpeed, Math.sin(angle) * timing.projectileSpeed, index);
+    shot.targetX = targetX;
+    return shot;
+  });
   for (const shot of shots) {
-    // Wait until the tail, not only the ship centre, is clear before preparing
-    // another attack. Use the actual vertical speed, including oblique fans.
+    // Combat may re-aim only after the physical tail clears the old salvo.
+    // This preserves an actual counterattack window without a safe-lane UI.
     boss.attackClearanceSeconds = Math.max(boss.attackClearanceSeconds,
       fireTime + (boss.playerY + 104 + shot.r - shot.y) / shot.vy);
     events.push({type: 'projectile', projectile: shot});
@@ -181,7 +181,7 @@ function stateDuration(boss) {
   if (boss.state === 'fire') return rules(boss).fireSeconds;
   if (boss.attackId === 0) return GUARDIAN_ATLAS_RULES.arrivalSeconds;
   const timing = rules(boss);
-  // After avoiding a curtain, a manual pilot needs time to re-align and let a
+  // After avoiding a salvo, a manual pilot needs time to re-align and let a
   // real projectile travel to the core. An exposed pose while the ship is
   // trapped in a different lane is not a usable counterattack opportunity.
   return Math.max(timing.recoverySeconds,
@@ -233,6 +233,7 @@ export function advanceGuardianAtlas(boss, dt, player, emit = () => {}) {
   const events = [];
   let remaining = Math.min(dt, GUARDIAN_ATLAS_RULES.maxDelta);
   boss.age += remaining;
+  observePlayer(boss, player);
   boss.flash = Math.max(0, boss.flash - remaining);
   while (remaining > 1e-10 && !boss.resolved) {
     const duration = stateDuration(boss);

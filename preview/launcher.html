@@ -1,28 +1,27 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080a1c"><title>NEON CRONIUM — Edición de prueba</title><link rel="manifest" href="manifest.webmanifest">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050a15">
+<meta name="description" content="Pilota entre las estrellas, recupera el CRONIUM y sigue el rastro del ataque a Chronos.">
+<title>NEON CRONIUM</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="juego/assets/icon-192.png">
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f7ff;background:radial-gradient(circle at 70% 15%,#193565 0%,transparent 37%),radial-gradient(circle at 15% 80%,#342052 0%,transparent 45%),#070b1b;display:grid;place-items:center;padding:max(env(safe-area-inset-top),28px) 18px max(env(safe-area-inset-bottom),28px)}
-main{width:100%;max-width:540px}.eyebrow{font-size:11px;letter-spacing:.19em;color:#73f8f5;font-weight:750}.hero{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-top:10px}.hero img{max-width:42%;height:auto;filter:drop-shadow(0 0 18px #4ee8f965)}h1{font-size:clamp(34px,9vw,54px);line-height:.99;letter-spacing:-.05em;margin:8px 0 16px}p{color:#b7c5e0;line-height:1.5}strong{color:#fff}.card{display:block;border:1px solid #465d83;border-radius:19px;padding:21px 20px;text-decoration:none;color:#f4f7ff;background:#ffffff0e;margin:12px 0;transition:background .15s}.card:active{background:#ffffff1e}.card b{display:block;font-size:19px;margin:2px 0 8px}.card span{color:#bbc8df;font-size:13px;line-height:1.4;display:block}.card.primary{background:linear-gradient(115deg,#074858,#183a79);border-color:#4aeae3}.tag{font-size:10px;letter-spacing:.08em;color:#9bf5fb;font-weight:700}.notice{font-size:12px;border-top:1px solid #304260;padding-top:15px;color:#91a5c4;margin-top:21px}.footer{font-size:11px;color:#92a2c1}.archive{margin-top:18px;border:1px solid #304260;border-radius:14px;padding:12px 14px}.archive summary{cursor:pointer;font-size:11px;letter-spacing:.1em;font-weight:750;color:#a9b7cf;min-height:28px}.archive p{font-size:12px}.archive-link{display:block;padding:12px 0;color:#a7d9ef;font-size:13px;text-underline-offset:3px}.qa-option{display:flex;gap:10px;align-items:center;padding:12px 0;font-size:12px;color:#cde0fc}.qa-option input{accent-color:#69efff;width:18px;height:18px;flex:0 0 18px}
-</style></head>
-<body><main>
-<div class="eyebrow">EL VIAJE DE CHRONOS</div>
-<div class="hero"><div><h1>NEON<br>CRONIUM</h1><p>Chronos ha sido atacado. Sigue el rastro del CRONIUM y descubre quién rompió el equilibrio.</p></div><img src="juego/assets/player_ship_identity_v1.webp" width="512" height="640" alt="Astér, la nave modular de Neon Cronium"></div>
-<a class="card primary" id="classiclink" href="juego/index.html"><span class="tag">CHRONOS → GAIA · 10 ETAPAS</span><b>CONTINUAR VIAJE →</b><span>Diez etapas de viaje espacial, rescate y una parada en C9. Si ya tenías otro destino, abre NIVELES y elige La Onda de Choque.</span></a>
-<details class="archive" id="qaArchive">
-<summary>ARCHIVO DE PRUEBAS</summary>
-<p>Herramientas de revisión y versiones anteriores. El viaje principal continúa desde el botón de arriba; estos guardados se conservan por separado.</p>
-<label class="qa-option"><input id="unlockClassic" type="checkbox">Desbloquear los diez niveles para QA al continuar el viaje</label>
-<p>Para probar Guardian Atlas, activa el desbloqueo y entra en Perímetro Atlas desde NIVELES. El encuentro comienza después de recuperar el CRONIUM.</p>
-<a class="archive-link" id="journeylink" href="juego/index.html?campaign=journey">Abrir prototipo histórico Chronos → Gaia</a>
-<a class="archive-link" id="n7link" href="juego/index.html?campaign=n7">Abrir regresión histórica N-7 · 100 rutas</a>
-<label class="qa-option"><input id="unlock" type="checkbox">Desbloquear las 100 rutas del archivo N-7 para QA</label>
-</details>
-<p id="storageStatus" role="status" style="font-size:12px;margin:0 8px 12px">El desbloqueo se conserva en esta edición. No modifica tus partidas normales.</p>
-
-<p class="notice"><strong>Cómo jugar:</strong> pulsa CONTINUAR VIAJE y después INICIAR EXPEDICIÓN. Desliza un dedo para pilotar y mantén DISPARAR con el otro. NIVELES permite volver a los territorios desbloqueados.</p>
-<p class="footer">Edición privada de pruebas. Sin anuncios, compras ni pagos reales; reparación gratuita. Guardado independiente y certificación física de iPhone pendiente.</p>
-<p class="footer">Compilación <code style="overflow-wrap:anywhere">__NEON_PREVIEW_COMMIT__</code>__NEON_PREVIEW_DIRTY__ · <a href="build-info.json" style="color:#9bf5fb">Ver procedencia</a></p>
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;min-height:100svh;color:#f4f8ff;background:#050a15;display:grid;place-items:center;padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,#03091638,#040b18b8 56%,#040913f5),url("juego/assets/chronos_flight_space_v1.webp") center 42%/cover no-repeat}main{width:100%;max-width:490px;position:relative;text-align:center}.eyebrow{font-size:10px;letter-spacing:.22em;color:#99c6da;font-weight:700}.hero{position:relative;min-height:260px;display:flex;align-items:center;justify-content:center;padding:34px 0 22px}.hero img{width:min(62%,228px);height:auto;filter:drop-shadow(0 0 23px #3cb9e74d);animation:shipDrift 5s ease-in-out infinite}h1{font-size:clamp(38px,12vw,58px);line-height:.92;letter-spacing:.07em;margin:8px 0 14px;font-weight:850;text-shadow:0 3px 18px #000b}p{color:#bbcddd;line-height:1.55;font-size:14px;max-width:380px;margin:0 auto 24px}.journey-label{display:block;font-size:10px;letter-spacing:.15em;color:#95c4d4;margin-bottom:10px;font-weight:750}.primary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px;border:1px solid #72ebec;border-radius:14px;padding:17px 20px;color:#041a26;background:linear-gradient(110deg,#a2fff0,#77dff0);text-decoration:none;font-size:16px;font-weight:850;letter-spacing:.04em;box-shadow:0 8px 35px #2b8da830,inset 0 1px #ffffffb8}.primary span{font-size:24px;line-height:1}.primary:active{transform:translateY(1px);filter:brightness(.92)}a:focus-visible{outline:2px solid #fff;outline-offset:5px}.controls{display:block;font-size:11px;color:#839eaf;margin:16px 0 25px;line-height:1.5}.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:22px}.legal a{font-size:11px;color:#90adbf;text-underline-offset:4px;text-decoration:none;padding:8px 0}.legal a:hover{text-decoration:underline}@keyframes shipDrift{50%{transform:translateY(-8px)}}@media(max-height:720px){.hero{min-height:190px;padding:12px 0}.hero img{width:160px}h1{font-size:40px}p{font-size:13px;margin-bottom:18px}.controls{margin:12px 0 14px}}@media(orientation:landscape) and (max-height:550px){main{max-width:760px;display:grid;grid-template-columns:.85fr 1.15fr;gap:0 32px;align-items:center}.eyebrow{grid-column:1/-1}.hero{grid-column:1;grid-row:2/8;min-height:180px}.hero img{width:190px}h1,p,.journey-label,.primary,.controls{grid-column:2}h1{font-size:38px;margin-top:14px}p{font-size:12px;margin-bottom:12px}.primary{min-height:52px;padding:12px 16px;font-size:14px}.controls{margin:10px 0}.legal{grid-column:1/-1;margin-top:6px}}@media(prefers-reduced-motion:reduce){.hero img{animation:none}.primary:active{transform:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">EL VIAJE DE CHRONOS</div>
+  <div class="hero"><img src="juego/assets/player_ship_identity_v1.webp" width="512" height="640" alt="Astér, la nave modular de Neon Cronium"></div>
+  <h1>NEON<br>CRONIUM</h1>
+  <p>Chronos ha sido atacado. Recupera el CRONIUM disperso y sigue su rastro entre las estrellas.</p>
+  <span class="journey-label">CHRONOS → GAIA NOVA</span>
+  <a class="primary" id="classiclink" href="juego/index.html">CONTINUAR VIAJE <span aria-hidden="true">→</span></a>
+  <small class="controls">Desliza un dedo para pilotar. Mantén DISPARAR con el otro.</small>
+  <nav class="legal" aria-label="Información del juego"><a href="juego/privacy.html">Privacidad</a><a href="juego/terms.html">Términos</a><a href="juego/privacy.html#contacto">Soporte</a></nav>
 </main>
 <script>
 if ('serviceWorker' in navigator) {
@@ -30,24 +29,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('launcher-sw.js', {scope: './'}).catch(function() {});
   });
 }
-document.getElementById('classiclink').addEventListener('click', function(event) {
-  if (!document.getElementById('unlockClassic').checked) return;
-  try {
-    const key = 'neon-preview-v1:neon-unlocked-v2';
-    const previous = Number(localStorage.getItem(key)) || 1;
-    localStorage.setItem(key, String(Math.max(10, previous)));
-  } catch (error) {
-    event.preventDefault();
-    document.getElementById('storageStatus').textContent = 'El navegador bloquea el guardado. Desmarca el desbloqueo para jugar desde el primer nivel.';
-  }
-});
-document.getElementById('n7link').addEventListener('click', function(event) {
-  if (!document.getElementById('unlock').checked) return;
-  try {
-    localStorage.setItem('neon-preview-v1:neon-n7-unlocked-v1', '100');
-  } catch (error) {
-    event.preventDefault();
-    document.getElementById('storageStatus').textContent = 'El navegador bloquea el guardado. Desmarca el desbloqueo para jugar desde la primera ruta.';
-  }
-});
-</script></body></html>
+</script>
+</body>
+</html>

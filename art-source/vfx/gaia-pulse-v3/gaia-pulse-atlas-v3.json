@@ -1,0 +1,622 @@
+{
+  "schemaVersion": 1,
+  "id": "combat.gaia-pulse.v3",
+  "revision": "gaia-pulse-v3",
+  "status": "IN_REVIEW",
+  "technicalAcceptance": "EXPORT_VALIDATED_GAMEPLAY_PENDING",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "runtime": "assets/gaia_pulse_atlas_v3.webp",
+  "master": "gaia-pulse-production-master.png",
+  "packedMaster": "gaia-pulse-packed-master.png",
+  "concept": "canva-concept-thumbnail-200.jpg",
+  "masterDimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "dimensions": {
+    "width": 1024,
+    "height": 1024
+  },
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "forward": {
+    "x": 0,
+    "y": -1
+  },
+  "transparent": true,
+  "runtimeBytes": 256162,
+  "decodedRgbaBytes": 4194304,
+  "runtimeSha256": "8dda1bfa8100ce607386ae5c345fc8350987e1651b5f856f499a16b0fc12ad48",
+  "masterSha256": "6175a8e940aecfdcdc49bd0d48bf4ad789e522938138002d1a8a711dfab48836",
+  "packedMasterSha256": "33ca690199ccf67a7759c0d0374cb3347b42fe79d38d3677ca0a0ff4dac3d223",
+  "animations": {
+    "pulse": {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "fps": 12,
+      "loop": true
+    },
+    "twin": {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "fps": 12,
+      "loop": true
+    },
+    "lance": {
+      "frames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "fps": 12,
+      "loop": true
+    },
+    "impact": {
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 16,
+      "loop": false,
+      "durationSeconds": 0.25
+    }
+  },
+  "provenance": {
+    "created": "2026-10-18",
+    "conceptTool": "Canva generate-image",
+    "canvaMediaId": "MAHYWJAlpCA",
+    "canvaLink": "https://www.canva.com/M/MAHYWJAlpCA?utm_source=OC-AaBlKrqBJJNF&utm_campaign=agent_connector_create_image_asset_opened",
+    "conceptOriginalDimensionsDeclaredByCanva": {
+      "width": 1264,
+      "height": 1264
+    },
+    "conceptRetainedDimensions": {
+      "width": 200,
+      "height": 200
+    },
+    "productionTool": "image_gen.imagegen",
+    "productionReference": "Canva-generated concept thumbnail",
+    "productionReason": "Canva returned only a 200px JPG thumbnail; original rendition returned HTTP403 and Canva background removal requires a paid plan. No upgrade or payment was made.",
+    "generatedOriginal": "/workspace/generated_images/exec-d2fba385-5c20-4cde-aa30-46c202fdb315.png",
+    "editing": "ImageMagick crop, common-scale impact packing, transparent padding and WebP optimization only",
+    "rights": "Original project-generated art without external franchise assets or purchases; platform terms apply. Exclusivity not asserted."
+  },
+  "frames": [
+    {
+      "index": 0,
+      "kind": "pulse",
+      "source": "frames/00-pulse-1.png",
+      "sourceRect": {
+        "x": 8,
+        "y": 22,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "fe9e0a7bb92ca4cd909e19318cb8c1ded2649ac50d8016e47f6153fe21a94013",
+      "alphaBounds": {
+        "minX": 50,
+        "minY": 30,
+        "maxX": 233,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 11174
+    },
+    {
+      "index": 1,
+      "kind": "pulse",
+      "source": "frames/01-pulse-2.png",
+      "sourceRect": {
+        "x": 320,
+        "y": 22,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "56d1079db4ca235d33632c71b74c70c9a5d6d56e710d53a1605fda310842f8d0",
+      "alphaBounds": {
+        "minX": 20,
+        "minY": 38,
+        "maxX": 222,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 11174
+    },
+    {
+      "index": 2,
+      "kind": "pulse",
+      "source": "frames/02-pulse-3.png",
+      "sourceRect": {
+        "x": 632,
+        "y": 22,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "23a72474b49bee3df1292468a42a9b552b0e87337918a2da27636a8036a51a51",
+      "alphaBounds": {
+        "minX": 23,
+        "minY": 38,
+        "maxX": 226,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 11241
+    },
+    {
+      "index": 3,
+      "kind": "pulse",
+      "source": "frames/03-pulse-4.png",
+      "sourceRect": {
+        "x": 948,
+        "y": 22,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "2d6e978c5555e9b4f6dceccd0d59945d979f6377a469c4ff6c4d56148d476f8a",
+      "alphaBounds": {
+        "minX": 21,
+        "minY": 37,
+        "maxX": 184,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 11289
+    },
+    {
+      "index": 4,
+      "kind": "twin",
+      "source": "frames/04-twin-1.png",
+      "sourceRect": {
+        "x": 8,
+        "y": 326,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "1b3a91f260d5be580fd7c1cfb363edfb394c883fb5b13f61f31528899ac3d784",
+      "alphaBounds": {
+        "minX": 69,
+        "minY": 22,
+        "maxX": 235,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 10110
+    },
+    {
+      "index": 5,
+      "kind": "twin",
+      "source": "frames/05-twin-2.png",
+      "sourceRect": {
+        "x": 320,
+        "y": 326,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "2ff3ea56b25feff160893d17b9f619809616b2ce7d66ed7b0987170705b87eb3",
+      "alphaBounds": {
+        "minX": 20,
+        "minY": 22,
+        "maxX": 232,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 10446
+    },
+    {
+      "index": 6,
+      "kind": "twin",
+      "source": "frames/06-twin-3.png",
+      "sourceRect": {
+        "x": 632,
+        "y": 326,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 512,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "cfbc7898d60c552e2e0d53522ec1986a60b068e54db836d943e887da06dbbf99",
+      "alphaBounds": {
+        "minX": 23,
+        "minY": 22,
+        "maxX": 233,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 10469
+    },
+    {
+      "index": 7,
+      "kind": "twin",
+      "source": "frames/07-twin-4.png",
+      "sourceRect": {
+        "x": 948,
+        "y": 326,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 768,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "a24d344b38285acfab6c334b1c53d28790b8f8c97a60b6e676a540075a6f6e43",
+      "alphaBounds": {
+        "minX": 21,
+        "minY": 28,
+        "maxX": 207,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 10362
+    },
+    {
+      "index": 8,
+      "kind": "lance",
+      "source": "frames/08-lance-1.png",
+      "sourceRect": {
+        "x": 8,
+        "y": 621,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "d21930e768f06a443b2225bb2fbd5631e7fe3d955be7933cee128ac465581657",
+      "alphaBounds": {
+        "minX": 50,
+        "minY": 22,
+        "maxX": 235,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 11321
+    },
+    {
+      "index": 9,
+      "kind": "lance",
+      "source": "frames/09-lance-2.png",
+      "sourceRect": {
+        "x": 320,
+        "y": 621,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "3c5d9b387ee64843be1a7ead23cf9da045dec44cf00a2d73a477a4640d746d2a",
+      "alphaBounds": {
+        "minX": 40,
+        "minY": 22,
+        "maxX": 204,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 12152
+    },
+    {
+      "index": 10,
+      "kind": "lance",
+      "source": "frames/10-lance-3.png",
+      "sourceRect": {
+        "x": 632,
+        "y": 621,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 512,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "df4bc4f7c8fabba439254faa043d2c9822c9c5368fbc5ab4ae29238b9d033fdb",
+      "alphaBounds": {
+        "minX": 22,
+        "minY": 22,
+        "maxX": 235,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 12976
+    },
+    {
+      "index": 11,
+      "kind": "lance",
+      "source": "frames/11-lance-4.png",
+      "sourceRect": {
+        "x": 948,
+        "y": 621,
+        "width": 300,
+        "height": 294
+      },
+      "rect": {
+        "x": 768,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "loop": true,
+      "rgbaSha256": "b36110b31df186c079226a53df9368ae0201d1c60e403fa278ff35b936918abd",
+      "alphaBounds": {
+        "minX": 21,
+        "minY": 22,
+        "maxX": 214,
+        "maxY": 233
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 12188
+    },
+    {
+      "index": 12,
+      "kind": "impact",
+      "source": "frames/12-impact-1.png",
+      "sourceRect": {
+        "x": 40,
+        "y": 950,
+        "width": 243,
+        "height": 260
+      },
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 16,
+      "packingScale": 0.6,
+      "loop": false,
+      "rgbaSha256": "b922b8abb1fe47455f1d9c1f546e4e6548db4b51dedb649292768bfda2990cea",
+      "alphaBounds": {
+        "minX": 57,
+        "minY": 50,
+        "maxX": 195,
+        "maxY": 185
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 6027
+    },
+    {
+      "index": 13,
+      "kind": "impact",
+      "source": "frames/13-impact-2.png",
+      "sourceRect": {
+        "x": 329,
+        "y": 932,
+        "width": 274,
+        "height": 275
+      },
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 16,
+      "packingScale": 0.6,
+      "loop": false,
+      "rgbaSha256": "25541b9f66ebfe5f5fce97e53fa705146458a761daa4aa590c7918f8060f5660",
+      "alphaBounds": {
+        "minX": 48,
+        "minY": 47,
+        "maxX": 209,
+        "maxY": 209
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 12492
+    },
+    {
+      "index": 14,
+      "kind": "impact",
+      "source": "frames/14-impact-3.png",
+      "sourceRect": {
+        "x": 610,
+        "y": 915,
+        "width": 351,
+        "height": 315
+      },
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 16,
+      "packingScale": 0.6,
+      "loop": false,
+      "rgbaSha256": "8a7312cfc05f4c1d96d2972a45af74d9e579668f7895ca3a00b1d43456799f65",
+      "alphaBounds": {
+        "minX": 22,
+        "minY": 33,
+        "maxX": 232,
+        "maxY": 221
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 23266
+    },
+    {
+      "index": 15,
+      "kind": "impact",
+      "source": "frames/15-impact-4.png",
+      "sourceRect": {
+        "x": 967,
+        "y": 932,
+        "width": 263,
+        "height": 276
+      },
+      "rect": {
+        "x": 768,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 16,
+      "packingScale": 0.6,
+      "loop": false,
+      "rgbaSha256": "505db66d88c1c2d156deb199f6115312ba13db47c036d72fa8ef8d1c0fb27442",
+      "alphaBounds": {
+        "minX": 49,
+        "minY": 45,
+        "maxX": 206,
+        "maxY": 210
+      },
+      "maximumSixteenPixelGutterAlpha": 0,
+      "visiblePixels": 9993
+    }
+  ]
+}

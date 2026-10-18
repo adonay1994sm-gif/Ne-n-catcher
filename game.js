@@ -307,6 +307,12 @@
   const classicFlightInput = NeonCampaign.createRelativeFlightInput();
   let classicEquipment = {version:1, recoveredTwin:false, unlocked:['pulse'], selected:'pulse'};
   let classicEquipmentWritable = true;
+  let classicSalvageLedger = null;
+  let classicSalvageState = null;
+  let classicSalvageRunId = null;
+  let classicSalvageEnemySequence = 0;
+  let classicSalvageWarningShown = false;
+  let classicCometShower = null;
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicPatrolTimer = 0;
@@ -441,6 +447,8 @@
     guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
     atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
     arcadePulse: loadSprite("assets/arcade_pulse_atlas_v2.webp", false),
+    hostileOrdnance: loadSprite("assets/hostile_ordnance_atlas_v1.webp", false),
+    gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v2.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
@@ -838,6 +846,109 @@
 
   function isUnifiedClassic() { return !N7_CAMPAIGN && !JOURNEY_DEMO; }
 
+  function loadClassicSalvage() {
+    if(!isUnifiedClassic())return false;
+    if(!classicSalvageLedger)classicSalvageLedger=NeonCampaign.createScrapLedger({storage});
+    const result=classicSalvageLedger.load();
+    classicSalvageState=result.ok?result.state:null;
+    if(!result.ok&&!classicSalvageWarningShown) {
+      classicSalvageWarningShown=true;
+      toast("La bodega no se puede guardar. Conservamos sus datos y bloqueamos las compras para evitar pérdidas.");
+    }
+    if(result.ok)projectClassicSalvageUpgrades();
+    return result.ok;
+  }
+
+  // A purchase owns its entitlement in the same atomic record as its price.
+  // The old equipment record is only a replayable projection, never the money
+  // transaction. A failed projection can be retried without charging again.
+  function projectClassicSalvageUpgrades() {
+    const upgrades=classicSalvageState?.upgrades||[];
+    let projected=true;
+    if(upgrades.includes("twin-preparation")&&classicEquipment.recoveredTwin&&!classicEquipment.twinPrepared) {
+      projected=persistClassicEquipment(NeonCampaign.prepareClassicTwin(classicEquipment));
+    }
+    if(classicWeapons)NeonCampaign.setClassicRechargeInterval(classicWeapons,upgrades.includes("coolant-feed")?1.5:2);
+    return projected;
+  }
+
+  function applyClassicSalvageShield() {
+    if(!isUnifiedClassic()||!classicSalvageState?.upgrades.includes("shield-cell"))return;
+    powers.shield=Math.max(powers.shield,3);classicShieldAge=0;classicShieldImpact=0;
+    updatePowerHud();
+  }
+
+  function beginClassicSalvageRun(resuming=false) {
+    classicSalvageRunId=null;classicSalvageEnemySequence=0;
+    if(!loadClassicSalvage())return false;
+    const scope=`classic:${currentLevel+1}`;
+    const canResume=resuming&&classicSalvageState.activeRun?.scope===scope;
+    const result=classicSalvageLedger.beginRun({scope,fresh:Boolean(classicSalvageState.activeRun&&!canResume)});
+    if(!result.ok)return false;
+    classicSalvageRunId=result.runId;classicSalvageState=result.state;
+    return true;
+  }
+
+  function buyClassicC9Upgrade(sku) {
+    if(!isUnifiedClassic()||!classicSalvageLedger)return false;
+    if(sku==="twin-preparation"&&(!classicEquipment.recoveredTwin||classicEquipment.twinPrepared||classicEquipment.unlocked.includes("twin")))return false;
+    const result=classicSalvageLedger.purchase({transactionId:`c9:${sku}`,sku});
+    if(result.state)classicSalvageState=result.state;
+    if(!result.ok&&result.reason!=="already-owned") {
+      if(ui.c9PurchaseStatus)ui.c9PurchaseStatus.textContent=result.reason==="insufficient-funds"
+        ? `Faltan ${result.missing} de chatarra. Recupera restos de las naves enemigas.`
+        : "No se ha confirmado el pago. La mejora no se aplica; puedes reintentarlo.";
+      updateClassicDock();return false;
+    }
+    const projected=projectClassicSalvageUpgrades();
+    if(ui.c9PurchaseStatus)ui.c9PurchaseStatus.textContent=!projected
+      ? "Pago guardado. El montaje queda pendiente; al reabrir C9 se reintentará sin cobrar otra vez."
+      : sku==="twin-preparation" ? "Emisor preparado. Atlas sigue custodiando la autorización del segundo cañón."
+      : sku==="shield-cell" ? "Célula instalada. El campo de fuerza protege cada salida durante tres segundos."
+      : "Refrigeración instalada. El arma recupera energía con mayor rapidez.";
+    shipPresentationSignature="";flightHudSignature="";updateClassicDock();updateAmmoHud();
+    if(projected)tone(720,.10,"triangle",.035);
+    return projected;
+  }
+
+  function spawnClassicScrap(target) {
+    if(!isUnifiedClassic()||!target||target.salvageDropped||!classicSalvageRunId||!classicSalvageState)return null;
+    const boss=target.bossSalvage===true;
+    if(!boss&&(!target.classicScout||target.classicScoutProjectile||target.n7Projectile))return null;
+    const enemyType=boss?"guardian-atlas":target.salvageRole||target.classicScout?.role||"scout";
+    const amount=NeonCampaign.rewardForEnemy(enemyType);
+    if(!amount)return null;
+    const stage=classicFlightView?.stageId||`${currentLevel+1}.0`;
+    const dropId=target.salvageDropId||`${stage}:enemy:${classicSalvageEnemySequence++}`;
+    target.salvageDropId=dropId;target.salvageDropped=true;
+    if(classicSalvageState.activeRun?.claimed.some(receipt=>receipt.id===dropId))return null;
+    const item={id:`salvage:${classicSalvageRunId}:${dropId}`,type:"salvage",salvagePickup:true,
+      bossSalvage:boss,runId:classicSalvageRunId,dropId,enemyType,amount,
+      x:target.x,y:target.y,baseX:target.x,r:18,s:65,vx:0,vy:65,life:boss?4:14,
+      rot:0,rs:.12,p:0,phase:0,amp:0,alpha:1};
+    items.push(item);return item;
+  }
+
+  function collectClassicScrap(item) {
+    if(!isUnifiedClassic()||!item?.salvagePickup||!classicSalvageLedger)return false;
+    const result=classicSalvageLedger.claimDrop({runId:item.runId,dropId:item.dropId,enemyType:item.enemyType});
+    if(!result.ok) {
+      if(!item.salvageSaveWarning){item.salvageSaveWarning=true;toast("No se ha guardado la chatarra. La recogida se reintentará sin duplicarla.");}
+      return false;
+    }
+    classicSalvageState=result.state;
+    if(!result.duplicate){tone(760,.045,"sine",.025);toast(`+${result.amount} chatarra`);}
+    return true;
+  }
+
+  function resetClassicCometShower() {
+    classicCometShower=null;
+    const view=classicFlightView;
+    if(!view||!["1.5","1.9"].includes(view.stageId))return;
+    classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
+      stageId:view.stageId,elapsed:view.stageElapsed});
+  }
+
   function recoverCampaignCompletion() {
     if(JOURNEY_DEMO)return true;
     if(!completionJournal)completionJournal=NeonCampaign.createCompletionJournal({storage,keys:KEYS,
@@ -872,6 +983,7 @@
         classicEquipmentWritable = backups.includes(raw) || storage.setJSON(backupKey, [...backups, raw]);
       }
     }
+    loadClassicSalvage();
     document.body.classList.add("flight-mode");
     const mount = document.createElement("div");
     mount.innerHTML = `<div id="flightHud" class="flight-hud hidden">
@@ -879,9 +991,9 @@
       <p id="flightObjective" class="flight-comms" role="status" aria-live="polite" data-active="false"></p>
       <button id="flightWeapon" class="flight-weapon" type="button"><small id="flightWeaponDamage">DAÑO ×1</small><b id="flightWeaponName">PULSO</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></svg></button>
       </div>
-      <div id="flightDock" class="overlay"><section class="panel flight-dock"><small>TALLER C9 · MIRA</small><h2>Preparados para la frontera.</h2><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p><button id="flightInstallTwin" class="primary" type="button">INSTALAR EMISOR GEMELO</button><button id="flightDockContinue" class="secondary" type="button">CONTINUAR HACIA GAIA</button><button id="flightDockHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
+      <div id="flightDock" class="overlay"><section class="panel flight-dock"><small>TALLER C9 · MIRA</small><h2>Preparados para la frontera.</h2><canvas id="flightDockCanvas" width="384" height="300" aria-label="Nave con su armamento instalado"></canvas><p id="flightDockStatus"></p><p id="c9Balance" class="c9-wallet" aria-label="Chatarra disponible">0 chatarra</p><button id="flightInstallTwin" class="primary" type="button">PREPARAR EMISOR · 24 CHATARRA</button><button id="c9BuyShield" class="secondary" type="button">CÉLULA DE ESCUDO · 30 CHATARRA</button><button id="c9BuyCoolant" class="secondary" type="button">REFRIGERACIÓN · 45 CHATARRA</button><p id="c9PurchaseStatus" class="c9-purchase-status" role="status"></p><button id="flightDockContinue" class="secondary" type="button">CONTINUAR HACIA GAIA</button><button id="flightDockHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
     canvas.parentElement.append(mount);
-    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin"]) ui[id] = $(id);
+    for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin","c9Balance","c9BuyShield","c9BuyCoolant","c9PurchaseStatus"]) ui[id] = $(id);
     const calibrate=document.createElement("button");calibrate.id="flightCalibrateLance";calibrate.className="secondary";calibrate.type="button";
     ui.flightInstallTwin.after(calibrate);ui.flightCalibrateLance=calibrate;
     const loadout = document.createElement("div");
@@ -904,12 +1016,9 @@
       const selected = classicEquipment.unlocked[(classicEquipment.unlocked.indexOf(classicEquipment.selected)+1)%classicEquipment.unlocked.length];
       if (persistClassicEquipment({...classicEquipment, selected})) { tone(selected === "twin" ? 860 : 650, .12, "triangle", .045); syncClassicFlightHud(); }
     };
-    ui.flightInstallTwin.onclick = () => {
-      if (!classicEquipment.recoveredTwin || classicEquipment.twinPrepared || classicEquipment.unlocked.includes("twin")) return;
-      if (persistClassicEquipment(NeonCampaign.prepareClassicTwin(classicEquipment))) {
-        toast("Emisor preparado. Atlas custodia la autorización del segundo cañón."); updateClassicDock();
-      }
-    };
+    ui.flightInstallTwin.onclick = () => buyClassicC9Upgrade("twin-preparation");
+    ui.c9BuyShield.onclick=()=>buyClassicC9Upgrade("shield-cell");
+    ui.c9BuyCoolant.onclick=()=>buyClassicC9Upgrade("coolant-feed");
     // Historical Lanza owners keep their weapon; the workshop no longer grants
     // two power tiers for free before the first real guardian.
     calibrate.onclick=()=>{
@@ -1017,6 +1126,7 @@
     setState("playing");overlay();last=performance.now();
     classicFlight.resolveService(classicFlightEvent);classicFlightView=classicFlight.snapshot();
     saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint());
+    applyClassicSalvageShield();
     syncClassicFlightHud();hud();resumeAudio();
   }
 
@@ -1040,20 +1150,30 @@
   }
 
   function updateClassicDock() {
+    loadClassicSalvage();
     const installed=classicEquipment.unlocked.includes("twin");
     const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
     ui.flightDockStatus.textContent=installed
-      ? `${weapon.label} equipado. ${weapon.description} Tres cargas; una se recupera cada 3,6 segundos de vuelo. Las armas ya guardadas se conservan.`
+      ? `${weapon.label} equipado. ${weapon.description} La energía del arma se recupera durante el vuelo. Tus armas anteriores se conservan.`
       : classicEquipment.twinPrepared ? "Emisor preparado y casco reparado. Conservas Pulso hasta vencer a Atlas: su autorización desbloquea el segundo cañón."
-      : classicEquipment.recoveredTwin ? "Emisor rescatado. Mira puede preparar sus anclajes; necesitarás superar a Atlas para activar el segundo cañón. Casco reparado, sin coste."
+      : classicEquipment.recoveredTwin ? "Emisor rescatado. Mira prepara sus anclajes por 24 de chatarra; necesitarás superar a Atlas para activar el segundo cañón. La reparación de emergencia sigue siendo gratuita."
       : "Casco reparado. Tu pulso central se recarga en vuelo. Recupera la pieza de Chronos; Atlas custodia el segundo cañón.";
     for(const button of $("flightLoadoutChoices").querySelectorAll("button")) {
       const type=button.dataset.flightLoadout,unlocked=classicEquipment.unlocked.includes(type);
       button.disabled=!unlocked;button.setAttribute("aria-pressed",String(type===classicEquipment.selected));
       button.title=unlocked?NeonCampaign.CLASSIC_WEAPON_RULES.types[type].description:type==="twin"?"Supera a Guardian Atlas":"Una frontera posterior desbloquea esta arma";
     }
-    ui.flightInstallTwin.disabled=installed || !classicEquipment.recoveredTwin || Boolean(classicEquipment.twinPrepared);
-    ui.flightInstallTwin.textContent=installed ? "SEGUNDO CAÑÓN AUTORIZADO" : classicEquipment.twinPrepared ? "EMISOR PREPARADO · FALTA ATLAS" : "PREPARAR EMISOR RECUPERADO";
+    const balance=classicSalvageState?.balance??0,upgrades=classicSalvageState?.upgrades||[];
+    ui.c9Balance.textContent=classicSalvageState ? NeonCampaign.formatDenominations(balance).label : "Bodega no disponible · compras protegidas";
+    ui.c9Balance.title="100.000 chatarra = 1 plata · 100 plata = 1 oro · 10 oro = 1 estelar";
+    ui.flightInstallTwin.disabled=!classicSalvageState || !classicEquipmentWritable || balance<24 || installed || !classicEquipment.recoveredTwin || Boolean(classicEquipment.twinPrepared);
+    ui.flightInstallTwin.textContent=installed ? "SEGUNDO CAÑÓN AUTORIZADO" : classicEquipment.twinPrepared ? "EMISOR PREPARADO · FALTA ATLAS" : "PREPARAR EMISOR · 24 CHATARRA";
+    ui.c9BuyShield.disabled=!classicSalvageState||balance<30||upgrades.includes("shield-cell");
+    ui.c9BuyShield.textContent=upgrades.includes("shield-cell")?"CÉLULA DE ESCUDO INSTALADA":"CÉLULA DE ESCUDO · 30 CHATARRA";
+    ui.c9BuyShield.title="Campo de fuerza durante tres segundos al entrar en cada etapa o salir del taller.";
+    ui.c9BuyCoolant.disabled=!classicSalvageState||balance<45||upgrades.includes("coolant-feed");
+    ui.c9BuyCoolant.textContent=upgrades.includes("coolant-feed")?"REFRIGERACIÓN INSTALADA":"REFRIGERACIÓN · 45 CHATARRA";
+    ui.c9BuyCoolant.title="Recupera un proyectil cada 1,5 segundos; no cambia el daño ni la cadencia.";
     ui.flightCalibrateLance.classList.toggle("hidden",!classicEquipment.unlocked.includes("lance"));
     ui.flightCalibrateLance.disabled=classicEquipment.selected==="lance";
     ui.flightCalibrateLance.textContent="EQUIPAR LANZA ×3 CONSERVADA";
@@ -1101,6 +1221,7 @@
       classicVoyageStageId=classicFlightView.stageId;
       classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;
       classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;
+      classicSalvageEnemySequence=0;resetClassicCometShower();applyClassicSalvageShield();
       saveClassicVoyageCheckpoint(event.checkpoint);
     }
     if(event.type==="stage-start") {
@@ -1186,12 +1307,11 @@
       }
     }
     if([5,9].includes(n)) {
-      if(view.stageElapsed>=7 && classicCometSequence===0){classicCometSequence=1;showStoryTransmission("N-7","Cometa cruzando la ruta. Observa su estela antes de atravesar.",3);}
-      if(view.stageElapsed>=10 && classicCometSequence===1){
-        classicCometSequence=2;const fromLeft=n===5,vx=fromLeft?62:-62;
-        items.push({id:`voyage-comet:${n}`,type:"meteor",flightComet:true,x:fromLeft?-45:W+45,y:H*.16,
-          baseX:fromLeft?-45:W+45,vx,vy:82,r:18,s:82,damage:14,hp:2,maxHp:2,special:"comet",spriteKey:"comet",rot:Math.atan2(82,vx),rs:0,p:0,phase:n,amp:0,alpha:1,life:16});
-      }
+      if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
+      NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
+        if(event.type==="warning")showStoryTransmission("N-7",event.text,2);
+        if(event.type==="spawn")items.push(event.item);
+      });
     }
     if([4,8].includes(n) && view.stageElapsed>=15 && classicCometWarning!==n) {
       classicCometWarning=n;const x=W*.45;
@@ -1209,6 +1329,7 @@
     item.id=`${NeonCampaign.CLASSIC_PURSUIT_VERSION}:${currentLevel}:${stage}:${ordinal}`;
     item.x=item.baseX=W*(ordinal%2===0?.25:.75);item.y=-65;item.rot=0;item.rs=0;
     item.flightPatrol=true;item.damage=16;item.s=role==="raider"?150:138;
+    item.salvageRole=role;item.salvageDropId=`${classicFlightView?.stageId||`${currentLevel+1}.0`}:enemy:${classicSalvageEnemySequence++}`;
     item.r=interceptor?35:32;item.hp=item.maxHp=interceptor?3:2;
     item.classicScout=NeonCampaign.createClassicPursuer({x:item.x,width:W,height:H,role,
       seed:stage*17+ordinal,minAttackY:(classicFlightBounds?.presentationTop||95)+45,baseSpeed:item.s});
@@ -1217,9 +1338,9 @@
     if(!classicPursuitAnnounced.has(role)) {
       classicPursuitAnnounced.add(role);
       showStoryTransmission(role==="raider"?"N-7":"RED ATLAS",role==="raider"
-        ?"Nos persiguen entre los restos. Su arma fija tu posición: cambia de rumbo cuando cargue."
+        ?"Los atacantes nos siguen. Saca el CRONIUM de este campo de restos."
         :role==="interceptor"?"CH-02 en intercepción. Sus motores le permiten cerrar el flanco."
-        :"CH-01 ha detectado el CRONIUM. Mantén espacio para esquivar su disparo.",4.2);
+        :"La red Atlas no reconoce nuestra identificación. Mantén el rumbo hacia Gaia.",4.2);
     }
     return item;
   }
@@ -1345,7 +1466,7 @@
     else if (atlasBoss.state === "entry") status = "Tu carga activa la contención. Desactiva el núcleo para abrir el paso.";
     else if (atlasBoss.state === "disabled") status = "Atlas: «Identidad confirmada. Gaia autoriza el acceso».";
     else if (atlasBoss.state === "phaseBreak") status = "N-7: «Es un bucle de contención. Rompe el enlace, salva al guardián».";
-    else if (atlasBoss.state === "charge") status = "ARMAS CARGANDO";
+    else if (atlasBoss.state === "charge") status = "CONTENCIÓN ORBITAL ACTIVA";
     else status = atlasBoss.vulnerability ? "NÚCLEO EXPUESTO · alinea la nave y abre fuego." : "BLINDAJE CERRADO · Atlas cambia de flanco.";
     if (status !== atlasLastStatus) { ui.atlasStatus.textContent = status; atlasLastStatus = status; layoutChanged = true; }
     if (layoutChanged) positionAtlasArena();
@@ -1356,10 +1477,12 @@
     if (event.clearProjectiles || event.type === "shutdown") {
       items = items.filter(item => !item.guardianProjectile);
     }
-    if (event.type === "warning") tone(event.phase === 1 ? 290 : 380, .16, "triangle", .045);
     if (event.type === "volley") tone(95, .12, "sawtooth", .045);
     if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
-    if (event.type === "shutdown") { score += 250; tone(640, .28, "sine", .06); }
+    if (event.type === "shutdown") {
+      score += 250;tone(640, .28, "sine", .06);
+      spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
+    }
     if (event.type === "disabled") completeLevel();
   }
 
@@ -1733,13 +1856,12 @@
     if (!ui.fire || !ui.ammo) return;
     if(isUnifiedClassic() && classicWeapons) {
       ammo=classicWeapons.charges;
-      const remaining=Math.max(0,NeonCampaign.CLASSIC_WEAPON_RULES.rechargeSeconds-classicWeapons.recharge);
-      ui.ammo.textContent=ammo<MAX_AMMO ? `${ammo}/${MAX_AMMO} · ${remaining.toFixed(1)}s` : `${ammo}/${MAX_AMMO}`;
+      ui.ammo.textContent="";
       ui.fire.disabled=state!=="playing" || warpTimer>0;
       ui.fire.setAttribute("aria-disabled", String(ui.fire.disabled || ammo<=0 || manualShotCooldown>0));
       ui.fire.classList.toggle("empty",ammo<=0);
       const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
-      ui.fire.setAttribute("aria-label",`Mantener para disparar ${weapon.label}. ${weapon.description} ${ammo} de ${MAX_AMMO} cargas; recarga automática`);
+      ui.fire.setAttribute("aria-label",ammo>0?`Mantener para disparar ${weapon.label}. La energía se recupera durante el vuelo.`:"El arma está recuperando energía. Mantén para disparar cuando esté disponible.");
       return;
     }
     if (JOURNEY_DEMO || atlasBoss) {
@@ -1941,6 +2063,8 @@
     classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
+    if(isUnifiedClassic())beginClassicSalvageRun(Boolean(voyageEntry));
+    resetClassicCometShower();
     // A restored entry has already emitted its checkpoint event. Initialize
     // the same encounter grace here instead of waiting for that event to replay.
     classicPatrolTimer=classicFlightView?(classicFlightView.stageNumber===1?4:7):0;
@@ -1948,7 +2072,7 @@
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     if(isUnifiedClassic()) {
-      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.arcadePulse);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
+      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
       if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
       if(classicFlight){
         ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
@@ -1983,7 +2107,7 @@
       collected=classicFlightView.collected;
       if(voyageEntry){hull=voyageEntry.hull;score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
     }
-    ammo = INITIAL_AMMO;
+    ammo = classicWeapons?classicWeapons.charges:INITIAL_AMMO;
     manualShotCooldown = 0;
     elapsed = 0;
     continued = false;
@@ -2017,6 +2141,7 @@
     player.x = player.target = W / 2;
     player.drift = 0;
     resetPowers();
+    applyClassicSalvageShield();
 
     energySpawned = 0;
     if(classicFlight)energySpawned=collected;
@@ -2555,6 +2680,37 @@
     return false;
   }
 
+  function segmentsCross(ax, ay, bx, by, cx, cy, dx, dy) {
+    const cross = (px, py, qx, qy, rx, ry) => (qx-px)*(ry-py)-(qy-py)*(rx-px);
+    const a=cross(ax,ay,bx,by,cx,cy),b=cross(ax,ay,bx,by,dx,dy);
+    const c=cross(cx,cy,dx,dy,ax,ay),d=cross(cx,cy,dx,dy,bx,by);
+    if(a*b>0 || c*d>0)return false;
+    return Math.max(Math.min(ax,bx),Math.min(cx,dx))<=Math.min(Math.max(ax,bx),Math.max(cx,dx))+1e-8 &&
+      Math.max(Math.min(ay,by),Math.min(cy,dy))<=Math.min(Math.max(ay,by),Math.max(cy,dy))+1e-8;
+  }
+
+  function sweptCircleHitsShip(startX, startY, endX, endY, radius) {
+    // Sweep the authored collision polygon itself. Fast nuclei and enemy
+    // projectiles must not jump across it, and cosmetic tails never damage it.
+    if(Math.max(startX,endX)+radius< -112 || Math.min(startX,endX)-radius>112 ||
+      Math.max(startY,endY)+radius< -151 || Math.min(startY,endY)-radius>98)return false;
+    if(circleHitsShip(startX,startY,radius)||circleHitsShip(endX,endY,radius))return true;
+    const radiusSquared=radius*radius;
+    for(let index=0;index<SHIP_COLLISION_OUTLINE.length;index++) {
+      const [ax,ay]=SHIP_COLLISION_OUTLINE[index];
+      const [bx,by]=SHIP_COLLISION_OUTLINE[(index+1)%SHIP_COLLISION_OUTLINE.length];
+      if(segmentsCross(startX,startY,endX,endY,ax,ay,bx,by) ||
+        squaredDistanceToSegment(ax,ay,startX,startY,endX,endY)<=radiusSquared ||
+        squaredDistanceToSegment(bx,by,startX,startY,endX,endY)<=radiusSquared)return true;
+    }
+    return false;
+  }
+
+  function releaseClassicShowerComet(item) {
+    if(item?.showerComet && typeof classicCometShower!=="undefined" && classicCometShower)
+      NeonCampaign.releaseCometShowerItem(classicCometShower,item);
+  }
+
   function hit(item) {
     const cos = Math.cos(item.rot || 0);
     const sin = Math.sin(item.rot || 0);
@@ -2563,6 +2719,13 @@
       const offsetY = circle.x * sin + circle.y * cos;
       const localX = item.x + offsetX - player.x;
       const localY = item.y + offsetY - player.y;
+      if((item.showerComet || item.guardianProjectile || item.classicScoutProjectile || item.salvagePickup) &&
+        Number.isFinite(item.previousX) && Number.isFinite(item.previousY)) {
+        const previousPlayerX=Number.isFinite(player.previousCollisionX)?player.previousCollisionX:player.x;
+        const previousPlayerY=Number.isFinite(player.previousCollisionY)?player.previousCollisionY:player.y;
+        if(sweptCircleHitsShip(item.previousX+offsetX-previousPlayerX,
+          item.previousY+offsetY-previousPlayerY,localX,localY,circle.r))return true;
+      }
       if (circleHitsShip(localX, localY, circle.r)) return true;
     }
     return false;
@@ -2734,6 +2897,7 @@
       for (const key in powers) powers[key] = 0;
       ui.powerHud.classList.add("hidden");
       hideWarning();
+      for(const item of items)releaseClassicShowerComet(item);
       items = [];
       gates = [];
       shots.length = 0;
@@ -2747,6 +2911,7 @@
   }
 
   function collectItem(item) {
+    if(item.type==="salvage")return collectClassicScrap(item);
     if(item.type==="flightModule") {
       if(!classicEquipment.recoveredTwin) {
         if(!persistClassicEquipment({...classicEquipment,recoveredTwin:true}))return false;
@@ -2839,6 +3004,10 @@
   }
 
   function animateScoutHit(target, destroyed) {
+    if(destroyed) {
+      spawnClassicScrap(target);
+      releaseClassicShowerComet(target);
+    }
     const animator = target.n7?.ch01Animator || target.classicScout?.animator;
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
@@ -3068,6 +3237,7 @@
     items = items.filter((item) => {
       if (!isThreat(item) || !protectedGates.some((gate) => threatOverlapsGateCorridor(item, gate))) return true;
       removed++;
+      releaseClassicShowerComet(item);
       if (item === tractorTarget) tractorTarget = null;
       return false;
     });
@@ -3126,6 +3296,27 @@
 
       if (gate.y - gate.h / 2 > H + 30) gates.splice(index, 1);
     }
+  }
+
+  function advanceClassicSalvagePickup(item, dt) {
+    // A destroyed machine leaves a physical pickup. Only collectItem/ledger can
+    // credit it after contact; a magnetic approach is presentation, not credit.
+    item.previousX=item.x;item.previousY=item.y;
+    item.life=(Number.isFinite(item.life)?item.life:14)-dt;
+    item.rot=Number.isFinite(item.rot)?item.rot:0;
+    item.rs=Number.isFinite(item.rs)?item.rs:0;
+    item.p=Number.isFinite(item.p)?item.p:0;
+    const dx=player.x-item.x,dy=player.y-item.y,distance=Math.hypot(dx,dy);
+    if(item.bossSalvage || distance<=150) {
+      const speed=item.bossSalvage?1100:360+240*(1-Math.min(1,distance/150));
+      const travel=Math.min(distance,speed*dt);
+      if(distance>0){item.x+=dx/distance*travel;item.y+=dy/distance*travel;}
+    } else {
+      item.vx=(Number.isFinite(item.vx)?item.vx:0)*Math.pow(.15,dt);
+      item.vy=Math.min(120,(Number.isFinite(item.vy)?item.vy:(Number.isFinite(item.s)?item.s:65))+18*dt);
+      item.x+=item.vx*dt;item.y+=item.vy*dt;
+    }
+    return item.life>0 && item.x> -80 && item.x<W+80 && item.y<H+120;
   }
 
   function update(dt) {
@@ -3203,6 +3394,7 @@
     if (lv.hazard === "gravity") player.drift = Math.sin(elapsed * 0.8) * 22;
     else player.drift = 0;
 
+    player.previousCollisionX=player.x;player.previousCollisionY=player.y;
     const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
@@ -3311,13 +3503,21 @@
       // Recovering the final fragment can replace the field with the Atlas
       // arena synchronously. The old loop indexes must not read that old field.
       if (!item) continue;
-      if(item.classicScoutProjectile && item.tacticsVersion===NeonCampaign.CLASSIC_PURSUIT_VERSION) {
+      if(item.salvagePickup) {
+        if(!advanceClassicSalvagePickup(item,dt*scale)){items.splice(index,1);continue;}
+      } else if(item.showerComet) {
+        if(!NeonCampaign.advanceShowerComet(item,dt*scale)) {
+          releaseClassicShowerComet(item);items.splice(index,1);continue;
+        }
+      } else if(item.classicScoutProjectile && item.tacticsVersion===NeonCampaign.CLASSIC_PURSUIT_VERSION) {
+        item.previousX=item.x;item.previousY=item.y;
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0||item.x< -60||item.x>W+60){items.splice(index,1);continue;}
       } else if(item.flightComet) {
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
       } else if (item.guardianProjectile) {
+        item.previousX=item.x;item.previousY=item.y;
         item.x += item.vx * dt * scale;
         item.y += item.vy * dt * scale;
         item.life -= dt * scale;
@@ -3340,10 +3540,10 @@
       if (item.type === "journeyPart") item.y = Math.min(item.y, player.y - 65);
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
-      if (wave && isThreat(item) && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
+      if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
-      if (lv.hazard === "phantom" && isThreat(item)) {
+      if (lv.hazard === "phantom" && isThreat(item) && !item.showerComet) {
         item.alpha = 0.20 + 0.80 * Math.abs(Math.sin(elapsed * 1.8 + item.phase));
       } else {
         item.alpha = 1;
@@ -3352,6 +3552,7 @@
       // La comprobación se repite después de aplicar ondas y órbitas: una
       // amenaza nacida fuera tampoco puede serpentear dentro del pasillo.
       if (isThreat(item) && threatOverlapsProtectedCorridor(item)) {
+        releaseClassicShowerComet(item);
         items.splice(index, 1);
         if (item === tractorTarget) tractorTarget = null;
         continue;
@@ -3364,9 +3565,10 @@
         item.y += dy * dt * 5.8;
       }
 
-      if(interceptClassicProjectile(item)){items.splice(index,1);continue;}
+      if(interceptClassicProjectile(item)){releaseClassicShowerComet(item);items.splice(index,1);continue;}
       if (hit(item)) {
-        if(collectItem(item)===false)continue;
+        if(collectItem(item)===false){if(item.salvagePickup)item.life=Math.max(item.life,2);continue;}
+        releaseClassicShowerComet(item);
         const actualIndex = items.indexOf(item);
         if (actualIndex >= 0) items.splice(actualIndex, 1);
         if (item === tractorTarget) tractorTarget = null;
@@ -3374,7 +3576,7 @@
         continue;
       }
 
-      if (item.y - item.r > H) {
+      if (!item.showerComet && item.y - item.r > H) {
         if (item.type === "energy") {
           combo = 1;
           comboTimer = 0;
@@ -4366,17 +4568,47 @@
   }
 
   function drawAtlasProjectile(item) {
-    ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.rot);
-    drawAtlasVfx(0, 27, 68, 1, .90);
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.rotate(Math.atan2(item.vy || 1, item.vx || 0) + Math.PI / 2);
+    if (!drawHostileOrdnance(item, 2, 64)) drawAtlasVfx(0, 27, 68, 1, .90);
+    ctx.restore();
+  }
+
+  // The illustrated core and its short wake share the physics pivot. No aim
+  // line, predicted landing point or additional update clock is drawn.
+  function drawHostileOrdnance(item, row = 0, size = 52) {
+    const atlas = SPRITES.hostileOrdnance;
+    if (!spriteReady(atlas)) return false;
+    const age = Number.isFinite(item.life) ? Math.max(0, 6 - item.life) : 0;
+    const cell = atlas.naturalWidth / 4;
+    const frame = Math.floor(age * (row === 2 ? 10 : 12)) % 4;
+    ctx.drawImage(atlas, frame * cell, row * cell, cell, cell,
+      -size / 2, -size / 2, size, size);
+    return true;
+  }
+
+  function drawSalvagePickup(item) {
+    if (!spriteReady(SPRITES.hostileOrdnance)) return;
+    const atlas = SPRITES.hostileOrdnance, cell = atlas.naturalWidth / 4;
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.globalAlpha *= Math.min(1, Math.max(0, item.life ?? 1));
+    ctx.rotate(Math.sin((item.p || 0) * .5) * .18);
+    // Early drops are raw scrap. Silver, gold and stellar coins are reserved
+    // for their actual denominations, never used to mislabel a nine-scrap drop.
+    const size = item.bossSalvage ? 56 : 38;
+    ctx.drawImage(atlas, 0, cell * 3, cell, cell, -size / 2, -size / 2, size, size);
     ctx.restore();
   }
 
   function drawArcadePulse(kind, age = 0, size = 72, alpha = 1) {
-    if (!spriteReady(SPRITES.arcadePulse)) return false;
+    const gaiaReady = spriteReady(SPRITES.gaiaPulse);
+    const atlas = gaiaReady ? SPRITES.gaiaPulse : SPRITES.arcadePulse;
+    if (!spriteReady(atlas)) return false;
     const row = kind === "impact" ? 3 : kind === "lance" ? 2 : kind === "twin" ? 1 : 0;
-    const frame = kind === "impact" ? (age < .035 ? 0 : age < .09 ? 1 : age < .165 ? 2 : 3)
+    const frame = gaiaReady ? (kind === "impact" ? Math.min(3, Math.floor(age * 16)) : Math.floor(age * 12) % 4)
+      : kind === "impact" ? (age < .035 ? 0 : age < .09 ? 1 : age < .165 ? 2 : 3)
       : Math.floor(age / (row === 0 ? .06 : row === 1 ? .05 : .055)) % 4;
-    const atlas=SPRITES.arcadePulse,cell=atlas.naturalWidth/4;
+    const cell=atlas.naturalWidth/4;
     ctx.save();ctx.globalAlpha*=alpha;
     ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
     ctx.restore();return true;
@@ -4413,13 +4645,14 @@
   function hasClassicTwinMounts() {
     // Some isolated render fixtures deliberately do not install campaign UI.
     return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
-      typeof classicEquipment !== "undefined" && ["twin","lance"].includes(classicEquipment.selected);
+      typeof classicEquipment !== "undefined" &&
+      (["twin","lance"].includes(classicEquipment.selected) || classicEquipment.twinPrepared === true);
   }
 
   function classicTwinFrame() {
     const cooldown = atlasBoss ? manualShotCooldown : classicWeapons?.cooldown || 0;
     if (cooldown > .10) return 2;
-    if (classicWeapons && classicWeapons.charges < 3 && classicWeapons.recharge > .10) return 1;
+    if (classicWeapons && classicWeapons.charges < 20 && classicWeapons.recharge > .10) return 1;
     return 0;
   }
 
@@ -4732,6 +4965,22 @@
   }
 
   function drawEnergy(item) {
+    if (typeof isUnifiedClassic === "function" && isUnifiedClassic()) {
+      // The authored core already contains its illumination. Repeated Canvas
+      // blur/gradients on every pickup cost a full software pass per object.
+      // Keep the same half-size appearance and physical collection radius.
+      const sequence = [0,1,2,3,4,5,4,3,2,1];
+      const phase = Number.isFinite(item.phase) ? item.phase : 0;
+      const frame = frameFrom("core", sequence[Math.floor((elapsed * 9 + phase) % sequence.length)]);
+      const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
+      ctx.save(); ctx.translate(item.x, item.y);
+      ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
+      ctx.shadowBlur = 0;
+      drawImageCentered(frame, item.r * 2.85, item.r * 2.85, -item.rot * .08);
+      if (spriteReady(SPRITES.croniumFragment))
+        drawImageCentered(SPRITES.croniumFragment, item.r * 2.10, item.r * 2.10, item.rot * .06, .72);
+      ctx.restore(); return;
+    }
     ctx.save();
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
@@ -4799,7 +5048,7 @@
     const sprite=frame.image==="assets/ch02_interceptor_atlas_v1.webp"?SPRITES.ch02:SPRITES.ch01;
     if(!spriteReady(sprite))return false;
     const {x, y, width, height} = frame.rect;
-    ctx.shadowBlur = 17;
+    ctx.shadowBlur = typeof isUnifiedClassic === "function" && isUnifiedClassic() ? 0 : 17;
     ctx.shadowColor = frame.damaged ? "#ff6079" : "#50e8ff";
     ctx.drawImage(sprite, x, y, width, height,
       -frame.drawSize * frame.pivot.x, -frame.drawSize * frame.pivot.y,
@@ -4813,6 +5062,12 @@
     ctx.translate(item.x, item.y);
 
     if (item.n7Projectile || item.classicScoutProjectile) {
+      if (item.classicScoutProjectile) {
+        ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
+        if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
+          item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
+        ctx.restore(); return;
+      }
       const atlasPulse = item.classicScoutProjectile;
       ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
       ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
@@ -4824,7 +5079,7 @@
       ctx.restore();
       return;
     }
-    const telegraph = item.n7?.telegraph || item.classicScout?.telegraph || 0;
+    const telegraph = item.n7?.telegraph || 0;
     if (telegraph > 0) {
       ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
       ctx.lineWidth = 2;
@@ -5196,6 +5451,7 @@
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
       if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
+      else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);

@@ -6,8 +6,10 @@ const finite = (value, name) => {
 const weapon = definition => Object.freeze({...definition,
   barrels: Object.freeze(definition.barrels.map(barrel => Object.freeze({...barrel})))});
 
+// Rules and ammunition are match-local. Saved equipment keeps the stable
+// pulse/twin/lance identifiers; a new run always adopts the current magazine.
 export const CLASSIC_WEAPON_RULES = Object.freeze({
-  version: 'classic-weapons-v1', maxCharges: 3, rechargeSeconds: 3.6,
+  version: 'classic-weapons-v2', maxCharges: 20, rechargeSeconds: 2,
   maxDelta: .05, maxProjectiles: 32, boundsMargin: 80,
   types: Object.freeze({
     pulse: weapon({id: 'pulse', label: 'Pulso', damageMultiplier: 1,
@@ -31,13 +33,22 @@ function knownType(type) {
   return type;
 }
 
+function rechargeInterval(seconds) {
+  finite(seconds, 'recharge interval');
+  if (seconds < 1.5 || seconds > CLASSIC_WEAPON_RULES.rechargeSeconds) {
+    throw new RangeError('Recharge interval must be between 1.5 and 2 seconds');
+  }
+  return seconds;
+}
+
 /**
  * One match, driven by the existing legacy loop. Units are logical Canvas
  * pixels and seconds. No rendering, scheduling, save or reward lives here.
  * Callers pause by passing zero delta (or by not calling advance).
  */
 export function createClassicWeapons({type = 'pulse', unlocked = ['pulse'],
-  width = 720, height = 1280} = {}) {
+  width = 720, height = 1280, rechargeSeconds = CLASSIC_WEAPON_RULES.rechargeSeconds} = {}) {
+  rechargeInterval(rechargeSeconds);
   finite(width, 'width'); finite(height, 'height'); knownType(type);
   if (width < 240 || height < 240) throw new RangeError('Invalid weapon arena');
   if (!Array.isArray(unlocked) || unlocked.length === 0) {
@@ -48,13 +59,27 @@ export function createClassicWeapons({type = 'pulse', unlocked = ['pulse'],
   return {
     version: CLASSIC_WEAPON_RULES.version, width, height,
     selected: type, unlocked: available, charges: CLASSIC_WEAPON_RULES.maxCharges,
-    recharge: 0, cooldown: 0, elapsed: 0,
+    rechargeSeconds, recharge: 0, cooldown: 0, elapsed: 0,
     projectileSequence: 0, eventSequence: 0, shotSequence: 0, projectiles: []
   };
 }
 
 function event(state, type, details = {}) {
   return {id: `${state.version}:event:${++state.eventSequence}`, type, ...details};
+}
+
+/**
+ * A purchased cooling module changes this match's interval without granting
+ * ammunition. Keep elapsed recovery seconds, bounded just before the new
+ * boundary; only a subsequent played-time update can emit a recovered round.
+ */
+export function setClassicRechargeInterval(state, seconds) {
+  rechargeInterval(seconds);
+  if (state.rechargeSeconds === seconds) return seconds;
+  state.rechargeSeconds = seconds;
+  state.recharge = state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 :
+    Math.min(state.recharge, seconds - 1e-9);
+  return seconds;
 }
 
 /** Reward/save code owns when this is called; repeated delivery is harmless. */
@@ -132,10 +157,10 @@ export function advanceClassicWeapons(state, delta) {
   state.cooldown = Math.max(0, state.cooldown - dt);
   if (state.charges < CLASSIC_WEAPON_RULES.maxCharges) {
     state.recharge += dt;
-    while (state.recharge + 1e-9 >= CLASSIC_WEAPON_RULES.rechargeSeconds &&
+    while (state.recharge + 1e-9 >= state.rechargeSeconds &&
       state.charges < CLASSIC_WEAPON_RULES.maxCharges) {
       state.charges++;
-      state.recharge = Math.max(0, state.recharge - CLASSIC_WEAPON_RULES.rechargeSeconds);
+      state.recharge = Math.max(0, state.recharge - state.rechargeSeconds);
       events.push(event(state, 'recharged', {charges: state.charges}));
     }
   }
@@ -190,7 +215,7 @@ export function classicWeaponSnapshot(state) {
     label: definition.label, description: definition.description,
     damageMultiplier: definition.damageMultiplier,
     rechargeProgress: state.charges === CLASSIC_WEAPON_RULES.maxCharges ? 0 :
-      Math.min(1, state.recharge / CLASSIC_WEAPON_RULES.rechargeSeconds),
+      Math.min(1, state.recharge / state.rechargeSeconds),
     projectiles: state.projectiles.map(projectile => ({...projectile,
       hitTargets: [...projectile.hitTargets]}))};
 }

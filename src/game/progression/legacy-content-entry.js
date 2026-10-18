@@ -1,6 +1,10 @@
 import {AUTHORED_LEVELS} from './level-designs.js';
 export {createVoyageScore} from '../audio/voyage-score.js';
 export {createCompletionJournal} from './completion-journal.js';
+export {SCRAP_ECONOMY_KEY, SCRAP_ECONOMY_RULES, SCRAP_REWARDS, SCRAP_UPGRADES,
+  createScrapLedger, rewardForEnemy, formatDenominations} from './scrap-economy.js';
+export {COMET_SHOWER_VERSION, createCometShower, advanceCometShower, advanceShowerComet,
+  releaseCometShowerItem, showerCometIntersectsCircle, cometShowerSnapshot} from './comet-shower.js';
 export {createClassicEquipment,normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,canEquipClassicWeapon} from './classic-arsenal.js';
 export {EncounterDirector, advanceEnemy, makeLegacyEntity} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
@@ -40,5 +44,6 @@ export {createChronosVoyage, CHRONOS_VOYAGE_VERSION, CHRONOS_VOYAGE_KEY,
   CHRONOS_VOYAGE_STAGES, normalizeChronosVoyageCheckpoint, createChronosVoyageCheckpoint} from './chronos-flight.js';
 export {getChronosDestructionPose} from '../animation/chronos-destruction.js';
 export {CLASSIC_WEAPON_RULES, createClassicWeapons, triggerClassicWeapon, advanceClassicWeapons,
-  hitClassicProjectile, unlockClassicWeapon, selectClassicWeapon, classicWeaponSnapshot} from '../combat/classic-weapons.js';
+  hitClassicProjectile, unlockClassicWeapon, selectClassicWeapon, classicWeaponSnapshot,
+  setClassicRechargeInterval} from '../combat/classic-weapons.js';
 export {calculateFlightBounds, createRelativeFlightInput, beginFlightInput, moveFlightInput, endFlightInput} from '../ship/flight-controls.js';

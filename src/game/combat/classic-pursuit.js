@@ -1,19 +1,36 @@
 import {createCh01Animator} from '../animation/ch01-animator.js';
 
-export const CLASSIC_PURSUIT_VERSION = 'classic-pursuit-v2';
+export const CLASSIC_PURSUIT_VERSION = 'classic-pursuit-v3';
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 const approach = (value, target, amount) => value + clamp(target - value, -amount, amount);
 const profiles = Object.freeze({
-  raider: Object.freeze({warning: .82, recovery: 2.05, maxAttacks: 3, holdSeconds: 13,
-    depth: .26, lateralSpeed: 110, acceleration: 215, sampleInterval: .42, damage: 14}),
-  scout: Object.freeze({warning: .96, recovery: 2.35, maxAttacks: 3, holdSeconds: 14.5,
-    depth: .28, lateralSpeed: 78, acceleration: 145, sampleInterval: .6, damage: 12}),
-  interceptor: Object.freeze({warning: .82, recovery: 1.85, maxAttacks: 4, holdSeconds: 15.5,
-    depth: .24, lateralSpeed: 148, acceleration: 250, sampleInterval: .4, damage: 14})
+  raider: Object.freeze({warning: .32, recovery: 1.25, maxAttacks: 8, holdSeconds: 20,
+    depth: .30, lateralSpeed: 140, acceleration: 265, sampleInterval: .24,
+    projectileSpeed: 360, leadSeconds: .32, damage: 14}),
+  scout: Object.freeze({warning: .38, recovery: 1.6, maxAttacks: 7, holdSeconds: 22,
+    depth: .29, lateralSpeed: 104, acceleration: 190, sampleInterval: .32,
+    projectileSpeed: 335, leadSeconds: .22, damage: 12}),
+  interceptor: Object.freeze({warning: .30, recovery: 1.15, maxAttacks: 10, holdSeconds: 24,
+    depth: .27, lateralSpeed: 176, acceleration: 315, sampleInterval: .2,
+    projectileSpeed: 390, leadSeconds: .38, damage: 15})
 });
 
+// Only already observed positions can influence a lead. Sampling limits both
+// reaction speed and velocity; neither current input nor a launched shot is read.
+function observePlayer(enemy, player) {
+  if (enemy.age + 1e-9 < enemy.nextObservationAt) return;
+  const prior = enemy.observation, elapsed = prior ? enemy.age - prior.at : 0;
+  const vx = elapsed > 0 ? clamp((player.x - prior.x) / elapsed, -720, 720) : 0;
+  const vy = elapsed > 0 ? clamp((player.y - prior.y) / elapsed, -560, 560) : 0;
+  enemy.observation = {x: player.x, y: player.y, at: enemy.age,
+    vx: prior ? prior.vx * .35 + vx * .65 : 0,
+    vy: prior ? prior.vy * .35 + vy * .65 : 0};
+  enemy.nextObservationAt = enemy.age + .2;
+}
+
+
 /** An encounter policy inside the existing item/update loop; owns no clock or RAF.
- * Aim is sampled when charging starts, never predicted or changed by later input.
+ * Aim uses bounded lead from past position samples, locked at weapon deployment.
  * The caller integrates Y once using item.s. This policy brakes that speed to
  * hold a visible combat band, then resumes forward flight on a bounded retreat.
  */
@@ -35,6 +52,7 @@ export function createClassicPursuer({x, width = 720, height = 1280,
     targetX: clamp(x, combatMargin + entryInset, width - combatMargin - entryInset), vx: 0,
     combatMinX: combatMargin, combatMaxX: width - combatMargin,
     holdY: null, combatStartedAt: null, retreatReason: null, repositionCount: 0,
+    observation: null, nextObservationAt: 0, observedTarget: null, leadOffset: 0,
     baseSpeed, nextTargetAt: 0, nextFire: 1.25,
     fired: 0, telegraph: 0, lockedTarget: null, attackScheduled: false,
     chargeSerial: 0, firedSerial: -1, previousHp: null, chargeStartedAt: null,
@@ -57,6 +75,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   enemy.baseSpeed ??= Math.max(1, item.s);
   enemy.age += step;
   enemy.stateAge += step;
+  observePlayer(enemy, player);
   const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
   enemy.previousHp = hp;
   const enter = state => {
@@ -66,7 +85,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   const combatX = value => clamp(value, enemy.combatMinX, enemy.combatMaxX);
   const minimumHoldY = enemy.minAttackY + 52;
   const maximumHoldY = Math.max(minimumHoldY, Math.min(enemy.height * .52, player.y - 350));
-  enemy.holdY = clamp(enemy.height * profile.depth + Math.sin(enemy.phase) * 22,
+  enemy.holdY = clamp(enemy.height * profile.depth + Math.sin(enemy.phase + enemy.fired * .8) * 25,
     minimumHoldY, maximumHoldY);
   const canAttack = () => hp > 0 && enemy.state !== 'retreat' &&
     item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 &&
@@ -77,7 +96,8 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     enemy.lockedTarget = null;
   };
   const laneTarget = () => {
-    const observedX = combatX(player.x);
+    const sample = enemy.observation;
+    const observedX = combatX(sample.x + clamp(sample.vx * .18, -64, 64));
     const span = Math.min(enemy.width * .22, 128);
     return combatX(enemy.role === 'interceptor' ? observedX + enemy.side * span :
       enemy.role === 'scout' ? enemy.baseX * .5 + observedX * .5 + enemy.side * span * .32 :
@@ -137,7 +157,13 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     }
     if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth &&
         Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
-      enemy.lockedTarget = Object.freeze({x: player.x, y: player.y});
+      const sample = enemy.observation;
+      enemy.leadOffset = clamp(sample.vx * profile.leadSeconds, -110, 110);
+      enemy.observedTarget = Object.freeze({...sample});
+      enemy.lockedTarget = Object.freeze({
+        x: clamp(sample.x + enemy.leadOffset, 24, enemy.width - 24),
+        y: clamp(sample.y + clamp(sample.vy * .12, -48, 48), item.y + 268, enemy.height - 24)
+      });
       enemy.targetX = item.x;
       enemy.chargeStartedAt = enemy.age;
       enemy.chargeSerial++;
@@ -148,7 +174,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   if (enemy.state === 'charge') {
     const warningElapsed = enemy.age - enemy.chargeStartedAt;
     enemy.telegraph = clamp(warningElapsed / profile.warning, 0, 1);
-    // The full warning precedes requesting the produced attack animation.
+    // A brief physical weapon-deployment pose precedes the produced attack.
     // Only its returned fire event can emit one projectile for this charge.
     if (warningElapsed >= profile.warning && !enemy.attackScheduled) {
       enemy.attackScheduled = enemy.animator.request('attack');
@@ -175,14 +201,15 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     const aim = enemy.lockedTarget;
     const dy = Math.max(1, aim.y - (item.y + 38));
     const dx = clamp(aim.x - item.x, -dy * .65, dy * .65);
-    const length = Math.hypot(dx, dy), speed = 295;
+    const length = Math.hypot(dx, dy), speed = profile.projectileSpeed;
     const shot = {
       type: 'meteor', x: item.x, baseX: item.x, y: item.y + 38,
       r: 9, s: speed, vx: dx / length * speed, vy: dy / length * speed, life: 5,
       damage: profile.damage, rot: 0, rs: 0, p: 0, phase: 0,
       amp: 0, special: '', alpha: 1, hp: 1, maxHp: 1,
       classicScoutProjectile: true, tacticsVersion: CLASSIC_PURSUIT_VERSION,
-      attackSerial: enemy.chargeSerial, role: enemy.role
+      attackSerial: enemy.chargeSerial, role: enemy.role,
+      observedTarget: {...enemy.observedTarget}, leadOffset: enemy.leadOffset
     };
     enemy.firedSerial = enemy.chargeSerial;
     enemy.fired++;

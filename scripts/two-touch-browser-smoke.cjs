@@ -15,7 +15,7 @@ const started=Date.now();
 const report={status:'running',exitCode:null,startedAt:new Date().toISOString(),command:process.argv,sourceRoot:root,
   baseline:values.baseline,profiles:[],limits:[
     'Actual Chromium, a 390x844 touch viewport and CDP contacts; no game state, save, hull, ammo, clock, entity or progression fixture writes.',
-    'The preview QA unlock is activated through its checkbox. Every round is selected through the actual menu.',
+    'Only the unlocked opening stage is selected through the actual menu. No QA unlock, save or progression injection is used.',
     'A read-only IIFE hook observes input, weapon counters and gameplay clocks. RAF instrumentation wraps the existing owner and never requests a frame.',
     'These are short controls regressions, not complete natural missions, visual acceptance, physical iPhone or Safari certification.',
     'Service workers are blocked. No cache lifecycle claim.',
@@ -54,10 +54,10 @@ async function anchors(){const canvas=await page.locator('#canvas').boundingBox(
 async function round(){if(activeContacts.size)await cancel();await page.goto(new URL('juego/index.html',server.url).href,{waitUntil:'load'});
   await wait(()=>typeof window.__TWO_TOUCH_QA__==='function'&&__TWO_TOUCH_QA__().state==='menu');
   await page.locator('#levels').click();await wait(()=>document.querySelectorAll('#levelGrid button').length===10);
-  assert.equal(await page.locator('#levelGrid button:disabled').count(),0);
-  await page.locator('#levelGrid button').nth(2).click();await page.locator('#launch').click();
-  await wait(()=>{const q=__TWO_TOUCH_QA__();return q.state==='playing'&&q.currentLevel===2&&q.warpTimer===0&&q.elapsed>.12&&q.assets.every(a=>a.loaded);});
-  const q=await inspect();assert.equal(q.weapons.charges,3);return anchors();}
+  assert.equal(await page.locator('#levelGrid button').first().isDisabled(),false);
+  await page.locator('#levelGrid button').first().click();await page.locator('#launch').click();
+  await wait(()=>{const q=__TWO_TOUCH_QA__();return q.state==='playing'&&q.currentLevel===0&&q.warpTimer===0&&q.elapsed>.12&&q.assets.every(a=>a.loaded);});
+  const q=await inspect();assert.equal(q.weapons.charges,20);return anchors();}
 async function check(name,operation){const entry={name,status:'running',assertions:[],samples:{}};profile.checks.push(entry);const began=Date.now();await save();
   console.log(`[two touch ${profile.id}] ${name}`);
   const expect=(label,fn)=>{try{fn();entry.assertions.push({label,status:'passed'});}catch(error){entry.assertions.push({label,status:'failed',error:errorText(error)});}};
@@ -96,28 +96,31 @@ async function runControls(){
     expect('remaining action finger never takes over the pilot',()=>{assert.equal(unchanged.input.active,false);equalNear(unchanged.player.target,released.player.target,'target x');equalNear(unchanged.player.targetY,released.player.targetY,'target y');});
     await release(a.fire.id);expect('all contacts end',()=>assert.equal(activeContacts.size,0));
   });
-  await check('holding action respects three charges, played-time recharge and weapon cadence',async(entry,expect)=>{
+  await check('holding action respects twenty rounds, gradual played-time recharge and weapon cadence',async(entry,expect)=>{
     const a=await round(),before=await inspect();await press(a.pilot);await press(a.fire);const immediately=await inspect();entry.samples.immediately=immediately;
-    expect('first shot consumes exactly one charge immediately',()=>{assert.equal(immediately.weapons.shotSequence,1);assert.equal(immediately.weapons.charges,2);});
+    expect('first shot consumes exactly one charge immediately',()=>{assert.equal(immediately.weapons.shotSequence,1);assert.equal(immediately.weapons.charges,19);});
     await wait(start=>__TWO_TOUCH_QA__().weapons.elapsed>=start+.09,immediately.weapons.elapsed);
     const cadence=await inspect();entry.samples.duringCooldown=cadence;
     expect('holding cannot burst another shot inside the pulse cooldown',()=>assert.equal(cadence.weapons.shotSequence,1));
-    await wait(start=>__TWO_TOUCH_QA__().weapons.elapsed>=start+.9,before.weapons.elapsed);
+    await wait(()=>{const q=__TWO_TOUCH_QA__();return q.weapons.charges===0&&q.weapons.shotSequence>=20;});
     const empty=await inspect();entry.samples.empty=empty;
-    expect('holding empties exactly the initial three charges',()=>{assert.equal(empty.weapons.shotSequence,3);assert.equal(empty.weapons.charges,0);assert.ok(empty.fireInput);});
+    const emptySequence=empty.weapons.shotSequence;
+    const nextRecovery=empty.weapons.elapsed+empty.weapons.rechargeSeconds-empty.weapons.recharge;
+    expect('holding empties the initial magazine plus rounds recovered during firing',()=>{assert.ok(emptySequence>=20&&emptySequence<40);assert.equal(empty.weapons.charges,0);assert.ok(empty.fireInput);});
+    expect('ammo stays out of the tactical HUD and accessible fire label',()=>{assert.equal(empty.ammoText,'');assert.doesNotMatch(empty.fireAriaLabel,/\d|cargas|segundos/i);});
     await release(a.fire.id);const releasedEmpty=await inspect();entry.samples.releasedWhileEmpty=releasedEmpty;
     expect('release while empty clears only the action contact',()=>{assert.equal(releasedEmpty.fireInput,null);assert.equal(releasedEmpty.input.active,true);});
     await press(a.fire);const pressedEmpty=await inspect();entry.samples.startedWhileEmpty=pressedEmpty;
     expect('pressing an empty battery stores held intent without granting a charge',()=>{assert.equal(pressedEmpty.fireDisabled,false);assert.equal(pressedEmpty.fireAriaDisabled,'true');
-      assert.ok(pressedEmpty.fireInput);assert.equal(pressedEmpty.weapons.charges,0);assert.equal(pressedEmpty.weapons.shotSequence,3);});
-    await wait(start=>__TWO_TOUCH_QA__().weapons.elapsed>=start+1.7,before.weapons.elapsed);
+      assert.ok(pressedEmpty.fireInput);assert.equal(pressedEmpty.weapons.charges,0);assert.equal(pressedEmpty.weapons.shotSequence,emptySequence);});
+    await wait(target=>__TWO_TOUCH_QA__().weapons.elapsed>=target,nextRecovery-.12);
     const noFreeShot=await inspect();entry.samples.beforeRecharge=noFreeShot;
-    expect('holding cannot create free shots before recharge',()=>{assert.equal(noFreeShot.weapons.shotSequence,3);assert.equal(noFreeShot.weapons.charges,0);});
+    expect('holding cannot create free shots before recharge',()=>{assert.equal(noFreeShot.weapons.shotSequence,emptySequence);assert.equal(noFreeShot.weapons.charges,0);});
     await move({...a.pilot,x:a.pilot.x+16,y:a.pilot.y-16});const moving=await inspect();entry.samples.moving=moving;
     expect('pilot remains usable with an empty held battery',()=>{assert.equal(moving.input.active,true);assert.ok(moving.player.target>empty.player.target+1);});
-    await wait(start=>__TWO_TOUCH_QA__().weapons.elapsed>=start+3.85,before.weapons.elapsed);
+    await wait(target=>__TWO_TOUCH_QA__().weapons.elapsed>=target,nextRecovery+.08);
     const recharged=await inspect();entry.samples.afterRecharge=recharged;
-    expect('one played-time recharge yields one further held shot',()=>{assert.equal(recharged.weapons.shotSequence,4);assert.equal(recharged.weapons.charges,0);assert.ok(recharged.weapons.cooldown>=0);});
+    expect('one played-time recharge yields one further held shot',()=>{assert.equal(recharged.weapons.shotSequence,emptySequence+1);assert.equal(recharged.weapons.charges,0);assert.ok(recharged.weapons.cooldown>=0);});
     await capture('held-recharge');await release(a.fire.id);const afterRelease=await inspect();entry.samples.released=afterRelease;
     expect('release while the battery button is disabled still clears action',()=>{assert.equal(afterRelease.fireInput,null);assert.equal(afterRelease.input.active,true);});
     await release(a.pilot.id);
@@ -144,7 +147,7 @@ async function runControls(){
     const a=await round();await press(a.pilot);await press(a.fire);const held=await inspect();entry.samples.held=held;
     await page.keyboard.press('Escape');await page.locator('#restart').click();await wait(token=>{const q=__TWO_TOUCH_QA__();return q.runToken>token&&q.state==='playing'&&q.warpTimer===0;},held.runToken);
     const restarted=await inspect();entry.samples.restarted=restarted;
-    expect('new run starts with three charges and no input owners',()=>{assert.equal(restarted.weapons.charges,3);assert.equal(restarted.weapons.shotSequence,0);assert.equal(restarted.input.active,false);assert.equal(restarted.fireInput,null);});
+    expect('new run starts with twenty rounds and no input owners',()=>{assert.equal(restarted.weapons.charges,20);assert.equal(restarted.weapons.shotSequence,0);assert.equal(restarted.input.active,false);assert.equal(restarted.fireInput,null);});
     await wait(start=>__TWO_TOUCH_QA__().weapons.elapsed>=start+.7,restarted.weapons.elapsed);const later=await inspect();entry.samples.later=later;
     expect('no old action is inherited by the new run',()=>assert.equal(later.weapons.shotSequence,0));await cancel();
   });
@@ -189,15 +192,16 @@ async function runControls(){
       assert.equal(sha256(body),report.packageFiles['game.js'].sha256);const marker='  legacyFrameId = requestAnimationFrame(frame);\n})();';assert.equal(source.split(marker).length,2);
       const hook=`window.__TWO_TOUCH_QA__=()=>({state,currentLevel,elapsed,hull,W,H,warpTimer,legacyRunning,runToken,player:{x:player.x,y:player.y,target:player.target,targetY:player.targetY},
         input:{...classicFlightInput},fireInput:typeof fireInput==='undefined'?null:fireInput?{...fireInput}:null,fireOwnershipAvailable:typeof fireInput!=='undefined',
-        weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge,elapsed:classicWeapons.elapsed,
-          shotSequence:classicWeapons.shotSequence,projectileSequence:classicWeapons.projectileSequence}:null,fireDisabled:ui.fire.disabled,fireAriaDisabled:ui.fire.getAttribute('aria-disabled'),
+        weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge,rechargeSeconds:classicWeapons.rechargeSeconds,elapsed:classicWeapons.elapsed,
+          shotSequence:classicWeapons.shotSequence,projectileSequence:classicWeapons.projectileSequence}:null,fireDisabled:ui.fire.disabled,fireAriaDisabled:ui.fire.getAttribute('aria-disabled'),ammoText:ui.ammo.textContent,fireAriaLabel:ui.fire.getAttribute('aria-label'),
         assets:Object.entries(SPRITES).filter(([,image])=>image.src).map(([id,image])=>({id,loaded:image.complete&&image.naturalWidth>0}))});\n`;
       await route.fulfill({response,body:source.replace(marker,hook+marker)});
     });
     await page.goto(server.url,{waitUntil:'load'});await wait(()=>{const image=document.querySelector('.hero img');return image?.complete&&image.naturalWidth>0;});
     profile.launcher=await page.locator('.hero img').evaluate(image=>({src:image.getAttribute('src'),width:image.naturalWidth,height:image.naturalHeight,alt:image.alt}));
     await capture('launcher');if(!values.baseline)assert.equal(profile.launcher.src,'juego/assets/player_ship_identity_v1.webp','Launcher still shows the retired ship');
-    await page.locator('#qaArchive summary').click();await page.locator('#unlockClassic').check();await page.locator('#classiclink').click();
+    assert.equal(await page.locator('#qaArchive,#unlockClassic,#n7link,#journeylink').count(),0);
+    await page.locator('#classiclink').click();
     await wait(()=>typeof __TWO_TOUCH_QA__==='function'&&__TWO_TOUCH_QA__().state==='menu');
     await runControls();profile.status=profile.checks.some(c=>c.status==='failed')?'failed':'passed';
     await save();await cdp.detach();await context.close();page=null;

@@ -1,6 +1,6 @@
 # NEON CRONIUM — Progreso verificable de producción
 
-Fecha del registro: **2026-10-18T07:54:42.413677+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
+Fecha del registro: **2026-10-18T08:38:18.172501+00:00**. Rama: **continuity-assets-audit-20261013**. Base: **f5b486ccfcdc56319417c33d7fa9282708ed6d64**.
 
 Fuente editable: [production-tasks.json](production-tasks.json). Regenerar con **node scripts/update-production-progress.mjs**; comprobar sincronización con **node scripts/update-production-progress.mjs --check**. El script no compila, prueba ni publica el juego.
 
@@ -61,6 +61,14 @@ Referencia: [PRODUCT_VISION.md](PRODUCT_VISION.md). Las tablas B03–B10 y el ca
 | P2-ENEMY-COMBAT-01 / P2 | Mantener intención y respuesta de combate de los enemigos activos | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
 | P1-ATLAS-MANUAL-01 / P1 | Validar Atlas como reto manual con AUTO apagado y opt-in sólo en Ajustes | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
 | P2-ARSENAL-01 / P2 | Vincular Pulso→Atlas→Gemelo a victoria persistida y conservar armamento antiguo | IN_REVIEW | PASSED_SCOPED_CHROMIUM_AND_AUTOMATION | PENDING_OWNER | PENDING |
+| P2-ENTRY-CANON-01 / P2 | Presentar una entrada definitiva con un único viaje principal | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P2-MAGAZINE-20-01 / P2 | Integrar cargador de veinte disparos y recarga progresiva sin contador HUD | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P2-SALVAGE-01 / P2 | Recuperar chatarra física y persistir denominaciones sin duplicaciones | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P2-C9-TRADE-01 / P2 | Comprar mejoras C9 con chatarra y efecto visible persistido | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P2-HOSTILE-PURSUIT-02 / P2 | Dar intención de interceptación a enemigos sin revelar el apuntado en el HUD | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P1-ATLAS-TACTICS-03 / P1 | Integrar Atlas de dos fases con patrones observados y 36 HP frente al cargador nuevo | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P3-COMET-SHOWER-01 / P3 | Convertir el gran vacío en cruces rápidos y lluvia de cometas transitables | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
+| P2-HOSTILE-ART-01 / P2 | Integrar proyectiles hostiles animados y fichas físicas de chatarra originales | IN_REVIEW | PENDING_INTEGRATED_QA | PENDING_OWNER | PENDING |
 
 La demostración comprimida P1 anterior queda recuperable y recibió cambios solicitados por el propietario. Prioridad actual: integración de nave y experiencia natural del clásico; no expansión del prototipo. La decisión del motor y la aceptación estética permanecen reservadas al propietario. El resto de las tareas sigue siendo recuperable.
 
@@ -75,28 +83,28 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 | Área | Verificadas / total | PENDING | IN_PROGRESS | BLOCKED | IN_REVIEW |
 | --- | --- | --- | --- | --- | --- |
 | Motor | 2/10 (20.0%) | 7 | 0 | 1 | 0 |
-| Jugabilidad | 8/75 (10.7%) | 35 | 1 | 1 | 30 |
-| Campaña clásica | 5/41 (12.2%) | 3 | 2 | 0 | 31 |
+| Jugabilidad | 8/81 (9.9%) | 35 | 1 | 1 | 36 |
+| Campaña clásica | 5/48 (10.4%) | 3 | 2 | 0 | 38 |
 | Campaña N-7 | 4/42 (9.5%) | 35 | 1 | 0 | 2 |
-| Enemigos | 5/79 (6.3%) | 57 | 0 | 0 | 17 |
-| Jefes | 0/16 (0.0%) | 13 | 0 | 0 | 3 |
-| Assets | 2/184 (1.1%) | 123 | 3 | 1 | 55 |
-| Animaciones | 5/148 (3.4%) | 108 | 1 | 0 | 34 |
+| Enemigos | 5/81 (6.2%) | 57 | 0 | 0 | 19 |
+| Jefes | 0/17 (0.0%) | 13 | 0 | 0 | 4 |
+| Assets | 2/187 (1.1%) | 123 | 3 | 1 | 58 |
+| Animaciones | 5/151 (3.3%) | 108 | 1 | 0 | 37 |
 | Narrativa | 0/19 (0.0%) | 17 | 1 | 0 | 1 |
 | Audio | 0/15 (0.0%) | 12 | 0 | 1 | 2 |
-| Interfaz | 5/31 (16.1%) | 9 | 1 | 0 | 16 |
+| Interfaz | 5/36 (13.9%) | 9 | 1 | 0 | 21 |
 | Rendimiento | 1/14 (7.1%) | 11 | 1 | 0 | 1 |
-| QA | 21/87 (24.1%) | 19 | 3 | 5 | 39 |
+| QA | 21/95 (22.1%) | 19 | 3 | 5 | 47 |
 | Preparación iOS | 0/21 (0.0%) | 14 | 0 | 6 | 1 |
 
 ## Indicadores por bloque
 
 | Bloque | Criterios cerrados / total | Estados |
 | --- | --- | --- |
-| 03 · Prueba integrada y cierre técnico | 20/30 (66.7%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 8 · DONE: 20 |
-| 04 · Jugabilidad procedural | 1/43 (2.3%) | PENDING: 18 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 22 · DONE: 1 |
-| 05 · Producción visual y 150 assets | 5/180 (2.8%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 52 · DONE: 5 |
-| 06 · Diez jefes | 0/11 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 1 · DONE: 0 |
+| 03 · Prueba integrada y cierre técnico | 20/31 (64.5%) | PENDING: 0 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 9 · DONE: 20 |
+| 04 · Jugabilidad procedural | 1/48 (2.1%) | PENDING: 18 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 27 · DONE: 1 |
+| 05 · Producción visual y 150 assets | 5/183 (2.7%) | PENDING: 120 · IN_PROGRESS: 3 · BLOCKED: 0 · IN_REVIEW: 55 · DONE: 5 |
+| 06 · Diez jefes | 0/12 (0.0%) | PENDING: 10 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 2 · DONE: 0 |
 | 07 · Narrativa completa | 0/14 (0.0%) | PENDING: 14 · IN_PROGRESS: 0 · BLOCKED: 0 · IN_REVIEW: 0 · DONE: 0 |
 | 08 · Audio y experiencia sensorial | 0/14 (0.0%) | PENDING: 12 · IN_PROGRESS: 0 · BLOCKED: 1 · IN_REVIEW: 1 · DONE: 0 |
 | 09 · Rendimiento y estabilidad | 0/16 (0.0%) | PENDING: 14 · IN_PROGRESS: 1 · BLOCKED: 1 · IN_REVIEW: 0 · DONE: 0 |
@@ -104,7 +112,7 @@ El registro inicial no hereda DONE de declaraciones previas. Un 0% no significa 
 
 ## Assets: catálogo frente a entrega
 
-Catálogo: **IN_REVIEW: 39; PLANNED: 116; IMPLEMENTED_CODE: 2**; 157 identificadores. Cierre de los doce requisitos: **0/157 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
+Catálogo: **IN_REVIEW: 41; PLANNED: 116; IMPLEMENTED_CODE: 2**; 159 identificadores. Cierre de los doce requisitos: **0/159 (0.0%)**. Un PNG/WebP, prompt o definición de animación no certifica integración visual.
 
 ## Evidencias históricas separadas
 

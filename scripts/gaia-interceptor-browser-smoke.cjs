@@ -12,7 +12,8 @@ const {startStaticServer, prepareEvidence, saveEvidence, sha256, errorText} = re
 const {values} = parseArgs({options: {root: {type: 'string'}, output: {type: 'string'},
   timeout: {type: 'string'}, 'expected-commit': {type: 'string'}, combat: {type: 'boolean', default: false},
   'equip-twin': {type: 'boolean', default: false}, 'close-range': {type: 'boolean', default: false},
-  'legacy-lance':{type:'boolean',default:false},'observe-engagement':{type:'boolean',default:false}}});
+  'legacy-lance':{type:'boolean',default:false},'observe-engagement':{type:'boolean',default:false},
+  'perf-only':{type:'boolean',default:false}}});
 const root = path.resolve(values.root || 'preview-dist');
 const output = path.resolve(values.output || `/tmp/gaia-interceptor-${Date.now()}`);
 const timeout = Number(values.timeout || 600000);
@@ -24,15 +25,16 @@ const equipment = legacyEquipment
   :{version:1,selected:'pulse',unlocked:['pulse'],recoveredTwin:true,twinPrepared:true};
 const report = {status: 'running', exitCode: null, startedAt: new Date().toISOString(), command: process.argv,
   sourceRoot: root, browser: 'Real Chromium, 390x844, DPR 1',
-  pilotVersion: values['close-range']?'natural-gaia-ch02-close-range-v3':'natural-gaia-ch02-bait-align-v2',
+  pilotVersion: values['close-range']?'natural-gaia-ch02-observed-close-range-v4':'natural-gaia-ch02-observed-ballistics-v4',
   cases: [], errors: [], consoleErrors: [], failedRequests: [],
   screenshots: [], samples: [], interceptors: [], actions: [],
   fixtures: {unlocked: 2, equipment}, combatRequired: values.combat, equipTwinViaUI:values['equip-twin'],
   closeRange:values['close-range'], verticalActions:[],hudSnapshots:[],
   loadoutProfile:legacyEquipment?'historical-owned-equipment':'fresh-C9-prepared-Pulse',
-  observeEngagement:values['observe-engagement'],
+  observeEngagement:values['observe-engagement'],perfOnly:values['perf-only'],
   limits: ['Only level 2 unlock and the explicitly recorded equipment profile are seeded; historical Twin/Lance ownership is a compatibility fixture, not a fresh reward.',
     'Patrol scheduling, enemy health, spawning, elapsed time, weapon projectiles and collisions are never changed.',
+    'The pointer pilot leads only currently observed enemy positions/velocity and avoids already emitted ballistic projectiles; hidden future AI targets are never consulted.',
     'The automatic QA pilot uses real pointer and keyboard controls; this is not a human playtest.',
     'Read-only closure diagnostics and native Canvas/RAF observers are injected into a local response; package files are unchanged.',
     'All sixteen source cells are checked for distinct decoded pixels; actual gameplay draw counts are reported separately.',
@@ -40,11 +42,12 @@ const report = {status: 'running', exitCode: null, startedAt: new Date().toISOSt
 let server, browser, context, page, evidenceReady = false;
 const started = Date.now();
 const save = () => saveEvidence(output, report);
-const inspect = () => page.evaluate(() => ({...window.__INTERCEPTOR_QA__(), observer: {
+const inspect = () => page.evaluate(perfOnly => ({...window.__INTERCEPTOR_QA__(), observer: {
   maximum: window.__INTERCEPTOR_OBSERVER__.maximum, frames: window.__INTERCEPTOR_OBSERVER__.frames,
   errors: [...window.__INTERCEPTOR_OBSERVER__.errors], draws: {...window.__INTERCEPTOR_OBSERVER__.draws},
-  visualDraws:[...window.__INTERCEPTOR_OBSERVER__.visualDraws]
-}}));
+  visualDraws:[...window.__INTERCEPTOR_OBSERVER__.visualDraws],
+  frameTimes:perfOnly?[...window.__INTERCEPTOR_OBSERVER__.frameTimes]:undefined
+}}),values['perf-only']);
 function healthy(q) {
   assert.deepEqual(report.errors, [], 'Uncaught JavaScript exception');
   assert.deepEqual(report.consoleErrors, [], 'Console error');
@@ -102,26 +105,11 @@ function pilotTarget(q, enemy, collecting = false) {
     .sort((a, b) => b.y - a.y)[0] : null;
   const weaponSpeed = q.weapons.selected==='twin'?900:920;
   const travel = enemy ? Math.max(0, (q.player.y - 125 - enemy.y) / (weaponSpeed + enemy.s)) : 0;
-  // Choose a firing lead from observed position/velocity and the disclosed
-  // pursuit-v1 movement limits. This simulates QA's aim only, never the game.
-  // Holding centre during entry avoids endlessly chasing a flanking target;
-  // once it commits to a visible charge, move into its firing lane.
-  let lead = enemy?.x;
-  if(enemy) {
-    let x=enemy.x,vx=enemy.classicScout.vx;
-    for(let future=0;future<travel;future+=.025) {
-      const step=Math.min(.025,travel-future);
-      const inFireHold=enemy.classicScout.state==='fire'&&future<Math.max(0,.34-enemy.classicScout.stateAge);
-      const held=enemy.classicScout.state==='charge'||inFireHold;
-      const nextFlank=Math.max(enemy.classicScout.combatMinX,Math.min(enemy.classicScout.combatMaxX,
-        q.player.x-enemy.classicScout.side*Math.min(q.W*.22,128)));
-      const target=enemy.classicScout.state==='fire'&&!inFireHold?nextFlank:enemy.classicScout.targetX;
-      const desired=held?0:Math.max(-148,Math.min(148,(target-x)*2.8));
-      vx+=Math.max(-250*step,Math.min(250*step,desired-vx));
-      x=Math.max(52,Math.min(q.W-52,x+vx*step));
-    }
-    lead=x;
-  }
+  // This is a QA aim estimate from the last visible position and current
+  // velocity only. Do not simulate hidden targetX/side/state-machine decisions
+  // or the player's future inputs to manufacture a successful natural hit.
+  const observedVx = enemy?.classicScout?.vx || 0;
+  const lead = enemy ? enemy.x + Math.max(-100, Math.min(100, observedVx * travel * .75)) : null;
   const aim = enemy ? clamp(lead) : nearest?.x ?? q.W / 2;
   const candidates = [aim, q.player.x, q.player.target, bounds.minX, bounds.maxX];
   for (let x = bounds.minX; x <= bounds.maxX; x += 24) candidates.push(x);
@@ -163,7 +151,8 @@ function pilotTarget(q, enemy, collecting = false) {
   const nested = await fs.access(path.join(root, 'juego', 'index.html')).then(() => true).catch(() => false);
   const prefix = nested ? 'neon-preview-v1:' : '';
   report.packageFiles = {};
-  for (const relative of ['game.js', 'content-runtime.js', 'assets/ch02_interceptor_atlas_v1.webp']) {
+  for (const relative of ['game.js', 'content-runtime.js', 'assets/ch02_interceptor_atlas_v1.webp',
+    ...(!values['perf-only']?['assets/gaia_pulse_atlas_v3.webp','assets/hostile_ordnance_atlas_v1.webp']:[])]) {
     const file = nested ? `juego/${relative}` : relative;
     const bytes = await fs.readFile(path.join(root, file));
     report.packageFiles[file] = {bytes: bytes.length, sha256: sha256(bytes)};
@@ -173,7 +162,7 @@ function pilotTarget(q, enemy, collecting = false) {
     headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage']});
   context = await browser.newContext({viewport: {width: 390, height: 844}, deviceScaleFactor: 1,
     isMobile: true, hasTouch: true, serviceWorkers: 'block'});
-  await context.addInitScript(({prefix, equipment}) => {
+  await context.addInitScript(({prefix, equipment, perfOnly}) => {
     const url = new URL(location.href);
     if (url.pathname.endsWith('/juego/index.html') || url.pathname.endsWith('/juego/')) {
       if (localStorage.getItem(prefix + 'neon-unlocked-v2') === null) localStorage.setItem(prefix + 'neon-unlocked-v2', '2');
@@ -182,10 +171,11 @@ function pilotTarget(q, enemy, collecting = false) {
       }
     }
     const request = window.requestAnimationFrame.bind(window), cancel = window.cancelAnimationFrame.bind(window);
-    const observer = window.__INTERCEPTOR_OBSERVER__ = {maximum: 0, frames: 0, pending: new Set(), errors: [], draws: {},visualDraws:[]};
+    const observer = window.__INTERCEPTOR_OBSERVER__ = {maximum: 0, frames: 0, pending: new Set(), errors: [], draws: {},visualDraws:[],frameTimes:[]};
     window.requestAnimationFrame = callback => {
       const id = request(now => {
         observer.pending.delete(id); observer.frames++;
+        if(perfOnly){observer.frameTimes.push(now);if(observer.frameTimes.length>2400)observer.frameTimes.shift();}
         try { callback(now); } catch (error) { observer.errors.push(error.stack || String(error)); throw error; }
       });
       observer.pending.add(id); observer.maximum = Math.max(observer.maximum, observer.pending.size); return id;
@@ -198,7 +188,7 @@ function pilotTarget(q, enemy, collecting = false) {
         const key = [args[1], args[2], args[3], args[4]].join(',');
         observer.draws[key] = (observer.draws[key] || 0) + 1;
       }
-      if(this.canvas.id==='canvas'&&/atlas_combat_vfx|smoke/i.test(source)) {
+      if(this.canvas.id==='canvas'&&/atlas_combat_vfx|hostile_ordnance|hostile_projectiles|gaia_pulse|arcade_pulse|smoke/i.test(source)) {
         const matrix=this.getTransform();
         observer.visualDraws.push({frame:observer.frames,source,rect:args.length===9?args.slice(1,5):null,
           destination:args.length===9?args.slice(5):args.slice(1),alpha:this.globalAlpha,
@@ -207,7 +197,7 @@ function pilotTarget(q, enemy, collecting = false) {
       }
       return draw.apply(this, args);
     };
-  }, {prefix, equipment});
+  }, {prefix, equipment, perfOnly:values['perf-only']});
   page = await context.newPage(); page.setDefaultTimeout(30000);
   page.on('pageerror', error => report.errors.push(errorText(error)));
   page.on('console', message => { if (message.type() === 'error') report.consoleErrors.push(message.text()); });
@@ -228,10 +218,12 @@ function pilotTarget(q, enemy, collecting = false) {
       player:{x:player.x,y:player.y,target:player.target,targetY:player.targetY},
       bounds:classicFlightBounds?{...classicFlightBounds}:null,
       equipment:JSON.parse(JSON.stringify(classicEquipment)),
+      salvage:typeof classicSalvageLedger!=="undefined"?classicSalvageLedger?.getState():null,
       weapons:classicWeapons?{...NeonCampaign.classicWeaponSnapshot(classicWeapons),shotSequence:classicWeapons.shotSequence}:null,
       atlas:{ready:spriteReady(SPRITES.ch02),width:SPRITES.ch02.naturalWidth,height:SPRITES.ch02.naturalHeight,source:SPRITES.ch02.currentSrc||SPRITES.ch02.src},
       items:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,hp:item.hp,maxHp:item.maxHp,
         rot:item.rot,rs:item.rs,vx:item.vx,vy:item.vy,circles:collisionCircles(item),
+        salvageDropId:item.salvageDropId,salvagePickup:!!item.salvagePickup,dropId:item.dropId,enemyType:item.enemyType,amount:item.amount,
         classicScoutProjectile:Boolean(item.classicScoutProjectile),attackSerial:item.attackSerial,role:item.role,
         classicScout:item.classicScout?{tacticsVersion:item.classicScout.tacticsVersion,role:item.classicScout.role,
           state:item.classicScout.state,stateAge:item.classicScout.stateAge,age:item.classicScout.age,
@@ -271,6 +263,10 @@ function pilotTarget(q, enemy, collecting = false) {
     assert.equal(q.equipment.selected, 'pulse');
     assert.deepEqual(q.equipment.unlocked,equipment.unlocked,'Current normalization must preserve legitimate ownership without granting fresh upgrades');
     assert.equal(q.settingsAutoFire,false,'New profiles must start with manual fire');
+    if(!values['perf-only']) {
+      assert.equal(q.weapons.charges,20);
+      assert.equal(await page.locator('#ammo').isVisible(),false,'No numeric charge/reload counter in the flight controls');
+    }
     if(!legacyEquipment)assert.equal(q.equipment.twinPrepared,true);
     await capture('gaia-natural-patrol-start', q);
     if(values['equip-twin']) {
@@ -282,6 +278,41 @@ function pilotTarget(q, enemy, collecting = false) {
     }
     return q;
   });
+  if(values['perf-only']) {
+    await step('measure a fixed12-second natural Gaia RAF window with identical idle/manual controls',async()=>{
+      await page.waitForFunction(()=>__INTERCEPTOR_QA__().state==='playing'&&__INTERCEPTOR_QA__().elapsed>=3,
+        null,{polling:100,timeout:120000});
+      const box=await page.locator('#canvas').boundingBox(),initial=await inspect();
+      await page.mouse.move(box.x+box.width*.5,box.y+box.height*.72);
+      const before=await inspect(),wallStart=Date.now();
+      await page.waitForTimeout(12000);
+      const after=await inspect(),wallMs=Date.now()-wallStart;
+      assert.equal(before.state,'playing');assert.equal(after.state,'playing');
+      assert.equal(after.currentLevel,1);assert.equal(after.settingsAutoFire,false);
+      const start=before.observer.frameTimes.at(-1);
+      const times=after.observer.frameTimes.filter(now=>now>=start);
+      const gaps=times.slice(1).map((now,index)=>now-times[index]);
+      assert.ok(gaps.length>=5,'Too few actual RAF callbacks to measure frame pacing');
+      const sorted=[...gaps].sort((a,b)=>a-b),pct=p=>sorted[Math.min(sorted.length-1,Math.floor((sorted.length-1)*p))];
+      const heap=await page.evaluate(()=>performance.memory?{used:performance.memory.usedJSHeapSize,
+        total:performance.memory.totalJSHeapSize,limit:performance.memory.jsHeapSizeLimit}:null);
+      report.performance={measurement:'Real Chromium existing-RAF callback pacing; software host, no iPhone/GPU/60FPS certification',
+        controls:'Idle ship at centre; manual firing stays OFF, no shot/timer/entity mutations',
+        wallMs,frames:after.observer.frames-before.observer.frames,
+        callbacksPerWallSecond:(after.observer.frames-before.observer.frames)/(wallMs/1000),
+        medianFrameMs:pct(.5),p95FrameMs:pct(.95),p99FrameMs:pct(.99),maxFrameMs:sorted.at(-1),
+        gapsOver50Ms:gaps.filter(gap=>gap>50).length,rawFrameGapsMs:gaps,
+        simulatedSeconds:after.elapsed-before.elapsed,
+        gameSecondsPerWallSecond:(after.elapsed-before.elapsed)/(wallMs/1000),heapBytes:heap,
+        before:{elapsed:before.elapsed,hull:before.hull,entities:before.items.length,
+          energy:before.items.filter(item=>item.type==='energy').length,weapon:before.weapons.selected,charges:before.weapons.charges},
+        after:{elapsed:after.elapsed,hull:after.hull,entities:after.items.length,
+          energy:after.items.filter(item=>item.type==='energy').length,weapon:after.weapons.selected,charges:after.weapons.charges},
+        warmup:{elapsed:initial.elapsed,entities:initial.items.length}};
+      await capture('gaia-natural-performance-window',after);return report.performance;
+    });
+    report.status='passed';report.exitCode=0;return;
+  }
   await step('the real CH-02 image contains sixteen distinct nonempty transparent cells', async () => {
     await page.waitForFunction(() => __INTERCEPTOR_QA__().atlas.ready, null, {polling: 100});
     const atlas = await page.evaluate(async () => {
@@ -313,8 +344,8 @@ function pilotTarget(q, enemy, collecting = false) {
   let previousSample = 0, lastVerticalAt=-Infinity, observedHudDamageEvents=0,
     box = await page.locator('#canvas').boundingBox();
   await step(values.combat
-    ? 'a natural interceptor flanks, announces an attack, freezes on pause and can be shot down'
-    : 'a natural interceptor flanks, announces an attack, fires a real projectile and freezes on pause', async () => {
+    ? 'a natural interceptor flanks, deploys its cannon, freezes on pause and can be shot down'
+    : 'a natural interceptor flanks, deploys its cannon, fires a ballistic projectile and freezes on pause', async () => {
     const began = Date.now();
     while (Date.now() - began < timeout) {
       const q = await inspect(); healthy(q);
@@ -337,7 +368,7 @@ function pilotTarget(q, enemy, collecting = false) {
         if (!record) {
           record = {id: enemy.id, firstElapsed: q.elapsed, initialHp: enemy.hp, minimumX: enemy.x,
             maximumX: enemy.x, fired: 0, states: [], animationStates: [], frames: [], hp: [],
-            holdSamples:[],retreatReason:null};
+            holdSamples:[],retreatReason:null,salvageDropId:enemy.salvageDropId};
           enemies.set(enemy.id, record); report.interceptors.push(record);
           targetId ??= enemy.id;
         }
@@ -347,10 +378,10 @@ function pilotTarget(q, enemy, collecting = false) {
         if (!record.animationStates.includes(enemy.classicScout.frame.state)) record.animationStates.push(enemy.classicScout.frame.state);
         if (!record.frames.includes(enemy.classicScout.frame.frameIndex)) record.frames.push(enemy.classicScout.frame.frameIndex);
         if (record.hp.at(-1) !== enemy.hp) record.hp.push(enemy.hp);
-        assert.equal(enemy.classicScout.tacticsVersion, 'classic-pursuit-v2');
+        assert.equal(enemy.classicScout.tacticsVersion, 'classic-pursuit-v3');
         assert.equal(enemy.classicScout.frame.image, 'assets/ch02_interceptor_atlas_v1.webp');
-        assert.ok(enemy.classicScout.fired <= 4, 'An interceptor exceeded its pursuit-v2 attack budget');
-        assert.ok(enemy.classicScout.firedSerial<=enemy.classicScout.chargeSerial,'A projectile cannot precede its announced charge');
+        assert.ok(enemy.classicScout.fired <= 10, 'An interceptor exceeded its finite pursuit-v3 attack budget');
+        assert.ok(enemy.classicScout.firedSerial<=enemy.classicScout.chargeSerial,'A projectile cannot precede its mechanical cannon-deployment state');
         if(enemy.classicScout.combatStartedAt!==null&&enemy.classicScout.state!=='retreat') {
           record.holdSamples.push({age:enemy.classicScout.age,y:enemy.y,speed:enemy.s,holdY:enemy.classicScout.holdY});
           if(record.holdSamples.length>160)record.holdSamples.shift();
@@ -372,7 +403,7 @@ function pilotTarget(q, enemy, collecting = false) {
       if (target) {
         await capture('ch02-natural-spawn', q);
         if (target.classicScout.state === 'charge') {
-          await capture('ch02-target-lock', q);
+          await capture('ch02-mechanical-cannon-deployment', q);
           if (!pauseChecked) {
             await page.locator('#pause').click(); const before = await inspect();
             await page.waitForTimeout(650); const after = await inspect();
@@ -398,7 +429,7 @@ function pilotTarget(q, enemy, collecting = false) {
       }
       if (destroyed || (!values.combat && firstFireSeen && shotSerials.size > 0 && pauseChecked &&
           report.interceptors.some(enemy => enemy.maximumX - enemy.minimumX > 35)&&
-          (!values['observe-engagement']||report.interceptors.some(enemy=>enemy.fired>=2&&enemy.retreatReason)))) break;
+          (!values['observe-engagement']||report.interceptors.some(enemy=>enemy.fired>=4&&enemy.retreatReason)))) break;
       if(values['close-range']&&target&&target.y>=90&&q.elapsed-lastVerticalAt>=.08) {
         const desiredY=Math.max(q.bounds.minY,Math.min(q.bounds.maxY,target.y+375));
         const delta=desiredY-q.player.targetY;
@@ -436,7 +467,7 @@ function pilotTarget(q, enemy, collecting = false) {
           for(const shot of emitted){assert.ok(Math.abs(shot.vx)<1e-8);assert.ok(shot.vy<0);}
           if(emitted.length===2){assert.ok(Math.abs(Math.abs(emitted[0].x-emitted[1].x)-20)<1e-6);assert.ok(Math.abs(emitted[0].y-emitted[1].y)<1e-6);}
           report.weaponGeometry??=[];report.weaponGeometry.push({at:after.elapsed,weapon:q.weapons.selected,
-            projectiles:emitted,actualDraws:after.observer.visualDraws.filter(draw=>draw.source.includes('atlas_combat_vfx'))});
+            projectiles:emitted,actualDraws:after.observer.visualDraws.filter(draw=>/atlas_combat_vfx|hostile_ordnance|hostile_projectiles|gaia_pulse/.test(draw.source))});
         }
         firedAt.set(targetId, q.elapsed);
       }
@@ -446,15 +477,15 @@ function pilotTarget(q, enemy, collecting = false) {
     assert.ok(report.interceptors[0].firstElapsed < 20, 'CH-02 must appear in the opening Gaia patrol sequence');
     assert.ok(report.interceptors.some(enemy => enemy.maximumX - enemy.minimumX > 35), 'No observable flank movement');
     assert.ok(firstFireSeen, 'No natural interceptor attack fired'); assert.ok(shotSerials.size > 0, 'No real interceptor projectile observed');
-    assert.equal(pauseChecked, true, 'No live target-lock pause was checked');
+    assert.equal(pauseChecked, true, 'No live cannon-deployment pause was checked');
     if(values.combat) {
       assert.equal(damaged, true, 'No player-inflicted damage observed');
       assert.equal(destroyed, true, `The natural QA pilot did not destroy CH-02 within ${timeout} ms`);
     }
     if(values['observe-engagement']) {
-      const full=report.interceptors.find(enemy=>enemy.fired>=2&&enemy.retreatReason);
-      assert.ok(full,'Observe at least two real attacks and a finite, reasoned retreat');
-      assert.ok(full.retreatAt<24,'The encounter cannot remain indefinitely');
+      const full=report.interceptors.find(enemy=>enemy.fired>=4&&enemy.retreatReason);
+      assert.ok(full,'Observe at least four real attacks and a finite, reasoned retreat');
+      assert.ok(full.retreatAt<34,'The encounter must respect its 24-second combat policy plus finite arrival');
       assert.ok(full.holdSamples.at(-1).age-full.holdSamples[0].age>=3,'The enemy must remain in active combat instead of flying through');
       report.engagementObservation=full;
     }
@@ -493,6 +524,16 @@ function pilotTarget(q, enemy, collecting = false) {
       assert.equal(deaths.length,1,'Destroyed CH-02 must award exactly one death reward');
       assert.equal(deaths[0].reward,10,'CH-02 death reward must match the shipped ten-point rule');
       report.uniqueDeathReward={targetId:destroyedId,deaths,hits:afterHits,duplicateAfterAnimation:false};
+      const dropId=enemies.get(destroyedId)?.salvageDropId;assert.ok(dropId,'Enemy needs a stable salvage identity');
+      const pickups=[...before.items,...after.items].filter(item=>item.salvagePickup&&item.dropId===dropId);
+      const receipts=(after.salvage?.activeRun?.claimed||[]).filter(receipt=>receipt.id===dropId);
+      assert.ok(pickups.length>0||receipts.length>0,'A real CH-02 death must leave recoverable salvage or its collected receipt');
+      assert.ok(pickups.every(item=>item.amount===15&&item.enemyType==='interceptor'));
+      assert.ok(receipts.length<=1,'Repeating death animation must not duplicate a salvage receipt');
+      assert.ok(receipts.every(receipt=>receipt.amount===15&&receipt.enemyType==='interceptor'));
+      if(after.salvage)assert.equal(after.salvage.balance,after.salvage.earned-after.salvage.spent);
+      report.uniqueSalvageDrop={dropId,amount:15,pickups,receipts,
+        collected:receipts.length===1,limit:receipts.length?'Real collection observed':'World pickup observed; this focused test does not claim collection'};
     }
     // Read the actual score but do not assert a total which unrelated natural
     // pickups/impacts can legitimately change during these real-time frames.
@@ -536,6 +577,10 @@ function pilotTarget(q, enemy, collecting = false) {
     if (evidenceReady) await page.screenshot({path: path.join(output, 'failure.png')}).catch(() => {});
   }
 }).finally(async () => {
+  if(report.packageFiles)for(const [file,entry]of Object.entries(report.packageFiles)){
+    try{assert.equal(sha256(await fs.readFile(path.join(root,file))),entry.sha256,`Package changed during QA: ${file}`);}
+    catch(error){report.status='failed';report.exitCode=1;process.exitCode=1;report.error??=errorText(error);report.packageChangedDuringRun=true;}
+  }
   await browser?.close(); await server?.close(); report.durationMs = Date.now() - started;
   if (evidenceReady) await save();
   console.log(JSON.stringify({status: report.status, exitCode: report.exitCode,

@@ -28,10 +28,12 @@ const gameSource = await text("game.js");
 const serviceWorkerSource = await text("sw.js");
 const nativeSource = await text("src/native-admob-entry.js");
 
-await test("versión 7.2.0 pre-release alineada en metadatos y pantalla", async () => {
+await test("versión interna 7.2.0 compatible y portada canónica sin distintivos técnicos", async () => {
   assert.equal(packageJson.version, "7.2.0");
   assert.equal(lockJson.version, "7.2.0");
-  assert.match(indexHtml, /V7\.2\.0/);
+  assert.doesNotMatch(indexHtml, />[^<]*V7\.2\.0[^<]*</);
+  assert.match(indexHtml, /NEON CRONIUM/);
+  assert.match(indexHtml, /CONTINUAR VIAJE/);
   assert.match(indexHtml, /FORMACIÓN DE RESTOS/);
   assert.match(indexHtml, /Formación de basura espacial/);
   assert.doesNotMatch(indexHtml, /Barrera orbital:/);
@@ -144,7 +146,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-pursuit-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-salvage-combat-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {

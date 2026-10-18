@@ -99,6 +99,7 @@
     items = items.filter((item) => {
       if (!isThreat(item) || !protectedGates.some((gate) => threatOverlapsGateCorridor(item, gate))) return true;
       removed++;
+      releaseClassicShowerComet(item);
       if (item === tractorTarget) tractorTarget = null;
       return false;
     });
@@ -157,6 +158,27 @@
 
       if (gate.y - gate.h / 2 > H + 30) gates.splice(index, 1);
     }
+  }
+
+  function advanceClassicSalvagePickup(item, dt) {
+    // A destroyed machine leaves a physical pickup. Only collectItem/ledger can
+    // credit it after contact; a magnetic approach is presentation, not credit.
+    item.previousX=item.x;item.previousY=item.y;
+    item.life=(Number.isFinite(item.life)?item.life:14)-dt;
+    item.rot=Number.isFinite(item.rot)?item.rot:0;
+    item.rs=Number.isFinite(item.rs)?item.rs:0;
+    item.p=Number.isFinite(item.p)?item.p:0;
+    const dx=player.x-item.x,dy=player.y-item.y,distance=Math.hypot(dx,dy);
+    if(item.bossSalvage || distance<=150) {
+      const speed=item.bossSalvage?1100:360+240*(1-Math.min(1,distance/150));
+      const travel=Math.min(distance,speed*dt);
+      if(distance>0){item.x+=dx/distance*travel;item.y+=dy/distance*travel;}
+    } else {
+      item.vx=(Number.isFinite(item.vx)?item.vx:0)*Math.pow(.15,dt);
+      item.vy=Math.min(120,(Number.isFinite(item.vy)?item.vy:(Number.isFinite(item.s)?item.s:65))+18*dt);
+      item.x+=item.vx*dt;item.y+=item.vy*dt;
+    }
+    return item.life>0 && item.x> -80 && item.x<W+80 && item.y<H+120;
   }
 
   function update(dt) {
@@ -234,6 +256,7 @@
     if (lv.hazard === "gravity") player.drift = Math.sin(elapsed * 0.8) * 22;
     else player.drift = 0;
 
+    player.previousCollisionX=player.x;player.previousCollisionY=player.y;
     const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
@@ -342,13 +365,21 @@
       // Recovering the final fragment can replace the field with the Atlas
       // arena synchronously. The old loop indexes must not read that old field.
       if (!item) continue;
-      if(item.classicScoutProjectile && item.tacticsVersion===NeonCampaign.CLASSIC_PURSUIT_VERSION) {
+      if(item.salvagePickup) {
+        if(!advanceClassicSalvagePickup(item,dt*scale)){items.splice(index,1);continue;}
+      } else if(item.showerComet) {
+        if(!NeonCampaign.advanceShowerComet(item,dt*scale)) {
+          releaseClassicShowerComet(item);items.splice(index,1);continue;
+        }
+      } else if(item.classicScoutProjectile && item.tacticsVersion===NeonCampaign.CLASSIC_PURSUIT_VERSION) {
+        item.previousX=item.x;item.previousY=item.y;
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0||item.x< -60||item.x>W+60){items.splice(index,1);continue;}
       } else if(item.flightComet) {
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
       } else if (item.guardianProjectile) {
+        item.previousX=item.x;item.previousY=item.y;
         item.x += item.vx * dt * scale;
         item.y += item.vy * dt * scale;
         item.life -= dt * scale;
@@ -371,10 +402,10 @@
       if (item.type === "journeyPart") item.y = Math.min(item.y, player.y - 65);
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
-      if (wave && isThreat(item) && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
+      if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
-      if (lv.hazard === "phantom" && isThreat(item)) {
+      if (lv.hazard === "phantom" && isThreat(item) && !item.showerComet) {
         item.alpha = 0.20 + 0.80 * Math.abs(Math.sin(elapsed * 1.8 + item.phase));
       } else {
         item.alpha = 1;
@@ -383,6 +414,7 @@
       // La comprobación se repite después de aplicar ondas y órbitas: una
       // amenaza nacida fuera tampoco puede serpentear dentro del pasillo.
       if (isThreat(item) && threatOverlapsProtectedCorridor(item)) {
+        releaseClassicShowerComet(item);
         items.splice(index, 1);
         if (item === tractorTarget) tractorTarget = null;
         continue;
@@ -395,9 +427,10 @@
         item.y += dy * dt * 5.8;
       }
 
-      if(interceptClassicProjectile(item)){items.splice(index,1);continue;}
+      if(interceptClassicProjectile(item)){releaseClassicShowerComet(item);items.splice(index,1);continue;}
       if (hit(item)) {
-        if(collectItem(item)===false)continue;
+        if(collectItem(item)===false){if(item.salvagePickup)item.life=Math.max(item.life,2);continue;}
+        releaseClassicShowerComet(item);
         const actualIndex = items.indexOf(item);
         if (actualIndex >= 0) items.splice(actualIndex, 1);
         if (item === tractorTarget) tractorTarget = null;
@@ -405,7 +438,7 @@
         continue;
       }
 
-      if (item.y - item.r > H) {
+      if (!item.showerComet && item.y - item.r > H) {
         if (item.type === "energy") {
           combo = 1;
           comboTimer = 0;

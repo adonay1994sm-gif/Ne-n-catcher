@@ -102,6 +102,12 @@
   const classicFlightInput = NeonCampaign.createRelativeFlightInput();
   let classicEquipment = {version:1, recoveredTwin:false, unlocked:['pulse'], selected:'pulse'};
   let classicEquipmentWritable = true;
+  let classicSalvageLedger = null;
+  let classicSalvageState = null;
+  let classicSalvageRunId = null;
+  let classicSalvageEnemySequence = 0;
+  let classicSalvageWarningShown = false;
+  let classicCometShower = null;
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicPatrolTimer = 0;
@@ -236,6 +242,8 @@
     guardianAtlas: loadSprite("assets/guardian_atlas_states_v1.webp", false),
     atlasVfx: loadSprite("assets/atlas_combat_vfx_v1.webp", false),
     arcadePulse: loadSprite("assets/arcade_pulse_atlas_v2.webp", false),
+    hostileOrdnance: loadSprite("assets/hostile_ordnance_atlas_v1.webp", false),
+    gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v2.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),

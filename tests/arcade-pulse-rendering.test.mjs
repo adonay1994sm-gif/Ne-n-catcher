@@ -6,6 +6,7 @@ import vm from 'node:vm';
 import metadata from '../art-source/vfx/arcade-combat-v2/arcade-pulse-atlas-v2.json' with {type: 'json'};
 import {createClassicWeapons, triggerClassicWeapon, advanceClassicWeapons}
   from '../src/game/combat/classic-weapons.js';
+import gaiaMetadata from '../art-source/vfx/gaia-pulse-v3/gaia-pulse-atlas-v3.json' with {type: 'json'};
 
 const source = readFileSync(new URL('../src/game/07-player-item-rendering.js', import.meta.url), 'utf8');
 const projectileEnd = source.indexOf('  function drawFlightModule(item) {');
@@ -26,7 +27,7 @@ const close = (actual, expected, label) => assert.ok(Math.abs(actual - expected)
 
 // Recording Canvas checks the real render transforms/crops. It does not claim
 // aesthetic approval or replace the separately recorded Chromium decode test.
-function harness({assembled = true, health = 100, selected = 'pulse', ready = true} = {}) {
+function harness({assembled = true, health = 100, selected = 'pulse', ready = true, gaiaReady = false} = {}) {
   const calls = [], stack = [], frameRequests = [];
   let properties = {globalAlpha: 1, matrix: [1, 0, 0, 1, 0, 0]};
   const ctx = new Proxy({}, {
@@ -63,6 +64,7 @@ function harness({assembled = true, health = 100, selected = 'pulse', ready = tr
   const image = (name, width, height) => ({name, complete: true, naturalWidth: width, naturalHeight: height});
   const sprites = {arcadePulse: image('arcade-pulse-v2', ready ? 1024 : 0, ready ? 1024 : 0),
     atlasVfx: image('historical-atlas-vfx', 2170, 725)};
+  if (gaiaReady) sprites.gaiaPulse = image('gaia-pulse-v3',1024,1024);
   const sandbox = vm.createContext({ctx, SPRITES: sprites,
     spriteReady: image => Boolean(image?.complete && image.naturalWidth && image.naturalHeight),
     isUnifiedClassic: () => true, classicWeapons: {projectiles: [], cooldown: 0},
@@ -108,6 +110,33 @@ test('arcade VFX atlas on disk matches the registered hash and sixteen padded di
   }
   for (const frame of metadata.frames.slice(0, 12)) {
     assert.ok(Math.abs(frame.brightCoreCenter.x - 128) < 1, 'Painted projectile cores share the vertical axis');
+  }
+});
+
+test('new Gaia art preserves provenance and sixteen distinct padded cells and overrides the recoverable v2 fallback', () => {
+  const runtime=readFileSync(new URL('../assets/gaia_pulse_atlas_v3.webp',import.meta.url));
+  assert.equal(createHash('sha256').update(runtime).digest('hex'),gaiaMetadata.runtimeSha256);
+  assert.equal(runtime.length,gaiaMetadata.runtimeBytes);
+  assert.equal(new Set(gaiaMetadata.frames.map(frame=>frame.rgbaSha256)).size,16);
+  assert.equal(gaiaMetadata.transparent,true);
+  assert.equal(gaiaMetadata.provenance.conceptTool,'Canva generate-image');
+  assert.ok(readFileSync(new URL('../art-source/vfx/gaia-pulse-v3/'+gaiaMetadata.concept,import.meta.url)).length>0);
+  for(const frame of gaiaMetadata.frames) {
+    assert.equal(frame.maximumSixteenPixelGutterAlpha,0);
+    assert.ok(frame.alphaBounds.minX>=16&&frame.alphaBounds.minY>=16);
+    assert.ok(frame.alphaBounds.maxX<=239&&frame.alphaBounds.maxY<=239);
+  }
+  const h=harness({gaiaReady:true});
+  for(const [kind,row] of [['pulse',0],['twin',1],['lance',2],['impact',3]]) {
+    const interval=1/gaiaMetadata.animations[kind].fps;
+    for(let frame=0;frame<4;frame++) {
+      h.clear();assert.equal(h.pulse(kind,frame*interval+.001,72),true);
+      assert.equal(h.images()[0].image,'gaia-pulse-v3');
+      assert.deepEqual(h.images()[0].args.slice(0,4),[frame*256,row*256,256,256]);
+      assert.deepEqual(h.images()[0].center,{x:0,y:0});
+    }
+    h.clear();h.pulse(kind,4*interval+.001,72);
+    assert.deepEqual(h.images()[0].args.slice(0,4),[kind==='impact'?768:0,row*256,256,256]);
   }
 });
 
@@ -232,7 +261,7 @@ test('muzzle flashes are a short played-time reaction and repeated drawing never
     h.clear(); h.player(1200);
     assert.equal(h.images().length, 0, 'A flash must finish before 200 ms, leaving the projectile to travel');
     assert.equal(weapons.shotSequence, 1);
-    assert.equal(weapons.charges, 2);
+    assert.equal(weapons.charges, 19);
   }
 });
 

@@ -1,0 +1,609 @@
+{
+  "schemaVersion": 1,
+  "id": "combat.hostile-salvage.v1",
+  "revision": "hostile-salvage-v1",
+  "status": "IN_REVIEW",
+  "technicalAcceptance": "EXPORT_VALIDATED_GAMEPLAY_PENDING",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "runtime": "assets/hostile_ordnance_atlas_v1.webp",
+  "master": "hostile-salvage-generated-master.png",
+  "packedMaster": "hostile-salvage-packed-master.png",
+  "masterDimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "dimensions": {
+    "width": 1024,
+    "height": 1024
+  },
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "forward": {
+    "x": 0,
+    "y": -1
+  },
+  "transparent": true,
+  "decodedRgbaBytes": 4194304,
+  "runtimeBytes": 237838,
+  "runtimeSha256": "24caa31504a647907f22f18f539e7de3170d7d4eaf7918104664921df631a0bf",
+  "masterSha256": "f07a08e3b549dac8ebc451e833071b1d6850864c1e6f3a759ec0710548743ff9",
+  "packedMasterSha256": "69193280efa329dda93d68b6022697a42b2e10c4fe19f26482f154a98319f405",
+  "animation": {
+    "scout": {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "fps": 12,
+      "loop": true
+    },
+    "interceptor": {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "fps": 12,
+      "loop": true
+    },
+    "atlas": {
+      "frames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "fps": 10,
+      "loop": true
+    },
+    "salvage": {
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 0,
+      "loop": false,
+      "meaning": "Four denominations, not animation frames"
+    }
+  },
+  "provenance": {
+    "created": "2026-10-18",
+    "tool": "image_gen.imagegen",
+    "source": "Original generation for NEON CRONIUM; no external image or franchise source",
+    "generatedOriginal": "/workspace/generated_images/exec-6204fdb7-d9ee-4683-8e9b-86455423e649.png",
+    "editing": "ImageMagick crop, resample, transparent padding, packing and WebP export only",
+    "rights": "Project-generated artwork; no purchased or third-party licensed material. Platform generation terms apply; exclusivity is not asserted."
+  },
+  "frames": [
+    {
+      "index": 0,
+      "kind": "scout-plasma",
+      "sourceRect": {
+        "x": 26,
+        "y": 18,
+        "width": 300,
+        "height": 296
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/00-scout-plasma-1.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "5447c563d1aacee1fe7f6b21ded94d5651141436afad8cd98483cc991672a5a0",
+      "alphaBounds": {
+        "minX": 56,
+        "minY": 40,
+        "maxX": 197,
+        "maxY": 230
+      },
+      "alphaPixels": 17093,
+      "visiblePixels": 13758,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 1,
+      "kind": "scout-plasma",
+      "sourceRect": {
+        "x": 332,
+        "y": 18,
+        "width": 300,
+        "height": 296
+      },
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/01-scout-plasma-2.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "634698a7a645d6d9dc6629be80a34d2650a95c08266bcd524fbe602dacd9e8ac",
+      "alphaBounds": {
+        "minX": 56,
+        "minY": 38,
+        "maxX": 199,
+        "maxY": 230
+      },
+      "alphaPixels": 17587,
+      "visiblePixels": 14200,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 2,
+      "kind": "scout-plasma",
+      "sourceRect": {
+        "x": 636,
+        "y": 18,
+        "width": 300,
+        "height": 296
+      },
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/02-scout-plasma-3.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "7c15620a2a297efe034a2a4946ac6d3927f2bfff7dda3c6d611c3521eb590fa9",
+      "alphaBounds": {
+        "minX": 54,
+        "minY": 38,
+        "maxX": 231,
+        "maxY": 229
+      },
+      "alphaPixels": 17741,
+      "visiblePixels": 14412,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 3,
+      "kind": "scout-plasma",
+      "sourceRect": {
+        "x": 940,
+        "y": 18,
+        "width": 300,
+        "height": 296
+      },
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/03-scout-plasma-4.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "8b2914704db0c09b0c5e3d57b444a32e6b55a0757e45b699d681be2c209b4b76",
+      "alphaBounds": {
+        "minX": 24,
+        "minY": 39,
+        "maxX": 198,
+        "maxY": 230
+      },
+      "alphaPixels": 17468,
+      "visiblePixels": 14175,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 4,
+      "kind": "interceptor-dart",
+      "sourceRect": {
+        "x": 26,
+        "y": 330,
+        "width": 300,
+        "height": 302
+      },
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/04-interceptor-dart-1.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "56047e104bbbcbe6425e451537231c15745431a28f1e66c8ee1048bd4e0cb127",
+      "alphaBounds": {
+        "minX": 81,
+        "minY": 27,
+        "maxX": 174,
+        "maxY": 235
+      },
+      "alphaPixels": 9708,
+      "visiblePixels": 6829,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 5,
+      "kind": "interceptor-dart",
+      "sourceRect": {
+        "x": 332,
+        "y": 330,
+        "width": 300,
+        "height": 302
+      },
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/05-interceptor-dart-2.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "781d790dadfab297514fb272505d7ace7007d27588c0af6614c98cacd00111a2",
+      "alphaBounds": {
+        "minX": 78,
+        "minY": 27,
+        "maxX": 173,
+        "maxY": 235
+      },
+      "alphaPixels": 10429,
+      "visiblePixels": 7520,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 6,
+      "kind": "interceptor-dart",
+      "sourceRect": {
+        "x": 636,
+        "y": 330,
+        "width": 300,
+        "height": 302
+      },
+      "rect": {
+        "x": 512,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/06-interceptor-dart-3.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "f09035db06ad3f00493ef049f33ca43c7e279fcff960324fde855cdab522097e",
+      "alphaBounds": {
+        "minX": 74,
+        "minY": 27,
+        "maxX": 209,
+        "maxY": 235
+      },
+      "alphaPixels": 11346,
+      "visiblePixels": 8093,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 7,
+      "kind": "interceptor-dart",
+      "sourceRect": {
+        "x": 940,
+        "y": 330,
+        "width": 300,
+        "height": 302
+      },
+      "rect": {
+        "x": 768,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/07-interceptor-dart-4.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 12,
+      "rgbaSha256": "674fdc3f8f83fc46fd250b4a3588c78bfd033f10d3cc55b550ec7d1a3a92ef36",
+      "alphaBounds": {
+        "minX": 23,
+        "minY": 27,
+        "maxX": 182,
+        "maxY": 235
+      },
+      "alphaPixels": 11769,
+      "visiblePixels": 8529,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 8,
+      "kind": "atlas-heavy-orb",
+      "sourceRect": {
+        "x": 26,
+        "y": 633,
+        "width": 300,
+        "height": 318
+      },
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/08-atlas-heavy-orb-1.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 10,
+      "rgbaSha256": "b6e568e1d720e91d021018b10ac4603abb322f8392e46698f2d536e608168ffa",
+      "alphaBounds": {
+        "minX": 45,
+        "minY": 20,
+        "maxX": 215,
+        "maxY": 233
+      },
+      "alphaPixels": 21079,
+      "visiblePixels": 18588,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 9,
+      "kind": "atlas-heavy-orb",
+      "sourceRect": {
+        "x": 332,
+        "y": 633,
+        "width": 300,
+        "height": 318
+      },
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/09-atlas-heavy-orb-2.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 10,
+      "rgbaSha256": "39398a8c7547c194b4a4e5910370b838e86a91db054523db980461a67b9e670d",
+      "alphaBounds": {
+        "minX": 38,
+        "minY": 20,
+        "maxX": 208,
+        "maxY": 235
+      },
+      "alphaPixels": 22991,
+      "visiblePixels": 19497,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 10,
+      "kind": "atlas-heavy-orb",
+      "sourceRect": {
+        "x": 636,
+        "y": 633,
+        "width": 300,
+        "height": 318
+      },
+      "rect": {
+        "x": 512,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/10-atlas-heavy-orb-3.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 10,
+      "rgbaSha256": "45350fc5270f9be5e3f43db796c57babc1f0ccebd7e3592bf8fe8c967659eed2",
+      "alphaBounds": {
+        "minX": 40,
+        "minY": 20,
+        "maxX": 224,
+        "maxY": 235
+      },
+      "alphaPixels": 22535,
+      "visiblePixels": 19492,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 11,
+      "kind": "atlas-heavy-orb",
+      "sourceRect": {
+        "x": 940,
+        "y": 633,
+        "width": 300,
+        "height": 318
+      },
+      "rect": {
+        "x": 768,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/11-atlas-heavy-orb-4.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 10,
+      "rgbaSha256": "5c3b867eae967f6826617ed235bbb22818d8af34df918b249dc8b2d2e61be91b",
+      "alphaBounds": {
+        "minX": 28,
+        "minY": 20,
+        "maxX": 211,
+        "maxY": 235
+      },
+      "alphaPixels": 22837,
+      "visiblePixels": 19503,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 12,
+      "kind": "salvage",
+      "denomination": "copper",
+      "sourceRect": {
+        "x": 26,
+        "y": 956,
+        "width": 300,
+        "height": 264
+      },
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/12-copper.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 0,
+      "rgbaSha256": "dde580a07e4af2a69b3ffcdbc2111bca32d5f974e3cdc80d96daf0d6c8f168ed",
+      "alphaBounds": {
+        "minX": 57,
+        "minY": 33,
+        "maxX": 210,
+        "maxY": 207
+      },
+      "alphaPixels": 16869,
+      "visiblePixels": 15525,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 13,
+      "kind": "salvage",
+      "denomination": "silver",
+      "sourceRect": {
+        "x": 332,
+        "y": 956,
+        "width": 300,
+        "height": 264
+      },
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/13-silver.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 0,
+      "rgbaSha256": "a930da23602d92aa8af7b5e84b5f3e961bd9076668ce7f64c903e409889903b0",
+      "alphaBounds": {
+        "minX": 20,
+        "minY": 33,
+        "maxX": 199,
+        "maxY": 209
+      },
+      "alphaPixels": 20411,
+      "visiblePixels": 19016,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 14,
+      "kind": "salvage",
+      "denomination": "gold",
+      "sourceRect": {
+        "x": 636,
+        "y": 956,
+        "width": 300,
+        "height": 264
+      },
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/14-gold.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 0,
+      "rgbaSha256": "07474a980426f41663dfbdc2399a3a4d9e7398f28138285013dedb84f8478fa8",
+      "alphaBounds": {
+        "minX": 34,
+        "minY": 33,
+        "maxX": 234,
+        "maxY": 205
+      },
+      "alphaPixels": 20515,
+      "visiblePixels": 19055,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 15,
+      "kind": "salvage",
+      "denomination": "stellar",
+      "sourceRect": {
+        "x": 940,
+        "y": 956,
+        "width": 300,
+        "height": 264
+      },
+      "rect": {
+        "x": 768,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "source": "frames/15-stellar.png",
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "fps": 0,
+      "rgbaSha256": "bc48ba1907a2507c5999a5cddd4adc4b0e4dbca7ea84b530920c7865fd48fe7f",
+      "alphaBounds": {
+        "minX": 22,
+        "minY": 33,
+        "maxX": 214,
+        "maxY": 214
+      },
+      "alphaPixels": 23100,
+      "visiblePixels": 20829,
+      "maximumSixteenPixelGutterAlpha": 0
+    }
+  ]
+}

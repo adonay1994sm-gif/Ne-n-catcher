@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18T07:54:42.413677+00:00",
+  "updatedAt": "2026-10-18T08:38:18.172501+00:00",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -321,7 +321,7 @@
   ],
   "assetTasks": {
     "catalog": "ASSET_PRODUCTION_150.json",
-    "expectedCount": 157,
+    "expectedCount": 159,
     "defaultState": "PENDING",
     "overrides": {
       "gaia-ch01-move": {
@@ -7195,7 +7195,14 @@
         "Servicio único, pausa y recarga de checkpoints antiguos/nuevos y salida confirmada se verifican sin duplicar taller, piezas u orbes."
       ],
       "relations": {
-        "extends": "P2-PRESENTATION-01"
+        "extends": "P2-PRESENTATION-01",
+        "supersededAspects": [
+          {
+            "by": "P2-C9-TRADE-01",
+            "batch": "MAIN_SALVAGE_COMBAT",
+            "scope": "La llegada rápida se conserva; la preparación y mejoras nuevas tienen precios, sin retirar derechos antiguos ni cobrar reparación de emergencia."
+          }
+        ]
       },
       "packageStatus": "VERIFIED_CLEAN",
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
@@ -7370,7 +7377,14 @@
         "La pausa no adelanta ataques y los eventos de animación no duplican proyectiles; se conserva recuperación entre encuentros, sin saturación permanente."
       ],
       "relations": {
-        "extends": "P3-PURSUIT-01"
+        "extends": "P3-PURSUIT-01",
+        "supersededAspects": [
+          {
+            "by": "P2-HOSTILE-PURSUIT-02",
+            "batch": "MAIN_SALVAGE_COMBAT",
+            "scope": "La presión persistente se conserva; la nueva revisión retira avisos HUD de disparo y añade anticipación acotada."
+          }
+        ]
       },
       "packageStatus": "VERIFIED_CLEAN",
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
@@ -7432,7 +7446,14 @@
         "Mayor exigencia procede de patrones y decisiones aprendibles, no de daño inevitable; dos dedos y batería de tres cargas funcionan durante el jefe."
       ],
       "relations": {
-        "extends": "P1-ATLAS-01"
+        "extends": "P1-ATLAS-01",
+        "supersededAspects": [
+          {
+            "by": "P1-ATLAS-TACTICS-03",
+            "batch": "MAIN_SALVAGE_COMBAT",
+            "scope": "Revisión de 36 HP y patrones observados para el nuevo cargador; las pruebas anteriores mantienen sólo su alcance histórico."
+          }
+        ]
       },
       "packageStatus": "VERIFIED_CLEAN",
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
@@ -7494,13 +7515,411 @@
         "Las tres cargas, recarga, selección y daño permanecen comprensibles y se prueban con los estados de equipo nuevo y antiguo."
       ],
       "relations": {
-        "extends": "P2-SAVE-01"
+        "extends": "P2-SAVE-01",
+        "supersededAspects": [
+          {
+            "by": "P2-MAGAZINE-20-01",
+            "batch": "MAIN_SALVAGE_COMBAT",
+            "scope": "La batería histórica de tres cargas se sustituye por veinte y recarga de 2 segundos; se conserva la autorización de Gemelo tras Atlas."
+          }
+        ]
       },
       "packageStatus": "VERIFIED_CLEAN",
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
       "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+    },
+    {
+      "id": "P2-ENTRY-CANON-01",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "03",
+      "canonicalPhase": "P2",
+      "name": "Presentar una entrada definitiva con un único viaje principal",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Interfaz",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-IDENTITY-02"
+      ],
+      "files": [
+        "preview/launcher.html",
+        "index.html",
+        "styles.css",
+        "scripts/build-preview.mjs",
+        "privacy.html",
+        "tests/product-brand.test.mjs",
+        "tests/preview-build.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "CONTINUAR VIAJE es la única entrada principal; no se exponen prototipos, campañas técnicas, archivo QA ni desbloqueos en la pantalla normal.",
+        "Los niveles, nave, ajustes, ayuda y legales continúan accesibles sin perder guardados ni cambiar su namespace.",
+        "La maquetación se comprueba en vertical pequeño y horizontal, con capturas del ejecutable y controles dentro de la pantalla.",
+        "La identidad instalable y la precarga permiten abrir entrada y recursos sin conexión; no se confunde acabado comercial con certificación de lanzamiento."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-MAGAZINE-20-01",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Integrar cargador de veinte disparos y recarga progresiva sin contador HUD",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Interfaz",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-ARSENAL-01"
+      ],
+      "files": [
+        "src/game/combat/classic-weapons.js",
+        "src/game/03-ui-game-flow.js",
+        "index.html",
+        "tests/classic-weapons.test.mjs",
+        "tests/unified-flight-legacy.test.mjs",
+        "tests/run-tests.mjs",
+        "tests/run-v7-web-tests.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Una expedición clásica comienza con capacidad de veinte disparos; cada activación respeta cadencia y consumo, incluido Gemelo.",
+        "Se recupera un disparo cada dos segundos de vuelo efectivo hasta veinte; pausa, segundo plano y cambio de arma no regalan munición.",
+        "DISPARAR no presenta cifra restante ni cuenta atrás; el control sigue sirviendo con pilotaje simultáneo a dos dedos.",
+        "AUTO sólo se habilita desde Ajustes; se conservan equipo, progreso y guardados anteriores."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-SALVAGE-01",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Recuperar chatarra física y persistir denominaciones sin duplicaciones",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-SAVE-01"
+      ],
+      "files": [
+        "src/game/progression/scrap-economy.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/05-corridor-update.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/scrap-economy.test.mjs",
+        "tests/unified-flight-legacy.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Cada tipo enemigo autorizado deja una recogida física con valor diferenciado; la destrucción por sí sola no incrementa el saldo.",
+        "La recogida acredita una sola vez con recibo estable durante recarga, checkpoint e interrupción; un fallo de persistencia no destruye dinero válido ni duplica recompensas.",
+        "Las conversiones son 100.000 chatarra por plata, cien plata por oro y diez oro por estelar, con enteros seguros y sin saldos negativos.",
+        "La clave propia conserva campañas, equipo y partidas antiguas; la validación y respaldo de un registro corrupto se comprueban antes de sobrescribir."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-C9-TRADE-01",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Comprar mejoras C9 con chatarra y efecto visible persistido",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-SALVAGE-01",
+        "P2-C9-FAST-01",
+        "P2-MAGAZINE-20-01"
+      ],
+      "files": [
+        "src/game/progression/scrap-economy.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/05-corridor-update.js",
+        "src/game/07-player-item-rendering.js",
+        "styles.css",
+        "tests/scrap-economy.test.mjs",
+        "tests/unified-flight-legacy.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "C9 muestra saldo, precio y disponibilidad; preparación del emisor cuesta 24, célula de escudo 30 y refrigeración 45 de chatarra.",
+        "La compra guarda saldo, derecho y recibo juntos; repetir la acción o interrumpir la aplicación no cobra otra vez ni concede una compra sin saldo.",
+        "Preparar exige pieza recuperada y no desbloquea Gemelo antes de Atlas; las posesiones históricas se conservan.",
+        "El escudo comprado protege tres segundos al salir o entrar en etapa; refrigeración cambia la recarga efectiva de dos a 1,5 segundos y se refleja al continuar.",
+        "La reparación de emergencia sigue siendo gratuita; se verifican salida del taller, retorno al menú, reentrada y partidas sin dinero suficiente."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-HOSTILE-PURSUIT-02",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "04",
+      "canonicalPhase": "P2",
+      "name": "Dar intención de interceptación a enemigos sin revelar el apuntado en el HUD",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Enemigos",
+        "Campaña clásica",
+        "QA"
+      ],
+      "dependencies": [
+        "P2-ENEMY-COMBAT-01",
+        "P2-HOSTILE-ART-01"
+      ],
+      "files": [
+        "src/game/combat/classic-pursuit.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/05-corridor-update.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/classic-pursuit.test.mjs",
+        "scripts/gaia-interceptor-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "La IA estima movimiento usando muestras anteriores acotadas, busca flancos y sostiene el combate con límites de simultaneidad y duración.",
+        "No se dibujan líneas de apuntado ni avisos HUD para cada ataque; preparación mecánica breve y proyectiles visibles permiten responder.",
+        "Los proyectiles siguen trayectoria física tras la emisión, sin lectura de futuras entradas ni seguimiento inevitable del jugador.",
+        "Los eventos de animación emiten ataques una sola vez; daño, pausa, retirada y destrucción no duplican proyectiles ni recompensas.",
+        "Una partida o encuentro natural con controles reales demuestra combate, esquiva y destrucción; los modelos simulados se informan aparte."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P1-ATLAS-TACTICS-03",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "06",
+      "canonicalPhase": "P1",
+      "name": "Integrar Atlas de dos fases con patrones observados y 36 HP frente al cargador nuevo",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Jefes",
+        "Campaña clásica",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "P1-ATLAS-MANUAL-01",
+        "P2-MAGAZINE-20-01",
+        "P2-HOSTILE-ART-01"
+      ],
+      "files": [
+        "src/game/combat/guardian-atlas.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/guardian-atlas.test.mjs",
+        "tests/guardian-atlas-legacy.test.mjs",
+        "scripts/guardian-atlas-browser-smoke.cjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Atlas tiene 36 HP y dos fases con maniobra, patrones basados en posiciones observadas y ventanas reales para atacar y esquivar.",
+        "No avisa el punto de tiro mediante líneas o etiquetas HUD; el despliegue mecánico y el proyectil ilustrado son legibles.",
+        "Pulso manual puede resolver el encuentro sin equipamiento obligatorio; se comprueban movimiento, daño y tiempo de respuesta mediante juego real.",
+        "Victoria, Gemelo y chatarra física se conceden con sus condiciones y una sola vez; el segundo arma no se regala antes del encuentro.",
+        "Pausa, reanudación, derrota y reintento conservan un solo propietario de RAF y no dejan proyectiles fantasma."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P3-COMET-SHOWER-01",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "04",
+      "canonicalPhase": "P3",
+      "name": "Convertir el gran vacío en cruces rápidos y lluvia de cometas transitables",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Jugabilidad",
+        "Campaña clásica",
+        "Animaciones",
+        "QA"
+      ],
+      "dependencies": [
+        "P3-TRANSIT-01",
+        "P1-COMET-02"
+      ],
+      "files": [
+        "src/game/progression/comet-shower.js",
+        "src/game/03-ui-game-flow.js",
+        "src/game/04-entities-collision-damage.js",
+        "src/game/05-corridor-update.js",
+        "src/game/07-player-item-rendering.js",
+        "tests/comet-shower.test.mjs",
+        "tests/unified-flight-legacy.test.mjs"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Los encuentros se limitan a las etapas 1.5 y 1.9 y usan cruces laterales, lluvia diagonal y adelantamientos con velocidad reconocible.",
+        "El aviso ambiental de lluvia precede al fenómeno; no se reutiliza como aviso de apuntado enemigo.",
+        "Existe un corredor alcanzable para la nave real durante toda la trayectoria de los cometas; las pruebas revisan varios tamaños y semillas.",
+        "Pausa y restauración no disparan una lluvia encima del jugador; existe gracia de reentrada y no se integran movimientos dos veces.",
+        "Se conservan 360 segundos, diez etapas, offsets, cuotas y checkpoints v2; el fondo continúa mostrando viaje real hacia Gaia."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
+    },
+    {
+      "id": "P2-HOSTILE-ART-01",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "block": "05",
+      "canonicalPhase": "P2",
+      "name": "Integrar proyectiles hostiles animados y fichas físicas de chatarra originales",
+      "priority": "HIGH",
+      "status": "IN_REVIEW",
+      "areas": [
+        "Assets",
+        "Animaciones",
+        "Enemigos",
+        "Interfaz",
+        "QA"
+      ],
+      "dependencies": [
+        "B05-02"
+      ],
+      "files": [
+        "assets/hostile_ordnance_atlas_v1.webp",
+        "art-source/vfx/hostile-salvage-v1/hostile-salvage-generated-master.png",
+        "art-source/vfx/hostile-salvage-v1/hostile-salvage-packed-master.png",
+        "art-source/vfx/hostile-salvage-v1/hostile-ordnance-atlas-v1.json",
+        "art-source/vfx/hostile-salvage-v1/README.md",
+        "src/game/01-runtime-assets.js",
+        "src/game/animation/animation-map.js",
+        "src/game/07-player-item-rendering.js",
+        "ASSET_MANIFEST.json",
+        "ASSET_PRODUCTION_150.json",
+        "sw.js",
+        "tests/arcade-pulse-rendering.test.mjs",
+        "assets/gaia_pulse_atlas_v3.webp",
+        "art-source/vfx/gaia-pulse-v3/gaia-pulse-production-master.png",
+        "art-source/vfx/gaia-pulse-v3/gaia-pulse-packed-master.png",
+        "art-source/vfx/gaia-pulse-v3/canva-concept-thumbnail-200.jpg",
+        "art-source/vfx/gaia-pulse-v3/gaia-pulse-atlas-v3.json",
+        "art-source/vfx/gaia-pulse-v3/README.md"
+      ],
+      "commit": null,
+      "tests": [],
+      "evidence": [],
+      "openErrors": [
+        "Verificación integrada del lote, aceptación artística o de experiencia humana y prueba física pendientes; no se heredan resultados anteriores."
+      ],
+      "acceptanceStatus": {
+        "technical": "PENDING_INTEGRATED_QA",
+        "artistic": "PENDING_OWNER",
+        "physical": "PENDING"
+      },
+      "acceptance": [
+        "Conservar maestro generado, procedencia, exportación 1024×1024, pivotes, celdas, alpha y mapa de animaciones diferenciadas.",
+        "Plasma Scout, dardo Interceptor y orbe Atlas muestran cuerpo y animación temporal propios en el juego, orientados a su velocidad real.",
+        "Las cuatro fichas de chatarra/plata/oro/estelar son denominaciones distintas; no se reproducen como cuatro fotogramas de una misma ficha.",
+        "Loader, manifiestos, inventario y serviceworker incluyen la exportación real; el navegador comprueba su uso y disponibilidad offline.",
+        "Capturas auténticas del combate y peso/memoria del recurso quedan registrados; una hoja de contactos o QA del atlas no sustituye la revisión del juego."
+      ],
+      "packageStatus": "PENDING_CURRENT_BATCH_BUILD",
+      "privateSiteStatus": "PENDING_CURRENT_BATCH_PUBLICATION"
     }
   ],
   "canonicalPlan": {
@@ -7522,21 +7941,23 @@
     ],
     "demoMap": "Centro Chronos -> Baliza C9 -> aproximación Gaia -> acceso Atlas",
     "decisions": [
-      "Partida nueva con disparo manual y tres cargas recargables; AUTO empieza apagado y sólo se habilita expresamente en Ajustes.",
-      "Progresión nueva: Pulso, victoria ante Guardian Atlas y después autorización de Gemelo. Conservar Gemelo/Lanza adquiridos en guardados antiguos.",
-      "C9 prepara la pieza recuperada y repara; no concede Gemelo ni Lanza gratis. Lanza nueva requiere un guardián posterior realmente integrado.",
-      "Decisión reversible de implementación: aproximación C9 de 2,4 s y taller a 183,2 s; salida dentro de 1.6, conservando 360 s, offsets, cuotas y checkpoints v2.",
-      "La nave modular conserva su silueta sin humo superpuesto; arte de proyectiles e impactos alineado con su trayectoria real.",
-      "Enemigos con intención persistente y avisos transitables; Atlas se verifica con Pulso manual antes de atribuir balance o dificultad adecuados.",
-      "Aplazar grandes cinemáticas Gaia→Vulkar; Motor V1 desactivado y campañas/guardados anteriores preservados."
+      "Único avance principal desde CONTINUAR VIAJE; fuentes, fixtures y guardados históricos permanecen recuperables sin exponer archivos QA o variantes técnicas.",
+      "Veinte disparos de capacidad y recarga de uno cada dos segundos de vuelo; DISPARAR sin restantes ni reloj. AUTO apagado salvo elección expresa en Ajustes.",
+      "Pulso inicial; victoria real ante Atlas autoriza Gemelo. Conservar Gemelo/Lanza de guardados válidos anteriores.",
+      "Chatarra física al destruir enemigos y saldo sólo al recoger, con recibos idempotentes y registro propio del clásico. Conversión exacta: 100.000 chatarra → 1 plata; 100 plata → 1 oro; 10 oro → 1 estelar.",
+      "Decisiones reversibles C9: preparación 24, escudo 30, refrigeración 45. Escudo tres segundos al salir/entrar etapa; refrigeración de2a 1,5 segundos. Reparación de emergencia gratuita.",
+      "IA por observación limitada y trayectorias físicas; sin líneas de apuntado o avisos HUD de cada tiro, con animación mecánica legible. Atlas v4 de 36 HP y dos fases.",
+      "Cruces rápidos y lluvia de cometas en 1.5 y 1.9; alerta ambiental y corredor alcanzable. Conservar 360 segundos, offsets, cuotas y checkpoints v2.",
+      "Nuevo arte de proyectiles y recogidas integrado en Canvas existente; Motor V1 desactivado, RAF único, campañas y guardados anteriores conservados. No lanzamiento comercial autorizado."
     ],
     "acceptance": "Technical, artistic and physical acceptance are separate; P1 awaits owner art review before mass expansion.",
     "latestFeedback": {
       "date": "2026-10-18",
       "status": "CHANGES_REQUESTED",
-      "report": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
-      "priority": "C9 sin demora, nave sin humo pegado, tiros verticales reales, enemigos con intención de combate y Atlas manual retador. AUTO apagado y opt-in sólo en Ajustes; progresión Pulso→Atlas→Gemelo.",
-      "scope": "Pulido integrado del clásico y sus guardados. Se aplazan las grandes cinemáticas Gaia→Vulkar; aceptación estética y dispositivo pendientes."
+      "reference": "docs/PRODUCT_VISION.md",
+      "batch": "MAIN_SALVAGE_COMBAT",
+      "priority": "Un único avance principal con portada pulida; veinte disparos recargables sin contador; enemigos que interceptan sin revelar apuntado; chatarra física y mejoras pagadas C9; Atlas36HP y cometas rápidos en el vacío.",
+      "scope": "Integración del clásico actual y sus diez etapas Chronos→Gaia; variantes históricas recuperables sin exposición en el menú, aceptación estética y dispositivos pendientes."
     },
     "latestClarification": {
       "date": "2026-10-17",
@@ -7682,6 +8103,13 @@
         "report": "docs/production-reports/CHRONOS_PURSUIT_GAIA_2026-10-18.md",
         "priority": "El propietario considera el primer nivel casi terminado: mejorar transiciones, subir levemente la dificultad tras la explosión de Chronos, dar lógica comprensible a los perseguidores y continuar con Gaia.",
         "scope": "Primer territorio Chronos→Gaia y segundo territorio Gaia; no equivale a aceptación artística completa ni a finalizar cien etapas."
+      },
+      {
+        "date": "2026-10-18",
+        "status": "CHANGES_REQUESTED",
+        "report": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
+        "priority": "C9 sin demora, nave sin humo pegado, tiros verticales reales, enemigos con intención de combate y Atlas manual retador. AUTO apagado y opt-in sólo en Ajustes; progresión Pulso→Atlas→Gemelo.",
+        "scope": "Pulido integrado del clásico y sus guardados. Se aplazan las grandes cinemáticas Gaia→Vulkar; aceptación estética y dispositivo pendientes."
       }
     ],
     "verificationHistory": [
@@ -7740,6 +8168,21 @@
         ],
         "supersededBy": "docs/production-reports/ARCADE_POLISH_BOSS_PROGRESSION_2026-10-18.md",
         "note": "Decisiones históricas; automático predeterminado, arma ilimitada y desbloqueos gratuitos de C9 no prevalecen sobre el nuevo mandato."
+      },
+      {
+        "date": "2026-10-18",
+        "decisions": [
+          "Partida nueva con disparo manual y tres cargas recargables; AUTO empieza apagado y sólo se habilita expresamente en Ajustes.",
+          "Progresión nueva: Pulso, victoria ante Guardian Atlas y después autorización de Gemelo. Conservar Gemelo/Lanza adquiridos en guardados antiguos.",
+          "C9 prepara la pieza recuperada y repara; no concede Gemelo ni Lanza gratis. Lanza nueva requiere un guardián posterior realmente integrado.",
+          "Decisión reversible de implementación: aproximación C9 de 2,4 s y taller a 183,2 s; salida dentro de 1.6, conservando 360 s, offsets, cuotas y checkpoints v2.",
+          "La nave modular conserva su silueta sin humo superpuesto; arte de proyectiles e impactos alineado con su trayectoria real.",
+          "Enemigos con intención persistente y avisos transitables; Atlas se verifica con Pulso manual antes de atribuir balance o dificultad adecuados.",
+          "Aplazar grandes cinemáticas Gaia→Vulkar; Motor V1 desactivado y campañas/guardados anteriores preservados."
+        ],
+        "supersededBy": "docs/PRODUCT_VISION.md",
+        "batch": "MAIN_SALVAGE_COMBAT",
+        "note": "Historial inmediato de pulido arcade: las tres cargas y avisos HUD de proyectiles se sustituyen por el mandato actual. C9 deja de preparar gratis; se conservan compras y armas válidas."
       }
     ]
   }

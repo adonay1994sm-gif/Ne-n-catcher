@@ -25,7 +25,7 @@ const equipmentProfile = {version: 1, recoveredTwin:true,
 const began = Date.now();
 const report = {status: 'running', exitCode: null, command: process.argv, sourceRoot: root,
   startedAt: new Date().toISOString(), browser: 'Real Chromium, 390x844, DPR 1', checks: [],
-  qaPilotVersion: 'manual-physical-projectile-settings-opt-in-v4',fireMode, qaScriptSha256: sha256(require('node:fs').readFileSync(__filename)),
+  qaPilotVersion: 'manual-ballistic-atlas-v4-magazine20-v5',fireMode, qaScriptSha256: sha256(require('node:fs').readFileSync(__filename)),
   initialEquipmentFixture: equipmentProfile,
   errors: [], consoleErrors: [], failedRequests: [], screenshots: [], samples: [],
   limits: ['Automatic QA pilot uses real pointer and button inputs; this is not a human playtest.',
@@ -183,6 +183,12 @@ function combatTarget(q) {
     assert.equal(report.buildInfo.commit,values['expected-commit'],'Unexpected package commit');
     assert.equal(report.buildInfo.dirty,false,'Certification requires a clean package');
   }
+  report.packageFiles={};
+  const packageNested=await fs.access(path.join(root,'juego','index.html')).then(()=>true).catch(()=>false);
+  for(const relative of ['game.js','content-runtime.js','assets/gaia_pulse_atlas_v3.webp','assets/hostile_ordnance_atlas_v1.webp']) {
+    const file=packageNested?`juego/${relative}`:relative;
+    const bytes=await fs.readFile(path.join(root,file));report.packageFiles[file]={bytes:bytes.length,sha256:sha256(bytes)};
+  }
   server = await startStaticServer(root);
   browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
     headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage']});
@@ -234,9 +240,12 @@ function combatTarget(q) {
         rot:item.rot,rs:item.rs,circles:collisionCircles(item),
         guardianProjectile:Boolean(item.guardianProjectile),projectileId:item.projectileId,
         attackId:item.attackId,scout:Boolean(item.classicScout)})),
-      weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,
+      weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,elapsed:classicWeapons.elapsed,
+        maxCharges:NeonCampaign.CLASSIC_WEAPON_RULES.maxCharges,rechargeSeconds:classicWeapons.rechargeSeconds||NeonCampaign.CLASSIC_WEAPON_RULES.rechargeSeconds,
         cooldown:classicWeapons.cooldown,recharge:classicWeapons.recharge,shotSequence:classicWeapons.shotSequence,
         projectiles:classicWeapons.projectiles.map(shot=>({...shot}))}:null,
+      atlasStatus:ui.atlasStatus?.textContent||null,
+      salvage:typeof classicSalvageLedger!=="undefined"?classicSalvageLedger?.getState():null,
       scoreAudio: typeof voyageScore!=="undefined" ? voyageScore?.snapshot() : null,
       legacyRunning,legacyFrameId,manualShotCooldown,
       unlocked:getUnlocked(),keys:{...KEYS}});\n`;
@@ -298,6 +307,8 @@ function combatTarget(q) {
     await wait(() => __ATLAS_QA__().state === 'playing' && __ATLAS_QA__().elapsed > 1.4);
     const q = await inspect(); assert.equal(q.goal, 45); assert.equal(q.unlocked, 2); assert.equal(q.boss, null);
     assert.equal(q.weapons.selected, equippedWeapon);
+    assert.equal(q.weapons.maxCharges,20);assert.equal(q.weapons.rechargeSeconds,2);
+    assert.equal(await page.locator('#ammo').isVisible(),false,'The numeric magazine/reload counter must stay hidden');
     report.gameURL = page.url(); await capture('gaia-recovery', q);
   });
   const box = await page.locator('#canvas').boundingBox();
@@ -333,11 +344,13 @@ function combatTarget(q) {
       assert.equal(q.unlocked, 2, 'Gaia was unlocked before the boss finished');
       if (q.boss) {
         assert.ok(q.collected >= q.goal, 'Atlas appeared before the recovery objective');
-        assert.equal(q.boss.version,'guardian-atlas-v3');assert.equal(q.boss.maxHp,24);
+        assert.equal(q.boss.version,'guardian-atlas-v4');assert.equal(q.boss.maxHp,36);
+        assert.doesNotMatch(q.atlasStatus||'',/ARMAS CARGANDO|CORREDOR SEGURO|OBJETIVO FIJADO|MUEVE.*CARRIL/i,
+          'Internal cannon deployment must not reveal an explicit target/safe-lane HUD warning');
         if(!q.boss.disabled&&equippedWeapon==='pulse')assert.deepEqual(q.equipment.unlocked,['pulse'],'Fresh Twin reward must wait for victory');
         bossStates.add(q.boss.state); bossPhases.add(q.boss.phase);
         if (q.boss.state === 'entry') await capture('atlas-entry', q);
-        if (q.boss.state === 'charge') await capture('atlas-warning', q);
+        if (q.boss.state === 'charge') await capture('atlas-mechanical-deployment', q);
         if (q.boss.phase === 2) await capture('atlas-phase-two', q);
         if (q.boss.disabled) await capture('atlas-disabled', q);
         if (!paused && q.boss.state !== 'entry' && !q.boss.disabled) {
@@ -353,12 +366,14 @@ function combatTarget(q) {
           continue; // Re-inspect current bullet positions after interacting.
         }
         if(fireMode==='manual' && q.boss.vulnerability && !q.boss.disabled &&
-          q.boss.state==='idle' && q.weapons.charges>0 && q.weapons.recharge<2.6 &&
+          q.boss.state==='idle' && q.weapons.charges>0 && q.weapons.recharge<1.75 &&
           q.manualShotCooldown<=0 && Math.abs(q.player.x-q.boss.x)<55) {
           // The physical shot must cross the actual arena; no hidden gap or
           // target coordinates, homing, forced hits or health writes are used.
+          // Avoid a nearly due recharge only when testing one-shot conservation;
+          // the pilot otherwise uses the full twenty-charge magazine.
           const before=await inspect();
-          if(before.weapons.charges>0 && before.weapons.recharge<2.6 && before.manualShotCooldown<=0) {
+          if(before.weapons.charges>0 && before.weapons.recharge<1.75 && before.manualShotCooldown<=0) {
             await page.locator('#fire').focus();await page.keyboard.press('Enter');
             const after=await inspect();
             assert.equal(after.weapons.shotSequence,before.weapons.shotSequence+1,'Discrete activation emits exactly one shot');
@@ -381,12 +396,12 @@ function combatTarget(q) {
     }
     assert.ok(report.finalSnapshot, `Session did not finish within ${timeout} ms`);
     assert.ok(maxCollected >= 45); assert.ok(maxX - minX > 120, 'Pointer pilot did not move the ship');
-    assert.ok(bossStates.has('entry') && bossStates.has('charge'), 'Visible entry and warning were not observed');
+    assert.ok(bossStates.has('entry') && bossStates.has('charge'), 'Visible entry and actual cannon-deployment poses were not observed');
     assert.ok(bossPhases.has(1) && bossPhases.has(2), 'Both boss phases were not observed');
     assert.ok(captured.has('atlas-disabled'), 'The deactivation sequence was not observed');
     assert.equal(paused,true);
-    if(fireMode==='manual'){assert.equal(manualChecked,true);assert.ok(report.manualShots.length>=3,'Manual round must repeatedly spend/recharge the real battery');}
-    assert.ok(observedProjectileIds.size >= 5, 'The pilot must actually face emitted attacks');
+    if(fireMode==='manual'){assert.equal(manualChecked,true);assert.ok(report.manualShots.length>=3,'Manual round must repeatedly spend the real finite magazine');}
+    assert.ok(observedProjectileIds.size >= 6, 'The pilot must actually face emitted attacks');
     report.naturalSession = {wallMs: Date.now() - sessionBegan, simulationSeconds: report.finalSnapshot.elapsed,
       maxCollected, movementRange: maxX - minX, bossStates: [...bossStates], bossPhases: [...bossPhases],
       observedProjectiles: observedProjectileIds.size, initialEquipmentFixture: equipmentProfile};
@@ -397,13 +412,19 @@ function combatTarget(q) {
       stars: JSON.parse(localStorage.getItem(prefix + 'neon-stars-v2') || '{}'),
       n7Unlocked: localStorage.getItem(prefix + 'neon-n7-unlocked-v1'),
       n7Best: localStorage.getItem(prefix + 'neon-n7-best-v1'),
-      equipment: JSON.parse(localStorage.getItem(prefix + 'neonCatcher.flightEquipment.v1') || 'null')
+      equipment: JSON.parse(localStorage.getItem(prefix + 'neonCatcher.flightEquipment.v1') || 'null'),
+      salvage: JSON.parse(localStorage.getItem(prefix + 'neonCatcher.classicSalvage.v1') || 'null')
     }), storagePrefix);
     assert.equal(saved.unlocked, '3'); assert.ok(saved.stars['2'] >= 1);
     assert.equal(saved.n7Unlocked, '37'); assert.equal(saved.n7Best, '2037');
     assert.ok(saved.equipment.unlocked.includes('twin'),'Atlas victory must grant the second cannon');
     assert.equal(saved.equipment.unlocked.includes('lance'),false,'Atlas must not grant Lance');
     assert.equal(saved.equipment.selected,equippedWeapon,'Reward must not automatically equip a weapon');
+    assert.ok(saved.salvage,'A real Atlas victory must persist its salvage reward');
+    assert.equal(saved.salvage.balance,saved.salvage.earned-saved.salvage.spent);
+    const guardianReceipts=saved.salvage.activeRun?.claimed.filter(receipt=>receipt.enemyType==='atlas')||[];
+    assert.equal(guardianReceipts.length,1,'Atlas destruction must grant exactly one durable salvage reward');
+    assert.equal(guardianReceipts[0].amount,180);
     assert.equal(saved.equipment.recoveredTwin,true);assert.equal(saved.equipment.twinPrepared,true);
     assert.deepEqual(saved.equipment.bossRewards,['guardian-atlas']);
     if(equippedWeapon==='pulse')assert.deepEqual(saved.equipment.unlocked,['pulse','twin']);
@@ -411,6 +432,7 @@ function combatTarget(q) {
     await page.waitForTimeout(450); const after = await inspect();
     assert.equal(after.score,before.score);assert.equal(after.unlocked,before.unlocked);
     assert.deepEqual(after.equipment,before.equipment,'Waiting after victory cannot duplicate or change the equipment reward');
+    assert.deepEqual(after.salvage,before.salvage,'Waiting after victory must not duplicate the salvage reward');
     assert.equal(await page.locator('#nextLevel').isVisible(), true);
   });
   await check('continue naturally into Vulkar and reload without losing victory or equipment', async () => {
@@ -453,6 +475,9 @@ function combatTarget(q) {
   }
 }).finally(async () => {
   await browser?.close(); await server?.close(); report.durationMs = Date.now() - began;
+  if(report.packageFiles)for(const [file,entry]of Object.entries(report.packageFiles)){
+    try{assert.equal(sha256(await fs.readFile(path.join(root,file))),entry.sha256,`Package changed during QA: ${file}`);}
+    catch(error){report.status='failed';report.exitCode=1;process.exitCode=1;report.packageChangedDuringRun=true;report.error??=errorText(error);}}
   if(report.buildInfo){const after=JSON.parse(await fs.readFile(path.join(root,'build-info.json'),'utf8'));
     if(JSON.stringify(after)!==JSON.stringify(report.buildInfo)){report.status='failed';report.exitCode=1;process.exitCode=1;report.packageChangedDuringRun=true;}}
   if (evidenceReady) await save();

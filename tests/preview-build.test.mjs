@@ -17,28 +17,22 @@ const sha256 = value => createHash('sha256').update(value).digest('hex');
 
 function assertOneMainJourney(document) {
   const mainLink = document.getElementById('classiclink');
-  const archive = document.getElementById('qaArchive');
+  assert.ok(mainLink, 'The canonical journey remains the primary entry');
   assert.equal(mainLink.getAttribute('href'), 'juego/index.html');
   assert.match(mainLink.textContent, /CONTINUAR VIAJE/);
   assert.equal(mainLink.closest('details'), null, 'The principal journey must be visible');
-  assert.equal(archive.tagName, 'DETAILS');
-  assert.equal(archive.hasAttribute('open'), false, 'Historical variants start collapsed');
-  assert.match(archive.querySelector('summary').textContent, /ARCHIVO DE PRUEBAS/);
-  for (const [id, destination] of [['journeylink', 'journey'], ['n7link', 'n7']]) {
-    const link = document.getElementById(id);
-    assert.equal(link.closest('details'), archive);
-    assert.equal(link.getAttribute('href'), `juego/index.html?campaign=${destination}`);
-    assert.equal(link.classList.contains('card'), false, 'Archives are not competing game cards');
+  for (const id of ['qaArchive','journeylink','n7link','unlockClassic','unlock','storageStatus']) {
+    assert.equal(document.getElementById(id), null, `${id} cannot expose an archived variant or QA unlock`);
   }
-  assert.equal(document.getElementById('unlockClassic').closest('details'), archive);
-  assert.equal(document.getElementById('unlock').closest('details'), archive);
-  const principalEntries = [...document.querySelectorAll('a[href^="juego/index.html"]')]
-    .filter(link => !link.closest('details'));
+  const principalEntries = [...document.querySelectorAll('a[href^="juego/index.html"]')];
   assert.deepEqual(principalEntries, [mainLink]);
+  assert.equal(document.querySelector('a[href*="campaign="]'), null);
+  assert.doesNotMatch(document.body.textContent, /ARCHIVO DE PRUEBAS|VERSIÓN EXPERIMENTAL|PRUEBA EXPERIMENTAL|V7\.2\.0/i);
+  assert.equal(document.title, 'NEON CRONIUM');
 }
 
 // Tests named "unit:" do not require or create build output.
-test('unit: preview offers one main journey and preserves historical versions inside a closed QA archive', async () => {
+test('unit: preview offers the canonical journey without archived variants or QA controls', async () => {
   const dom = new JSDOM(await text('preview/launcher.html'));
   try { assertOneMainJourney(dom.window.document); }
   finally { dom.window.close(); }
@@ -77,56 +71,56 @@ test('unit: preview transforms require the actual game markers and preserve ordi
   assert.doesNotMatch(transformed, /VER ANUNCIO Y REPARAR/);
   assert.equal(source, await text('game.js'));
   assert.match(previewPage(html), /preview-config\.js/);
-  assert.match(previewPage(html), /PRUEBA EXPERIMENTAL/);
+  assert.doesNotMatch(previewPage(html), /PRUEBA EXPERIMENTAL|CAMBIAR MODO|Prueba experimental/);
+  const transformedPage = new JSDOM(previewPage(html));
+  try {
+    assert.equal(transformedPage.window.document.title, 'NEON CRONIUM');
+    assert.equal(transformedPage.window.document.getElementById('playLabel').textContent, 'CONTINUAR VIAJE');
+  } finally { transformedPage.window.close(); }
   assert.equal(html, await text('index.html'));
   assert.throws(() => previewGame('unexpected source'), /exactly one marker/);
   assert.throws(() => previewPage('unexpected source'), /exactly one marker/);
 });
 
-test('unit: launcher unlock affects only preview N-7 and reports blocked storage', async () => {
+test('unit: the canonical launcher does not access storage and still exposes its entry when storage is blocked', async () => {
   const html = await text('preview/launcher.html');
-  const dom = new JSDOM(html, {url: 'https://preview.test/', runScripts: 'dangerously'});
+  assert.doesNotMatch(html, /localStorage|sessionStorage|unlockClassic|n7link|journeylink/);
+  let storageReads = 0;
+  const dom = new JSDOM(html, {url: 'https://preview.test/', runScripts: 'dangerously', beforeParse(window) {
+    Object.defineProperty(window, 'localStorage', {get() {storageReads++;throw new Error('blocked');}});
+  }});
   try {
     const {window} = dom;
-    window.localStorage.setItem('neon-n7-unlocked-v1', '42');
-    window.localStorage.setItem('neon-unlocked-v2', '7');
-    window.document.getElementById('unlock').checked = true;
-    // Avoid navigation in this DOM-only test; the actual listener still runs.
-    const link = window.document.getElementById('n7link');
-    const click = () => link.dispatchEvent(new window.Event('click', {cancelable: true}));
-    assert.equal(click(), true);
-    assert.equal(window.localStorage.getItem(`${STORAGE_PREFIX}neon-n7-unlocked-v1`), '100');
-    assert.equal(window.localStorage.getItem('neon-n7-unlocked-v1'), '42');
-    assert.equal(window.localStorage.getItem('neon-unlocked-v2'), '7');
-    Object.defineProperty(window, 'localStorage', {get() {throw new Error('blocked');}});
-    assert.equal(click(), false);
-    assert.match(window.document.getElementById('storageStatus').textContent, /bloquea el guardado/);
+    assertOneMainJourney(window.document);
+    const link = window.document.getElementById('classiclink');
+    let clicks = 0;
+    link.addEventListener('click', event => {clicks++;event.preventDefault();}); // Suppress JSDOM navigation only.
+    link.dispatchEvent(new window.Event('click', {cancelable: true}));
+    assert.equal(clicks, 1);
+    assert.equal(link.getAttribute('href'), 'juego/index.html');
+    assert.equal(storageReads, 0, 'The presentation layer cannot require or alter a save before entry');
   } finally {dom.window.close();}
 });
 
-test('unit: classic QA unlock preserves achievements, ordinary saves and N-7', async () => {
+test('unit: entering the canonical journey preserves ordinary, historical, achievement and salvage saves byte for byte', async () => {
   const dom = new JSDOM(await text('preview/launcher.html'), {url: 'https://preview.test/', runScripts: 'dangerously'});
   try {
     const {window} = dom;
     const saved = {'neon-unlocked-v2':'7', [`${STORAGE_PREFIX}neon-stars-v2`]:'{"1":2}',
-      [`${STORAGE_PREFIX}neon-n7-unlocked-v1`]:'37'};
+      [`${STORAGE_PREFIX}neon-unlocked-v2`]:'2', [`${STORAGE_PREFIX}neon-n7-unlocked-v1`]:'37',
+      [`${STORAGE_PREFIX}neonCatcher.classicSalvage.v1`]:'{"fixture":"opaque archived bytes"}'};
     for (const [key,value] of Object.entries(saved)) window.localStorage.setItem(key,value);
-    const click = () => window.document.getElementById('classiclink').dispatchEvent(new window.Event('click', {cancelable:true}));
-    assert.equal(click(), true);
-    assert.equal(window.localStorage.getItem(`${STORAGE_PREFIX}neon-unlocked-v2`), null);
-    window.document.getElementById('unlockClassic').checked = true;
-    assert.equal(click(), true);
-    assert.equal(window.localStorage.getItem(`${STORAGE_PREFIX}neon-unlocked-v2`), '10');
+    const link = window.document.getElementById('classiclink');
+    link.addEventListener('click', event => event.preventDefault());
+    for (let index=0;index<2;index++) link.dispatchEvent(new window.Event('click', {cancelable:true}));
     for (const [key,value] of Object.entries(saved)) assert.equal(window.localStorage.getItem(key), value);
-    assert.equal(click(), true);
-    assert.equal(window.localStorage.getItem(`${STORAGE_PREFIX}neon-unlocked-v2`), '10');
-    Object.defineProperty(window, 'localStorage', {get() {throw new Error('blocked');}});
-    assert.equal(click(), false);
-    assert.match(window.document.getElementById('storageStatus').textContent, /bloquea el guardado/);
+    assert.deepEqual(Object.keys(window.localStorage).sort(),Object.keys(saved).sort(),
+      'A normal entry cannot add automatic unlocks or replace existing save namespaces');
+    assert.equal(window.document.querySelector('input[type="checkbox"]'),null);
   } finally {dom.window.close();}
 });
 
-test('unit: preview installation opens the selector with one identity from either entry point', async () => {
+test('unit: isolated installation opens the canonical entry with one identity from either entry point', async () => {
   const source = await text('manifest.webmanifest');
   const base = 'https://preview.test/prueba/';
   const identity = base + '?edition=neon-preview-v1';
@@ -136,7 +130,8 @@ test('unit: preview installation opens the selector with one identity from eithe
     assert.equal(new URL(manifest.id, manifestURL).href, identity);
     assert.equal(new URL(manifest.start_url, manifestURL).href, base + 'index.html');
     assert.equal(new URL(manifest.scope, manifestURL).href, base);
-    assert.match(manifest.name, /Prueba experimental/);
+    assert.equal(manifest.name, 'NEON CRONIUM');
+    assert.doesNotMatch(manifest.description, /experimental|selector|N-7/i);
     for (const icon of manifest.icons) {
       assert.ok(new URL(icon.src, manifestURL).href.startsWith(base + 'juego/assets/'));
     }
@@ -174,6 +169,10 @@ test('unit: launcher worker caches its shell and preserves game and unrelated ca
   assert.ok(worker.additions.includes(worker.scope + 'index.html'));
   assert.ok(worker.additions.includes(worker.scope + 'manifest.webmanifest'));
   assert.ok(worker.additions.includes(worker.scope + 'build-info.json'));
+  for (const resource of ['juego/assets/chronos_flight_space_v1.webp','juego/privacy.html','juego/terms.html']) {
+    assert.ok(worker.additions.includes(worker.scope + resource), resource);
+  }
+  assert.ok(worker.additions.some(url => new URL(url).pathname.endsWith('/juego/styles.css')));
   assert.ok(!worker.additions.includes(worker.scope + 'juego/index.html'));
   worker.handlers.activate({waitUntil: promise => {activation = promise;}});
   await activation;
@@ -182,11 +181,11 @@ test('unit: launcher worker caches its shell and preserves game and unrelated ca
 
 test('unit: launcher worker serves the selector offline without intercepting game or foreign pages', async () => {
   const worker = launcherWorkerHarness('d'.repeat(64));
-  for (const path of ['', 'index.html?source=installed', 'manifest.webmanifest']) {
+  for (const path of ['', 'index.html?source=installed', 'manifest.webmanifest', 'juego/privacy.html#contacto', 'juego/terms.html', 'juego/assets/chronos_flight_space_v1.webp', 'juego/styles.css?v=7.2.0']) {
     let response;
     worker.handlers.fetch({request: {method: 'GET', mode: 'navigate', url: worker.scope + path},
       respondWith: value => {response = value;}});
-    assert.equal(await response, 'cached:' + worker.scope + path.split('?')[0]);
+    assert.equal(await response, 'cached:' + worker.scope + path.split(/[?#]/)[0]);
   }
   for (const url of [worker.scope + 'juego/index.html?campaign=n7', worker.scope + 'juego/game.js',
     worker.scope + 'other.html', 'https://preview.test/index.html', 'https://elsewhere.test/']) {
@@ -249,13 +248,13 @@ test('unit: Netlify opt-in cannot authorize main or PR deploy contexts', () => {
   assert.equal(run('--unknown', '1').status, 2);
 });
 
-test('built launcher has one principal journey, recoverable historical archives and resolving package paths', async () => {
+test('built launcher has one canonical journey and resolving package paths without historical variant controls', async () => {
   const html = await readFile(join(dist, 'index.html'), 'utf8');
   const dom = new JSDOM(html);
   try { assertOneMainJourney(dom.window.document); }
   finally { dom.window.close(); }
   assert.match(html, /juego\/assets\/player_ship_identity_v1\.webp/);
-  assert.match(html, /neon-preview-v1:neon-n7-unlocked-v1/);
+  assert.doesNotMatch(html, /neon-preview-v1:neon-n7-unlocked-v1|localStorage|unlockClassic/);
   assert.doesNotMatch(html, /__NEON_PREVIEW_/);
   assert.match(html, /rel="manifest" href="manifest.webmanifest"/);
   assert.match(html, /register\('launcher-sw\.js'/);

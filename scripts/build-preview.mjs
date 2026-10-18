@@ -19,7 +19,7 @@ function replaceOnce(source, before, after) {
 export function previewGame(source) {
   return replaceOnce(source, 'const storage = NeonCore.createStorageService();',
     'const storage = NeonCore.createStorageService(window.NeonPreview.storage);')
-    .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARACIÓN DE PRUEBA · SIN ANUNCIO');
+    .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARAR NAVE');
 }
 
 export function previewWorker(source, revision) {
@@ -43,7 +43,9 @@ export function previewLauncherWorker(revision) {
   return `const CACHE_PREFIX = "neon-preview-launcher-v1:" + self.registration.scope + "::";
 const CACHE = CACHE_PREFIX + ${JSON.stringify(revision)};
 const CORE = ["./", "index.html", "manifest.webmanifest", "build-info.json",
-  "juego/assets/player_ship_identity_v1.webp", "juego/assets/icon-192.png", "juego/assets/icon-512.png"]
+  "juego/assets/player_ship_identity_v1.webp", "juego/assets/chronos_flight_space_v1.webp",
+  "juego/assets/icon-192.png", "juego/assets/icon-512.png",
+  "juego/privacy.html", "juego/terms.html", "juego/styles.css"]
   .map(path => new URL(path, self.registration.scope).href);
 const ALLOWED = new Set(CORE);
 self.addEventListener("install", event => {
@@ -83,8 +85,8 @@ export function previewManifest(source, nested = false) {
   const base = nested ? '../' : './';
   return JSON.stringify({...original,
     id: base + '?edition=neon-preview-v1',
-    name: 'NEON CRONIUM — Prueba experimental', short_name: 'NEON CRONIUM',
-    description: 'Edición experimental con selector de campaña clásica y rutas N-7. Guardado de prueba independiente.',
+    name: 'NEON CRONIUM', short_name: 'NEON CRONIUM',
+    description: 'Pilota entre las estrellas, recupera el CRONIUM y sigue el rastro del ataque a Chronos.',
     start_url: base + 'index.html', scope: base,
     icons: original.icons.map(icon => ({...icon, src: nested ? icon.src : 'juego/' + icon.src}))
   }, null, 2) + '\n';
@@ -101,7 +103,7 @@ window.NeonPreview = Object.freeze({
     removeItem(key) { localStorage.removeItem(${JSON.stringify(STORAGE_PREFIX)} + key); }
   })
 });
-// Direct links into the game must also prepare the offline mode selector.
+// Direct links into the game also prepare the offline journey entry.
 if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
   const workerURL = new URL("../launcher-sw.js", document.currentScript.src);
   window.addEventListener("load", () => {
@@ -114,12 +116,10 @@ if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
 export function previewPage(source) {
   let html = replaceOnce(source, '<script src="native-admob.js?v=7.2.0"></script>',
     '<script src="preview-config.js"></script>\n<script src="native-admob.js?v=7.2.0"></script>');
-  html = replaceOnce(html, '<div class="menu-legal">',
-    '<div class="menu-legal"><a href="../index.html">PRUEBA EXPERIMENTAL · CAMBIAR MODO</a>');
   html = replaceOnce(html, 'rel="manifest" href="manifest.webmanifest"',
     'rel="manifest" href="../manifest.webmanifest"');
-  return html.replace(/<title>[^<]*<\/title>/, '<title>NEON CRONIUM — Prueba experimental</title>')
-    .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARACIÓN DE PRUEBA · SIN ANUNCIO');
+  return html.replace(/<title>[^<]*<\/title>/, '<title>NEON CRONIUM</title>')
+    .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARAR NAVE');
 }
 
 async function filesBelow(directory, base = directory) {

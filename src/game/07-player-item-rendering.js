@@ -13,17 +13,47 @@
   }
 
   function drawAtlasProjectile(item) {
-    ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.rot);
-    drawAtlasVfx(0, 27, 68, 1, .90);
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.rotate(Math.atan2(item.vy || 1, item.vx || 0) + Math.PI / 2);
+    if (!drawHostileOrdnance(item, 2, 64)) drawAtlasVfx(0, 27, 68, 1, .90);
+    ctx.restore();
+  }
+
+  // The illustrated core and its short wake share the physics pivot. No aim
+  // line, predicted landing point or additional update clock is drawn.
+  function drawHostileOrdnance(item, row = 0, size = 52) {
+    const atlas = SPRITES.hostileOrdnance;
+    if (!spriteReady(atlas)) return false;
+    const age = Number.isFinite(item.life) ? Math.max(0, 6 - item.life) : 0;
+    const cell = atlas.naturalWidth / 4;
+    const frame = Math.floor(age * (row === 2 ? 10 : 12)) % 4;
+    ctx.drawImage(atlas, frame * cell, row * cell, cell, cell,
+      -size / 2, -size / 2, size, size);
+    return true;
+  }
+
+  function drawSalvagePickup(item) {
+    if (!spriteReady(SPRITES.hostileOrdnance)) return;
+    const atlas = SPRITES.hostileOrdnance, cell = atlas.naturalWidth / 4;
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.globalAlpha *= Math.min(1, Math.max(0, item.life ?? 1));
+    ctx.rotate(Math.sin((item.p || 0) * .5) * .18);
+    // Early drops are raw scrap. Silver, gold and stellar coins are reserved
+    // for their actual denominations, never used to mislabel a nine-scrap drop.
+    const size = item.bossSalvage ? 56 : 38;
+    ctx.drawImage(atlas, 0, cell * 3, cell, cell, -size / 2, -size / 2, size, size);
     ctx.restore();
   }
 
   function drawArcadePulse(kind, age = 0, size = 72, alpha = 1) {
-    if (!spriteReady(SPRITES.arcadePulse)) return false;
+    const gaiaReady = spriteReady(SPRITES.gaiaPulse);
+    const atlas = gaiaReady ? SPRITES.gaiaPulse : SPRITES.arcadePulse;
+    if (!spriteReady(atlas)) return false;
     const row = kind === "impact" ? 3 : kind === "lance" ? 2 : kind === "twin" ? 1 : 0;
-    const frame = kind === "impact" ? (age < .035 ? 0 : age < .09 ? 1 : age < .165 ? 2 : 3)
+    const frame = gaiaReady ? (kind === "impact" ? Math.min(3, Math.floor(age * 16)) : Math.floor(age * 12) % 4)
+      : kind === "impact" ? (age < .035 ? 0 : age < .09 ? 1 : age < .165 ? 2 : 3)
       : Math.floor(age / (row === 0 ? .06 : row === 1 ? .05 : .055)) % 4;
-    const atlas=SPRITES.arcadePulse,cell=atlas.naturalWidth/4;
+    const cell=atlas.naturalWidth/4;
     ctx.save();ctx.globalAlpha*=alpha;
     ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
     ctx.restore();return true;
@@ -60,13 +90,14 @@
   function hasClassicTwinMounts() {
     // Some isolated render fixtures deliberately do not install campaign UI.
     return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
-      typeof classicEquipment !== "undefined" && ["twin","lance"].includes(classicEquipment.selected);
+      typeof classicEquipment !== "undefined" &&
+      (["twin","lance"].includes(classicEquipment.selected) || classicEquipment.twinPrepared === true);
   }
 
   function classicTwinFrame() {
     const cooldown = atlasBoss ? manualShotCooldown : classicWeapons?.cooldown || 0;
     if (cooldown > .10) return 2;
-    if (classicWeapons && classicWeapons.charges < 3 && classicWeapons.recharge > .10) return 1;
+    if (classicWeapons && classicWeapons.charges < 20 && classicWeapons.recharge > .10) return 1;
     return 0;
   }
 
@@ -379,6 +410,22 @@
   }
 
   function drawEnergy(item) {
+    if (typeof isUnifiedClassic === "function" && isUnifiedClassic()) {
+      // The authored core already contains its illumination. Repeated Canvas
+      // blur/gradients on every pickup cost a full software pass per object.
+      // Keep the same half-size appearance and physical collection radius.
+      const sequence = [0,1,2,3,4,5,4,3,2,1];
+      const phase = Number.isFinite(item.phase) ? item.phase : 0;
+      const frame = frameFrom("core", sequence[Math.floor((elapsed * 9 + phase) % sequence.length)]);
+      const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
+      ctx.save(); ctx.translate(item.x, item.y);
+      ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
+      ctx.shadowBlur = 0;
+      drawImageCentered(frame, item.r * 2.85, item.r * 2.85, -item.rot * .08);
+      if (spriteReady(SPRITES.croniumFragment))
+        drawImageCentered(SPRITES.croniumFragment, item.r * 2.10, item.r * 2.10, item.rot * .06, .72);
+      ctx.restore(); return;
+    }
     ctx.save();
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
@@ -446,7 +493,7 @@
     const sprite=frame.image==="assets/ch02_interceptor_atlas_v1.webp"?SPRITES.ch02:SPRITES.ch01;
     if(!spriteReady(sprite))return false;
     const {x, y, width, height} = frame.rect;
-    ctx.shadowBlur = 17;
+    ctx.shadowBlur = typeof isUnifiedClassic === "function" && isUnifiedClassic() ? 0 : 17;
     ctx.shadowColor = frame.damaged ? "#ff6079" : "#50e8ff";
     ctx.drawImage(sprite, x, y, width, height,
       -frame.drawSize * frame.pivot.x, -frame.drawSize * frame.pivot.y,
@@ -460,6 +507,12 @@
     ctx.translate(item.x, item.y);
 
     if (item.n7Projectile || item.classicScoutProjectile) {
+      if (item.classicScoutProjectile) {
+        ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
+        if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
+          item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
+        ctx.restore(); return;
+      }
       const atlasPulse = item.classicScoutProjectile;
       ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
       ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
@@ -471,7 +524,7 @@
       ctx.restore();
       return;
     }
-    const telegraph = item.n7?.telegraph || item.classicScout?.telegraph || 0;
+    const telegraph = item.n7?.telegraph || 0;
     if (telegraph > 0) {
       ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
       ctx.lineWidth = 2;

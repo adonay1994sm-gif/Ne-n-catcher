@@ -19,11 +19,11 @@ const timeout = Number(values.timeout || 90000);
 assert.ok(Number.isFinite(timeout) && timeout >= 20000 && timeout <= 180000);
 const started = Date.now();
 const report = {status:'running',exitCode:null,command:process.argv,sourceRoot:root,
-  startedAt:new Date().toISOString(),pilotVersion:'c9-short-approach-real-input-v1',
+  startedAt:new Date().toISOString(),pilotVersion:'c9-paid-salvage-magazine20-real-input-v2',
   checks:[],errors:[],consoleErrors:[],failedRequests:[],incidentalRequests:[],screenshots:[],samples:[],
   limits:[
-    'Declared valid saved entry 1.6 with hull36, score160, 18collected, maxCombo1, recovered emitter and only Pulse. No later health, time, entity, quota or equipment writes.',
-    'Actual menu, stage selector, keyboard/button firing, pause, preparation and Continue inputs drive the shipped loop. This is focused C9 QA, not a complete ten-stage voyage.',
+    'Declared valid saved entry 1.6 with hull36, score160, 18collected, maxCombo1, recovered emitter and only Pulse, plus a separately recorded valid salvage ledger of 24 earned chatarra. No later health, time, entity, quota, money or equipment writes.',
+    'Actual menu, stage selector, keyboard/button firing, pause, paid preparation and Continue inputs drive the shipped loop. The initial 24-chatarra wallet is an isolated purchase fixture, not evidence that the natural journey earned that amount. This is focused C9 QA, not a complete ten-stage voyage.',
     'Read-only diagnostics are appended to a local HTTP game response; original package files remain unchanged. Canvas/RAF observers call native functions without scheduling gameplay.',
     'Real Chromium 390x844 DPR1 on this host. No Safari, physical iPhone, human balance or artistic acceptance is claimed.',
     'Service workers are blocked to make local response instrumentation explicit; this run does not certify offline update behavior.',
@@ -90,6 +90,7 @@ async function menuLaunch() {
   assert.equal(report.buildInfo.engineV1,false);
   assert.equal(report.buildInfo.branch,'continuity-assets-audit-20261013');
   report.packageBefore = await hashFiles(root);
+  assert.ok(report.packageBefore['juego/assets/gaia_pulse_atlas_v3.webp'],'New authored Pulse atlas is missing from the package');
   const modelPath = path.resolve(__dirname,'../src/game/progression/chronos-flight.js');
   const model = await import(pathToFileURL(modelPath).href);
   const checkpoint = model.normalizeChronosVoyageCheckpoint(model.createChronosVoyageCheckpoint(6,{goal:36,collected:18}));
@@ -97,6 +98,14 @@ async function menuLaunch() {
   assert.equal(checkpoint.serviceWaiting,undefined);
   report.fixture = {version:2,checkpoint,entry:{hull:36,score:160,collected:18,maxCombo:1},unlockedStage:6,completed:false};
   report.equipmentFixture = {version:1,recoveredTwin:true,unlocked:['pulse'],selected:'pulse'};
+  const economyPath=path.resolve(__dirname,'../src/game/progression/scrap-economy.js');
+  const economy=await import(pathToFileURL(economyPath).href);
+  report.salvageFixture={...economy.createScrapRecord(),balance:24,earned:24};
+  assert.deepEqual(economy.normalizeScrapRecord(report.salvageFixture),report.salvageFixture);
+  report.salvageFixtureSource={model:economyPath,sha256:sha256(await fs.readFile(economyPath)),
+    method:'createScrapRecord with exactly24 earned/balance to isolate the real C9 purchase transaction',
+    key:economy.SCRAP_ECONOMY_KEY,price:economy.SCRAP_UPGRADES['twin-preparation'].price};
+  assert.equal(report.salvageFixtureSource.price,24);
   report.fixtureSource = {model:modelPath,sha256:sha256(await fs.readFile(modelPath)),
     method:'createChronosVoyageCheckpoint(6) then normalizeChronosVoyageCheckpoint; valid wrapper supplied before launch'};
   const prefix = report.buildInfo.storagePrefix;
@@ -104,20 +113,21 @@ async function menuLaunch() {
   report.sentinels = {[prefix+'neon-n7-unlocked-v1']:'37',[prefix+'neon-n7-best-v1']:'2037',
     [prefix+'neon-best-v2']:'9000','neon-n7-unlocked-v1':'37','neon-n7-best-v1':'2037'};
   await fs.writeFile(path.join(output,'declared-checkpoint-fixture.json'),JSON.stringify({voyage:report.fixture,
-    equipment:report.equipmentFixture,sentinels:report.sentinels},null,2)+'\n');
+    equipment:report.equipmentFixture,salvage:report.salvageFixture,sentinels:report.sentinels},null,2)+'\n');
   server = await startStaticServer(root);
   browser = await chromium.launch({executablePath:process.env.CHROMIUM_PATH || '/usr/bin/chromium',headless:true,
     args:['--no-sandbox','--disable-dev-shm-usage']});
   report.browser = {version:browser.version(),viewport:{width:390,height:844},deviceScaleFactor:1};
   context = await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,
     hasTouch:true,serviceWorkers:'block'});
-  await context.addInitScript(({fixture,equipment,sentinels,prefix}) => {
+  await context.addInitScript(({fixture,equipment,salvage,salvageKey,sentinels,prefix}) => {
     const key = prefix+'neonCatcher.chronosVoyage.v2';
     // Only the absent initial record is seeded. Reload must consume actual
     // application writes rather than resetting the fixture or hiding save loss.
     if(location.pathname.endsWith('/juego/index.html') && !localStorage.getItem(key)) {
       localStorage.setItem(key,JSON.stringify(fixture));
       localStorage.setItem(prefix+'neonCatcher.flightEquipment.v1',JSON.stringify(equipment));
+      localStorage.setItem(prefix+salvageKey,JSON.stringify(salvage));
       for(const [name,value] of Object.entries(sentinels)) localStorage.setItem(name,value);
     }
     const observer = window.__C9_POLISH_OBSERVER__ = {frames:0,maximum:0,pending:new Set(),errors:[],
@@ -138,7 +148,7 @@ async function menuLaunch() {
       const state = window.__C9_POLISH_DRAW_QA__?.();
       if(state?.hull === 36 && /ship_modular_atlas_v1/.test(source)) observer.lowHullFrames++;
       if(state?.hull === 36 && /smoke_frame_/.test(source)) observer.lowHullSmokeDraws++;
-      if(/arcade_pulse_atlas_v2/.test(source) && args.length === 8 && args[1] === 0 && state) {
+      if(/gaia_pulse_atlas_v3/.test(source) && args.length === 8 && args[1] === 0 && state) {
         const matrix = this.getTransform(),x = args[4]+args[6]/2,y = args[5]+args[7]/2;
         const center = {x:matrix.a*x+matrix.c*y+matrix.e,y:matrix.b*x+matrix.d*y+matrix.f};
         const match = state.projectiles.filter(shot=>shot.weapon === 'pulse').map(shot=>({shot,
@@ -157,7 +167,8 @@ async function menuLaunch() {
       }
       return result;
     };
-  },{fixture:report.fixture,equipment:report.equipmentFixture,sentinels:report.sentinels,prefix});
+  },{fixture:report.fixture,equipment:report.equipmentFixture,salvage:report.salvageFixture,
+    salvageKey:report.salvageFixtureSource.key,sentinels:report.sentinels,prefix});
   page = await context.newPage();page.setDefaultTimeout(15000);
   page.on('pageerror',error=>report.errors.push(errorText(error)));
   page.on('console',message=>{if(message.type() === 'error') {
@@ -182,9 +193,11 @@ async function menuLaunch() {
       player:{x:player.x,y:player.y},settings:{...settings},
       flight:classicFlightView?JSON.parse(JSON.stringify(classicFlightView)):null,
       weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
-      equipment:JSON.parse(JSON.stringify(classicEquipment)),voyage:classicVoyageRecord?JSON.parse(JSON.stringify(classicVoyageRecord)):null,
+      equipment:JSON.parse(JSON.stringify(classicEquipment)),
+      salvage:typeof classicSalvageLedger!=="undefined"?classicSalvageLedger?.getState():null,
+      voyage:classicVoyageRecord?JSON.parse(JSON.stringify(classicVoyageRecord)):null,
       sprites:{modular:!!(SPRITES.modularShip?.complete&&SPRITES.modularShip.naturalWidth),
-      pulse:!!(SPRITES.arcadePulse?.complete&&SPRITES.arcadePulse.naturalWidth),c9:!!(SPRITES.c9Station?.complete&&SPRITES.c9Station.naturalWidth)},
+      pulse:!!(SPRITES.gaiaPulse?.complete&&SPRITES.gaiaPulse.naturalWidth),c9:!!(SPRITES.c9Station?.complete&&SPRITES.c9Station.naturalWidth)},
       saves:Object.fromEntries(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]))});\n`;
     await route.fulfill({response,body:source.replace(marker,hook+marker)});
   });
@@ -199,6 +212,9 @@ async function menuLaunch() {
     const before = await inspect();assert.equal(before.hull,36);assert.equal(before.score,160);
     assert.equal(before.collected,18);assert.equal(before.flight.stageId,'1.6');assert.ok(before.flight.stageElapsed < 1.2);
     assert.equal(before.settings.autoFire,false);assert.deepEqual(before.equipment.unlocked,['pulse']);
+    assert.equal(before.weapons.charges,20);assert.equal(before.salvage.balance,24);
+    assert.equal(before.salvage.spent,0);assert.deepEqual(before.salvage.upgrades,[]);
+    assert.equal(await page.locator('#ammo').isVisible(),false,'A numeric charge/reload counter must not cover gameplay');
     await wait(()=>window.__C9_POLISH_QA__().sprites.pulse && window.__C9_POLISH_QA__().sprites.c9);
     await page.waitForTimeout(350);const frozen = await inspect();
     assert.equal(frozen.flight.elapsed,before.flight.elapsed);assert.equal(frozen.hull,36);
@@ -224,7 +240,7 @@ async function menuLaunch() {
     }
     report.pulse={snapshot:q,observedPoses:[...new Set(traces.map(item=>item.rect.join(',')))],traces};return report.pulse;
   });
-  await check('C9 opens at the actual1.2-second arrival; service freezes route and battery, heals and only prepares the recovered component',async()=>{
+  await check('C9 opens at the actual1.2-second arrival; paid24 preparation commits one ledger transaction without granting Twin',async()=>{
     await page.locator('#flightDock.show').waitFor({timeout});
     const docked = await inspect();
     assert.equal(docked.state,'paused');assert.equal(docked.flight.stageId,'1.6');
@@ -233,7 +249,20 @@ async function menuLaunch() {
     await capture('c9-arrival-opens-workshop-without-a-wait',docked);
     await page.waitForTimeout(450);const frozen = await inspect();
     assert.deepEqual(frozen.flight,docked.flight);assert.deepEqual(frozen.weapons,docked.weapons);
-    await page.locator('#flightInstallTwin').click();const prepared = await inspect();
+    assert.equal(docked.salvage.balance,24);assert.equal(docked.salvage.spent,0);
+    assert.match(await page.locator('#c9Balance').innerText(),/24.*chatarra/i);
+    assert.match(await page.locator('#flightInstallTwin').innerText(),/24/,'The workshop must disclose the price before buying');
+    await page.locator('#flightInstallTwin').dblclick();const prepared = await inspect();
+    assert.equal(prepared.salvage.balance,0);assert.equal(prepared.salvage.earned,24);assert.equal(prepared.salvage.spent,24);
+    assert.deepEqual(prepared.salvage.upgrades,['twin-preparation']);
+    assert.equal(prepared.salvage.purchases.length,1);
+    assert.deepEqual(prepared.salvage.purchases[0],{id:'c9:twin-preparation',sku:'twin-preparation',price:24});
+    assert.equal(await page.locator('#flightInstallTwin').isDisabled(),true);
+    assert.equal(await page.locator('#c9BuyShield').isDisabled(),true,'An unaffordable shield purchase must be unavailable');
+    assert.equal(await page.locator('#c9BuyCoolant').isDisabled(),true,'An unaffordable coolant purchase must be unavailable');
+    assert.match(await page.locator('#c9Balance').innerText(),/0.*chatarra/i);
+    await page.waitForTimeout(300);const settled=await inspect();
+    assert.deepEqual(settled.salvage,prepared.salvage,'The repeated real click/animation must not charge twice');
     assert.equal(prepared.equipment.twinPrepared,true);assert.deepEqual(prepared.equipment.unlocked,['pulse']);
     assert.equal(prepared.equipment.selected,'pulse');assert.equal(prepared.weapons.selected,'pulse');
     assert.deepEqual(prepared.weapons,frozen.weapons,'Preparing a component cannot recharge or alter the weapon');
@@ -242,7 +271,8 @@ async function menuLaunch() {
     assert.equal(await page.locator('#flightCalibrateLance').isVisible(),false);
     assert.match(await page.locator('#flightDockStatus').innerText(),/Atlas/);
     await capture('c9-component-prepared-pulse-still-equipped',prepared);
-    report.service={docked,frozen,prepared};return report.service;
+    report.service={docked,frozen,prepared,settled,purchase:{price:24,actualSpent:prepared.salvage.spent,
+      receipt:prepared.salvage.purchases[0],balanceAfter:prepared.salvage.balance,duplicateCharge:false}};return report.service;
   });
   await check('Continue leaves the station within2.4s, persists a healed same-stage milestone and reload never reopens C9',async()=>{
     await page.locator('#flightDockContinue').click();
@@ -261,17 +291,22 @@ async function menuLaunch() {
     await capture('c9-departed-back-in-the-flight-corridor',departed);
     const savedBytes = departed.saves[prefix+'neonCatcher.chronosVoyage.v2'];
     const equipmentBytes = departed.saves[prefix+'neonCatcher.flightEquipment.v1'];
+    const salvageBytes=departed.saves[prefix+report.salvageFixtureSource.key];
+    assert.equal(JSON.parse(salvageBytes).spent,24);assert.equal(JSON.parse(salvageBytes).balance,0);
     assert.equal(JSON.parse(savedBytes).entry.hull,100);
-    report.departure={undocked,departed,savedBytes,equipmentBytes};
+    report.departure={undocked,departed,savedBytes,equipmentBytes,salvageBytes};
     await page.reload({waitUntil:'load'});
     await wait(()=>typeof window.__C9_POLISH_QA__ === 'function' && document.querySelector('#menu.show'));
     const menu = await inspect();assert.equal(menu.saves[prefix+'neonCatcher.chronosVoyage.v2'],savedBytes);
     assert.equal(menu.saves[prefix+'neonCatcher.flightEquipment.v1'],equipmentBytes);
+    assert.equal(menu.saves[prefix+report.salvageFixtureSource.key],salvageBytes,'Reload must preserve the paid entitlement and exact balance');
     await menuLaunch();await wait(()=>window.__C9_POLISH_QA__().state === 'playing');
     const restored = await inspect();
     assert.equal(restored.hull,100);assert.equal(restored.flight.stageId,'1.6');
     assert.equal(restored.flight.waitingFor,null);assert.equal(restored.equipment.twinPrepared,true);
     assert.deepEqual(restored.equipment.unlocked,['pulse']);
+    assert.equal(restored.salvage.balance,0);assert.equal(restored.salvage.spent,24);
+    assert.equal(restored.salvage.purchases.length,1);assert.deepEqual(restored.salvage.upgrades,['twin-preparation']);
     await wait(()=>window.__C9_POLISH_QA__().flight.stageElapsed >= 3.6);
     const later = await inspect();assert.equal(later.state,'playing');assert.equal(later.hull,100);
     assert.equal(later.flight.waitingFor,null);

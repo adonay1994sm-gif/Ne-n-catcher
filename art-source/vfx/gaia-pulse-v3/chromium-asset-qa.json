@@ -1,0 +1,151 @@
+{
+  "status": "passed",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/Ne-n-catcher/art-source/vfx/gaia-pulse-v3/validate-browser.cjs"
+  ],
+  "startedAt": "2026-10-18T08:39:31.029Z",
+  "scope": "Real Chromium asset decode and Canvas alpha QA, not gameplay QA",
+  "asset": "assets/gaia_pulse_atlas_v3.webp",
+  "assetSha256": "8dda1bfa8100ce607386ae5c345fc8350987e1651b5f856f499a16b0fc12ad48",
+  "cases": [
+    {
+      "name": "WebP decodes at 1024×1024",
+      "status": "passed"
+    },
+    {
+      "name": "All 16 cells have 16 px transparent gutters, visible isolated artwork and no shared trails",
+      "status": "passed"
+    },
+    {
+      "name": "Sixteen distinct decoded sprites",
+      "status": "passed"
+    },
+    {
+      "name": "No Chromium JavaScript errors",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "result": {
+    "width": 1024,
+    "height": 1024,
+    "frames": [
+      {
+        "index": 0,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 11174,
+        "transparentPixels": 51025,
+        "signature": "18f9d27e"
+      },
+      {
+        "index": 1,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 11174,
+        "transparentPixels": 50935,
+        "signature": "657fd498"
+      },
+      {
+        "index": 2,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 11241,
+        "transparentPixels": 51114,
+        "signature": "d8183136"
+      },
+      {
+        "index": 3,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 11289,
+        "transparentPixels": 50834,
+        "signature": "f0bc7b84"
+      },
+      {
+        "index": 4,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 10110,
+        "transparentPixels": 50997,
+        "signature": "ff7dbd7f"
+      },
+      {
+        "index": 5,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 10446,
+        "transparentPixels": 50749,
+        "signature": "a8f26e1e"
+      },
+      {
+        "index": 6,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 10469,
+        "transparentPixels": 50623,
+        "signature": "840b795a"
+      },
+      {
+        "index": 7,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 10362,
+        "transparentPixels": 50547,
+        "signature": "a89de599"
+      },
+      {
+        "index": 8,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 11321,
+        "transparentPixels": 49876,
+        "signature": "251d1a5e"
+      },
+      {
+        "index": 9,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 12152,
+        "transparentPixels": 48155,
+        "signature": "5056cdb2"
+      },
+      {
+        "index": 10,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 12976,
+        "transparentPixels": 46727,
+        "signature": "e592e0d8"
+      },
+      {
+        "index": 11,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 12188,
+        "transparentPixels": 48036,
+        "signature": "adb9dd94"
+      },
+      {
+        "index": 12,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 6027,
+        "transparentPixels": 53386,
+        "signature": "1b894ab6"
+      },
+      {
+        "index": 13,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 12492,
+        "transparentPixels": 47164,
+        "signature": "af61dd02"
+      },
+      {
+        "index": 14,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 23266,
+        "transparentPixels": 35081,
+        "signature": "12250be9"
+      },
+      {
+        "index": 15,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 9993,
+        "transparentPixels": 47259,
+        "signature": "7689c2ab"
+      }
+    ]
+  },
+  "browser": "154.0.8037.57",
+  "exitCode": 0,
+  "finishedAt": "2026-10-18T08:39:32.221Z"
+}

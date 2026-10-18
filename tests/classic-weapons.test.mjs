@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {CLASSIC_WEAPON_RULES, createClassicWeapons, selectClassicWeapon, unlockClassicWeapon,
   triggerClassicWeapon, advanceClassicWeapons, hitClassicProjectile,
-  classicWeaponSnapshot} from '../src/game/combat/classic-weapons.js';
+  classicWeaponSnapshot, setClassicRechargeInterval} from '../src/game/combat/classic-weapons.js';
 
 const origin = {x: 360, y: 1000};
 const run = (state, seconds, events = []) => {
@@ -16,13 +16,15 @@ const run = (state, seconds, events = []) => {
   return events;
 };
 
-test('a match starts with three pulses and a trigger cannot spend through cooldown', () => {
+test('a match starts with twenty pulses and a trigger cannot spend through cooldown', () => {
   const state = createClassicWeapons();
-  assert.equal(state.charges, 3);
+  assert.equal(state.version, 'classic-weapons-v2');
+  assert.equal(CLASSIC_WEAPON_RULES.maxCharges, 20);
+  assert.equal(state.charges, 20);
   const first = triggerClassicWeapon(state, origin);
   assert.equal(first.accepted, true);
   assert.equal(first.projectiles.length, 1);
-  assert.equal(state.charges, 2);
+  assert.equal(state.charges, 19);
   const before = classicWeaponSnapshot(state);
   assert.equal(triggerClassicWeapon(state, origin).reason, 'cooldown');
   assert.deepEqual(classicWeaponSnapshot(state), before);
@@ -30,28 +32,143 @@ test('a match starts with three pulses and a trigger cannot spend through cooldo
   assert.equal(triggerClassicWeapon(state, origin).accepted, true);
   run(state, .24);
   assert.equal(triggerClassicWeapon(state, origin).accepted, true);
-  assert.equal(state.charges, 0);
-  assert.equal(triggerClassicWeapon(state, origin).reason, 'empty');
+  assert.equal(state.charges, 17);
 });
 
-test('recharge gives one charge per 3.6 played seconds and does not restart on another shot', () => {
+test('continuous fire depletes the twenty-round magazine without stopping gradual recharge', () => {
   const state = createClassicWeapons();
-  triggerClassicWeapon(state, origin);
-  run(state, 1.8);
-  triggerClassicWeapon(state, origin);
-  run(state, 1.79);
-  assert.equal(state.charges, 1);
+  const rechargeEvents = [];
+  let emitted = 0;
+  while (state.charges > 0 && emitted < 40) {
+    const result = triggerClassicWeapon(state, origin);
+    assert.equal(result.accepted, true);
+    emitted++;
+    if (state.charges > 0) run(state, CLASSIC_WEAPON_RULES.types.pulse.cooldown, rechargeEvents);
+  }
+  assert.equal(state.charges, 0);
+  assert.equal(emitted, 22, 'twenty stored shots plus two recovered during the burst');
+  assert.equal(rechargeEvents.filter(event => event.type === 'recharged').length, 2);
+  const before = classicWeaponSnapshot(state);
+  assert.equal(triggerClassicWeapon(state, origin).reason, 'empty');
+  assert.deepEqual(classicWeaponSnapshot(state), before);
+  const untilRecovery = CLASSIC_WEAPON_RULES.rechargeSeconds - state.recharge;
+  assert.ok(untilRecovery > .01 && untilRecovery < 2);
+  run(state, untilRecovery - .01);
+  assert.equal(state.charges, 0);
   const events = run(state, .01);
-  assert.equal(state.charges, 2);
+  assert.equal(state.charges, 1, 'empty magazines recover one round rather than filling at once');
   assert.equal(events.filter(event => event.type === 'recharged').length, 1);
-  run(state, 3.6);
-  assert.equal(state.charges, 3);
+  assert.equal(triggerClassicWeapon(state, origin).accepted, true);
+  assert.equal(state.charges, 0);
+});
+
+test('recharge gives one round per two played seconds and does not restart on another shot', () => {
+  const state = createClassicWeapons();
+  assert.equal(CLASSIC_WEAPON_RULES.rechargeSeconds, 2);
+  triggerClassicWeapon(state, origin);
+  run(state, 1);
+  triggerClassicWeapon(state, origin);
+  run(state, .99);
+  assert.equal(state.charges, 18);
+  const events = run(state, .01);
+  assert.equal(state.charges, 19);
+  assert.equal(events.filter(event => event.type === 'recharged').length, 1);
+  run(state, 2);
+  assert.equal(state.charges, 20);
   assert.equal(state.recharge, 0);
   run(state, 10);
   triggerClassicWeapon(state, origin);
-  assert.equal(state.recharge, 0, 'full batteries cannot bank free ammo');
-  run(state, 3.59);
-  assert.equal(state.charges, 2);
+  assert.equal(state.recharge, 0, 'full magazines cannot bank free ammunition');
+  run(state, 1.99);
+  assert.equal(state.charges, 19);
+});
+
+test('C9 cooling uses its configured interval while the base magazine still recovers every two seconds', () => {
+  const standard = createClassicWeapons();
+  const cooled = createClassicWeapons({rechargeSeconds: 1.5});
+  const intermediate = createClassicWeapons({rechargeSeconds: 1.75});
+  assert.equal(standard.rechargeSeconds, 2);
+  assert.equal(cooled.rechargeSeconds, 1.5);
+  assert.equal(intermediate.rechargeSeconds, 1.75);
+  for (const state of [standard, cooled]) {
+    triggerClassicWeapon(state, origin);
+    run(state, 1.49);
+    assert.equal(state.charges, 19);
+  }
+  assert.equal(run(cooled, .01).filter(event => event.type === 'recharged').length, 1);
+  assert.equal(cooled.charges, 20);
+  assert.equal(classicWeaponSnapshot(cooled).rechargeProgress, 0);
+  run(standard, .01);
+  assert.equal(standard.charges, 19);
+  assert.ok(Math.abs(classicWeaponSnapshot(standard).rechargeProgress - .75) < 1e-9);
+  run(standard, .5);
+  assert.equal(standard.charges, 20);
+});
+
+test('installing cooling preserves partial recovery and does not refill or bypass cooldown', () => {
+  const state = createClassicWeapons({unlocked: ['pulse', 'twin']});
+  triggerClassicWeapon(state, origin);
+  run(state, .5);
+  triggerClassicWeapon(state, origin);
+  const before = classicWeaponSnapshot(state);
+  assert.equal(setClassicRechargeInterval(state, 1.5), 1.5);
+  assert.equal(state.rechargeSeconds, 1.5);
+  assert.equal(state.recharge, before.recharge, 'played recovery seconds survive installation');
+  assert.equal(state.charges, before.charges);
+  assert.equal(state.cooldown, before.cooldown);
+  assert.equal(state.elapsed, before.elapsed);
+  assert.equal(state.eventSequence, before.eventSequence);
+  assert.deepEqual(state.projectiles, before.projectiles);
+  assert.ok(Math.abs(classicWeaponSnapshot(state).rechargeProgress - 1 / 3) < 1e-9);
+  const installed = classicWeaponSnapshot(state);
+  setClassicRechargeInterval(state, 1.5);
+  assert.deepEqual(classicWeaponSnapshot(state), installed, 'repeated installation is idempotent');
+  selectClassicWeapon(state, 'twin');
+  assert.equal(state.rechargeSeconds, 1.5);
+  assert.equal(state.charges, before.charges);
+  assert.equal(state.recharge, before.recharge);
+  assert.equal(triggerClassicWeapon(state, origin).reason, 'cooldown');
+  run(state, .99);
+  assert.equal(state.charges, 18);
+  assert.equal(run(state, .01).filter(event => event.type === 'recharged').length, 1);
+  assert.equal(state.charges, 19);
+});
+
+test('late cooling installation waits for played time instead of issuing ammunition while paused', () => {
+  const state = createClassicWeapons();
+  triggerClassicWeapon(state, origin);
+  run(state, 1.9);
+  const sequence = state.eventSequence;
+  setClassicRechargeInterval(state, 1.5);
+  assert.equal(state.charges, 19);
+  assert.ok(state.recharge >= 0 && state.recharge < 1.5);
+  assert.equal(state.eventSequence, sequence);
+  const paused = classicWeaponSnapshot(state);
+  for (let frame = 0; frame < 60; frame++) assert.deepEqual(advanceClassicWeapons(state, 0), []);
+  assert.deepEqual(classicWeaponSnapshot(state), paused);
+  const resumed = advanceClassicWeapons(state, 86400);
+  assert.equal(resumed.filter(event => event.type === 'recharged').length, 1);
+  assert.equal(state.charges, 20);
+  assert.equal(state.recharge, 0);
+  assert.ok(Math.abs(state.elapsed - paused.elapsed - .05) < 1e-9);
+  setClassicRechargeInterval(state, 2);
+  assert.equal(state.charges, 20);
+  assert.equal(state.recharge, 0);
+  triggerClassicWeapon(state, origin);
+  run(state, 1.5);
+  assert.equal(state.charges, 19, 'returning to the base module restores its actual interval');
+});
+
+test('invalid cooling intervals reject before mutating the match or constructing an unsupported model', () => {
+  const state = createClassicWeapons();
+  triggerClassicWeapon(state, origin);
+  run(state, .1);
+  const before = classicWeaponSnapshot(state);
+  for (const invalid of [1.49, 2.01, -1, 0, NaN, Infinity, -Infinity, '1.5', null]) {
+    assert.throws(() => createClassicWeapons({rechargeSeconds: invalid}));
+    assert.throws(() => setClassicRechargeInterval(state, invalid));
+    assert.deepEqual(classicWeaponSnapshot(state), before);
+  }
 });
 
 test('zero delta freezes cooldown, charge recovery, projectile movement and event identity', () => {
@@ -68,7 +185,7 @@ test('a suspended-frame delta cannot refill ammunition or jump projectiles acros
   triggerClassicWeapon(state, origin);
   const beforeY = state.projectiles[0].y;
   advanceClassicWeapons(state, 86400);
-  assert.equal(state.charges, 2);
+  assert.equal(state.charges, 19);
   assert.equal(state.elapsed, .05);
   assert.equal(state.recharge, .05);
   assert.ok(Math.abs(state.projectiles[0].y - beforeY + 920 * .05) < 1e-8);
@@ -78,7 +195,7 @@ test('twin keeps two centered, parallel muzzles and spends one shared charge', (
   const state = createClassicWeapons({type: 'twin', unlocked: ['pulse', 'twin']});
   const result = triggerClassicWeapon(state, origin);
   assert.equal(result.projectiles.length, 2);
-  assert.equal(state.charges, 2);
+  assert.equal(state.charges, 19);
   const [left, right] = result.projectiles;
   assert.equal(left.x, 350); assert.equal(right.x, 370);
   assert.ok(Math.abs(left.vx) < 1e-9 && Math.abs(right.vx) < 1e-9);
@@ -176,7 +293,7 @@ test('weapon metadata explains exact damage per charge with multipliers 1, 2 and
     const damage = shot.projectiles.reduce((total, projectile) =>
       total + hitClassicProjectile(state, projectile.id, 'centered-target').damage, 0);
     assert.equal(damage, multiplier, `${type} must deliver its advertised damage to one centered target`);
-    assert.equal(state.charges, 2, 'every weapon spends exactly one shared charge');
+    assert.equal(state.charges, 19, 'every weapon spends exactly one shared charge');
   }
 });
 
@@ -244,7 +361,7 @@ test('switching through all three types cannot refill, reset recharge or bypass 
   }
   run(state, .38);
   assert.equal(triggerClassicWeapon(state, origin).accepted, true);
-  assert.equal(state.charges, 1);
+  assert.equal(state.charges, 18);
   assert.ok(Math.abs(state.recharge - .48) < 1e-9);
 });
 
@@ -256,7 +373,8 @@ test('v1 saved type identifiers remain accepted and the additive lance type roun
   ]) {
     const restored = JSON.parse(JSON.stringify(saved));
     const state = createClassicWeapons({type: restored.selected, unlocked: restored.unlocked});
-    assert.equal(state.version, restored.version);
+    assert.equal(state.version, 'classic-weapons-v2');
+    assert.notEqual(state.version, restored.version, 'a new match adopts current ephemeral rules');
     assert.equal(state.selected, restored.selected);
     assert.deepEqual(state.unlocked, restored.unlocked);
     assert.equal(triggerClassicWeapon(state, origin).accepted, true);
@@ -286,6 +404,30 @@ test('projectiles have bounded lifetime/space, never exceed capacity and expire 
   assert.equal(expirations[0].reason, 'lifetime');
 });
 
+test('a twin volley reserves both projectile slots atomically without spending on refusal', () => {
+  const state = createClassicWeapons({type: 'twin', unlocked: ['pulse', 'twin']});
+  const prototype = triggerClassicWeapon(state, origin).projectiles[0];
+  run(state, 2);
+  assert.equal(state.charges, 20);
+  state.projectiles = Array.from({length: CLASSIC_WEAPON_RULES.maxProjectiles - 1}, (_, index) =>
+    ({...prototype, id: `retained-${index}`, hitTargets: []}));
+  const before = classicWeaponSnapshot(state);
+  const refused = triggerClassicWeapon(state, origin);
+  assert.equal(refused.accepted, false);
+  assert.equal(refused.reason, 'capacity');
+  assert.equal(refused.projectiles.length, 0);
+  assert.equal(refused.events.length, 0);
+  assert.deepEqual(classicWeaponSnapshot(state), before, 'no partial volley, charge or sequence change');
+  state.projectiles.pop();
+  const accepted = triggerClassicWeapon(state, origin);
+  assert.equal(accepted.accepted, true);
+  assert.equal(accepted.projectiles.length, 2);
+  assert.equal(state.projectiles.length, CLASSIC_WEAPON_RULES.maxProjectiles);
+  assert.equal(state.charges, 19);
+  assert.equal(new Set(state.projectiles.map(projectile => projectile.id)).size,
+    CLASSIC_WEAPON_RULES.maxProjectiles);
+});
+
 test('event IDs are unique, diagnostics cannot mutate combat, and events do not move with projectiles', () => {
   const state = createClassicWeapons({unlocked: ['pulse', 'twin']});
   const first = triggerClassicWeapon(state, origin);
@@ -294,7 +436,7 @@ test('event IDs are unique, diagnostics cannot mutate combat, and events do not 
   snapshot.unlocked.push('made-up');
   snapshot.projectiles[0].x = -999;
   snapshot.projectiles[0].hitTargets.push('anything');
-  const events = [...first.events, ...run(state, 3.6)];
+  const events = [...first.events, ...run(state, 2)];
   assert.equal(state.unlocked.includes('made-up'), false);
   assert.equal(first.events.find(event => event.type === 'projectile').projectile.y, emittedY);
   assert.equal(new Set(events.map(event => event.id)).size, events.length);
@@ -329,9 +471,9 @@ test('long play stays bounded and deterministic with the same player inputs', ()
       if (frame === 1800) selectClassicWeapon(state, 'twin');
       if (frame % 7 === 0) triggerClassicWeapon(state, origin);
       advanceClassicWeapons(state, 1 / 60);
-      assert.ok(state.charges >= 0 && state.charges <= 3);
+      assert.ok(state.charges >= 0 && state.charges <= 20);
       assert.ok(state.projectiles.length <= CLASSIC_WEAPON_RULES.maxProjectiles);
-      assert.ok(state.recharge >= 0 && state.recharge < 3.6);
+      assert.ok(state.recharge >= 0 && state.recharge < 2);
     }
   }
   assert.deepEqual(classicWeaponSnapshot(a), classicWeaponSnapshot(b));

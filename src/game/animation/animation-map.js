@@ -43,6 +43,30 @@ export const ANIMATION_MAP = Object.freeze({
     ...(name==='impact'?{durationMs:Object.freeze([35,55,75,95])}:{}),
     pivot:Object.freeze({x:.5,y:.5}),integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'
   })]))),
+  gaiaCombat: Object.freeze(Object.fromEntries([
+    ['pulse',0,1000/12,true],['twin',1,1000/12,true],['lance',2,1000/12,true],['impact',3,1000/16,false]
+  ].map(([name,row,frameMs,loop]) => [name,define(['assets/gaia_pulse_atlas_v3.webp'],{
+    frameMs,loop,atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,
+    atlasCells:Object.freeze([0,1,2,3].map(column=>row*4+column)),
+    ...(name==='impact'?{durationMs:Object.freeze([62.5,62.5,62.5,62.5])}:{}),
+    pivot:Object.freeze({x:.5,y:.5}),forwardAxis:'-Y',frameEvents:Object.freeze([]),
+    integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'
+  })]))),
+  hostileOrdnance: Object.freeze(Object.fromEntries([
+    ['scout',0,1000/12],['interceptor',1,1000/12],['atlas',2,100]
+  ].map(([name,row,frameMs]) => [name,define(['assets/hostile_ordnance_atlas_v1.webp'],{
+    frameMs,loop:true,atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,
+    atlasCells:Object.freeze([0,1,2,3].map(column=>row*4+column)),
+    pivot:Object.freeze({x:.5,y:.5}),forwardAxis:'-Y',frameEvents:Object.freeze([]),
+    integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'
+  })]))),
+  // Different denomination designs are static pickups, never one animation.
+  salvageTokens: Object.freeze(Object.fromEntries(['copper','silver','gold','stellar'].map((name,index)=>
+    [name,define(['assets/hostile_ordnance_atlas_v1.webp'],{
+      frameMs:1000,loop:false,atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,
+      atlasCells:Object.freeze([12+index]),pivot:Object.freeze({x:.5,y:.5}),frameEvents:Object.freeze([]),
+      integrationStatus:'IN_REVIEW',artisticAcceptance:'PENDING_OWNER',physicalAcceptance:'PENDING'
+    })]))),
   ch02Interceptor: Object.freeze(Object.fromEntries(Object.entries(ch02.animations).map(([name,animation])=>
     [name,define([ch02.proposedRuntimeImage],{frameMs:animation.durationMs[0],loop:animation.loop,
       atlasColumns:4,atlasRows:4,cellWidth:256,cellHeight:256,

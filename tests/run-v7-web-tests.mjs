@@ -28,9 +28,11 @@ await test("JavaScript principal, runtime y service worker tienen sintaxis váli
   new vm.Script(serviceWorkerSource, { filename: "sw.js" });
 });
 
-await test("V7.2.0 pre-release está alineada en pantalla, juego y caché", async () => {
-  assert.match(indexHtml, /V7\.2\.0/);
-  assert.match(indexHtml, /Compilación V7\.2\.0 · Pre-Release/);
+await test("versión interna y caché conservan compatibilidad sin insignia técnica en portada", async () => {
+  assert.doesNotMatch(indexHtml, />[^<]*V7\.2\.0[^<]*</);
+  assert.match(indexHtml, /NEON CRONIUM/);
+  assert.match(indexHtml, /CONTINUAR VIAJE/);
+  assert.doesNotMatch(indexHtml, /Compilación V7|Pre-Release/);
   assert.match(gameSource, /BUILD_VERSION = "7\.2\.0"/);
   assert.match(serviceWorkerSource, /neon-cronium-pre-release-7-2-0/);
   assert.doesNotMatch(indexHtml, /[?&]v=6\.8\.0/);
@@ -193,28 +195,39 @@ await test("arranque de nivel conserva presupuestos y estados limpios", async ()
   assert.equal(snapshot.energyBudget, 45);
   assert.equal(snapshot.powerBudget, 2);
   assert.equal(snapshot.displayedScore, 0);
-  assert.equal(snapshot.ammo, 3);
+  assert.equal(snapshot.ammo, 20);
 });
 
-await test("control de disparo agota tres cargas, bloquea la cuarta y recarga sin emitir disparos fantasma", async () => {
+await test("el cargador canónico ofrece veinte proyectiles, se agota y recupera uno sin contador ni disparos fantasma", async () => {
   api.startLevel(0);
   api.prepareWeaponFixture();
-  for (let shot = 0; shot < 3; shot++) {
-    assert.equal(api.fireManualShot(), true);
+  assert.equal(api.snapshot().ammo, 20);
+  assert.equal(api.snapshot().weapons.rechargeSeconds, 2);
+  assert.equal(api.fireManualShot(), true);
+  assert.equal(api.snapshot().weapons.projectiles.length, 1, "un pulso recorre el espacio como proyectil físico");
+  assert.equal(api.snapshot().counts.shots, 0, "no duplica el proyectil con un haz instantáneo heredado");
+  let emitted = 1;
+  while (api.snapshot().ammo > 0 && emitted < 40) {
     api.advancePlayed(.25);
+    assert.equal(api.fireManualShot(), true);
+    emitted++;
   }
+  assert.equal(emitted, 22, "veinte almacenados más dos recuperados durante la ráfaga");
   assert.equal(api.snapshot().ammo, 0);
   assert.equal(api.fireManualShot(), false);
-  assert.equal(api.snapshot().weapons.shotSequence, 3);
-  api.advancePlayed(2.84);
-  assert.equal(api.snapshot().ammo, 0);
+  assert.equal(api.snapshot().weapons.shotSequence, emitted);
+  assert.equal(harness.window.document.getElementById('ammo').textContent, '');
+  assert.doesNotMatch(harness.window.document.getElementById('fire').getAttribute('aria-label'), /\d|segundos|cargas/i);
+  const remaining = api.snapshot().weapons.rechargeSeconds - api.snapshot().weapons.recharge;
+  api.advancePlayed(remaining - .01);
+  assert.equal(api.snapshot().ammo, 0, "el tiempo jugado anterior al intervalo no concede munición");
   assert.equal(api.fireManualShot(), false);
   api.advancePlayed(.02);
   assert.equal(api.snapshot().ammo, 1);
-  assert.equal(api.snapshot().weapons.shotSequence, 3);
+  assert.equal(api.snapshot().weapons.shotSequence, emitted, "la recarga no dispara por sí sola");
   assert.equal(api.fireManualShot(), true);
   assert.equal(api.snapshot().ammo, 0);
-  assert.equal(api.snapshot().weapons.shotSequence, 4);
+  assert.equal(api.snapshot().weapons.shotSequence, emitted + 1);
 });
 
 await test("daño activa respuesta de cámara/HUD sin alterar la lógica de casco", async () => {

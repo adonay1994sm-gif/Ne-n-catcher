@@ -244,6 +244,37 @@
     return false;
   }
 
+  function segmentsCross(ax, ay, bx, by, cx, cy, dx, dy) {
+    const cross = (px, py, qx, qy, rx, ry) => (qx-px)*(ry-py)-(qy-py)*(rx-px);
+    const a=cross(ax,ay,bx,by,cx,cy),b=cross(ax,ay,bx,by,dx,dy);
+    const c=cross(cx,cy,dx,dy,ax,ay),d=cross(cx,cy,dx,dy,bx,by);
+    if(a*b>0 || c*d>0)return false;
+    return Math.max(Math.min(ax,bx),Math.min(cx,dx))<=Math.min(Math.max(ax,bx),Math.max(cx,dx))+1e-8 &&
+      Math.max(Math.min(ay,by),Math.min(cy,dy))<=Math.min(Math.max(ay,by),Math.max(cy,dy))+1e-8;
+  }
+
+  function sweptCircleHitsShip(startX, startY, endX, endY, radius) {
+    // Sweep the authored collision polygon itself. Fast nuclei and enemy
+    // projectiles must not jump across it, and cosmetic tails never damage it.
+    if(Math.max(startX,endX)+radius< -112 || Math.min(startX,endX)-radius>112 ||
+      Math.max(startY,endY)+radius< -151 || Math.min(startY,endY)-radius>98)return false;
+    if(circleHitsShip(startX,startY,radius)||circleHitsShip(endX,endY,radius))return true;
+    const radiusSquared=radius*radius;
+    for(let index=0;index<SHIP_COLLISION_OUTLINE.length;index++) {
+      const [ax,ay]=SHIP_COLLISION_OUTLINE[index];
+      const [bx,by]=SHIP_COLLISION_OUTLINE[(index+1)%SHIP_COLLISION_OUTLINE.length];
+      if(segmentsCross(startX,startY,endX,endY,ax,ay,bx,by) ||
+        squaredDistanceToSegment(ax,ay,startX,startY,endX,endY)<=radiusSquared ||
+        squaredDistanceToSegment(bx,by,startX,startY,endX,endY)<=radiusSquared)return true;
+    }
+    return false;
+  }
+
+  function releaseClassicShowerComet(item) {
+    if(item?.showerComet && typeof classicCometShower!=="undefined" && classicCometShower)
+      NeonCampaign.releaseCometShowerItem(classicCometShower,item);
+  }
+
   function hit(item) {
     const cos = Math.cos(item.rot || 0);
     const sin = Math.sin(item.rot || 0);
@@ -252,6 +283,13 @@
       const offsetY = circle.x * sin + circle.y * cos;
       const localX = item.x + offsetX - player.x;
       const localY = item.y + offsetY - player.y;
+      if((item.showerComet || item.guardianProjectile || item.classicScoutProjectile || item.salvagePickup) &&
+        Number.isFinite(item.previousX) && Number.isFinite(item.previousY)) {
+        const previousPlayerX=Number.isFinite(player.previousCollisionX)?player.previousCollisionX:player.x;
+        const previousPlayerY=Number.isFinite(player.previousCollisionY)?player.previousCollisionY:player.y;
+        if(sweptCircleHitsShip(item.previousX+offsetX-previousPlayerX,
+          item.previousY+offsetY-previousPlayerY,localX,localY,circle.r))return true;
+      }
       if (circleHitsShip(localX, localY, circle.r)) return true;
     }
     return false;
@@ -423,6 +461,7 @@
       for (const key in powers) powers[key] = 0;
       ui.powerHud.classList.add("hidden");
       hideWarning();
+      for(const item of items)releaseClassicShowerComet(item);
       items = [];
       gates = [];
       shots.length = 0;
@@ -436,6 +475,7 @@
   }
 
   function collectItem(item) {
+    if(item.type==="salvage")return collectClassicScrap(item);
     if(item.type==="flightModule") {
       if(!classicEquipment.recoveredTwin) {
         if(!persistClassicEquipment({...classicEquipment,recoveredTwin:true}))return false;
@@ -528,6 +568,10 @@
   }
 
   function animateScoutHit(target, destroyed) {
+    if(destroyed) {
+      spawnClassicScrap(target);
+      releaseClassicShowerComet(target);
+    }
     const animator = target.n7?.ch01Animator || target.classicScout?.animator;
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");

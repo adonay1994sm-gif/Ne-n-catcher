@@ -1,0 +1,151 @@
+{
+  "status": "passed",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/Ne-n-catcher/art-source/vfx/hostile-salvage-v1/validate-browser.cjs"
+  ],
+  "startedAt": "2026-10-18T08:31:30.148Z",
+  "scope": "Real Chromium asset decode and Canvas alpha QA, not gameplay QA",
+  "asset": "assets/hostile_ordnance_atlas_v1.webp",
+  "assetSha256": "24caa31504a647907f22f18f539e7de3170d7d4eaf7918104664921df631a0bf",
+  "cases": [
+    {
+      "name": "WebP decodes at 1024×1024",
+      "status": "passed"
+    },
+    {
+      "name": "All 16 cells have 16 px transparent gutters, visible isolated artwork and no shared trails",
+      "status": "passed"
+    },
+    {
+      "name": "Sixteen distinct decoded sprites",
+      "status": "passed"
+    },
+    {
+      "name": "No Chromium JavaScript errors",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "result": {
+    "width": 1024,
+    "height": 1024,
+    "frames": [
+      {
+        "index": 0,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 13758,
+        "transparentPixels": 48443,
+        "signature": "e0be8b57"
+      },
+      {
+        "index": 1,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 14200,
+        "transparentPixels": 47949,
+        "signature": "ae0f0299"
+      },
+      {
+        "index": 2,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 14412,
+        "transparentPixels": 47795,
+        "signature": "86882916"
+      },
+      {
+        "index": 3,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 14175,
+        "transparentPixels": 48068,
+        "signature": "a2768525"
+      },
+      {
+        "index": 4,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 6829,
+        "transparentPixels": 55828,
+        "signature": "8f5cd316"
+      },
+      {
+        "index": 5,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 7520,
+        "transparentPixels": 55107,
+        "signature": "2a8942d2"
+      },
+      {
+        "index": 6,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 8093,
+        "transparentPixels": 54190,
+        "signature": "5aa71431"
+      },
+      {
+        "index": 7,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 8529,
+        "transparentPixels": 53767,
+        "signature": "8eaeb682"
+      },
+      {
+        "index": 8,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 18588,
+        "transparentPixels": 44457,
+        "signature": "ae89c790"
+      },
+      {
+        "index": 9,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 19497,
+        "transparentPixels": 42545,
+        "signature": "05e3ce30"
+      },
+      {
+        "index": 10,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 19492,
+        "transparentPixels": 43001,
+        "signature": "09561e1d"
+      },
+      {
+        "index": 11,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 19503,
+        "transparentPixels": 42699,
+        "signature": "0b29238e"
+      },
+      {
+        "index": 12,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 15525,
+        "transparentPixels": 48667,
+        "signature": "0368f19f"
+      },
+      {
+        "index": 13,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 19016,
+        "transparentPixels": 45125,
+        "signature": "2f8ce29d"
+      },
+      {
+        "index": 14,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 19055,
+        "transparentPixels": 45021,
+        "signature": "6a1f234b"
+      },
+      {
+        "index": 15,
+        "maximumGutterAlpha": 0,
+        "visiblePixels": 20829,
+        "transparentPixels": 42436,
+        "signature": "6950bc66"
+      }
+    ]
+  },
+  "browser": "154.0.8037.57",
+  "exitCode": 0,
+  "finishedAt": "2026-10-18T08:31:30.837Z"
+}

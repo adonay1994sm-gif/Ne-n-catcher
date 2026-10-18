@@ -13,6 +13,7 @@
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
       if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
+      else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);

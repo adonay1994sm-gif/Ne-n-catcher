@@ -1,3 +1,21 @@
+## Mandato vigente — entrada principal, arsenal y chatarra · 18/10/2026
+
+La petición actual del propietario prevalece sobre las instrucciones creativas históricas incompatibles que siguen. Presentar **un único viaje principal**, con CONTINUAR VIAJE dominante, progreso persistido y accesos secundarios a niveles, nave, ajustes y servicios. Retirar de la entrada jugable los archivos QA, variantes técnicas, selectores de prototipos, desbloqueos y etiquetas experimentales. Conservar sus fuentes, fixtures, paquetes y guardados recuperables; una portada con acabado comercial no certifica lanzamiento ni cien etapas terminadas.
+
+El clásico usa **20 disparos** en su cargador y recupera **un disparo cada 2 s de vuelo efectivo**, hasta el máximo. No mostrar restantes, fracciones ni cuenta atrás en DISPARAR; la disponibilidad se comunica con respuesta visual discreta. La pausa detiene consumo y recarga. Manual por defecto; automático sólo por elección expresa en Ajustes. Pulso sigue siendo el cañón inicial y Gemelo se autoriza al vencer realmente a Atlas; conservar armas válidas de partidas anteriores. Esta orden sustituye la batería histórica de tres cargas.
+
+Los adversarios intentan interceptar y sostener el combate mediante observación limitada del movimiento del jugador, anticipación acotada y trayectorias físicas. No mostrar líneas de apuntado ni avisos HUD que revelen sus tiros. Mantener preparación mecánica breve, proyectiles ilustrados legibles, espacio de reacción y rutas transitables; un proyectil ya emitido no sigue mágicamente al jugador. Atlas usa la revisión v4 de **36 HP**, dos fases y patrones que reaccionan a posiciones observadas, sin aumentar dificultad mediante daño inevitable. Integrar su arte y los proyectiles en el Canvas existente, con un solo ciclo de actualización.
+
+La economía nueva pertenece únicamente al clásico y conserva los demás guardados. **Destruir un enemigo genera chatarra física; no acredita dinero automáticamente.** La recogida y su recibo se guardan una sola vez. Reglas iniciales: 100.000 unidades de chatarra = 1 plata; 100 plata = 1 oro; 10 oro = 1 estelar. Mantener enteros seguros, saldos no negativos y compras idempotentes. La rareza y la curva económica quedan pendientes de evaluación humana; estas conversiones no son una promesa de equilibrio final.
+
+C9 vende la preparación del emisor por **24 de chatarra**, una célula de escudo por **30** y refrigeración por **45**. Son decisiones de trabajo reversibles. Preparar no desbloquea Gemelo antes de Atlas. La célula da **3 s** de protección al salir o entrar en etapa; refrigeración reduce la recarga de **2 a 1,5 s**. La reparación de emergencia sigue siendo gratuita para evitar bloqueos. Pago, mejora y recibo forman una transacción coherente; si falla una proyección del equipo antiguo se reintenta sin cobrar dos veces.
+
+Introducir cruces rápidos y lluvia de cometas en **1.5 y 1.9**, con aviso ambiental de lluvia y corredor realmente transitable durante toda la trayectoria. El aviso ambiental no autoriza avisar cada disparo enemigo. Conservar las diez etapas, los **360 s**, sus offsets y checkpoints; no añadir otro reloj de ruta. El acercamiento continuo a Gaia y a los destinos posteriores conserva la dirección artística del viaje.
+
+Seguimiento único: `docs/production-tasks.json`, lote **MAIN_SALVAGE_COMBAT**. Las nuevas tareas empiezan **IN_REVIEW**, con verificación técnica, aceptación artística y prueba física separadas; no trasladar resultados anteriores al código actual. Motor V1 desactivado, rama `continuity-assets-audit-20261013`, PR #3, main, RAF único, recursos, guardados y límites de distribución permanecen protegidos. No producción, App Store, TestFlight, pagos reales ni gastos externos.
+
+---
+
 ## Orden vigente de pulido arcade · 18/10/2026
 
 El último mandato del propietario concentra el trabajo en integración y combate: C9 debe abrir el taller al llegar, el humo no puede quedar como una imagen pegada a la nave, los tiros deben corresponder a proyectiles verticales reales, los enemigos mantienen intención de combate y Atlas debe plantear un reto manual aprendible. No ampliar ahora las grandes cinemáticas Gaia→Vulkar.

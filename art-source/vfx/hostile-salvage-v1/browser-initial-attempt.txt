@@ -1,0 +1,7 @@
+Command: node art-source/vfx/hostile-salvage-v1/validate-browser.cjs
+Initial attempt, 2026-10-18, exit code 1:
+browserType.launch: Executable doesn't exist at /home/agent/.cache/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell
+
+Cause: this workspace uses system Chromium, not the optional Playwright browser download.
+Correction: validator now uses CHROMIUM_PATH or /usr/bin/chromium, matching the game's browser scripts.
+No missing browser was downloaded, no game code changed and no gameplay result was claimed for the failed asset-only attempt.

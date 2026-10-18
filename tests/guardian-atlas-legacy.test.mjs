@@ -90,10 +90,20 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
     setSlow(seconds) { powers.slow=seconds; },
     pilotedAtlasFrame(dt=1/60) {
       // Keep the actual emitted curtains in the real collision/update loop.
-      // The in-memory pilot follows the announced corridor to isolate timing.
-      const corridor=atlasBoss?.telegraph?.safeGap || items.find(item=>
-        item.guardianProjectile && item.safeGap && item.y<player.y+140)?.safeGap;
-      player.x=player.target=corridor?.center ?? 360;
+      // This instrumented pilot reads visible projectile trajectories, never
+      // a hidden/announced safe corridor. It isolates timing, not natural skill.
+      const incoming=items.filter(item=>item.guardianProjectile && item.vy>0).map(item=>{
+        const time=(player.y-item.y)/item.vy;
+        return item.y-item.r<=player.y+104 && time<2 ?
+          {x:item.x+item.vx*Math.max(0,time),r:item.r} : null;
+      }).filter(Boolean);
+      const lanes=[132,210,285,360,435,510,588];
+      let best=360,clearance=-Infinity;
+      for(const lane of lanes){
+        const distance=incoming.length ? Math.min(...incoming.map(item=>Math.abs(item.x-lane)-item.r)) : 999-Math.abs(lane-360);
+        if(distance>clearance){clearance=distance;best=lane;}
+      }
+      player.x=player.target=best;
       update(dt);
     },
     snapshot:()=>({state,hull,score,collected,ammo,manualShotCooldown,currentLevel,runToken,
@@ -115,9 +125,8 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
     for (let index = 0; index < 45; index++) api.collectEnergy();
     return snapshot();
   }
-  // Shared three-charge batteries intentionally replace the former unlimited
-  // boss pulse. Allow its real 3.6-second recharge while retaining a finite
-  // failure bound; this lifecycle fixture does not certify natural balance.
+  // The finite twenty-round magazine and actual played-time recovery remain
+  // active. This bounded lifecycle fixture does not certify natural balance.
   function until(predicate, maximum = 60 * 240, shoot = false) {
     for (let frame = 0; frame < maximum; frame++) {
       const q = snapshot(); if (predicate(q)) return q;
@@ -219,57 +228,46 @@ test('death, a rewarded continuation and retry cannot bypass or prematurely save
   assert.equal(h.pending.size, 1);
 });
 
-test('Gaia and Chronos share three manual charges with played-time recharge instead of unlimited boss ammunition', t => {
+test('Gaia and Chronos share twenty manual rounds with played-time recharge instead of unlimited boss ammunition', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal();
   assert.equal(h.window.document.getElementById('atlasAutoFire'), null,
     'The encounter must not turn an opt-in accessibility setting into a prominent battle button');
   assert.equal(h.snapshot().autoFire, false);
-  for (let shot = 0; shot < 3; shot++) {
-    assert.equal(h.api.fireManualShot(), true, `Manual pulse ${shot + 1} was unavailable`);
-    for (let frame = 0; frame < 20; frame++) h.api.isolatedFrame(1 / 60);
+  for (const index of [1,0]) {
+    if(index===0)h.api.prepare(0);
+    assert.equal(h.snapshot().ammo,20);
+    assert.equal(Boolean(h.snapshot().boss),index===1);
+    let emitted=0;
+    while(h.snapshot().ammo>0 && emitted<40){
+      assert.equal(h.api.fireManualShot(),true,`Manual pulse ${emitted+1} was unavailable`);
+      emitted++;
+      if(h.snapshot().ammo>0)for(let frame=0;frame<20;frame++)h.api.isolatedFrame(1/60);
+    }
+    assert.ok(emitted>=20 && emitted<40,'Gradual recharge may contribute rounds during the finite burst');
+    assert.equal(h.snapshot().state,'playing');
+    assert.equal(h.snapshot().ammo,0);
+    assert.equal(h.api.fireManualShot(),false,'Entering a boss cannot grant unlimited ammunition');
+    assert.equal(h.snapshot().weapons.shotSequence,emitted);
+    assert.equal(h.window.document.getElementById('ammo').textContent,'');
+    assert.doesNotMatch(h.window.document.getElementById('fire').getAttribute('aria-label'),/\d|segundos|cargas/i);
+    const depleted=h.snapshot();
+    h.api.pauseGame();
+    for(let frame=0;frame<600;frame++)h.api.update(1/60);
+    assert.deepEqual(h.snapshot().weapons,depleted.weapons,'Pause cannot refill the shared magazine');
+    h.api.resumeGame();
+    while(h.snapshot().weapons.recharge+1/60<h.snapshot().weapons.rechargeSeconds-1e-8)h.api.isolatedFrame(1/60);
+    assert.equal(h.snapshot().ammo,0);assert.equal(h.api.fireManualShot(),false);
+    h.api.isolatedFrame(1/60);
+    assert.equal(h.snapshot().ammo,1);
+    assert.equal(h.snapshot().weapons.shotSequence,emitted,'Recovery cannot silently emit a shot');
+    assert.equal(h.api.fireManualShot(),true);
+    assert.equal(h.snapshot().ammo,0);assert.equal(h.snapshot().weapons.shotSequence,emitted+1);
+    if(index===1)for(let extra=2;extra<=3;extra++){
+      while(h.snapshot().ammo===0)h.api.isolatedFrame(1/60);
+      assert.equal(h.api.fireManualShot(),true,`Recharged boss pulse ${extra} was unavailable`);
+      assert.equal(h.snapshot().weapons.shotSequence,emitted+extra);
+    }
   }
-  assert.equal(h.snapshot().state, 'playing');
-  assert.equal(h.snapshot().ammo, 0);
-  assert.equal(h.api.fireManualShot(), false, 'Entering a boss must not turn the battery into unlimited shots');
-  assert.equal(h.snapshot().weapons.shotSequence, 3);
-  const depleted = h.snapshot();
-  h.api.pauseGame();
-  for (let frame = 0; frame < 600; frame++) h.api.update(1 / 60);
-  assert.deepEqual(h.snapshot().weapons, depleted.weapons,
-    'A paused Atlas encounter cannot refill its shared battery');
-  h.api.resumeGame();
-  while (h.snapshot().weapons.recharge + 1 / 60 < 3.6 - 1e-8) h.api.isolatedFrame(1 / 60);
-  assert.equal(h.snapshot().ammo, 0); assert.equal(h.api.fireManualShot(), false);
-  h.api.isolatedFrame(1 / 60);
-  assert.equal(h.snapshot().ammo, 1);
-  assert.equal(h.snapshot().weapons.shotSequence, 3);
-  assert.equal(h.api.fireManualShot(), true);
-  assert.equal(h.snapshot().ammo, 0); assert.equal(h.snapshot().weapons.shotSequence, 4);
-  for (let shot = 5; shot <= 6; shot++) {
-    while (h.snapshot().ammo === 0) h.api.isolatedFrame(1 / 60);
-    assert.equal(h.api.fireManualShot(), true, `Recharged boss pulse ${shot} was unavailable`);
-    assert.equal(h.snapshot().weapons.shotSequence, shot);
-  }
-  h.api.prepare(0);
-  assert.equal(h.snapshot().ammo, 3); assert.equal(h.snapshot().boss, null);
-  for (let shot = 0; shot < 3; shot++) {
-    assert.equal(h.api.fireManualShot(), true);
-    for (let frame = 0; frame < 20; frame++) h.api.isolatedFrame(1 / 60);
-  }
-  assert.equal(h.snapshot().ammo, 0); assert.equal(h.api.fireManualShot(), false);
-  assert.equal(h.snapshot().weapons.shotSequence, 3);
-  // Frame the actual legacy update, not a synthetic jump or a cooldown reset.
-  // Immediately before 3.6 played seconds there is still no fourth charge.
-  while (h.snapshot().weapons.recharge + 1 / 60 < 3.6 - 1e-8) h.api.isolatedFrame(1 / 60);
-  const beforeRecharge = h.snapshot();
-  assert.ok(beforeRecharge.weapons.recharge < 3.6);
-  assert.equal(beforeRecharge.ammo, 0); assert.equal(h.api.fireManualShot(), false);
-  h.api.isolatedFrame(1 / 60);
-  const recharged = h.snapshot();
-  assert.equal(recharged.ammo, 1);
-  assert.equal(recharged.weapons.shotSequence, 3, 'Recharging cannot silently emit a shot');
-  assert.equal(h.api.fireManualShot(), true);
-  assert.equal(h.snapshot().ammo, 0); assert.equal(h.snapshot().weapons.shotSequence, 4);
 });
 
 test('Atlas receives the advertised ×1, ×2 and ×3 damage only when physical projectiles reach its core', t => {
@@ -279,7 +277,7 @@ test('Atlas receives the advertised ×1, ×2 and ×3 damage only when physical p
       selected, ...(selected === 'lance' ? {lanceCalibrated: true} : {})});
     const h = harness(t, '', {saved}); h.api.prepare(); h.collectGoal();
     assert.equal(h.snapshot().autoFire, false);
-    h.until(q => q.boss.state === 'idle');
+    h.until(q => q.boss.state === 'idle' && q.boss.vulnerability);
     const before = h.snapshot();
     assert.equal(before.weapons.damageMultiplier, multiplier);
     assert.equal(h.window.document.getElementById('flightWeaponDamage').textContent, `DAÑO ×${multiplier}`);
@@ -337,10 +335,10 @@ test('manual is the default and automatic fire is an explicit persistent setting
 
 test('a manual off-axis shot keeps its own trajectory and misses Atlas instead of homing or applying instant damage', t => {
   const h=harness(t);h.api.prepare();h.collectGoal();h.until(q=>q.boss.vulnerability);
-  h.api.placeShip(119);const before=h.snapshot();
+  h.api.placeShip(h.snapshot().boss.x<360?601:119);const before=h.snapshot();
   assert.ok(Math.abs(before.player.x-before.boss.x)>115);
   assert.equal(h.api.fireManualShot(),true,'Firing is not disabled by an artificial boss-alignment gate');
-  const fired=h.snapshot();assert.equal(fired.weapons.charges,2);
+  const fired=h.snapshot();assert.equal(fired.weapons.charges,19);
   assert.equal(fired.boss.hp,before.boss.hp);assert.equal(fired.shots.length,0);
   assert.equal(fired.weapons.projectiles.length,1);
   const origin=fired.weapons.projectiles[0];
@@ -419,7 +417,7 @@ test('leaving the encounter does not mutate saves and N-7 cannot start classic A
   assert.equal(n7.pending.size, 1);
 });
 
-test('slow time shares the real Atlas and projectile clock before announcing another corridor', t => {
+test('slow time shares the real Atlas and projectile clock before firing another aimed pattern', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal();
   h.until(q => q.boss.phase === 2, 60 * 240, true);
   h.api.setSlow(120);
@@ -431,12 +429,12 @@ test('slow time shares the real Atlas and projectile clock before announcing ano
     'The existing slow ability must slow the encounter clock as well as its bullets');
 
   let firstAttack = null, nextWarning = null, measuredBulletStep = false;
-  const volleys = new Set(), emittedIds = new Set(), clearedIds = new Set();
+  const volleys = new Set(), emittedIds = new Set(), clearedIds = new Set(), vanished = [];
   for (let frame = 0; frame < 60 * 35 && !nextWarning; frame++) {
     const before = h.snapshot();
     h.api.pilotedAtlasFrame(1 / 60);
     const after = h.snapshot();
-    assert.equal(after.state, 'playing', 'The announced corridor must remain usable');
+    assert.equal(after.state, 'playing', 'The instrumented visible-projectile pilot must retain a usable response');
     for (const bullet of after.projectiles) {
       if (firstAttack === null) firstAttack = bullet.attackId;
       if (bullet.attackId === firstAttack) {
@@ -446,19 +444,22 @@ test('slow time shares the real Atlas and projectile clock before announcing ano
       const earlier = before.projectiles.find(item => item.id === bullet.id);
       if (earlier) {
         assert.ok(Math.abs(bullet.y - earlier.y - bullet.vy / 120) < 1e-8,
-          'The real emitted curtain uses the same half-speed clock');
+          'The real emitted salvo uses the same half-speed clock');
         measuredBulletStep = true;
       }
+    }
+    for(const bullet of before.projectiles.filter(item=>item.attackId===firstAttack)) {
+      if(!after.projectiles.some(item=>item.id===bullet.id))vanished.push({bullet,hullBefore:before.hull,hullAfter:after.hull,player:after.player,bossAge:after.boss.age});
     }
     if (firstAttack !== null && after.boss.state === 'charge' && after.boss.attackId > firstAttack) {
       nextWarning = after;
     }
   }
   assert.ok(measuredBulletStep, 'The test must observe actual projectile movement');
-  assert.deepEqual([...volleys].sort(), [0, 1], 'Both real curtains must be emitted');
-  assert.ok(nextWarning, 'The encounter must progress to its next warning under slow time');
+  assert.deepEqual([...volleys].sort(), [0, 1], 'Both real phase-two salvos must be emitted');
+  assert.ok(nextWarning, 'The encounter must progress to its next attack preparation under slow time');
   assert.ok(emittedIds.size>0);
   assert.deepEqual([...clearedIds].sort(),[...emittedIds].sort(),
-    'Every actual previous projectile must be observed passing the full tail before another pattern is announced; normal offscreen expiry is allowed');
+    `Every actual previous projectile must be observed passing the full tail before another pattern is prepared; vanished=${JSON.stringify(vanished)}`);
   assert.equal(h.pending.size, 1);
 });

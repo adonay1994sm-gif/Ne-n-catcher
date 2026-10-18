@@ -33,10 +33,12 @@ const contentSource = await text("content-runtime.js");
 const serviceWorkerSource = await text("sw.js");
 const nativeSource = await text("src/native-admob-entry.js");
 
-await test("versión 7.2.0 pre-release alineada en metadatos y pantalla", async () => {
+await test("versión interna 7.2.0 compatible y portada canónica sin distintivos técnicos", async () => {
   assert.equal(packageJson.version, "7.2.0");
   assert.equal(lockJson.version, "7.2.0");
-  assert.match(indexHtml, /V7\.2\.0/);
+  assert.doesNotMatch(indexHtml, />[^<]*V7\.2\.0[^<]*</);
+  assert.match(indexHtml, /NEON CRONIUM/);
+  assert.match(indexHtml, /CONTINUAR VIAJE/);
   assert.match(indexHtml, /FORMACIÓN DE RESTOS/);
   assert.match(indexHtml, /Formación de basura espacial/);
   assert.doesNotMatch(indexHtml, /Barrera orbital:/);
@@ -159,7 +161,7 @@ await test("service worker incluye recursos activos y excluye referencias visual
   ];
   for (const path of required) assert.ok(corePaths.has(path), `no precargado: ${path}`);
   for (const path of [...assetManifest.groups.filter(group=>group.precache===false).flatMap(group=>group.paths),...assetManifest.standalone.filter(item=>item.precache===false).map(item=>item.path)]) assert.equal(corePaths.has(path),false,`referencia retirada precargada: ${path}`);
-  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-pursuit-1");
+  assert.equal(swContext.__SW_TEST__.CACHE, "neon-cronium-pre-release-7-2-0-salvage-combat-1");
 });
 
 await test("todas las referencias locales de HTML existen", async () => {
@@ -374,28 +376,36 @@ await test("claves, campaña y balance crítico permanecen iguales", async () =>
   assert.deepEqual(Array.from(api.levels, (level) => level.spawn), [0.69, 0.72, 0.67, 0.62, 0.58, 0.54, 0.51, 0.47, 0.44, 0.4]);
 });
 
-await test("cada partida comienza con tres cargas y recupera una tras 3,6 segundos jugados", async () => {
+await test("el cargador canónico ofrece veinte proyectiles, se agota y recupera uno sin contador ni disparos fantasma", async () => {
   api.startLevel(0);
   api.prepareWeaponFixture();
-  assert.equal(api.snapshot().ammo, 3);
-  for (let shot = 0; shot < 3; shot++) {
-    assert.equal(api.fireManualShot(), true);
+  assert.equal(api.snapshot().ammo, 20);
+  assert.equal(api.snapshot().weapons.rechargeSeconds, 2);
+  assert.equal(api.fireManualShot(), true);
+  assert.equal(api.snapshot().weapons.projectiles.length, 1, "un pulso recorre el espacio como proyectil físico");
+  assert.equal(api.snapshot().counts.shots, 0, "no duplica el proyectil con un haz instantáneo heredado");
+  let emitted = 1;
+  while (api.snapshot().ammo > 0 && emitted < 40) {
     api.advancePlayed(.25);
+    assert.equal(api.fireManualShot(), true);
+    emitted++;
   }
+  assert.equal(emitted, 22, "veinte almacenados más dos recuperados durante la ráfaga");
   assert.equal(api.snapshot().ammo, 0);
   assert.equal(api.fireManualShot(), false);
-  assert.equal(api.snapshot().counts.projectiles, 3, "el pulso nuevo recorre el espacio como proyectil físico");
-  assert.equal(api.snapshot().counts.shots, 0, "no duplica el proyectil con un haz instantáneo heredado");
-  assert.equal(api.snapshot().weapons.shotSequence, 3);
-  api.advancePlayed(2.84);
-  assert.equal(api.snapshot().ammo, 0, "3,59 segundos aún no conceden una carga");
+  assert.equal(api.snapshot().weapons.shotSequence, emitted);
+  assert.equal(gameWindow.document.getElementById('ammo').textContent, '');
+  assert.doesNotMatch(gameWindow.document.getElementById('fire').getAttribute('aria-label'), /\d|segundos|cargas/i);
+  const remaining = api.snapshot().weapons.rechargeSeconds - api.snapshot().weapons.recharge;
+  api.advancePlayed(remaining - .01);
+  assert.equal(api.snapshot().ammo, 0, "el tiempo jugado anterior al intervalo no concede munición");
   assert.equal(api.fireManualShot(), false);
   api.advancePlayed(.02);
   assert.equal(api.snapshot().ammo, 1);
-  assert.equal(api.snapshot().weapons.shotSequence, 3, "la recarga no dispara por sí sola");
+  assert.equal(api.snapshot().weapons.shotSequence, emitted, "la recarga no dispara por sí sola");
   assert.equal(api.fireManualShot(), true);
   assert.equal(api.snapshot().ammo, 0);
-  assert.equal(api.snapshot().weapons.shotSequence, 4);
+  assert.equal(api.snapshot().weapons.shotSequence, emitted + 1);
 });
 
 await test("guardados corruptos se normalizan sin romper el menú ni el control", async () => {
