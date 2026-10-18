@@ -40,13 +40,13 @@ async function layout(){return page.evaluate(()=>{
     activeId:document.activeElement?.id,overlayVisible:document.querySelector('#flightDock')?.classList.contains('show'),
     comms:document.querySelector('#flightObjective')?.textContent};
 });}
-function controls(positions,{c9=false,weapon=false}={}){
+function controls(positions,{c9=false,weapon=false,hint=true}={}){
   const ids=['fire','classicMissile'];
   for(const id of ids){const r=positions[id];assert.ok(r?.visible,id+' must be visible');assert.ok(r.width>=44&&r.height>=44,id+' touch target <44px');
     assert.ok(r.x>=0&&r.right<=positions.viewport.width+1&&r.y>=0&&r.bottom<=positions.viewport.height+1,id+' outside viewport');}
   assert.equal(positions.classicC9.visible,c9,'C9 visibility must follow recovered equipment and combat lock');
   assert.equal(positions.flightWeapon.visible,weapon,'Weapon switch must exist only with multiple owned weapons');
-  assert.ok(positions.flightPilotHint?.visible,'Fresh fixture must explain the invisible relative-flight surface');
+  assert.equal(positions.flightPilotHint?.visible,hint,'Pilot hint visibility must follow first-flight/recovered-module context');
   for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const a=positions[ids[i]],b=positions[ids[j]];
     assert.ok(a.right<=b.x+1||b.right<=a.x+1||a.bottom<=b.y+1||b.bottom<=a.y+1,'Overlapping touch controls '+ids[i]+'/'+ids[j]);}
   assert.ok(positions.documentWidth<=positions.viewport.width+1,'Horizontal overflow');
@@ -220,7 +220,7 @@ function guardianBounds(q,positions){
     });
     await check('closed, opening and exposed Atlas poses fit below the HUD at both viewport sizes',async()=>{
       const states=[];for(const state of ['closed','opening','exposed']){
-        await fixture('bossUntil',state);const q=await snapshot(),positions=await layout();controls(positions);
+        await fixture('bossUntil',state);const q=await snapshot(),positions=await layout();controls(positions,{hint:false});
         assert.equal(q.boss.vulnerability,state==='exposed');assert.equal(positions.classicC9.disabled,true);
         states.push({state,bounds:guardianBounds(q,positions),snapshot:q,layout:positions});await capture('atlas-'+state);
       }return states;

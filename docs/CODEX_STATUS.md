@@ -1,3 +1,15 @@
+# DIAGNÓSTICO
+
+18/10/2026 · Revisión de cierre del nivel 1 sobre la rama `continuity-assets-audit-20261013`. Se preservó `70e518f`; el incremento funcional probado es `8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a`. El viaje Chronos→Gaia está integrado, pero los mandos seguían mezclando pilotaje, combate, arma y C9.
+
+# INFORME DE PRODUCCIÓN — LEVEL_ONE_CONTROLS_REVIEW
+
+Se integró un mando relativo flotante, ayuda inicial, grupo Phaser/misil y reglas contextuales: selector sólo con varias armas y C9 sólo tras recuperar su módulo. Visual Chromium 12/12 con 22 capturas en 390×844/320×568; multitoque real 7/7; estáticas 13/13 y regresión 34/34. [Informe y criterio de cierre](production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md).
+
+El nivel 1 permanece `IN_REVIEW`: técnicamente preparado, pendiente de sensación/arte del propietario y Safari/iPhone físico. No copiar esta interfaz a los niveles siguientes hasta esa partida final. Motor V1 desactivado, un RAF, guardados y campañas preservados.
+
+---
+
 ## Netlify aislado operativo ·18/10/2026
 
 La causa final era el alcance de `NEON_PREVIEW_DEPLOY`: el panel no lo entregaba al build Production del proyecto aislado. `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20` lo define únicamente en el entorno de la rama autorizada; la puerta conserva identidad exacta, host HTTPS, marca Netlify y rechazo de main/PR/sitio original. [Actions39140857478](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39140857478) terminó success. [Preview pública](https://neon-preview-deploy.netlify.app/) y `build-info.json` responden200 con SHA exacto, dirtyfalse, MotorV1false y134archivos. Chromium móvil abrió el viaje canónico, diez tramos, HUD, disparo y pausa sin errores. Tarea P1-NETLIFY-ISOLATED-01 DONE por su alcance técnico; el juego conserva sus revisiones artísticas/físicas pendientes.

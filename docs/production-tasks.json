@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-18",
+  "updatedAt": "2026-10-18T16:20:00Z",
   "baselineCommit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
   "branch": "continuity-assets-audit-20261013",
   "states": [
@@ -5594,7 +5594,7 @@
         "scripts/compact-hud-browser-smoke.cjs",
         "scripts/compact-hud-powers-smoke.cjs"
       ],
-      "commit": "6891f810c1fee09def8704729cf843e9926843c7",
+      "commit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a",
       "tests": [
         "node scripts/certify-local.mjs docs/production-reports/evidence/compact-hud/certification-03:11/11 exit0; contenido168/168",
         "node scripts/compact-hud-browser-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/after-04:26/26 exit0; antes del ajuste final del toast",
@@ -5604,7 +5604,8 @@
         "node scripts/compact-hud-powers-smoke.cjs --root preview-dist --output docs/production-reports/evidence/compact-hud/powers-layout-01 --layout-only:12/12 exit0; CSS final, expiración no ejecutada en este smoke",
         "npm run test:architecture; npm run test:static:6/6 y13/13 exit0 después del último ajuste CSS",
         "npm run build:preview:6891f81 dirty:false; npm run test:preview:23/23 exit0",
-        "Sites versión7 succeeded18:44:38UTC;113archivos idénticos al paquete; no prueba física"
+        "Sites versión7 succeeded18:44:38UTC;113archivos idénticos al paquete; no prueba física",
+        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados."
       ],
       "evidence": [
         "docs/production-reports/COMPACT_HUD_2026-10-17.md",
@@ -5617,7 +5618,10 @@
         "docs/production-reports/evidence/compact-hud/powers-04/results.json",
         "docs/production-reports/evidence/compact-hud/package-6891f81/package.json",
         "docs/production-reports/evidence/compact-hud/package-6891f81/site-deployment.json",
-        "docs/production-reports/evidence/compact-hud/package-6891f81/preview-tests.json"
+        "docs/production-reports/evidence/compact-hud/package-6891f81/preview-tests.json",
+        "docs/production-reports/evidence/level-one-controls/visual-8f6c61b-03/results.json",
+        "docs/production-reports/evidence/level-one-controls/two-touch-8f6c61b-01/results.json",
+        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md"
       ],
       "openErrors": [
         "Aceptación artística del propietario pendiente.",
@@ -5633,7 +5637,7 @@
         "QA Chromium sobre preview-dist; paquete exacto publicado y revisión del propietario."
       ],
       "acceptanceStatus": {
-        "technical": "PASSED",
+        "technical": "CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -5641,7 +5645,7 @@
         "extends": "P1-FLIGHT-01",
         "note": "Petición actual: liberar el escenario y pilotaje, sin expandir niveles ni activar MotorV1."
       },
-      "packageCommit": "6891f810c1fee09def8704729cf843e9926843c7"
+      "packageCommit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a"
     },
     {
       "id": "P1-COMBAT-02",
@@ -6142,12 +6146,13 @@
         "tests/two-finger-input.test.mjs",
         "scripts/two-touch-browser-smoke.cjs"
       ],
-      "commit": "d325e51f19df0dd1e77ab9257ddcdeee775299be",
+      "commit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a",
       "tests": [
         "Certificación inicial: build y 9 suites/auditorías aprobadas; 10/11 fases. Contrato web actualizado: 13/13, salida 0.",
         "Contenido 193/193; motor 40/40; arquitectura 6/6; estáticos 13/13; regresión 33/33; preview 23/23.",
         "Chromium multitáctil: 14/14 grupos y 70 aserciones (7 grupos CDP nativo y 7 fixture TouchEvent).",
-        "Chromium HUD compacto: 26/26 grupos en 5 tamaños; partida natural Chronos–C9–Gaia: 5/5; N-7: 6 pasos, salida 0."
+        "Chromium HUD compacto: 26/26 grupos en 5 tamaños; partida natural Chronos–C9–Gaia: 5/5; N-7: 6 pasos, salida 0.",
+        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados."
       ],
       "evidence": [
         "docs/production-reports/SHIP_TOUCH_COMET_2026-10-17.md",
@@ -6156,7 +6161,10 @@
         "docs/production-reports/evidence/ship-controls/touch-after-03/results.json",
         "docs/production-reports/evidence/ship-controls/compact-01/results.json",
         "docs/production-reports/evidence/ship-controls/natural-01/results.json",
-        "docs/production-reports/evidence/ship-controls/n7-02/results.json"
+        "docs/production-reports/evidence/ship-controls/n7-02/results.json",
+        "docs/production-reports/evidence/level-one-controls/visual-8f6c61b-03/results.json",
+        "docs/production-reports/evidence/level-one-controls/two-touch-8f6c61b-01/results.json",
+        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md"
       ],
       "openErrors": [
         "Safari y prueba física iPhone pendientes; aceptación técnica Chromium no equivale a publicación comercial."
@@ -6167,7 +6175,7 @@
         "Botón sigue recibiendo contacto durante recarga con disponibilidad comunicada por aria-disabled."
       ],
       "acceptanceStatus": {
-        "technical": "PASSED",
+        "technical": "CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -6175,7 +6183,8 @@
         "extends": "P1-FLIGHT-01",
         "replacesBehavior": "Disparo únicamente al hacer click y propiedad compartida de contactos táctiles.",
         "note": "Petición actual: consolidar esta versión como base y corregir controles, sin activar el MotorV1 ni declarar terminados cien niveles."
-      }
+      },
+      "packageCommit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a"
     },
     {
       "id": "P1-COMET-02",
@@ -8713,13 +8722,14 @@
         "tests/guardian-atlas-legacy.test.mjs",
         "tests/chronos-chapter.test.mjs"
       ],
-      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "commit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a",
       "tests": [
         "node scripts/certify-local.mjs /tmp/neon-chapter-certification-02: 11/11 fases, salida0, SHA3547147; 553 casos de contenido.",
         "node scripts/chapter-one-visual-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-visual-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662: 6/6 escenas controladas a390×844 y320×568, salida0; no partida natural.",
         "GitHub Actions39120714906: completed/success, SHAf634a4635c4faacd33d19390706e0a97d1198662.",
         "node scripts/chapter-one-browser-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --output /tmp/neon-chapter-browser-natural-f634a46-01 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 900000:4/4, salida0;472326ms, capítulo natural completo y recarga idempotente.",
-        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados."
+        "node scripts/chapter-one-offline-smoke.cjs --root /tmp/neon-chapter-playtest-f634a46 --previous /tmp/neon-chapter-previous49 --output /tmp/neon-chapter-qa-f634/offline-03 --expected-commit f634a4635c4faacd33d19390706e0a97d1198662 --timeout 120000:7/7, salida0;38.297ms. Compatibilidad preparada y comienzo fresco separados.",
+        "Control review 8f6c61b: visual12/12 y22 capturas a390×844/320×568; multitoque Chromium7/7; contenido661/661; estáticas13/13; regresión34/34; selector de un arma y C9 prematuro retirados."
       ],
       "evidence": [
         "docs/production-reports/CHAPTER_ONE_LIVING_JOURNEY_2026-10-18.md",
@@ -8729,13 +8739,16 @@
         "docs/production-reports/evidence/chapter1-living/ci-f634a46.json",
         "docs/production-reports/evidence/chapter1-living/site-http/results.json",
         "docs/production-reports/evidence/chapter1-living/natural-f634a46/results.json",
-        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json"
+        "docs/production-reports/evidence/chapter1-living/offline-f634a46/results.json",
+        "docs/production-reports/evidence/level-one-controls/visual-8f6c61b-03/results.json",
+        "docs/production-reports/evidence/level-one-controls/two-touch-8f6c61b-01/results.json",
+        "docs/production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md"
       ],
       "openErrors": [
         "Aceptación artística del propietario, balance humano y Safari/iPhone físico pendientes; no se declaran completos diez territorios."
       ],
       "acceptanceStatus": {
-        "technical": "CHROMIUM_INTEGRATED_PASSED_OWNER_DEVICE_REVIEW_PENDING",
+        "technical": "CURRENT_CHROMIUM_CONTROLS_AND_LEVEL_LOOP_PASSED",
         "artistic": "PENDING_OWNER",
         "physical": "PENDING"
       },
@@ -8747,7 +8760,8 @@
         "Publicar sólo una preview privada autorizada con revisión comprobada y CI completa; no confundir Chromium, fuente publicada y dispositivo físico."
       ],
       "packageStatus": "BUILT_CLEAN_F634A46_SHA256_RECORDED",
-      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED"
+      "privateSiteStatus": "PRIVATE_SITE20_SUCCEEDED_HTTP12_PASSED",
+      "packageCommit": "8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a"
     },
     {
       "id": "P1-CH1-AUDIO-01",

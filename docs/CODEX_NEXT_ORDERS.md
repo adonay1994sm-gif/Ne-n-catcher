@@ -1,3 +1,15 @@
+## Continuación vigente · revisión final del nivel 1 · 18/10/2026
+
+[Informe de mandos y puerta de cierre](production-reports/LEVEL_ONE_CONTROLS_REVIEW_2026-10-18.md). Funcional `8f6c61b7675ac0d4941c3a087c27dd58e08e2e2a`.
+
+1. Verificar GitHub Actions y la preview Netlify aislada para el SHA de cierre; no usar la URL antigua como prueba automática.
+2. El propietario debe jugar nivel 1 en teléfono y revisar: desplazamiento con mando flotante, disparo sostenido con segundo dedo, misil, aparición de C9 y combate Atlas.
+3. Mantener P1 `IN_REVIEW` hasta esa aceptación. Se permite preparar diseño del nivel 2, pero no multiplicar controles/balance no aprobados por los otros nueve niveles.
+4. Si el control se aprueba, cerrar P1 y comenzar Gaia→Vulkar con enemigos, historia, subjefe y guardián propios, conservando la continuidad espacial.
+5. Mantener rama autorizada, Motor V1 desactivado, un RAF, guardados y preview aislada; no main, PR3, producción original, tiendas ni force push.
+
+---
+
 ## Continuación tras publicación Netlify ·18/10/2026
 
 Usar `https://neon-preview-deploy.netlify.app/` para la revisión del propietario. Antes de atribuir cambios futuros, comprobar `build-info.json` contra el último SHA de `continuity-assets-audit-20261013`. No mover `NEON_PREVIEW_DEPLOY` al entorno global ni debilitar la validación de identidad. Corregir como deuda de QA `scripts/preview-offline-smoke.cjs`, que aún busca el selector de dos campañas retirado, conservando la portada canónica de un solo viaje. Después continuar la revisión humana del nivel uno y preparar una auditoría no destructiva del repositorio antes de proponer integración en main; ninguna limpieza o cambio de rama principal está autorizado todavía.
