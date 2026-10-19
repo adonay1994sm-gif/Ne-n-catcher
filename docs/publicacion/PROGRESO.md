@@ -34,7 +34,19 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 
 ## Cierre
 - [x] Ejecución final e `INFORME_FINAL.md`.
-- [ ] Push y Pull Request (bloqueado por 403 en git push).
+- [x] Push y Pull Request #5 (el 403 se resolvió al reconectar GitHub).
+
+## Mejoras jugables del capítulo 1 (tras la prueba del propietario)
+- [x] Botón INICIAR siempre visible en la ficha del tramo.
+- [x] Mínimo de casco 50 al reanudar/reintentar y texto "REINTENTAR TRAMO".
+- [x] Disparos básicos enemigos en rojo (antes cian como los del jugador).
+- [x] Campo de meteoritos, restos y satélites en los diez tramos (`voyage-hazards.js`).
+- [x] Lluvia de cometas dispersa v4 (7-9 cometas por oleada, varios bordes).
+- [x] Enemigos v5: ráfagas dobles, abanicos, esperas irregulares; más patrullas.
+- [x] Atlas v8: Ruptura Crono, ataques encadenados, núcleo menos expuesto.
+- [ ] Prueba del propietario en iPhone de todo lo anterior (valores reversibles).
+- [ ] Partida natural completa automática sobre esta rama (el piloto solo genera
+  preview desde la rama autorizada).
 
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y
