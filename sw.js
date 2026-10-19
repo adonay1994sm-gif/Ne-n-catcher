@@ -1,4 +1,4 @@
-const CACHE = "neon-cronium-pre-release-7-2-0-orbital-hud-1";
+const CACHE = "neon-cronium-pre-release-7-2-0-orbital-hud-2";
 const CORE = [
   "assets/combat_sfx_atlas_v2.m4a",
   "assets/combat_sfx_atlas_v2.json",
@@ -103,8 +103,27 @@ const CORE = [
   "assets/chronos_collapse_background_v1.webp"
 ];
 
+// addAll es "todo o nada": si un solo archivo falla, la instalación entera
+// falla y el juego se queda sin modo sin conexión. En ese caso se guarda
+// archivo a archivo y solo se omiten los que fallen; se descargarán al usarse.
+async function precache() {
+  const cache = await caches.open(CACHE);
+  try {
+    await cache.addAll(CORE);
+  } catch {
+    await Promise.all(CORE.map(async (path) => {
+      try {
+        const response = await fetch(path);
+        if (response?.ok) await cache.put(path, response);
+      } catch {
+        // Archivo omitido; networkFirst/cacheFirst lo recuperarán más tarde.
+      }
+    }));
+  }
+}
+
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()));
+  event.waitUntil(precache().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
