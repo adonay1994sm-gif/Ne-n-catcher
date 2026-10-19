@@ -2008,11 +2008,15 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/comet-shower.js
-  var COMET_SHOWER_VERSION = "comet-shower-v3";
+  var COMET_SHOWER_VERSION = "comet-shower-v4";
   var COMET_SHOWER_RULES = Object.freeze({
-    maxActive: 5,
+    // v4: oleadas más grandes y dispersas (cada cometa con su propio borde,
+    // lado del pasillo e intervalo) en lugar de trenes de 3-4 en fila.
+    maxActive: 9,
     warningSeconds: 2,
     resumeGraceSeconds: 7,
+    burstSizes: Object.freeze([7, 9, 8]),
+    spawnGap: Object.freeze([0.18, 0.75]),
     maxDelta: 0.05,
     shipWidth: 208 * 0.52,
     shipSideClearance: 119 * 0.52,
@@ -2111,17 +2115,19 @@ var NeonCampaign = (() => {
       ax = -direction * (15 + random() * 35);
       ay = (random() * 2 - 1) * Math.min(28, height * 0.025);
     } else {
-      const laneMinimum = dangerSide < 0 ? 24 : corridor.right + 42;
-      const laneMaximum = dangerSide < 0 ? corridor.left - 42 : width - 24;
+      const lanes = [[24, corridor.left - 42, -1], [corridor.right + 42, width - 24, 1]].filter(([low, high]) => high - low >= 30);
+      const lane = lanes.length ? lanes[Math.floor(random() * lanes.length)] : null;
+      const laneSide = lane ? lane[2] : dangerSide;
+      const laneMinimum = lane ? lane[0] : 1, laneMaximum = lane ? lane[1] : 0;
       const referenceX = laneMinimum <= laneMaximum ? clamp3(width * (0.4 + random() * 0.2), laneMinimum, laneMaximum) : width / 2;
       y = mode === 1 ? -margin : height + margin;
       entryEdge = mode === 1 ? "top" : "bottom";
       const verticalDirection = mode === 1 ? 1 : -1;
-      ax = dangerSide * (16 + random() * 65) * (random() < 0.32 ? -1 : 1);
+      ax = laneSide * (16 + random() * 65) * (random() < 0.32 ? -1 : 1);
       ay = verticalDirection * (10 + random() * 20);
       const referenceY = height * (0.6 + random() * 0.24);
       const referenceTime = Math.abs(referenceY - y) / speed;
-      vx = dangerSide * (18 + random() * 130) - ax * referenceTime;
+      vx = laneSide * (18 + random() * 130) - ax * referenceTime;
       vx = clamp3(vx, -speed * 0.32, speed * 0.32);
       vy = verticalDirection * Math.sqrt(speed * speed - vx * vx);
       const time = (-Math.abs(vy) + Math.sqrt(vy * vy + 2 * Math.abs(ay) * Math.abs(referenceY - y))) / Math.abs(ay);
@@ -2170,7 +2176,8 @@ var NeonCampaign = (() => {
   }
   function makeComet(state, burst, ordinal) {
     const primaryMode = state.burstModes[burst];
-    const mode = ordinal > 0 && randomFor2(state.seed + burst * 211 + ordinal * 2017)() < 0.25 ? 0 : primaryMode;
+    const roll = randomFor2(state.seed + burst * 211 + ordinal * 2017)();
+    const mode = ordinal === 0 || roll < 0.4 ? primaryMode : roll < 0.6 ? 0 : roll < 0.8 ? 1 : 2;
     for (let attempt = 0; attempt < 18; attempt++) {
       const item = makeCandidate(state, burst, ordinal, mode, attempt);
       if (item.x < -128 || item.x > state.width + 128) continue;
@@ -2206,9 +2213,12 @@ var NeonCampaign = (() => {
       const warningAt = at - COMET_SHOWER_RULES.warningSeconds;
       if (warningAt <= elapsed) continue;
       schedule.push({ at: warningAt, kind: "warning", burst });
-      const count = burst === 1 ? 4 : 3;
-      for (let ordinal = 0; ordinal < count; ordinal++) {
-        schedule.push({ at: at + ordinal * 0.42, kind: "spawn", burst, ordinal });
+      const count = COMET_SHOWER_RULES.burstSizes[burst];
+      const [gapLow, gapHigh] = COMET_SHOWER_RULES.spawnGap;
+      const timing = randomFor2(normalizedSeed ^ Math.imul(burst + 11, 668265263));
+      for (let ordinal = 0, offset = 0; ordinal < count; ordinal++) {
+        schedule.push({ at: at + offset, kind: "spawn", burst, ordinal });
+        offset += gapLow + timing() * (gapHigh - gapLow);
       }
     }
     schedule.sort((left, right) => left.at - right.at);

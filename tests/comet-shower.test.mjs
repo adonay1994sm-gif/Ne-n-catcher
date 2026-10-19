@@ -41,7 +41,7 @@ function run({width = 720, height = 1280, seed = 0, stageId = '1.5', elapsed = 0
 }
 
 test('new shower is isolated from route content/checkpoints and rejects impossible input', () => {
-  assert.equal(COMET_SHOWER_VERSION, 'comet-shower-v3');
+  assert.equal(COMET_SHOWER_VERSION, 'comet-shower-v4');
   const state = createCometShower();
   assert.equal(state.stageId, '1.5');
   assert.equal(state.elapsed, 0);
@@ -56,13 +56,20 @@ test('new shower is isolated from route content/checkpoints and rejects impossib
   assert.throws(() => advanceCometShower(state, DT, {x: NaN, y: 2}, () => {}), TypeError);
 });
 
-test('three distinct trains are preceded by two played seconds of warning and bounded to five bodies', () => {
+test('three dispersed bursts are preceded by two played seconds of warning and bounded to the active cap', () => {
   const result = run();
   const warnings = result.events.filter(event => event.type === 'warning');
   const spawns = result.events.filter(event => event.type === 'spawn');
   assert.deepEqual(warnings.map(event => event.at), [5, 14, 23]);
   assert.ok(warnings.every(event => event.text.startsWith('Se aproxima lluvia de cometas')));
-  assert.deepEqual(spawns.map(event => event.burst), [0, 0, 0, 1, 1, 1, 1, 2, 2, 2]);
+  assert.deepEqual(spawns.map(event => event.burst),
+    COMET_SHOWER_RULES.burstSizes.flatMap((size, burst) => Array(size).fill(burst)));
+  for (let burst = 0; burst < 3; burst++) {
+    const members = spawns.filter(event => event.burst === burst);
+    assert.ok(new Set(members.map(event => event.item.entryEdge)).size >= 2, `burst ${burst} mixes entrances`);
+    const gaps = members.slice(1).map((event, index) => +(event.at - members[index].at).toFixed(3));
+    assert.ok(new Set(gaps).size > 2, `burst ${burst} spawns at irregular intervals`);
+  }
   for (const warning of warnings) {
     const first = spawns.find(event => event.burst === warning.burst);
     assert.equal(first.at - warning.at, 2);
@@ -84,8 +91,8 @@ test('100 seeds across six viewports retain a reachable whole-hull passage for t
   for (const [width, height] of profiles) for (let seed = 0; seed < 100; seed++) {
     const result = run({width, height, seed});
     assert.equal(result.events.filter(event => event.type === 'warning').length, 3);
-    assert.equal(result.state.spawned, 10, `complete trains at ${width}x${height}, seed ${seed}`);
-    assert.ok(result.peak <= 5);
+    assert.equal(result.state.spawned, 24, `complete bursts at ${width}x${height}, seed ${seed}`);
+    assert.ok(result.peak <= COMET_SHOWER_RULES.maxActive);
     for (const corridor of result.state.corridors) {
       assert.ok(corridor.width >= COMET_SHOWER_RULES.shipWidth + 40);
       assert.ok(corridor.center >= COMET_SHOWER_RULES.shipSideClearance &&
@@ -174,7 +181,7 @@ test('explicit hull widths preserve the full safety contract and never shrink th
   for(const [width,height,shipWidth,shipSideClearance] of [[320,568,208,119],[390,844,270.4,154.7],[720,1280,108.16,61.88]]) {
     const result=run({width,height,shipWidth,shipSideClearance,seed:17});
     assert.equal(result.state.shipWidth,shipWidth);
-    assert.equal(result.state.spawned,10);
+    assert.equal(result.state.spawned,24);
     assert.ok(result.state.corridors.every(corridor=>corridor.width===shipWidth+40));
   }
 });
@@ -247,13 +254,13 @@ test('slow or externally held comets retain their safe corridor and cannot be fo
     advanceCometShower(state, DT, {x: 360, y: 900}, event => {
       if (event.type === 'spawn') items.push(event.item);
     });
-    assert.ok(state.active.length <= 5);
+    assert.ok(state.active.length <= COMET_SHOWER_RULES.maxActive);
     assert.ok(new Set(state.active.map(entry=>entry.item.showerBurst)).size<=1,
       'two different passage reservations never close each other during slow motion');
   }
-  assert.equal(items.length, 3, 'only the first physical train exists while its bodies are externally held');
-  assert.equal(state.skipped, 7, 'later incompatible trains are skipped rather than filling the safe lane');
-  assert.equal(state.active.length, 3);
+  assert.equal(items.length, 7, 'only the first physical burst exists while its bodies are externally held');
+  assert.equal(state.skipped, 17, 'later incompatible bursts are skipped rather than filling the safe lane');
+  assert.equal(state.active.length, 7);
   for (const item of items) releaseCometShowerItem(state, item);
   assert.equal(state.active.length, 0);
 });
