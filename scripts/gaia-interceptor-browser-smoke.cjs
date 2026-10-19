@@ -378,7 +378,7 @@ function pilotTarget(q, enemy, collecting = false) {
         if (!record.animationStates.includes(enemy.classicScout.frame.state)) record.animationStates.push(enemy.classicScout.frame.state);
         if (!record.frames.includes(enemy.classicScout.frame.frameIndex)) record.frames.push(enemy.classicScout.frame.frameIndex);
         if (record.hp.at(-1) !== enemy.hp) record.hp.push(enemy.hp);
-        assert.equal(enemy.classicScout.tacticsVersion, 'classic-pursuit-v4');
+        assert.equal(enemy.classicScout.tacticsVersion, 'classic-pursuit-v5');
         assert.equal(enemy.classicScout.frame.image, 'assets/ch02_interceptor_atlas_v1.webp');
         assert.ok(enemy.classicScout.fired <= 10, 'An interceptor exceeded its finite pursuit-v3 attack budget');
         assert.ok(enemy.classicScout.firedSerial<=enemy.classicScout.chargeSerial,'A projectile cannot precede its mechanical cannon-deployment state');

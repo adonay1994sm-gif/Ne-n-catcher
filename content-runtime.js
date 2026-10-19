@@ -3396,9 +3396,10 @@ var NeonCampaign = (() => {
   }
 
   // src/game/combat/classic-pursuit.js
-  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v4";
+  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v5";
   var clamp7 = (value, low, high) => Math.max(low, Math.min(high, value));
   var approach = (value, target, amount) => value + clamp7(target - value, -amount, amount);
+  var MAX_LATERAL_SPEED = 176;
   var profiles = Object.freeze({
     raider: Object.freeze({
       warning: 0.32,
@@ -3414,7 +3415,10 @@ var NeonCampaign = (() => {
       depthSweep: 25,
       projectileSpeed: 360,
       leadSeconds: 0.32,
-      damage: 14
+      damage: 14,
+      volleys: Object.freeze({ single: 0.45, double: 0.35, spread: 0.2 }),
+      flipChance: 0.7,
+      dashChance: 0.15
     }),
     scout: Object.freeze({
       warning: 0.38,
@@ -3430,7 +3434,10 @@ var NeonCampaign = (() => {
       depthSweep: 32,
       projectileSpeed: 335,
       leadSeconds: 0.22,
-      damage: 12
+      damage: 12,
+      volleys: Object.freeze({ single: 0.5, double: 0.15, spread: 0.35 }),
+      flipChance: 0.6,
+      dashChance: 0.1
     }),
     interceptor: Object.freeze({
       warning: 0.3,
@@ -3446,7 +3453,10 @@ var NeonCampaign = (() => {
       depthSweep: 40,
       projectileSpeed: 390,
       leadSeconds: 0.38,
-      damage: 15
+      damage: 15,
+      volleys: Object.freeze({ single: 0.25, double: 0.45, spread: 0.3 }),
+      flipChance: 0.75,
+      dashChance: 0.35
     })
   });
   function observePlayer(enemy, player, interval) {
@@ -3468,6 +3478,22 @@ var NeonCampaign = (() => {
     value = Math.imul(value ^ value >>> 16, 3266489909);
     return ((value ^ value >>> 13) >>> 0) / 4294967296;
   }
+  function nextRandom(enemy) {
+    enemy.rng = enemy.rng + 1831565813 >>> 0;
+    let value = Math.imul(enemy.rng ^ enemy.rng >>> 15, 1 | enemy.rng);
+    value ^= value + Math.imul(value ^ value >>> 7, 61 | value);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  }
+  function chooseVolley(enemy, weights) {
+    if (enemy.fired === 0) return "single";
+    let roll = nextRandom(enemy);
+    for (const [kind, weight] of Object.entries(weights)) {
+      roll -= weight;
+      if (roll <= 0) return kind;
+    }
+    return "single";
+  }
+  var CLASSIC_PURSUIT_VOLLEY = Object.freeze({ maxProjectiles: 3, doubleGap: 0.2, spreadAngle: 0.24, cone: 0.65 });
   function createClassicPursuer({
     x,
     width = 720,
@@ -3525,6 +3551,10 @@ var NeonCampaign = (() => {
       firedSerial: -1,
       previousHp: null,
       chargeStartedAt: null,
+      rng: (Math.imul(Math.trunc(seed) >>> 0, 2654435769) ^ 1374496523) >>> 0,
+      volley: "single",
+      followUp: null,
+      dashing: false,
       animator: createCh01Animator({ hp: 2, maxHp: 2 })
     };
   }
@@ -3573,21 +3603,25 @@ var NeonCampaign = (() => {
     };
     const reposition = () => {
       clearCharge();
-      enemy.side *= -1;
+      enemy.followUp = null;
+      if (nextRandom(enemy) < profile2.flipChance) enemy.side *= -1;
+      enemy.dashing = nextRandom(enemy) < profile2.dashChance;
       enemy.repositionCount++;
       enemy.targetX = laneTarget();
       enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
-      enemy.nextFire = enemy.age + profile2.recovery;
+      enemy.nextFire = enemy.age + profile2.recovery * (0.65 + nextRandom(enemy) * 0.7);
       enter("reposition");
     };
     const retreat = (reason) => {
       clearCharge();
+      enemy.followUp = null;
       enemy.retreatReason = reason;
       enemy.targetX = player.x < enemy.width / 2 ? enemy.width - 56 : 56;
       enter("retreat");
     };
     if (hp <= 0) {
       clearCharge();
+      enemy.followUp = null;
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
@@ -3631,6 +3665,7 @@ var NeonCampaign = (() => {
         enemy.targetX = item.x;
         enemy.chargeStartedAt = enemy.age;
         enemy.chargeSerial++;
+        enemy.volley = chooseVolley(enemy, profile2.volleys);
         enter("charge");
       }
     }
@@ -3642,7 +3677,8 @@ var NeonCampaign = (() => {
       }
     }
     const previousX = item.x;
-    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp7((enemy.targetX - item.x) * 2.8, -profile2.lateralSpeed, profile2.lateralSpeed);
+    const lateralLimit = enemy.dashing && enemy.state === "reposition" ? Math.min(MAX_LATERAL_SPEED, profile2.lateralSpeed * 1.3) : profile2.lateralSpeed;
+    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp7((enemy.targetX - item.x) * 2.8, -lateralLimit, lateralLimit);
     enemy.vx = approach(enemy.vx, desiredVelocity, profile2.acceleration * step);
     const minimumX = enemy.state === "retreat" ? 52 : Math.min(item.x, enemy.combatMinX);
     const maximumX = enemy.state === "retreat" ? enemy.width - 52 : Math.max(item.x, enemy.combatMaxX);
@@ -3651,22 +3687,22 @@ var NeonCampaign = (() => {
     const desiredVertical = enemy.state === "destroyed" ? 0 : enemy.state === "retreat" ? enemy.baseSpeed * 1.35 : clamp7((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
     item.s = approach(item.s, desiredVertical, enemy.baseSpeed * 1.8 * step);
     const events = enemy.animator.update(step, { hp, maxHp, vx: enemy.vx, vy: item.s });
-    for (const event2 of events) {
-      if (event2.name === "attackCanceled" && enemy.state === "charge") reposition();
-      if (event2.name !== "fire" || enemy.state !== "charge" || !enemy.attackScheduled || enemy.firedSerial === enemy.chargeSerial || !canAttack()) continue;
+    const launch = (angleOffset) => {
       const aim = enemy.lockedTarget;
       const dy = Math.max(1, aim.y - (item.y + 38));
-      const dx = clamp7(aim.x - item.x, -dy * 0.65, dy * 0.65);
-      const length = Math.hypot(dx, dy), speed = profile2.projectileSpeed;
-      const shot = {
+      const dx = clamp7(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
+      const limit = Math.atan(CLASSIC_PURSUIT_VOLLEY.cone);
+      const angle = clamp7(Math.atan2(dx, dy) + angleOffset, -limit, limit);
+      const speed = profile2.projectileSpeed;
+      spawnProjectile({
         type: "meteor",
         x: item.x,
         baseX: item.x,
         y: item.y + 38,
         r: 9,
         s: speed,
-        vx: dx / length * speed,
-        vy: dy / length * speed,
+        vx: Math.sin(angle) * speed,
+        vy: Math.cos(angle) * speed,
         life: 5,
         damage: profile2.damage,
         rot: 0,
@@ -3682,15 +3718,29 @@ var NeonCampaign = (() => {
         tacticsVersion: CLASSIC_PURSUIT_VERSION,
         attackSerial: enemy.chargeSerial,
         role: enemy.role,
+        volley: enemy.volley,
         observedTarget: { ...enemy.observedTarget },
         leadOffset: enemy.leadOffset
-      };
+      });
+    };
+    if (enemy.followUp !== null && enemy.state === "fire" && enemy.age >= enemy.followUp) {
+      enemy.followUp = null;
+      if (canAttack() && enemy.lockedTarget) launch(0);
+    }
+    for (const event2 of events) {
+      if (event2.name === "attackCanceled" && enemy.state === "charge") reposition();
+      if (event2.name !== "fire" || enemy.state !== "charge" || !enemy.attackScheduled || enemy.firedSerial === enemy.chargeSerial || !canAttack()) continue;
       enemy.firedSerial = enemy.chargeSerial;
       enemy.fired++;
       enemy.telegraph = 0;
       enemy.attackScheduled = false;
       enter("fire");
-      spawnProjectile(shot);
+      if (enemy.volley === "spread") {
+        for (const offset of [0, -CLASSIC_PURSUIT_VOLLEY.spreadAngle, CLASSIC_PURSUIT_VOLLEY.spreadAngle]) launch(offset);
+      } else {
+        launch(0);
+        if (enemy.volley === "double") enemy.followUp = enemy.age + CLASSIC_PURSUIT_VOLLEY.doubleGap;
+      }
     }
   }
 
@@ -5305,7 +5355,7 @@ var NeonCampaign = (() => {
       recordId: "chronos-sabotage-atlas-log"
     };
   }
-  function nextRandom(boss) {
+  function nextRandom2(boss) {
     let value = boss.seed;
     value ^= value << 13;
     value ^= value >>> 17;
@@ -5358,13 +5408,13 @@ var NeonCampaign = (() => {
     if (tacticalAttack && boss.tacticalManeuver === "flank") {
       boss.motionSide = boss.telegraph.sweepDirection;
     }
-    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom(boss) * 0.17);
+    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom2(boss) * 0.17);
     const lead = clamp11(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
     const target = exposed ? boss.x + boss.motionSide * flank : tacticalAttack && boss.tacticalManeuver === "withdraw" ? boss.width / 2 + boss.motionSide * space * 0.34 : sample.x + lead + boss.motionSide * flank;
     boss.motionX = clamp11(target, bounds.left, bounds.right);
     const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
     boss.motionY = clamp11(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
-    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom(boss) * 0.5);
+    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom2(boss) * 0.5);
     boss.motionDecision++;
   }
   function moveAtlas(boss, dt) {
@@ -5424,7 +5474,7 @@ var NeonCampaign = (() => {
     if (boss.phaseAttacks > 3 || boss.phase === 2) {
       const options = tier === "basic" ? ["duelBurst"] : tier === "medium" ? Math.abs(sample.vx) >= 85 ? ["flankSalvo", "staggeredSalvo"] : ["staggeredSalvo", "flankSalvo"] : ["reactorSweep", "reactorPincer"];
       const candidates = options.filter((candidate) => candidate !== boss.previousPatterns[tier]);
-      pattern = candidates[Math.floor(nextRandom(boss) * candidates.length)] || options[0];
+      pattern = candidates[Math.floor(nextRandom2(boss) * candidates.length)] || options[0];
     }
     boss.previousPatterns[tier] = pattern;
     const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp11(sample.vx * 0.28, -100, 100);
