@@ -30,10 +30,11 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - [x] c) Revisión del README público.
 
 ## Fase 5 · Propuestas
-- [ ] art-source a LFS · evidencias · historial · repo privado · nombre y bundle ID · motores · dividir 03-ui.
+- [x] art-source a LFS · evidencias · historial · repo privado · nombre y bundle ID · motores · dividir 03-ui.
 
 ## Cierre
-- [ ] Ejecución final, `INFORME_FINAL.md` y Pull Request.
+- [x] Ejecución final e `INFORME_FINAL.md`.
+- [ ] Push y Pull Request (bloqueado por 403 en git push).
 
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y
