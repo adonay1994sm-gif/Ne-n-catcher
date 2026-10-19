@@ -1309,6 +1309,12 @@
     }
   }
 
+  // Al reanudar o reintentar un tramo se restaura el casco guardado a su
+  // entrada, pero nunca por debajo de este mínimo: si se entró al tramo de
+  // Atlas casi destruido, cada reintento sería una derrota segura. Valor de
+  // trabajo reversible; el guardado conserva el casco real de entrada.
+  const CLASSIC_RESUME_HULL_FLOOR = 50;
+
   function classicVoyageCheckpointRecord(checkpoint,completed=false) {
     if(!checkpoint)return null;
     const previous=classicVoyageRecord;
@@ -2518,7 +2524,7 @@
     collected = 0;
     if(classicFlight){
       collected=classicFlightView.collected;
-      if(voyageEntry){hull=voyageEntry.hull;classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
+      if(voyageEntry){hull=Math.max(voyageEntry.hull,CLASSIC_RESUME_HULL_FLOOR);classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
     }
     ammo = classicWeapons?classicWeapons.charges:INITIAL_AMMO;
     manualShotCooldown = 0;
