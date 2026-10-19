@@ -3097,9 +3097,28 @@
     return [{ x: 0, y: 0, r: item.r * 1.04 }];
   }
 
+  // Rectángulo envolvente de la silueta de colisión para descartar rápido los
+  // objetos lejanos. Se calcula una sola vez, en el primer uso, cuando la
+  // silueta ya está escalada. Solo es un filtro previo: la prueba exacta
+  // sigue siendo el polígono.
+  let shipCollisionBounds = null;
+  function getShipCollisionBounds() {
+    if (!shipCollisionBounds) {
+      shipCollisionBounds = SHIP_COLLISION_OUTLINE.reduce((bounds, [x, y]) => {
+        bounds.left = Math.min(bounds.left, x);
+        bounds.right = Math.max(bounds.right, x);
+        bounds.top = Math.min(bounds.top, y);
+        bounds.bottom = Math.max(bounds.bottom, y);
+        return bounds;
+      }, { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity });
+    }
+    return shipCollisionBounds;
+  }
+
   function circleHitsShip(localX, localY, radius) {
-    if (localX + radius < -112 || localX - radius > 112 ||
-        localY + radius < -151 || localY - radius > 98) return false;
+    const bounds = getShipCollisionBounds();
+    if (localX + radius < bounds.left || localX - radius > bounds.right ||
+        localY + radius < bounds.top || localY - radius > bounds.bottom) return false;
     if (pointInsidePolygon(localX, localY, SHIP_COLLISION_OUTLINE)) return true;
     const radiusSquared = radius * radius;
     for (let index = 0; index < SHIP_COLLISION_OUTLINE.length; index++) {
@@ -3122,8 +3141,9 @@
   function sweptCircleHitsShip(startX, startY, endX, endY, radius) {
     // Sweep the authored collision polygon itself. Fast nuclei and enemy
     // projectiles must not jump across it, and cosmetic tails never damage it.
-    if(Math.max(startX,endX)+radius< -112 || Math.min(startX,endX)-radius>112 ||
-      Math.max(startY,endY)+radius< -151 || Math.min(startY,endY)-radius>98)return false;
+    const bounds=getShipCollisionBounds();
+    if(Math.max(startX,endX)+radius<bounds.left || Math.min(startX,endX)-radius>bounds.right ||
+      Math.max(startY,endY)+radius<bounds.top || Math.min(startY,endY)-radius>bounds.bottom)return false;
     if(circleHitsShip(startX,startY,radius)||circleHitsShip(endX,endY,radius))return true;
     const radiusSquared=radius*radius;
     for(let index=0;index<SHIP_COLLISION_OUTLINE.length;index++) {
