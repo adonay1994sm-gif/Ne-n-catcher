@@ -1216,7 +1216,8 @@
     const stages = document.createElement("section");
     stages.id="chronosStages"; stages.className="chronos-stages cockpit-stage-list hidden";
     stages.innerHTML='<small>CHRONOS → GAIA · TRAMOS DEL VIAJE</small><div id="chronosStageGrid" class="chronos-stage-grid"></div><p id="chronosStagesNote"></p>';
-    $("launch").before(stages);
+    // La lista va encima del bloque de botones, que queda fijo abajo del panel.
+    ($("briefingActions") || $("launch")).before(stages);
     syncClassicFlightHud();
   }
 
