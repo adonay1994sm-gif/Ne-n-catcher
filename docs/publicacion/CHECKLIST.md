@@ -7,6 +7,22 @@ Fecha: 19/10/2026. Fuentes: `docs/APP_STORE_READINESS.md`,
 Leyenda: ✅ listo · 🟡 a medias · ⛔ bloqueado (falta algo externo o una
 decisión) · ❓ sin comprobar.
 
+## ⚠️ El juego todavía no está terminado
+
+Este trabajo prepara la **parte técnica y administrativa** de la publicación.
+**No** significa que el juego esté listo para la tienda. Según el propio
+proyecto (`docs/PRODUCT_VISION.md`, `AGENTS.md`):
+
+- El objetivo es una campaña de **10 capítulos × 10 etapas**. Hoy solo el
+  **capítulo 1** (Chronos → Gaia, 10 etapas, jefe Atlas) está jugable y aún
+  en pulido; los otros nueve capítulos no están producidos.
+- El arsenal objetivo de **10–15 armas** está pendiente; hoy hay pocas.
+- Arte, música y mezcla final siguen pendientes de aceptación del propietario.
+- No hay ninguna prueba en iPhone real ni sesiones de juego con personas.
+
+Por eso este checklist es una **preparación anticipada**: sirve para que,
+cuando el contenido esté terminado, publicar no se retrase por trámites.
+
 | # | Requisito | Estado | Qué hay hoy | Qué falta |
 |---|---|---|---|---|
 | 1 | Política de privacidad | 🟡 | `privacy.html` existe y está enlazada desde el menú y precargada. Fecha 3/08/2026, habla de "V6.5" y dice que no es la versión final. | Texto final con responsable y contacto, publicidad AdMob y URL pública estable para App Store Connect. Borrador en `docs/propuestas/privacy.html`. |

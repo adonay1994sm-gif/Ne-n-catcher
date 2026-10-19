@@ -5,6 +5,12 @@ Se distribuye como PWA (Netlify publica `www/`) y como app iOS con Capacitor.
 Las instrucciones detalladas del propietario están en `AGENTS.md`; esta guía
 solo resume lo imprescindible.
 
+## Estado del juego
+
+El juego **no está terminado**: solo el capítulo 1 de la campaña objetivo
+(10 capítulos × 10 etapas) está jugable y en pulido. Preparar la publicación
+no significa que esté listo para la tienda.
+
 ## Idioma
 
 - Explica todo en **español** y con lenguaje sencillo.

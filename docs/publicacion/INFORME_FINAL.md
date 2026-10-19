@@ -4,6 +4,22 @@ Fecha: 19/10/2026 · Rama: `claude/preparar-publicacion-rtfl9q`
 Base: `continuity-assets-audit-20261013` (`bfa3325`). 23 commits pequeños,
 uno por cambio. `main` no se ha tocado.
 
+## ⚠️ El juego todavía no está terminado
+
+Este trabajo prepara la **parte técnica y administrativa** de la publicación.
+**No** significa que el juego esté listo para la tienda. Según el propio
+proyecto (`docs/PRODUCT_VISION.md`, `AGENTS.md`):
+
+- El objetivo es una campaña de **10 capítulos × 10 etapas**. Hoy solo el
+  **capítulo 1** (Chronos → Gaia, 10 etapas, jefe Atlas) está jugable y aún
+  en pulido; los otros nueve capítulos no están producidos.
+- El arsenal objetivo de **10–15 armas** está pendiente; hoy hay pocas.
+- Arte, música y mezcla final siguen pendientes de aceptación del propietario.
+- No hay ninguna prueba en iPhone real ni sesiones de juego con personas.
+
+Por eso este checklist es una **preparación anticipada**: sirve para que,
+cuando el contenido esté terminado, publicar no se retrase por trámites.
+
 ## Resultado final de las pruebas
 
 | Comando | Al empezar | Al terminar |
