@@ -219,32 +219,45 @@
     return dx * dx + dy * dy;
   }
 
+  // Círculos de colisión reutilizables por forma. collisionCircles se llama
+  // por objeto y fotograma; rellenar estos arrays en sitio evita crear
+  // basura. Quien llama debe usar el resultado al momento y no guardarlo
+  // (copiarlo si necesita conservarlo).
+  const SINGLE_COLLISION_CIRCLE = [{ x: 0, y: 0, r: 0 }];
+  const SATELLITE_COLLISION_CIRCLES = [{ x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }];
+  const PANEL_COLLISION_CIRCLES = [{ x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }];
+
+  function singleCollisionCircle(radius) {
+    const circle = SINGLE_COLLISION_CIRCLE[0];
+    circle.x = 0;
+    circle.y = 0;
+    circle.r = radius;
+    return SINGLE_COLLISION_CIRCLE;
+  }
+
+  function tripleCollisionCircles(circles, item, offset, sideRadius, centerRadius) {
+    circles[0].x = -item.r * offset; circles[0].y = 0; circles[0].r = item.r * sideRadius;
+    circles[1].x = 0; circles[1].y = 0; circles[1].r = item.r * centerRadius;
+    circles[2].x = item.r * offset; circles[2].y = 0; circles[2].r = item.r * sideRadius;
+    return circles;
+  }
+
   function collisionCircles(item) {
-    if (item.type === "energy") return [{ x: 0, y: 0, r: item.r * 1.10 }];
+    if (item.type === "energy") return singleCollisionCircle(item.r * 1.10);
     if (!isThreat(item)) {
       const factor = item.type === "repair" ? 1.05 : (item.type === "tractor" || item.type === "phaser") ? 0.92 : 1.0;
-      return [{ x: 0, y: 0, r: item.r * factor }];
+      return singleCollisionCircle(item.r * factor);
     }
-    if (item.classicScout || item.classicScoutProjectile) return [{ x: 0, y: 0, r: item.r * 0.94 }];
-    if (item.special === "comet") return [{ x: 0, y: 0, r: item.r * 0.94 }];
-    if (item.type === "satellite") {
-      return [
-        { x: -item.r * 0.92, y: 0, r: item.r * 0.58 },
-        { x: 0, y: 0, r: item.r * 0.70 },
-        { x: item.r * 0.92, y: 0, r: item.r * 0.58 }
-      ];
-    }
+    if (item.classicScout || item.classicScoutProjectile) return singleCollisionCircle(item.r * 0.94);
+    if (item.special === "comet") return singleCollisionCircle(item.r * 0.94);
+    if (item.type === "satellite") return tripleCollisionCircles(SATELLITE_COLLISION_CIRCLES, item, 0.92, 0.58, 0.70);
     if (item.type === "debris" && item.spriteKey === "debrisPanel") {
-      return [
-        { x: -item.r * 0.68, y: 0, r: item.r * 0.62 },
-        { x: 0, y: 0, r: item.r * 0.66 },
-        { x: item.r * 0.68, y: 0, r: item.r * 0.62 }
-      ];
+      return tripleCollisionCircles(PANEL_COLLISION_CIRCLES, item, 0.68, 0.62, 0.66);
     }
-    if (item.type === "debris") return [{ x: 0, y: 0, r: item.r * 1.08 }];
-    if (item.spriteKey === "meteorLarge") return [{ x: 0, y: 0, r: item.r * 1.22 }];
-    if (item.spriteKey && item.spriteKey.includes("Medium")) return [{ x: 0, y: 0, r: item.r * 1.12 }];
-    return [{ x: 0, y: 0, r: item.r * 1.04 }];
+    if (item.type === "debris") return singleCollisionCircle(item.r * 1.08);
+    if (item.spriteKey === "meteorLarge") return singleCollisionCircle(item.r * 1.22);
+    if (item.spriteKey && item.spriteKey.includes("Medium")) return singleCollisionCircle(item.r * 1.12);
+    return singleCollisionCircle(item.r * 1.04);
   }
 
   // Rectángulo envolvente de la silueta de colisión para descartar rápido los

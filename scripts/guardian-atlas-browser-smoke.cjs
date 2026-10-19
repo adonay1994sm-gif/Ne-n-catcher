@@ -237,7 +237,7 @@ function combatTarget(q) {
         stateTime:atlasBoss.stateTime,disabled:atlasBoss.disabled,vulnerability:atlasBoss.vulnerability,
         attackId:atlasBoss.attackId} : null,
       items:items.map(item=>({type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,vx:item.classicScout?.vx??item.vx,vy:item.vy,
-        rot:item.rot,rs:item.rs,circles:collisionCircles(item),
+        rot:item.rot,rs:item.rs,circles:collisionCircles(item).map(circle=>({...circle})),
         guardianProjectile:Boolean(item.guardianProjectile),projectileId:item.projectileId,
         attackId:item.attackId,scout:Boolean(item.classicScout)})),
       weapons:classicWeapons?{selected:classicWeapons.selected,charges:classicWeapons.charges,elapsed:classicWeapons.elapsed,

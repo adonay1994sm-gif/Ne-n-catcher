@@ -222,7 +222,7 @@ function pilotTarget(q, enemy, collecting = false) {
       weapons:classicWeapons?{...NeonCampaign.classicWeaponSnapshot(classicWeapons),shotSequence:classicWeapons.shotSequence}:null,
       atlas:{ready:spriteReady(SPRITES.ch02),width:SPRITES.ch02.naturalWidth,height:SPRITES.ch02.naturalHeight,source:SPRITES.ch02.currentSrc||SPRITES.ch02.src},
       items:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,hp:item.hp,maxHp:item.maxHp,
-        rot:item.rot,rs:item.rs,vx:item.vx,vy:item.vy,circles:collisionCircles(item),
+        rot:item.rot,rs:item.rs,vx:item.vx,vy:item.vy,circles:collisionCircles(item).map(circle=>({...circle})),
         salvageDropId:item.salvageDropId,salvagePickup:!!item.salvagePickup,dropId:item.dropId,enemyType:item.enemyType,amount:item.amount,
         classicScoutProjectile:Boolean(item.classicScoutProjectile),attackSerial:item.attackSerial,role:item.role,
         classicScout:item.classicScout?{tacticsVersion:item.classicScout.tacticsVersion,role:item.classicScout.role,

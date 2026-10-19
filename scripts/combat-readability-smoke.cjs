@@ -184,7 +184,7 @@ async function swipePanel(selector) {
       assets:Object.entries(SPRITES).filter(([,image])=>image.src).map(([id,image])=>({id,loaded:image.complete&&image.naturalWidth>0,width:image.naturalWidth,height:image.naturalHeight}))}),
       orb(){if(state!=='playing')throw new Error('Orb fixture requires active play');
         const item={type:'energy',x:player.x,y:player.y,r:20,alpha:1,phase:0,rot:0,p:0};
-        const before={collected,score,r:item.r,circles:collisionCircles(item),hitsShip:hit(item)};
+        const before={collected,score,r:item.r,circles:collisionCircles(item).map(circle=>({...circle})),hitsShip:hit(item)};
         const base=ctx.getTransform(),draws=[],scales=[],drawImage=ctx.drawImage,scale=ctx.scale;
         ctx.drawImage=function(image,...args){const matrix=this.getTransform(),index=Object.values(SPRITES).indexOf(image),id=index<0?null:Object.keys(SPRITES)[index];
           const width=args.length===8?args[6]:args.length===4?args[2]:image.naturalWidth;
@@ -192,7 +192,7 @@ async function swipePanel(selector) {
           return drawImage.call(this,image,...args);};
         ctx.scale=function(x,y){scales.push([x,y]);return scale.call(this,x,y);};
         try{drawEnergy(item);}finally{ctx.drawImage=drawImage;ctx.scale=scale;}
-        const afterRender={r:item.r,circles:collisionCircles(item),hitsShip:hit(item)};
+        const afterRender={r:item.r,circles:collisionCircles(item).map(circle=>({...circle})),hitsShip:hit(item)};
         const drawTime=elapsed,proximity=1,breath=.5+.5*Math.sin(drawTime*3.4),pulse=1+breath*.055+proximity*.08;
         collectItem(item);
         const result={type:'synthetic-orb-real-draw-and-collection-handlers',before,afterRender,after:{collected,score},draws,scales,pulse};this.fixtureCalls.push(result);return result;},
