@@ -9,6 +9,8 @@ export {HULL_REINFORCEMENT_RULES, resolveHullReinforcement} from '../combat/hull
 export {createCompletionJournal} from './completion-journal.js';
 export {SCRAP_ECONOMY_KEY, SCRAP_ECONOMY_RULES, SCRAP_REWARDS, SCRAP_UPGRADES,
   createScrapLedger, rewardForEnemy, formatDenominations, hullReserveCapacity, classicWorkshopState} from './scrap-economy.js';
+export {VOYAGE_HAZARD_VERSION, VOYAGE_HAZARD_PROFILES, createVoyageHazardField, advanceVoyageHazardField,
+  largestUpperGap} from './voyage-hazards.js';
 export {COMET_SHOWER_VERSION, createCometShower, advanceCometShower, advanceShowerComet,
   releaseCometShowerItem, showerCometIntersectsCircle, cometShowerSnapshot} from './comet-shower.js';
 export {createClassicEquipment,normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,canEquipClassicWeapon,syncClassicWorkshopWeapons} from './classic-arsenal.js';

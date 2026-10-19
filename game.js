@@ -343,6 +343,7 @@
   let classicVoyageRequestedStage = null;
   let classicVoyageSpawnTimer = 0;
   let classicVoyageHazardTimer = 0;
+  let classicVoyageHazards = null;
   let classicVoyageStageId = "";
   let classicThreatSequence = 0;
   let flightDockReturn = 'menu';
@@ -1656,12 +1657,19 @@
         classicPatrolTimer=n<3?12:n>=9?8:n===7?13:10;
       }
     }
-    if([2,4,8].includes(n)) {
-      classicVoyageHazardTimer-=dt;
-      if(classicVoyageHazardTimer<=0 && items.filter(isThreat).length<2) {
-        const wreck=createThreat("debris",level());wreck.x=wreck.baseX=W*(n%2?.23:.77);wreck.y=-95;wreck.s=110+n*4;
-        items.push(wreck);classicVoyageHazardTimer=20;
-      }
+    // Campo de meteoritos, restos de naves y satélites con densidad propia de
+    // cada tramo y un hueco transitable garantizado. Las pruebas que quieren
+    // un tramo vacío lo desactivan con un temporizador muy alto (>=900).
+    if(classicVoyageHazardTimer<900) {
+      if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
+        stageNumber:n,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+      const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
+        !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
+      NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
+        const threat=createThreat(hazard.type,level());
+        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        items.push(threat);
+      });
     }
     if([5,9].includes(n)) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
