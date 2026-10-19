@@ -5250,13 +5250,15 @@ var NeonCampaign = (() => {
     return value;
   };
   var GUARDIAN_ATLAS_RULES = Object.freeze({
-    version: "guardian-atlas-v7",
+    version: "guardian-atlas-v8",
     maxHp: 96,
     maxDelta: 0.05,
     entrySeconds: 2.2,
     closedSeconds: 0.85,
+    // v8: ventana de núcleo más corta (antes 3,8 s) y más corta aún en la fase 2.
     openingSeconds: 0.65,
-    exposedSeconds: 3.8,
+    exposedSeconds: 3,
+    exposedPhaseTwoSeconds: 2.5,
     closingSeconds: 0.55,
     phaseBreakSeconds: 1.25,
     shutdownSeconds: 1.55,
@@ -5277,8 +5279,23 @@ var NeonCampaign = (() => {
     attacks: Object.freeze({
       basic: Object.freeze({ chargeSeconds: 0.36, volleyTimes: Object.freeze([0]), damage: 13 }),
       medium: Object.freeze({ chargeSeconds: 0.52, volleyTimes: Object.freeze([0, 0.34]), damage: 15 }),
-      superpower: Object.freeze({ chargeSeconds: 0.86, volleyTimes: Object.freeze([0, 0.45]), damage: 22 })
+      superpower: Object.freeze({ chargeSeconds: 0.86, volleyTimes: Object.freeze([0, 0.45]), damage: 22 }),
+      // Ataque fulminante: carga larga y visible, un muro de orbes pesados con
+      // un único hueco alcanzable que obliga a moverse.
+      fulminant: Object.freeze({ chargeSeconds: 1.05, volleyTimes: Object.freeze([0]), damage: 26 })
     }),
+    fulminant: Object.freeze({
+      spacing: 64,
+      gapHalf: 115,
+      phaseTwoGapHalf: 100,
+      speed: 390,
+      phaseTwoSpeed: 440,
+      minPlayerDistance: 170,
+      everyAttacks: Object.freeze([3, 5]),
+      phaseTwoEveryAttacks: Object.freeze([2, 4])
+    }),
+    // Ataques encadenados antes de abrir el núcleo, una vez presentadas las rutinas.
+    chains: Object.freeze({ phaseOneChance: 0.45, phaseTwoMinimum: 1, phaseTwoExtraChance: 0.4 }),
     patterns: Object.freeze({
       duelBurst: Object.freeze({ volleyTimes: Object.freeze([0, 0.24]), projectiles: 2 }),
       staggeredSalvo: Object.freeze({ volleyTimes: Object.freeze([0, 0.25, 0.58]), projectiles: 3 }),
@@ -5342,6 +5359,9 @@ var NeonCampaign = (() => {
       previousPatterns: { basic: null, medium: null, superpower: null },
       tacticalManeuver: "patrol",
       attacksSinceSuperpower: 0,
+      attacksSinceFulminant: 0,
+      nextFulminantAfter: 4,
+      chainRemaining: 0,
       motionDecision: 0,
       nextMotionAt: 0,
       motionX: width / 2,
@@ -5443,12 +5463,16 @@ var NeonCampaign = (() => {
     if (next === "exposed") events.push({
       type: "coreExposed",
       phase: boss.phase,
-      seconds: GUARDIAN_ATLAS_RULES.exposedSeconds,
+      seconds: boss.phase === 1 ? GUARDIAN_ATLAS_RULES.exposedSeconds : GUARDIAN_ATLAS_RULES.exposedPhaseTwoSeconds,
       coreRadius: boss.coreRadius
     });
     if (next === "closing") events.push({ type: "coreClosed", phase: boss.phase });
   }
-  function beginCharge(boss, player, events) {
+  function scheduleFulminant(boss) {
+    const [low, high] = boss.phase === 1 ? GUARDIAN_ATLAS_RULES.fulminant.everyAttacks : GUARDIAN_ATLAS_RULES.fulminant.phaseTwoEveryAttacks;
+    boss.nextFulminantAfter = low + Math.floor(nextRandom2(boss) * (high - low + 1));
+  }
+  function beginCharge(boss, player, events, chained = false) {
     boss.attackId++;
     boss.phaseAttacks++;
     boss.volley = 0;
@@ -5458,20 +5482,31 @@ var NeonCampaign = (() => {
     if (boss.phaseAttacks <= 3) {
       boss.attackTier = tiers[boss.phaseAttacks - 1];
       boss.attackDecision = "introduce-routine";
+    } else if (boss.attacksSinceFulminant >= boss.nextFulminantAfter) {
+      boss.attackTier = "fulminant";
+      boss.attackDecision = "crono-rupture";
     } else if (boss.attacksSinceSuperpower >= 3) {
       boss.attackTier = "superpower";
       boss.attackDecision = "reactor-recharged";
     } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * 0.27) {
-      boss.attackTier = "medium";
+      boss.attackTier = nextRandom2(boss) < 0.7 ? "medium" : "basic";
       boss.attackDecision = "intercept-flank";
     } else {
-      boss.attackTier = boss.attackTier === "basic" ? "medium" : "basic";
+      boss.attackTier = nextRandom2(boss) < 0.5 ? "medium" : "basic";
       boss.attackDecision = "pressure-observed-lane";
     }
     boss.attacksSinceSuperpower = boss.attackTier === "superpower" ? 0 : boss.attacksSinceSuperpower + 1;
+    if (boss.attackTier === "fulminant") {
+      boss.attacksSinceFulminant = 0;
+      scheduleFulminant(boss);
+    } else if (boss.phaseAttacks > 3) boss.attacksSinceFulminant++;
+    if (!chained) {
+      const chains = GUARDIAN_ATLAS_RULES.chains;
+      boss.chainRemaining = boss.phase === 2 ? chains.phaseTwoMinimum + (nextRandom2(boss) < chains.phaseTwoExtraChance ? 1 : 0) : boss.phaseAttacks <= 3 ? 0 : nextRandom2(boss) < chains.phaseOneChance ? 1 : 0;
+    }
     const tier = boss.attackTier;
-    let pattern = tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
-    if (boss.phaseAttacks > 3 || boss.phase === 2) {
+    let pattern = tier === "fulminant" ? "cronoRupture" : tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
+    if ((boss.phaseAttacks > 3 || boss.phase === 2) && tier !== "fulminant") {
       const options = tier === "basic" ? ["duelBurst"] : tier === "medium" ? Math.abs(sample.vx) >= 85 ? ["flankSalvo", "staggeredSalvo"] : ["staggeredSalvo", "flankSalvo"] : ["reactorSweep", "reactorPincer"];
       const candidates = options.filter((candidate) => candidate !== boss.previousPatterns[tier]);
       pattern = candidates[Math.floor(nextRandom2(boss) * candidates.length)] || options[0];
@@ -5481,7 +5516,7 @@ var NeonCampaign = (() => {
     const originY = boss.y + boss.r * 0.7;
     boss.lastPattern = pattern;
     const sweepDirection = sample.vx ? Math.sign(sample.vx) : sample.x < boss.width / 2 ? 1 : -1;
-    boss.tacticalManeuver = pattern === "flankSalvo" || pattern === "staggeredSalvo" ? "flank" : tier === "superpower" ? "withdraw" : "pressure";
+    boss.tacticalManeuver = tier === "fulminant" ? "withdraw" : pattern === "flankSalvo" || pattern === "staggeredSalvo" ? "flank" : tier === "superpower" ? "withdraw" : "pressure";
     boss.nextMotionAt = boss.age;
     boss.telegraph = {
       kind: "mechanicalDeployment",
@@ -5507,9 +5542,15 @@ var NeonCampaign = (() => {
     };
     transition(boss, "charge", events);
     events.push({ type: "warning", phase: boss.phase, ...boss.telegraph });
+    if (tier === "fulminant") events.push({
+      type: "fulminant",
+      phase: boss.phase,
+      attackId: boss.attackId,
+      seconds: attackRules(boss).chargeSeconds
+    });
   }
   function projectile(boss, x, y, vx, vy, ordinal, targetX) {
-    const aim = boss.telegraph, heavy = boss.attackTier === "superpower";
+    const aim = boss.telegraph, heavy = boss.attackTier === "superpower" || boss.attackTier === "fulminant";
     const damage = boss.attackTier === "basic" ? phaseRules(boss).projectileDamage : attackRules(boss).damage;
     return {
       type: "meteor",
@@ -5548,7 +5589,52 @@ var NeonCampaign = (() => {
       maxHp: 1
     };
   }
+  function fireCronoRupture(boss, events, fireTime) {
+    const rule = GUARDIAN_ATLAS_RULES.fulminant, aim = boss.telegraph;
+    const originY = boss.y + boss.r * 0.7;
+    const gapHalf = Math.min(boss.phase === 1 ? rule.gapHalf : rule.phaseTwoGapHalf, boss.width * 0.3);
+    const low = gapHalf + 12, high = boss.width - gapHalf - 12;
+    let gapX = (low + high) / 2, best = -1;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const candidate = low + nextRandom2(boss) * Math.max(0, high - low);
+      const distance = Math.abs(candidate - aim.observedX);
+      if (distance >= rule.minPlayerDistance) {
+        gapX = candidate;
+        break;
+      }
+      if (distance > best) {
+        best = distance;
+        gapX = candidate;
+      }
+    }
+    const spacing = Math.min(rule.spacing, (boss.width - 48) / 8);
+    const speed = boss.phase === 1 ? rule.speed : rule.phaseTwoSpeed;
+    let ordinal = 0;
+    for (let x = 24; x <= boss.width - 24 + 1e-9 && ordinal < GUARDIAN_ATLAS_RULES.maxProjectilesPerAttack; x += spacing) {
+      if (Math.abs(x - gapX) < gapHalf) continue;
+      const shot = projectile(boss, x, originY, 0, speed, ordinal++, x);
+      shot.targetY = Math.max(originY + 180, aim.targetY);
+      shot.fulminant = true;
+      boss.attackClearanceSeconds = Math.max(
+        boss.attackClearanceSeconds,
+        fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy
+      );
+      events.push({ type: "projectile", projectile: shot });
+    }
+    events.push({
+      type: "volley",
+      attackId: boss.attackId,
+      phase: boss.phase,
+      attackTier: boss.attackTier,
+      volley: boss.volley,
+      x: boss.x,
+      y: originY,
+      fulminant: true
+    });
+    boss.volley++;
+  }
   function fireVolley(boss, events, fireTime = boss.stateTime) {
+    if (boss.attackTier === "fulminant") return fireCronoRupture(boss, events, fireTime);
     const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === "superpower";
     const crossfire = ["crossfire", "flankSalvo", "reactorPincer"].includes(aim.pattern);
     const originSide = (boss.volley === 0 ? -1 : 1) * (aim.pattern === "crossfire" ? 1 : aim.sweepDirection);
@@ -5603,7 +5689,7 @@ var NeonCampaign = (() => {
       boss.attackClearanceSeconds + 0.12
     );
     if (boss.state === "opening") return rule.openingSeconds;
-    if (boss.state === "exposed") return rule.exposedSeconds;
+    if (boss.state === "exposed") return boss.phase === 1 ? rule.exposedSeconds : rule.exposedPhaseTwoSeconds;
     if (boss.state === "closing") return rule.closingSeconds;
     if (boss.state === "phaseBreak") return rule.phaseBreakSeconds;
     if (boss.state === "disabled") return rule.shutdownSeconds;
@@ -5626,7 +5712,10 @@ var NeonCampaign = (() => {
       fireVolley(boss, events);
     } else if (boss.state === "fire") {
       boss.telegraph = null;
-      transition(boss, "opening", events);
+      if (boss.chainRemaining > 0) {
+        boss.chainRemaining--;
+        beginCharge(boss, player, events, true);
+      } else transition(boss, "opening", events);
     } else if (boss.state === "opening") transition(boss, "exposed", events);
     else if (boss.state === "exposed") transition(boss, "closing", events);
     else if (boss.state === "closing" || boss.state === "phaseBreak") transition(boss, "closed", events);
@@ -5705,6 +5794,9 @@ var NeonCampaign = (() => {
       boss.phase = 2;
       boss.phaseAttacks = 0;
       boss.telegraph = null;
+      boss.chainRemaining = 0;
+      boss.attacksSinceFulminant = 0;
+      scheduleFulminant(boss);
       transition(boss, "phaseBreak", events);
       events.push({ type: "phase", phase: 2, clearProjectiles: true });
     }

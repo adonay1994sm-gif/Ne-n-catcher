@@ -15,7 +15,9 @@
   function drawAtlasProjectile(item) {
     ctx.save(); ctx.translate(item.x, item.y);
     ctx.rotate(Math.atan2(item.vy || 1, item.vx || 0) + Math.PI / 2);
-    if (!drawHostileOrdnance(item, 2, 64)) drawAtlasVfx(0, 27, 68, 1, .90);
+    // Los orbes de la Ruptura Crono se dibujan mayores; su colisión no cambia.
+    const size = item.fulminant ? 80 : 64;
+    if (!drawHostileOrdnance(item, 2, size)) drawAtlasVfx(0, 27, size + 4, 1, .90);
     ctx.restore();
   }
 

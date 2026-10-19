@@ -326,7 +326,7 @@ function combatTarget(q) {
       }
       assert.equal(q.state,'playing');
       if(q.boss){
-        assert.equal(q.currentLevel,0);assert.equal(q.boss.version,'guardian-atlas-v7');assert.equal(q.boss.maxHp,96);
+        assert.equal(q.currentLevel,0);assert.equal(q.boss.version,'guardian-atlas-v8');assert.equal(q.boss.maxHp,96);
         assert.ok(q.flight.canFinish);assert.equal(q.flight.stageNumber,10);assert.ok(q.flight.elapsed>=360);
         if(!initialBossBattery)initialBossBattery={charges:q.weapons.charges,recharge:q.weapons.recharge};
         if(!q.boss.disabled){assert.equal(q.weapons.unlimitedFire,true);

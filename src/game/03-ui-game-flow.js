@@ -930,6 +930,13 @@
       items = items.filter(item => !item.guardianProjectile);
     }
     if (event.type === "volley") combatSound(event.attackTier==="basic"?"enemy-phaser":"enemy-heavy",event.x??atlasBoss.x);
+    // Ruptura Crono: alarma durante la carga y golpe al soltar la cortina. El
+    // aviso no indica dónde quedará el hueco.
+    if (event.type === "fulminant") {
+      combatSound("atlas-charge",atlasBoss.x);flash=Math.max(flash,.22);
+      showStoryTransmission("COMANDANTE IRIA · GAIA","¡Ruptura Crono! Atlas va a barrer la pantalla: busca el hueco.",1.6);
+    }
+    if (event.type === "volley" && event.fulminant) { shake=Math.max(shake,6);cameraKickY=Math.max(cameraKickY,4); }
     if (event.type === "phase") { signalClassicChapter("atlas-phase-two"); cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);

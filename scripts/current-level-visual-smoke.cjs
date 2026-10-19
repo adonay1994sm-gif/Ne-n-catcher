@@ -266,7 +266,7 @@ function guardianBounds(q,positions){
     await check('Atlas uses the moving v7 collider and emits audible basic and heavy attacks',async()=>{
       await wait(()=>['guardianAtlas','chapterMissile','flightKit'].every(key=>window.__CURRENT_LEVEL_QA__.snapshot().assets[key].ready));
       await fixture('prepareAtlas');await wait(()=>window.__CURRENT_LEVEL_QA__.snapshot().combat?.ready);
-      await fixture('bossUntil','fire');const basic=await snapshot();assert.equal(basic.boss.version,'guardian-atlas-v7');
+      await fixture('bossUntil','fire');const basic=await snapshot();assert.equal(basic.boss.version,'guardian-atlas-v8');
       assert.ok(basic.combat.playedByCue['enemy-phaser']>0);const samples=await fixture('motionSamples',7);
       assert.ok(Math.max(...samples.map(s=>s.x))-Math.min(...samples.map(s=>s.x))>40,'Boss must visibly change its physical lane');
       await page.waitForTimeout(250);await fixture('nextHeavy');const heavy=await snapshot();assert.ok(heavy.combat.playedByCue['enemy-heavy']>0);
