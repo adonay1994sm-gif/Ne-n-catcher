@@ -11,3 +11,10 @@ preview-dist/
 
 # Netlify CLI connection/cache is machine-local and may contain deployment identity.
 .netlify/
+
+# Restos de una exportación para revisión (scripts/export-review-source.py)
+# descomprimida dentro del repositorio. No forman parte del juego.
+/CLAUDE_CODIGO_POR_PARTES/
+/00_LEER_PRIMERO_CLAUDE.txt
+/EXPORT_MANIFEST.json
+/LEER_PRIMERO_EXPORTACION.txt
