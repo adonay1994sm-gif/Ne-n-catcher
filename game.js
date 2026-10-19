@@ -1653,8 +1653,11 @@
     if(![5,6].includes(n)) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
-        if(items.filter(item=>item.flightPatrol).length<(n===1?1:2))spawnClassicFlightPatrol(n<7?"raider":n>=9&&classicPatrolSequence%2?"interceptor":"scout");
-        classicPatrolTimer=n<3?12:n>=9?8:n===7?13:10;
+        // Más presencia y una mezcla de tipos que crece durante el viaje.
+        const cap=n===1?1:[3,8,9,10].includes(n)?3:2;
+        const roster=n<=2?["raider"]:n<=4?["raider","scout","raider"]:n<=8?["scout","raider","interceptor"]:["interceptor","raider","scout","interceptor"];
+        if(items.filter(item=>item.flightPatrol).length<cap)spawnClassicFlightPatrol(roster[classicPatrolSequence%roster.length]);
+        classicPatrolTimer=(n<3?9:n>=9?6:8)*(.8+Math.random()*.4);
       }
     }
     // Campo de meteoritos, restos de naves y satélites con densidad propia de
