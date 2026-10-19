@@ -5094,13 +5094,44 @@
 
   // The illustrated core and its short wake share the physics pivot. No aim
   // line, predicted landing point or additional update clock is drawn.
+  // El disparo básico enemigo (fila 0) era azul-cian, igual que los del
+  // jugador. Se recolorea una sola vez a rojo hostil en un lienzo aparte con
+  // la misma disposición; si no se puede (sin DOM), se usa el original.
+  let hostileScoutTint = null;
+  function hostileOrdnanceSource(atlas, row) {
+    if (row !== 0) return atlas;
+    if (hostileScoutTint?.source === atlas) return hostileScoutTint.canvas || atlas;
+    hostileScoutTint = { source: atlas, canvas: null };
+    try {
+      const width = atlas.naturalWidth, cell = width / 4;
+      const canvas = document.createElement("canvas");
+      canvas.width = width; canvas.height = cell;
+      const tint = canvas.getContext("2d");
+      tint.drawImage(atlas, 0, 0, width, cell, 0, 0, width, cell);
+      const pixels = tint.getImageData(0, 0, width, cell), data = pixels.data;
+      for (let index = 0; index < data.length; index += 4) {
+        const red = data[index], green = data[index + 1], blue = data[index + 2];
+        data[index] = blue;
+        data[index + 1] = green * .32;
+        data[index + 2] = Math.min(255, red * .55 + green * .25);
+      }
+      tint.putImageData(pixels, 0, 0);
+      hostileScoutTint.canvas = canvas;
+    } catch {
+      // Sin lienzo disponible: se mantiene el arte original.
+    }
+    return hostileScoutTint.canvas || atlas;
+  }
+
   function drawHostileOrdnance(item, row = 0, size = 52) {
     const atlas = SPRITES.hostileOrdnance;
     if (!spriteReady(atlas)) return false;
     const age = Number.isFinite(item.life) ? Math.max(0, 6 - item.life) : 0;
     const cell = atlas.naturalWidth / 4;
     const frame = Math.floor(age * (row === 2 ? 10 : 12)) % 4;
-    ctx.drawImage(atlas, frame * cell, row * cell, cell, cell,
+    // La copia recoloreada solo contiene la fila 0, así que su recorte empieza en y=0.
+    const source = hostileOrdnanceSource(atlas, row);
+    ctx.drawImage(source, frame * cell, source === atlas ? row * cell : 0, cell, cell,
       -size / 2, -size / 2, size, size);
     return true;
   }
