@@ -1839,6 +1839,8 @@
     if (score > oldBest) ui.newBest.classList.remove("hidden");
     ui.final.textContent = score;
     ui.reward.classList.toggle("hidden", continued || supplyFailed);
+    // En el viaje se reintenta desde la entrada del tramo guardado, no el sector entero.
+    $("retry").textContent = classicFlightView?.stageId ? `REINTENTAR TRAMO ${classicFlightView.stageId}` : "REINTENTAR SECTOR";
     overlay(ui.over);
     registerRun();
     tone(110, 0.30, "sawtooth", 0.06);
