@@ -2201,6 +2201,9 @@
     ui.briefingVisual.dataset.scene = lv.scene;
     ui.briefingPanel.style.setProperty("--brief-accent", lv.accent);
     buildChronosStageGrid();
+    // El inicio de Chronos empieza a cargar al abrir la ficha, no al despegar.
+    if(pendingLevel===0)[SPRITES.chronosIntroStation,SPRITES.chronosIntroFragments,SPRITES.cronosPrimeVideo,
+      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx].forEach(ensureSprite);
     overlay(ui.briefing);
   }
 
@@ -4017,7 +4020,9 @@
     // ruta (sin volver al dibujo antiguo mientras siga a la vista).
     const pose = NeonCampaign.getChronosIntroPose(view.elapsed,
       {reducedEffects: Boolean(settings.reduceEffects), holdWreck: Boolean(view.station.visible)});
-    return pose.active && spriteReady(SPRITES.chronosIntroStation) ? pose : null;
+    // Mientras las piezas cargan no se dibuja la estación antigua (se veía un
+    // instante en iPhone); solo si fallan se vuelve al dibujo anterior.
+    return pose.active && !SPRITES.chronosIntroStation._loadError ? pose : null;
   }
 
   function drawAtlasCell(image, columns, cell, x, y, width, height) {
@@ -4026,6 +4031,7 @@
   }
 
   function drawTalasa(pose) {
+    if (!spriteReady(SPRITES.chronosIntroStation)) return;
     // El planeta que orbita Chronos se queda atrás al huir.
     const fade = 1 - clamp((pose.clock - 20) / 6, 0, 1);
     if (fade <= 0) return;
@@ -4146,7 +4152,7 @@
     const unit = W * node.scale * station.zoom;
     const x = node.x * W, y = (node.y + station.drop) * H;
     const ringPoint = (angle, radius) => [x + Math.cos(angle) * radius * unit, y + Math.sin(angle) * radius * unit * station.tiltY];
-    if (node.visible) {
+    if (node.visible && spriteReady(atlas)) {
       ctx.save(); ctx.globalAlpha = station.alpha;
       const wheel = unit * .7;
       const wheelSpace = () => { ctx.translate(x, y); ctx.rotate(station.sway); ctx.scale(1, station.tiltY); ctx.rotate(station.wheelAngle); };
