@@ -112,9 +112,10 @@ def anchored(cell, size, anchor, scale):
 
 
 def prime_animation_atlas():
-    """24 fotogramas de Cronos Prime (12 de carga y disparo, 12 de giro) en
-    celdas de 320, alineados por el núcleo. 6×4."""
-    size, scale = 320, 320 / 400
+    """24 fotogramas de Cronos Prime (12 de carga y disparo, 12 de giro) a su
+    resolución original (sin reducir: en iPhone se ven ampliados), en celdas
+    de 400 alineadas por el núcleo. 6×4."""
+    size, scale = 400, 1
     frames = grid_cells(PRIME / 'cronos_prime_f1_carga_disparo_12f_v1.webp', 4, 3) + \
         grid_cells(PRIME / 'cronos_prime_f1_giro_12f_v1.webp', 4, 3)
     return sheet([anchored(frame, size, core_center(frame), scale) for frame in frames], 6, size)
@@ -131,7 +132,7 @@ def main():
     station_atlas().save(OUT / 'chronos_intro_station_atlas_v1.webp', 'WEBP', quality=86, method=6)
     fragments_atlas().save(OUT / 'chronos_intro_fragments_atlas_v1.webp', 'WEBP', quality=86, method=6)
     prime_fx_atlas().save(OUT / 'cronos_prime_fx_atlas_v1.webp', 'WEBP', quality=86, method=6)
-    prime_animation_atlas().save(OUT / 'cronos_prime_anim_atlas_v1.webp', 'WEBP', quality=86, method=6)
+    prime_animation_atlas().save(OUT / 'cronos_prime_anim_atlas_v1.webp', 'WEBP', quality=95, method=6)
     station_explosion_atlas().save(OUT / 'chronos_station_explosion_atlas_v1.webp', 'WEBP', quality=84, method=6)
 
 

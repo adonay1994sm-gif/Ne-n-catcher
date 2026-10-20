@@ -64,14 +64,26 @@ const FRAGMENTS = Object.freeze([
 
 const INACTIVE = Object.freeze({active: false});
 
-function primeFrame(elapsed, drain) {
-  if (elapsed < T.arrive) return pick(F.side, (elapsed - T.approach) / (T.arrive - T.approach));
-  if (elapsed < T.drain) return pick(F.front, (elapsed - T.arrive) / (T.drain - T.arrive));
-  if (elapsed < T.beamStart) return pick(F.charge, drain);
-  if (elapsed < T.fireEnd) return F.fire;
-  if (elapsed < T.turn) return pick(F.cooldown, (elapsed - T.fireEnd) / (T.turn - T.fireEnd));
-  // Se gira hacia un lado para mirar a la nave y se marcha de perfil.
-  return pick([...F.front].reverse().concat([...F.side].reverse()), (elapsed - T.turn) / (T.leave - T.turn));
+// Pista de fotogramas: cada tramo reparte su lista en el tiempo y la pose
+// funde cada fotograma con el siguiente (sin saltos visibles). El disparo
+// entra y sale en seco a propósito.
+const spread = (list, from, to) => list.map((frame, index) => [from + (to - from) * index / list.length, frame]);
+const FRAME_TRACK = Object.freeze([
+  ...spread(F.side, T.approach, T.arrive - .4), [T.arrive - .4, F.front[0]],
+  ...spread(F.front.slice(1), T.arrive, T.drain),
+  ...spread(F.charge, T.drain, T.beamStart),
+  [T.beamStart, F.fire, 'cut'], [T.fireEnd, F.cooldown[0], 'cut'],
+  ...spread(F.cooldown.slice(1), T.fireEnd + (T.turn - T.fireEnd) / 3, T.turn),
+  ...spread([...F.front].reverse().concat([...F.side].reverse()), T.turn, T.leave)
+]);
+
+function primeFrame(elapsed) {
+  let index = 0;
+  while (index + 1 < FRAME_TRACK.length && FRAME_TRACK[index + 1][0] <= elapsed) index++;
+  const [at, frame] = FRAME_TRACK[index];
+  const following = FRAME_TRACK[index + 1];
+  if (!following || following[2] === 'cut') return {frame, next: frame, blend: 0};
+  return {frame, next: following[1], blend: smooth(elapsed, at, following[0])};
 }
 
 export function getChronosIntroPose(elapsed, {reducedEffects = false, holdWreck = false} = {}) {
@@ -125,7 +137,7 @@ export function getChronosIntroPose(elapsed, {reducedEffects = false, holdWreck 
   const recoil = ruptured ? .02 * Math.max(0, 1 - since / .35) : 0;
   const prime = {
     visible: elapsed >= T.approach && elapsed < T.gone,
-    frame: primeFrame(elapsed, drain),
+    ...primeFrame(elapsed),
     x: mix(mix(FAR.x, HOVER.x, arrival), EXIT.x, leaving),
     y: mix(mix(FAR.y, HOVER.y, arrival), EXIT.y, leaving) + hover - recoil,
     scale: mix(mix(FAR.scale, HOVER.scale, arrival), EXIT.scale, leaving) * (1 + .08 * drain),

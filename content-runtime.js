@@ -4949,9 +4949,9 @@ var NeonCampaign = (() => {
     const targetX = clamp10(aim.targetX + sweep * aim.sweepDirection + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
     const distance = targetY - originY;
     const direction = Math.atan2(distance, targetX - originX);
-    const spread = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : patternRules(boss) ? 0.12 : 0.24), distance) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
+    const spread2 = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : patternRules(boss) ? 0.12 : 0.24), distance) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
     const count = patternRules(boss)?.projectiles;
-    const offsets = count ? Array.from({ length: count }, (_, index) => (index / (count - 1) * 2 - 1) * spread) : heavy || tier === "medium" && boss.phase === 2 ? [-spread, -spread / 2, 0, spread / 2, spread] : [-spread, 0, spread];
+    const offsets = count ? Array.from({ length: count }, (_, index) => (index / (count - 1) * 2 - 1) * spread2) : heavy || tier === "medium" && boss.phase === 2 ? [-spread2, -spread2 / 2, 0, spread2 / 2, spread2] : [-spread2, 0, spread2];
     const speed = heavy ? boss.phase === 1 ? 300 : 325 : phaseRules(boss).projectileSpeed;
     for (const [index, offset] of offsets.entries()) {
       const angle = direction + offset;
@@ -5569,7 +5569,6 @@ var NeonCampaign = (() => {
   var easeIn = (value, from, to) => clamp14((value - from) / (to - from), 0, 1) ** 2;
   var mix2 = (from, to, amount) => from + (to - from) * amount;
   var wobble = (time, rate, seed) => Math.sin(time * rate + seed) * 0.6 + Math.sin(time * rate * 2.13 + seed * 1.7) * 0.4;
-  var pick = (list, amount) => list[Math.min(list.length - 1, Math.floor(clamp14(amount, 0, 0.9999) * list.length))];
   var SHOTS = Object.freeze([
     [0, "scale"],
     [T.omen, "omen"],
@@ -5596,13 +5595,24 @@ var NeonCampaign = (() => {
     [0.15, 1, 1.1]
   ].map(([x, y, spin], cell) => Object.freeze({ cell, x, y, spin })));
   var INACTIVE = Object.freeze({ active: false });
-  function primeFrame(elapsed, drain) {
-    if (elapsed < T.arrive) return pick(F.side, (elapsed - T.approach) / (T.arrive - T.approach));
-    if (elapsed < T.drain) return pick(F.front, (elapsed - T.arrive) / (T.drain - T.arrive));
-    if (elapsed < T.beamStart) return pick(F.charge, drain);
-    if (elapsed < T.fireEnd) return F.fire;
-    if (elapsed < T.turn) return pick(F.cooldown, (elapsed - T.fireEnd) / (T.turn - T.fireEnd));
-    return pick([...F.front].reverse().concat([...F.side].reverse()), (elapsed - T.turn) / (T.leave - T.turn));
+  var spread = (list, from, to) => list.map((frame, index) => [from + (to - from) * index / list.length, frame]);
+  var FRAME_TRACK = Object.freeze([
+    ...spread(F.side, T.approach, T.arrive - 0.4),
+    [T.arrive - 0.4, F.front[0]],
+    ...spread(F.front.slice(1), T.arrive, T.drain),
+    ...spread(F.charge, T.drain, T.beamStart),
+    [T.beamStart, F.fire, "cut"],
+    [T.fireEnd, F.cooldown[0], "cut"],
+    ...spread(F.cooldown.slice(1), T.fireEnd + (T.turn - T.fireEnd) / 3, T.turn),
+    ...spread([...F.front].reverse().concat([...F.side].reverse()), T.turn, T.leave)
+  ]);
+  function primeFrame(elapsed) {
+    let index = 0;
+    while (index + 1 < FRAME_TRACK.length && FRAME_TRACK[index + 1][0] <= elapsed) index++;
+    const [at, frame] = FRAME_TRACK[index];
+    const following = FRAME_TRACK[index + 1];
+    if (!following || following[2] === "cut") return { frame, next: frame, blend: 0 };
+    return { frame, next: following[1], blend: smooth3(elapsed, at, following[0]) };
   }
   function getChronosIntroPose(elapsed, { reducedEffects = false, holdWreck = false } = {}) {
     if (!Number.isFinite(elapsed) || elapsed < 0) return INACTIVE;
@@ -5645,7 +5655,7 @@ var NeonCampaign = (() => {
     const recoil = ruptured ? 0.02 * Math.max(0, 1 - since / 0.35) : 0;
     const prime = {
       visible: elapsed >= T.approach && elapsed < T.gone,
-      frame: primeFrame(elapsed, drain),
+      ...primeFrame(elapsed),
       x: mix2(mix2(FAR.x, HOVER.x, arrival2), EXIT.x, leaving),
       y: mix2(mix2(FAR.y, HOVER.y, arrival2), EXIT.y, leaving) + hover - recoil,
       scale: mix2(mix2(FAR.scale, HOVER.scale, arrival2), EXIT.scale, leaving) * (1 + 0.08 * drain),
