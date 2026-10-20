@@ -51,7 +51,7 @@ desde lejos antes de convertirse en combate. Nunca se aterriza.
 
 | Viaje | Recorrido | Jefe intermedio | Jefe final |
 |---|---|---|---|
-| 1 | Chronos → Gaia | **Nave saboteadora** (pendiente de confirmar) | Atlas ✔ |
+| 1 | Chronos → Gaia | **CH-03, satélite de defensa** (confirmado) | Atlas ✔ |
 | 2 | Gaia → Vulkar | Personaje nuevo por diseñar (sustituye a Magma Serpent) | Titan Vulkar |
 | 3 | Vulkar → luna minera | Por decidir | Por decidir |
 | 4 | Luna minera → salida de Vulkar | Por decidir | Por decidir |
@@ -112,8 +112,13 @@ Arreglo (siguiendo el concepto de 4 viñetas del propietario):
   viaje. El capítulo 1 se migra sin cambios visibles (comprobado con pruebas).
 - Carga del arte por viaje (no todo de golpe) y control de memoria en iPhone.
 
-## 10. Pendiente del propietario
+## 10. Actualización (20/10/2026)
 
-1. Enviar la historia escrita.
-2. Confirmar que la nave saboteadora es el jefe intermedio del viaje 1.
-3. Diseñar el personaje que sustituye a Magma Serpent.
+- Jefe intermedio del viaje 1: **CH-03** (confirmado por el propietario).
+- El propietario delegó la historia: el reparto completo de viajes, jefes y
+  personajes está en **`BIBLIA_HISTORIA.md`**, que sustituye la tabla del
+  punto 5 donde no coincidan.
+- La nave saboteadora pasa a ser el **carguero C-17** del prólogo y jefe
+  intermedio del viaje 2.
+- Pendiente: diseñar el personaje que sustituye a Magma Serpent (jefe final
+  del viaje 3).
