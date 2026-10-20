@@ -1,0 +1,17 @@
+{
+  "entrega": "2026-10-20",
+  "autor": "propietario (ChatGPT)",
+  "piezas": [
+    {
+      "archivo": "cronos_prime_nucleo_energia_v1.webp",
+      "sha256": "798387978c855704a7c0ae8ab225598000a57ffaaee3fb8dd13e96d895fdd128",
+      "notas": "Esfera de energía pura: corazón brillante bajo la armadura (fase 1)."
+    },
+    {
+      "archivo": "cronos_prime_descargas_v1.webp",
+      "sha256": "53785e5e9ec427b4e282313da97386ef8999ec78bedba2f22768613517e07e23",
+      "notas": "Hoja 3x2 de 6 descargas eléctricas violetas; efectos de Cronos Prime y de la ruptura de Chronos."
+    }
+  ],
+  "descartadas": "Dos anillos y esfera blindada en blanco: no coinciden con el dosier (armadura oscura, alas laterales)."
+}
