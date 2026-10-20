@@ -18,3 +18,7 @@ preview-dist/
 /00_LEER_PRIMERO_CLAUDE.txt
 /EXPORT_MANIFEST.json
 /LEER_PRIMERO_EXPORTACION.txt
+
+# Capturas y resultados que generan los scripts de navegador (*-smoke.cjs).
+# Se quedan en disco para revisarlas; no se versionan (limpieza 20/10/2026).
+docs/**/evidence/
