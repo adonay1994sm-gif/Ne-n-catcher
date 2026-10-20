@@ -95,3 +95,13 @@ Adaptadas de [forrestchang/andrej-karpathy-skills](https://github.com/forrestcha
   `brainstorming` no está instalado: usa texto o capturas.
 - `/competencia`: lanza `auditor-codigo`, `critico-juego` y `director-arte`
   en paralelo y compara sus veredictos. El propietario decide.
+- Diseño: lee `DESIGN.md` (tokens, legibilidad, cinemáticas, encargos de
+  arte) antes de tocar HUD, menús, sprites o efectos. `director-arte` debe
+  leerlo siempre.
+- `capturas-juego`: para ver el juego real (`node scripts/capture-intro.cjs`
+  tras `npm run build`). Úsala antes de opinar sobre algo visual.
+- `playwright-cli` (Microsoft): para explorar el juego paso a paso. La orden
+  no está instalada; instalarla (`npm install -g @playwright/cli`) o ejecutar
+  `npx playwright install` necesita permiso del propietario.
+- `industrial-brutalist-ui` (Taste Skill): solo si se llama por su nombre,
+  para explorar variantes de menús/HUD tipo telemetría; `DESIGN.md` manda.
