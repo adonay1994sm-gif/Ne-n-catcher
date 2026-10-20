@@ -27,6 +27,7 @@ var NeonCampaign = (() => {
     CHRONOS_CHAPTER_STORY_KEY: () => CHRONOS_CHAPTER_STORY_KEY,
     CHRONOS_CHAPTER_VERSION: () => CHRONOS_CHAPTER_VERSION,
     CHRONOS_FLIGHT_VERSION: () => CHRONOS_FLIGHT_VERSION,
+    CHRONOS_INTRO_TIMELINE: () => CHRONOS_INTRO_TIMELINE,
     CHRONOS_VOYAGE_KEY: () => CHRONOS_VOYAGE_KEY,
     CHRONOS_VOYAGE_STAGES: () => CHRONOS_VOYAGE_STAGES,
     CHRONOS_VOYAGE_VERSION: () => CHRONOS_VOYAGE_VERSION,
@@ -90,6 +91,7 @@ var NeonCampaign = (() => {
     endFlightInput: () => endFlightInput,
     formatDenominations: () => formatDenominations,
     getChronosDestructionPose: () => getChronosDestructionPose,
+    getChronosIntroPose: () => getChronosIntroPose,
     getVoyageTransitionPresentation: () => getVoyageTransitionPresentation,
     guardianAtlasAnimation: () => guardianAtlasAnimation,
     hitClassicProjectile: () => hitClassicProjectile,
@@ -6265,6 +6267,101 @@ var NeonCampaign = (() => {
     });
   }
 
+  // src/game/animation/chronos-intro.js
+  var CHRONOS_INTRO_TIMELINE = Object.freeze({
+    awaken: 5,
+    stutterStart: 7.6,
+    stutterEnd: 8.2,
+    stutterRewind: 0.5,
+    rupture: 9,
+    flashSeconds: 1.2,
+    primeGone: 11.5,
+    ringGone: 16,
+    fragmentsEnd: 17,
+    backdropIn: 0.6,
+    backdropFrameSeconds: 2.1,
+    backdropOutStart: 21,
+    backdropEnd: 24,
+    backdropMaxAlpha: 0.78,
+    end: 26
+  });
+  var T = CHRONOS_INTRO_TIMELINE;
+  var clamp15 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var smooth3 = (value, from, to) => {
+    const t = clamp15((value - from) / (to - from), 0, 1);
+    return t * t * (3 - 2 * t);
+  };
+  var FRAGMENTS = Object.freeze([
+    [-0.95, -0.35, 1.6],
+    [0.9, -0.45, -1.2],
+    [-0.55, 0.85, 2.1],
+    [0.6, 0.8, -1.8],
+    [-0.2, -1, 0.9],
+    [1, 0.15, 1.4],
+    [-1, 0.2, -2.3],
+    [0.15, 1, 1.1]
+  ].map(([x, y, spin], cell) => Object.freeze({ cell, x, y, spin })));
+  var INACTIVE = Object.freeze({ active: false });
+  function getChronosIntroPose(elapsed, { reducedEffects = false } = {}) {
+    if (!Number.isFinite(elapsed) || elapsed < 0 || elapsed > T.end) return INACTIVE;
+    const stuttering = !reducedEffects && elapsed >= T.stutterStart && elapsed < T.stutterEnd;
+    const clock = stuttering ? elapsed - T.stutterRewind : elapsed;
+    const ruptured = elapsed >= T.rupture;
+    const since = elapsed - T.rupture;
+    const phase = elapsed < T.awaken ? "calm" : stuttering ? "stutter" : !ruptured ? "awakening" : elapsed < T.primeGone ? "rupture" : "aftermath";
+    const separation = ruptured ? smooth3(since, 0, T.ringGone - T.rupture) : 0;
+    const station2 = {
+      // Giros contrarios y lentos; tras la ruptura el anillo exterior gira más rápido.
+      ringAngle: -0.06 * clock - (ruptured ? 0.35 * since * since / (1 + since) : 0),
+      wheelAngle: 0.09 * clock + (ruptured ? 0.12 * since : 0),
+      ringOffset: separation * 0.55,
+      ringScale: 1 + separation * 0.35,
+      ringAlpha: ruptured ? 1 - smooth3(since, 2.5, T.ringGone - T.rupture) : 1,
+      wheelCell: ruptured ? 2 : 1,
+      towerCell: ruptured ? 4 : 3,
+      towerLift: ruptured ? smooth3(since, 0, 4) * 0.08 : 0,
+      coreAlpha: 1,
+      // Alejamiento de presentación: la estación rota se aleja más deprisa que
+      // la ruta para dejar sitio al juego. Solo afecta al dibujo.
+      zoom: 1 - 0.45 * smooth3(elapsed, T.rupture + 1, T.backdropEnd)
+    };
+    const awakening = smooth3(clock, T.awaken, T.rupture - 0.2);
+    const prime = {
+      alpha: elapsed < T.awaken ? 0 : ruptured ? 1 - smooth3(since, 0.4, T.primeGone - T.rupture) : smooth3(clock, T.awaken, T.awaken + 1.2),
+      coreGlow: ruptured ? 1 : awakening,
+      wingSpread: ruptured ? 1 : smooth3(clock, T.awaken + 1.6, T.rupture - 0.3),
+      bladeSpread: ruptured ? 1 : smooth3(clock, T.awaken + 2.2, T.rupture - 0.2),
+      beamAlpha: ruptured ? 1 - smooth3(since, 0.2, 1.4) : smooth3(clock, T.rupture - 0.5, T.rupture) * 0.9,
+      scale: 0.55 + 0.2 * awakening + (ruptured ? 0.25 * smooth3(since, 0, 2) : 0)
+    };
+    const flashPeak = reducedEffects ? 0.4 : 1;
+    const flash = ruptured && since < T.flashSeconds ? flashPeak * (1 - since / T.flashSeconds) ** 2 : 0;
+    const fragments = ruptured ? FRAGMENTS.map((item) => {
+      const travel = since * (0.35 + 0.1 * (item.cell % 3)) + since * since * 0.03;
+      return {
+        cell: item.cell,
+        dx: item.x * travel,
+        dy: item.y * travel,
+        angle: item.spin * since,
+        scale: 0.9 + travel * 0.55,
+        alpha: 1 - smooth3(elapsed, T.fragmentsEnd - 3, T.fragmentsEnd)
+      };
+    }) : [];
+    let backdrop = { alpha: 0, frameA: 0, frameB: 0, mix: 0, zoom: 1.12 };
+    if (ruptured && elapsed < T.backdropEnd) {
+      const position = clamp15(since / T.backdropFrameSeconds, 0, 5);
+      const frameA = Math.floor(position), frameB = Math.min(5, frameA + 1);
+      backdrop = {
+        alpha: T.backdropMaxAlpha * smooth3(since, 0, T.backdropIn) * (1 - smooth3(elapsed, T.backdropOutStart, T.backdropEnd)),
+        frameA,
+        frameB,
+        mix: frameA === frameB ? 0 : smooth3(position - frameA, 0.55, 1),
+        zoom: 1.12 - 0.2 * smooth3(elapsed, T.rupture, T.backdropEnd)
+      };
+    }
+    return { active: true, phase, clock, stutter: stuttering ? 1 : 0, flash, station: station2, prime, fragments, backdrop };
+  }
+
   // src/game/combat/classic-weapons.js
   var finite7 = (value, name) => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -6659,7 +6756,7 @@ var NeonCampaign = (() => {
     }
     return bounds;
   }
-  var clamp15 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var clamp16 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   function calculateFlightBounds({ width, height, hudBottom, controlsTop, shipScale = 1 }) {
     finite8(width, "width");
     finite8(height, "height");
@@ -6672,7 +6769,7 @@ var NeonCampaign = (() => {
     const firstX = SIDE_CLEARANCE * shipScale, lastX = width - SIDE_CLEARANCE * shipScale;
     const firstY = hudBottom + NOSE_CLEARANCE * shipScale, lastY = controlsTop - TAIL_CLEARANCE * shipScale;
     const xFits = firstX <= lastX, yFits = firstY <= lastY;
-    const centerY = clamp15(firstY / 2 + lastY / 2, 0, height);
+    const centerY = clamp16(firstY / 2 + lastY / 2, 0, height);
     return Object.freeze({
       minX: xFits ? firstX : width / 2,
       maxX: xFits ? lastX : width / 2,
@@ -6718,8 +6815,8 @@ var NeonCampaign = (() => {
     if (sensitivity <= 0) throw new RangeError("Sensitivity must be positive");
     if (!state.active || state.id !== id) {
       return {
-        targetX: clamp15(targetX, bounds.minX, bounds.maxX),
-        targetY: clamp15(targetY, bounds.minY, bounds.maxY),
+        targetX: clamp16(targetX, bounds.minX, bounds.maxX),
+        targetY: clamp16(targetY, bounds.minY, bounds.maxY),
         moved: false
       };
     }
@@ -6731,8 +6828,8 @@ var NeonCampaign = (() => {
     state.lastX = x;
     state.lastY = y;
     return {
-      targetX: clamp15(nextX, bounds.minX, bounds.maxX),
-      targetY: clamp15(nextY, bounds.minY, bounds.maxY),
+      targetX: clamp16(nextX, bounds.minX, bounds.maxX),
+      targetY: clamp16(nextY, bounds.minY, bounds.maxY),
       moved
     };
   }
