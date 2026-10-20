@@ -73,6 +73,22 @@ oculta el cambio.
 Con esta entrega la estación queda completa por piezas: ya se puede romper
 de verdad dentro del juego.
 
+### 20/10/2026 · Cronos Prime, fase 1 — `art-source/cronos-prime/`
+
+| Archivo | Qué es | Uso previsto | Estado |
+|---|---|---|---|
+| `cronos_prime_f1_nucleo_v1.webp` | Núcleo blindado con anillos y garras | Centro del jefe; late y se abre | RECIBIDO |
+| `cronos_prime_f1_ala_v1.webp` | Ala de cuchillas con anillos de energía (izquierda) | Las dos alas (la derecha en espejo); se abren y giran | RECIBIDO |
+| `cronos_prime_f1_cuchilla_superior_v1.webp` | Cuchilla superior (izquierda) | Las dos superiores (la derecha en espejo) | RECIBIDO |
+| `cronos_prime_f1_haz_v1.webp` | Haz vertical con espirales | Columna de energía que parpadea | RECIBIDO |
+| `cronos_prime_nucleo_energia_v1.webp` | Esfera de energía pura | Corazón brillante bajo el núcleo | RECIBIDO |
+| `cronos_prime_descargas_v1.webp` | 6 descargas eléctricas | Efectos de Cronos Prime y de la ruptura de Chronos | RECIBIDO |
+
+Montaje de comprobación: `docs/art/montaje_cronos_prime_fase1.png` (reproduce
+la fase 1 del dosier). Primera entrega descartada (anillos y esfera blancos sin
+alas). Uso: Cronos Prime despierta y destruye Chronos en el inicio; combate
+final en el viaje 10.
+
 ## Pendiente de pedir (sugerencias de Claude)
 
 | Qué | Para qué | Notas para ChatGPT |

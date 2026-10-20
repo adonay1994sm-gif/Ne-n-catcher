@@ -13,5 +13,44 @@
       "notas": "Hoja 3x2 de 6 descargas eléctricas violetas; efectos de Cronos Prime y de la ruptura de Chronos."
     }
   ],
-  "descartadas": "Dos anillos y esfera blindada en blanco: no coinciden con el dosier (armadura oscura, alas laterales)."
+  "descartadas": "Dos anillos y esfera blindada en blanco: no coinciden con el dosier (armadura oscura, alas laterales).",
+  "piezas_fase1": [
+    {
+      "archivo": "cronos_prime_f1_nucleo_v1.webp",
+      "tamano": [
+        973,
+        1012
+      ],
+      "sha256": "e30598c0099b822abad7a74143923b0642d96557285c3ccea21d27c78452c208",
+      "notas": "Núcleo blindado con anillos violetas y garras; centro del jefe."
+    },
+    {
+      "archivo": "cronos_prime_f1_ala_v1.webp",
+      "tamano": [
+        1114,
+        741
+      ],
+      "sha256": "06bbbac68aaf169da12740f5866f242fc4bc78beff256153dc1b00a3ba2fd9c4",
+      "notas": "Ala lateral de cuchillas con anillos (lado izquierdo; el derecho es su espejo)."
+    },
+    {
+      "archivo": "cronos_prime_f1_cuchilla_superior_v1.webp",
+      "tamano": [
+        819,
+        1174
+      ],
+      "sha256": "4a7dc69844e26845426a0b8bb56c35cf8a2d356dd7f7e82086001151f7760cd5",
+      "notas": "Cuchilla superior izquierda; la derecha es su espejo."
+    },
+    {
+      "archivo": "cronos_prime_f1_haz_v1.webp",
+      "tamano": [
+        176,
+        1226
+      ],
+      "sha256": "7cf6befd7024f31216897f2b512d291da50ee3faf9ce5cd688a32b24b6f71e91",
+      "notas": "Haz vertical de energía con espirales."
+    }
+  ],
+  "notas_fase1": "La hoja de descargas llegó repetida (igual que cronos_prime_descargas_v1)."
 }
