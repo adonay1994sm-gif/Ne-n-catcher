@@ -1,0 +1,235 @@
+{
+  "entrega": "2026-10-20",
+  "autor": "propietario (generado con ChatGPT)",
+  "formato": "WebP sin pérdida, RGBA; convertido desde el PNG recibido",
+  "planetas": [
+    {
+      "id": "vulkar-planeta-rotacion-v1",
+      "nombre": "Vulkar",
+      "archivo": "vulkar_planeta_rotacion_v1.webp",
+      "sha256": "43379d734381dbd977b48c612d3686f161b8f928fcaffac150d8ff59cba57503",
+      "tamano": [
+        1774,
+        887
+      ],
+      "fotogramas": 7,
+      "cajas_fotogramas_xyxy": [
+        [
+          15,
+          17,
+          430,
+          428
+        ],
+        [
+          458,
+          18,
+          873,
+          428
+        ],
+        [
+          901,
+          20,
+          1317,
+          428
+        ],
+        [
+          1344,
+          20,
+          1760,
+          428
+        ],
+        [
+          15,
+          462,
+          431,
+          870
+        ],
+        [
+          458,
+          461,
+          873,
+          870
+        ],
+        [
+          901,
+          460,
+          1317,
+          870
+        ]
+      ],
+      "diametro_aprox_px": 415,
+      "notas": "7 vistas de una rotación lenta; la última no enlaza con la primera (usar ida y vuelta o fundido). Bordes limpios."
+    },
+    {
+      "id": "aether-planeta-rotacion-v1",
+      "nombre": "Aether",
+      "archivo": "aether_planeta_rotacion_v1.webp",
+      "sha256": "18b9814913977292a6ffcf111f3930d8137a56221ee031c6a1b055cdfc02a4e4",
+      "tamano": [
+        1774,
+        887
+      ],
+      "fotogramas": 7,
+      "cajas_fotogramas_xyxy": [
+        [
+          14,
+          18,
+          440,
+          438
+        ],
+        [
+          452,
+          18,
+          881,
+          440
+        ],
+        [
+          892,
+          18,
+          1321,
+          440
+        ],
+        [
+          1331,
+          18,
+          1759,
+          441
+        ],
+        [
+          13,
+          453,
+          441,
+          876
+        ],
+        [
+          452,
+          453,
+          882,
+          876
+        ],
+        [
+          892,
+          453,
+          1322,
+          876
+        ]
+      ],
+      "diametro_aprox_px": 428,
+      "notas": "7 vistas de una rotación lenta; la última no enlaza con la primera (usar ida y vuelta o fundido). Bordes limpios."
+    },
+    {
+      "id": "cryon-planeta-rotacion-v1",
+      "nombre": "Cryon",
+      "archivo": "cryon_planeta_rotacion_v1.webp",
+      "sha256": "a779259c67ea088215113809e4da7141db4f515636fa5574b9c797c5e0d0feed",
+      "tamano": [
+        1774,
+        887
+      ],
+      "fotogramas": 7,
+      "cajas_fotogramas_xyxy": [
+        [
+          19,
+          17,
+          433,
+          433
+        ],
+        [
+          455,
+          16,
+          873,
+          435
+        ],
+        [
+          897,
+          16,
+          1316,
+          434
+        ],
+        [
+          1338,
+          16,
+          1757,
+          435
+        ],
+        [
+          14,
+          451,
+          433,
+          871
+        ],
+        [
+          454,
+          451,
+          873,
+          871
+        ],
+        [
+          895,
+          451,
+          1314,
+          871
+        ]
+      ],
+      "diametro_aprox_px": 418,
+      "notas": "7 vistas de una rotación lenta; la última no enlaza con la primera (usar ida y vuelta o fundido). Bordes limpios."
+    },
+    {
+      "id": "talasa-planeta-rotacion-v1",
+      "nombre": "Tálasa (planeta que orbita Chronos)",
+      "archivo": "talasa_planeta_rotacion_v1.webp",
+      "sha256": "27164c6d477ca23f42b7765cfb3c67fdfb8b6b6380e907129fb3fadf95667d95",
+      "tamano": [
+        1774,
+        887
+      ],
+      "fotogramas": 7,
+      "cajas_fotogramas_xyxy": [
+        [
+          22,
+          25,
+          423,
+          424
+        ],
+        [
+          465,
+          25,
+          866,
+          424
+        ],
+        [
+          906,
+          25,
+          1309,
+          424
+        ],
+        [
+          1350,
+          25,
+          1753,
+          424
+        ],
+        [
+          22,
+          468,
+          424,
+          867
+        ],
+        [
+          465,
+          468,
+          867,
+          867
+        ],
+        [
+          908,
+          468,
+          1309,
+          867
+        ]
+      ],
+      "diametro_aprox_px": 401,
+      "notas": "7 vistas de una rotación lenta; la última no enlaza con la primera (usar ida y vuelta o fundido). Bordes limpios."
+    }
+  ]
+}

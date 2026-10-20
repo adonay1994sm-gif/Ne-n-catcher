@@ -1,0 +1,68 @@
+{
+  "entrega": "2026-10-20",
+  "autor": "propietario (generado con ChatGPT)",
+  "formato": "WebP calidad 92 (opaco), 941x1672, desde el PNG recibido",
+  "orden_propuesto": "estacion_a, ruptura_01..10 (la estacion_b es una variante de diseño que no coincide con la explosión)",
+  "imagenes": [
+    {
+      "archivo": "chronos_estacion_a_v1.webp",
+      "numero_en_la_entrega": 1,
+      "sha256": "95fb263038fdb6d4d96f9be9297577e41098e017fcb2d7bc2c54e31aa7a1d64e"
+    },
+    {
+      "archivo": "chronos_estacion_b_v1.webp",
+      "numero_en_la_entrega": 2,
+      "sha256": "2f0a510f87ee7949dc49f5ac14788b4054e595064d75e707bb7b36bcd765c9d0"
+    },
+    {
+      "archivo": "chronos_ruptura_01_v1.webp",
+      "numero_en_la_entrega": 12,
+      "sha256": "ae6c8690b9d5d50c6dd7a7b429b553df553d53e823457f5304bbcedc0b7e5c81"
+    },
+    {
+      "archivo": "chronos_ruptura_02_v1.webp",
+      "numero_en_la_entrega": 3,
+      "sha256": "868d569762d17a934ea004542d6a83b47cb007eddaf9e5ae329ad4aa01e29fca"
+    },
+    {
+      "archivo": "chronos_ruptura_03_v1.webp",
+      "numero_en_la_entrega": 4,
+      "sha256": "54779a7b265379c12f314e30486886d5c098af1dd9f71846b93f790eee0c2466"
+    },
+    {
+      "archivo": "chronos_ruptura_04_v1.webp",
+      "numero_en_la_entrega": 5,
+      "sha256": "88b6dbb85e2986a66169ef65dd5ec5abbd04dfecdcce00d936105e0dfb0d9075"
+    },
+    {
+      "archivo": "chronos_ruptura_05_v1.webp",
+      "numero_en_la_entrega": 7,
+      "sha256": "944c56dcaa789c86b805d5b7408d395f860473938209b5e640aedb5c9b780e59"
+    },
+    {
+      "archivo": "chronos_ruptura_06_v1.webp",
+      "numero_en_la_entrega": 6,
+      "sha256": "e4e5b75e1417e3c59f76baa40606ccd42baa1a568a1b5e4a8efd9b152b91aaa5"
+    },
+    {
+      "archivo": "chronos_ruptura_07_v1.webp",
+      "numero_en_la_entrega": 8,
+      "sha256": "50b1131140a2073afdc21a33cdb8c9c6648f457755f26a99a7c8fac482cbca73"
+    },
+    {
+      "archivo": "chronos_ruptura_08_v1.webp",
+      "numero_en_la_entrega": 9,
+      "sha256": "12fa9aec82aed5a5054439253ab8be450825689dac9e6bc78cd65768a363b12a"
+    },
+    {
+      "archivo": "chronos_ruptura_09_v1.webp",
+      "numero_en_la_entrega": 10,
+      "sha256": "7591b5544696b9ca2deccd7b470ab3bfe9916929b07cc3287ddfa805f672500b"
+    },
+    {
+      "archivo": "chronos_ruptura_10_v1.webp",
+      "numero_en_la_entrega": 11,
+      "sha256": "76f6b2611bea147562b2b88f52aa938deee639d4a8a0a2f2a52e33f69be0f964"
+    }
+  ]
+}
