@@ -2,7 +2,7 @@
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
   "assetCount": 102,
-  "runtimeBytes": 14292728,
+  "runtimeBytes": 15036856,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1263,7 +1263,7 @@
       "id": "cronos-prime-anim-atlas-v1",
       "path": "assets/cronos_prime_anim_atlas_v1.webp",
       "master": "art-source/cronos-prime/cronos_prime_f1_carga_disparo_12f_v1.webp + cronos_prime_f1_giro_12f_v1.webp",
-      "dimensions": "1920x1280; 6x4 celdas de 320 alineadas por el núcleo: 0–2 reposo, 3–7 carga, 8 disparo, 9–11 enfriamiento, 12–23 giro",
+      "dimensions": "2400x1600; 6x4 celdas de 400 a resolución original, alineadas por el núcleo: 0–2 reposo, 3–7 carga, 8 disparo, 9–11 enfriamiento, 12–23 giro",
       "format": "webp-alpha",
       "use": "Cronos Prime animado en el inicio de Chronos",
       "level": 1,
@@ -1271,9 +1271,9 @@
       "status": "IN_REVIEW",
       "origin": "arte del propietario (ChatGPT), entregas del 20/10/2026; empaquetado con scripts/build-chronos-intro-assets.py",
       "version": "chronos-intro-v1",
-      "size": 878188,
+      "size": 1622316,
       "precache": false,
-      "sha256": "8f6e3b7399c1a3c9b8e5142fb30532490911602a55c6a173d01507de5b7513fb"
+      "sha256": "1a0197b21941d5324775fd4ffdd9e878ad5981b6c52a6adbeedfedb35ecee8e9"
     },
     {
       "id": "chronos-station-explosion-atlas-v1",

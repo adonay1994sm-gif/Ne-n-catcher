@@ -4092,8 +4092,14 @@
       ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = halo;
       ctx.fillRect(x - size, y - size, size * 2, size * 2); ctx.restore();
     }
-    ctx.save(); ctx.globalAlpha = prime.alpha;
+    // Fotograma actual y fundido hacia el siguiente, con suavizado alto (en
+    // iPhone el sprite se amplía).
+    ctx.save(); ctx.globalAlpha = prime.alpha; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
     drawAtlasCell(atlas, 6, prime.frame, x - size / 2, y - size / 2, size, size);
+    if (prime.blend > 0 && prime.next !== prime.frame) {
+      ctx.globalAlpha = prime.alpha * prime.blend;
+      drawAtlasCell(atlas, 6, prime.next, x - size / 2, y - size / 2, size, size);
+    }
     ctx.restore();
     // Frenazo: onda de energía que se expande y se apaga.
     if (prime.brake > 0) {

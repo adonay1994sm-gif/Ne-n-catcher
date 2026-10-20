@@ -41,7 +41,8 @@ test('Cronos Prime arrives from outside: a distant light, then it closes in turn
   assert.ok(far.visible && far.scale < .2 && far.x > .65, 'small and far at first');
   assert.ok(Math.abs(near.scale - 1) < .02 && Math.abs(near.x - .48) < .01 && Math.abs(near.y - .25) < .02);
   assert.ok(far.trail > .9 && pose(T.arrive + .5).prime.trail === 0, 'engine trail only while moving');
-  for (const frame of framesBetween(T.approach, T.arrive)) assert.ok(F.side.includes(frame), 'it turns (rotation frames) while closing in');
+  for (const frame of framesBetween(T.approach, T.arrive - .4)) assert.ok(F.side.includes(frame), 'it turns (rotation frames) while closing in');
+  assert.ok(F.front.includes(pose(T.arrive).prime.frame), 'and faces the station when it brakes');
   assert.ok(pose(T.arrive + .05).prime.brake > .8, 'it brakes hard');
   assert.ok(pose(T.arrive + .5).prime.nameCard > .9);
   assert.equal(pose(T.approach + .3).station.whole, true);
@@ -83,6 +84,18 @@ test('after the blast it cools down, turns and leaves the way it came, without f
   assert.ok(pose(T.gone - .05).prime.x > .85, 'it flies off the way it came');
   assert.ok(pose(T.gone - .05).prime.scale < .2);
   assert.equal(pose(T.gone).prime.visible, false);
+});
+
+test('frames cross-fade into the next one (no visible jumps) except the sharp cut of the shot', () => {
+  for (let time = T.approach; time < T.leave; time += .01) {
+    const {prime} = pose(time), later = pose(time + .01).prime;
+    assert.ok(prime.blend >= 0 && prime.blend <= 1);
+    if (later.frame !== prime.frame && !(time < T.beamStart && time + .01 >= T.beamStart) && !(time < T.fireEnd && time + .01 >= T.fireEnd)) {
+      assert.equal(later.frame, prime.next, `frame ${prime.frame} hands over to the one it was fading into at ${time.toFixed(2)}`);
+      assert.ok(prime.blend > .9, `the hand-over is invisible at ${time.toFixed(2)}`);
+    }
+  }
+  assert.equal(pose(T.beamStart + .01).prime.blend, 0, 'the shot cuts in');
 });
 
 test('the scene stays owned by the intro after it ends and poses are pure, deterministic and finite', () => {
