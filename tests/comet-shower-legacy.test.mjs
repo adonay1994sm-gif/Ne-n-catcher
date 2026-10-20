@@ -20,7 +20,7 @@ function fixture() {
     state:'playing',level:()=>({speed:1,hazard:'wave',gate:0,spawn:1000}),
     stars:[],spaceDust:[],foregroundParticles:[],visualSpeed:1,cameraKickX:0,cameraKickY:0,
     elapsed:0,manualShotCooldown:0,levelOneShockwave:0,impactReactionTimer:0,
-    settings:{sensitivity:50,effects:false},JOURNEY_DEMO:false,classicFlight:null,
+    settings:{sensitivity:50,effects:false},classicFlight:null,
     warpTimer:0,encounterDirector:null,spawnTimer:999,currentLevel:0,atlasBoss:null,
     comboTimer:0,hull:100,powers:{tractor:0,shield:0,slow:0,phaser:0},shake:0,flash:0,stormPulse:0,
     tractorTarget:null,classicFlightView:null,

@@ -25,7 +25,7 @@ function harness({classic=true,reserve=0,atlasGradient=false}={}) {
     isUnifiedClassic:()=>classic,state:'playing',playerVisible:true,
     player:{x:360,y:1000,target:360,targetY:1000,drift:0,visualBank:.6},
     powers:{shield:4},classicHullReserve:reserve,classicShieldImpact:.2,
-    hull:100,elapsed:2.5,JOURNEY_DEMO:false,impactReactionTimer:0,
+    hull:100,elapsed:2.5,impactReactionTimer:0,
     shipLoadout:{hull:'aster',wings:'aster',engines:'aster'},classicWeapons:{cooldown:0},
     classicEquipment:{selected:'pulse'},hasClassicTwinMounts:()=>false,
     spriteReady:sprite=>!!sprite?.naturalWidth,SPRITES:{croniumEnergy:image('cronium-energy',512,512),croniumFragment:image('crystal'),shieldEffect:image('legacy-shield'),shieldIdle:image('legacy-shield'),forceShieldAtlas:image('force-field',1536,384)},
@@ -41,10 +41,10 @@ function harness({classic=true,reserve=0,atlasGradient=false}={}) {
   return {sandbox,calls,draws,stats,properties};
 }
 
-test('both classic hull families share the52% render contract while N7 and Journey retain historical scale',()=>{
+test('both classic hull families share the52% render contract while N7 retains historical scale',()=>{
   const classic=visualContract();assert.equal(classic.classicScale,.52);
   assert.equal(classic.assemblySize,108.16);assert.equal(classic.muzzleOffset,65);
-  for(const campaign of ['n7','journey']) {
+  for(const campaign of ['n7']) {
     const historical=visualContract(`?campaign=${campaign}`);
     assert.equal(historical.classicScale,1);assert.equal(historical.assemblySize,208);
     assert.ok(Math.abs(historical.centerYOffset+19.2)<1e-9);assert.equal(historical.bankStrength,1);

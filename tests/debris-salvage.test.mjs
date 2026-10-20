@@ -22,7 +22,7 @@ function harness({classic=true}={}) {
   const run=ledger.beginRun({scope:'classic:1'});
   const calls={damage:[],missileImpacts:[]};
   const game=vm.createContext({Math,W:720,H:1280,currentLevel:0,
-    N7_CAMPAIGN:!classic,JOURNEY_DEMO:false,NeonCampaign:{...weapons,...economy},
+    N7_CAMPAIGN:!classic,NeonCampaign:{...weapons,...economy},
     classicSalvageLedger:ledger,classicSalvageState:run.state,classicSalvageRunId:run.runId,
     classicSalvageEnemySequence:0,classicThreatSequence:0,classicFlightView:{stageId:'1.2'},
     classicWeapons:weapons.createClassicWeapons(),classicCometShower:null,

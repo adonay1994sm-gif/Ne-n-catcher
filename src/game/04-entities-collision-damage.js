@@ -547,13 +547,6 @@
         if(classicChapterStory)signalClassicChapter("module-recovered");
         else showStoryTransmission("MIRA · C9","Pieza asegurada. La montamos antes de entrar en la red Atlas.",4.5);
       }
-    } else if (item.type === "journeyPart") {
-      if (journey?.collectPart()) {
-        persistJourney();
-        pulseRing(item.x, item.y, "#ffd877", 95, .48);
-        toast("Aleta vectorial rescatada · taller C9 disponible");
-        tone(840, .14, "triangle", .065);
-      }
     } else if (item.type === "energy") {
       const multiplier = powers.double > 0 ? 2 : 1;
       score += 10 * combo * multiplier;
@@ -644,10 +637,6 @@
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
-      if (target.journeyBorder && journey?.resolveBorder()) {
-        persistJourney();
-        showStoryTransmission("ACCESO ATLAS", "Bloqueo desactivado. Corredor a Gaia abierto.", 3.4);
-      }
       if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
       const duration=animator.getFrame().image==="assets/ch02_interceptor_atlas_v1.webp"?.56:.49;
       explosions.push({x: target.x, y: target.y, ch01Animator: animator,
@@ -695,9 +684,9 @@
       if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
       return fireClassicWeapon();
     }
-    if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
+    if (state !== "playing" || (!atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
-    if (!JOURNEY_DEMO && !atlasBoss) ammo -= 1;
+    if (!atlasBoss) ammo -= 1;
     manualShotCooldown = 0.28;
     cameraKickY = Math.max(cameraKickY, 5);
     shake = Math.max(shake, 3.2);
@@ -750,7 +739,6 @@
   }
 
   function checkSupplyFailure() {
-    if (JOURNEY_DEMO) return;
     // The staged voyage reissues missed signals locally; the old finite supply
     // failure remains unchanged in the other nine territories and N-7.
     if(classicFlightView?.stageNumber)return;

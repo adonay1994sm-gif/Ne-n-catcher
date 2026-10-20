@@ -76,7 +76,7 @@
 
   const overlayReturnFocus = new WeakMap();
   function overlay(el) {
-    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar, ui.flightDock].filter(Boolean);
+    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.shipHangar, ui.flightDock].filter(Boolean);
     const previous = panels.find(node => node.classList.contains("show"));
     const opener = document.activeElement;
     const restore = previous && overlayReturnFocus.get(previous);
@@ -214,9 +214,9 @@
       }
     } else {
       // Preserve the experimental campaigns' existing horizontal flight line.
-      const controlBandCss = JOURNEY_DEMO ? 136 : 104;
+      const controlBandCss = 104;
       const clearance = 110 + controlBandCss * H / rect.height;
-      player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
+      player.y = H - Math.max(260, clearance);
       player.x = clamp(player.x, 80, W - 80);
       player.target = clamp(player.target, 80, W - 80);
       positionAtlasArena();

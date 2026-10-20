@@ -65,7 +65,7 @@ function harness({classic = true, ready = true, fx = 70, music = 50} = {}) {
     }
   };
   const sandbox = vm.createContext({settings: {music, fx, autoFire: false, effects: false, vibration: false},
-    N7_CAMPAIGN: !classic, JOURNEY_DEMO: false, audioCtx: null, musicGain: null,
+    N7_CAMPAIGN: !classic, audioCtx: null, musicGain: null,
     window: {AudioContext: SharedAudioContext}, navigator: {}, NeonCampaign: campaign,
     NeonCore: {resolveDamage({hull, amount, shieldActive}) {return {hull: shieldActive ? hull : Math.max(0,hull-amount),
       absorbed: shieldActive, destroyed: !shieldActive && hull <= amount};}},

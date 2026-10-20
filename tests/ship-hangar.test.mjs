@@ -10,7 +10,7 @@ const [html,uiSource]=await Promise.all([
   readFile(new URL('src/game/03-ui-game-flow.js',root),'utf8')
 ]);
 const start=uiSource.indexOf('  function setupShipHangar() {');
-const end=uiSource.indexOf('  function setupJourneyUI() {',start);
+const end=uiSource.indexOf('  function updateMenu() {',start);
 assert.ok(start>=0&&end>start,'The real hangar setup must be present in the game source');
 const hangarSetup=uiSource.slice(start,end);
 const aster={hull:'aster',wings:'aster',engines:'aster'};

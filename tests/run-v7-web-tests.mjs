@@ -196,7 +196,7 @@ await test("hitbox clásica al 52 % con ajuste interior conserva extremos visibl
   assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+61.568)<1e-9);
   assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-51.012)<1e-9);
   assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-39.104)<1e-9);
-  for(const campaign of ['n7','journey']){
+  for(const campaign of ['n7']){
     const archived=await loadHarness(campaign);
     try {
       assert.equal(sha256(JSON.stringify(archived.api.collisionOutline)),
