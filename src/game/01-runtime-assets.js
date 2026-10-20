@@ -250,6 +250,18 @@
     croniumEnergy: loadSprite("assets/cronium_energy_atlas_v2.webp", false),
     flightKit: loadSprite("assets/chronos_flight_atlas_v1.webp", false),
     chronosDestruction: loadSprite("assets/chronos_destruction_atlas_v1.webp", false),
+    // Inicio de Chronos con las piezas del propietario (carga diferida).
+    chronosIntroStation: loadSprite("assets/chronos_intro_station_atlas_v1.webp", false),
+    chronosIntroFragments: loadSprite("assets/chronos_intro_fragments_atlas_v1.webp", false),
+    cronosPrimePhaseOne: loadSprite("assets/cronos_prime_phase1_atlas_v1.webp", false),
+    chronosIntroBackdrops: [
+      loadSprite("assets/chronos_intro_backdrop_01_v1.webp", false),
+      loadSprite("assets/chronos_intro_backdrop_02_v1.webp", false),
+      loadSprite("assets/chronos_intro_backdrop_03_v1.webp", false),
+      loadSprite("assets/chronos_intro_backdrop_04_v1.webp", false),
+      loadSprite("assets/chronos_intro_backdrop_05_v1.webp", false),
+      loadSprite("assets/chronos_intro_backdrop_06_v1.webp", false),
+    ],
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
     c9Station: loadSprite("assets/c9_station_v1.webp", false),
