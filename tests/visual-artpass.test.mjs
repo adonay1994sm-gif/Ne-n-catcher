@@ -32,7 +32,7 @@ test('Chronos background uses the authored image and bounded readability veil', 
 
 test('Chronos accident uses four authored atlas phases instead of a drawn ring', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  const scene = src.slice(src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)'),
+  const scene = src.slice(src.indexOf('if (currentLevel === 0 && levelOneShockwave > 0)'),
     src.indexOf('if (stormPulse > 0 && !settings.reduceEffects)'));
   assert.match(scene, /SPRITES\.chronosShockwave/);
   assert.match(scene, /Math\.floor\(progress \* 4\)/);
@@ -43,7 +43,7 @@ test('Chronos accident uses four authored atlas phases instead of a drawn ring',
 
 test('Atlas perimeter draws its own illustrated Gaia Nova environment', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 1 && spriteReady\(SPRITES\.atlasBackground\)/);
+  assert.match(src, /currentLevel === 1 && spriteReady\(SPRITES\.atlasBackground\)/);
   assert.match(src, /ctx\.drawImage\(image, \(W - width\) \/ 2 \+ driftX/);
   const master = await readFile(join(root, 'art-source/visual-rebirth/levels/02/atlas-perimeter-master.png'));
   const runtime = await readFile(join(root, 'assets/atlas_perimeter_background_v1.webp'));
@@ -69,8 +69,8 @@ test('Vulkar level 3 uses separate illustrated space and planet layers with the 
 
 test('Vulkar magma tunnel has a separate level 4 illustration and no purple ion overlay', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 3 && spriteReady\(SPRITES\.magmaTunnelBackground\)/);
-  assert.match(src, /lv\.scene === "ion" && \(N7_CAMPAIGN \|\| currentLevel !== 3\)/);
+  assert.match(src, /currentLevel === 3 && spriteReady\(SPRITES\.magmaTunnelBackground\)/);
+  assert.match(src, /lv\.scene === "ion" && currentLevel !== 3/);
   const master = await readFile(join(root, 'art-source/visual-rebirth/levels/04/vulkar-magma-tunnel-master.png'));
   const runtime = await readFile(join(root, 'assets/vulkar_magma_tunnel_background_v1.webp'));
   assert.ok(master.byteLength > runtime.byteLength);
@@ -78,8 +78,8 @@ test('Vulkar magma tunnel has a separate level 4 illustration and no purple ion 
 
 test('Cryon whiteout has a dedicated illustrated classic level 5 scene', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 4 && spriteReady\(SPRITES\.cryonWhiteoutBackground\)/);
-  assert.match(src, /lv\.scene === "crimson" && \(N7_CAMPAIGN \|\| currentLevel !== 4\)/);
+  assert.match(src, /currentLevel === 4 && spriteReady\(SPRITES\.cryonWhiteoutBackground\)/);
+  assert.match(src, /lv\.scene === "crimson" && currentLevel !== 4/);
   const master = await readFile(join(root, 'art-source/visual-rebirth/levels/05/cryon-whiteout-master.png'));
   const runtime = await readFile(join(root, 'assets/cryon_whiteout_background_v1.webp'));
   assert.ok(master.byteLength > runtime.byteLength);
@@ -87,8 +87,8 @@ test('Cryon whiteout has a dedicated illustrated classic level 5 scene', async (
 
 test('Cryon Leviathan rift has its own classic level 6 scene', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 5 && spriteReady\(SPRITES\.cryonRiftBackground\)/);
-  assert.match(src, /lv\.scene === "gravity" && \(N7_CAMPAIGN \|\| currentLevel !== 5\)/);
+  assert.match(src, /currentLevel === 5 && spriteReady\(SPRITES\.cryonRiftBackground\)/);
+  assert.match(src, /lv\.scene === "gravity" && currentLevel !== 5/);
   const master = await readFile(join(root, 'art-source/visual-rebirth/levels/06/cryon-leviathan-rift-master.png'));
   const runtime = await readFile(join(root, 'assets/cryon_leviathan_rift_background_v1.webp'));
   assert.ok(master.byteLength > runtime.byteLength);
@@ -96,8 +96,8 @@ test('Cryon Leviathan rift has its own classic level 6 scene', async () => {
 
 test('Aether cemetery and phantom threshold are separate classic scenes', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 6 && spriteReady\(SPRITES\.aetherEchoBackground\)/);
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 7 && spriteReady\(SPRITES\.aetherThresholdBackground\)/);
+  assert.match(src, /currentLevel === 6 && spriteReady\(SPRITES\.aetherEchoBackground\)/);
+  assert.match(src, /currentLevel === 7 && spriteReady\(SPRITES\.aetherThresholdBackground\)/);
   for (const [master, runtime] of [
     ['art-source/visual-rebirth/levels/07/aether-echo-cemetery-master.png', 'assets/aether_echo_cemetery_background_v1.webp'],
     ['art-source/visual-rebirth/levels/08/aether-phantom-threshold-master.png', 'assets/aether_phantom_threshold_background_v1.webp']
@@ -108,8 +108,8 @@ test('Aether cemetery and phantom threshold are separate classic scenes', async 
 
 test('Titan Omega and final Chronos collapse use authored classic backgrounds', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 8 && spriteReady\(SPRITES\.titanGraveyardBackground\)/);
-  assert.match(src, /!N7_CAMPAIGN && currentLevel === 9 && spriteReady\(SPRITES\.chronosCollapseBackground\)/);
+  assert.match(src, /currentLevel === 8 && spriteReady\(SPRITES\.titanGraveyardBackground\)/);
+  assert.match(src, /currentLevel === 9 && spriteReady\(SPRITES\.chronosCollapseBackground\)/);
   for (const [master, runtime] of [
     ['art-source/visual-rebirth/levels/09/titan-omega-graveyard-master.png', 'assets/titan_omega_graveyard_background_v1.webp'],
     ['art-source/visual-rebirth/levels/10/chronos-collapse-master.png', 'assets/chronos_collapse_background_v1.webp']
@@ -120,7 +120,7 @@ test('Titan Omega and final Chronos collapse use authored classic backgrounds', 
 
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  const a = src.indexOf('if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0)');
+  const a = src.indexOf('if (currentLevel === 0 && levelOneShockwave > 0)');
   const b = src.indexOf('if (stormPulse > 0 && !settings.reduceEffects)', a);
   assert.ok(a > 0 && b > a);
   const snippet = src.slice(a, b);

@@ -353,18 +353,6 @@ test('Atlas blocks the onboard workshop instead of permitting combat avoidance b
   assert.equal(h.pending.size, 1);
 });
 
-test('archived N-7 cannot open the classic onboard workshop or touch its ledger', t => {
-  for (const campaign of ['n7']) {
-    const h = harness(t, {campaign});
-    const before = h.stored(SALVAGE_KEY), n7Unlocked = h.stored('neon-n7-unlocked-v1');
-    assert.equal(h.api.openClassicDock('hud'), false); assert.equal(h.api.openClassicDock('menu'), false);
-    assert.equal(h.snapshot().workshopOpened, false);
-    assert.equal(h.node('flightDock')?.classList.contains('show') || false, false);
-    assert.equal(h.stored(SALVAGE_KEY), before); assert.equal(h.stored('neon-n7-unlocked-v1'), n7Unlocked);
-    assert.equal(h.pending.size, 1);
-  }
-});
-
 test('Forja connects paid weapon ranks to real loadouts and preserves them after interruption', t => {
   const equipment={version:1,recoveredTwin:true,unlocked:['pulse'],selected:'pulse'};
   const h=harness(t,{salvage:fundedRecord(1000),equipment});h.api.prepare();h.node('classicC9').click();

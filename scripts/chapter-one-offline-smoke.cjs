@@ -28,7 +28,7 @@ const report = {status: 'running', exitCode: null, command: process.argv, starte
     'Upgrade scenario seeds declared compatibility saves, including an authentic old-schema empty salvage ledger: zero money, zero purchases. These are fixtures, not progress earned in play. A separate fresh context launches the naturally unlocked chapter without any seeded save.',
     'No source hooks, request interception, entity insertion, clock acceleration or in-flight counter changes.',
     'RAF and drawImage observers call the original functions unchanged and do not create another animation loop.',
-    'Checks native worker upgrade/offline restart, saved progress/economy migration, current atlases/C9 upgrade artwork, the v2 combat bank and two AAC scores, current ship/projectiles, and N7 regression. Fresh in-world chapter launch is natural UI operation; this is not a full chapter/boss balance certification or aesthetic/device acceptance.']};
+    'Checks native worker upgrade/offline restart, saved progress/economy migration, current atlases/C9 upgrade artwork, the v2 combat bank and two AAC scores, and current ship/projectiles. Fresh in-world chapter launch is natural UI operation; this is not a full chapter/boss balance certification or aesthetic/device acceptance.']};
 let browser, context, server, temp, evidenceReady = false, offline = false;
 const save = () => saveEvidence(output, report);
 const bounded = (promise, milliseconds, label) => {
@@ -454,29 +454,6 @@ async function prepareContext() {
     report.offlineStorageAfterLaunch = afterLaunch;
     const final = await observer(page); assert.equal(final.raf.maximum, 1); assert.deepEqual(final.raf.errors, []);
     await page.close(); return {state, running, final, stage: '1.3', fixtureResume: true, voyage};
-  });
-  await step('offline N7 remains available through its historical direct URL without changing classic saves',async()=>{
-    const page=await newPage();await page.goto(new URL('juego/index.html?campaign=n7',server.url).href,{waitUntil:'load'});
-    await page.locator('#menu.show').waitFor();
-    const before=await storage(page);
-    assert.equal(before[prefix+'neon-n7-unlocked-v1'],'37','N7 progress fixture must survive the upgrade');
-    const protectedKeys=Object.keys(before).filter(key=>!key.startsWith(prefix+'neon-n7-'));
-    await page.locator('#levels').click();
-    assert.equal(await page.locator('#levelGrid button').count(),100);
-    assert.equal(await page.locator('#levelGrid button:not(:disabled)').count(),37);
-    await page.locator('#levelGrid button').first().click();await page.locator('#launch').click();
-    await waitAsync(page,()=>window.__CHAPTER_OFFLINE_OBSERVER__.draw['ship_modular_atlas_v1.webp']>=24&&!document.querySelector('#fire').disabled);
-    assert.equal(await page.evaluate(()=>navigator.onLine),false);
-    assert.match((await page.locator('#ammo').textContent()).trim(),/^3\/3$/,
-      'N7 keeps its independent historical magazine contract');
-    await page.locator('#pause').click();await page.locator('#paused.show').waitFor();
-    const after=await storage(page);
-    for(const key of protectedKeys)assert.equal(after[key],before[key],`N7 changed unrelated save: ${key}`);
-    const audit=await observer(page);assert.equal(audit.raf.maximum,1);assert.deepEqual(audit.raf.errors,[]);
-    await capture(page,'offline-n7-regression-paused');
-    await page.locator('#resume').click();await page.locator('#paused.show').waitFor({state:'hidden'});
-    await page.close();return {fixture:'N7 unlock37 is seeded compatibility data, not earned by this run',
-      totalRoutes:100,unlockedRoutes:37,protectedKeys,offline:true,audit};
   });
   await step('separate fresh context naturally launches the first chapter offline without seeded progress or money',async()=>{
     await context.close();offline=false;await prepareContext();

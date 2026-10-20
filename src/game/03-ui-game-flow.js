@@ -1,6 +1,6 @@
   const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
 
-  function isUnifiedClassic() { return !N7_CAMPAIGN; }
+  function isUnifiedClassic() { return true; }
 
   function classicChapterControlsLocked() {
     return Boolean(classicChapterView?.opening?.controlsLocked);
@@ -161,9 +161,9 @@
 
   function recoverCampaignCompletion() {
     if(!completionJournal)completionJournal=NeonCampaign.createCompletionJournal({storage,keys:KEYS,
-      levelCount:LEVELS.length,checkpointKey:N7_CAMPAIGN?null:NeonCampaign.CHRONOS_VOYAGE_KEY,
+      levelCount:LEVELS.length,checkpointKey:NeonCampaign.CHRONOS_VOYAGE_KEY,
       validateCheckpoint:value=>normalizeClassicVoyageRecord(value)!==null,
-      equipmentKey:N7_CAMPAIGN?null:CLASSIC_EQUIPMENT_KEY,
+      equipmentKey:CLASSIC_EQUIPMENT_KEY,
       validateEquipment:value=>NeonCampaign.normalizeClassicEquipment(value)!==null});
     const result=completionJournal.recover();
     completionPersistenceBlocked=!result.ok;
@@ -850,7 +850,7 @@
   }
 
   function isAtlasMission() {
-    return !N7_CAMPAIGN && currentLevel === 0;
+    return currentLevel === 0;
   }
 
   function setupAtlasEncounter() {
@@ -1132,7 +1132,7 @@
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
-    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
@@ -1153,7 +1153,7 @@
       reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
     }
     ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : isUnifiedClassic() ? "NIVEL" : "SECTOR";
+    ui.hudLevel.previousElementSibling.textContent = isUnifiedClassic() ? "NIVEL" : "SECTOR";
     if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
@@ -1243,10 +1243,7 @@
   }
 
   function updateEncounterHud() {
-    ui.encounterProgress.classList.toggle("active", Boolean(encounterDirector));
-    if (encounterDirector) {
-      ui.encounterProgress.querySelector("em").textContent = `${encounterWave}/${encounterDirector.plan.waves.length}`;
-    }
+    ui.encounterProgress.classList.toggle("active", false);
   }
 
   function buildLevelGrid() {
@@ -1265,9 +1262,9 @@
       const earned = +(starsMap[index + 1] || 0);
       const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
       button.innerHTML = `
-        <small>${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${index + 1}</small>
+        <small>NIVEL ${index + 1}</small>
         <strong>${lv.name}</strong>
-        <span>${lv.world} · ${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}</span>
+        <span>${lv.world} · ${lv.goal} CRONIUM</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
         ${button.disabled ? '<div class="lock">🔒</div>' : ""}
       `;
@@ -1281,10 +1278,10 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = `NIVEL ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
-    ui.briefingGoal.textContent = `${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}`;
+    ui.briefingGoal.textContent = `${lv.goal} CRONIUM`;
     ui.briefingThreat.textContent = lv.threatLabel;
     ui.briefingSupply.textContent = `${lv.goal + Math.ceil(lv.goal * 0.25)} disponibles`;
     ui.briefingMission.textContent = lv.mission;
@@ -1301,7 +1298,7 @@
   }
 
   function showBanner() {
-    ui.bannerSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${currentLevel + 1}`;
+    ui.bannerSector.textContent = `SECTOR ${currentLevel + 1}`;
     ui.bannerName.textContent = level().name.toUpperCase();
     ui.bannerGoal.textContent = `Recupera ${level().goal} núcleos · ${level().desc}`;
     ui.banner.classList.add("show");
@@ -1359,7 +1356,7 @@
       advanceClassicTutorial();
       if(atlasBoss?.resolved&&classicChapterView.aftermathReady)completeLevel();
     }
-    if (classicFlight || N7_CAMPAIGN || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
+    if (classicFlight || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -1431,8 +1428,6 @@
       ensureSprite(SPRITES.ch01);ensureSprite(SPRITES.ch02);
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);ensureSprite(SPRITES.satellite);
     }
-    encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
-    encounterWave = 0;
     setState("playing");
     score = 0;
     displayedScore = 0;
@@ -1452,7 +1447,7 @@
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
-    classicScoutTimer = !N7_CAMPAIGN && currentLevel === 1 ? 3.8 : 0;
+    classicScoutTimer = currentLevel === 1 ? 3.8 : 0;
     classicScoutAnnounced = false;
     warpTimer = classicFlight ? 0 : 1.25;
     supplyFailed = false;
@@ -1506,10 +1501,6 @@
     hud();
     updateEncounterHud();
     if(!isUnifiedClassic()) showBanner();
-    if (N7_CAMPAIGN) {
-      const opening = NeonCampaign.n7Dialogue("sectorStart", {level: currentLevel + 1});
-      if (opening) showStoryTransmission("N-7", opening);
-    }
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     if(classicFlightView?.waitingFor==="service")beginClassicVoyageService();
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
@@ -1590,7 +1581,6 @@
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }
-    if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
@@ -1636,10 +1626,10 @@
       if(earnedEquipment)classicEquipment=earnedEquipment;
     }
     registerRun();
-    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "NIVEL SUPERADO";
+    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : "NIVEL SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
+      ? "Has estabilizado el Colapso Neon"
       : `${level().name} completado`;
     if (isAtlasMission() && atlasBoss?.resolved) ui.completeTitle.textContent = "Atlas ha abierto el paso";
     ui.starsAwarded.innerHTML = [1, 2, 3]
@@ -1649,13 +1639,13 @@
     ui.levelHull.textContent = `${Math.ceil(hull)}%`;
     ui.maxCombo.textContent = `x${maxCombo}`;
     ui.unlockMessage.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "Puedes volver a cada nivel para mejorar tu resultado")
+      ? "Puedes volver a cada nivel para mejorar tu resultado"
       : newlyUnlocked
-        ? `${N7_CAMPAIGN ? "Ruta" : "Nivel"} ${currentLevel + 2} desbloqueado`
+        ? `Nivel ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
     ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
-      ?"CRUZAR HACIA GAIA NOVA →":N7_CAMPAIGN?"SIGUIENTE RUTA →":"SIGUIENTE NIVEL →";
+      ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE NIVEL →";
     if(isUnifiedClassic()&&currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";

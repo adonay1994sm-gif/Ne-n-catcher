@@ -17,7 +17,7 @@ const sources = ['02-storage-audio.js', '03-ui-game-flow.js', '04-entities-colli
   .map(file => readFileSync(new URL(`../src/game/${file}`, import.meta.url), 'utf8')).join('\n');
 const flush = async () => {for (let turn = 0; turn < 12; turn++) await Promise.resolve();};
 
-function harness({classic = true, ready = true, fx = 70, music = 50} = {}) {
+function harness({ready = true, fx = 70, music = 50} = {}) {
   const calls = {contexts: [], sfxFactories: [], sounds: [], fetches: 0, decode: 0,
     oscillators: [], sources: [], gains: [], voyage: [], writes: [], timeline: [], scrap: []};
   const records = new Map(); let blocked = false, bank;
@@ -65,7 +65,7 @@ function harness({classic = true, ready = true, fx = 70, music = 50} = {}) {
     }
   };
   const sandbox = vm.createContext({settings: {music, fx, autoFire: false, effects: false, vibration: false},
-    N7_CAMPAIGN: !classic, audioCtx: null, musicGain: null,
+    audioCtx: null, musicGain: null,
     window: {AudioContext: SharedAudioContext}, navigator: {}, NeonCampaign: campaign,
     NeonCore: {resolveDamage({hull, amount, shieldActive}) {return {hull: shieldActive ? hull : Math.max(0,hull-amount),
       absorbed: shieldActive, destroyed: !shieldActive && hull <= amount};}},
@@ -99,7 +99,7 @@ function harness({classic = true, ready = true, fx = 70, music = 50} = {}) {
   return {sandbox, calls, records, bank: () => bank,
     async start() {
       sandbox.startMusic(); await flush();
-      if (classic && bank.snapshot().loading) await vm.runInContext('combatSfx.load()', sandbox);
+      if (bank.snapshot().loading) await vm.runInContext('combatSfx.load()', sandbox);
       sandbox.state = 'playing'; sandbox.updateScore(0); return this;
     },
     blockStorage(value = true) {blocked = value;},
@@ -122,13 +122,6 @@ test('classic starts one shared context and one bank connected to that context, 
   assert.equal(h.calls.fetches, 1); assert.equal(h.calls.decode, 1);
   assert.equal(h.bank().snapshot().paused, true);
   assert.equal(h.calls.sources.length, 0); assert.equal(h.calls.oscillators.length, 0);
-});
-
-test('N-7 keeps its existing tone path and never allocates the new classic bank', async () => {
-  const h = await harness({classic: false}).start(); h.sandbox.tone(400,.08,'triangle',.04);
-  assert.equal(h.calls.contexts.length, 1); assert.equal(h.calls.sfxFactories.length, 0);
-  assert.equal(h.calls.fetches, 0); assert.equal(h.calls.oscillators.length, 1);
-  assert.equal(h.calls.sources.length, 0);
 });
 
 test('ready combat plays the bank with viewport-relative pan and cannot also emit a fallback tone', async () => {
@@ -194,13 +187,6 @@ test('live volume settings affect the original bank and do not rebuild its graph
   assert.equal(h.calls.contexts.length, 1); assert.equal(h.calls.decode, 1);
 });
 
-test('a same-page switch to N-7 pauses the classic bank without redirecting N-7 feedback into it', async () => {
-  const h = await harness().start(); h.sandbox.N7_CAMPAIGN = true;
-  h.sandbox.updateScore(0); h.sandbox.combatSound('phaser');
-  assert.equal(h.bank().snapshot().paused, true);
-  assert.equal(h.calls.sources.length, 0); assert.equal(h.calls.oscillators.length, 1);
-});
-
 test('the real Phaser trigger makes one sound per accepted discharge, including a two-barrel weapon', async () => {
   const h = await harness().start();
   h.sandbox.classicWeapons = weapons.createClassicWeapons({type:'twin',unlocked:['pulse','twin']});
@@ -242,15 +228,6 @@ test('real reserve and hull damage each dispatch exactly one hull-hit rather tha
   assert.equal(h.sandbox.hull,85);
   assert.equal(h.calls.sounds.filter(item => item.name === 'hull-hit').length,2);
   assert.equal(h.calls.oscillators.length,0); assert.equal(h.calls.writes.length,0);
-});
-
-test('N-7 damage retains its historical shield and tones with no classic reserve or bank', async () => {
-  const h = await harness({classic:false}).start(); h.sandbox.powers.shield = 3;
-  h.sandbox.damageShip(10,200,900);
-  assert.equal(h.sandbox.hull,100); assert.equal(h.sandbox.classicHullReserve,30);
-  assert.equal(h.calls.oscillators.length,1); assert.equal(h.calls.sources.length,0);
-  h.sandbox.powers.shield = 0; h.sandbox.damageShip(10,520,900);
-  assert.equal(h.sandbox.hull,90); assert.equal(h.calls.oscillators.length,2);
 });
 
 test('real Atlas simulation dispatches charge only at state entry, independent of repeated animation frames', async () => {

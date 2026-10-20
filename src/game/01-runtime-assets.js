@@ -1,7 +1,6 @@
   const storage = NeonCore.createStorageService();
 
   function migrateLegacyStorage() {
-    if (N7_CAMPAIGN) return false;
     // A denied read is not an absent score: do not overwrite an unreadable
     // current record with a smaller historical one while writes still work.
     const legacyRead = storage.readRaw(LEGACY_KEYS.best);
@@ -58,8 +57,6 @@
   let comboTimer = 0;
   let collected = 0;
   let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
-  let encounterDirector = null;
-  let encounterWave = 0;
   let continued = false;
   let shake = 0;
   let flash = 0;
@@ -167,10 +164,8 @@
 
   const powers = { shield: 0, tractor: 0, slow: 0, double: 0, phaser: 0 };
   const player = NeonCore.createPlayerModel(W, H);
-  if (!N7_CAMPAIGN) {
-    player.w *= SHIP_VISUAL.classicScale;
-    player.h *= SHIP_VISUAL.classicScale;
-  }
+  player.w *= SHIP_VISUAL.classicScale;
+  player.h *= SHIP_VISUAL.classicScale;
 
   // Silueta de colisión aproximada al sprite de la nave.
   // Está ligeramente metida hacia dentro para que los roces mínimos no sean injustos,
@@ -187,15 +182,12 @@
     [-28, -112], [-18, -137]
   ];
 
-  // Scale the actual collision silhouette with the owner's smaller classic
-  // ship; preserve the geometry of the two archived campaign variants.
-  if (!N7_CAMPAIGN) {
-    for (const point of SHIP_COLLISION_OUTLINE) {
-      point[0] *= SHIP_VISUAL.classicScale * .9;
-      point[1] *= SHIP_VISUAL.classicScale * .8;
-    }
+  // Scale the actual collision silhouette with the owner's smaller classic ship.
+  for (const point of SHIP_COLLISION_OUTLINE) {
+    point[0] *= SHIP_VISUAL.classicScale * .9;
+    point[1] *= SHIP_VISUAL.classicScale * .8;
   }
-  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth * SHIP_VISUAL.classicScale * (!N7_CAMPAIGN ? .9 : 1);
+  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth * SHIP_VISUAL.classicScale * .9;
   const CORRIDOR_REQUIRED_CLEARANCE = 14;
   const CORRIDOR_TOP = -170;
   const CORRIDOR_BOTTOM_PADDING = 94;

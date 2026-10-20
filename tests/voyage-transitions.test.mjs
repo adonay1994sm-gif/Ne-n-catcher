@@ -186,5 +186,5 @@ test('Gaia keeps its existing painting fallback until both independent illustrat
     renderer.SPRITES[name].naturalWidth = previous;
   }
   assert.match(source,/currentLevel===1 && drawGaiaOrbitBackground\(\)/);
-  assert.match(source,/!N7_CAMPAIGN && currentLevel === 1 && spriteReady\(SPRITES\.atlasBackground\)/);
+  assert.match(source,/currentLevel === 1 && spriteReady\(SPRITES\.atlasBackground\)/);
 });

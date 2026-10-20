@@ -7,18 +7,16 @@
   let W = 720;
   let H = 1280;
   const BUILD_VERSION = "7.2.0";
-  // Local development route; preserves the original campaign and its save keys.
-  const N7_CAMPAIGN = new URLSearchParams(location.search).get("campaign") === "n7";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
   // Owner revision: 30% larger than the previous 40% ship, not 30% of it.
-  const CLASSIC_SHIP_SCALE = !N7_CAMPAIGN ? 0.52 : 1;
+  const CLASSIC_SHIP_SCALE = 0.52;
   const SHIP_VISUAL_SCALE = 0.8 * CLASSIC_SHIP_SCALE;
   const SHIP_VISUAL = Object.freeze({
     classicScale: CLASSIC_SHIP_SCALE,
     assemblySize: 208 * CLASSIC_SHIP_SCALE,
     muzzleOffset: 125 * CLASSIC_SHIP_SCALE,
-    bankStrength: !N7_CAMPAIGN ? 1.8 : 1,
+    bankStrength: 1.8,
     scale: SHIP_VISUAL_SCALE,
     spriteSize: 248 * SHIP_VISUAL_SCALE,
     fallbackWidth: 232 * SHIP_VISUAL_SCALE,
@@ -192,7 +190,7 @@
     }
   ];
 
-  const LEVELS = N7_CAMPAIGN ? NeonCampaign.LEVELS : ORIGINAL_LEVELS;
+  const LEVELS = ORIGINAL_LEVELS;
   const KEYS = {
     best: "neon-best-v2",
     unlocked: "neon-unlocked-v2",
@@ -201,15 +199,11 @@
     games: "neon-games-v2",
     settings: "neon-settings-v5"
   };
-  if (N7_CAMPAIGN) {
-    for (const key of ["best", "unlocked", "stars", "levelBest", "games"]) KEYS[key] = `neon-n7-${key}-v1`;
-  }
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true };
   const storage = NeonCore.createStorageService();
 
   function migrateLegacyStorage() {
-    if (N7_CAMPAIGN) return false;
     // A denied read is not an absent score: do not overwrite an unreadable
     // current record with a smaller historical one while writes still work.
     const legacyRead = storage.readRaw(LEGACY_KEYS.best);
@@ -266,8 +260,6 @@
   let comboTimer = 0;
   let collected = 0;
   let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
-  let encounterDirector = null;
-  let encounterWave = 0;
   let continued = false;
   let shake = 0;
   let flash = 0;
@@ -375,10 +367,8 @@
 
   const powers = { shield: 0, tractor: 0, slow: 0, double: 0, phaser: 0 };
   const player = NeonCore.createPlayerModel(W, H);
-  if (!N7_CAMPAIGN) {
-    player.w *= SHIP_VISUAL.classicScale;
-    player.h *= SHIP_VISUAL.classicScale;
-  }
+  player.w *= SHIP_VISUAL.classicScale;
+  player.h *= SHIP_VISUAL.classicScale;
 
   // Silueta de colisión aproximada al sprite de la nave.
   // Está ligeramente metida hacia dentro para que los roces mínimos no sean injustos,
@@ -395,15 +385,12 @@
     [-28, -112], [-18, -137]
   ];
 
-  // Scale the actual collision silhouette with the owner's smaller classic
-  // ship; preserve the geometry of the two archived campaign variants.
-  if (!N7_CAMPAIGN) {
-    for (const point of SHIP_COLLISION_OUTLINE) {
-      point[0] *= SHIP_VISUAL.classicScale * .9;
-      point[1] *= SHIP_VISUAL.classicScale * .8;
-    }
+  // Scale the actual collision silhouette with the owner's smaller classic ship.
+  for (const point of SHIP_COLLISION_OUTLINE) {
+    point[0] *= SHIP_VISUAL.classicScale * .9;
+    point[1] *= SHIP_VISUAL.classicScale * .8;
   }
-  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth * SHIP_VISUAL.classicScale * (!N7_CAMPAIGN ? .9 : 1);
+  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth * SHIP_VISUAL.classicScale * .9;
   const CORRIDOR_REQUIRED_CLEARANCE = 14;
   const CORRIDOR_TOP = -170;
   const CORRIDOR_BOTTOM_PADDING = 94;
@@ -942,7 +929,7 @@
   }
   const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
 
-  function isUnifiedClassic() { return !N7_CAMPAIGN; }
+  function isUnifiedClassic() { return true; }
 
   function classicChapterControlsLocked() {
     return Boolean(classicChapterView?.opening?.controlsLocked);
@@ -1103,9 +1090,9 @@
 
   function recoverCampaignCompletion() {
     if(!completionJournal)completionJournal=NeonCampaign.createCompletionJournal({storage,keys:KEYS,
-      levelCount:LEVELS.length,checkpointKey:N7_CAMPAIGN?null:NeonCampaign.CHRONOS_VOYAGE_KEY,
+      levelCount:LEVELS.length,checkpointKey:NeonCampaign.CHRONOS_VOYAGE_KEY,
       validateCheckpoint:value=>normalizeClassicVoyageRecord(value)!==null,
-      equipmentKey:N7_CAMPAIGN?null:CLASSIC_EQUIPMENT_KEY,
+      equipmentKey:CLASSIC_EQUIPMENT_KEY,
       validateEquipment:value=>NeonCampaign.normalizeClassicEquipment(value)!==null});
     const result=completionJournal.recover();
     completionPersistenceBlocked=!result.ok;
@@ -1792,7 +1779,7 @@
   }
 
   function isAtlasMission() {
-    return !N7_CAMPAIGN && currentLevel === 0;
+    return currentLevel === 0;
   }
 
   function setupAtlasEncounter() {
@@ -2074,7 +2061,7 @@
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
-    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
@@ -2095,7 +2082,7 @@
       reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
     }
     ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : isUnifiedClassic() ? "NIVEL" : "SECTOR";
+    ui.hudLevel.previousElementSibling.textContent = isUnifiedClassic() ? "NIVEL" : "SECTOR";
     if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
@@ -2185,10 +2172,7 @@
   }
 
   function updateEncounterHud() {
-    ui.encounterProgress.classList.toggle("active", Boolean(encounterDirector));
-    if (encounterDirector) {
-      ui.encounterProgress.querySelector("em").textContent = `${encounterWave}/${encounterDirector.plan.waves.length}`;
-    }
+    ui.encounterProgress.classList.toggle("active", false);
   }
 
   function buildLevelGrid() {
@@ -2207,9 +2191,9 @@
       const earned = +(starsMap[index + 1] || 0);
       const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
       button.innerHTML = `
-        <small>${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${index + 1}</small>
+        <small>NIVEL ${index + 1}</small>
         <strong>${lv.name}</strong>
-        <span>${lv.world} · ${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}</span>
+        <span>${lv.world} · ${lv.goal} CRONIUM</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
         ${button.disabled ? '<div class="lock">🔒</div>' : ""}
       `;
@@ -2223,10 +2207,10 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = `NIVEL ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
-    ui.briefingGoal.textContent = `${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}`;
+    ui.briefingGoal.textContent = `${lv.goal} CRONIUM`;
     ui.briefingThreat.textContent = lv.threatLabel;
     ui.briefingSupply.textContent = `${lv.goal + Math.ceil(lv.goal * 0.25)} disponibles`;
     ui.briefingMission.textContent = lv.mission;
@@ -2243,7 +2227,7 @@
   }
 
   function showBanner() {
-    ui.bannerSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${currentLevel + 1}`;
+    ui.bannerSector.textContent = `SECTOR ${currentLevel + 1}`;
     ui.bannerName.textContent = level().name.toUpperCase();
     ui.bannerGoal.textContent = `Recupera ${level().goal} núcleos · ${level().desc}`;
     ui.banner.classList.add("show");
@@ -2301,7 +2285,7 @@
       advanceClassicTutorial();
       if(atlasBoss?.resolved&&classicChapterView.aftermathReady)completeLevel();
     }
-    if (classicFlight || N7_CAMPAIGN || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
+    if (classicFlight || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -2373,8 +2357,6 @@
       ensureSprite(SPRITES.ch01);ensureSprite(SPRITES.ch02);
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);ensureSprite(SPRITES.satellite);
     }
-    encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
-    encounterWave = 0;
     setState("playing");
     score = 0;
     displayedScore = 0;
@@ -2394,7 +2376,7 @@
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
-    classicScoutTimer = !N7_CAMPAIGN && currentLevel === 1 ? 3.8 : 0;
+    classicScoutTimer = currentLevel === 1 ? 3.8 : 0;
     classicScoutAnnounced = false;
     warpTimer = classicFlight ? 0 : 1.25;
     supplyFailed = false;
@@ -2448,10 +2430,6 @@
     hud();
     updateEncounterHud();
     if(!isUnifiedClassic()) showBanner();
-    if (N7_CAMPAIGN) {
-      const opening = NeonCampaign.n7Dialogue("sectorStart", {level: currentLevel + 1});
-      if (opening) showStoryTransmission("N-7", opening);
-    }
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     if(classicFlightView?.waitingFor==="service")beginClassicVoyageService();
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
@@ -2532,7 +2510,6 @@
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }
-    if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
@@ -2578,10 +2555,10 @@
       if(earnedEquipment)classicEquipment=earnedEquipment;
     }
     registerRun();
-    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "NIVEL SUPERADO";
+    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : "NIVEL SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
+      ? "Has estabilizado el Colapso Neon"
       : `${level().name} completado`;
     if (isAtlasMission() && atlasBoss?.resolved) ui.completeTitle.textContent = "Atlas ha abierto el paso";
     ui.starsAwarded.innerHTML = [1, 2, 3]
@@ -2591,13 +2568,13 @@
     ui.levelHull.textContent = `${Math.ceil(hull)}%`;
     ui.maxCombo.textContent = `x${maxCombo}`;
     ui.unlockMessage.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "Puedes volver a cada nivel para mejorar tu resultado")
+      ? "Puedes volver a cada nivel para mejorar tu resultado"
       : newlyUnlocked
-        ? `${N7_CAMPAIGN ? "Ruta" : "Nivel"} ${currentLevel + 2} desbloqueado`
+        ? `Nivel ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
     ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
-      ?"CRUZAR HACIA GAIA NOVA →":N7_CAMPAIGN?"SIGUIENTE RUTA →":"SIGUIENTE NIVEL →";
+      ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE NIVEL →";
     if(isUnifiedClassic()&&currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";
@@ -3755,19 +3732,7 @@
 
     if(isUnifiedClassic())advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
-    if (encounterDirector) {
-      encounterDirector.advance(dt, (item) => {
-        items.push(item);
-        if (item.type === "energy") energySpawned++;
-      });
-      if (encounterDirector.wave !== encounterWave) {
-        encounterWave = encounterDirector.wave;
-        ammo = MAX_AMMO;
-        updateAmmoHud();
-        updateEncounterHud();
-      }
-    } else {
-      if (!atlasBoss && !classicFlightView) {
+    if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -3788,7 +3753,6 @@
           }
           classicScoutTimer = 6.2 + Math.random() * 1.5;
         }
-      }
       }
     }
 
@@ -3915,7 +3879,6 @@
 
     if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
-    if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
         player.x + (Math.random() - 0.5) * 70 * SHIP_VISUAL.scale,
@@ -4008,7 +3971,7 @@
         ctx.arc(x, y, 7 + (index % 4) * 4, 0, Math.PI * 2);
         ctx.fill();
       }
-    } else if (lv.scene === "ion" && (N7_CAMPAIGN || currentLevel !== 3)) {
+    } else if (lv.scene === "ion" && currentLevel !== 3) {
       ctx.strokeStyle = "rgba(191,126,255,.34)";
       ctx.lineWidth = 3;
       ctx.shadowBlur = 15;
@@ -4020,14 +3983,14 @@
         ctx.bezierCurveTo(W * 0.25, y - 70, W * 0.62, y + 75, W + 30, y - 25);
         ctx.stroke();
       }
-    } else if (lv.scene === "crimson" && (N7_CAMPAIGN || currentLevel !== 4)) {
+    } else if (lv.scene === "crimson" && currentLevel !== 4) {
       drawPlanet(W * 0.19, H * 0.16, 92, ["#fff5c7", "#ff744f", "#761737"], false);
       ctx.globalAlpha = 0.14 + Math.sin(t * 0.004) * 0.03;
       ctx.fillStyle = "#ff4965";
       ctx.beginPath();
       ctx.arc(W * 0.19, H * 0.16, 145, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "gravity" && (N7_CAMPAIGN || currentLevel !== 5)) {
+    } else if (lv.scene === "gravity" && currentLevel !== 5) {
       const x = W * 0.74;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(80,255,208,.48)";
@@ -4041,7 +4004,7 @@
       ctx.beginPath();
       ctx.arc(x, y, 61, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "ghost" && (N7_CAMPAIGN || currentLevel !== 6)) {
+    } else if (lv.scene === "ghost" && currentLevel !== 6) {
       ctx.globalAlpha = 0.20;
       ctx.fillStyle = "#b99bea";
       ctx.fillRect(W * 0.10, H * 0.17, W * 0.80, 12);
@@ -4053,7 +4016,7 @@
       fog.addColorStop(1, "rgba(174,132,232,0)");
       ctx.fillStyle = fog;
       ctx.fillRect(0, H * 0.12, W, H * 0.62);
-    } else if (lv.scene === "overdrive" && (N7_CAMPAIGN || currentLevel !== 7)) {
+    } else if (lv.scene === "overdrive" && currentLevel !== 7) {
       ctx.globalAlpha = 0.20;
       ctx.strokeStyle = "#fff27b";
       ctx.lineWidth = 2;
@@ -4064,13 +4027,13 @@
         ctx.lineTo(x - 130, H * 0.70);
         ctx.stroke();
       }
-    } else if (lv.scene === "dark" && (N7_CAMPAIGN || currentLevel !== 8)) {
+    } else if (lv.scene === "dark" && currentLevel !== 8) {
       drawPlanet(W * 0.73, H * 0.18, 112, ["#6d2d73", "#27102f", "#05030a"], false);
       ctx.fillStyle = "rgba(255,92,233,.12)";
       ctx.beginPath();
       ctx.arc(W * 0.73, H * 0.18, 130, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "collapse" && (N7_CAMPAIGN || currentLevel !== 9)) {
+    } else if (lv.scene === "collapse" && currentLevel !== 9) {
       const x = W * 0.50;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(93,255,236,.58)";
@@ -4598,15 +4561,15 @@
     }
     ctx.restore();
 
-    if (!N7_CAMPAIGN && currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
-    if (!N7_CAMPAIGN && currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
-    if (!N7_CAMPAIGN && currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
-    if (!N7_CAMPAIGN && currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
-    if (!N7_CAMPAIGN && currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
-    if (!N7_CAMPAIGN && currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
-    if (!N7_CAMPAIGN && currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
-    if (!N7_CAMPAIGN && currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
-    if (!N7_CAMPAIGN && currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
+    if (currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
+    if (currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
+    if (currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
+    if (currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
+    if (currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
+    if (currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
+    if (currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
+    if (currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
+    if (currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -4622,7 +4585,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
+    } else if (currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
       const image = SPRITES.atlasBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.04;
       const width = image.naturalWidth * scale;
@@ -4641,7 +4604,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
+    } else if (currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
       const image = SPRITES.vulkarBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
       const width = image.naturalWidth * scale;
@@ -4659,7 +4622,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 3 && spriteReady(SPRITES.magmaTunnelBackground)) {
+    } else if (currentLevel === 3 && spriteReady(SPRITES.magmaTunnelBackground)) {
       const image = SPRITES.magmaTunnelBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
       const width = image.naturalWidth * scale;
@@ -4677,7 +4640,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
+    } else if (currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
       const image = SPRITES.cryonWhiteoutBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4695,7 +4658,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 5 && spriteReady(SPRITES.cryonRiftBackground)) {
+    } else if (currentLevel === 5 && spriteReady(SPRITES.cryonRiftBackground)) {
       const image = SPRITES.cryonRiftBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4713,7 +4676,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
+    } else if (currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
       const image = SPRITES.aetherEchoBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4731,7 +4694,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
+    } else if (currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
       const image = SPRITES.aetherThresholdBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4749,7 +4712,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
+    } else if (currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
       const image = SPRITES.titanGraveyardBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4767,7 +4730,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
+    } else if (currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
       const image = SPRITES.chronosCollapseBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4789,7 +4752,7 @@
 
     // Start the authored VFX download while the level is still in its menu;
     // the scripted reactor accident happens thirty-one seconds into play.
-    if (!N7_CAMPAIGN && currentLevel === 0) ensureSprite(SPRITES.chronosShockwave);
+    if (currentLevel === 0) ensureSprite(SPRITES.chronosShockwave);
 
     ctx.save();
     ctx.globalCompositeOperation = "screen";
@@ -4846,7 +4809,7 @@
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
 
-    if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0) {
+    if (currentLevel === 0 && levelOneShockwave > 0) {
       const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);
       const sx = W * 0.50;
       const sy = H * 0.40;

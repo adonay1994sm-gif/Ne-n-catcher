@@ -7,13 +7,13 @@ const [config,render]=await Promise.all([
   readFile(new URL('../src/game/00-bootstrap-config.js',import.meta.url),'utf8'),
   readFile(new URL('../src/game/07-player-item-rendering.js',import.meta.url),'utf8')
 ]);
-function visualContract(search='') {
-  const context=vm.createContext({URLSearchParams,location:{search}});
-  vm.runInContext(config.slice(config.indexOf('  const N7_CAMPAIGN'),config.indexOf('  const ui ='))+
+function visualContract() {
+  const context=vm.createContext({});
+  vm.runInContext(config.slice(config.indexOf('  const INITIAL_AMMO'),config.indexOf('  const ui ='))+
     '\nglobalThis.contract=SHIP_VISUAL;',context);
   return JSON.parse(JSON.stringify(context.contract));
 }
-function harness({classic=true,reserve=0,atlasGradient=false}={}) {
+function harness({reserve=0,atlasGradient=false}={}) {
   const calls=[],draws=[],properties={globalAlpha:1},stats={halos:0,gradients:0,blurWrites:[]};
   const image=(name,width=192,height=192)=>({name,naturalWidth:width,naturalHeight:height,complete:true});
   const ctx=new Proxy({}, {get(_target,key){
@@ -21,8 +21,8 @@ function harness({classic=true,reserve=0,atlasGradient=false}={}) {
     if(key==='createRadialGradient')return()=>{if(!atlasGradient)throw new Error('No per-pickup gradients');return{addColorStop(){}};};
     return key in properties?properties[key]:(...args)=>calls.push({method:key,args});
   },set(_target,key,value){properties[key]=value;if(key==='shadowBlur')stats.blurWrites.push(value);return true;}});
-  const sandbox=vm.createContext({Math,ctx,SHIP_VISUAL:visualContract(classic?'':'?campaign=n7'),
-    isUnifiedClassic:()=>classic,state:'playing',playerVisible:true,
+  const sandbox=vm.createContext({Math,ctx,SHIP_VISUAL:visualContract(),
+    isUnifiedClassic:()=>true,state:'playing',playerVisible:true,
     player:{x:360,y:1000,target:360,targetY:1000,drift:0,visualBank:.6},
     powers:{shield:4},classicHullReserve:reserve,classicShieldImpact:.2,
     hull:100,elapsed:2.5,impactReactionTimer:0,
@@ -41,15 +41,10 @@ function harness({classic=true,reserve=0,atlasGradient=false}={}) {
   return {sandbox,calls,draws,stats,properties};
 }
 
-test('both classic hull families share the52% render contract while N7 retains historical scale',()=>{
+test('both classic hull families share the52% render contract',()=>{
   const classic=visualContract();assert.equal(classic.classicScale,.52);
   assert.equal(classic.assemblySize,108.16);assert.equal(classic.muzzleOffset,65);
-  for(const campaign of ['n7']) {
-    const historical=visualContract(`?campaign=${campaign}`);
-    assert.equal(historical.classicScale,1);assert.equal(historical.assemblySize,208);
-    assert.ok(Math.abs(historical.centerYOffset+19.2)<1e-9);assert.equal(historical.bankStrength,1);
-    assert.ok(Math.abs(classic.centerYOffset-historical.centerYOffset*.52)<1e-9);
-  }
+  assert.ok(Math.abs(classic.centerYOffset+19.2*.52)<1e-9);assert.equal(classic.bankStrength,1.8);
 });
 
 test('actual player rendering uses the smoothed visual bank and integrated armor plating without a classic shield bubble',()=>{
@@ -59,9 +54,6 @@ test('actual player rendering uses the smoothed visual bank and integrated armor
   assert.equal(assembly.args[8],1.8);assert.ok(assembly.args[9]>0);
   assert.equal(h.draws.some(draw=>draw.name==='force-field'),false);
   assert.equal(h.calls.some(call=>call.method==='centered'&&call.args[0].name==='legacy-shield'),false);
-  const historical=harness({classic:false});historical.sandbox.drawPlayer(2500);
-  assert.equal(historical.calls.find(call=>call.method==='assembly').args[2],208);
-  assert.ok(historical.calls.some(call=>call.method==='centered'&&call.args[0].name==='legacy-shield'));
 });
 
 test('animated CRONIUM draws four complete padded energy poses at8fps and reuses one small cached halo',()=>{

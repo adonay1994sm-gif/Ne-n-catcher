@@ -282,19 +282,7 @@
 
     if(isUnifiedClassic())advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
-    if (encounterDirector) {
-      encounterDirector.advance(dt, (item) => {
-        items.push(item);
-        if (item.type === "energy") energySpawned++;
-      });
-      if (encounterDirector.wave !== encounterWave) {
-        encounterWave = encounterDirector.wave;
-        ammo = MAX_AMMO;
-        updateAmmoHud();
-        updateEncounterHud();
-      }
-    } else {
-      if (!atlasBoss && !classicFlightView) {
+    if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -315,7 +303,6 @@
           }
           classicScoutTimer = 6.2 + Math.random() * 1.5;
         }
-      }
       }
     }
 
@@ -442,7 +429,6 @@
 
     if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
-    if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
         player.x + (Math.random() - 0.5) * 70 * SHIP_VISUAL.scale,

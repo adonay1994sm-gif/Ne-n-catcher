@@ -9,16 +9,15 @@ const [runtime,collision]=await Promise.all([
 ]);
 const start=runtime.indexOf('  const SHIP_COLLISION_OUTLINE =');
 const end=runtime.indexOf('  const SHIP_COLLISION_HALF_WIDTH =',start);
-assert.ok(start>=0&&end>start,'Use the real outline and its actual campaign transforms');
-function fixture(campaign='classic') {
-  const context=vm.createContext({Math,N7_CAMPAIGN:campaign==='n7',
-    SHIP_VISUAL:{classicScale:campaign==='classic'?.52:1},player:{x:360,y:800},
+assert.ok(start>=0&&end>start,'Use the real outline and its actual classic transform');
+function fixture() {
+  const context=vm.createContext({Math,
+    SHIP_VISUAL:{classicScale:.52},player:{x:360,y:800},
     isThreat:()=>true,clamp:(value,min,max)=>Math.max(min,Math.min(max,value))});
   vm.runInContext(runtime.slice(start,end)+'\nglobalThis.outline=SHIP_COLLISION_OUTLINE;',context);
   vm.runInContext(collision,context);
   return context;
 }
-const plain=value=>JSON.parse(JSON.stringify(value));
 
 test('the classic nose, wings and tail collide on visible material without an enlarged invisible envelope',()=>{
   const game=fixture();
@@ -36,17 +35,4 @@ test('fast hostile projectiles sweep across the smaller physical nose while a pa
   assert.equal(game.circleHitsShip(39,-59.8,1.88),false);
   assert.equal(game.hit(projectile),true,'movement across the nose is a real contact');
   assert.equal(game.hit({...projectile,y:730,previousY:730}),false,'passing above the nose stays clear');
-});
-
-test('the unchanged original contact envelope remains available in the archived N-7 campaign',()=>{
-  const n7=fixture('n7');
-  assert.equal(n7.outline.length,30);
-  assert.deepEqual(plain(n7.outline[0]),[0,-148]);
-  assert.ok(n7.outline.some(([x,y])=>x===109&&y===20));
-  for(const game of [n7]) {
-    assert.equal(game.circleHitsShip(0,-130,2),true);
-    assert.equal(game.circleHitsShip(100,20,2),true);
-    assert.equal(game.circleHitsShip(0,85,2),true);
-    assert.equal(game.circleHitsShip(120,20,2),false);
-  }
 });

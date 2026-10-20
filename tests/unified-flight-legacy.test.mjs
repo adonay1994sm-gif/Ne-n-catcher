@@ -662,10 +662,7 @@ test('recovering and preparing the C9 emitter preserves the battery while keepin
   assert.equal(restored.snapshot().weapons.selected, 'pulse');
   assert.deepEqual(restored.snapshot().weapons.unlocked, ['pulse']);
   assert.equal(h.stored('neon-n7-unlocked-v1'), '37'); assert.equal(h.stored('neon-n7-best-v1'), '2037');
-  const n7 = harness(t, {campaign: 'n7', saved: save}); n7.api.prepare();
-  assert.equal(n7.snapshot().weapons, null); assert.equal(n7.snapshot().route, null);
-  assert.equal(n7.stored(EQUIPMENT_KEY), save); assert.equal(n7.node('flightRoute'), null);
-  assert.equal(h.pending.size, 1); assert.equal(restored.pending.size, 1); assert.equal(n7.pending.size, 1);
+  assert.equal(h.pending.size, 1); assert.equal(restored.pending.size, 1);
 });
 
 test('C9 requires earned salvage and purchases cooling once without granting weapons or ammunition', t => {
@@ -700,9 +697,6 @@ test('C9 requires earned salvage and purchases cooling once without granting wea
   const restored=harness(t,{savedSalvage:h.stored(SALVAGE_KEY)});restored.api.prepare();
   assert.equal(restored.snapshot().weapons.rechargeSeconds,1.5);
   assert.equal(restored.snapshot().weapons.charges,20,'A new match starts full and keeps its purchased cooling');
-  const n7=harness(t,{campaign:'n7',savedSalvage:h.stored(SALVAGE_KEY)});n7.api.prepare();
-  assert.equal(n7.snapshot().weapons,null);assert.equal(n7.snapshot().ammo,3);
-  assert.equal(n7.stored(SALVAGE_KEY),h.stored(SALVAGE_KEY),'Legacy play cannot spend the canonical wallet');
 });
 
 test('a blocked C9 monetary write cannot grant its cooling entitlement or consume ammunition', t => {
@@ -1006,7 +1000,7 @@ test('the compact HUD and weapon share menu, completion, death and Atlas visibil
   assert.equal(h.pending.size, 1);
 });
 
-test('power pickup and expiry update flight clearance only when chip visibility changes and leave N-7 bounds alone', t => {
+test('power pickup and expiry update flight clearance only when chip visibility changes', t => {
   const rects = {
     hud: {left: 10, top: 10, width: 370, height: 44},
     flightRoute: {left: 10, top: 58, width: 370, height: 24},
@@ -1045,15 +1039,7 @@ test('power pickup and expiry update flight clearance only when chip visibility 
   assert.deepEqual(h.snapshot().bounds, before.bounds);
   const expiredReads = h.rectReads('powerHud'); h.advance(.2);
   assert.equal(h.rectReads('powerHud'), expiredReads);
-
-  const n7 = harness(t, {campaign: 'n7', rects}); n7.api.prepare();
-  const n7Reads = n7.rectReads('powerHud');
-  n7.api.collectPower('shield'); n7.advance(.5);
-  assert.equal(n7.node('powerShield').classList.contains('active'), true);
-  assert.equal(n7.snapshot().bounds, null);
-  assert.equal(n7.rectReads('powerHud'), n7Reads,
-    'The classic layout adapter must not run for the archived N-7 campaign');
-  assert.equal(h.pending.size, 1); assert.equal(n7.pending.size, 1);
+  assert.equal(h.pending.size, 1);
 });
 
 test('each Chronos stage gates its actual route on time and its cumulative recovery quota without replaying events', t => {
@@ -1179,19 +1165,6 @@ test('the voluntary onboard C9 workshop prepares its recovered emitter and resum
   assert.equal(h.voyage().checkpoint.stageNumber,7);
   assert.equal(continued.unlocked, 1);
   assert.equal(h.pending.size, 1);
-});
-
-test('the archived N-7 mode neither loads nor modifies the new Chronos voyage record', t => {
-  const h = harness(t); h.api.prepare(); h.reachStage(2);
-  const raw = h.stored(VOYAGE_KEY);
-  const archived = harness(t, {campaign: 'n7', savedVoyage: raw}); archived.api.prepare();
-  assert.equal(archived.snapshot().route, null);
-  archived.advance(3); archived.api.collectEnergy();
-  archived.api.pauseGame(); archived.advance(3); archived.api.resumeGame(); archived.api.goHome();
-  assert.equal(archived.stored(VOYAGE_KEY), raw);
-  assert.equal(archived.stored('neon-n7-unlocked-v1'), '37');
-  assert.equal(archived.stored('neon-n7-best-v1'), '2037');
-  assert.equal(archived.pending.size, 1);
 });
 
 test('a historical C9 end-of-stage waiting checkpoint resolves once into the next stage without losing recovered equipment', t => {

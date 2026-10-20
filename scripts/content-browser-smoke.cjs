@@ -11,10 +11,10 @@ const repository = path.resolve(__dirname, '..');
 const {values: args} = parseArgs({options: {
   root: {type: 'string'}, output: {type: 'string'}, 'base-url': {type: 'string'},
   baseURL: {type: 'string'}, timeout: {type: 'string'}, help: {type: 'boolean'},
-  combat: {type: 'boolean'}, profile: {type: 'string'}, mode: {type: 'string'}
+  profile: {type: 'string'}
 }});
 if (args.help) {
-  console.log('Options: --root www|preview-dist --output DIR --base-url URL --timeout 45000 --combat [--profile 390x844 --mode n7]');
+  console.log('Options: --root www|preview-dist --output DIR --base-url URL --timeout 45000 [--profile 390x844]');
   process.exit(0);
 }
 const root = path.resolve(args.root || process.env.NEON_BROWSER_ROOT || path.join(repository, 'www'));
@@ -28,16 +28,14 @@ const profiles = [
   {name: '320x568', width: 320, height: 568, dpr: 2},
   {name: '844x390', width: 844, height: 390, dpr: 3}
 ].filter(profile => !args.profile || profile.name === args.profile);
-const modes = ['original', 'n7'].filter(mode => !args.mode || mode === args.mode);
-assert.ok(profiles.length && modes.length, 'Unknown --profile or --mode');
-const expectedCases = profiles.length * modes.length + Number(Boolean(args.combat));
+assert.ok(profiles.length, 'Unknown --profile');
+const expectedCases = profiles.length;
 const report = {
   status: 'running', exitCode: null, startedAt: new Date().toISOString(), command: process.argv,
   sourceRoot: root, output, timeout, cases: [], expectedCases,
   limits: ['Chromium emulation only; no physical Safari/iPhone certification.',
     'Real game images and Canvas rendering; not a sustained FPS or memory benchmark.',
     'Read-only inspection hook inserted into the served game response; shipped bundles unchanged.',
-    'Smoke modes unlocked through separate keys; optional combat session completes route 37 naturally at DPR 1.',
     'Selector currently renders 10/100 buttons; pagination requires an explicit test update.',
     'Service workers blocked to verify fresh resources; offline/cache lifecycle not certified.']
 };
@@ -102,8 +100,9 @@ async function layout(page, paused = false) {
   assert.deepEqual(result.issues, [], 'Visible layout is clipped or distorted');
   return result;
 }
-async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
-  const result = {id: `${profile.name}-${mode}${fullRoute ? '-combat-progress' : ''}`, profile, mode, fullRoute, status: 'running',
+async function runCase(browser, profile, baseURL) {
+  const mode = 'original';
+  const result = {id: `${profile.name}-${mode}`, profile, mode, status: 'running',
     startedAt: new Date().toISOString(), steps: [], errors: [], failedRequests: [],
     consoleErrors: [], instrumentationErrors: [], bundles: {}, images: []};
   report.cases.push(result); await saveReport();
@@ -143,15 +142,12 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
     } finally { entry.durationMs = Date.now() - started; await saveReport(); }
   }
   try {
-    await page.addInitScript(({fullRoute}) => {
+    await page.addInitScript(() => {
       // Initialize once per context, never overwrite saves on reload or mode changes.
       if (!sessionStorage.getItem('neon-browser-qa-seeded')) {
-        localStorage.setItem('neon-n7-unlocked-v1', fullRoute ? '37' : '100');
-        localStorage.setItem('neon-unlocked-v2', fullRoute ? '7' : '10');
-        localStorage.setItem('neon-preview-v1:neon-n7-unlocked-v1', fullRoute ? '37' : '100');
-        localStorage.setItem('neon-preview-v1:neon-unlocked-v2', fullRoute ? '2' : '10');
+        localStorage.setItem('neon-unlocked-v2', '10');
+        localStorage.setItem('neon-preview-v1:neon-unlocked-v2', '10');
         localStorage.setItem('neon-best-v2', '2026');
-        localStorage.setItem('neon-n7-best-v1', '2037');
         sessionStorage.setItem('neon-browser-qa-seeded', '1');
       }
       window.__COMBAT_QA__ = {enemiesSeen: 0, projectilesSeen: 0, projectilesMoved: 0,
@@ -205,7 +201,7 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
         const captured = eventBefore.get(event);
         if (captured) window.__QA_EVENTS__.push({...captured, at: performance.now(), after: window.__GAME_QA__?.()});
       });
-    }, {fullRoute});
+    });
     await page.route(/\/(?:game|content-runtime|core-runtime)\.js(?:\?.*)?$/, async route => {
       try {
         const response = await route.fetch({timeout}); const body = await response.body();
@@ -215,10 +211,10 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
         const source = body.toString('utf8');
         const marker = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
         assert.equal(source.split(marker).length, 2, 'Expected exactly one legacy bootstrap marker');
-        const hook = `window.__GAME_QA__ = () => ({state,hull,ammo,currentLevel,N7_CAMPAIGN,
+        const hook = `window.__GAME_QA__ = () => ({state,hull,ammo,currentLevel,
           levelCount:LEVELS.length,playerX:player.x,target:player.target,W,H,elapsed,last,warpTimer,runToken,
-          legacyRunning,legacyFrameId,entityCount:items.length,directorTime:encounterDirector?.elapsed ?? null,
-          reproduction:encounterDirector?.reproduction ?? null, collected, score, goal:level().goal,
+          legacyRunning,legacyFrameId,entityCount:items.length,directorTime:null,
+          reproduction:null, collected, score, goal:level().goal,
           preview:Boolean(window.NeonPreview), unlocked:getUnlocked(),keys:{...KEYS},
           enemies:items.filter(item=>item.n7).map(item=>({id:item.id,x:item.x,y:item.y})),
           projectiles:items.filter(item=>item.n7Projectile).map(item=>({id:item.id,x:item.x,y:item.y}))});
@@ -232,37 +228,24 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
     });
     await step('open selected mode and verify level selector', async () => {
       await page.goto(baseURL, {waitUntil: 'load'});
-      const preview = await page.locator('#n7link').count() === 1;
+      const preview = await page.locator('#classiclink').count() === 1;
       result.previewLauncher = preview;
-      if (preview) {
-        if (mode === 'n7') {
-          const archive = page.locator('#qaArchive');
-          if (await archive.count() && await archive.getAttribute('open') === null) {
-            await archive.locator('summary').click();
-          }
-          if (!fullRoute) await page.locator('#unlock').check();
-          await page.locator('#n7link').click();
-        }
-        else await page.locator('a.card:not(#n7link)').click();
-      } else if (mode === 'n7') {
-        const url = new URL(page.url()); url.searchParams.set('campaign', 'n7');
-        await page.goto(url.href, {waitUntil: 'load'});
-      }
+      if (preview) await page.locator('#classiclink').click();
       await wait(page, () => typeof window.__GAME_QA__ === 'function' && __GAME_QA__().state === 'menu');
       result.gameURL = page.url();
       const state = await page.evaluate(() => __GAME_QA__());
-      assert.equal(state.N7_CAMPAIGN, mode === 'n7'); assert.equal(state.levelCount, mode === 'n7' ? 100 : 10);
+      assert.equal(state.levelCount, 10);
       result.storageBefore = await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).map(key => [key, localStorage.getItem(key)])));
       await page.locator('#levels').click();
       await wait(page, expected => document.querySelectorAll('#levelGrid button').length === expected, state.levelCount);
       result.levelCards = await page.locator('#levelGrid button').count();
-      assert.equal(await page.locator('#levelGrid button:disabled').count(), fullRoute ? 63 : 0);
-      await page.locator('#levelGrid button').nth(mode === 'n7' ? 36 : 0).click();
+      assert.equal(await page.locator('#levelGrid button:disabled').count(), 0);
+      await page.locator('#levelGrid button').nth(0).click();
       await page.locator('#launch').click();
-      await wait(page, isN7 => {
+      await wait(page, () => {
         const g = __GAME_QA__();
-        return g.state === 'playing' && g.warpTimer === 0 && (isN7 ? g.directorTime > .05 : g.elapsed > 1.3);
-      }, mode === 'n7');
+        return g.state === 'playing' && g.warpTimer === 0 && g.elapsed > 1.3;
+      });
       // Deferred sprites deliberately have no URL until their first use (for
       // example CH-01 is absent from the classic campaign).
       await wait(page, () => __GAME_ASSETS_QA__().filter(image => image.url)
@@ -291,13 +274,6 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
       await wait(page, ammo => __GAME_QA__().ammo === ammo - 1, fireBefore.ammo);
       result.fire = {before:fireBefore,after:await page.evaluate(() => __GAME_QA__())};
     });
-    if (fullRoute) await step('real enemies and moving enemy projectiles reach the visible playfield', async () => {
-      await page.waitForFunction(() => __COMBAT_QA__.enemiesSeen > 0 && __COMBAT_QA__.projectilesSeen > 0 &&
-        __COMBAT_QA__.projectilesMoved > 0 && __COMBAT_QA__.framesWithVisibleProjectiles >= 3,
-        undefined, {polling:200,timeout:180000});
-      assert.equal((await snapshot(page)).game.state, 'playing');
-      await page.screenshot({path:path.join(output,result.id+'-combat.png'),timeout});
-    });
     let paused;
     await step('pause freezes simulation while one RAF continues', async () => {
       await page.locator('#pause').click(); await wait(page, () => __GAME_QA__().state === 'paused');
@@ -310,7 +286,7 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
       assert.ok(Math.abs(result.layout.paused.canvas.y - result.layout.playing.canvas.y) < 1, 'Pause moved canvas by scrolling');
       await page.screenshot({path: path.join(output, result.id + '-paused.png'), timeout});
     });
-    await step('resume advances real game clock and encounter director', async () => {
+    await step('resume advances real game clock', async () => {
       await page.locator('#resume').click();
       await wait(page, before => {
         const g = __GAME_QA__(); return g.state === 'playing' && g.elapsed > before.elapsed + .05 &&
@@ -320,69 +296,17 @@ async function runCase(browser, profile, mode, baseURL, fullRoute = false) {
       assert.equal(resumed.raf.pending, 1); assert.equal(resumed.raf.maxPending, 1);
       assert.ok(resumed.raf.frames > paused.raf.frames); result.lifecycle = {paused, resumed};
     });
-    if (fullRoute) {
-      await step('natural route completion saves progress only in its own namespace', async () => {
-        // Real RAF, unmodified simulation speed, center refuge. No forced victory or time jumps.
-        const progressTimer = setInterval(async () => {
-          try {
-            const g = await page.evaluate(() => __GAME_QA__());
-            console.log(`[${result.id}] director=${g.directorTime.toFixed(2)} collected=${g.collected}/${g.goal} hull=${g.hull} state=${g.state}`);
-          } catch {}
-        },10000);
-        try {
-          await page.waitForFunction(() => ['complete','over','destroying'].includes(__GAME_QA__().state),
-            undefined,{polling:500,timeout:420000});
-        } finally { clearInterval(progressTimer); }
-        const completed = (await snapshot(page)).game;
-        assert.equal(completed.state,'complete'); assert.equal(completed.currentLevel,36);
-        assert.equal(completed.unlocked,38); assert.ok(completed.collected >= completed.goal);
-        assert.equal(completed.hull,100);
-        const after = await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).map(key => [key,localStorage.getItem(key)])));
-        const prefix = completed.preview ? 'neon-preview-v1:' : '';
-        const allowed = new Set(Object.entries(completed.keys).filter(([key])=>key !== 'settings').map(([,value])=>prefix+value));
-        for (const key of new Set([...Object.keys(result.storageBefore),...Object.keys(after)])) {
-          if (!allowed.has(key)) assert.equal(after[key],result.storageBefore[key],`Foreign save changed: ${key}`);
-        }
-        assert.equal(after[prefix+completed.keys.unlocked],'38');
-        assert.ok(JSON.parse(after[prefix+completed.keys.stars])['37'] > 0);
-        assert.ok(JSON.parse(after[prefix+completed.keys.levelBest])['37'] > 0);
-        result.progress = {completed,before:result.storageBefore,after};
-        await page.screenshot({path:path.join(output,result.id+'-complete.png'),timeout});
-        await page.reload({waitUntil:'load'});
-        await wait(page,()=>typeof window.__GAME_QA__ === 'function' && __GAME_QA__().state === 'menu');
-        assert.equal((await snapshot(page)).game.unlocked,38);
-        await page.locator('#levels').click();
-        assert.equal(await page.locator('#levelGrid button:not(:disabled)').count(),38);
-        result.progress.persistedAfterReload = true;
-      });
-      await step('switch to classic mode without importing N-7 progress', async () => {
-        if (result.previewLauncher) {
-          await page.goto(baseURL,{waitUntil:'load'});
-          await page.locator('a.card:not(#n7link)').click();
-        } else {
-          const url = new URL(page.url()); url.searchParams.delete('campaign');
-          await page.goto(url.href,{waitUntil:'load'});
-        }
-        await wait(page,()=>typeof window.__GAME_QA__ === 'function' && __GAME_QA__().state === 'menu');
-        const game = (await snapshot(page)).game;
-        assert.equal(game.N7_CAMPAIGN,false); assert.equal(game.levelCount,10);
-        assert.equal(game.unlocked,game.preview ? 2 : 7);
-        assert.deepEqual(result.errors,[]); assert.deepEqual(result.failedRequests,[]);
-      });
-      result.status = 'passed'; return;
-    }
     await step('restart resets progress, preserves seed and advances again', async () => {
       await page.locator('#pause').click(); const before = await page.evaluate(() => __GAME_QA__());
       await page.locator('#restart').click();
       await wait(page, token => __QA_EVENTS__.some(event => event.id === 'restart' && event.after.runToken === token + 1), before.runToken);
       const event = await page.evaluate(() => __QA_EVENTS__.filter(event => event.id === 'restart').at(-1));
       assert.equal(event.after.state, 'playing'); assert.equal(event.after.hull, 100); assert.equal(event.after.ammo, 3);
-      assert.equal(event.after.elapsed, 0); assert.equal(event.after.directorTime, mode === 'n7' ? 0 : null);
+      assert.equal(event.after.elapsed, 0); assert.equal(event.after.directorTime, null);
       assert.equal(event.after.currentLevel, before.currentLevel); assert.deepEqual(event.after.reproduction, before.reproduction);
-      await wait(page, isN7 => {
-        const g = __GAME_QA__(); return g.state === 'playing' && g.warpTimer === 0 &&
-          (isN7 ? g.directorTime > .05 : g.elapsed > 1.3);
-      }, mode === 'n7');
+      await wait(page, () => {
+        const g = __GAME_QA__(); return g.state === 'playing' && g.warpTimer === 0 && g.elapsed > 1.3;
+      });
     });
     await step('return to menu and verify resource and RAF health', async () => {
       await page.locator('#pause').click(); await page.locator('#quit').click();
@@ -418,8 +342,7 @@ async function main() {
       headless: true, timeout, args: ['--no-sandbox', '--disable-dev-shm-usage'],
       ...(process.env.NEON_BROWSER_PROXY ? {proxy: {server: process.env.NEON_BROWSER_PROXY}} : {})});
     report.browser = browser.version();
-    for (const profile of profiles) for (const mode of modes) await runCase(browser, profile, mode, baseURL);
-    if (args.combat) await runCase(browser,{name:'390x844-dpr1',width:390,height:844,dpr:1},'n7',baseURL,true);
+    for (const profile of profiles) await runCase(browser, profile, baseURL);
     report.status = report.cases.length === expectedCases && report.cases.every(result => result.status === 'passed') ? 'passed' : 'failed';
     report.exitCode = report.status === 'passed' ? 0 : 1;
   } catch (error) {
