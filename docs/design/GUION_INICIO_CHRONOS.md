@@ -1,12 +1,12 @@
-# Guion plano a plano · Inicio de Chronos (v3)
+# Guion plano a plano · Inicio de Chronos (v4)
 
 Crítica del propietario a la v2 (20/10/2026): la ruptura parece un juguete,
 el villano no tiene carácter, el ataque no impresiona, Chronos se ve siempre
 del mismo tamaño y los fotogramas de cada escena no están construidos.
 
-Reglas que se mantienen: la ruptura ocurre a los **9 s** del reloj de ruta;
-los controles están bloqueados hasta entonces (apertura cinematográfica del
-capítulo) y la partida sigue sin cortes después. Todo se deriva de una pose
+Reglas que se mantienen: la ruptura ocurre a los **9 s** del reloj de ruta y
+la partida sigue sin cortes. **Los controles no se bloquean** (la historia del
+capítulo usa la presentación "in-world"); la escena ocurre mientras se pilota. Todo se deriva de una pose
 pura (`getChronosIntroPose`) y se dibuja con una **cámara** propia de la
 escena (zoom, encuadre, temblor) que no afecta al juego.
 
@@ -36,6 +36,21 @@ escena (zoom, encuadre, temblor) que no afecta al juego.
 | 6 | 9,0–11,5 | **Ruptura** | Destello corto, onda expansiva (4 fases) mayor que la estación, explosiones en cadena por el anillo, 8 trozos que salen y crecen hacia la cámara, la torre se parte. | Sacudida fuerte y vuelta a 1,0. | Ruptura del reactor |
 | 7 | 11,5–13,6 | **Desprecio** | Cronos Prime gira hacia la nave, el ojo se vuelve rojo un instante y se marcha en un salto (estela vertical + destello). | Fija. | — |
 | 8 | 13,6–26 | **Huida** | Estación rota con incendios, oscurecida, alejándose; la partida ya es protagonista. | Alejamiento. | Ruta de emergencia |
+
+## Cambios de la v4 (revisión de los agentes de competencia)
+
+- El impacto corta (dos fotogramas en blanco) a las **láminas pintadas** de la
+  ruptura: 01–05 rápidas con empuje y sacudida, 06–10 más lentas y fundido al
+  **fondo tras la ruptura**, que baja a media luz al pilotar y se retira a los
+  14–18 s. La estación por piezas no vuelve a dibujarse: Chronos queda destruida.
+- Cronos Prime sale de una **grieta vertical**, se hace más grande que la
+  pantalla, abre las alas y se retira a un puesto de tiro en diagonal; el haz
+  cruza media pantalla.
+- Se bebe la estación **sector a sector** (8 sectores) con descargas.
+- Al final se inclina hacia la nave con una **pupila roja** que la mira y
+  sale por una grieta que se cierra de golpe.
+- Si las láminas no han cargado, se usa la ruptura por piezas (onda y
+  estallidos azules).
 
 ## Arte usado
 
