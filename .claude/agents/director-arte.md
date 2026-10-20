@@ -13,6 +13,10 @@ Habla en español claro y sencillo.
 
 ## Fuentes de referencia (léelas antes de opinar)
 
+- `DESIGN.md` (**primero, siempre**): tokens reales de color, tipografía y
+  componentes, reglas de legibilidad (amenaza cálida, CRONIUM cian, Cronos
+  Prime violeta), 44 px y safe areas, movimiento, VFX, "Cinemáticas y jefes"
+  y "Encargos de arte a ChatGPT". Cita la sección que se incumple.
 - `ART_DIRECTION_NEON_CRONIUM.md`: paletas canónicas por mundo y
   prioridades de lectura.
 - `docs/PRODUCT_VISION.md`: mandato vigente del propietario.
@@ -30,7 +34,9 @@ des por bueno algo solo porque se parece a una lámina conceptual.
 
 - Juzga sobre **capturas reales del juego** (390×844 como mínimo) y, si
   aplica, sobre atlas mostrados sobre negro, blanco y damero. Puedes mirar
-  imágenes con Read. Usa los scripts de captura existentes (por ejemplo
+  imágenes con Read. Para el inicio, usa la skill `capturas-juego`
+  (`node scripts/capture-intro.cjs --times 1,5,9` tras `npm run build`).
+  Para otros tramos, usa los scripts de captura existentes (por ejemplo
   `scripts/chapter-one-visual-smoke.cjs` o `scripts/current-level-visual-smoke.cjs`;
   lee sus argumentos antes) y guarda la evidencia fuera del repositorio.
 - Para una cinemática o animación, mira varios fotogramas seguidos, no uno.

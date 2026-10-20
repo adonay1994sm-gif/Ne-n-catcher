@@ -99,6 +99,26 @@ probaron de fondo se retiraron (el propietario las vio como un collage).
 Sin usar todavía: estación completa, variante B, anillo con antenas, fondo
 tras la ruptura, esfera de energía y descargas.
 
+## Sitio de assets del propietario
+
+El propietario publica sus entregas en
+https://neon-cronium-video-referencia.chictide18.chatgpt.site (catálogo en
+`catalog.json`: animaciones, piezas y descargas). Revisado el 20/10/2026:
+
+| Colección | Qué hay | Uso en el juego |
+|---|---|---|
+| Cronos Prime · fase 1 (animación, giro, ataque leve/medio/máximo, rotación completa ×3) | Hojas de celdas de 512 | El cuerpo ocupa **~350 px** dentro de cada celda (igual que la entrega anterior): no ganan nitidez. El ataque máximo tiene un haz más grande. |
+| Cronos Prime · complementos | Ojo con iris (2048), vista de tres cuartos (2048) | Alta resolución, estáticos: primeros planos. |
+| Cronos Prime · fases 2 y 3, núcleo y energía | Piezas a 2048 | Combate final (viaje 10). |
+| Estación espacial | Piezas a 2048 y fondo vertical 1080×1920 | Pueden sustituir a las piezas actuales con más nitidez. |
+| Explosión azul | 8 celdas de 512 | Ya integrada (misma explosión). |
+| Planetas | 4 hojas de 7 vistas | Ya recibidas (Vulkar, Cryon, Aether, Tálasa). |
+| Dron explorador (Gaia Nova) | 8 fotogramas, demo en revisión | Enemigo futuro. |
+
+**Para ganar nitidez de verdad** en iPhone, cada fotograma debe tener el
+cuerpo ocupando casi toda la celda y celdas de ≥ 768–1024 px (en pantalla se
+dibuja a unos 700 px reales).
+
 ## Pendiente de pedir (sugerencias de Claude)
 
 | Qué | Para qué | Notas para ChatGPT |
