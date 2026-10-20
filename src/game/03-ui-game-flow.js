@@ -653,10 +653,10 @@
     if(!isUnifiedClassic())return;
     const introBefore=classicFlightView?.elapsed;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
-    // El tiempo «tartamudea»: la alarma suena dos veces, la primera antes de su causa.
+    // Cronos Prime carga el disparo: suena la alarma al empezar a cargar y al abrir fuego.
     const timeline=NeonCampaign.CHRONOS_INTRO_TIMELINE;
     if(timeline&&Number.isFinite(introBefore)&&classicFlightView) {
-      for(const cue of [timeline.stutterStart-timeline.stutterRewind,timeline.stutterStart])
+      for(const cue of [timeline.chargeStart,timeline.beamStart])
         if(introBefore<cue&&classicFlightView.elapsed>=cue)combatSound("atlas-charge",W*.5);
     }
     if(classicChapterStory&&classicFlightView) {
@@ -1572,7 +1572,7 @@
         ensureSprite(SPRITES.ch01);
         ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
         ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimePhaseOne);
-        for(const backdrop of SPRITES.chronosIntroBackdrops)ensureSprite(backdrop);ensureSprite(SPRITES.guardianAtlas);
+        ensureSprite(SPRITES.guardianAtlas);
       }
     }
 

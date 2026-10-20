@@ -211,21 +211,6 @@
     ctx.drawImage(image, (cell % columns) * size, Math.floor(cell / columns) * size, size, size, x, y, width, height);
   }
 
-  function drawChronosIntroBackdrop(pose) {
-    const plates = SPRITES.chronosIntroBackdrops || [];
-    if (pose.backdrop.alpha <= 0) return;
-    const draw = (index, alpha) => {
-      const image = plates[index];
-      if (alpha <= 0 || !spriteReady(image)) return;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * pose.backdrop.zoom;
-      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
-      ctx.save(); ctx.globalAlpha = pose.backdrop.alpha * alpha;
-      ctx.drawImage(image, (W - width) / 2, (H - height) * .42, width, height); ctx.restore();
-    };
-    draw(pose.backdrop.frameA, 1);
-    draw(pose.backdrop.frameB, pose.backdrop.mix);
-  }
-
   function drawTalasa(pose) {
     // El planeta que orbita Chronos se queda atrás al huir.
     const fade = 1 - clamp((pose.clock - 20) / 6, 0, 1);
@@ -236,32 +221,49 @@
     ctx.restore();
   }
 
-  function drawCronosPrimePhaseOne(pose, x, y, unit) {
+  function drawCronosPrimePhaseOne(pose) {
     const prime = pose.prime, atlas = SPRITES.cronosPrimePhaseOne;
-    if (prime.alpha <= 0 || !spriteReady(atlas)) return;
-    // Las alas abiertas miden unas 2,2 veces el tamaño: nunca salen de la pantalla.
-    const size = Math.min(unit * prime.scale, W * .94 / 2.2);
-    ctx.save(); ctx.translate(x, y); ctx.globalAlpha = prime.alpha;
-    // Alas laterales (la derecha es el espejo de la izquierda) y cuchillas.
-    const wingSize = size * .62, wingGap = size * (.18 + .30 * prime.wingSpread);
+    if (!prime.visible || !spriteReady(atlas)) return;
+    // Con las alas abiertas mide unas 2,2 veces el tamaño: cabe en pantalla.
+    const size = W * .42 * prime.scale;
+    ctx.save(); ctx.translate(prime.x * W, prime.y * H); ctx.rotate(prime.tilt);
+    // Alas laterales (la derecha es el espejo de la izquierda) y cuchillas:
+    // llega plegado y las despliega al colocarse frente a la estación.
+    const wingSize = size * .62, wingGap = size * (.05 + .17 * prime.wingSpread);
     for (const side of [-1, 1]) {
       ctx.save(); ctx.scale(side, 1);
-      ctx.globalAlpha = prime.alpha * prime.wingSpread;
-      drawAtlasCell(atlas, 2, 1, -wingGap - wingSize, -wingSize / 2, wingSize, wingSize);
+      ctx.save(); ctx.translate(-wingGap - wingSize / 2, 0); ctx.rotate(.9 * (1 - prime.wingSpread));
+      drawAtlasCell(atlas, 2, 1, -wingSize / 2, -wingSize / 2, wingSize, wingSize);
+      ctx.restore();
       const bladeSize = size * .42;
-      ctx.translate(-size * (.12 + .06 * prime.bladeSpread), -size * (.26 + .12 * prime.bladeSpread));
-      ctx.rotate(-.35 * (1 - prime.bladeSpread));
-      ctx.globalAlpha = prime.alpha * prime.bladeSpread;
+      ctx.translate(-size * (.10 + .08 * prime.bladeSpread), -size * (.22 + .16 * prime.bladeSpread));
+      ctx.rotate(-.5 * (1 - prime.bladeSpread));
       drawAtlasCell(atlas, 2, 2, -bladeSize / 2, -bladeSize / 2, bladeSize, bladeSize);
       ctx.restore();
     }
     const coreSize = size * .5;
-    ctx.globalAlpha = prime.alpha;
     drawAtlasCell(atlas, 2, 0, -coreSize / 2, -coreSize / 2, coreSize, coreSize);
     if (prime.coreGlow > 0) {
-      ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = prime.alpha * prime.coreGlow * .55;
+      // Carga del disparo: el núcleo se ilumina y crece un halo blanco.
+      ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = prime.coreGlow * .6;
       drawAtlasCell(atlas, 2, 0, -coreSize / 2, -coreSize / 2, coreSize, coreSize);
+      const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, coreSize * (.35 + .45 * prime.charge));
+      halo.addColorStop(0, "rgba(235,245,255,.95)"); halo.addColorStop(1, "rgba(120,170,255,0)");
+      ctx.globalAlpha = prime.coreGlow; ctx.fillStyle = halo;
+      ctx.fillRect(-coreSize, -coreSize, coreSize * 2, coreSize * 2);
     }
+    ctx.restore();
+  }
+
+  function drawCronosPrimeBeam(pose, targetX, targetY) {
+    // Haz de Cronos Prime desde su núcleo hasta el reactor de la estación.
+    const prime = pose.prime, atlas = SPRITES.cronosPrimePhaseOne;
+    if (!prime.visible || prime.beamAlpha <= 0 || !spriteReady(atlas)) return;
+    const fromX = prime.x * W, fromY = prime.y * H;
+    const length = Math.hypot(targetX - fromX, targetY - fromY), width = W * .3;
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = prime.beamAlpha;
+    ctx.translate(fromX, fromY); ctx.rotate(Math.atan2(targetY - fromY, targetX - fromX) - Math.PI / 2);
+    drawAtlasCell(atlas, 2, 3, -width / 2, -length * .08, width, length * 1.16);
     ctx.restore();
   }
 
@@ -269,7 +271,8 @@
     const node = view.station, atlas = SPRITES.chronosIntroStation;
     if (!node.visible) return;
     const station = pose.station;
-    const x = node.x * W, y = node.y * H, unit = W * node.scale * station.zoom;
+    const unit = W * node.scale * station.zoom;
+    const x = node.x * W + station.shake * unit, y = (node.y + station.drop) * H + station.shake * unit * .6;
     // Anillo exterior: se separa, crece y se desvanece tras la ruptura.
     if (station.ringAlpha > 0) {
       const ring = unit * station.ringScale;
@@ -286,18 +289,9 @@
     else ctx.rotate(station.wheelAngle * .25);
     drawAtlasCell(atlas, 3, station.wheelCell, -wheel / 2, -wheel / 2, wheel, wheel);
     ctx.restore();
-    drawCronosPrimePhaseOne(pose, x, y - unit * .04, unit);
     // Torre de cristal sobre el núcleo: intacta y, desde el segundo 9, rota.
     const tower = unit * .62;
     drawAtlasCell(atlas, 3, station.towerCell, x - tower / 2, y + unit * .1 - tower - station.towerLift * unit, tower, tower);
-    // Haz vertical de Cronos Prime que atraviesa la torre.
-    const beamAtlas = SPRITES.cronosPrimePhaseOne;
-    if (pose.prime.beamAlpha > 0 && spriteReady(beamAtlas)) {
-      const height = unit * 1.6;
-      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = pose.prime.beamAlpha * pose.prime.alpha;
-      drawAtlasCell(beamAtlas, 2, 3, x - height / 2, y - height * .62, height, height);
-      ctx.restore();
-    }
     // Restos de la estación que salen despedidos, la mitad hacia la nave.
     const fragments = SPRITES.chronosIntroFragments;
     if (pose.fragments.length && spriteReady(fragments)) {
@@ -310,17 +304,12 @@
         ctx.restore();
       }
     }
+    // El atacante va por delante de la estación.
+    drawCronosPrimeBeam(pose, x, y - unit * .05);
+    drawCronosPrimePhaseOne(pose);
   }
 
   function drawChronosIntroOverlay(pose) {
-    if (pose.stutter > 0) {
-      // Imagen que se repite: bandas desplazadas y tinte frío.
-      ctx.save(); ctx.globalCompositeOperation = "screen";
-      ctx.fillStyle = "rgba(120,180,255,.10)"; ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = "rgba(170,140,255,.16)";
-      for (let band = 0; band < 6; band++) ctx.fillRect(0, ((band * 211 + pose.clock * 900) % H), W, 6 + band * 2);
-      ctx.restore();
-    }
     if (pose.flash > 0) {
       ctx.save(); ctx.globalCompositeOperation = "screen";
       ctx.fillStyle = `rgba(200,225,255,${(pose.flash * .85).toFixed(3)})`; ctx.fillRect(0, 0, W, H);
@@ -462,7 +451,7 @@
     ctx.restore();
 
     const intro = chronosIntroPose(view);
-    if (intro) { drawChronosIntroBackdrop(intro); drawTalasa(intro); }
+    if (intro) drawTalasa(intro);
     drawChronosFlightSprite(2, chronosDestinationPresentation(view.planet));
     if (intro) drawChronosIntroStation(view, intro);
     else if (!drawChronosDestructionStation(view, destruction)) {
@@ -508,7 +497,8 @@
       }
     }
 
-    if (view.attacker.visible) {
+    // Con el inicio nuevo el atacante es Cronos Prime, no la nave antigua.
+    if (view.attacker.visible && !intro) {
       const attacker = view.attacker;
       const size = W * attacker.scale * 1.4;
       // The artwork's cannon points down-left.  Rotate its measured muzzle
@@ -517,7 +507,7 @@
       const angle = attacker.rotation || 0;
       const muzzleX = W * attacker.x + localX * Math.cos(angle) - localY * Math.sin(angle);
       const muzzleY = H * attacker.y + localX * Math.sin(angle) + localY * Math.cos(angle);
-      if (attacker.state === "fire" && !intro) {
+      if (attacker.state === "fire") {
         const targetX = W * view.station.x, targetY = H * view.station.y;
         const dx = targetX - muzzleX, dy = targetY - muzzleY;
         ctx.save();

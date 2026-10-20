@@ -47,6 +47,10 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - [x] Nuevo inicio de Chronos con el arte del propietario: estación por piezas,
   Cronos Prime fase 1 la destruye a los 9 s, restos, destello y láminas de la
   ruptura (`src/game/animation/chronos-intro.js`). Sin las piezas, inicio anterior.
+- [x] Inicio de Chronos rehecho tras la prueba del propietario ("no tiene
+  sentido"): Cronos Prime llega desde fuera, se coloca sobre la estación,
+  carga, dispara y se marcha. Sin láminas mezcladas, sin tartamudeo y sin la
+  nave atacante antigua. Las láminas quedan en `assets/` sin usar.
 - [ ] Prueba del propietario en iPhone de todo lo anterior (valores reversibles).
 - [ ] Partida natural completa automática sobre esta rama (el piloto solo genera
   preview desde la rama autorizada).
