@@ -237,10 +237,10 @@
     // Inicio de Chronos con las piezas del propietario (carga diferida).
     chronosIntroStation: loadSprite("assets/chronos_intro_station_atlas_v1.webp", false),
     chronosIntroFragments: loadSprite("assets/chronos_intro_fragments_atlas_v1.webp", false),
-    cronosPrimePhaseOne: loadSprite("assets/cronos_prime_phase1_atlas_v1.webp", false),
+    // Cronos Prime animado (24 fotogramas) y explosión azul de la estación.
+    cronosPrimeAnim: loadSprite("assets/cronos_prime_anim_atlas_v1.webp", false),
+    chronosStationExplosion: loadSprite("assets/chronos_station_explosion_atlas_v1.webp", false),
     cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
-    // Láminas pintadas de la ruptura (01–10) y el fondo que queda (11).
-    chronosRupturePlates: [1,2,3,4,5,6,7,8,9,10,11].map((index) => loadSprite(`assets/chronos_rupture_plate_${String(index).padStart(2,"0")}_v1.webp`, false)),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
     c9Station: loadSprite("assets/c9_station_v1.webp", false),
