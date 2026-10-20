@@ -4332,10 +4332,10 @@
   // sigue usando el inicio anterior.
   function chronosIntroPose(view) {
     if (typeof NeonCampaign.getChronosIntroPose !== "function") return null;
-    // Tras la secuencia, la estación rota sigue alejándose con su última pose
-    // (sin volver al dibujo antiguo mientras siga a la vista).
-    const elapsed = view.station.visible ? Math.min(view.elapsed, (NeonCampaign.CHRONOS_INTRO_TIMELINE || {end: 26}).end) : view.elapsed;
-    const pose = NeonCampaign.getChronosIntroPose(elapsed, {reducedEffects: Boolean(settings.reduceEffects)});
+    // Tras la secuencia, la estación rota sigue girando y alejándose con la
+    // ruta (sin volver al dibujo antiguo mientras siga a la vista).
+    const pose = NeonCampaign.getChronosIntroPose(view.elapsed,
+      {reducedEffects: Boolean(settings.reduceEffects), holdWreck: Boolean(view.station.visible)});
     return pose.active && spriteReady(SPRITES.chronosIntroStation) ? pose : null;
   }
 
@@ -4411,20 +4411,24 @@
       const ring = unit * station.ringScale;
       ctx.save(); ctx.globalAlpha = station.ringAlpha;
       ctx.translate(x + station.ringOffset * unit * .35, y - station.ringOffset * unit * .25);
-      ctx.scale(1, .8); ctx.rotate(station.ringAngle);
+      ctx.rotate(station.sway); ctx.scale(1, station.tiltY); ctx.rotate(station.ringAngle);
       drawAtlasCell(atlas, 3, 0, -ring / 2, -ring / 2, ring, ring);
       ctx.restore();
     }
     // Rueda con brazos: plana y girando; rota e inclinada tras la ruptura.
     const wheel = unit * .7;
-    ctx.save(); ctx.translate(x, y);
-    if (station.wheelCell === 1) { ctx.scale(1, .8); ctx.rotate(station.wheelAngle); }
-    else ctx.rotate(station.wheelAngle * .25);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(station.sway);
+    // La rueda inclinada ya viene en perspectiva: gira sin aplastarla más.
+    if (station.wheelCell === 1) ctx.scale(1, station.tiltY);
+    ctx.rotate(station.wheelCell === 1 ? station.wheelAngle : station.wheelAngle * .5);
     drawAtlasCell(atlas, 3, station.wheelCell, -wheel / 2, -wheel / 2, wheel, wheel);
     ctx.restore();
     // Torre de cristal sobre el núcleo: intacta y, desde el segundo 9, rota.
-    const tower = unit * .62;
-    drawAtlasCell(atlas, 3, station.towerCell, x - tower / 2, y + unit * .1 - tower - station.towerLift * unit, tower, tower);
+    // La torre se balancea con la estación desde su base.
+    const tower = unit * .62, towerBase = y + unit * .1 - station.towerLift * unit;
+    ctx.save(); ctx.translate(x, towerBase); ctx.rotate(station.sway * .6);
+    drawAtlasCell(atlas, 3, station.towerCell, -tower / 2, -tower, tower, tower);
+    ctx.restore();
     // Restos de la estación que salen despedidos, la mitad hacia la nave.
     const fragments = SPRITES.chronosIntroFragments;
     if (pose.fragments.length && spriteReady(fragments)) {
