@@ -490,34 +490,13 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
-    if (item.n7Projectile || item.classicScoutProjectile) {
-      if (item.classicScoutProjectile) {
-        ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
-        if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
-          item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
-        ctx.restore(); return;
-      }
-      const atlasPulse = item.classicScoutProjectile;
-      ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
-      ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
-      ctx.shadowBlur = 12;
-      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42,
-        item.tacticsVersion?Math.atan2(item.vy,item.vx):Math.PI/2)) {
-        ctx.fillRect(-4, -12, 8, 24);
-      }
-      ctx.restore();
-      return;
+    if (item.classicScoutProjectile) {
+      ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
+      if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
+        item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
+      ctx.restore(); return;
     }
-    const telegraph = item.n7?.telegraph || 0;
-    if (telegraph > 0) {
-      ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
-      ctx.lineWidth = 2;
-      const aim=item.classicScout?.lockedTarget;
-      const angle=aim?Math.atan2(aim.y-item.y,aim.x-item.x):Math.PI/2;
-      ctx.beginPath();ctx.moveTo(Math.cos(angle)*35,Math.sin(angle)*35);
-      ctx.lineTo(Math.cos(angle)*145,Math.sin(angle)*145);ctx.stroke();
-    }
-    if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
+    if (drawCh01Frame(item.classicScout?.animator)) {
       ctx.restore();
       return;
     }

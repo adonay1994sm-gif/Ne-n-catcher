@@ -12,7 +12,7 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.guardianProjectile || item.n7Projectile) drawAtlasProjectile(item);
+      if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "energy") drawEnergy(item);

@@ -1035,7 +1035,7 @@
     if(target.salvageRunId&&target.salvageRunId!==classicSalvageRunId)return null;
     const boss=target.bossSalvage===true;
     const wreckage=["debris","satellite"].includes(target.type);
-    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.n7Projectile||target.guardianProjectile))return null;
+    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
     const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
@@ -1750,7 +1750,7 @@
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);
       if(shot.weapon==="missile")addMissileImpact(item.x,item.y);else addImpactEffect(item.x,item.y,.8);
-      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
+      score+=item.classicScoutProjectile?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
       hudScoreTarget=score;
       if(destroyed){
         if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
@@ -3298,7 +3298,7 @@
       spawnClassicScrap(target);
       releaseClassicShowerComet(target);
     }
-    const animator = target.n7?.ch01Animator || target.classicScout?.animator;
+    const animator = target.classicScout?.animator;
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
@@ -3737,8 +3737,6 @@
       } else item.y += item.s * dt * scale;
       item.rot += item.rs * dt;
       item.p += dt * 4;
-      if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
-      if(item.flightPatrol && item.n7 && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
       if (item.classicScout) {
@@ -5317,34 +5315,13 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
-    if (item.n7Projectile || item.classicScoutProjectile) {
-      if (item.classicScoutProjectile) {
-        ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
-        if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
-          item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
-        ctx.restore(); return;
-      }
-      const atlasPulse = item.classicScoutProjectile;
-      ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
-      ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
-      ctx.shadowBlur = 12;
-      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42,
-        item.tacticsVersion?Math.atan2(item.vy,item.vx):Math.PI/2)) {
-        ctx.fillRect(-4, -12, 8, 24);
-      }
-      ctx.restore();
-      return;
+    if (item.classicScoutProjectile) {
+      ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
+      if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
+        item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
+      ctx.restore(); return;
     }
-    const telegraph = item.n7?.telegraph || 0;
-    if (telegraph > 0) {
-      ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
-      ctx.lineWidth = 2;
-      const aim=item.classicScout?.lockedTarget;
-      const angle=aim?Math.atan2(aim.y-item.y,aim.x-item.x):Math.PI/2;
-      ctx.beginPath();ctx.moveTo(Math.cos(angle)*35,Math.sin(angle)*35);
-      ctx.lineTo(Math.cos(angle)*145,Math.sin(angle)*145);ctx.stroke();
-    }
-    if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
+    if (drawCh01Frame(item.classicScout?.animator)) {
       ctx.restore();
       return;
     }
@@ -5710,7 +5687,7 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.guardianProjectile || item.n7Projectile) drawAtlasProjectile(item);
+      if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "energy") drawEnergy(item);

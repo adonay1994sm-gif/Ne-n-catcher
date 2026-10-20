@@ -630,7 +630,7 @@
       spawnClassicScrap(target);
       releaseClassicShowerComet(target);
     }
-    const animator = target.n7?.ch01Animator || target.classicScout?.animator;
+    const animator = target.classicScout?.animator;
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {

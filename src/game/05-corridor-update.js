@@ -368,8 +368,6 @@
       } else item.y += item.s * dt * scale;
       item.rot += item.rs * dt;
       item.p += dt * 4;
-      if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
-      if(item.flightPatrol && item.n7 && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
       if (item.classicScout) {

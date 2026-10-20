@@ -118,7 +118,7 @@ test('collision damage, missed wreckage, stone and incoming projectiles never gr
   assert.equal(h.calls.damage.length,2);assert.equal(loot(h.game).length,0);
   const meteor=h.target('meteor');assert.equal(meteor.salvageDropId,undefined);
   h.game.animateScoutHit(meteor,true);
-  for(const flag of ['classicScoutProjectile','n7Projectile','guardianProjectile']) {
+  for(const flag of ['classicScoutProjectile','guardianProjectile']) {
     h.game.animateScoutHit({type:'debris',x:360,y:600,[flag]:true},true);
   }
   assert.equal(loot(h.game).length,0);assert.equal(h.ledger.getBalance(),0);

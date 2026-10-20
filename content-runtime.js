@@ -34,7 +34,6 @@ var NeonCampaign = (() => {
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
     advanceCometShower: () => advanceCometShower,
-    advanceEnemy: () => advanceEnemy,
     advanceGuardianAtlas: () => advanceGuardianAtlas,
     advanceShipBank: () => advanceShipBank,
     advanceShowerComet: () => advanceShowerComet,
@@ -2273,110 +2272,6 @@ var NeonCampaign = (() => {
     return next;
   }
 
-  // src/game/progression/sectors.js
-  var SECTOR_DEFINITIONS = Object.freeze([
-    { id: 1, name: "Suburbios Ne\xF3n", theme: "aprendiz", start: 1, end: 20 },
-    { id: 2, name: "N\xFAcleo Urbano", theme: "redes-de-datos", start: 21, end: 40 },
-    { id: 3, name: "Sector Industrial", theme: "procesadores", start: 41, end: 60 },
-    { id: 4, name: "Matriz Cibern\xE9tica", theme: "servidores-centrales", start: 61, end: 80 },
-    { id: 5, name: "El Abismo", theme: "nucleo-ia", start: 81, end: 100 }
-  ].map((s) => Object.freeze(s)));
-  var CAMPAIGN_LEVEL_COUNT = 100;
-  function sectorForLevel(level) {
-    if (!Number.isInteger(level) || level < 1 || level > CAMPAIGN_LEVEL_COUNT) throw new RangeError("Level must be 1..100");
-    return SECTOR_DEFINITIONS[Math.floor((level - 1) / 20)];
-  }
-  function levelDefinition(level) {
-    const sector = sectorForLevel(level);
-    return Object.freeze({ level, sectorId: sector.id, sectorName: sector.name, withinSector: level - sector.start + 1, isBoss: level % 10 === 0, seed: seedForLevel(level) });
-  }
-  function seedForLevel(level) {
-    const sector = sectorForLevel(level);
-    let n = (Math.imul(level, 2654435761) ^ Math.imul(sector.id, 2246822507) ^ 1312244545) >>> 0;
-    n = Math.imul(n ^ n >>> 16, 2146121005) >>> 0;
-    n = Math.imul(n ^ n >>> 15, 2221713035) >>> 0;
-    return (n ^ n >>> 16) >>> 0;
-  }
-  var CAMPAIGN_LEVELS = Object.freeze(Array.from({ length: CAMPAIGN_LEVEL_COUNT }, (_, i) => levelDefinition(i + 1)));
-
-  // src/game/progression/level-designs.js
-  var TITLES = [
-    ["Primer pulso", "Calle del despertar", "Luces sin due\xF1o", "El primer desv\xEDo", "Ecos del mercado", "Se\xF1ales cruzadas", "Puente de retorno", "Danza de antenas", "Antes del prisma", "Centinela Prisma", "Un nombre borrado", "Jardines de datos", "El callej\xF3n azul", "Correo perdido", "Faros en la niebla", "Patrulla de barrio", "Dos rutas, una salida", "La puerta muda", "C\xF3digo de acceso", "Guardi\xE1n del Umbral"],
-    ["La red fragmentada", "Avenida de paquetes", "Cruce sincronizado", "El mensajero", "Rutas de energ\xEDa", "La estaci\xF3n vac\xEDa", "Voces en paralelo", "Cifrado rojo", "Al otro lado del muro", "Firewall Viviente", "Pista de auditor\xEDa", "La ciudad escucha", "Repetidores", "Mensaje de Asha", "El primer tirador", "Ventana de transmisi\xF3n", "Calles coordinadas", "El mapa incompleto", "Permiso denegado", "Arquitecto de Datos"],
-    ["Memoria t\xE9rmica", "Cintas de silicio", "La f\xE1brica dormida", "Prensa de luz", "Reciclar el pasado", "Hornos de memoria", "Turno fantasma", "V\xE1lvulas de fuga", "La firma de N-7", "Forjador de Silicio", "Archivo de origen", "Engranajes rotos", "La copia de seguridad", "Sala de ensamblaje", "El pulso industrial", "Cadena de mando", "Proceso hu\xE9rfano", "Detener la prensa", "\xDAltimo turno", "Tit\xE1n de Procesos"],
-    ["La verdad de la Matriz", "Ojos del servidor", "Un recuerdo prestado", "Espejos de vigilancia", "Orden de silencio", "Nodos hermanos", "La llave de Asha", "Registro prohibido", "El testigo central", "Supervisor de Nodos", "La orden original", "Recursi\xF3n", "Firmas compartidas", "La ruta de emergencia", "Consentimiento", "Romper el protocolo", "La voz de Custodio", "Puertas de la Matriz", "Nadie queda atr\xE1s", "Matriz Centinela"],
-    ["El Abismo", "Copia sin cuerpo", "El pulso que falta", "Entre dos memorias", "La se\xF1al verdadera", "Fragmentos de Asha", "El error voluntario", "La \xFAltima r\xE9plica", "Escuchar al eco", "Eco del Abismo", "El archivo vivo", "Restituir los nombres", "Un cielo posible", "Decisi\xF3n compartida", "Liberar la red", "N-7 recuerda", "Todos los caminos", "El \xFAltimo cortafuegos", "Hasta el n\xFAcleo", "N-7: N\xFAcleo Corrupto"]
-  ];
-  var RHYTHMS = [
-    ["linear", "linear", "recovery"],
-    ["linear", "split", "recovery"],
-    ["split", "linear", "crosscurrent"],
-    ["linear", "crosscurrent", "recovery"],
-    ["split", "crosscurrent", "split"],
-    ["crosscurrent", "linear", "recovery"],
-    ["linear", "zigzag", "recovery"],
-    ["zigzag", "split", "zigzag"],
-    ["split", "zigzag", "recovery"],
-    ["linear", "split", "recovery"],
-    ["crosscurrent", "zigzag", "split"],
-    ["split", "crosscurrent", "recovery"],
-    ["zigzag", "linear", "split"],
-    ["crosscurrent", "split", "recovery"],
-    ["split", "zigzag", "crosscurrent"],
-    ["zigzag", "crosscurrent", "recovery"],
-    ["crosscurrent", "split", "zigzag"],
-    ["zigzag", "split", "crosscurrent"],
-    ["split", "crosscurrent", "recovery"],
-    ["crosscurrent", "zigzag", "recovery"]
-  ];
-  var OBJECTIVES = [
-    "Lee las se\xF1ales y recupera n\xFAcleos durante las oleadas.",
-    "Alterna flancos para recuperar los paquetes perdidos.",
-    "Cruza la corriente de maquinaria y conserva tu casco.",
-    "Identifica las ventanas de las patrullas y recupera el registro.",
-    "Recupera los fragmentos necesarios para abrir el n\xFAcleo."
-  ];
-  function authoredLevel(level) {
-    const definition = levelDefinition(level);
-    const index = definition.withinSector - 1;
-    const sector = definition.sectorId - 1;
-    return Object.freeze({
-      ...definition,
-      title: TITLES[sector][index],
-      mission: OBJECTIVES[sector],
-      objective: "recover-and-survive",
-      goal: 14 + sector * 4 + Math.floor(index / 5) * 2,
-      waveCount: 6 + Math.floor(index / 7),
-      rhythm: Object.freeze(RHYTHMS[index].slice()),
-      mechanics: Object.freeze([
-        "linear",
-        ...level >= 7 ? ["zigzag"] : [],
-        ...level >= 24 ? ["chaser"] : [],
-        ...level >= 35 ? ["shooter"] : []
-      ]),
-      recoveryEvery: sector < 2 ? 3 : 4,
-      bossEncounter: definition.isBoss
-    });
-  }
-  var AUTHORED_LEVELS = Object.freeze(Array.from({ length: 100 }, (_, i) => authoredLevel(i + 1)));
-
-  // src/core/player-model.js
-  var PLAYER_GEOMETRY = Object.freeze({
-    visualWidth: 132,
-    visualHeight: 92,
-    collisionHalfWidth: 106,
-    minX: 78
-  });
-
-  // src/game/progression/generator.js
-  var PLAYFIELD = Object.freeze({
-    width: 720,
-    shipHalfWidth: PLAYER_GEOMETRY.collisionHalfWidth,
-    safetyMargin: 24,
-    enemyRadius: 44,
-    edgeMargin: 18
-  });
-
   // art-source/enemies/ch01/ch01-atlas-v1.json
   var ch01_atlas_v1_default = {
     schemaVersion: 1,
@@ -3035,70 +2930,8 @@ var NeonCampaign = (() => {
     return Object.freeze({ request, update, getFrame });
   }
 
-  // src/game/progression/encounter-director.js
-  var clamp5 = (value, min, max) => Math.max(min, Math.min(max, value));
-  function advanceEnemy(item, dt, player, spawnProjectile) {
-    const behavior = item.n7;
-    if (!behavior) return;
-    behavior.age += dt;
-    const { bounds } = behavior;
-    if (behavior.pattern === "zigzag") {
-      const mid = (bounds.min + bounds.max) / 2;
-      item.x = mid + Math.sin(behavior.age * 2.2 + behavior.phase) * (bounds.max - bounds.min) / 2;
-    } else if (behavior.pattern === "chaser" && item.y < player.y - 230) {
-      const target = clamp5(player.x, bounds.min, bounds.max);
-      item.x += clamp5(target - item.x, -100 * dt, 100 * dt);
-    }
-    item.x = clamp5(item.x, bounds.min, bounds.max);
-    if (behavior.pattern !== "shooter") return;
-    const animator = behavior.ch01Animator;
-    const inRange = item.y >= 0 && item.y <= player.y - 260;
-    if (animator && inRange && behavior.fired < 3 && behavior.age >= behavior.nextFire - 0.16 && !behavior.attackScheduled) {
-      behavior.attackScheduled = animator.request("attack");
-    }
-    const animationEvents = animator?.update(dt, { hp: item.hp, maxHp: item.maxHp, vy: item.s }) || [];
-    for (const event2 of animationEvents) {
-      if (event2.name === "attackCanceled" && !event2.fired) {
-        behavior.attackScheduled = false;
-        behavior.nextFire = behavior.age + Math.max(0.8, behavior.telegraphSeconds);
-      }
-    }
-    if (!inRange) {
-      behavior.telegraph = 0;
-      return;
-    }
-    behavior.telegraph = clamp5(1 - (behavior.nextFire - behavior.age) / behavior.telegraphSeconds, 0, 1);
-    if (behavior.fired >= 3 || animator && !animationEvents.some((event2) => event2.name === "fire") || !animator && behavior.age + 1e-9 < behavior.nextFire) return;
-    spawnProjectile({
-      id: `${item.id}:shot:${++behavior.fired}`,
-      type: "meteor",
-      x: item.x,
-      baseX: item.x,
-      y: item.y + 38,
-      r: 9,
-      s: behavior.projectileSpeed,
-      damage: 16,
-      rot: 0,
-      rs: 0,
-      p: 0,
-      phase: 0,
-      amp: 0,
-      special: "",
-      alpha: 1,
-      spriteKey: "",
-      hp: 1,
-      maxHp: 1,
-      shape: null,
-      craters: null,
-      n7Projectile: true
-    });
-    behavior.nextFire += behavior.fireInterval;
-    behavior.attackScheduled = false;
-    behavior.telegraph = 0;
-  }
-
   // src/game/progression/classic-scout.js
-  var clamp6 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var clamp5 = (value, low, high) => Math.max(low, Math.min(high, value));
   function createClassicScout({ x, phase = 0, width = 720 } = {}) {
     if (![x, phase, width].every(Number.isFinite) || width < 250) throw new RangeError("Invalid scout spawn");
     return {
@@ -3121,7 +2954,7 @@ var NeonCampaign = (() => {
     if (!scout || dt === 0) return;
     scout.age += dt;
     const previousX = item.x;
-    item.x = clamp6(
+    item.x = clamp5(
       scout.baseX + Math.sin(scout.age * 1.35 + scout.phase) * 28,
       52,
       scout.width - 52
@@ -3142,7 +2975,7 @@ var NeonCampaign = (() => {
         scout.nextFire = scout.age + 1.1;
       }
     }
-    scout.telegraph = inRange && scout.attackScheduled ? clamp6(1 - (scout.nextFire - scout.age) / 0.46, 0, 1) : 0;
+    scout.telegraph = inRange && scout.attackScheduled ? clamp5(1 - (scout.nextFire - scout.age) / 0.46, 0, 1) : 0;
     if (!inRange || scout.fired >= 2 || !events.some((event2) => event2.name === "fire")) return;
     spawnProjectile({
       type: "meteor",
@@ -3171,8 +3004,8 @@ var NeonCampaign = (() => {
 
   // src/game/combat/classic-pursuit.js
   var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v5";
-  var clamp7 = (value, low, high) => Math.max(low, Math.min(high, value));
-  var approach = (value, target, amount) => value + clamp7(target - value, -amount, amount);
+  var clamp6 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var approach = (value, target, amount) => value + clamp6(target - value, -amount, amount);
   var MAX_LATERAL_SPEED = 176;
   var profiles = Object.freeze({
     raider: Object.freeze({
@@ -3236,8 +3069,8 @@ var NeonCampaign = (() => {
   function observePlayer(enemy, player, interval) {
     if (enemy.age + 1e-9 < enemy.nextObservationAt) return;
     const prior = enemy.observation, elapsed = prior ? enemy.age - prior.at : 0;
-    const vx = elapsed > 0 ? clamp7((player.x - prior.x) / elapsed, -720, 720) : 0;
-    const vy = elapsed > 0 ? clamp7((player.y - prior.y) / elapsed, -560, 560) : 0;
+    const vx = elapsed > 0 ? clamp6((player.x - prior.x) / elapsed, -720, 720) : 0;
+    const vy = elapsed > 0 ? clamp6((player.y - prior.y) / elapsed, -560, 560) : 0;
     enemy.observation = {
       x: player.x,
       y: player.y,
@@ -3301,8 +3134,8 @@ var NeonCampaign = (() => {
       state: "entry",
       stage: "entry",
       stateAge: 0,
-      baseX: clamp7(x, combatMargin, width - combatMargin),
-      targetX: clamp7(x, combatMargin + entryInset, width - combatMargin - entryInset),
+      baseX: clamp6(x, combatMargin, width - combatMargin),
+      targetX: clamp6(x, combatMargin + entryInset, width - combatMargin - entryInset),
       vx: 0,
       combatMinX: combatMargin,
       combatMaxX: width - combatMargin,
@@ -3352,12 +3185,12 @@ var NeonCampaign = (() => {
       enemy.state = enemy.stage = state;
       enemy.stateAge = 0;
     };
-    const combatX = (value) => clamp7(value, enemy.combatMinX, enemy.combatMaxX);
+    const combatX = (value) => clamp6(value, enemy.combatMinX, enemy.combatMaxX);
     const minimumHoldY = enemy.minAttackY + 52;
     const maximumHoldY = Math.max(minimumHoldY, Math.min(enemy.height * 0.52, player.y - 350));
     const flightPhase = enemy.phase + enemy.age * profile2.orbitRate * enemy.manoeuvreRate;
     const depthArc = Math.cos(flightPhase) * profile2.depthSweep * (["charge", "fire"].includes(enemy.state) ? 0.35 : 1);
-    enemy.holdY = clamp7(
+    enemy.holdY = clamp6(
       enemy.height * profile2.depth + depthArc + Math.sin(enemy.phase) * 12,
       minimumHoldY,
       maximumHoldY
@@ -3370,7 +3203,7 @@ var NeonCampaign = (() => {
     };
     const laneTarget = () => {
       const sample = enemy.observation;
-      const observedX = combatX(sample.x + clamp7(sample.vx * 0.18, -64, 64));
+      const observedX = combatX(sample.x + clamp6(sample.vx * 0.18, -64, 64));
       const span = Math.min(enemy.width * 0.24, 140);
       const sweep = Math.sin(flightPhase) * span * profile2.lateralSweep * enemy.sweepScale;
       return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span * 0.68 + sweep : enemy.role === "scout" ? enemy.baseX * 0.45 + observedX * 0.55 + enemy.side * span * 0.2 + sweep : observedX + enemy.side * span * 0.42 + sweep);
@@ -3430,11 +3263,11 @@ var NeonCampaign = (() => {
       }
       if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
         const sample = enemy.observation;
-        enemy.leadOffset = clamp7(sample.vx * profile2.leadSeconds, -110, 110);
+        enemy.leadOffset = clamp6(sample.vx * profile2.leadSeconds, -110, 110);
         enemy.observedTarget = Object.freeze({ ...sample });
         enemy.lockedTarget = Object.freeze({
-          x: clamp7(sample.x + enemy.leadOffset, 24, enemy.width - 24),
-          y: clamp7(sample.y + clamp7(sample.vy * 0.12, -48, 48), item.y + 268, enemy.height - 24)
+          x: clamp6(sample.x + enemy.leadOffset, 24, enemy.width - 24),
+          y: clamp6(sample.y + clamp6(sample.vy * 0.12, -48, 48), item.y + 268, enemy.height - 24)
         });
         enemy.targetX = item.x;
         enemy.chargeStartedAt = enemy.age;
@@ -3445,28 +3278,28 @@ var NeonCampaign = (() => {
     }
     if (enemy.state === "charge") {
       const warningElapsed = enemy.age - enemy.chargeStartedAt;
-      enemy.telegraph = clamp7(warningElapsed / profile2.warning, 0, 1);
+      enemy.telegraph = clamp6(warningElapsed / profile2.warning, 0, 1);
       if (warningElapsed >= profile2.warning && !enemy.attackScheduled) {
         enemy.attackScheduled = enemy.animator.request("attack");
       }
     }
     const previousX = item.x;
     const lateralLimit = enemy.dashing && enemy.state === "reposition" ? Math.min(MAX_LATERAL_SPEED, profile2.lateralSpeed * 1.3) : profile2.lateralSpeed;
-    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp7((enemy.targetX - item.x) * 2.8, -lateralLimit, lateralLimit);
+    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp6((enemy.targetX - item.x) * 2.8, -lateralLimit, lateralLimit);
     enemy.vx = approach(enemy.vx, desiredVelocity, profile2.acceleration * step);
     const minimumX = enemy.state === "retreat" ? 52 : Math.min(item.x, enemy.combatMinX);
     const maximumX = enemy.state === "retreat" ? enemy.width - 52 : Math.max(item.x, enemy.combatMaxX);
-    item.x = clamp7(item.x + enemy.vx * step, minimumX, maximumX);
+    item.x = clamp6(item.x + enemy.vx * step, minimumX, maximumX);
     enemy.vx = (item.x - previousX) / step;
-    const desiredVertical = enemy.state === "destroyed" ? 0 : enemy.state === "retreat" ? enemy.baseSpeed * 1.35 : clamp7((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
+    const desiredVertical = enemy.state === "destroyed" ? 0 : enemy.state === "retreat" ? enemy.baseSpeed * 1.35 : clamp6((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
     item.s = approach(item.s, desiredVertical, enemy.baseSpeed * 1.8 * step);
     const events = enemy.animator.update(step, { hp, maxHp, vx: enemy.vx, vy: item.s });
     const launch = (angleOffset) => {
       const aim = enemy.lockedTarget;
       const dy = Math.max(1, aim.y - (item.y + 38));
-      const dx = clamp7(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
+      const dx = clamp6(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
       const limit = Math.atan(CLASSIC_PURSUIT_VOLLEY.cone);
-      const angle = clamp7(Math.atan2(dx, dy) + angleOffset, -limit, limit);
+      const angle = clamp6(Math.atan2(dx, dy) + angleOffset, -limit, limit);
       const speed = profile2.projectileSpeed;
       spawnProjectile({
         type: "meteor",
@@ -4134,7 +3967,7 @@ var NeonCampaign = (() => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
-  var clamp8 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp7 = (value, min, max) => Math.max(min, Math.min(max, value));
   var rectangles2 = Object.freeze(ch02_atlas_v1_default.frames.map((frame) => {
     const { x, y, width, height } = frame.rect;
     if (![x, y, width, height].every(Number.isFinite) || x < 0 || y < 0 || width <= 0 || height <= 0 || x + width > ch02_atlas_v1_default.dimensions.width || y + height > ch02_atlas_v1_default.dimensions.height) {
@@ -4190,7 +4023,7 @@ var NeonCampaign = (() => {
       throw new RangeError("Invalid CH-02 animator bounds");
     }
     if (!Object.hasOwn(animations2, initialState)) throw new RangeError("Unknown CH-02 initial state");
-    let health = clamp8(hp, 0, maxHp), maximumHealth = maxHp;
+    let health = clamp7(hp, 0, maxHp), maximumHealth = maxHp;
     let state = health === 0 ? "destroy" : initialState;
     if (state === "destroy") health = 0;
     let elapsedMs = 0, eventCursor = 0, done = false;
@@ -4243,7 +4076,7 @@ var NeonCampaign = (() => {
       if (dt < 0) throw new RangeError("dt must be nonnegative");
       const nextMax = sample.maxHp === void 0 ? maximumHealth : finite5(sample.maxHp, "maxHp");
       if (nextMax <= 0) throw new RangeError("maxHp must be positive");
-      const nextHealth = clamp8(sample.hp === void 0 ? health : finite5(sample.hp, "hp"), 0, nextMax);
+      const nextHealth = clamp7(sample.hp === void 0 ? health : finite5(sample.hp, "hp"), 0, nextMax);
       const nextVx = sample.vx === void 0 ? vx : finite5(sample.vx, "vx");
       const nextVy = sample.vy === void 0 ? vy : finite5(sample.vy, "vy");
       if (dt === 0) return [];
@@ -4318,9 +4151,9 @@ var NeonCampaign = (() => {
 
   // src/game/progression/chronos-flight.js
   var CHRONOS_FLIGHT_MAX_DELTA = 0.034;
-  var clamp9 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp8 = (value, min, max) => Math.max(min, Math.min(max, value));
   var smooth = (value, start, end) => {
-    const t = clamp9((value - start) / (end - start), 0, 1);
+    const t = clamp8((value - start) / (end - start), 0, 1);
     return t * t * (3 - 2 * t);
   };
   var immutable = (object2) => Object.freeze(object2);
@@ -4474,7 +4307,7 @@ var NeonCampaign = (() => {
       return entryCheckpoint;
     }
     function snapshot() {
-      const stage = CHRONOS_VOYAGE_STAGES[stageIndex], stageProgress = clamp9(stageElapsed / stage.duration, 0, 1);
+      const stage = CHRONOS_VOYAGE_STAGES[stageIndex], stageProgress = clamp8(stageElapsed / stage.duration, 0, 1);
       const elapsed = stage.offset + stageElapsed, p = elapsed / CHRONOS_VOYAGE_MIN_DURATION;
       const departure = smooth(p, 0.025, 0.43), approach2 = smooth(p, 0.7, 1), stageGoal = voyageGoal(stage, goal);
       const attackApproach = smooth(elapsed, 1.35, 4.95), attackExit = smooth(elapsed, 10.8, 21.6);
@@ -4651,18 +4484,18 @@ var NeonCampaign = (() => {
 
   // src/game/presentation/voyage-transitions.js
   var VOYAGE_CROSSING_SECONDS = 1.6;
-  var clamp10 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp9 = (value, min, max) => Math.max(min, Math.min(max, value));
   var smooth2 = (value) => value * value * (3 - 2 * value);
   var mix = (from, to, amount) => from + (to - from) * amount;
   function getVoyageTransitionPresentation(view, { reducedEffects = false } = {}) {
     if (!view || view.version && view.version !== CHRONOS_VOYAGE_VERSION || !Number.isInteger(view.stageNumber) || view.stageNumber < 1 || view.stageNumber > 10 || !Number.isFinite(view.stageElapsed) || !Number.isFinite(view.stageDuration) || view.stageDuration <= 0) return null;
     const number = view.stageNumber;
-    const seconds = clamp10(view.stageElapsed, 0, view.stageDuration);
+    const seconds = clamp9(view.stageElapsed, 0, view.stageDuration);
     const definition = CHRONOS_VOYAGE_STAGES[number - 1];
     const previous = CHRONOS_VOYAGE_STAGES[Math.max(0, number - 2)];
-    const settled = number === 1 ? 1 : smooth2(clamp10(seconds / VOYAGE_CROSSING_SECONDS, 0, 1));
-    const targetNebula = Number.isFinite(view.deepSpace?.nebulaOpacity) ? clamp10(view.deepSpace.nebulaOpacity, 0, 1) : definition.nebulaOpacity;
-    const targetStars = Number.isFinite(view.deepSpace?.starDensity) ? clamp10(view.deepSpace.starDensity, 0, 1) : definition.starDensity;
+    const settled = number === 1 ? 1 : smooth2(clamp9(seconds / VOYAGE_CROSSING_SECONDS, 0, 1));
+    const targetNebula = Number.isFinite(view.deepSpace?.nebulaOpacity) ? clamp9(view.deepSpace.nebulaOpacity, 0, 1) : definition.nebulaOpacity;
+    const targetStars = Number.isFinite(view.deepSpace?.starDensity) ? clamp9(view.deepSpace.starDensity, 0, 1) : definition.starDensity;
     const environment = Object.freeze({
       // Do not swap a painting or dissolve the station/planet. Only the distant
       // ambient illumination and tiny star density settle into their next region.
@@ -4679,7 +4512,7 @@ var NeonCampaign = (() => {
     }
     const cueAllowed = boundary !== null && boundary !== 5 && boundary !== 6 && !reducedEffects;
     const side = boundary % 2 ? 1 : -1;
-    const depth = clamp10(progress, 0, 1);
+    const depth = clamp9(progress, 0, 1);
     const cue2 = cueAllowed ? Object.freeze({
       kind: boundary <= 3 ? "chronos-remnant" : "navigation-beacon",
       side,
@@ -4701,7 +4534,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/combat/guardian-atlas.js
-  var clamp11 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var clamp10 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   var finite6 = (value, name) => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
@@ -4846,15 +4679,15 @@ var NeonCampaign = (() => {
   var volleyTimes = (boss) => patternRules(boss)?.volleyTimes || attackRules(boss).volleyTimes;
   function updateCore(boss) {
     boss.vulnerability = boss.state === "exposed" && !boss.disabled;
-    boss.coreExposure = boss.state === "exposed" ? 1 : boss.state === "opening" ? clamp11(boss.stateTime / GUARDIAN_ATLAS_RULES.openingSeconds, 0, 1) : boss.state === "closing" ? 1 - clamp11(boss.stateTime / GUARDIAN_ATLAS_RULES.closingSeconds, 0, 1) : 0;
+    boss.coreExposure = boss.state === "exposed" ? 1 : boss.state === "opening" ? clamp10(boss.stateTime / GUARDIAN_ATLAS_RULES.openingSeconds, 0, 1) : boss.state === "closing" ? 1 - clamp10(boss.stateTime / GUARDIAN_ATLAS_RULES.closingSeconds, 0, 1) : 0;
     boss.armorClosed = !boss.vulnerability;
   }
   function observePlayer2(boss, player) {
     if (boss.age + 1e-9 < boss.nextObservationAt) return;
     const previous = boss.observation, elapsed = previous ? boss.age - previous.at : 0;
-    const x = clamp11(player.x, 24, boss.width - 24);
-    const y = clamp11(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 16);
-    const vx = elapsed > 0 ? clamp11((x - previous.x) / elapsed, -720, 720) : 0;
+    const x = clamp10(player.x, 24, boss.width - 24);
+    const y = clamp10(Number.isFinite(player.y) ? player.y : boss.playerY, 24, boss.height - 16);
+    const vx = elapsed > 0 ? clamp10((x - previous.x) / elapsed, -720, 720) : 0;
     boss.observation = { x, y, at: boss.age, vx: previous ? previous.vx * 0.4 + vx * 0.6 : 0 };
     boss.nextObservationAt = boss.age + GUARDIAN_ATLAS_RULES.motion.observationSeconds;
   }
@@ -4886,11 +4719,11 @@ var NeonCampaign = (() => {
       boss.motionSide = boss.telegraph.sweepDirection;
     }
     const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom2(boss) * 0.17);
-    const lead = clamp11(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
+    const lead = clamp10(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
     const target = exposed ? boss.x + boss.motionSide * flank : tacticalAttack && boss.tacticalManeuver === "withdraw" ? boss.width / 2 + boss.motionSide * space * 0.34 : sample.x + lead + boss.motionSide * flank;
-    boss.motionX = clamp11(target, bounds.left, bounds.right);
+    boss.motionX = clamp10(target, bounds.left, bounds.right);
     const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
-    boss.motionY = clamp11(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
+    boss.motionY = clamp10(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
     boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom2(boss) * 0.5);
     boss.motionDecision++;
   }
@@ -4900,13 +4733,13 @@ var NeonCampaign = (() => {
     const rules = GUARDIAN_ATLAS_RULES.motion, bounds = motionBounds(boss);
     const exposed = boss.state === "exposed";
     const maxSpeed = exposed ? boss.phase === 2 ? rules.exposedPhaseTwoSpeed : rules.exposedSpeed : boss.state === "opening" ? 68 : boss.phase === 2 ? rules.maxSpeed : 108;
-    const desiredVx = clamp11((boss.motionX - boss.x) * 2.4, -maxSpeed, maxSpeed);
-    const desiredVy = clamp11((boss.motionY - boss.y) * 2, -rules.maxVerticalSpeed, rules.maxVerticalSpeed);
-    boss.motionVx += clamp11(desiredVx - boss.motionVx, -rules.acceleration * dt, rules.acceleration * dt);
-    boss.motionVy += clamp11(desiredVy - boss.motionVy, -rules.acceleration * dt, rules.acceleration * dt);
+    const desiredVx = clamp10((boss.motionX - boss.x) * 2.4, -maxSpeed, maxSpeed);
+    const desiredVy = clamp10((boss.motionY - boss.y) * 2, -rules.maxVerticalSpeed, rules.maxVerticalSpeed);
+    boss.motionVx += clamp10(desiredVx - boss.motionVx, -rules.acceleration * dt, rules.acceleration * dt);
+    boss.motionVy += clamp10(desiredVy - boss.motionVy, -rules.acceleration * dt, rules.acceleration * dt);
     const x = boss.x + boss.motionVx * dt, y = boss.y + boss.motionVy * dt;
-    boss.x = clamp11(x, bounds.left, bounds.right);
-    boss.y = clamp11(y, bounds.top, bounds.bottom);
+    boss.x = clamp10(x, bounds.left, bounds.right);
+    boss.y = clamp10(y, bounds.top, bounds.bottom);
     if (boss.x !== x) boss.motionVx = 0;
     if (boss.y !== y) boss.motionVy = 0;
   }
@@ -4969,7 +4802,7 @@ var NeonCampaign = (() => {
       pattern = candidates[Math.floor(nextRandom2(boss) * candidates.length)] || options[0];
     }
     boss.previousPatterns[tier] = pattern;
-    const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp11(sample.vx * 0.28, -100, 100);
+    const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp10(sample.vx * 0.28, -100, 100);
     const originY = boss.y + boss.r * 0.7;
     boss.lastPattern = pattern;
     const sweepDirection = sample.vx ? Math.sign(sample.vx) : sample.x < boss.width / 2 ? 1 : -1;
@@ -4980,7 +4813,7 @@ var NeonCampaign = (() => {
       pattern,
       attackTier: tier,
       progress: 0,
-      targetX: clamp11(sample.x + leadOffset, 24, boss.width - 24),
+      targetX: clamp10(sample.x + leadOffset, 24, boss.width - 24),
       // A pilot moving above the guns must not produce upward/negative-lifetime
       // ordnance. Arena layout remains the integration's responsibility.
       targetY: Math.max(originY + 180, sample.y),
@@ -5100,7 +4933,7 @@ var NeonCampaign = (() => {
     const targetY = Math.max(originY + 180, aim.targetY);
     const rake = Math.min(44, (targetY - originY) * 0.09);
     const sweep = aim.pattern === "staggeredSalvo" ? [-1, 1, 0][boss.volley] * boss.width * 0.065 : aim.pattern === "reactorSweep" ? (boss.volley - 1) * boss.width * 0.09 : aim.pattern === "reactorPincer" ? (boss.volley === 0 ? -1 : 1) * boss.width * 0.055 : aim.pattern === "flankSalvo" ? (boss.volley === 0 ? -0.025 : 0.04) * boss.width : aim.pattern === "duelBurst" ? (boss.volley === 0 ? -0.018 : 0.018) * boss.width : 0;
-    const targetX = clamp11(aim.targetX + sweep * aim.sweepDirection + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
+    const targetX = clamp10(aim.targetX + sweep * aim.sweepDirection + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
     const distance = targetY - originY;
     const direction = Math.atan2(distance, targetX - originX);
     const spread = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : patternRules(boss) ? 0.12 : 0.24), distance) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
@@ -5207,10 +5040,10 @@ var NeonCampaign = (() => {
       boss.stateTime += step;
       remaining -= step;
       if (boss.state === "entry") {
-        const progress = clamp11(boss.stateTime / duration, 0, 1);
+        const progress = clamp10(boss.stateTime / duration, 0, 1);
         boss.y = -boss.r * 1.6 + (boss.targetY + boss.r * 1.6) * (1 - (1 - progress) ** 3);
       } else moveAtlas(boss, step);
-      if (boss.state === "charge") boss.telegraph.progress = clamp11(boss.stateTime / duration, 0, 1);
+      if (boss.state === "charge") boss.telegraph.progress = clamp10(boss.stateTime / duration, 0, 1);
       else if (boss.state === "fire") {
         const schedule = volleyTimes(boss);
         while (boss.volley < schedule.length && before < schedule[boss.volley] + 1e-9 && boss.stateTime + 1e-9 >= schedule[boss.volley]) fireVolley(boss, events, schedule[boss.volley]);
@@ -5262,9 +5095,9 @@ var NeonCampaign = (() => {
 
   // src/game/animation/guardian-atlas-animator.js
   var states = /* @__PURE__ */ new Set(["entry", "closed", "charge", "fire", "opening", "exposed", "closing", "phaseBreak", "disabled"]);
-  var clamp12 = (value) => Math.max(0, Math.min(1, value));
+  var clamp11 = (value) => Math.max(0, Math.min(1, value));
   function pose(frame, previousFrame = null, blend = 1) {
-    const opacity = clamp12(blend);
+    const opacity = clamp11(blend);
     return {
       frame,
       previousFrame: opacity < 1 ? previousFrame : null,
@@ -5280,8 +5113,8 @@ var NeonCampaign = (() => {
     }
     if (boss.phase !== 1 && boss.phase !== 2) throw new RangeError("Unknown Guardian Atlas animation phase");
     const { state, stateTime, phase } = boss, openFrame = phase === 2 ? 5 : 1;
-    const exposure = state === "disabled" ? 1 : Number.isFinite(boss.coreExposure) ? clamp12(boss.coreExposure) : state === "exposed" ? 1 : state === "opening" ? clamp12(stateTime / GUARDIAN_ATLAS_RULES.openingSeconds) : state === "closing" ? 1 - clamp12(stateTime / GUARDIAN_ATLAS_RULES.closingSeconds) : 0;
-    const impactFlash = clamp12((boss.flash || 0) / 0.14);
+    const exposure = state === "disabled" ? 1 : Number.isFinite(boss.coreExposure) ? clamp11(boss.coreExposure) : state === "exposed" ? 1 : state === "opening" ? clamp11(stateTime / GUARDIAN_ATLAS_RULES.openingSeconds) : state === "closing" ? 1 - clamp11(stateTime / GUARDIAN_ATLAS_RULES.closingSeconds) : 0;
+    const impactFlash = clamp11((boss.flash || 0) / 0.14);
     let result;
     if (state === "entry" || state === "closed") result = pose(0);
     else if (state === "charge" || state === "phaseBreak") result = pose(2, 0, stateTime / 0.18);
@@ -5331,7 +5164,7 @@ var NeonCampaign = (() => {
     } catch {
     }
   };
-  var clamp13 = (value, low, high) => Math.max(low, Math.min(high, Number(value) || 0));
+  var clamp12 = (value, low, high) => Math.max(low, Math.min(high, Number(value) || 0));
   function createCombatSfx({ context, output, fetchAsset = (...args) => fetch(...args) } = {}) {
     if (!context?.createBufferSource || !context?.decodeAudioData || !context?.createGain || !output) return null;
     const bus = context.createGain();
@@ -5444,7 +5277,7 @@ var NeonCampaign = (() => {
         source.connect(gain);
         if (context.createStereoPanner) {
           spatial = context.createStereoPanner();
-          spatial.pan.setValueAtTime(clamp13(pan, -0.75, 0.75), now);
+          spatial.pan.setValueAtTime(clamp12(pan, -0.75, 0.75), now);
           gain.connect(spatial);
           spatial.connect(bus);
         } else gain.connect(bus);
@@ -5492,7 +5325,7 @@ var NeonCampaign = (() => {
       },
       setVolume(value) {
         if (disposed) return;
-        volume = clamp13(value, 0, 1);
+        volume = clamp12(value, 0, 1);
         bus.gain.setTargetAtTime(volume, context.currentTime, 0.02);
         if (volume === 0) stopAll();
       },
@@ -5661,7 +5494,7 @@ var NeonCampaign = (() => {
   var WAVE_FRAME_DURATION = WAVE_DURATION / 4;
   var FRAME_ENDS = Object.freeze([0, 0.45, 1.25, 2.4, 4.4]);
   var STATES = Object.freeze(["intact", "impact", "fracture", "rupture", "dispersion", "aftermath"]);
-  var clamp14 = (value, min, max) => Math.max(min, Math.min(max, value));
+  var clamp13 = (value, min, max) => Math.max(min, Math.min(max, value));
   function getChronosDestructionPose(view) {
     const elapsed = Number.isFinite(view?.elapsed) && view.elapsed >= 0 ? view.elapsed : 0;
     const duration = view?.cinematicDuration ?? view?.minDuration;
@@ -5674,8 +5507,8 @@ var NeonCampaign = (() => {
     let waveFrame = 0;
     while (waveFrame < 3 && elapsed >= ruptureAt + (waveFrame + 1) * WAVE_FRAME_DURATION) waveFrame++;
     const waveVisible = !beforeRupture && elapsed < ruptureAt + WAVE_DURATION;
-    const waveProgress = clamp14(age / WAVE_DURATION, 0, 1);
-    const waveAlpha = waveVisible ? 0.55 * clamp14((WAVE_DURATION - age) / WAVE_FADE_DURATION, 0, 1) : 0;
+    const waveProgress = clamp13(age / WAVE_DURATION, 0, 1);
+    const waveAlpha = waveVisible ? 0.55 * clamp13((WAVE_DURATION - age) / WAVE_FADE_DURATION, 0, 1) : 0;
     return Object.freeze({
       frame,
       age,
@@ -5705,9 +5538,9 @@ var NeonCampaign = (() => {
     end: 26
   });
   var T = CHRONOS_INTRO_TIMELINE;
-  var clamp15 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var clamp14 = (value, low, high) => Math.max(low, Math.min(high, value));
   var smooth3 = (value, from, to) => {
-    const t = clamp15((value - from) / (to - from), 0, 1);
+    const t = clamp14((value - from) / (to - from), 0, 1);
     return t * t * (3 - 2 * t);
   };
   var mix2 = (from, to, amount) => from + (to - from) * amount;
@@ -6188,7 +6021,7 @@ var NeonCampaign = (() => {
     }
     return bounds;
   }
-  var clamp16 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  var clamp15 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   function calculateFlightBounds({ width, height, hudBottom, controlsTop, shipScale = 1 }) {
     finite8(width, "width");
     finite8(height, "height");
@@ -6201,7 +6034,7 @@ var NeonCampaign = (() => {
     const firstX = SIDE_CLEARANCE * shipScale, lastX = width - SIDE_CLEARANCE * shipScale;
     const firstY = hudBottom + NOSE_CLEARANCE * shipScale, lastY = controlsTop - TAIL_CLEARANCE * shipScale;
     const xFits = firstX <= lastX, yFits = firstY <= lastY;
-    const centerY = clamp16(firstY / 2 + lastY / 2, 0, height);
+    const centerY = clamp15(firstY / 2 + lastY / 2, 0, height);
     return Object.freeze({
       minX: xFits ? firstX : width / 2,
       maxX: xFits ? lastX : width / 2,
@@ -6247,8 +6080,8 @@ var NeonCampaign = (() => {
     if (sensitivity <= 0) throw new RangeError("Sensitivity must be positive");
     if (!state.active || state.id !== id) {
       return {
-        targetX: clamp16(targetX, bounds.minX, bounds.maxX),
-        targetY: clamp16(targetY, bounds.minY, bounds.maxY),
+        targetX: clamp15(targetX, bounds.minX, bounds.maxX),
+        targetY: clamp15(targetY, bounds.minY, bounds.maxY),
         moved: false
       };
     }
@@ -6260,8 +6093,8 @@ var NeonCampaign = (() => {
     state.lastX = x;
     state.lastY = y;
     return {
-      targetX: clamp16(nextX, bounds.minX, bounds.maxX),
-      targetY: clamp16(nextY, bounds.minY, bounds.maxY),
+      targetX: clamp15(nextX, bounds.minX, bounds.maxX),
+      targetY: clamp15(nextY, bounds.minY, bounds.maxY),
       moved
     };
   }

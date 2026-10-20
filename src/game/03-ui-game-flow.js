@@ -117,7 +117,7 @@
     if(target.salvageRunId&&target.salvageRunId!==classicSalvageRunId)return null;
     const boss=target.bossSalvage===true;
     const wreckage=["debris","satellite"].includes(target.type);
-    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.n7Projectile||target.guardianProjectile))return null;
+    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
     const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
@@ -832,7 +832,7 @@
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);
       if(shot.weapon==="missile")addMissileImpact(item.x,item.y);else addImpactEffect(item.x,item.y,.8);
-      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
+      score+=item.classicScoutProjectile?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
       hudScoreTarget=score;
       if(destroyed){
         if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
