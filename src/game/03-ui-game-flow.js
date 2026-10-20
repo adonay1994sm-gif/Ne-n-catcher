@@ -720,6 +720,7 @@
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
         const threat=createThreat(hazard.type,level());
         threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.voyageHazard=true;
         items.push(threat);
       });
     }

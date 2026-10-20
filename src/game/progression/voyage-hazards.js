@@ -8,7 +8,7 @@
  * aparición deja en la franja superior al menos un hueco por el que cabe la
  * nave con margen. Si no hay sitio, espera en vez de cerrar el paso.
  */
-export const VOYAGE_HAZARD_VERSION = 'voyage-hazards-v1';
+export const VOYAGE_HAZARD_VERSION = 'voyage-hazards-v2';
 
 export const VOYAGE_HAZARD_RULES = Object.freeze({
   maxDelta: .05, upperBand: .45, gapMargin: 50, footprint: 1.3, edgeMargin: 46, attempts: 8
@@ -16,13 +16,16 @@ export const VOYAGE_HAZARD_RULES = Object.freeze({
 
 // gap: segundos entre apariciones [mín, máx]; cap: amenazas ambientales a la
 // vez; cluster: probabilidad de que salgan 2–3 juntas; mix: pesos por tipo;
-// speed: px/s [mín, máx]. Valores de trabajo reversibles.
-const profile = (gap, cap, cluster, mix, speed) => Object.freeze({
-  gap: Object.freeze(gap), cap, cluster, mix: Object.freeze(mix), speed: Object.freeze(speed)
+// speed: px/s [mín, máx]; start: segundos del tramo sin peligros; damageScale:
+// parte del daño normal que hacen. Valores de trabajo reversibles.
+const profile = (gap, cap, cluster, mix, speed, {start = 0, damageScale = 1} = {}) => Object.freeze({
+  gap: Object.freeze(gap), cap, cluster, mix: Object.freeze(mix), speed: Object.freeze(speed), start, damageScale
 });
 export const VOYAGE_HAZARD_PROFILES = Object.freeze({
-  1: profile([1.7, 2.7], 3, .15, {meteor: .45, debris: .55}, [170, 260]),
-  2: profile([1.1, 1.9], 4, .30, {meteor: .30, debris: .55, satellite: .15}, [160, 250]),
+  // 1.1: respiro de 8 s tras la ruptura (a los 9 s), dos a la vez como mucho
+  // y medio daño mientras el piloto se sitúa (prueba del propietario, 20/10).
+  1: profile([1.7, 2.7], 2, .15, {meteor: .45, debris: .55}, [170, 260], {start: 17, damageScale: .5}),
+  2: profile([1.1, 1.9], 4, .30, {meteor: .30, debris: .55, satellite: .15}, [160, 250], {damageScale: .5}),
   3: profile([.9, 1.6], 5, .35, {meteor: .35, debris: .50, satellite: .15}, [170, 270]),
   4: profile([1.3, 2.1], 4, .25, {meteor: .50, debris: .40, satellite: .10}, [190, 290]),
   5: profile([2.3, 3.4], 2, .10, {meteor: .80, debris: .20}, [210, 320]),
@@ -58,7 +61,7 @@ export function createVoyageHazardField({stageNumber, seed = 0, width = 720, hei
   const random = randomFor((Math.trunc(seed) >>> 0) ^ Math.imul(stageNumber, 0x9E3779B9));
   return {version: VOYAGE_HAZARD_VERSION, stageNumber, width, height, shipWidth, random,
     // La primera aparición llega pronto para que el tramo no empiece vacío.
-    wait: .6 + random() * .8, emitted: 0, skipped: 0};
+    wait: stage.start + .6 + random() * .8, emitted: 0, skipped: 0};
 }
 
 function pickType(mix, random) {
@@ -125,7 +128,8 @@ export function advanceVoyageHazardField(field, delta, threats, emit) {
     if (!hazard) { field.skipped++; break; }
     live.push({x: hazard.x, y: -95 - index * 70, r: hazard.r});
     field.emitted++; count++;
-    emit(Object.freeze({type: hazard.type, x: hazard.x, speed: hazard.speed, delayY: index * 70}));
+    emit(Object.freeze({type: hazard.type, x: hazard.x, speed: hazard.speed, delayY: index * 70,
+      damageScale: profileData.damageScale}));
   }
   return count;
 }

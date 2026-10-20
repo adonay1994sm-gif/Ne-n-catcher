@@ -1762,7 +1762,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/voyage-hazards.js
-  var VOYAGE_HAZARD_VERSION = "voyage-hazards-v1";
+  var VOYAGE_HAZARD_VERSION = "voyage-hazards-v2";
   var VOYAGE_HAZARD_RULES = Object.freeze({
     maxDelta: 0.05,
     upperBand: 0.45,
@@ -1771,16 +1771,20 @@ var NeonCampaign = (() => {
     edgeMargin: 46,
     attempts: 8
   });
-  var profile = (gap, cap, cluster, mix3, speed) => Object.freeze({
+  var profile = (gap, cap, cluster, mix3, speed, { start = 0, damageScale = 1 } = {}) => Object.freeze({
     gap: Object.freeze(gap),
     cap,
     cluster,
     mix: Object.freeze(mix3),
-    speed: Object.freeze(speed)
+    speed: Object.freeze(speed),
+    start,
+    damageScale
   });
   var VOYAGE_HAZARD_PROFILES = Object.freeze({
-    1: profile([1.7, 2.7], 3, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260]),
-    2: profile([1.1, 1.9], 4, 0.3, { meteor: 0.3, debris: 0.55, satellite: 0.15 }, [160, 250]),
+    // 1.1: respiro de 8 s tras la ruptura (a los 9 s), dos a la vez como mucho
+    // y medio daño mientras el piloto se sitúa (prueba del propietario, 20/10).
+    1: profile([1.7, 2.7], 2, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260], { start: 17, damageScale: 0.5 }),
+    2: profile([1.1, 1.9], 4, 0.3, { meteor: 0.3, debris: 0.55, satellite: 0.15 }, [160, 250], { damageScale: 0.5 }),
     3: profile([0.9, 1.6], 5, 0.35, { meteor: 0.35, debris: 0.5, satellite: 0.15 }, [170, 270]),
     4: profile([1.3, 2.1], 4, 0.25, { meteor: 0.5, debris: 0.4, satellite: 0.1 }, [190, 290]),
     5: profile([2.3, 3.4], 2, 0.1, { meteor: 0.8, debris: 0.2 }, [210, 320]),
@@ -1823,7 +1827,7 @@ var NeonCampaign = (() => {
       shipWidth,
       random,
       // La primera aparición llega pronto para que el tramo no empiece vacío.
-      wait: 0.6 + random() * 0.8,
+      wait: stage.start + 0.6 + random() * 0.8,
       emitted: 0,
       skipped: 0
     };
@@ -1885,7 +1889,13 @@ var NeonCampaign = (() => {
       live.push({ x: hazard.x, y: -95 - index * 70, r: hazard.r });
       field.emitted++;
       count++;
-      emit(Object.freeze({ type: hazard.type, x: hazard.x, speed: hazard.speed, delayY: index * 70 }));
+      emit(Object.freeze({
+        type: hazard.type,
+        x: hazard.x,
+        speed: hazard.speed,
+        delayY: index * 70,
+        damageScale: profileData.damageScale
+      }));
     }
     return count;
   }
