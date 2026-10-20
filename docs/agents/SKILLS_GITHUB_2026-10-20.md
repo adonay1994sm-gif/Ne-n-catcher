@@ -108,6 +108,54 @@ wshobson `ui-design` (ver su `SOURCES.json`).
 | [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) (`game-developer`, `performance-engineer`, `debugger`, `code-reviewer`…) | MIT | Listas de comprobación genéricas (multijugador, shaders, bases de datos) que dependen de un "gestor de contexto" inexistente aquí. No aportan sobre lo que ya hacemos. |
 | Skills de juegos en directorios (OpenGame, Three.js, Godot, "game-development") | Variada / sin comprobar | Generan juegos nuevos o usan otros motores; no encajan con un juego Canvas 2D existente. Repositorios sin verificar. |
 
+## Segunda ronda: diseño ("estamos estancados con el diseño")
+
+Propuesta del propietario: Taste Skill, Awesome Design (DESIGN.md), una
+guía de diseño propia y Playwright CLI. Mismos criterios. Repositorios
+clonados en modo lectura y leídos antes de copiar nada.
+
+### Incorporado
+
+| Qué | Fuente · licencia · commit | Dónde | Por qué |
+|---|---|---|---|
+| `playwright-cli` | [microsoft/playwright-cli](https://github.com/microsoft/playwright-cli) · Apache-2.0 (comprobado: `LICENSE` y `package.json`; sin `NOTICE`) · `b1a5903c5b633b8c9f843ad7b629c2a78437040c` | `.claude/skills/playwright-cli/` (`SKILL.md`, 10 referencias, `LICENSE`) | Explorar el juego paso a paso (pulsar, capturar, vídeo, consola). |
+| `industrial-brutalist-ui` | [Leonxlnx/taste-skill-classics](https://github.com/Leonxlnx/taste-skill-classics) · MIT · `5e08c9383dc4ad7fc0df70e1ac8cfa09ec356305` | `.claude/skills/industrial-brutalist-ui/` (`SKILL.md`, `LICENSE`) | Su modo "Tactical Telemetry & CRT" es lo más cercano a un HUD de juego. Solo se activa llamándola por su nombre (`disable-model-invocation`). Su acento rojo único y su veto a degradados chocan con la identidad neón: `DESIGN.md` manda. |
+| `DESIGN.md` (raíz) | Propio; formato tomado como plantilla de [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) · MIT · `3b605329240ce735b510037cca322f1831fdd7f8` | `DESIGN.md` | Tokens y reglas reales del proyecto (styles.css, index.html, render del lienzo, dirección de arte, guion del inicio). No copia ninguna marca. |
+| `capturas-juego` + `scripts/capture-intro.cjs` | Propio | `.claude/skills/capturas-juego/`, `scripts/` | Alternativa local a Playwright CLI con el Playwright ya instalado: sirve `www/`, abre 390×844, pulsa `#play` y `#launch`, captura en los segundos pedidos y graba webm opcional fuera del repo. |
+
+Copias idénticas al original (comparadas con `cmp`); huellas sha256 y
+commit de cada archivo en `.claude/skills/SOURCES.json`.
+
+**Playwright CLI: avisos.** La orden `playwright-cli` no está instalada
+aquí y el Playwright global (1.56.1) no trae `npx playwright cli`. No se
+instala ni se toca `package.json`. Su `SKILL.md` preautoriza
+`Bash(npx playwright:*)` cuando la skill está activa, lo que incluye
+`npx playwright install` (descarga navegadores): no ejecutarlo sin orden
+del propietario. Instalar el CLI (`npm install -g @playwright/cli`) también
+necesita su permiso. No usar `attach --cdp`/`--extension` contra navegadores
+personales.
+
+**Prueba real del script de capturas (20/10/2026).** Tras `npm ci` y
+`npm run build`: `node scripts/capture-intro.cjs --times 1,5,9,12 --video
+--output <scratchpad>/capturas/intro-02` → `passed`; 4 PNG de 780×1688
+(capturas a 1,00 / 5,00 / 9,00 / 12,00 s), `intro.webm` (WebM válido,
+2,2 MB) y `results.json` sin errores de página, de consola ni peticiones
+fallidas (Chromium 141.0.7390.37). Se ven la estación y Cronos Prime (5 s) y
+la explosión azul (12 s). Sin `--output` guarda en
+`<tmp>/neon-capturas/intro-<fecha>`; se niega a reutilizar una carpeta con
+`results.json`. No certifica Safari ni iPhone físico.
+
+### Descartado
+
+| Qué | Licencia | Por qué no |
+|---|---|---|
+| Taste Skill v2 `design-taste-frontend` ([Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill), commit `6010f91a9935f1c167dfc500fb1a475681892e6b`) | MIT (comprobado) | Hecha para webs y paneles de aplicación (landing pages, dashboards). Sus reglas prohíben brillos, degradados, monospace y etiquetas en mayúsculas espaciadas: chocan con un arcade neón. `assets.mjs` busca y descarga imágenes de colecciones externas (Openverse, Wikimedia, Met…); `inspect.mjs` lanza Chrome. Una página le cuesta 30–45 min y cientos de miles de tokens. Su idea útil (juzgar solo capturas, arreglar los peores problemas y volver a mirar) ya la sigue `director-arte` con `capturas-juego`. |
+| Taste classics: `high-end-visual-design`, `minimalist-ui`, `gpt-taste`, `design-taste-frontend-v1`, `design-taste-frontend-v2-experimental` | MIT | Landing pages, React/Tailwind/GSAP; nada aplicable a un juego Canvas. |
+| Taste classics: `stitch-design-taste` | MIT | Pensada para Google Stitch y prohíbe "neón y brillos". Solo se usó su estructura de `DESIGN.md` como inspiración. |
+| [Leonxlnx/imagegen-skills](https://github.com/Leonxlnx/imagegen-skills) (`imagegen-frontend-web/mobile`, `brandkit`, `image-to-code`; commit `beb16b0d0f4dae9a6f5cb04ea41e97b93a54ab8e`) | MIT | Necesitan una herramienta de generación de imágenes (ChatGPT Images, Codex) y producen maquetas web o de app, no arte de juego. |
+| Los `DESIGN.md` de marcas de awesome-design-md (PlayStation, Nintendo, SpaceX…) | MIT (archivo de repositorio) | Son análisis de marcas ajenas: solo se usa el formato. Además su guía sugiere `npx @google/design.md lint` (descarga un paquete): no se usa. |
+| [VoltAgent/awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) (commit `8f746b5bbb69cc7544fa850c126a71f754091951`) | MIT | Solo un README con enlaces a getdesign.md y a Claude Design (servicio web). Nada que incorporar. |
+
 ## Próximo paso propuesto
 
 Un agente propio del proyecto, `neon-playtester`, que lance el juego en
