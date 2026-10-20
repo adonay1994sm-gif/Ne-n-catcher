@@ -61,6 +61,17 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - [x] Modos ocultos n7 y journey retirados; web y app sin demo del motor ni
   mapas (12,9 MB); capturas de pruebas fuera de git.
 
+## Campaña de 50 viajes · Fase A: motor por fichas (20/10/2026)
+
+- [x] Motor genérico `progression/voyage-engine.js`: cada viaje es una ficha.
+- [x] El viaje 1 es la ficha `voyages/s1-v1-chronos-gaia.js` y se juega igual:
+      prueba paso a paso contra una copia congelada del motor original.
+- [x] Patrullas, peligros, cometas y reparación de cada tramo salen de la ficha
+      (`getVoyageStageRules`), con prueba de que son las mismas reglas de antes.
+- [x] Propuesta de historia: `docs/design/CAMPANA_50_VIAJES.md` (pendiente de
+      decisiones del propietario).
+- [ ] Fase B: sector 1 en 5 viajes (S1-V1…S1-V5).
+
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y
   rompía 35 pruebas de `npm run test:content` (cargan el módulo sin la
