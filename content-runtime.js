@@ -5542,22 +5542,23 @@ var NeonCampaign = (() => {
     beamStart: 8.6,
     rupture: 9,
     fireEnd: 9.2,
-    explosionSeconds: 1.6,
-    stationGone: 9.5,
+    explosionSeconds: 2.2,
+    stationGone: 9,
     turn: 10.4,
     leave: 11.5,
     gone: 12.6,
     fragmentsEnd: 17,
     end: 26
   });
+  var range = (from, to) => Array.from({ length: to - from + 1 }, (_, index) => from + index);
   var CRONOS_PRIME_FRAMES = Object.freeze({
-    idle: [0, 1, 2],
-    charge: [3, 4, 5, 6, 7],
-    fire: 8,
-    cooldown: [9, 10, 11],
-    side: [12, 13, 14, 15],
-    front: [16, 17, 18, 19]
+    idle: range(0, 7),
+    wake: range(8, 13),
+    charge: range(14, 23),
+    fire: range(24, 33),
+    cooldown: range(34, 39)
   });
+  var STATION_BURST_FRAMES = 10;
   var T = CHRONOS_INTRO_TIMELINE;
   var F = CRONOS_PRIME_FRAMES;
   var clamp14 = (value, low, high) => Math.max(low, Math.min(high, value));
@@ -5596,15 +5597,19 @@ var NeonCampaign = (() => {
   ].map(([x, y, spin], cell) => Object.freeze({ cell, x, y, spin })));
   var INACTIVE = Object.freeze({ active: false });
   var spread = (list, from, to) => list.map((frame, index) => [from + (to - from) * index / list.length, frame]);
+  var idleLoop = (from, to) => {
+    const steps = [];
+    for (let at = from, index = 0; at < to - 1e-9; at += 0.16, index++) steps.push([at, F.idle[index % F.idle.length]]);
+    return steps;
+  };
   var FRAME_TRACK = Object.freeze([
-    ...spread(F.side, T.approach, T.arrive - 0.4),
-    [T.arrive - 0.4, F.front[0]],
-    ...spread(F.front.slice(1), T.arrive, T.drain),
-    ...spread(F.charge, T.drain, T.beamStart),
-    [T.beamStart, F.fire, "cut"],
-    [T.fireEnd, F.cooldown[0], "cut"],
-    ...spread(F.cooldown.slice(1), T.fireEnd + (T.turn - T.fireEnd) / 3, T.turn),
-    ...spread([...F.front].reverse().concat([...F.side].reverse()), T.turn, T.leave)
+    ...idleLoop(T.approach, T.drain),
+    ...spread(F.wake, T.drain, T.drain + 0.9),
+    ...spread(F.charge, T.drain + 0.9, T.beamStart),
+    [T.beamStart, F.fire[0], "cut"],
+    ...spread(F.fire.slice(1), T.beamStart + (T.fireEnd - T.beamStart) / F.fire.length, T.fireEnd),
+    ...spread(F.cooldown, T.fireEnd, T.leave),
+    ...idleLoop(T.leave, T.gone + 0.2)
   ]);
   function primeFrame(elapsed) {
     let index = 0;
@@ -5640,7 +5645,7 @@ var NeonCampaign = (() => {
       wheelAngle: 0.32 * spinClock,
       tiltY: 0.8 + 0.035 * Math.sin(spinClock * 0.45),
       sway: 0.04 * Math.sin(spinClock * 0.3),
-      // Mientras la explosión lo tapa todo, la estación entera desaparece.
+      // Al impacto la estación entera pasa a ser la explosión: no queda nada entero.
       whole: elapsed < T.stationGone,
       towerCell: ruptured ? 4 : 3,
       sectorLights: Array.from({ length: SECTORS }, (_, index) => ruptured ? 0 : flicker * (1 - smooth3(drain * SECTORS, index, index + 0.8))),
@@ -5685,13 +5690,16 @@ var NeonCampaign = (() => {
     const beam = { alpha: beamWindow, width: (0.6 + 0.4 * smooth3(elapsed, T.beamStart, T.rupture)) * (1 + 0.1 * Math.sin(elapsed * 60) * motion) };
     const flash = ruptured && since < 0.25 ? (reducedEffects ? 0.25 : 0.7) * (1 - since / 0.25) ** 2 : 0;
     const explosionAge = ruptured ? since / T.explosionSeconds : 1;
+    const burstPosition = explosionAge * STATION_BURST_FRAMES;
     const explosion = explosionAge < 1 ? {
-      frame: Math.min(7, Math.floor(explosionAge * 8)),
-      scale: 1.7 + 0.45 * easeOut(explosionAge, 0, 1),
+      frame: Math.min(STATION_BURST_FRAMES - 1, Math.floor(burstPosition)),
+      next: Math.min(STATION_BURST_FRAMES - 1, Math.floor(burstPosition) + 1),
+      blend: burstPosition % 1,
+      scale: 1.4 + 0.25 * easeOut(explosionAge, 0, 1),
       alpha: 1 - smooth3(explosionAge, 0.8, 1)
     } : null;
-    const fragments = elapsed >= T.stationGone - 0.1 ? FRAGMENTS.map((item) => {
-      const age = elapsed - (T.stationGone - 0.1);
+    const fragments = elapsed >= T.rupture + 0.35 ? FRAGMENTS.map((item) => {
+      const age = elapsed - (T.rupture + 0.35);
       const travel = age * (0.45 + 0.12 * (item.cell % 3)) + age * age * 0.04;
       return {
         cell: item.cell,

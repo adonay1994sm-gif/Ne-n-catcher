@@ -440,9 +440,9 @@
     // Inicio de Chronos con las piezas del propietario (carga diferida).
     chronosIntroStation: loadSprite("assets/chronos_intro_station_atlas_v1.webp", false),
     chronosIntroFragments: loadSprite("assets/chronos_intro_fragments_atlas_v1.webp", false),
-    // Cronos Prime animado (24 fotogramas) y explosión azul de la estación.
-    cronosPrimeAnim: loadSprite("assets/cronos_prime_anim_atlas_v1.webp", false),
-    chronosStationExplosion: loadSprite("assets/chronos_station_explosion_atlas_v1.webp", false),
+    // Cronos Prime animado (40 fotogramas del vídeo) y la estación estallando.
+    cronosPrimeVideo: loadSprite("assets/cronos_prime_video_atlas_v1.webp", false),
+    chronosStationBurst: loadSprite("assets/chronos_station_burst_atlas_v1.webp", false),
     cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
@@ -2326,7 +2326,7 @@
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
       ensureSprite(SPRITES.ch01);
       ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeAnim);ensureSprite(SPRITES.chronosStationExplosion);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
       ensureSprite(SPRITES.guardianAtlas);
     }
 
@@ -4070,9 +4070,10 @@
   }
 
   function drawCronosPrime(pose) {
-    const prime = pose.prime, atlas = SPRITES.cronosPrimeAnim;
+    const prime = pose.prime, atlas = SPRITES.cronosPrimeVideo;
     if (!prime.visible || !spriteReady(atlas)) return;
-    const x = prime.x * W, y = prime.y * H, size = W * .56 * prime.scale;
+    // El cuerpo llena ~94 % de la celda (fotogramas sacados del vídeo).
+    const x = prime.x * W, y = prime.y * H, size = W * .52 * prime.scale;
     // Estela de motor mientras viaja (al llegar y al irse).
     if (prime.trail > 0) {
       const length = size * 2.6 * prime.trail, back = prime.heading + Math.PI;
@@ -4095,10 +4096,10 @@
     // Fotograma actual y fundido hacia el siguiente, con suavizado alto (en
     // iPhone el sprite se amplía).
     ctx.save(); ctx.globalAlpha = prime.alpha; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
-    drawAtlasCell(atlas, 6, prime.frame, x - size / 2, y - size / 2, size, size);
+    drawAtlasCell(atlas, 8, prime.frame, x - size / 2, y - size / 2, size, size);
     if (prime.blend > 0 && prime.next !== prime.frame) {
       ctx.globalAlpha = prime.alpha * prime.blend;
-      drawAtlasCell(atlas, 6, prime.next, x - size / 2, y - size / 2, size, size);
+      drawAtlasCell(atlas, 8, prime.next, x - size / 2, y - size / 2, size, size);
     }
     ctx.restore();
     // Frenazo: onda de energía que se expande y se apaga.
@@ -4173,19 +4174,25 @@
           ctx.restore();
         }
       }
-      // Torre: intacta mientras vive; partida y a oscuras después.
-      const tower = unit * .62;
-      ctx.save(); ctx.translate(x, y + unit * .1); ctx.rotate(station.sway * .6);
-      drawAtlasCell(atlas, 3, station.towerCell, -tower / 2, -tower, tower, tower);
-      ctx.restore();
+      // Torre de cristal mientras vive (al estallar, la estación desaparece).
+      if (station.whole) {
+        const tower = unit * .62;
+        ctx.save(); ctx.translate(x, y + unit * .1); ctx.rotate(station.sway * .6);
+        drawAtlasCell(atlas, 3, station.towerCell, -tower / 2, -tower, tower, tower);
+        ctx.restore();
+      }
       ctx.restore();
     }
-    // Explosión azul del propietario sobre el núcleo.
-    const blast = SPRITES.chronosStationExplosion;
+    // La propia estación estalla (hojas del propietario, fundidas).
+    const blast = SPRITES.chronosStationBurst;
     if (pose.explosion && spriteReady(blast)) {
       const size = unit * pose.explosion.scale;
       ctx.save(); ctx.globalAlpha = pose.explosion.alpha;
-      drawAtlasCell(blast, 4, pose.explosion.frame, x - size / 2, y - size / 2, size, size);
+      drawAtlasCell(blast, 5, pose.explosion.frame, x - size / 2, y - size / 2, size, size);
+      if (pose.explosion.blend > 0 && pose.explosion.next !== pose.explosion.frame) {
+        ctx.globalAlpha = pose.explosion.alpha * pose.explosion.blend;
+        drawAtlasCell(blast, 5, pose.explosion.next, x - size / 2, y - size / 2, size, size);
+      }
       ctx.restore();
     }
     // Restos que salen despedidos; los que van hacia la nave crecen.
