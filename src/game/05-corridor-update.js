@@ -257,7 +257,7 @@
     else player.drift = 0;
 
     player.previousCollisionX=player.x;player.previousCollisionY=player.y;
-    const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
+    const follow = 9 + (settings.sensitivity / 100) * 8;
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     if(isUnifiedClassic())player.visualBank=NeonCampaign.advanceShipBank(player.visualBank||0,
       clamp((player.target+player.drift-player.x)/95,-1,1),dt);
@@ -282,29 +282,7 @@
 
     if(isUnifiedClassic())advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
-    if (JOURNEY_DEMO && journey) {
-      journey.advance(dt, journeyEvent);
-      syncJourneyHud();
-      if (journeyView.phase !== "travel") { updateEffects(dt); return; }
-      journeyShieldCooldown = Math.max(0, journeyShieldCooldown - dt);
-      journeyTractorCooldown = Math.max(0, journeyTractorCooldown - dt);
-      journeyAutoTimer = Math.max(0, journeyAutoTimer - dt);
-      if (journeyAutoFire && journeyAutoTimer === 0 && items.some(item => isThreat(item) && item.y < player.y && Math.abs(item.x - player.x) < 145)) {
-        fireManualShot(); journeyAutoTimer = .62;
-      }
-    } else if (encounterDirector) {
-      encounterDirector.advance(dt, (item) => {
-        items.push(item);
-        if (item.type === "energy") energySpawned++;
-      });
-      if (encounterDirector.wave !== encounterWave) {
-        encounterWave = encounterDirector.wave;
-        ammo = MAX_AMMO;
-        updateAmmoHud();
-        updateEncounterHud();
-      }
-    } else {
-      if (!atlasBoss && !classicFlightView) {
+    if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -325,7 +303,6 @@
           }
           classicScoutTimer = 6.2 + Math.random() * 1.5;
         }
-      }
       }
     }
 
@@ -401,11 +378,6 @@
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
         advance(item,dt*scale,player,shot=>{items.push(shot);if(isUnifiedClassic())combatSound("enemy-phaser",shot.x);});
       }
-      if (item.journeyEntry && item.classicScout.age < .9) {
-        const entry = item.classicScout.age / .9;
-        item.x = -80 + (item.journeyEntry.targetX + 80) * entry;
-      }
-      if (item.type === "journeyPart") item.y = Math.min(item.y, player.y - 65);
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
@@ -457,7 +429,6 @@
 
     if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
-    if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
         player.x + (Math.random() - 0.5) * 70 * SHIP_VISUAL.scale,

@@ -45,7 +45,7 @@ async function main(){
     const page=await context.newPage();
     page.on('pageerror',error=>report.errors.push(errorText(error)));
     page.on('response',response=>{if(response.status()>=400)report.errors.push(`${response.status()} ${response.url()}`);});
-    const root=server.url,game=new URL('juego/index.html?campaign=n7',root).href;
+    const root=server.url,game=new URL('juego/index.html',root).href;
     const state=async()=>({...await page.evaluate(async()=>({controller:navigator.serviceWorker.controller?.scriptURL,
       registrations:(await navigator.serviceWorker.getRegistrations()).map(reg=>({scope:reg.scope,active:reg.active?.scriptURL,state:reg.active?.state})),
       caches:await caches.keys()})),workers:await Promise.all(context.serviceWorkers().map(async worker=>{try{return{url:worker.url(),...await bounded(worker.evaluate(()=>({cache:typeof CACHE==='string'?CACHE:null,scope:self.registration.scope})),2000,'Retired worker inspection timed out')};}catch(error){return{url:worker.url(),error:String(error)};}}))});

@@ -233,7 +233,7 @@ test('a failed space plate still renders the independent stars and planet', () =
 test('reduced effects removes the actual full-screen storm flash without changing storm state', () => {
   const h = harness();
   Object.assign(h.sandbox, {classicFlightView: null, isUnifiedClassic: () => false,
-    JOURNEY_DEMO: false, N7_CAMPAIGN: true, currentLevel: 1, state: 'playing',
+    currentLevel: 1, state: 'playing',
     level: () => ({top: '#020817', mid: '#050b17', accent: '#55eeee', scene: 'quiet'}),
     stars: [], spaceDust: [], foregroundParticles: [], visualSpeed: 1,
     stormPulse: 1, levelOneShockwave: 0});

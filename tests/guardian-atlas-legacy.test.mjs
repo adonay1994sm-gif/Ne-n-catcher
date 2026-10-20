@@ -510,14 +510,11 @@ test('a corrupt equipment record with a durable backup can receive the Atlas rew
   assert.equal(h.pending.size,1);
 });
 
-test('leaving the encounter does not mutate saves and N-7 cannot start classic Atlas', t => {
+test('leaving the encounter does not mutate saves', t => {
   const h = harness(t); h.api.prepare(); h.collectGoal(); h.api.goHome();
   assert.equal(h.snapshot().state, 'menu'); assert.equal(h.snapshot().unlocked, 1);
   assert.deepEqual(h.stars(), {});
-  const n7 = harness(t, 'n7'); n7.api.prepare(1);
-  assert.equal(n7.snapshot().boss, null);
-  assert.equal(n7.window.localStorage.getItem('neon-unlocked-v2'), '1');
-  assert.equal(n7.pending.size, 1);
+  assert.equal(h.pending.size, 1);
 });
 
 test('Gaia remains playable without spawning a second copy of the chapter-one guardian', t => {

@@ -80,7 +80,7 @@
         ctx.arc(x, y, 7 + (index % 4) * 4, 0, Math.PI * 2);
         ctx.fill();
       }
-    } else if (lv.scene === "ion" && (N7_CAMPAIGN || currentLevel !== 3)) {
+    } else if (lv.scene === "ion" && currentLevel !== 3) {
       ctx.strokeStyle = "rgba(191,126,255,.34)";
       ctx.lineWidth = 3;
       ctx.shadowBlur = 15;
@@ -92,14 +92,14 @@
         ctx.bezierCurveTo(W * 0.25, y - 70, W * 0.62, y + 75, W + 30, y - 25);
         ctx.stroke();
       }
-    } else if (lv.scene === "crimson" && (N7_CAMPAIGN || currentLevel !== 4)) {
+    } else if (lv.scene === "crimson" && currentLevel !== 4) {
       drawPlanet(W * 0.19, H * 0.16, 92, ["#fff5c7", "#ff744f", "#761737"], false);
       ctx.globalAlpha = 0.14 + Math.sin(t * 0.004) * 0.03;
       ctx.fillStyle = "#ff4965";
       ctx.beginPath();
       ctx.arc(W * 0.19, H * 0.16, 145, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "gravity" && (N7_CAMPAIGN || currentLevel !== 5)) {
+    } else if (lv.scene === "gravity" && currentLevel !== 5) {
       const x = W * 0.74;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(80,255,208,.48)";
@@ -113,7 +113,7 @@
       ctx.beginPath();
       ctx.arc(x, y, 61, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "ghost" && (N7_CAMPAIGN || currentLevel !== 6)) {
+    } else if (lv.scene === "ghost" && currentLevel !== 6) {
       ctx.globalAlpha = 0.20;
       ctx.fillStyle = "#b99bea";
       ctx.fillRect(W * 0.10, H * 0.17, W * 0.80, 12);
@@ -125,7 +125,7 @@
       fog.addColorStop(1, "rgba(174,132,232,0)");
       ctx.fillStyle = fog;
       ctx.fillRect(0, H * 0.12, W, H * 0.62);
-    } else if (lv.scene === "overdrive" && (N7_CAMPAIGN || currentLevel !== 7)) {
+    } else if (lv.scene === "overdrive" && currentLevel !== 7) {
       ctx.globalAlpha = 0.20;
       ctx.strokeStyle = "#fff27b";
       ctx.lineWidth = 2;
@@ -136,13 +136,13 @@
         ctx.lineTo(x - 130, H * 0.70);
         ctx.stroke();
       }
-    } else if (lv.scene === "dark" && (N7_CAMPAIGN || currentLevel !== 8)) {
+    } else if (lv.scene === "dark" && currentLevel !== 8) {
       drawPlanet(W * 0.73, H * 0.18, 112, ["#6d2d73", "#27102f", "#05030a"], false);
       ctx.fillStyle = "rgba(255,92,233,.12)";
       ctx.beginPath();
       ctx.arc(W * 0.73, H * 0.18, 130, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "collapse" && (N7_CAMPAIGN || currentLevel !== 9)) {
+    } else if (lv.scene === "collapse" && currentLevel !== 9) {
       const x = W * 0.50;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(93,255,236,.58)";
@@ -638,7 +638,6 @@
 
   function background(t) {
     if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
-    if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
     if(isUnifiedClassic() && currentLevel===1 && drawGaiaOrbitBackground()) {return;}
     if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
@@ -671,15 +670,15 @@
     }
     ctx.restore();
 
-    if (!N7_CAMPAIGN && currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
-    if (!N7_CAMPAIGN && currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
-    if (!N7_CAMPAIGN && currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
-    if (!N7_CAMPAIGN && currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
-    if (!N7_CAMPAIGN && currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
-    if (!N7_CAMPAIGN && currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
-    if (!N7_CAMPAIGN && currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
-    if (!N7_CAMPAIGN && currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
-    if (!N7_CAMPAIGN && currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
+    if (currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
+    if (currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
+    if (currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
+    if (currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
+    if (currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
+    if (currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
+    if (currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
+    if (currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
+    if (currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -695,7 +694,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
+    } else if (currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
       const image = SPRITES.atlasBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.04;
       const width = image.naturalWidth * scale;
@@ -714,7 +713,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
+    } else if (currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
       const image = SPRITES.vulkarBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
       const width = image.naturalWidth * scale;
@@ -732,7 +731,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 3 && spriteReady(SPRITES.magmaTunnelBackground)) {
+    } else if (currentLevel === 3 && spriteReady(SPRITES.magmaTunnelBackground)) {
       const image = SPRITES.magmaTunnelBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
       const width = image.naturalWidth * scale;
@@ -750,7 +749,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
+    } else if (currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
       const image = SPRITES.cryonWhiteoutBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -768,7 +767,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 5 && spriteReady(SPRITES.cryonRiftBackground)) {
+    } else if (currentLevel === 5 && spriteReady(SPRITES.cryonRiftBackground)) {
       const image = SPRITES.cryonRiftBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -786,7 +785,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
+    } else if (currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
       const image = SPRITES.aetherEchoBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -804,7 +803,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
+    } else if (currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
       const image = SPRITES.aetherThresholdBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -822,7 +821,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
+    } else if (currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
       const image = SPRITES.titanGraveyardBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -840,7 +839,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
+    } else if (currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
       const image = SPRITES.chronosCollapseBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -862,7 +861,7 @@
 
     // Start the authored VFX download while the level is still in its menu;
     // the scripted reactor accident happens thirty-one seconds into play.
-    if (!N7_CAMPAIGN && currentLevel === 0) ensureSprite(SPRITES.chronosShockwave);
+    if (currentLevel === 0) ensureSprite(SPRITES.chronosShockwave);
 
     ctx.save();
     ctx.globalCompositeOperation = "screen";
@@ -919,7 +918,7 @@
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
 
-    if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0) {
+    if (currentLevel === 0 && levelOneShockwave > 0) {
       const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);
       const sx = W * 0.50;
       const sy = H * 0.40;
@@ -1061,44 +1060,4 @@
     ctx.fillStyle = "#eaffff";
     ctx.beginPath(); ctx.arc(0, 0, 5 + intensity * 4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-  }
-  function drawJourneyBackground() {
-    const view = journeyView || {routeProgress: 0, segmentId: "departure", segmentProgress: 0};
-    const progress = view.routeProgress;
-    ctx.fillStyle = "#020917"; ctx.fillRect(0, 0, W, H);
-    const painting = (image, alpha, zoom) => {
-      if (!spriteReady(image) || alpha <= 0) return;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * zoom;
-      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
-      ctx.save(); ctx.globalAlpha = alpha;
-      ctx.drawImage(image, (W - width) / 2, (H - height) / 2, width, height); ctx.restore();
-    };
-    painting(SPRITES.cronosBackground, clamp(1 - progress * 2.6, 0, 1), 1.16 - progress * .3);
-    painting(SPRITES.atlasBackground, clamp((progress - .18) / .65, 0, .94), 1.02 + progress * .18);
-    ctx.save(); ctx.globalAlpha = .5;
-    for (const star of stars) {
-      ctx.fillStyle = star.tint;
-      ctx.fillRect(star.x, star.y, star.r, star.r * 2.5);
-    }
-    ctx.restore();
-    if (progress < .42 && spriteReady(SPRITES.chronosModule)) {
-      const distance = progress / .42;
-      const size = 320 - distance * 230;
-      ctx.save(); ctx.globalAlpha = (1 - distance) * .85;
-      ctx.translate(W * (.61 - distance * .39), H * (.32 - distance * .16));
-      ctx.rotate(-.2 + distance * .4);
-      ctx.drawImage(SPRITES.chronosModule, -size / 2, -size / 2, size, size);
-      ctx.restore();
-    }
-    if (view.segmentId === "departure" && view.segmentProgress >= .08 && view.segmentProgress < .12 && spriteReady(SPRITES.chronosShockwave)) {
-      const phase = (view.segmentProgress - .08) / .04;
-      const atlas = SPRITES.chronosShockwave, cell = atlas.naturalWidth / 2;
-      const frame = Math.min(3, Math.floor(phase * 4)), size = 250 + phase * 700;
-      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.sin(phase * Math.PI) * .8;
-      ctx.drawImage(atlas, frame % 2 * cell, Math.floor(frame / 2) * cell, cell, cell, W * .5 - size / 2, H * .32 - size / 2, size, size);
-      ctx.restore();
-    }
-    const veil = ctx.createLinearGradient(0, H * .3, 0, H);
-    veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");
-    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }

@@ -7,19 +7,16 @@
   let W = 720;
   let H = 1280;
   const BUILD_VERSION = "7.2.0";
-  // Local development route; preserves the original campaign and its save keys.
-  const N7_CAMPAIGN = new URLSearchParams(location.search).get("campaign") === "n7";
-  const JOURNEY_DEMO = new URLSearchParams(location.search).get("campaign") === "journey";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
   // Owner revision: 30% larger than the previous 40% ship, not 30% of it.
-  const CLASSIC_SHIP_SCALE = !N7_CAMPAIGN && !JOURNEY_DEMO ? 0.52 : 1;
+  const CLASSIC_SHIP_SCALE = 0.52;
   const SHIP_VISUAL_SCALE = 0.8 * CLASSIC_SHIP_SCALE;
   const SHIP_VISUAL = Object.freeze({
     classicScale: CLASSIC_SHIP_SCALE,
     assemblySize: 208 * CLASSIC_SHIP_SCALE,
     muzzleOffset: 125 * CLASSIC_SHIP_SCALE,
-    bankStrength: !N7_CAMPAIGN && !JOURNEY_DEMO ? 1.8 : 1,
+    bankStrength: 1.8,
     scale: SHIP_VISUAL_SCALE,
     spriteSize: 248 * SHIP_VISUAL_SCALE,
     fallbackWidth: 232 * SHIP_VISUAL_SCALE,
@@ -193,7 +190,7 @@
     }
   ];
 
-  const LEVELS = N7_CAMPAIGN ? NeonCampaign.LEVELS : ORIGINAL_LEVELS;
+  const LEVELS = ORIGINAL_LEVELS;
   const KEYS = {
     best: "neon-best-v2",
     unlocked: "neon-unlocked-v2",
@@ -202,18 +199,11 @@
     games: "neon-games-v2",
     settings: "neon-settings-v5"
   };
-  if (N7_CAMPAIGN) {
-    for (const key of ["best", "unlocked", "stars", "levelBest", "games"]) KEYS[key] = `neon-n7-${key}-v1`;
-  }
-  if (JOURNEY_DEMO) {
-    for (const key of Object.keys(KEYS)) KEYS[key] = `neon-journey-demo-${key}-v1`;
-  }
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true };
   const storage = NeonCore.createStorageService();
 
   function migrateLegacyStorage() {
-    if (N7_CAMPAIGN || JOURNEY_DEMO) return false;
     // A denied read is not an absent score: do not overwrite an unreadable
     // current record with a smaller historical one while writes still work.
     const legacyRead = storage.readRaw(LEGACY_KEYS.best);
@@ -270,16 +260,6 @@
   let comboTimer = 0;
   let collected = 0;
   let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
-  let encounterDirector = null;
-  let journey = null;
-  let journeyView = null;
-  let journeyCanSave = true;
-  let journeyAutoFire = true;
-  let journeyAutoTimer = 0;
-  let journeyShieldCooldown = 0;
-  let journeyTractorCooldown = 0;
-  let journeyPointerLast = null;
-  let encounterWave = 0;
   let continued = false;
   let shake = 0;
   let flash = 0;
@@ -387,10 +367,8 @@
 
   const powers = { shield: 0, tractor: 0, slow: 0, double: 0, phaser: 0 };
   const player = NeonCore.createPlayerModel(W, H);
-  if (!N7_CAMPAIGN && !JOURNEY_DEMO) {
-    player.w *= SHIP_VISUAL.classicScale;
-    player.h *= SHIP_VISUAL.classicScale;
-  }
+  player.w *= SHIP_VISUAL.classicScale;
+  player.h *= SHIP_VISUAL.classicScale;
 
   // Silueta de colisión aproximada al sprite de la nave.
   // Está ligeramente metida hacia dentro para que los roces mínimos no sean injustos,
@@ -407,15 +385,12 @@
     [-28, -112], [-18, -137]
   ];
 
-  // Scale the actual collision silhouette with the owner's smaller classic
-  // ship; preserve the geometry of the two archived campaign variants.
-  if (!N7_CAMPAIGN && !JOURNEY_DEMO) {
-    for (const point of SHIP_COLLISION_OUTLINE) {
-      point[0] *= SHIP_VISUAL.classicScale * .9;
-      point[1] *= SHIP_VISUAL.classicScale * .8;
-    }
+  // Scale the actual collision silhouette with the owner's smaller classic ship.
+  for (const point of SHIP_COLLISION_OUTLINE) {
+    point[0] *= SHIP_VISUAL.classicScale * .9;
+    point[1] *= SHIP_VISUAL.classicScale * .8;
   }
-  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth * SHIP_VISUAL.classicScale * (!N7_CAMPAIGN && !JOURNEY_DEMO ? .9 : 1);
+  const SHIP_COLLISION_HALF_WIDTH = NeonCore.PLAYER_GEOMETRY.collisionHalfWidth * SHIP_VISUAL.classicScale * .9;
   const CORRIDOR_REQUIRED_CLEARANCE = 14;
   const CORRIDOR_TOP = -170;
   const CORRIDOR_BOTTOM_PADDING = 94;
@@ -637,7 +612,7 @@
 
   const overlayReturnFocus = new WeakMap();
   function overlay(el) {
-    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.journeyStation, ui.journeyComplete, ui.shipHangar, ui.flightDock].filter(Boolean);
+    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.shipHangar, ui.flightDock].filter(Boolean);
     const previous = panels.find(node => node.classList.contains("show"));
     const opener = document.activeElement;
     const restore = previous && overlayReturnFocus.get(previous);
@@ -775,9 +750,9 @@
       }
     } else {
       // Preserve the experimental campaigns' existing horizontal flight line.
-      const controlBandCss = JOURNEY_DEMO ? 136 : 104;
+      const controlBandCss = 104;
       const clearance = 110 + controlBandCss * H / rect.height;
-      player.y = H - Math.max(JOURNEY_DEMO ? 360 : 260, clearance);
+      player.y = H - Math.max(260, clearance);
       player.x = clamp(player.x, 80, W - 80);
       player.target = clamp(player.target, 80, W - 80);
       positionAtlasArena();
@@ -954,7 +929,7 @@
   }
   const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
 
-  function isUnifiedClassic() { return !N7_CAMPAIGN && !JOURNEY_DEMO; }
+  function isUnifiedClassic() { return true; }
 
   function classicChapterControlsLocked() {
     return Boolean(classicChapterView?.opening?.controlsLocked);
@@ -1114,11 +1089,10 @@
   }
 
   function recoverCampaignCompletion() {
-    if(JOURNEY_DEMO)return true;
     if(!completionJournal)completionJournal=NeonCampaign.createCompletionJournal({storage,keys:KEYS,
-      levelCount:LEVELS.length,checkpointKey:N7_CAMPAIGN?null:NeonCampaign.CHRONOS_VOYAGE_KEY,
+      levelCount:LEVELS.length,checkpointKey:NeonCampaign.CHRONOS_VOYAGE_KEY,
       validateCheckpoint:value=>normalizeClassicVoyageRecord(value)!==null,
-      equipmentKey:N7_CAMPAIGN?null:CLASSIC_EQUIPMENT_KEY,
+      equipmentKey:CLASSIC_EQUIPMENT_KEY,
       validateEquipment:value=>NeonCampaign.normalizeClassicEquipment(value)!==null});
     const result=completionJournal.recover();
     completionPersistenceBlocked=!result.ok;
@@ -1805,7 +1779,7 @@
   }
 
   function isAtlasMission() {
-    return !N7_CAMPAIGN && !JOURNEY_DEMO && currentLevel === 0;
+    return currentLevel === 0;
   }
 
   function setupAtlasEncounter() {
@@ -2073,161 +2047,7 @@
     });
   }
 
-  function setupJourneyUI() {
-    if (!JOURNEY_DEMO) return;
-    document.body.classList.add("journey-mode");
-    const mount = document.createElement("div");
-    mount.innerHTML = `<div id="journeyRoute" class="journey-route hidden"><small>CRONOS → GAIA NOVA</small><b id="journeyDestination"></b><progress id="journeyDistance" max="1" value="0" aria-label="Recorrido hasta Gaia"></progress><span id="journeyObjective"></span></div>
-      <div id="journeySkills" class="journey-skills hidden"><button id="journeyShield" type="button">ESCUDO <small>LISTO</small></button><button id="journeyTractor" type="button">TRACTOR <small>LISTO</small></button></div>
-      <div id="journeyStation" class="overlay"><section class="panel journey-service"><small>BALIZA DE SERVICIO C9</small><img src="assets/repair_drone.webp" alt="Mira, robot del taller"><h2>Un momento de respiro.</h2><p>«Soy Mira. Ese módulo rescatado aún puede volar. Te lo monto y sello el casco.»</p><div class="journey-piece"><canvas id="journeyModulePreview" width="240" height="150" role="img" aria-label="Propulsor C9 recuperado">Propulsor C9 recuperado.</canvas><div><b>Propulsor C9</b><p>Respuesta lateral +20 % y propulsión ámbar visible. Instalación con la pieza recuperada; sin créditos.</p></div></div><button id="journeyInstall" class="primary" type="button">INSTALAR PIEZA Y REPARAR</button><button id="journeyContinue" class="secondary" type="button" disabled>CONTINUAR HACIA GAIA</button><button id="journeyStationHome" class="link" type="button">Guardar y volver</button></section></div>
-      <div id="journeyComplete" class="overlay"><section class="panel journey-service"><small>ACCESO ATLAS · TRAYECTO COMPLETO</small><h2>Gaia nos recibe.</h2><p>Has salido de Chronos, recuperado e instalado una pieza y abierto el paso. El siguiente viaje todavía está en producción.</p><p id="journeyReward"></p><button id="journeyAgain" class="primary" type="button">REPETIR TRAVESÍA</button><button id="journeyHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
-    canvas.parentElement.append(mount);
-    for (const id of ["journeyRoute", "journeyDestination", "journeyDistance", "journeyObjective", "journeySkills", "journeyShield", "journeyTractor", "journeyStation", "journeyInstall", "journeyContinue", "journeyComplete"]) ui[id] = $(id);
-    $("journeyInstall").onclick = () => {
-      if (!journey?.serviceInstall()) return;
-      hull = 100;
-      persistJourney();
-      showJourneyStation();
-      tone(780, .16, "triangle", .06);
-    };
-    $("journeyContinue").onclick = () => {
-      if (!journey?.resumeFromStation()) return;
-      persistJourney();
-      setState("playing"); overlay(); last = performance.now();
-      ui.fire.classList.remove("hidden"); ui.journeySkills.classList.remove("hidden");
-      ui.journeyRoute.classList.remove("hidden");
-      syncJourneyHud();
-      showStoryTransmission("MIRA · C9", "Propulsor conectado. Prueba el empuje hacia Gaia.", 3.2);
-    };
-    $("journeyStationHome").onclick = goHome;
-    $("journeyHome").onclick = goHome;
-    $("journeyAgain").onclick = () => startJourney(true);
-    ui.journeyShield.onclick = () => useJourneyAbility("shield");
-    ui.journeyTractor.onclick = () => useJourneyAbility("tractor");
-    const choice = document.createElement("label");
-    choice.className = "journey-auto-choice";
-    choice.innerHTML = '<input id="journeyAuto" type="checkbox">Disparo básico automático · también puedes disparar manualmente';
-    $("play").after(choice);
-    journeyAutoFire = storage.getJSON("neon-journey-demo-autofire-v1", true) !== false;
-    $("journeyAuto").checked = journeyAutoFire;
-    $("journeyAuto").onchange = event => {
-      journeyAutoFire = event.target.checked;
-      storage.setJSON("neon-journey-demo-autofire-v1", journeyAutoFire);
-    };
-    ui.menu.querySelector("h2").textContent = "Un viaje entre mundos.";
-    ui.menu.querySelector(".menu-panel > p").textContent = "Evacúa Chronos, rescata una pieza y cruza hacia Gaia. Desliza sin soltar para pilotar; tu nave dispara al encontrar una amenaza.";
-  }
-
-  function persistJourney() {
-    if (journey && (!journeyCanSave || !storage.setJSON(NeonCampaign.JOURNEY_DEMO_SAVE_KEY, journey.checkpoint()))) toast("Guardado no disponible. Mantén esta partida abierta.");
-    journeyView = journey?.snapshot() || null;
-  }
-
-  function startJourney(fresh = false) {
-    let saved = null;
-    journeyCanSave = true;
-    if (!fresh) saved = storage.getRaw(NeonCampaign.JOURNEY_DEMO_SAVE_KEY);
-    journey = NeonCampaign.createJourneyDemo(saved);
-    if (saved !== null && journey.snapshot().recovery === "invalid-save") {
-      const backupKey = `${NeonCampaign.JOURNEY_DEMO_SAVE_KEY}:invalid-backups`;
-      const previous = storage.getJSON(backupKey, []);
-      const copies = Array.isArray(previous) ? previous : [previous];
-      journeyCanSave = copies.includes(saved) || storage.setJSON(backupKey, [...copies, saved]);
-    }
-    if (journey.snapshot().phase === "complete") journey = NeonCampaign.createJourneyDemo();
-    journeyView = journey.snapshot();
-    journeyAutoTimer = 0; journeyShieldCooldown = 0; journeyTractorCooldown = 0;
-    startLevel(0);
-    warpTimer = .45;
-    ui.bannerName.textContent = "CHRONOS → GAIA NOVA";
-    ui.bannerGoal.textContent = "Desliza para pilotar. Rescata el módulo señalado.";
-    ui.banner.classList.remove("show"); bannerTimer = 0;
-    ui.journeyRoute.classList.remove("hidden");
-    ui.journeySkills.classList.remove("hidden");
-    ui.powerHud.classList.add("hidden");
-    persistJourney(); syncJourneyHud();
-    if (journeyView.phase === "station") showJourneyStation();
-  }
-
-  function showJourneyStation() {
-    journeyView = journey.snapshot();
-    journey.setPaused(false); // service actions are allowed; the route itself is stopped.
-    if (state === "playing") setState("paused");
-    items = []; clearTransientEffects(); hideStoryTransmission();
-    ui.fire.classList.add("hidden"); ui.journeySkills.classList.add("hidden");
-    ui.journeyRoute.classList.add("hidden");
-    ui.banner.classList.remove("show");
-    ui.journeyInstall.disabled = journeyView.partInstalled;
-    ui.journeyInstall.textContent = journeyView.partInstalled ? "PROPULSOR MONTADO · CASCO SELLADO" : "INSTALAR PIEZA Y REPARAR";
-    ui.journeyContinue.disabled = !journeyView.partInstalled;
-    overlay(ui.journeyStation); syncJourneyHud();
-  }
-
-  function useJourneyAbility(name) {
-    if (!JOURNEY_DEMO || !journey || state !== "playing") return;
-    const cooldown = name === "shield" ? journeyShieldCooldown : journeyTractorCooldown;
-    if (cooldown > 0) return;
-    powers[name] = 4;
-    if (name === "shield") journeyShieldCooldown = 11;
-    else journeyTractorCooldown = 8;
-    activatePower(name, {x: player.x, y: player.y});
-  }
-
-  function syncJourneyHud() {
-    if (!JOURNEY_DEMO || !journey) return;
-    journeyView = journey.snapshot();
-    ui.journeyDestination.textContent = journeyView.destination;
-    ui.journeyDistance.value = journeyView.routeProgress;
-    ui.journeyObjective.textContent = journeyView.phase === "station" ? "Instala la pieza recuperada" : journeyView.waitingFor === "part" ? "Recupera el módulo · usa TRACTOR si lo necesitas" : journeyView.borderActive && !journeyView.borderResolved ? "Desactiva al guardián CH-01 para abrir el paso" : journeyView.partCollected ? "Pieza a bordo · sigue el corredor" : "Rescata el propulsor C9 señalizado";
-    for (const [name, cooldown] of [["journeyShield", journeyShieldCooldown], ["journeyTractor", journeyTractorCooldown]]) {
-      ui[name].disabled = cooldown > 0 || state !== "playing";
-      const label = cooldown > 0 ? `${Math.ceil(cooldown)} s` : "LISTO";
-      if (ui[name].querySelector("small").textContent !== label) ui[name].querySelector("small").textContent = label;
-    }
-    ui.goal.textContent = `${Math.round(journeyView.routeProgress * 100)}%`;
-    ui.goal.previousElementSibling.textContent = "RECORRIDO";
-    ui.hudLevel.textContent = `1.${journeyView.segmentIndex + 1}`;
-    ui.hudLevel.previousElementSibling.textContent = "TRAMO";
-  }
-
-  function journeyEvent(event) {
-    if (event.type === "partAvailable") {
-      items.push({type: "journeyPart", x: W * .68, baseX: W * .68, y: H * .35, r: 27, s: 120, rot: 0, rs: .2, p: 0, phase: 0, alpha: 1});
-      showStoryTransmission("BALIZA C9", "Propulsor C9 intacto. Acércate o activa el tractor.", 3.8);
-    } else if (event.type === "enemy" || event.type === "border") {
-      const enemy = createThreat("scout", level());
-      enemy.x = enemy.baseX = event.type === "border" ? W * .5 : W * .28;
-      enemy.classicScout.baseX = enemy.x;
-      enemy.journeyEntry = {targetX: enemy.x};
-      enemy.y = H * .22;
-      enemy.s = event.type === "border" ? 0 : 95;
-      if (event.type === "border") {
-        enemy.journeyBorder = true; enemy.hp = enemy.maxHp = 3;
-        showStoryTransmission("ACCESO ATLAS", "Identificación alterada. Desactiva el bloqueo y cruza.", 3.6);
-      }
-      items.push(enemy);
-    } else if (event.type === "station") {
-      persistJourney(); showJourneyStation();
-    } else if (event.type === "segmentStart") {
-      items = []; persistJourney();
-    } else if (event.type === "complete") {
-      persistJourney();
-      setState("complete");
-      ui.hud.classList.add("hidden"); ui.fire.classList.add("hidden");
-      ui.journeySkills.classList.add("hidden");
-      ui.journeyRoute.classList.add("hidden");
-      $("journeyReward").textContent = `${journey.snapshot().credits} créditos registrados · recompensa única del trayecto`;
-      hideStoryTransmission(); overlay(ui.journeyComplete);
-    }
-  }
-
   function updateMenu() {
-    if (JOURNEY_DEMO) {
-      const saved = NeonCampaign.createJourneyDemo(storage.getJSON(NeonCampaign.JOURNEY_DEMO_SAVE_KEY, null)).snapshot();
-      ui.playLabel.textContent = saved.phase === "complete" ? "REPETIR VIAJE" : "CONTINUAR VIAJE";
-      ui.playSector.textContent = `${saved.origin} → ${saved.destination}`;
-      return;
-    }
     const unlocked = getUnlocked();
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
@@ -2241,7 +2061,7 @@
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
-    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
@@ -2262,7 +2082,7 @@
       reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
     }
     ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : isUnifiedClassic() ? "NIVEL" : "SECTOR";
+    ui.hudLevel.previousElementSibling.textContent = isUnifiedClassic() ? "NIVEL" : "SECTOR";
     if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
@@ -2279,8 +2099,7 @@
     lastHudCollected = collected;
     lastHudHull = hull;
     updateAmmoHud();
-    if (JOURNEY_DEMO) syncJourneyHud();
-    else syncClassicFlightHud();
+    syncClassicFlightHud();
   }
 
   function updateAmmoHud() {
@@ -2299,7 +2118,7 @@
       ui.fire.setAttribute("aria-label",ammo>0?`Mantener para disparar ${weapon.label}. La energía se recupera durante el vuelo.`:"El arma está recuperando energía. Mantén para disparar cuando esté disponible.");
       return;
     }
-    if (JOURNEY_DEMO || atlasBoss) {
+    if (atlasBoss) {
       ui.fire.classList.remove("empty");
       ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
       ui.fire.disabled = state !== "playing" || warpTimer > 0;
@@ -2353,10 +2172,7 @@
   }
 
   function updateEncounterHud() {
-    ui.encounterProgress.classList.toggle("active", Boolean(encounterDirector));
-    if (encounterDirector) {
-      ui.encounterProgress.querySelector("em").textContent = `${encounterWave}/${encounterDirector.plan.waves.length}`;
-    }
+    ui.encounterProgress.classList.toggle("active", false);
   }
 
   function buildLevelGrid() {
@@ -2375,9 +2191,9 @@
       const earned = +(starsMap[index + 1] || 0);
       const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
       button.innerHTML = `
-        <small>${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${index + 1}</small>
+        <small>NIVEL ${index + 1}</small>
         <strong>${lv.name}</strong>
-        <span>${lv.world} · ${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}</span>
+        <span>${lv.world} · ${lv.goal} CRONIUM</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
         ${button.disabled ? '<div class="lock">🔒</div>' : ""}
       `;
@@ -2391,10 +2207,10 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = `NIVEL ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
-    ui.briefingGoal.textContent = `${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}`;
+    ui.briefingGoal.textContent = `${lv.goal} CRONIUM`;
     ui.briefingThreat.textContent = lv.threatLabel;
     ui.briefingSupply.textContent = `${lv.goal + Math.ceil(lv.goal * 0.25)} disponibles`;
     ui.briefingMission.textContent = lv.mission;
@@ -2411,7 +2227,7 @@
   }
 
   function showBanner() {
-    ui.bannerSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${currentLevel + 1}`;
+    ui.bannerSector.textContent = `SECTOR ${currentLevel + 1}`;
     ui.bannerName.textContent = level().name.toUpperCase();
     ui.bannerGoal.textContent = `Recupera ${level().goal} núcleos · ${level().desc}`;
     ui.banner.classList.add("show");
@@ -2469,7 +2285,7 @@
       advanceClassicTutorial();
       if(atlasBoss?.resolved&&classicChapterView.aftermathReady)completeLevel();
     }
-    if (classicFlight || N7_CAMPAIGN || JOURNEY_DEMO || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
+    if (classicFlight || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -2541,8 +2357,6 @@
       ensureSprite(SPRITES.ch01);ensureSprite(SPRITES.ch02);
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);ensureSprite(SPRITES.satellite);
     }
-    encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
-    encounterWave = 0;
     setState("playing");
     score = 0;
     displayedScore = 0;
@@ -2562,7 +2376,7 @@
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
-    classicScoutTimer = !N7_CAMPAIGN && currentLevel === 1 ? 3.8 : 0;
+    classicScoutTimer = currentLevel === 1 ? 3.8 : 0;
     classicScoutAnnounced = false;
     warpTimer = classicFlight ? 0 : 1.25;
     supplyFailed = false;
@@ -2616,10 +2430,6 @@
     hud();
     updateEncounterHud();
     if(!isUnifiedClassic()) showBanner();
-    if (N7_CAMPAIGN) {
-      const opening = NeonCampaign.n7Dialogue("sectorStart", {level: currentLevel + 1});
-      if (opening) showStoryTransmission("N-7", opening);
-    }
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     if(classicFlightView?.waitingFor==="service")beginClassicVoyageService();
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
@@ -2629,7 +2439,6 @@
   function pauseGame() {
     if (state !== "playing") return;
     if (typeof resetGameInput === "function") resetGameInput();
-    journey?.setPaused(true);
     NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
     hideWarning();
@@ -2639,8 +2448,6 @@
   function resumeGame() {
     if (state !== "paused") return;
     if(ui.flightDock?.classList.contains("show")&&flightDockReturn==="hud"){closeClassicDock();return;}
-    if (JOURNEY_DEMO && journey?.snapshot().phase === "station") { showJourneyStation(); return; }
-    journey?.setPaused(false);
     setState("playing");
     overlay();
     last = performance.now();
@@ -2667,17 +2474,11 @@
     syncClassicChapterPresentation();
     hideWarning();
     hideStoryTransmission();
-    if (JOURNEY_DEMO) {
-      persistJourney();
-      ui.journeyRoute.classList.add("hidden");
-      ui.journeySkills.classList.add("hidden");
-    }
     overlay(ui.menu);
     updateMenu();
   }
 
   function registerRun() {
-    if (JOURNEY_DEMO) return;
     const games = Math.trunc(Math.max(0, storage.getNumber(KEYS.games, 0))) + 1;
     storage.set(KEYS.games, games);
     const interval = Math.trunc(Math.max(0, Number(window.MONETIZATION_CONFIG?.native?.interstitialEveryRuns) || 0));
@@ -2702,7 +2503,6 @@
   }
 
   function completeLevel() {
-    if (JOURNEY_DEMO) return;
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
     if(classicChapterStory&&atlasBoss?.resolved&&!classicChapterView?.aftermathReady)return;
@@ -2710,7 +2510,6 @@
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }
-    if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
@@ -2756,10 +2555,10 @@
       if(earnedEquipment)classicEquipment=earnedEquipment;
     }
     registerRun();
-    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "NIVEL SUPERADO";
+    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : "NIVEL SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
+      ? "Has estabilizado el Colapso Neon"
       : `${level().name} completado`;
     if (isAtlasMission() && atlasBoss?.resolved) ui.completeTitle.textContent = "Atlas ha abierto el paso";
     ui.starsAwarded.innerHTML = [1, 2, 3]
@@ -2769,13 +2568,13 @@
     ui.levelHull.textContent = `${Math.ceil(hull)}%`;
     ui.maxCombo.textContent = `x${maxCombo}`;
     ui.unlockMessage.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "Puedes volver a cada nivel para mejorar tu resultado")
+      ? "Puedes volver a cada nivel para mejorar tu resultado"
       : newlyUnlocked
-        ? `${N7_CAMPAIGN ? "Ruta" : "Nivel"} ${currentLevel + 2} desbloqueado`
+        ? `Nivel ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
     ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
-      ?"CRUZAR HACIA GAIA NOVA →":N7_CAMPAIGN?"SIGUIENTE RUTA →":"SIGUIENTE NIVEL →";
+      ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE NIVEL →";
     if(isUnifiedClassic()&&currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";
@@ -3440,13 +3239,6 @@
         if(classicChapterStory)signalClassicChapter("module-recovered");
         else showStoryTransmission("MIRA · C9","Pieza asegurada. La montamos antes de entrar en la red Atlas.",4.5);
       }
-    } else if (item.type === "journeyPart") {
-      if (journey?.collectPart()) {
-        persistJourney();
-        pulseRing(item.x, item.y, "#ffd877", 95, .48);
-        toast("Aleta vectorial rescatada · taller C9 disponible");
-        tone(840, .14, "triangle", .065);
-      }
     } else if (item.type === "energy") {
       const multiplier = powers.double > 0 ? 2 : 1;
       score += 10 * combo * multiplier;
@@ -3537,10 +3329,6 @@
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
-      if (target.journeyBorder && journey?.resolveBorder()) {
-        persistJourney();
-        showStoryTransmission("ACCESO ATLAS", "Bloqueo desactivado. Corredor a Gaia abierto.", 3.4);
-      }
       if (explosions.length >= EFFECT_LIMITS.explosions) explosions.shift();
       const duration=animator.getFrame().image==="assets/ch02_interceptor_atlas_v1.webp"?.56:.49;
       explosions.push({x: target.x, y: target.y, ch01Animator: animator,
@@ -3588,9 +3376,9 @@
       if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
       return fireClassicWeapon();
     }
-    if (state !== "playing" || (!JOURNEY_DEMO && !atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
+    if (state !== "playing" || (!atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
 
-    if (!JOURNEY_DEMO && !atlasBoss) ammo -= 1;
+    if (!atlasBoss) ammo -= 1;
     manualShotCooldown = 0.28;
     cameraKickY = Math.max(cameraKickY, 5);
     shake = Math.max(shake, 3.2);
@@ -3643,7 +3431,6 @@
   }
 
   function checkSupplyFailure() {
-    if (JOURNEY_DEMO) return;
     // The staged voyage reissues missed signals locally; the old finite supply
     // failure remains unchanged in the other nine territories and N-7.
     if(classicFlightView?.stageNumber)return;
@@ -3920,7 +3707,7 @@
     else player.drift = 0;
 
     player.previousCollisionX=player.x;player.previousCollisionY=player.y;
-    const follow = (9 + (settings.sensitivity / 100) * 8) * (JOURNEY_DEMO && journeyView?.engineBoost ? 1.2 : 1);
+    const follow = 9 + (settings.sensitivity / 100) * 8;
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
     if(isUnifiedClassic())player.visualBank=NeonCampaign.advanceShipBank(player.visualBank||0,
       clamp((player.target+player.drift-player.x)/95,-1,1),dt);
@@ -3945,29 +3732,7 @@
 
     if(isUnifiedClassic())advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
-    if (JOURNEY_DEMO && journey) {
-      journey.advance(dt, journeyEvent);
-      syncJourneyHud();
-      if (journeyView.phase !== "travel") { updateEffects(dt); return; }
-      journeyShieldCooldown = Math.max(0, journeyShieldCooldown - dt);
-      journeyTractorCooldown = Math.max(0, journeyTractorCooldown - dt);
-      journeyAutoTimer = Math.max(0, journeyAutoTimer - dt);
-      if (journeyAutoFire && journeyAutoTimer === 0 && items.some(item => isThreat(item) && item.y < player.y && Math.abs(item.x - player.x) < 145)) {
-        fireManualShot(); journeyAutoTimer = .62;
-      }
-    } else if (encounterDirector) {
-      encounterDirector.advance(dt, (item) => {
-        items.push(item);
-        if (item.type === "energy") energySpawned++;
-      });
-      if (encounterDirector.wave !== encounterWave) {
-        encounterWave = encounterDirector.wave;
-        ammo = MAX_AMMO;
-        updateAmmoHud();
-        updateEncounterHud();
-      }
-    } else {
-      if (!atlasBoss && !classicFlightView) {
+    if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         addItem();
@@ -3988,7 +3753,6 @@
           }
           classicScoutTimer = 6.2 + Math.random() * 1.5;
         }
-      }
       }
     }
 
@@ -4064,11 +3828,6 @@
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
         advance(item,dt*scale,player,shot=>{items.push(shot);if(isUnifiedClassic())combatSound("enemy-phaser",shot.x);});
       }
-      if (item.journeyEntry && item.classicScout.age < .9) {
-        const entry = item.classicScout.age / .9;
-        item.x = -80 + (item.journeyEntry.targetX + 80) * entry;
-      }
-      if (item.type === "journeyPart") item.y = Math.min(item.y, player.y - 65);
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
@@ -4120,7 +3879,6 @@
 
     if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
-    if (encounterDirector?.finished && collected >= level().goal && !items.some(isThreat)) completeLevel();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
         player.x + (Math.random() - 0.5) * 70 * SHIP_VISUAL.scale,
@@ -4213,7 +3971,7 @@
         ctx.arc(x, y, 7 + (index % 4) * 4, 0, Math.PI * 2);
         ctx.fill();
       }
-    } else if (lv.scene === "ion" && (N7_CAMPAIGN || currentLevel !== 3)) {
+    } else if (lv.scene === "ion" && currentLevel !== 3) {
       ctx.strokeStyle = "rgba(191,126,255,.34)";
       ctx.lineWidth = 3;
       ctx.shadowBlur = 15;
@@ -4225,14 +3983,14 @@
         ctx.bezierCurveTo(W * 0.25, y - 70, W * 0.62, y + 75, W + 30, y - 25);
         ctx.stroke();
       }
-    } else if (lv.scene === "crimson" && (N7_CAMPAIGN || currentLevel !== 4)) {
+    } else if (lv.scene === "crimson" && currentLevel !== 4) {
       drawPlanet(W * 0.19, H * 0.16, 92, ["#fff5c7", "#ff744f", "#761737"], false);
       ctx.globalAlpha = 0.14 + Math.sin(t * 0.004) * 0.03;
       ctx.fillStyle = "#ff4965";
       ctx.beginPath();
       ctx.arc(W * 0.19, H * 0.16, 145, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "gravity" && (N7_CAMPAIGN || currentLevel !== 5)) {
+    } else if (lv.scene === "gravity" && currentLevel !== 5) {
       const x = W * 0.74;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(80,255,208,.48)";
@@ -4246,7 +4004,7 @@
       ctx.beginPath();
       ctx.arc(x, y, 61, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "ghost" && (N7_CAMPAIGN || currentLevel !== 6)) {
+    } else if (lv.scene === "ghost" && currentLevel !== 6) {
       ctx.globalAlpha = 0.20;
       ctx.fillStyle = "#b99bea";
       ctx.fillRect(W * 0.10, H * 0.17, W * 0.80, 12);
@@ -4258,7 +4016,7 @@
       fog.addColorStop(1, "rgba(174,132,232,0)");
       ctx.fillStyle = fog;
       ctx.fillRect(0, H * 0.12, W, H * 0.62);
-    } else if (lv.scene === "overdrive" && (N7_CAMPAIGN || currentLevel !== 7)) {
+    } else if (lv.scene === "overdrive" && currentLevel !== 7) {
       ctx.globalAlpha = 0.20;
       ctx.strokeStyle = "#fff27b";
       ctx.lineWidth = 2;
@@ -4269,13 +4027,13 @@
         ctx.lineTo(x - 130, H * 0.70);
         ctx.stroke();
       }
-    } else if (lv.scene === "dark" && (N7_CAMPAIGN || currentLevel !== 8)) {
+    } else if (lv.scene === "dark" && currentLevel !== 8) {
       drawPlanet(W * 0.73, H * 0.18, 112, ["#6d2d73", "#27102f", "#05030a"], false);
       ctx.fillStyle = "rgba(255,92,233,.12)";
       ctx.beginPath();
       ctx.arc(W * 0.73, H * 0.18, 130, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "collapse" && (N7_CAMPAIGN || currentLevel !== 9)) {
+    } else if (lv.scene === "collapse" && currentLevel !== 9) {
       const x = W * 0.50;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(93,255,236,.58)";
@@ -4771,7 +4529,6 @@
 
   function background(t) {
     if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
-    if (JOURNEY_DEMO) { drawJourneyBackground(); return; }
     if(isUnifiedClassic() && currentLevel===1 && drawGaiaOrbitBackground()) {return;}
     if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
@@ -4804,15 +4561,15 @@
     }
     ctx.restore();
 
-    if (!N7_CAMPAIGN && currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
-    if (!N7_CAMPAIGN && currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
-    if (!N7_CAMPAIGN && currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
-    if (!N7_CAMPAIGN && currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
-    if (!N7_CAMPAIGN && currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
-    if (!N7_CAMPAIGN && currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
-    if (!N7_CAMPAIGN && currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
-    if (!N7_CAMPAIGN && currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
-    if (!N7_CAMPAIGN && currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
+    if (currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
+    if (currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
+    if (currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
+    if (currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
+    if (currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
+    if (currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
+    if (currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
+    if (currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
+    if (currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
     if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
       const image = SPRITES.cronosBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
@@ -4828,7 +4585,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
+    } else if (currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
       const image = SPRITES.atlasBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.04;
       const width = image.naturalWidth * scale;
@@ -4847,7 +4604,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
+    } else if (currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
       const image = SPRITES.vulkarBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
       const width = image.naturalWidth * scale;
@@ -4865,7 +4622,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 3 && spriteReady(SPRITES.magmaTunnelBackground)) {
+    } else if (currentLevel === 3 && spriteReady(SPRITES.magmaTunnelBackground)) {
       const image = SPRITES.magmaTunnelBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
       const width = image.naturalWidth * scale;
@@ -4883,7 +4640,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
+    } else if (currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
       const image = SPRITES.cryonWhiteoutBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4901,7 +4658,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 5 && spriteReady(SPRITES.cryonRiftBackground)) {
+    } else if (currentLevel === 5 && spriteReady(SPRITES.cryonRiftBackground)) {
       const image = SPRITES.cryonRiftBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4919,7 +4676,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
+    } else if (currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
       const image = SPRITES.aetherEchoBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4937,7 +4694,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
+    } else if (currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
       const image = SPRITES.aetherThresholdBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4955,7 +4712,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
+    } else if (currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
       const image = SPRITES.titanGraveyardBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4973,7 +4730,7 @@
       ctx.fillStyle = readability;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
-    } else if (!N7_CAMPAIGN && currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
+    } else if (currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
       const image = SPRITES.chronosCollapseBackground;
       const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
       const width = image.naturalWidth * scale;
@@ -4995,7 +4752,7 @@
 
     // Start the authored VFX download while the level is still in its menu;
     // the scripted reactor accident happens thirty-one seconds into play.
-    if (!N7_CAMPAIGN && currentLevel === 0) ensureSprite(SPRITES.chronosShockwave);
+    if (currentLevel === 0) ensureSprite(SPRITES.chronosShockwave);
 
     ctx.save();
     ctx.globalCompositeOperation = "screen";
@@ -5052,7 +4809,7 @@
     ctx.fillStyle = vignette;
     ctx.fillRect(0, 0, W, H);
 
-    if (!N7_CAMPAIGN && currentLevel === 0 && levelOneShockwave > 0) {
+    if (currentLevel === 0 && levelOneShockwave > 0) {
       const progress = clamp(1 - levelOneShockwave / 0.62, 0, 1);
       const sx = W * 0.50;
       const sy = H * 0.40;
@@ -5194,46 +4951,6 @@
     ctx.fillStyle = "#eaffff";
     ctx.beginPath(); ctx.arc(0, 0, 5 + intensity * 4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-  }
-  function drawJourneyBackground() {
-    const view = journeyView || {routeProgress: 0, segmentId: "departure", segmentProgress: 0};
-    const progress = view.routeProgress;
-    ctx.fillStyle = "#020917"; ctx.fillRect(0, 0, W, H);
-    const painting = (image, alpha, zoom) => {
-      if (!spriteReady(image) || alpha <= 0) return;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * zoom;
-      const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
-      ctx.save(); ctx.globalAlpha = alpha;
-      ctx.drawImage(image, (W - width) / 2, (H - height) / 2, width, height); ctx.restore();
-    };
-    painting(SPRITES.cronosBackground, clamp(1 - progress * 2.6, 0, 1), 1.16 - progress * .3);
-    painting(SPRITES.atlasBackground, clamp((progress - .18) / .65, 0, .94), 1.02 + progress * .18);
-    ctx.save(); ctx.globalAlpha = .5;
-    for (const star of stars) {
-      ctx.fillStyle = star.tint;
-      ctx.fillRect(star.x, star.y, star.r, star.r * 2.5);
-    }
-    ctx.restore();
-    if (progress < .42 && spriteReady(SPRITES.chronosModule)) {
-      const distance = progress / .42;
-      const size = 320 - distance * 230;
-      ctx.save(); ctx.globalAlpha = (1 - distance) * .85;
-      ctx.translate(W * (.61 - distance * .39), H * (.32 - distance * .16));
-      ctx.rotate(-.2 + distance * .4);
-      ctx.drawImage(SPRITES.chronosModule, -size / 2, -size / 2, size, size);
-      ctx.restore();
-    }
-    if (view.segmentId === "departure" && view.segmentProgress >= .08 && view.segmentProgress < .12 && spriteReady(SPRITES.chronosShockwave)) {
-      const phase = (view.segmentProgress - .08) / .04;
-      const atlas = SPRITES.chronosShockwave, cell = atlas.naturalWidth / 2;
-      const frame = Math.min(3, Math.floor(phase * 4)), size = 250 + phase * 700;
-      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.sin(phase * Math.PI) * .8;
-      ctx.drawImage(atlas, frame % 2 * cell, Math.floor(frame / 2) * cell, cell, cell, W * .5 - size / 2, H * .32 - size / 2, size, size);
-      ctx.restore();
-    }
-    const veil = ctx.createLinearGradient(0, H * .3, 0, H);
-    veil.addColorStop(0, "#02081700"); veil.addColorStop(1, "#020613aa");
-    ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
   }
   // Image-backed artwork. The simulation, not the render clock, selects poses.
   const ATLAS_FRAME_PIVOTS = Array.from({length:8},()=>[256,256]);
@@ -5560,13 +5277,6 @@
       }
       target.restore();
     }
-    const modulePreview = $("journeyModulePreview");
-    if (modulePreview && $("journeyStation")?.classList.contains("show")) {
-      const target = modulePreview.getContext("2d"); target.clearRect(0, 0, 240, 150);
-      target.save(); target.translate(120, -7); target.scale(.65, .65);
-      drawShipComponent(target, NeonCampaign.normalizeShipLoadout({engines:"bastion"}), "engines");
-      target.restore();
-    }
   }
 
   function playerFrameState(t) {
@@ -5620,13 +5330,11 @@
       ctx.restore();
     }
 
-    const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
-      ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
     const steering=classic&&Number.isFinite(player.visualBank)?player.visualBank:clamp((player.target+player.drift-player.x)/95,-1,1);
     const reserve=classic&&typeof classicHullReserve==="number"&&classicHullReserve>0
       ?.08+(typeof classicShieldImpact==="number"?classicShieldImpact:0):0;
-    const assembled = drawModularShip(ctx, assembledLoadout, assemblySize, elapsed,
+    const assembled = drawModularShip(ctx, shipLoadout, assemblySize, elapsed,
       steering, hull, impactReactionTimer,hasClassicTwinMounts()?classicTwinFrame():null,
       SHIP_VISUAL.bankStrength??1,reserve);
     ctx.restore();
@@ -6189,17 +5897,6 @@
     ctx.fillText(label, W / 2, y - 3);
     ctx.restore();
   }
-  function drawJourneyPart(item) {
-    ctx.save(); ctx.translate(item.x, item.y);
-    ctx.shadowBlur = 24; ctx.shadowColor = "#ffd877";
-    const pulse = 1 + Math.sin(elapsed * 4) * .08;
-    ctx.save(); ctx.scale(.27 * pulse, .27 * pulse); ctx.translate(0, -134);
-    drawShipComponent(ctx, NeonCampaign.normalizeShipLoadout({engines: "bastion"}), "engines");
-    ctx.restore();
-    ctx.fillStyle = "#fff4c3"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("PROPULSOR C9", 0, -57);
-    ctx.restore();
-  }
   function render(t) {
     syncShipPresentation();
     drawShipHangar(t);
@@ -6217,7 +5914,6 @@
       if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
-      else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
       else if (item.type === "debris") drawDebris(item);
@@ -6345,7 +6041,6 @@
     const previousFire = fireInput;
     const previousMissile = missileInput;
     legacyPilotId = null;
-    journeyPointerLast = null;
     fireInput = null;
     missileInput = null;
     NeonCampaign.endFlightInput(classicFlightInput);
@@ -6426,16 +6121,6 @@
     const x = pointerX(event, point);
     if (!Number.isFinite(x)) return;
     const factor = settings.sensitivity / 100;
-    if (JOURNEY_DEMO) {
-      if (press) {
-        journeyPointerLast = x;
-        return;
-      }
-      if (journeyPointerLast === null) return;
-      player.target = clamp(player.target + (x - journeyPointerLast) * factor, 70, W - 70);
-      journeyPointerLast = x;
-      return;
-    }
     player.target = clamp(player.x + (x - player.x) * factor, 70, W - 70);
   }
 
@@ -6452,7 +6137,6 @@
     for (const id of ids) {
       if (id === legacyPilotId) {
         legacyPilotId = null;
-        journeyPointerLast = null;
       }
       if(NeonCampaign.endFlightInput(classicFlightInput, id))hidePilotGuide();
     }
@@ -6579,7 +6263,6 @@
   });
 
   $("play").onclick = () => {
-    if (JOURNEY_DEMO) { startJourney(); return; }
     if(isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
@@ -6606,12 +6289,12 @@
   };
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
-  $("restart").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
+  $("restart").onclick = () => startLevel(currentLevel);
   $("quit").onclick = goHome;
   $("home").onclick = goHome;
   $("completeHome").onclick = goHome;
-  $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
-  $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
+  $("retry").onclick = () => startLevel(currentLevel);
+  $("replayLevel").onclick = () => startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
     if(isUnifiedClassic()&&currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
       startLevel(1);
@@ -6732,7 +6415,6 @@
     }
   }, { once: true });
   console.info(`[NEON CRONIUM] build ${BUILD_VERSION}`);
-  setupJourneyUI();
   setupShipHangar();
   setupAtlasEncounter();
   updateMenu();

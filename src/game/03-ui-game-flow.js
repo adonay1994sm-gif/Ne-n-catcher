@@ -1,6 +1,6 @@
   const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
 
-  function isUnifiedClassic() { return !N7_CAMPAIGN && !JOURNEY_DEMO; }
+  function isUnifiedClassic() { return true; }
 
   function classicChapterControlsLocked() {
     return Boolean(classicChapterView?.opening?.controlsLocked);
@@ -160,11 +160,10 @@
   }
 
   function recoverCampaignCompletion() {
-    if(JOURNEY_DEMO)return true;
     if(!completionJournal)completionJournal=NeonCampaign.createCompletionJournal({storage,keys:KEYS,
-      levelCount:LEVELS.length,checkpointKey:N7_CAMPAIGN?null:NeonCampaign.CHRONOS_VOYAGE_KEY,
+      levelCount:LEVELS.length,checkpointKey:NeonCampaign.CHRONOS_VOYAGE_KEY,
       validateCheckpoint:value=>normalizeClassicVoyageRecord(value)!==null,
-      equipmentKey:N7_CAMPAIGN?null:CLASSIC_EQUIPMENT_KEY,
+      equipmentKey:CLASSIC_EQUIPMENT_KEY,
       validateEquipment:value=>NeonCampaign.normalizeClassicEquipment(value)!==null});
     const result=completionJournal.recover();
     completionPersistenceBlocked=!result.ok;
@@ -851,7 +850,7 @@
   }
 
   function isAtlasMission() {
-    return !N7_CAMPAIGN && !JOURNEY_DEMO && currentLevel === 0;
+    return currentLevel === 0;
   }
 
   function setupAtlasEncounter() {
@@ -1119,161 +1118,7 @@
     });
   }
 
-  function setupJourneyUI() {
-    if (!JOURNEY_DEMO) return;
-    document.body.classList.add("journey-mode");
-    const mount = document.createElement("div");
-    mount.innerHTML = `<div id="journeyRoute" class="journey-route hidden"><small>CRONOS → GAIA NOVA</small><b id="journeyDestination"></b><progress id="journeyDistance" max="1" value="0" aria-label="Recorrido hasta Gaia"></progress><span id="journeyObjective"></span></div>
-      <div id="journeySkills" class="journey-skills hidden"><button id="journeyShield" type="button">ESCUDO <small>LISTO</small></button><button id="journeyTractor" type="button">TRACTOR <small>LISTO</small></button></div>
-      <div id="journeyStation" class="overlay"><section class="panel journey-service"><small>BALIZA DE SERVICIO C9</small><img src="assets/repair_drone.webp" alt="Mira, robot del taller"><h2>Un momento de respiro.</h2><p>«Soy Mira. Ese módulo rescatado aún puede volar. Te lo monto y sello el casco.»</p><div class="journey-piece"><canvas id="journeyModulePreview" width="240" height="150" role="img" aria-label="Propulsor C9 recuperado">Propulsor C9 recuperado.</canvas><div><b>Propulsor C9</b><p>Respuesta lateral +20 % y propulsión ámbar visible. Instalación con la pieza recuperada; sin créditos.</p></div></div><button id="journeyInstall" class="primary" type="button">INSTALAR PIEZA Y REPARAR</button><button id="journeyContinue" class="secondary" type="button" disabled>CONTINUAR HACIA GAIA</button><button id="journeyStationHome" class="link" type="button">Guardar y volver</button></section></div>
-      <div id="journeyComplete" class="overlay"><section class="panel journey-service"><small>ACCESO ATLAS · TRAYECTO COMPLETO</small><h2>Gaia nos recibe.</h2><p>Has salido de Chronos, recuperado e instalado una pieza y abierto el paso. El siguiente viaje todavía está en producción.</p><p id="journeyReward"></p><button id="journeyAgain" class="primary" type="button">REPETIR TRAVESÍA</button><button id="journeyHome" class="secondary" type="button">VOLVER AL MENÚ</button></section></div>`;
-    canvas.parentElement.append(mount);
-    for (const id of ["journeyRoute", "journeyDestination", "journeyDistance", "journeyObjective", "journeySkills", "journeyShield", "journeyTractor", "journeyStation", "journeyInstall", "journeyContinue", "journeyComplete"]) ui[id] = $(id);
-    $("journeyInstall").onclick = () => {
-      if (!journey?.serviceInstall()) return;
-      hull = 100;
-      persistJourney();
-      showJourneyStation();
-      tone(780, .16, "triangle", .06);
-    };
-    $("journeyContinue").onclick = () => {
-      if (!journey?.resumeFromStation()) return;
-      persistJourney();
-      setState("playing"); overlay(); last = performance.now();
-      ui.fire.classList.remove("hidden"); ui.journeySkills.classList.remove("hidden");
-      ui.journeyRoute.classList.remove("hidden");
-      syncJourneyHud();
-      showStoryTransmission("MIRA · C9", "Propulsor conectado. Prueba el empuje hacia Gaia.", 3.2);
-    };
-    $("journeyStationHome").onclick = goHome;
-    $("journeyHome").onclick = goHome;
-    $("journeyAgain").onclick = () => startJourney(true);
-    ui.journeyShield.onclick = () => useJourneyAbility("shield");
-    ui.journeyTractor.onclick = () => useJourneyAbility("tractor");
-    const choice = document.createElement("label");
-    choice.className = "journey-auto-choice";
-    choice.innerHTML = '<input id="journeyAuto" type="checkbox">Disparo básico automático · también puedes disparar manualmente';
-    $("play").after(choice);
-    journeyAutoFire = storage.getJSON("neon-journey-demo-autofire-v1", true) !== false;
-    $("journeyAuto").checked = journeyAutoFire;
-    $("journeyAuto").onchange = event => {
-      journeyAutoFire = event.target.checked;
-      storage.setJSON("neon-journey-demo-autofire-v1", journeyAutoFire);
-    };
-    ui.menu.querySelector("h2").textContent = "Un viaje entre mundos.";
-    ui.menu.querySelector(".menu-panel > p").textContent = "Evacúa Chronos, rescata una pieza y cruza hacia Gaia. Desliza sin soltar para pilotar; tu nave dispara al encontrar una amenaza.";
-  }
-
-  function persistJourney() {
-    if (journey && (!journeyCanSave || !storage.setJSON(NeonCampaign.JOURNEY_DEMO_SAVE_KEY, journey.checkpoint()))) toast("Guardado no disponible. Mantén esta partida abierta.");
-    journeyView = journey?.snapshot() || null;
-  }
-
-  function startJourney(fresh = false) {
-    let saved = null;
-    journeyCanSave = true;
-    if (!fresh) saved = storage.getRaw(NeonCampaign.JOURNEY_DEMO_SAVE_KEY);
-    journey = NeonCampaign.createJourneyDemo(saved);
-    if (saved !== null && journey.snapshot().recovery === "invalid-save") {
-      const backupKey = `${NeonCampaign.JOURNEY_DEMO_SAVE_KEY}:invalid-backups`;
-      const previous = storage.getJSON(backupKey, []);
-      const copies = Array.isArray(previous) ? previous : [previous];
-      journeyCanSave = copies.includes(saved) || storage.setJSON(backupKey, [...copies, saved]);
-    }
-    if (journey.snapshot().phase === "complete") journey = NeonCampaign.createJourneyDemo();
-    journeyView = journey.snapshot();
-    journeyAutoTimer = 0; journeyShieldCooldown = 0; journeyTractorCooldown = 0;
-    startLevel(0);
-    warpTimer = .45;
-    ui.bannerName.textContent = "CHRONOS → GAIA NOVA";
-    ui.bannerGoal.textContent = "Desliza para pilotar. Rescata el módulo señalado.";
-    ui.banner.classList.remove("show"); bannerTimer = 0;
-    ui.journeyRoute.classList.remove("hidden");
-    ui.journeySkills.classList.remove("hidden");
-    ui.powerHud.classList.add("hidden");
-    persistJourney(); syncJourneyHud();
-    if (journeyView.phase === "station") showJourneyStation();
-  }
-
-  function showJourneyStation() {
-    journeyView = journey.snapshot();
-    journey.setPaused(false); // service actions are allowed; the route itself is stopped.
-    if (state === "playing") setState("paused");
-    items = []; clearTransientEffects(); hideStoryTransmission();
-    ui.fire.classList.add("hidden"); ui.journeySkills.classList.add("hidden");
-    ui.journeyRoute.classList.add("hidden");
-    ui.banner.classList.remove("show");
-    ui.journeyInstall.disabled = journeyView.partInstalled;
-    ui.journeyInstall.textContent = journeyView.partInstalled ? "PROPULSOR MONTADO · CASCO SELLADO" : "INSTALAR PIEZA Y REPARAR";
-    ui.journeyContinue.disabled = !journeyView.partInstalled;
-    overlay(ui.journeyStation); syncJourneyHud();
-  }
-
-  function useJourneyAbility(name) {
-    if (!JOURNEY_DEMO || !journey || state !== "playing") return;
-    const cooldown = name === "shield" ? journeyShieldCooldown : journeyTractorCooldown;
-    if (cooldown > 0) return;
-    powers[name] = 4;
-    if (name === "shield") journeyShieldCooldown = 11;
-    else journeyTractorCooldown = 8;
-    activatePower(name, {x: player.x, y: player.y});
-  }
-
-  function syncJourneyHud() {
-    if (!JOURNEY_DEMO || !journey) return;
-    journeyView = journey.snapshot();
-    ui.journeyDestination.textContent = journeyView.destination;
-    ui.journeyDistance.value = journeyView.routeProgress;
-    ui.journeyObjective.textContent = journeyView.phase === "station" ? "Instala la pieza recuperada" : journeyView.waitingFor === "part" ? "Recupera el módulo · usa TRACTOR si lo necesitas" : journeyView.borderActive && !journeyView.borderResolved ? "Desactiva al guardián CH-01 para abrir el paso" : journeyView.partCollected ? "Pieza a bordo · sigue el corredor" : "Rescata el propulsor C9 señalizado";
-    for (const [name, cooldown] of [["journeyShield", journeyShieldCooldown], ["journeyTractor", journeyTractorCooldown]]) {
-      ui[name].disabled = cooldown > 0 || state !== "playing";
-      const label = cooldown > 0 ? `${Math.ceil(cooldown)} s` : "LISTO";
-      if (ui[name].querySelector("small").textContent !== label) ui[name].querySelector("small").textContent = label;
-    }
-    ui.goal.textContent = `${Math.round(journeyView.routeProgress * 100)}%`;
-    ui.goal.previousElementSibling.textContent = "RECORRIDO";
-    ui.hudLevel.textContent = `1.${journeyView.segmentIndex + 1}`;
-    ui.hudLevel.previousElementSibling.textContent = "TRAMO";
-  }
-
-  function journeyEvent(event) {
-    if (event.type === "partAvailable") {
-      items.push({type: "journeyPart", x: W * .68, baseX: W * .68, y: H * .35, r: 27, s: 120, rot: 0, rs: .2, p: 0, phase: 0, alpha: 1});
-      showStoryTransmission("BALIZA C9", "Propulsor C9 intacto. Acércate o activa el tractor.", 3.8);
-    } else if (event.type === "enemy" || event.type === "border") {
-      const enemy = createThreat("scout", level());
-      enemy.x = enemy.baseX = event.type === "border" ? W * .5 : W * .28;
-      enemy.classicScout.baseX = enemy.x;
-      enemy.journeyEntry = {targetX: enemy.x};
-      enemy.y = H * .22;
-      enemy.s = event.type === "border" ? 0 : 95;
-      if (event.type === "border") {
-        enemy.journeyBorder = true; enemy.hp = enemy.maxHp = 3;
-        showStoryTransmission("ACCESO ATLAS", "Identificación alterada. Desactiva el bloqueo y cruza.", 3.6);
-      }
-      items.push(enemy);
-    } else if (event.type === "station") {
-      persistJourney(); showJourneyStation();
-    } else if (event.type === "segmentStart") {
-      items = []; persistJourney();
-    } else if (event.type === "complete") {
-      persistJourney();
-      setState("complete");
-      ui.hud.classList.add("hidden"); ui.fire.classList.add("hidden");
-      ui.journeySkills.classList.add("hidden");
-      ui.journeyRoute.classList.add("hidden");
-      $("journeyReward").textContent = `${journey.snapshot().credits} créditos registrados · recompensa única del trayecto`;
-      hideStoryTransmission(); overlay(ui.journeyComplete);
-    }
-  }
-
   function updateMenu() {
-    if (JOURNEY_DEMO) {
-      const saved = NeonCampaign.createJourneyDemo(storage.getJSON(NeonCampaign.JOURNEY_DEMO_SAVE_KEY, null)).snapshot();
-      ui.playLabel.textContent = saved.phase === "complete" ? "REPETIR VIAJE" : "CONTINUAR VIAJE";
-      ui.playSector.textContent = `${saved.origin} → ${saved.destination}`;
-      return;
-    }
     const unlocked = getUnlocked();
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
@@ -1287,7 +1132,7 @@
     ui.campaignPercent.textContent = `${percent}%`;
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
-    ui.playSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
+    ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
@@ -1308,7 +1153,7 @@
       reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
     }
     ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = N7_CAMPAIGN ? "RUTA" : isUnifiedClassic() ? "NIVEL" : "SECTOR";
+    ui.hudLevel.previousElementSibling.textContent = isUnifiedClassic() ? "NIVEL" : "SECTOR";
     if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
@@ -1325,8 +1170,7 @@
     lastHudCollected = collected;
     lastHudHull = hull;
     updateAmmoHud();
-    if (JOURNEY_DEMO) syncJourneyHud();
-    else syncClassicFlightHud();
+    syncClassicFlightHud();
   }
 
   function updateAmmoHud() {
@@ -1345,7 +1189,7 @@
       ui.fire.setAttribute("aria-label",ammo>0?`Mantener para disparar ${weapon.label}. La energía se recupera durante el vuelo.`:"El arma está recuperando energía. Mantén para disparar cuando esté disponible.");
       return;
     }
-    if (JOURNEY_DEMO || atlasBoss) {
+    if (atlasBoss) {
       ui.fire.classList.remove("empty");
       ui.ammo.textContent = manualShotCooldown > 0 ? "RECARGA" : "PULSO BÁSICO · ∞";
       ui.fire.disabled = state !== "playing" || warpTimer > 0;
@@ -1399,10 +1243,7 @@
   }
 
   function updateEncounterHud() {
-    ui.encounterProgress.classList.toggle("active", Boolean(encounterDirector));
-    if (encounterDirector) {
-      ui.encounterProgress.querySelector("em").textContent = `${encounterWave}/${encounterDirector.plan.waves.length}`;
-    }
+    ui.encounterProgress.classList.toggle("active", false);
   }
 
   function buildLevelGrid() {
@@ -1421,9 +1262,9 @@
       const earned = +(starsMap[index + 1] || 0);
       const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
       button.innerHTML = `
-        <small>${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${index + 1}</small>
+        <small>NIVEL ${index + 1}</small>
         <strong>${lv.name}</strong>
-        <span>${lv.world} · ${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}</span>
+        <span>${lv.world} · ${lv.goal} CRONIUM</span>
         <div class="level-stars">${button.disabled ? "" : starText}</div>
         ${button.disabled ? '<div class="lock">🔒</div>' : ""}
       `;
@@ -1437,10 +1278,10 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "NIVEL"} ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = `NIVEL ${pendingLevel + 1}`;
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
-    ui.briefingGoal.textContent = `${lv.goal} ${N7_CAMPAIGN ? "núcleos" : "CRONIUM"}`;
+    ui.briefingGoal.textContent = `${lv.goal} CRONIUM`;
     ui.briefingThreat.textContent = lv.threatLabel;
     ui.briefingSupply.textContent = `${lv.goal + Math.ceil(lv.goal * 0.25)} disponibles`;
     ui.briefingMission.textContent = lv.mission;
@@ -1457,7 +1298,7 @@
   }
 
   function showBanner() {
-    ui.bannerSector.textContent = `${N7_CAMPAIGN ? "RUTA" : "SECTOR"} ${currentLevel + 1}`;
+    ui.bannerSector.textContent = `SECTOR ${currentLevel + 1}`;
     ui.bannerName.textContent = level().name.toUpperCase();
     ui.bannerGoal.textContent = `Recupera ${level().goal} núcleos · ${level().desc}`;
     ui.banner.classList.add("show");
@@ -1515,7 +1356,7 @@
       advanceClassicTutorial();
       if(atlasBoss?.resolved&&classicChapterView.aftermathReady)completeLevel();
     }
-    if (classicFlight || N7_CAMPAIGN || JOURNEY_DEMO || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
+    if (classicFlight || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
     if (next && elapsed >= next.at) {
       showStoryTransmission(next.speaker, next.text);
@@ -1587,8 +1428,6 @@
       ensureSprite(SPRITES.ch01);ensureSprite(SPRITES.ch02);
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);ensureSprite(SPRITES.satellite);
     }
-    encounterDirector = N7_CAMPAIGN ? new NeonCampaign.EncounterDirector(currentLevel + 1) : null;
-    encounterWave = 0;
     setState("playing");
     score = 0;
     displayedScore = 0;
@@ -1608,7 +1447,7 @@
     elapsed = 0;
     continued = false;
     spawnTimer = 0.35;
-    classicScoutTimer = !N7_CAMPAIGN && currentLevel === 1 ? 3.8 : 0;
+    classicScoutTimer = currentLevel === 1 ? 3.8 : 0;
     classicScoutAnnounced = false;
     warpTimer = classicFlight ? 0 : 1.25;
     supplyFailed = false;
@@ -1662,10 +1501,6 @@
     hud();
     updateEncounterHud();
     if(!isUnifiedClassic()) showBanner();
-    if (N7_CAMPAIGN) {
-      const opening = NeonCampaign.n7Dialogue("sectorStart", {level: currentLevel + 1});
-      if (opening) showStoryTransmission("N-7", opening);
-    }
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     if(classicFlightView?.waitingFor==="service")beginClassicVoyageService();
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
@@ -1675,7 +1510,6 @@
   function pauseGame() {
     if (state !== "playing") return;
     if (typeof resetGameInput === "function") resetGameInput();
-    journey?.setPaused(true);
     NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
     hideWarning();
@@ -1685,8 +1519,6 @@
   function resumeGame() {
     if (state !== "paused") return;
     if(ui.flightDock?.classList.contains("show")&&flightDockReturn==="hud"){closeClassicDock();return;}
-    if (JOURNEY_DEMO && journey?.snapshot().phase === "station") { showJourneyStation(); return; }
-    journey?.setPaused(false);
     setState("playing");
     overlay();
     last = performance.now();
@@ -1713,17 +1545,11 @@
     syncClassicChapterPresentation();
     hideWarning();
     hideStoryTransmission();
-    if (JOURNEY_DEMO) {
-      persistJourney();
-      ui.journeyRoute.classList.add("hidden");
-      ui.journeySkills.classList.add("hidden");
-    }
     overlay(ui.menu);
     updateMenu();
   }
 
   function registerRun() {
-    if (JOURNEY_DEMO) return;
     const games = Math.trunc(Math.max(0, storage.getNumber(KEYS.games, 0))) + 1;
     storage.set(KEYS.games, games);
     const interval = Math.trunc(Math.max(0, Number(window.MONETIZATION_CONFIG?.native?.interstitialEveryRuns) || 0));
@@ -1748,7 +1574,6 @@
   }
 
   function completeLevel() {
-    if (JOURNEY_DEMO) return;
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
     if(classicChapterStory&&atlasBoss?.resolved&&!classicChapterView?.aftermathReady)return;
@@ -1756,7 +1581,6 @@
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }
-    if (N7_CAMPAIGN && (!encounterDirector?.finished || items.some(isThreat))) return;
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();
@@ -1802,10 +1626,10 @@
       if(earnedEquipment)classicEquipment=earnedEquipment;
     }
     registerRun();
-    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : N7_CAMPAIGN ? "RUTA SUPERADA" : "NIVEL SUPERADO";
+    ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : "NIVEL SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Has atravesado las cien rutas" : "Has estabilizado el Colapso Neon")
+      ? "Has estabilizado el Colapso Neon"
       : `${level().name} completado`;
     if (isAtlasMission() && atlasBoss?.resolved) ui.completeTitle.textContent = "Atlas ha abierto el paso";
     ui.starsAwarded.innerHTML = [1, 2, 3]
@@ -1815,13 +1639,13 @@
     ui.levelHull.textContent = `${Math.ceil(hull)}%`;
     ui.maxCombo.textContent = `x${maxCombo}`;
     ui.unlockMessage.textContent = currentLevel === LEVELS.length - 1
-      ? (N7_CAMPAIGN ? "Puedes volver a cada ruta para mejorar tus estrellas" : "Puedes volver a cada nivel para mejorar tu resultado")
+      ? "Puedes volver a cada nivel para mejorar tu resultado"
       : newlyUnlocked
-        ? `${N7_CAMPAIGN ? "Ruta" : "Nivel"} ${currentLevel + 2} desbloqueado`
+        ? `Nivel ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
     ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
-      ?"CRUZAR HACIA GAIA NOVA →":N7_CAMPAIGN?"SIGUIENTE RUTA →":"SIGUIENTE NIVEL →";
+      ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE NIVEL →";
     if(isUnifiedClassic()&&currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";

@@ -323,13 +323,6 @@
       }
       target.restore();
     }
-    const modulePreview = $("journeyModulePreview");
-    if (modulePreview && $("journeyStation")?.classList.contains("show")) {
-      const target = modulePreview.getContext("2d"); target.clearRect(0, 0, 240, 150);
-      target.save(); target.translate(120, -7); target.scale(.65, .65);
-      drawShipComponent(target, NeonCampaign.normalizeShipLoadout({engines:"bastion"}), "engines");
-      target.restore();
-    }
   }
 
   function playerFrameState(t) {
@@ -383,13 +376,11 @@
       ctx.restore();
     }
 
-    const assembledLoadout = JOURNEY_DEMO && journeyView?.engineBoost
-      ? NeonCampaign.normalizeShipLoadout({...shipLoadout, engines: "bastion"}) : shipLoadout;
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
     const steering=classic&&Number.isFinite(player.visualBank)?player.visualBank:clamp((player.target+player.drift-player.x)/95,-1,1);
     const reserve=classic&&typeof classicHullReserve==="number"&&classicHullReserve>0
       ?.08+(typeof classicShieldImpact==="number"?classicShieldImpact:0):0;
-    const assembled = drawModularShip(ctx, assembledLoadout, assemblySize, elapsed,
+    const assembled = drawModularShip(ctx, shipLoadout, assemblySize, elapsed,
       steering, hull, impactReactionTimer,hasClassicTwinMounts()?classicTwinFrame():null,
       SHIP_VISUAL.bankStrength??1,reserve);
     ctx.restore();
@@ -950,16 +941,5 @@
     ctx.textAlign = "center";
     ctx.fillStyle = powers.double > 0 ? "#ffe66c" : "#fff";
     ctx.fillText(label, W / 2, y - 3);
-    ctx.restore();
-  }
-  function drawJourneyPart(item) {
-    ctx.save(); ctx.translate(item.x, item.y);
-    ctx.shadowBlur = 24; ctx.shadowColor = "#ffd877";
-    const pulse = 1 + Math.sin(elapsed * 4) * .08;
-    ctx.save(); ctx.scale(.27 * pulse, .27 * pulse); ctx.translate(0, -134);
-    drawShipComponent(ctx, NeonCampaign.normalizeShipLoadout({engines: "bastion"}), "engines");
-    ctx.restore();
-    ctx.fillStyle = "#fff4c3"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("PROPULSOR C9", 0, -57);
     ctx.restore();
   }

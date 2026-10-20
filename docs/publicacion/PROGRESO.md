@@ -58,6 +58,8 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 ## Limpieza de la rama (20/10/2026)
 - [x] Fuera 3.307 capturas antiguas de QA, el zip 6.8, 9 assets sin uso y
   25 reexportaciones: de 955 MB a 221 MB. Ver `LIMPIEZA_2026-10-20.md`.
+- [x] Modos ocultos n7 y journey retirados; web y app sin demo del motor ni
+  mapas (12,9 MB); capturas de pruebas fuera de git.
 
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y

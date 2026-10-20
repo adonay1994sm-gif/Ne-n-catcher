@@ -8,10 +8,10 @@ import {createStorageService} from '../src/core/storage-service.js';
 const source = await readFile(new URL('../src/game/01-runtime-assets.js', import.meta.url), 'utf8');
 const migration = source.match(/  function migrateLegacyStorage\(\) \{[\s\S]*?\n  \}/)?.[0];
 assert.ok(migration, 'Actual runtime migration function found');
-const invoke = new Function('storage', 'N7_CAMPAIGN', 'JOURNEY_DEMO', 'LEGACY_KEYS', 'KEYS',
+const invoke = new Function('storage', 'LEGACY_KEYS', 'KEYS',
   `${migration}\nreturn migrateLegacyStorage();`);
 const LEGACY = 'neon-best-v1', CURRENT = 'neon-best-v2';
-function fixture({legacy, current, denied = [], writeDenied = false, n7 = false, journey = false} = {}) {
+function fixture({legacy, current, denied = [], writeDenied = false} = {}) {
   const values = new Map(), reads = [], writes = [];
   if (legacy !== undefined) values.set(LEGACY, legacy);
   if (current !== undefined) values.set(CURRENT, current);
@@ -27,7 +27,7 @@ function fixture({legacy, current, denied = [], writeDenied = false, n7 = false,
       writes.push({key, value}); values.set(key, String(value));
     }
   });
-  const result = invoke(storage, n7, journey, {best: LEGACY}, {best: CURRENT});
+  const result = invoke(storage, {best: LEGACY}, {best: CURRENT});
   return {values, reads, writes, result};
 }
 
@@ -103,12 +103,4 @@ test('write denial reports failure and preserves both readable scores', () => {
   const result = fixture({legacy: '12000', current: '9000', writeDenied: true});
   assert.equal(result.result, false); assert.equal(result.values.get(CURRENT), '9000');
   assert.equal(result.values.get(LEGACY), '12000'); assert.deepEqual(result.writes, []);
-});
-
-test('N-7 and the Journey fixture never read or migrate classic keys', () => {
-  for (const campaign of [{n7: true}, {journey: true}]) {
-    const result = fixture({...campaign, legacy: '12000', current: '9000'});
-    assert.equal(result.result, false); assert.deepEqual(result.reads, []); assert.deepEqual(result.writes, []);
-    assert.equal(result.values.get(CURRENT), '9000');
-  }
 });

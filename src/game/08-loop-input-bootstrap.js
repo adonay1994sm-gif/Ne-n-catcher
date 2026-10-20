@@ -15,7 +15,6 @@
       if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
-      else if (item.type === "journeyPart") drawJourneyPart(item);
       else if (item.type === "energy") drawEnergy(item);
       else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
       else if (item.type === "debris") drawDebris(item);
@@ -143,7 +142,6 @@
     const previousFire = fireInput;
     const previousMissile = missileInput;
     legacyPilotId = null;
-    journeyPointerLast = null;
     fireInput = null;
     missileInput = null;
     NeonCampaign.endFlightInput(classicFlightInput);
@@ -224,16 +222,6 @@
     const x = pointerX(event, point);
     if (!Number.isFinite(x)) return;
     const factor = settings.sensitivity / 100;
-    if (JOURNEY_DEMO) {
-      if (press) {
-        journeyPointerLast = x;
-        return;
-      }
-      if (journeyPointerLast === null) return;
-      player.target = clamp(player.target + (x - journeyPointerLast) * factor, 70, W - 70);
-      journeyPointerLast = x;
-      return;
-    }
     player.target = clamp(player.x + (x - player.x) * factor, 70, W - 70);
   }
 
@@ -250,7 +238,6 @@
     for (const id of ids) {
       if (id === legacyPilotId) {
         legacyPilotId = null;
-        journeyPointerLast = null;
       }
       if(NeonCampaign.endFlightInput(classicFlightInput, id))hidePilotGuide();
     }
@@ -377,7 +364,6 @@
   });
 
   $("play").onclick = () => {
-    if (JOURNEY_DEMO) { startJourney(); return; }
     if(isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
@@ -404,12 +390,12 @@
   };
   $("resume").onclick = resumeGame;
   $("pauseSettings").onclick = () => openSettings("paused");
-  $("restart").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
+  $("restart").onclick = () => startLevel(currentLevel);
   $("quit").onclick = goHome;
   $("home").onclick = goHome;
   $("completeHome").onclick = goHome;
-  $("retry").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
-  $("replayLevel").onclick = () => JOURNEY_DEMO ? startJourney() : startLevel(currentLevel);
+  $("retry").onclick = () => startLevel(currentLevel);
+  $("replayLevel").onclick = () => startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
     if(isUnifiedClassic()&&currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
       startLevel(1);
@@ -530,7 +516,6 @@
     }
   }, { once: true });
   console.info(`[NEON CRONIUM] build ${BUILD_VERSION}`);
-  setupJourneyUI();
   setupShipHangar();
   setupAtlasEncounter();
   updateMenu();

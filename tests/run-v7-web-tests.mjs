@@ -189,21 +189,13 @@ await test("campaña, guardados, balance y tamaño visual permanecen compatibles
   assert.match(gameSource, /SHIP_VISUAL_SCALE = 0\.8/);
 });
 
-await test("hitbox clásica al 52 % con ajuste interior conserva extremos visibles y variantes históricas", async () => {
+await test("hitbox clásica al 52 % con ajuste interior conserva extremos visibles", async () => {
   const outline=Array.from(api.collisionOutline,point=>Array.from(point));
   assert.equal(outline.length,30);
   assert.equal(sha256(JSON.stringify(outline)), "a40789b028be6be21f4e38897310e205ff2008bc05c4c6cdef03712215077622");
   assert.ok(Math.abs(Math.min(...outline.map(point=>point[1]))+61.568)<1e-9);
   assert.ok(Math.abs(Math.max(...outline.map(point=>Math.abs(point[0])))-51.012)<1e-9);
   assert.ok(Math.abs(Math.max(...outline.map(point=>point[1]))-39.104)<1e-9);
-  for(const campaign of ['n7','journey']){
-    const archived=await loadHarness(campaign);
-    try {
-      assert.equal(sha256(JSON.stringify(archived.api.collisionOutline)),
-        "997fed2f9a050e08eca8c68d0b43486bc2f67a3243519e4f425bfb928ebb4841",
-        `La geometría original de ${campaign} debe permanecer intacta`);
-    } finally {archived.dom.window.close();}
-  }
 });
 
 await test("arranque de nivel conserva presupuestos y estados limpios", async () => {

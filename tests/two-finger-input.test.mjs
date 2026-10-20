@@ -15,7 +15,7 @@ assert.ok(fireClickSource, 'The source retains an accessible click handler');
 const visibilitySource = source.match(/  document\.addEventListener\("visibilitychange", async \(\) => \{[\s\S]*?\n  \}\);/)?.[0];
 assert.ok(visibilitySource);
 
-function harness(t, {pointerEvents = true, mode = 'classic', introActive = false} = {}) {
+function harness(t, {pointerEvents = true, introActive = false} = {}) {
   const dom = new JSDOM('<canvas id="canvas"></canvas><button id="fire">Disparar</button><button id="classicMissile">Misil</button>', {
     runScripts: 'outside-only', pretendToBeVisual: true
   });
@@ -47,10 +47,9 @@ function harness(t, {pointerEvents = true, mode = 'classic', introActive = false
     const settings={sensitivity:100},player={x:360,y:1100,target:360,targetY:1100};
     const classicFlightInput=NeonCampaign.createRelativeFlightInput();
     const classicFlightBounds={minX:119,maxX:601,minY:350,maxY:1300};
-    const JOURNEY_DEMO=${JSON.stringify(mode === 'journey')};
-    let journeyPointerLast=null,shotCount=0,charges=3,cooldown=0;
+    let shotCount=0,charges=3,cooldown=0;
     let missileCount=0,missileAmmo=3;
-    function isUnifiedClassic(){return ${JSON.stringify(mode === 'classic')};}
+    function isUnifiedClassic(){return true;}
     const classicChapterStory=isUnifiedClassic()?NeonCampaign.createChronosChapterStory():null;
     let classicChapterView=classicChapterStory?.snapshot()||null;
     function classicChapterControlsLocked(){return Boolean(classicChapterView?.opening?.controlsLocked);}
@@ -85,7 +84,7 @@ function harness(t, {pointerEvents = true, mode = 'classic', introActive = false
     ${visibilitySource}
     window.__input={
       snapshot:()=>({state,player:{...player},pilot:{...classicFlightInput},
-        fire:fireInput?{...fireInput}:null,missile:missileInput?{...missileInput}:null,missileCount,missileAmmo,legacyPilotId,journeyPointerLast,shotCount,charges,cooldown,
+        fire:fireInput?{...fireInput}:null,missile:missileInput?{...missileInput}:null,missileCount,missileAmmo,legacyPilotId,shotCount,charges,cooldown,
         chapter:classicChapterView,controlsLocked:classicChapterControlsLocked()}),
       tick(dt=.034){last=0;frame(dt*1000);},
       pause:pauseGame,resume:resumeGame,reset:resetGameInput,skipIntro:skipIntroForControlFixture,
@@ -326,28 +325,3 @@ test('keyboard and assistive click remain single-shot alternatives while right m
   h.fire.dispatchEvent(new h.window.MouseEvent('click', {detail: 1}));
   assert.equal(h.snapshot().shotCount, 3);
 });
-
-for (const mode of ['n7', 'journey']) {
-  test(`${mode} keeps its historical movement rule while a second action contact starts and ends`, t => {
-    const h = harness(t, {mode, pointerEvents: false});
-    const action = {identifier: 70, clientX: 350, clientY: 750};
-    const pilot = {identifier: 71, clientX: 180, clientY: 600};
-    h.touch(h.fire, 'touchstart', [action], [action]);
-    h.touch(h.canvas, 'touchstart', [action, pilot], [pilot]);
-    const before = h.snapshot();
-    h.touch(h.fire, 'touchend', [pilot], [action]);
-    assert.equal(h.snapshot().legacyPilotId, 71);
-    assert.equal(h.snapshot().fire, null);
-    assert.equal(h.snapshot().shotCount, 1);
-    const moved = {...pilot, clientX: 210};
-    h.touch(h.canvas, 'touchmove', [moved], [moved]);
-    if (mode === 'journey') {
-      assert.equal(h.snapshot().player.target, before.player.target + 30 * 720 / 390);
-    } else {
-      assert.equal(h.snapshot().player.target, 210 * 720 / 390);
-    }
-    h.touch(h.canvas, 'touchend', [], [moved]);
-    assert.equal(h.snapshot().legacyPilotId, null);
-    assert.equal(h.snapshot().journeyPointerLast, null);
-  });
-}

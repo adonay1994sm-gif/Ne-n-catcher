@@ -7,19 +7,16 @@
   let W = 720;
   let H = 1280;
   const BUILD_VERSION = "7.2.0";
-  // Local development route; preserves the original campaign and its save keys.
-  const N7_CAMPAIGN = new URLSearchParams(location.search).get("campaign") === "n7";
-  const JOURNEY_DEMO = new URLSearchParams(location.search).get("campaign") === "journey";
   const INITIAL_AMMO = 3;
   const MAX_AMMO = 3;
   // Owner revision: 30% larger than the previous 40% ship, not 30% of it.
-  const CLASSIC_SHIP_SCALE = !N7_CAMPAIGN && !JOURNEY_DEMO ? 0.52 : 1;
+  const CLASSIC_SHIP_SCALE = 0.52;
   const SHIP_VISUAL_SCALE = 0.8 * CLASSIC_SHIP_SCALE;
   const SHIP_VISUAL = Object.freeze({
     classicScale: CLASSIC_SHIP_SCALE,
     assemblySize: 208 * CLASSIC_SHIP_SCALE,
     muzzleOffset: 125 * CLASSIC_SHIP_SCALE,
-    bankStrength: !N7_CAMPAIGN && !JOURNEY_DEMO ? 1.8 : 1,
+    bankStrength: 1.8,
     scale: SHIP_VISUAL_SCALE,
     spriteSize: 248 * SHIP_VISUAL_SCALE,
     fallbackWidth: 232 * SHIP_VISUAL_SCALE,
@@ -193,7 +190,7 @@
     }
   ];
 
-  const LEVELS = N7_CAMPAIGN ? NeonCampaign.LEVELS : ORIGINAL_LEVELS;
+  const LEVELS = ORIGINAL_LEVELS;
   const KEYS = {
     best: "neon-best-v2",
     unlocked: "neon-unlocked-v2",
@@ -202,11 +199,5 @@
     games: "neon-games-v2",
     settings: "neon-settings-v5"
   };
-  if (N7_CAMPAIGN) {
-    for (const key of ["best", "unlocked", "stars", "levelBest", "games"]) KEYS[key] = `neon-n7-${key}-v1`;
-  }
-  if (JOURNEY_DEMO) {
-    for (const key of Object.keys(KEYS)) KEYS[key] = `neon-journey-demo-${key}-v1`;
-  }
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true };

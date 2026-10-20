@@ -70,7 +70,7 @@ function harness({assembled = true, health = 100, selected = 'pulse', ready = tr
     isUnifiedClassic: () => true, classicWeapons: {projectiles: [], cooldown: 0},
     classicEquipment: {selected},
     state: 'playing', playerVisible: true, player: {x: 360, y: 1000, target: 360, drift: 0},
-    powers: {shield: 0}, hull: health, elapsed: 2.3, JOURNEY_DEMO: false,
+    powers: {shield: 0}, hull: health, elapsed: 2.3,
     shipLoadout: {hull: 'aster', wings: 'aster', engines: 'aster'},
     SHIP_VISUAL: {scale: 1, centerYOffset: 14, shieldSize: 220},
     impactReactionTimer: 0, damageSmokeSide: -1,

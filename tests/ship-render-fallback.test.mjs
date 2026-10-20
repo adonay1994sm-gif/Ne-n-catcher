@@ -11,7 +11,7 @@ const [html,uiSource,renderSource]=await Promise.all([
   readFile(new URL('src/game/07-player-item-rendering.js',root),'utf8')
 ]);
 const setupStart=uiSource.indexOf('  function setupShipHangar() {');
-const setupEnd=uiSource.indexOf('  function setupJourneyUI() {',setupStart);
+const setupEnd=uiSource.indexOf('  function updateMenu() {',setupStart);
 const renderEnd=renderSource.indexOf('  function playerFrameState(t) {');
 assert.ok(setupStart>=0&&setupEnd>setupStart&&renderEnd>0,'Real setup and rendering functions must exist');
 const setup=uiSource.slice(setupStart,setupEnd),render=renderSource.slice(0,renderEnd);

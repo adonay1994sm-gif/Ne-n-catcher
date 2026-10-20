@@ -12,7 +12,7 @@ import * as economy from '../src/game/progression/scrap-economy.js';
 const source=(await Promise.all(['03-ui-game-flow.js','04-entities-collision-damage.js']
   .map(name=>readFile(new URL(`../src/game/${name}`,import.meta.url),'utf8')))).join('\n');
 
-function harness({classic=true}={}) {
+function harness() {
   let blocked=false;
   const records=new Map(),storage={
     readRaw:key=>({ok:true,value:records.get(key)??null}),
@@ -22,7 +22,7 @@ function harness({classic=true}={}) {
   const run=ledger.beginRun({scope:'classic:1'});
   const calls={damage:[],missileImpacts:[]};
   const game=vm.createContext({Math,W:720,H:1280,currentLevel:0,
-    N7_CAMPAIGN:!classic,JOURNEY_DEMO:false,NeonCampaign:{...weapons,...economy},
+    NeonCampaign:{...weapons,...economy},
     classicSalvageLedger:ledger,classicSalvageState:run.state,classicSalvageRunId:run.runId,
     classicSalvageEnemySequence:0,classicThreatSequence:0,classicFlightView:{stageId:'1.2'},
     classicWeapons:weapons.createClassicWeapons(),classicCometShower:null,
@@ -122,10 +122,6 @@ test('collision damage, missed wreckage, stone and incoming projectiles never gr
     h.game.animateScoutHit({type:'debris',x:360,y:600,[flag]:true},true);
   }
   assert.equal(loot(h.game).length,0);assert.equal(h.ledger.getBalance(),0);
-  const archived=harness({classic:false});
-  const old=archived.target('satellite');assert.equal(old.salvageDropId,undefined);
-  archived.game.animateScoutHit(old,true);
-  assert.equal(loot(archived.game).length,0);assert.equal(archived.ledger.getBalance(),0);
 });
 
 test('a previously claimed fragment cannot emit another pickup after reload or in a stale run',()=>{

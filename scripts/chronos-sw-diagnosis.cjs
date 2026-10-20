@@ -55,7 +55,7 @@ async function poll(predicate,ms,label){const until=Date.now()+ms;while(Date.now
   page.on('response',response=>{report.browserResponses.push({atMs:Date.now()-began,url:response.url(),status:response.status(),fromServiceWorker:response.fromServiceWorker()});if(response.status()>=400)report.errors.push(`${response.status()} ${response.url()}`);});
   await page.goto(server.url,{waitUntil:'load'});
   await poll(()=>navigator.serviceWorker.controller?.scriptURL.endsWith('/launcher-sw.js'),30000,'Launcher controller did not install');
-  const game=new URL('juego/index.html?campaign=n7',server.url).href;
+  const game=new URL('juego/index.html',server.url).href;
   await page.goto(game,{waitUntil:'load'});
   await poll(()=>navigator.serviceWorker.controller?.scriptURL.endsWith('/juego/sw.js'),30000,'Game controller did not install');
   await page.evaluate(async()=>{
