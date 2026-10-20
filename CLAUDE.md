@@ -83,3 +83,15 @@ Adaptadas de [forrestchang/andrej-karpathy-skills](https://github.com/forrestcha
 4. **Demuestra que funciona.** Convierte la tarea en un criterio comprobable
    (una prueba que falla y luego pasa, una captura, la salida de un comando)
    y no la des por terminada sin esa prueba.
+
+## Skills y agentes del proyecto
+
+- Flujo para trabajo nuevo: `brainstorming` → especificación aprobada →
+  `writing-plans` → `subagent-driven-development` o `executing-plans`, con
+  `test-driven-development`. Detalle y fuentes en
+  `docs/agents/SKILLS_GITHUB_2026-10-20.md`.
+- Al cerrar un trabajo, sigue las reglas de **Ramas** de esta guía (no se
+  usa `finishing-a-development-branch`). El compañero visual de
+  `brainstorming` no está instalado: usa texto o capturas.
+- `/competencia`: lanza `auditor-codigo`, `critico-juego` y `director-arte`
+  en paralelo y compara sus veredictos. El propietario decide.
