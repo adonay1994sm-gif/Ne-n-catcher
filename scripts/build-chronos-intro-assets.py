@@ -80,10 +80,22 @@ def prime_atlas():
     return sheet([fit(content(load(PRIME / f'{name}.webp')), size) for name in names], 2, size)
 
 
+def prime_fx_atlas():
+    """Esfera de energía y seis descargas de Cronos Prime (4×2 celdas de 384)."""
+    size = 384
+    sphere = content(load(PRIME / 'cronos_prime_nucleo_energia_v1.webp'))
+    sheet_image = load(PRIME / 'cronos_prime_descargas_v1.webp')
+    w, h = sheet_image.size
+    bolts = [content(sheet_image.crop((c * w // 3, r * h // 2, (c + 1) * w // 3, (r + 1) * h // 2)))
+             for r in range(2) for c in range(3)]
+    return sheet([fit(sphere, size)] + [fit(bolt, size) for bolt in bolts], 4, size)
+
+
 def main():
     station_atlas().save(OUT / 'chronos_intro_station_atlas_v1.webp', 'WEBP', quality=86, method=6)
     fragments_atlas().save(OUT / 'chronos_intro_fragments_atlas_v1.webp', 'WEBP', quality=86, method=6)
     prime_atlas().save(OUT / 'cronos_prime_phase1_atlas_v1.webp', 'WEBP', quality=86, method=6)
+    prime_fx_atlas().save(OUT / 'cronos_prime_fx_atlas_v1.webp', 'WEBP', quality=86, method=6)
 
 
 if __name__ == '__main__':

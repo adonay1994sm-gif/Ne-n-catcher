@@ -238,6 +238,7 @@
     chronosIntroStation: loadSprite("assets/chronos_intro_station_atlas_v1.webp", false),
     chronosIntroFragments: loadSprite("assets/chronos_intro_fragments_atlas_v1.webp", false),
     cronosPrimePhaseOne: loadSprite("assets/cronos_prime_phase1_atlas_v1.webp", false),
+    cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
     flightWeapons: loadSprite("assets/chronos_flight_weapons_v1.webp", false),
     c9Station: loadSprite("assets/c9_station_v1.webp", false),

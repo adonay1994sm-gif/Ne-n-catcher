@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 100,
-  "runtimeBytes": 12747818,
+  "assetCount": 101,
+  "runtimeBytes": 13177290,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1272,6 +1272,21 @@
       "origin": "arte del propietario (ChatGPT), entregas del 20/10/2026; empaquetado con scripts/build-chronos-intro-assets.py",
       "version": "chronos-intro-v1",
       "size": 276388,
+      "precache": false
+    },
+    {
+      "id": "cronos-prime-fx-atlas-v1",
+      "path": "assets/cronos_prime_fx_atlas_v1.webp",
+      "master": "art-source/cronos-prime/",
+      "dimensions": "1536x768; 4x2 celdas de 384: esfera de energía (ojo) y seis descargas",
+      "format": "webp-alpha",
+      "use": "Cronos Prime en el inicio de Chronos: ojo que late, grieta, descargas del haz",
+      "level": 1,
+      "animation": "Pose pura src/game/animation/chronos-intro.js sobre el reloj de ruta",
+      "status": "IN_REVIEW",
+      "origin": "arte del propietario (ChatGPT), entregas del 20/10/2026; empaquetado con scripts/build-chronos-intro-assets.py",
+      "version": "chronos-intro-v1",
+      "size": 429472,
       "precache": false
     }
   ],

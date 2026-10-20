@@ -5532,17 +5532,21 @@ var NeonCampaign = (() => {
 
   // src/game/animation/chronos-intro.js
   var CHRONOS_INTRO_TIMELINE = Object.freeze({
-    arrive: 3,
-    arrived: 6.2,
-    unfoldStart: 5.4,
-    unfoldEnd: 7.4,
-    chargeStart: 7,
+    omen: 2.8,
+    tearOpen: 3.4,
+    appear: 4.6,
+    emerged: 5.6,
+    wingsSnap: 5.6,
+    eyeOpen: 5.9,
+    drain: 6.4,
     beamStart: 8.6,
     rupture: 9,
-    beamEnd: 9.9,
-    flashSeconds: 0.9,
-    retreatStart: 10.6,
-    retreatEnd: 13.4,
+    beamEnd: 9.6,
+    flashSeconds: 0.45,
+    shockwaveSeconds: 1.6,
+    scorn: 11.5,
+    warp: 12.8,
+    gone: 13.6,
     ringGone: 16,
     fragmentsEnd: 17,
     end: 26
@@ -5553,11 +5557,23 @@ var NeonCampaign = (() => {
     const t = clamp14((value - from) / (to - from), 0, 1);
     return t * t * (3 - 2 * t);
   };
+  var easeOut = (value, from, to) => 1 - (1 - clamp14((value - from) / (to - from), 0, 1)) ** 3;
   var mix2 = (from, to, amount) => from + (to - from) * amount;
-  var ENTRY = Object.freeze({ x: 1.3, y: -0.2 });
-  var HOVER = Object.freeze({ x: 0.5, y: 0.3 });
+  var wobble = (time, rate, seed) => Math.sin(time * rate + seed) * 0.6 + Math.sin(time * rate * 2.13 + seed * 1.7) * 0.4;
+  var SHOTS = Object.freeze([
+    [0, "scale"],
+    [T.omen, "omen"],
+    [T.appear, "appearance"],
+    [T.drain, "drain"],
+    [T.beamStart, "shot"],
+    [T.rupture, "rupture"],
+    [T.scorn, "scorn"],
+    [T.gone, "escape"]
+  ]);
   var STATION_FRAME = Object.freeze({ zoom: 0.72, drop: 0.08 });
-  var EXIT = Object.freeze({ x: 0.62, y: -0.4 });
+  var TEAR = Object.freeze({ x: 0.5, y: 0.19 });
+  var HOVER = Object.freeze({ x: 0.5, y: 0.3 });
+  var SPIN = Object.freeze({ wheel: 0.32, ring: -0.2, wreck: 0.22, wobble: 0.035 });
   var FRAGMENTS = Object.freeze([
     [-0.95, -0.35, 1.6],
     [0.9, -0.45, -1.2],
@@ -5568,8 +5584,18 @@ var NeonCampaign = (() => {
     [-1, 0.2, -2.3],
     [0.15, 1, 1.1]
   ].map(([x, y, spin], cell) => Object.freeze({ cell, x, y, spin })));
+  var CHAIN = Object.freeze([0, 1, 2, 3, 4, 5, 6, 7].map((index) => Object.freeze({
+    angle: -Math.PI / 2 + index * Math.PI / 4 + (index % 2 ? 0.18 : -0.12),
+    delay: 0.06 + index * 0.17
+  })));
+  var EXPLOSION_SECONDS = 0.72;
+  var CONVOY = Object.freeze([
+    { lane: 0.46, start: 0.3, speed: 0.16 },
+    { lane: 0.38, start: 2.1, speed: -0.13 },
+    { lane: 0.5, start: 3.9, speed: 0.2 }
+  ]);
+  var FIRES = Object.freeze([[0.2, -0.12, 0], [-0.24, 0.06, 1.3], [0.06, 0.2, 2.4]]);
   var INACTIVE = Object.freeze({ active: false });
-  var SPIN = Object.freeze({ wheel: 0.32, ring: -0.2, wreck: 0.22, wobble: 0.035 });
   function getChronosIntroPose(elapsed, { reducedEffects = false, holdWreck = false } = {}) {
     if (!Number.isFinite(elapsed) || elapsed < 0) return INACTIVE;
     if (elapsed > T.end && !holdWreck) return INACTIVE;
@@ -5578,14 +5604,36 @@ var NeonCampaign = (() => {
     const ruptured = elapsed >= T.rupture;
     const since = elapsed - T.rupture;
     const spinSince = spinClock - T.rupture;
-    const phase = elapsed < T.arrive ? "calm" : elapsed < T.arrived ? "arrival" : elapsed < T.beamStart ? "charge" : elapsed < T.beamEnd ? "fire" : elapsed < T.retreatEnd ? "retreat" : "aftermath";
+    const shotIndex = SHOTS.reduce((found, [at], index) => elapsed >= at ? index : found, 0);
+    const motion = reducedEffects ? 0 : 1;
+    const reveal = smooth3(elapsed, 0, T.appear);
+    const push = smooth3(elapsed, T.beamStart, T.rupture) * (1 - smooth3(elapsed, T.rupture + 0.2, T.rupture + 1.5));
+    const tremor = smooth3(elapsed, T.drain, T.beamStart) * (ruptured ? 0 : 1) * 6e-3 + (ruptured ? 0.03 * Math.max(0, 1 - since / 1.1) ** 2 : 0) + (elapsed >= T.wingsSnap && elapsed < T.wingsSnap + 0.35 ? 0.01 * (1 - (elapsed - T.wingsSnap) / 0.35) : 0);
+    const camera = {
+      zoom: mix2(2.1, 1, smooth3(elapsed, 0, T.drain)) + 0.08 * push,
+      cx: mix2(0.48, 0.5, reveal),
+      cy: mix2(0.36, 0.5, smooth3(elapsed, T.omen * 0.5, T.drain)) - 0.04 * smooth3(elapsed, T.omen, T.appear) * (1 - smooth3(elapsed, T.appear, T.drain)),
+      shakeX: motion * tremor * wobble(elapsed, 47, 1),
+      shakeY: motion * tremor * wobble(elapsed, 53, 4)
+    };
+    const darkness = 0.6 * smooth3(elapsed, T.omen, T.appear) * (1 - smooth3(elapsed, T.rupture + 0.5, T.scorn));
+    const tearAmount = smooth3(elapsed, T.tearOpen, T.emerged) * (1 - smooth3(elapsed, T.emerged + 0.2, T.drain + 0.4));
+    const tear = {
+      x: TEAR.x,
+      y: TEAR.y,
+      open: tearAmount,
+      bolts: tearAmount > 0 ? [0, 1, 2, 3].map((index) => ({
+        cell: 1 + (index + Math.floor(elapsed * 9)) % 6,
+        angle: index * Math.PI / 2 + 0.4 * wobble(elapsed, 3, index),
+        alpha: tearAmount * clamp14(0.55 + 0.45 * wobble(elapsed, 23, index * 2.3), 0, 1)
+      })) : []
+    };
+    const drain = smooth3(elapsed, T.drain, T.beamStart);
+    const flicker = elapsed >= T.omen && elapsed < T.drain ? 0.82 + 0.18 * Math.max(0, wobble(elapsed, 31, 2)) : 1;
     const separation = ruptured ? smooth3(since, 0, T.ringGone - T.rupture) : 0;
     const station2 = {
-      // Giros contrarios y lentos; tras la ruptura el anillo exterior gira más rápido.
       ringAngle: SPIN.ring * spinClock - (ruptured ? 0.35 * since * since / (1 + since) : 0),
-      // Tras el impacto la rueda rota sigue girando, desequilibrada.
       wheelAngle: ruptured ? SPIN.wheel * T.rupture + SPIN.wreck * spinSince + 0.25 * Math.sin(spinSince * 0.7) * smooth3(since, 0, 2) : SPIN.wheel * spinClock,
-      // Cabeceo: la elipse respira un poco (más fuerte tras el golpe).
       tiltY: 0.8 + SPIN.wobble * Math.sin(spinClock * 0.45) + (ruptured ? 0.05 * Math.sin(spinSince * 0.9) * smooth3(since, 0, 1.5) : 0),
       sway: 0.04 * Math.sin(spinClock * 0.3) + (ruptured ? 0.12 * Math.sin(spinSince * 0.5) * smooth3(since, 0, 2) : 0),
       ringOffset: separation * 0.55,
@@ -5594,50 +5642,119 @@ var NeonCampaign = (() => {
       wheelCell: ruptured ? 2 : 1,
       towerCell: ruptured ? 4 : 3,
       towerLift: ruptured ? smooth3(since, 0, 4) * 0.08 : 0,
-      // Sacudida breve del impacto (sin ella con efectos reducidos).
-      shake: ruptured && !reducedEffects ? 0.03 * Math.max(0, 1 - since / 0.8) * Math.sin(since * 55) : 0,
-      // Alejamiento de presentación: la estación rota se aleja más deprisa que
-      // la ruta para dejar sitio al juego. Solo afecta al dibujo.
+      // Luz propia de la estación (1 encendida, 0 apagada): parpadea en el
+      // presagio y Cronos Prime se la bebe antes de disparar.
+      lights: ruptured ? 0 : flicker * (1 - 0.85 * drain),
+      drainedSectors: Math.floor(drain * 8 + 1e-9),
       zoom: STATION_FRAME.zoom * (1 - 0.5 * smooth3(elapsed, T.rupture + 1, 18)),
+      drop: STATION_FRAME.drop,
       // Tras la ruptura la estación pasa a ser fondo: se oscurece para que los
       // peligros y enemigos se lean por encima.
       alpha: 1 - 0.45 * smooth3(elapsed, T.rupture + 2, T.rupture + 6),
-      drop: STATION_FRAME.drop
+      shake: 0
     };
-    const arrival2 = smooth3(elapsed, T.arrive, T.arrived);
-    const leaving = smooth3(elapsed, T.retreatStart, T.retreatEnd);
-    const x = mix2(mix2(ENTRY.x, HOVER.x, arrival2), EXIT.x, leaving);
-    const y = mix2(mix2(ENTRY.y, HOVER.y, arrival2), EXIT.y, leaving);
-    const recoil = ruptured ? 0.025 * Math.max(0, 1 - since / 0.6) : 0;
-    const charge = smooth3(elapsed, T.chargeStart, T.rupture);
+    const emerge = easeOut(elapsed, T.appear, T.emerged);
+    const snapTime = elapsed - T.wingsSnap;
+    const wingSpread = snapTime < 0 ? 0 : snapTime < 0.18 ? 1.15 * snapTime / 0.18 : 1 + 0.15 * Math.cos((snapTime - 0.18) * 14) * Math.exp(-(snapTime - 0.18) * 6);
+    const eye = smooth3(elapsed, T.eyeOpen, T.eyeOpen + 0.4);
+    const turn = smooth3(elapsed, T.scorn, T.scorn + 0.8);
+    const warp = smooth3(elapsed, T.warp, T.gone);
+    const recoil = ruptured ? 0.03 * Math.max(0, 1 - since / 0.5) : 0;
+    const charge = drain;
     const prime = {
-      visible: elapsed >= T.arrive && elapsed < T.retreatEnd,
-      x,
-      y: y - recoil,
-      // Entra inclinado, se endereza al llegar y se ladea al marcharse.
-      tilt: -0.5 * (1 - arrival2) + 0.35 * leaving,
-      scale: mix2(0.55, 1, arrival2) * (1 - 0.45 * leaving),
-      alpha: elapsed < T.arrive ? 0 : 1,
-      wingSpread: smooth3(elapsed, T.unfoldStart, T.unfoldEnd) * (1 - 0.6 * leaving),
-      bladeSpread: smooth3(elapsed, T.unfoldStart + 0.5, T.unfoldEnd + 0.3) * (1 - 0.6 * leaving),
-      coreGlow: ruptured ? 1 - smooth3(since, 0.4, 2) * 0.7 : charge,
+      visible: elapsed >= T.appear && elapsed < T.gone,
+      x: mix2(TEAR.x, HOVER.x, emerge) + 0.04 * turn * Math.sin(elapsed * 1.3) * (1 - warp),
+      y: mix2(TEAR.y, HOVER.y, emerge) - recoil - 0.75 * warp ** 2,
+      scale: mix2(0.12, 1, emerge) * (1 + 0.12 * charge) * (1 - 0.35 * warp),
+      stretch: 1 + 5 * warp ** 2,
+      tilt: 0.22 * turn * (1 - warp),
+      alpha: elapsed < T.appear ? 0 : 1 - smooth3(elapsed, T.gone - 0.15, T.gone),
+      wingSpread: clamp14(wingSpread, 0, 1.15) * (1 - 0.5 * warp),
+      bladeSpread: smooth3(elapsed, T.wingsSnap + 0.1, T.wingsSnap + 0.45) * (1 - 0.5 * warp),
+      // El ojo: abierto y blanco al cargar; rojo un instante al mirar a la nave.
+      eye,
+      eyeRed: turn * (1 - smooth3(elapsed, T.warp - 0.1, T.warp + 0.3)),
+      pulse: 0.5 + 0.5 * Math.sin(elapsed * (5 + 9 * charge)),
+      // Onda del chasquido de las alas (1 → 0 en 0,45 s).
+      snap: snapTime >= 0 && snapTime < 0.45 ? 1 - snapTime / 0.45 : 0,
       charge,
-      beamAlpha: smooth3(elapsed, T.beamStart, T.rupture) * (1 - smooth3(elapsed, T.rupture + 0.3, T.beamEnd))
+      coreGlow: ruptured ? 1 - 0.6 * smooth3(since, 0.4, 2) : Math.max(eye * 0.5, charge),
+      nameCard: smooth3(elapsed, T.eyeOpen, T.eyeOpen + 0.4) * (1 - smooth3(elapsed, T.beamStart - 0.4, T.beamStart))
     };
-    const flashPeak = reducedEffects ? 0.3 : 0.6;
-    const flash = ruptured && since < T.flashSeconds ? flashPeak * (1 - since / T.flashSeconds) ** 2 : 0;
+    const drainStreams = elapsed >= T.drain && elapsed < T.rupture ? [0, 1, 2, 3, 4, 5, 6, 7].map((index) => ({
+      angle: -Math.PI / 2 + index * Math.PI / 4 + station2.ringAngle * 0.2,
+      progress: ((elapsed - T.drain) * 1.6 + index * 0.37) % 1,
+      alpha: smooth3(elapsed, T.drain, T.drain + 0.4) * (1 - smooth3(elapsed, T.beamStart, T.rupture))
+    })) : [];
+    const beamWindow = smooth3(elapsed, T.beamStart, T.beamStart + 0.12) * (1 - smooth3(elapsed, T.rupture + 0.15, T.beamEnd));
+    const beam = { alpha: beamWindow, width: (0.55 + 0.45 * smooth3(elapsed, T.beamStart, T.rupture)) * (1 + 0.12 * Math.sin(elapsed * 60) * motion) };
+    const flashPeak = reducedEffects ? 0.3 : 0.85;
+    const flash = ruptured && since < T.flashSeconds ? flashPeak * (1 - since / T.flashSeconds) ** 3 : 0;
+    const shockAge = ruptured ? since / T.shockwaveSeconds : 1;
+    const shockwave = shockAge < 1 ? {
+      frame: Math.min(3, Math.floor(shockAge * 4)),
+      scale: 0.6 + 1.5 * easeOut(shockAge, 0, 1),
+      alpha: 1 - smooth3(shockAge, 0.35, 1)
+    } : null;
+    const explosions = ruptured ? CHAIN.map((item) => {
+      const age = (since - item.delay) / EXPLOSION_SECONDS;
+      return age >= 0 && age < 1 ? {
+        angle: item.angle,
+        radius: 0.42,
+        frame: Math.min(7, Math.floor(age * 8)),
+        scale: 0.34 + 0.12 * Math.sin(item.angle * 3),
+        alpha: 1 - smooth3(age, 0.7, 1)
+      } : null;
+    }).filter(Boolean) : [];
+    const fires = ruptured ? FIRES.map(([dx, dy, seed]) => ({
+      dx,
+      dy,
+      frame: Math.floor((spinClock * 9 + seed * 3) % 8),
+      alpha: smooth3(since, 1.2, 2.5) * (0.55 + 0.2 * Math.sin(spinClock * 7 + seed)),
+      scale: 0.14
+    })) : [];
     const fragments = ruptured ? FRAGMENTS.map((item) => {
-      const travel = since * (0.35 + 0.1 * (item.cell % 3)) + since * since * 0.03;
+      const travel = since * (0.5 + 0.14 * (item.cell % 3)) + since * since * 0.05;
       return {
         cell: item.cell,
         dx: item.x * travel,
         dy: item.y * travel,
         angle: item.spin * since,
-        scale: 0.9 + travel * 0.55,
+        scale: 1 + travel * (item.y > 0 ? 2.4 : 1.1),
         alpha: 1 - smooth3(elapsed, T.fragmentsEnd - 3, T.fragmentsEnd)
       };
     }) : [];
-    return { active: true, phase, clock: elapsed, flash, station: station2, prime, fragments };
+    const convoy = elapsed < T.drain ? CONVOY.map((ship, index) => {
+      const age = elapsed - ship.start;
+      const flee = smooth3(elapsed, T.appear, T.drain);
+      return age < 0 ? null : {
+        angle: -Math.PI / 2 + index * 2.1 + ship.speed * age * 3,
+        radius: ship.lane + flee * 0.9,
+        alpha: smooth3(age, 0, 0.4) * (1 - flee),
+        heading: Math.sign(ship.speed)
+      };
+    }).filter(Boolean) : [];
+    const phase = SHOTS[shotIndex][1];
+    return {
+      active: true,
+      phase,
+      shot: shotIndex + 1,
+      clock: elapsed,
+      controlsLocked: elapsed < T.rupture,
+      camera,
+      darkness,
+      tear,
+      station: station2,
+      prime,
+      drainStreams,
+      beam,
+      flash,
+      shockwave,
+      explosions,
+      fires,
+      fragments,
+      convoy
+    };
   }
 
   // src/game/combat/classic-weapons.js

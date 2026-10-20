@@ -645,10 +645,10 @@
   function advanceClassicFlight(dt) {
     const introBefore=classicFlightView?.elapsed;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
-    // Cronos Prime carga el disparo: suena la alarma al empezar a cargar y al abrir fuego.
+    // Cronos Prime: suena al abrir las alas, al empezar a alimentarse y al disparar.
     const timeline=NeonCampaign.CHRONOS_INTRO_TIMELINE;
     if(timeline&&Number.isFinite(introBefore)&&classicFlightView) {
-      for(const cue of [timeline.chargeStart,timeline.beamStart])
+      for(const cue of [timeline.wingsSnap,timeline.drain,timeline.beamStart])
         if(introBefore<cue&&classicFlightView.elapsed>=cue)combatSound("atlas-charge",W*.5);
     }
     if(classicChapterStory&&classicFlightView) {
@@ -1403,7 +1403,7 @@
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
       ensureSprite(SPRITES.ch01);
       ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimePhaseOne);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimePhaseOne);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
       ensureSprite(SPRITES.guardianAtlas);
     }
 
