@@ -91,11 +91,19 @@ def prime_fx_atlas():
     return sheet([fit(sphere, size)] + [fit(bolt, size) for bolt in bolts], 4, size)
 
 
+# Láminas pintadas de la ruptura (corte de cine tras el impacto) y el fondo
+# que queda después. Reducidas a 540×960: van a pantalla completa unos segundos.
+RUPTURE_PLATES = [f'chronos_ruptura_{index:02d}_v1' for index in range(1, 11)] + ['chronos_fondo_tras_ruptura_v1']
+
+
 def main():
     station_atlas().save(OUT / 'chronos_intro_station_atlas_v1.webp', 'WEBP', quality=86, method=6)
     fragments_atlas().save(OUT / 'chronos_intro_fragments_atlas_v1.webp', 'WEBP', quality=86, method=6)
     prime_atlas().save(OUT / 'cronos_prime_phase1_atlas_v1.webp', 'WEBP', quality=86, method=6)
     prime_fx_atlas().save(OUT / 'cronos_prime_fx_atlas_v1.webp', 'WEBP', quality=86, method=6)
+    for order, name in enumerate(RUPTURE_PLATES, 1):
+        image = Image.open(INTRO / f'{name}.webp').convert('RGB').resize((540, 960), Image.LANCZOS)
+        image.save(OUT / f'chronos_rupture_plate_{order:02d}_v1.webp', 'WEBP', quality=82, method=6)
 
 
 if __name__ == '__main__':

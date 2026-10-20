@@ -560,10 +560,19 @@ test('with the owner pieces loaded, the real renderer turns the station, breaks 
   assert.ok(h.drawCalls.some(call => call.path === INTRO_STATION_PATH), 'the piece-by-piece station is drawn');
   assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
   assert.deepEqual(towerCells().filter(cell => cell === 0 || cell === 1), [0], 'intact tower before the rupture');
-  h.advance(9.2);
+  h.advance(9.03);
   h.clearDrawCalls(); h.api.background(1e9);
-  assert.ok(towerCells().includes(1), 'broken tower after the rupture');
+  assert.ok(towerCells().includes(1), 'broken tower in the white frames of the impact');
   assert.ok(h.drawCalls.some(call => call.path === 'assets/chronos_intro_fragments_atlas_v1.webp'), 'fragments fly');
+  assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
+  // Corte a las láminas pintadas: la estación por piezas no vuelve a dibujarse.
+  h.advance(.5);
+  h.clearDrawCalls(); h.api.background(2e9);
+  assert.ok(h.drawCalls.some(call => /chronos_rupture_plate_0\d_v1/.test(call.path)), 'painted rupture plate on screen');
+  assert.equal(towerCells().filter(cell => cell < 2).length, 0, 'the station is not drawn whole again');
+  h.advance(20);
+  h.clearDrawCalls(); h.api.background(3e9);
+  assert.equal(towerCells().filter(cell => cell < 2).length, 0, 'not even after the plates fade out');
   assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
   assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
   assert.equal(h.pending.size, 1);
