@@ -80,18 +80,10 @@ def prime_atlas():
     return sheet([fit(content(load(PRIME / f'{name}.webp')), size) for name in names], 2, size)
 
 
-# Fotogramas de la ruptura usados como fondo, a resolución reducida: van
-# detrás del juego, oscurecidos, y así caben en memoria en un iPhone.
-BACKDROPS = [1, 3, 5, 7, 9, 10]
-
-
 def main():
     station_atlas().save(OUT / 'chronos_intro_station_atlas_v1.webp', 'WEBP', quality=86, method=6)
     fragments_atlas().save(OUT / 'chronos_intro_fragments_atlas_v1.webp', 'WEBP', quality=86, method=6)
     prime_atlas().save(OUT / 'cronos_prime_phase1_atlas_v1.webp', 'WEBP', quality=86, method=6)
-    for order, number in enumerate(BACKDROPS, 1):
-        image = Image.open(INTRO / f'chronos_ruptura_{number:02d}_v1.webp').convert('RGB').resize((540, 960), Image.LANCZOS)
-        image.save(OUT / f'chronos_intro_backdrop_{order:02d}_v1.webp', 'WEBP', quality=80, method=6)
 
 
 if __name__ == '__main__':

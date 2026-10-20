@@ -94,8 +94,8 @@ final en el viaje 10.
 `scripts/build-chronos-intro-assets.py` empaqueta las piezas en `assets/`:
 `chronos_intro_station_atlas_v1.webp` (anillo, rueda, rueda inclinada, torres
 y Tálasa), `chronos_intro_fragments_atlas_v1.webp`,
-`cronos_prime_phase1_atlas_v1.webp` y seis láminas de la ruptura
-(`chronos_intro_backdrop_01…06_v1.webp`, de las rupturas 1, 3, 5, 7, 9 y 10).
+`cronos_prime_phase1_atlas_v1.webp`. Las seis láminas de la ruptura que se
+probaron de fondo se retiraron (el propietario las vio como un collage).
 Sin usar todavía: estación completa, variante B, anillo con antenas, fondo
 tras la ruptura, esfera de energía y descargas.
 
