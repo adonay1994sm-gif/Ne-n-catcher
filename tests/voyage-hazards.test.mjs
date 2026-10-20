@@ -41,8 +41,9 @@ test('the field never exceeds the stage cap and always leaves a passable gap for
 });
 
 test('the first stage leaves a breather after the rupture and the opening stages hit softer', () => {
-  // Tramo 1.1: la ruptura es a los 9 s; nada cae hasta 8 s después.
-  assert.ok(VOYAGE_HAZARD_PROFILES[1].start >= 17);
+  // Tramo 1.1: el juego crea el campo con la ruptura (9 s de ruta), así que
+  // start cuenta desde ahí: 8 s de respiro, no 8 + 9.
+  assert.equal(VOYAGE_HAZARD_PROFILES[1].start, 8);
   for (const seed of [1, 7, 99, 4242]) {
     const {emitted} = simulate(1, VOYAGE_HAZARD_PROFILES[1].start - .1, seed);
     assert.equal(emitted.length, 0, `seed ${seed}`);

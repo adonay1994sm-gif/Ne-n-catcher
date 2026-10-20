@@ -478,7 +478,8 @@
     const impactAngle = Math.atan2(y - player.y, x - player.x);
     const damageResult = NeonCampaign.resolveHullReinforcement({hull,amount,
       reserve:classicHullReserve,capacity:classicHullReserveCapacity,
-      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true});
+      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true,
+      largeAsteroidScale:context.largeAsteroidScale||1});
     classicHullReserve=damageResult.reserve;
     if (damageResult.absorbed) {
       classicShieldImpact=.18;
@@ -562,7 +563,8 @@
       // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
       const enemyPhaser=item.classicScoutProjectile&&!item.guardianProjectile;
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
-        largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
+        largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge",
+        largeAsteroidScale:item.hazardDamageScale||1});
     } else {
       activatePower(item.type, item);
     }

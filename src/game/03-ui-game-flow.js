@@ -720,7 +720,7 @@
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
         const threat=createThreat(hazard.type,level());
         threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
-        threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.voyageHazard=true;
+        threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.hazardDamageScale=hazard.damageScale??1;
         items.push(threat);
       });
     }
@@ -1394,6 +1394,8 @@
     // the same encounter grace here instead of waiting for that event to replay.
     classicPatrolTimer=classicFlightView?(classicFlightView.stageNumber===1?4:7):0;
     classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    // Un reintento empieza con un campo nuevo (y su respiro), no con el gastado.
+    classicVoyageHazards=null;
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);

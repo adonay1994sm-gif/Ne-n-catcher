@@ -1639,7 +1639,7 @@
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
         const threat=createThreat(hazard.type,level());
         threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
-        threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.voyageHazard=true;
+        threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.hazardDamageScale=hazard.damageScale??1;
         items.push(threat);
       });
     }
@@ -2313,6 +2313,8 @@
     // the same encounter grace here instead of waiting for that event to replay.
     classicPatrolTimer=classicFlightView?(classicFlightView.stageNumber===1?4:7):0;
     classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    // Un reintento empieza con un campo nuevo (y su respiro), no con el gastado.
+    classicVoyageHazards=null;
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
     ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
@@ -3148,7 +3150,8 @@
     const impactAngle = Math.atan2(y - player.y, x - player.x);
     const damageResult = NeonCampaign.resolveHullReinforcement({hull,amount,
       reserve:classicHullReserve,capacity:classicHullReserveCapacity,
-      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true});
+      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true,
+      largeAsteroidScale:context.largeAsteroidScale||1});
     classicHullReserve=damageResult.reserve;
     if (damageResult.absorbed) {
       classicShieldImpact=.18;
@@ -3232,7 +3235,8 @@
       // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
       const enemyPhaser=item.classicScoutProjectile&&!item.guardianProjectile;
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
-        largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
+        largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge",
+        largeAsteroidScale:item.hazardDamageScale||1});
     } else {
       activatePower(item.type, item);
     }

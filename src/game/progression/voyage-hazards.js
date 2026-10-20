@@ -22,9 +22,10 @@ const profile = (gap, cap, cluster, mix, speed, {start = 0, damageScale = 1} = {
   gap: Object.freeze(gap), cap, cluster, mix: Object.freeze(mix), speed: Object.freeze(speed), start, damageScale
 });
 export const VOYAGE_HAZARD_PROFILES = Object.freeze({
-  // 1.1: respiro de 8 s tras la ruptura (a los 9 s), dos a la vez como mucho
-  // y medio daño mientras el piloto se sitúa (prueba del propietario, 20/10).
-  1: profile([1.7, 2.7], 2, .15, {meteor: .45, debris: .55}, [170, 260], {start: 17, damageScale: .5}),
+  // 1.1: el campo nace con la ruptura (9 s de ruta); 8 s de respiro desde
+  // ahí, dos a la vez como mucho y medio daño mientras el piloto se sitúa
+  // (prueba del propietario, 20/10).
+  1: profile([1.7, 2.7], 2, .15, {meteor: .45, debris: .55}, [170, 260], {start: 8, damageScale: .5}),
   2: profile([1.1, 1.9], 4, .30, {meteor: .30, debris: .55, satellite: .15}, [160, 250], {damageScale: .5}),
   3: profile([.9, 1.6], 5, .35, {meteor: .35, debris: .50, satellite: .15}, [170, 270]),
   4: profile([1.3, 2.1], 4, .25, {meteor: .50, debris: .40, satellite: .10}, [190, 290]),

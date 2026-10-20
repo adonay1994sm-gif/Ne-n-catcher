@@ -89,3 +89,9 @@ test('actual classic shield pickup restores persistent reserve with no timer',()
   const classic=runtime().sandbox;classic.classicHullReserve=3;classic.classicHullReserveCapacity=45;
   classic.activatePower('shield',item);assert.equal(classic.classicHullReserve,45);assert.equal(classic.powers.shield,0);
 });
+
+test('the learning stages also halve the fixed large-asteroid blow', () => {
+  assert.equal(damage({reserve:0,largeAsteroid:true,amount:17,largeAsteroidScale:.5}).hull,81);
+  assert.equal(damage({reserve:30,largeAsteroid:true,amount:17,largeAsteroidScale:.5}).hull,90);
+  assert.throws(()=>damage({largeAsteroid:true,amount:17,largeAsteroidScale:0}),RangeError);
+});

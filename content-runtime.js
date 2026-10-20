@@ -969,13 +969,15 @@ var NeonCampaign = (() => {
     capacity = 30,
     amount,
     kind = "collision",
-    largeAsteroid = false
+    largeAsteroid = false,
+    largeAsteroidScale = 1
   } = {}) {
     finite(hull, "hull");
     finite(reserve, "reserve");
     finite(capacity, "capacity");
     finite(amount, "damage");
-    if (hull < 0 || hull > 100 || ![30, 45, 65].includes(capacity) || reserve < 0 || reserve > capacity || amount < 0 || typeof largeAsteroid !== "boolean" || !["collision", "phaser", "heavyPhaser", "largeAsteroid"].includes(kind)) {
+    finite(largeAsteroidScale, "largeAsteroidScale");
+    if (hull < 0 || hull > 100 || ![30, 45, 65].includes(capacity) || reserve < 0 || reserve > capacity || amount < 0 || typeof largeAsteroid !== "boolean" || largeAsteroidScale <= 0 || largeAsteroidScale > 1 || !["collision", "phaser", "heavyPhaser", "largeAsteroid"].includes(kind)) {
       throw new RangeError("Invalid reinforced hull damage request");
     }
     let incoming = amount;
@@ -983,7 +985,7 @@ var NeonCampaign = (() => {
     if (amount > 0 && kind === "heavyPhaser") incoming = HULL_REINFORCEMENT_RULES.heavyPhaserDamage;
     const large = (largeAsteroid || kind === "largeAsteroid") && incoming > 0;
     const reserveDamage = large ? reserve : Math.min(reserve, incoming);
-    const hullImpact = large ? reserve > 0 ? HULL_REINFORCEMENT_RULES.protectedLargeAsteroidHullDamage : HULL_REINFORCEMENT_RULES.largeAsteroidHullDamage : Math.max(0, incoming - reserveDamage);
+    const hullImpact = large ? Math.round((reserve > 0 ? HULL_REINFORCEMENT_RULES.protectedLargeAsteroidHullDamage : HULL_REINFORCEMENT_RULES.largeAsteroidHullDamage) * largeAsteroidScale) : Math.max(0, incoming - reserveDamage);
     const nextHull = Math.max(0, hull - hullImpact), nextReserve = reserve - reserveDamage;
     return {
       hull: nextHull,
@@ -1781,9 +1783,10 @@ var NeonCampaign = (() => {
     damageScale
   });
   var VOYAGE_HAZARD_PROFILES = Object.freeze({
-    // 1.1: respiro de 8 s tras la ruptura (a los 9 s), dos a la vez como mucho
-    // y medio daño mientras el piloto se sitúa (prueba del propietario, 20/10).
-    1: profile([1.7, 2.7], 2, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260], { start: 17, damageScale: 0.5 }),
+    // 1.1: el campo nace con la ruptura (9 s de ruta); 8 s de respiro desde
+    // ahí, dos a la vez como mucho y medio daño mientras el piloto se sitúa
+    // (prueba del propietario, 20/10).
+    1: profile([1.7, 2.7], 2, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260], { start: 8, damageScale: 0.5 }),
     2: profile([1.1, 1.9], 4, 0.3, { meteor: 0.3, debris: 0.55, satellite: 0.15 }, [160, 250], { damageScale: 0.5 }),
     3: profile([0.9, 1.6], 5, 0.35, { meteor: 0.35, debris: 0.5, satellite: 0.15 }, [170, 270]),
     4: profile([1.3, 2.1], 4, 0.25, { meteor: 0.5, debris: 0.4, satellite: 0.1 }, [190, 290]),
