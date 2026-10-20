@@ -99,6 +99,13 @@ probaron de fondo se retiraron (el propietario las vio como un collage).
 Sin usar todavía: estación completa, variante B, anillo con antenas, fondo
 tras la ruptura, esfera de energía y descargas.
 
+### 20/10/2026 · Vídeo de Cronos Prime y estallido de la estación
+
+| Archivo | Qué es | Uso | Estado |
+|---|---|---|---|
+| `art-source/cronos-prime/cronos_prime_f1_video_croma_v1.mp4` | Vídeo de Gemini con croma verde, 1280×720, 24 fps: reposo, despertar, carga, disparo, enfriamiento | Se recorta el verde y se sacan 40 fotogramas de 512 (`cronos_prime_video_atlas_v1`); cuerpo ~480 px | INTEGRADO |
+| `art-source/chronos-inicio/chronos_estacion_estallido_a/b/c_v1.webp` | La estación estallando (3 hojas de 5) | a + b → `chronos_station_burst_atlas_v1` (10 fotogramas); c sin usar | INTEGRADO |
+
 ## Sitio de assets del propietario
 
 El propietario publica sus entregas en
