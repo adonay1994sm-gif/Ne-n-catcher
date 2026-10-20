@@ -55,6 +55,10 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - [ ] Partida natural completa automática sobre esta rama (el piloto solo genera
   preview desde la rama autorizada).
 
+## Limpieza de la rama (20/10/2026)
+- [x] Fuera 3.307 capturas antiguas de QA, el zip 6.8, 9 assets sin uso y
+  25 reexportaciones: de 955 MB a 221 MB. Ver `LIMPIEZA_2026-10-20.md`.
+
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y
   rompía 35 pruebas de `npm run test:content` (cargan el módulo sin la
