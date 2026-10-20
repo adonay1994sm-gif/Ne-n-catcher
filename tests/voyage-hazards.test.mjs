@@ -26,7 +26,7 @@ function simulate(stageNumber, seconds, seed = 7) {
 test('every stage of the voyage has a hazard profile and the field fills a stage instead of leaving it empty', () => {
   for (let stage = 1; stage <= 10; stage++) {
     assert.ok(VOYAGE_HAZARD_PROFILES[stage], `stage ${stage}`);
-    const {emitted} = simulate(stage, 36);
+    const {emitted} = simulate(stage, 36 + VOYAGE_HAZARD_PROFILES[stage].start);
     assert.ok(emitted.length >= 8, `stage ${stage} emitted only ${emitted.length}`);
   }
   assert.ok(simulate(3, 36).emitted.length > simulate(6, 36).emitted.length, 'the debris field is denser than the C9 stage');
@@ -37,6 +37,23 @@ test('the field never exceeds the stage cap and always leaves a passable gap for
     const {maxLive, minGap, field} = simulate(stage, 36, seed);
     assert.ok(maxLive <= VOYAGE_HAZARD_PROFILES[stage].cap, `stage ${stage} live ${maxLive}`);
     assert.ok(minGap >= field.shipWidth + VOYAGE_HAZARD_RULES.gapMargin, `stage ${stage} gap ${minGap}`);
+  }
+});
+
+test('the first stage leaves a breather after the rupture and the opening stages hit softer', () => {
+  // Tramo 1.1: el juego crea el campo con la ruptura (9 s de ruta), así que
+  // start cuenta desde ahí: 8 s de respiro, no 8 + 9.
+  assert.equal(VOYAGE_HAZARD_PROFILES[1].start, 8);
+  for (const seed of [1, 7, 99, 4242]) {
+    const {emitted} = simulate(1, VOYAGE_HAZARD_PROFILES[1].start - .1, seed);
+    assert.equal(emitted.length, 0, `seed ${seed}`);
+  }
+  assert.ok(VOYAGE_HAZARD_PROFILES[1].cap <= 2, 'never more than two ambient hazards in 1.1');
+  for (let stage = 1; stage <= 10; stage++) {
+    const {emitted} = simulate(stage, 40 + VOYAGE_HAZARD_PROFILES[stage].start);
+    const expected = stage <= 2 ? .5 : 1;
+    assert.ok(emitted.every(item => item.damageScale === expected), `stage ${stage}`);
+    assert.equal(VOYAGE_HAZARD_PROFILES[stage].start > 0, stage === 1, `only 1.1 waits (stage ${stage})`);
   }
 });
 

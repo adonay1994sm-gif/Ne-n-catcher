@@ -560,10 +560,21 @@ test('with the owner pieces loaded, the real renderer turns the station, breaks 
   assert.ok(h.drawCalls.some(call => call.path === INTRO_STATION_PATH), 'the piece-by-piece station is drawn');
   assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
   assert.deepEqual(towerCells().filter(cell => cell === 0 || cell === 1), [0], 'intact tower before the rupture');
-  h.advance(9.2);
+  h.advance(9.03);
   h.clearDrawCalls(); h.api.background(1e9);
-  assert.ok(towerCells().includes(1), 'broken tower after the rupture');
+  assert.ok(towerCells().includes(1), 'broken tower at the impact');
+  assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
+  // Tras la explosión azul la estación entera no vuelve a dibujarse.
+  h.advance(.5);
+  h.clearDrawCalls(); h.api.background(2e9);
+  assert.ok(h.drawCalls.some(call => call.path === 'assets/chronos_station_explosion_atlas_v1.webp'), 'the owner blue explosion');
+  assert.ok(h.drawCalls.some(call => call.path === 'assets/cronos_prime_anim_atlas_v1.webp'), 'animated Cronos Prime');
   assert.ok(h.drawCalls.some(call => call.path === 'assets/chronos_intro_fragments_atlas_v1.webp'), 'fragments fly');
+  const wholeCells = h.drawCalls.filter(call => call.path === INTRO_STATION_PATH && call.args[1] === 0).length;
+  assert.equal(wholeCells, 0, 'ring and wheel are gone');
+  h.advance(20);
+  h.clearDrawCalls(); h.api.background(3e9);
+  assert.equal(h.drawCalls.filter(call => call.path === INTRO_STATION_PATH && call.args[1] === 0).length, 0, 'not even later');
   assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
   assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
   assert.equal(h.pending.size, 1);

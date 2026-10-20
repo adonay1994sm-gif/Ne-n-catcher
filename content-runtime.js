@@ -969,13 +969,15 @@ var NeonCampaign = (() => {
     capacity = 30,
     amount,
     kind = "collision",
-    largeAsteroid = false
+    largeAsteroid = false,
+    largeAsteroidScale = 1
   } = {}) {
     finite(hull, "hull");
     finite(reserve, "reserve");
     finite(capacity, "capacity");
     finite(amount, "damage");
-    if (hull < 0 || hull > 100 || ![30, 45, 65].includes(capacity) || reserve < 0 || reserve > capacity || amount < 0 || typeof largeAsteroid !== "boolean" || !["collision", "phaser", "heavyPhaser", "largeAsteroid"].includes(kind)) {
+    finite(largeAsteroidScale, "largeAsteroidScale");
+    if (hull < 0 || hull > 100 || ![30, 45, 65].includes(capacity) || reserve < 0 || reserve > capacity || amount < 0 || typeof largeAsteroid !== "boolean" || largeAsteroidScale <= 0 || largeAsteroidScale > 1 || !["collision", "phaser", "heavyPhaser", "largeAsteroid"].includes(kind)) {
       throw new RangeError("Invalid reinforced hull damage request");
     }
     let incoming = amount;
@@ -983,7 +985,7 @@ var NeonCampaign = (() => {
     if (amount > 0 && kind === "heavyPhaser") incoming = HULL_REINFORCEMENT_RULES.heavyPhaserDamage;
     const large = (largeAsteroid || kind === "largeAsteroid") && incoming > 0;
     const reserveDamage = large ? reserve : Math.min(reserve, incoming);
-    const hullImpact = large ? reserve > 0 ? HULL_REINFORCEMENT_RULES.protectedLargeAsteroidHullDamage : HULL_REINFORCEMENT_RULES.largeAsteroidHullDamage : Math.max(0, incoming - reserveDamage);
+    const hullImpact = large ? Math.round((reserve > 0 ? HULL_REINFORCEMENT_RULES.protectedLargeAsteroidHullDamage : HULL_REINFORCEMENT_RULES.largeAsteroidHullDamage) * largeAsteroidScale) : Math.max(0, incoming - reserveDamage);
     const nextHull = Math.max(0, hull - hullImpact), nextReserve = reserve - reserveDamage;
     return {
       hull: nextHull,
@@ -1762,7 +1764,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/voyage-hazards.js
-  var VOYAGE_HAZARD_VERSION = "voyage-hazards-v1";
+  var VOYAGE_HAZARD_VERSION = "voyage-hazards-v2";
   var VOYAGE_HAZARD_RULES = Object.freeze({
     maxDelta: 0.05,
     upperBand: 0.45,
@@ -1771,16 +1773,21 @@ var NeonCampaign = (() => {
     edgeMargin: 46,
     attempts: 8
   });
-  var profile = (gap, cap, cluster, mix3, speed) => Object.freeze({
+  var profile = (gap, cap, cluster, mix3, speed, { start = 0, damageScale = 1 } = {}) => Object.freeze({
     gap: Object.freeze(gap),
     cap,
     cluster,
     mix: Object.freeze(mix3),
-    speed: Object.freeze(speed)
+    speed: Object.freeze(speed),
+    start,
+    damageScale
   });
   var VOYAGE_HAZARD_PROFILES = Object.freeze({
-    1: profile([1.7, 2.7], 3, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260]),
-    2: profile([1.1, 1.9], 4, 0.3, { meteor: 0.3, debris: 0.55, satellite: 0.15 }, [160, 250]),
+    // 1.1: el campo nace con la ruptura (9 s de ruta); 8 s de respiro desde
+    // ahí, dos a la vez como mucho y medio daño mientras el piloto se sitúa
+    // (prueba del propietario, 20/10).
+    1: profile([1.7, 2.7], 2, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260], { start: 8, damageScale: 0.5 }),
+    2: profile([1.1, 1.9], 4, 0.3, { meteor: 0.3, debris: 0.55, satellite: 0.15 }, [160, 250], { damageScale: 0.5 }),
     3: profile([0.9, 1.6], 5, 0.35, { meteor: 0.35, debris: 0.5, satellite: 0.15 }, [170, 270]),
     4: profile([1.3, 2.1], 4, 0.25, { meteor: 0.5, debris: 0.4, satellite: 0.1 }, [190, 290]),
     5: profile([2.3, 3.4], 2, 0.1, { meteor: 0.8, debris: 0.2 }, [210, 320]),
@@ -1823,7 +1830,7 @@ var NeonCampaign = (() => {
       shipWidth,
       random,
       // La primera aparición llega pronto para que el tramo no empiece vacío.
-      wait: 0.6 + random() * 0.8,
+      wait: stage.start + 0.6 + random() * 0.8,
       emitted: 0,
       skipped: 0
     };
@@ -1885,7 +1892,13 @@ var NeonCampaign = (() => {
       live.push({ x: hazard.x, y: -95 - index * 70, r: hazard.r });
       field.emitted++;
       count++;
-      emit(Object.freeze({ type: hazard.type, x: hazard.x, speed: hazard.speed, delayY: index * 70 }));
+      emit(Object.freeze({
+        type: hazard.type,
+        x: hazard.x,
+        speed: hazard.speed,
+        delayY: index * 70,
+        damageScale: profileData.damageScale
+      }));
     }
     return count;
   }
@@ -5522,32 +5535,56 @@ var NeonCampaign = (() => {
 
   // src/game/animation/chronos-intro.js
   var CHRONOS_INTRO_TIMELINE = Object.freeze({
-    arrive: 3,
-    arrived: 6.2,
-    unfoldStart: 5.4,
-    unfoldEnd: 7.4,
-    chargeStart: 7,
+    omen: 2.8,
+    approach: 3.6,
+    arrive: 6,
+    drain: 6.4,
     beamStart: 8.6,
     rupture: 9,
-    beamEnd: 9.9,
-    flashSeconds: 0.9,
-    retreatStart: 10.6,
-    retreatEnd: 13.4,
-    ringGone: 16,
+    fireEnd: 9.2,
+    explosionSeconds: 1.6,
+    stationGone: 9.5,
+    turn: 10.4,
+    leave: 11.5,
+    gone: 12.6,
     fragmentsEnd: 17,
     end: 26
   });
+  var CRONOS_PRIME_FRAMES = Object.freeze({
+    idle: [0, 1, 2],
+    charge: [3, 4, 5, 6, 7],
+    fire: 8,
+    cooldown: [9, 10, 11],
+    side: [12, 13, 14, 15],
+    front: [16, 17, 18, 19]
+  });
   var T = CHRONOS_INTRO_TIMELINE;
+  var F = CRONOS_PRIME_FRAMES;
   var clamp14 = (value, low, high) => Math.max(low, Math.min(high, value));
   var smooth3 = (value, from, to) => {
     const t = clamp14((value - from) / (to - from), 0, 1);
     return t * t * (3 - 2 * t);
   };
+  var easeOut = (value, from, to) => 1 - (1 - clamp14((value - from) / (to - from), 0, 1)) ** 3;
+  var easeIn = (value, from, to) => clamp14((value - from) / (to - from), 0, 1) ** 2;
   var mix2 = (from, to, amount) => from + (to - from) * amount;
-  var ENTRY = Object.freeze({ x: 1.3, y: -0.2 });
-  var HOVER = Object.freeze({ x: 0.5, y: 0.3 });
+  var wobble = (time, rate, seed) => Math.sin(time * rate + seed) * 0.6 + Math.sin(time * rate * 2.13 + seed * 1.7) * 0.4;
+  var pick = (list, amount) => list[Math.min(list.length - 1, Math.floor(clamp14(amount, 0, 0.9999) * list.length))];
+  var SHOTS = Object.freeze([
+    [0, "scale"],
+    [T.omen, "omen"],
+    [T.approach, "arrival"],
+    [T.drain, "drain"],
+    [T.beamStart, "shot"],
+    [T.rupture, "rupture"],
+    [T.turn, "scorn"],
+    [T.gone, "escape"]
+  ]);
   var STATION_FRAME = Object.freeze({ zoom: 0.72, drop: 0.08 });
-  var EXIT = Object.freeze({ x: 0.62, y: -0.4 });
+  var FAR = Object.freeze({ x: 0.72, y: 0.22, scale: 0.07 });
+  var HOVER = Object.freeze({ x: 0.48, y: 0.25, scale: 1 });
+  var EXIT = Object.freeze({ x: 0.94, y: 0.12, scale: 0.05 });
+  var SECTORS = 8;
   var FRAGMENTS = Object.freeze([
     [-0.95, -0.35, 1.6],
     [0.9, -0.45, -1.2],
@@ -5559,7 +5596,14 @@ var NeonCampaign = (() => {
     [0.15, 1, 1.1]
   ].map(([x, y, spin], cell) => Object.freeze({ cell, x, y, spin })));
   var INACTIVE = Object.freeze({ active: false });
-  var SPIN = Object.freeze({ wheel: 0.32, ring: -0.2, wreck: 0.22, wobble: 0.035 });
+  function primeFrame(elapsed, drain) {
+    if (elapsed < T.arrive) return pick(F.side, (elapsed - T.approach) / (T.arrive - T.approach));
+    if (elapsed < T.drain) return pick(F.front, (elapsed - T.arrive) / (T.drain - T.arrive));
+    if (elapsed < T.beamStart) return pick(F.charge, drain);
+    if (elapsed < T.fireEnd) return F.fire;
+    if (elapsed < T.turn) return pick(F.cooldown, (elapsed - T.fireEnd) / (T.turn - T.fireEnd));
+    return pick([...F.front].reverse().concat([...F.side].reverse()), (elapsed - T.turn) / (T.leave - T.turn));
+  }
   function getChronosIntroPose(elapsed, { reducedEffects = false, holdWreck = false } = {}) {
     if (!Number.isFinite(elapsed) || elapsed < 0) return INACTIVE;
     if (elapsed > T.end && !holdWreck) return INACTIVE;
@@ -5567,64 +5611,105 @@ var NeonCampaign = (() => {
     elapsed = Math.min(elapsed, T.end);
     const ruptured = elapsed >= T.rupture;
     const since = elapsed - T.rupture;
-    const spinSince = spinClock - T.rupture;
-    const phase = elapsed < T.arrive ? "calm" : elapsed < T.arrived ? "arrival" : elapsed < T.beamStart ? "charge" : elapsed < T.beamEnd ? "fire" : elapsed < T.retreatEnd ? "retreat" : "aftermath";
-    const separation = ruptured ? smooth3(since, 0, T.ringGone - T.rupture) : 0;
+    const shotIndex = SHOTS.reduce((found, [at], index) => elapsed >= at ? index : found, 0);
+    const motion = reducedEffects ? 0 : 1;
+    const push = smooth3(elapsed, T.beamStart, T.rupture) * (1 - smooth3(elapsed, T.rupture + 0.2, T.rupture + 1.5));
+    const brake = elapsed >= T.arrive && elapsed < T.arrive + 0.4 ? 0.01 * (1 - (elapsed - T.arrive) / 0.4) : 0;
+    const drain = smooth3(elapsed, T.drain, T.beamStart);
+    const tremor = drain * (ruptured ? 0 : 1) * 6e-3 + brake + (ruptured ? 0.03 * Math.max(0, 1 - since / 1.1) ** 2 : 0);
+    const camera = {
+      zoom: mix2(3, 1, smooth3(elapsed, 0, T.drain)) + 0.08 * push,
+      cx: mix2(0.48, 0.5, smooth3(elapsed, 0, T.approach)),
+      cy: mix2(0.32, 0.5, smooth3(elapsed, T.omen * 0.5, T.drain)),
+      shakeX: motion * tremor * wobble(elapsed, 47, 1),
+      shakeY: motion * tremor * wobble(elapsed, 53, 4)
+    };
+    const flicker = elapsed >= T.omen && elapsed < T.drain ? 0.82 + 0.18 * Math.max(0, wobble(elapsed, 31, 2)) : 1;
     const station2 = {
-      // Giros contrarios y lentos; tras la ruptura el anillo exterior gira más rápido.
-      ringAngle: SPIN.ring * spinClock - (ruptured ? 0.35 * since * since / (1 + since) : 0),
-      // Tras el impacto la rueda rota sigue girando, desequilibrada.
-      wheelAngle: ruptured ? SPIN.wheel * T.rupture + SPIN.wreck * spinSince + 0.25 * Math.sin(spinSince * 0.7) * smooth3(since, 0, 2) : SPIN.wheel * spinClock,
-      // Cabeceo: la elipse respira un poco (más fuerte tras el golpe).
-      tiltY: 0.8 + SPIN.wobble * Math.sin(spinClock * 0.45) + (ruptured ? 0.05 * Math.sin(spinSince * 0.9) * smooth3(since, 0, 1.5) : 0),
-      sway: 0.04 * Math.sin(spinClock * 0.3) + (ruptured ? 0.12 * Math.sin(spinSince * 0.5) * smooth3(since, 0, 2) : 0),
-      ringOffset: separation * 0.55,
-      ringScale: 1 + separation * 0.35,
-      ringAlpha: ruptured ? 1 - smooth3(since, 2.5, T.ringGone - T.rupture) : 1,
-      wheelCell: ruptured ? 2 : 1,
+      ringAngle: -0.2 * spinClock,
+      wheelAngle: 0.32 * spinClock,
+      tiltY: 0.8 + 0.035 * Math.sin(spinClock * 0.45),
+      sway: 0.04 * Math.sin(spinClock * 0.3),
+      // Mientras la explosión lo tapa todo, la estación entera desaparece.
+      whole: elapsed < T.stationGone,
       towerCell: ruptured ? 4 : 3,
-      towerLift: ruptured ? smooth3(since, 0, 4) * 0.08 : 0,
-      // Sacudida breve del impacto (sin ella con efectos reducidos).
-      shake: ruptured && !reducedEffects ? 0.03 * Math.max(0, 1 - since / 0.8) * Math.sin(since * 55) : 0,
-      // Alejamiento de presentación: la estación rota se aleja más deprisa que
-      // la ruta para dejar sitio al juego. Solo afecta al dibujo.
-      zoom: STATION_FRAME.zoom * (1 - 0.45 * smooth3(elapsed, T.rupture + 1, 24)),
-      drop: STATION_FRAME.drop
+      sectorLights: Array.from({ length: SECTORS }, (_, index) => ruptured ? 0 : flicker * (1 - smooth3(drain * SECTORS, index, index + 0.8))),
+      zoom: STATION_FRAME.zoom * (1 - 0.5 * smooth3(elapsed, T.rupture + 1, 18)),
+      drop: STATION_FRAME.drop,
+      // Lo que queda (la torre partida) es fondo: oscuro y lejano.
+      alpha: ruptured ? 0.75 * (1 - smooth3(elapsed, T.rupture + 2, T.rupture + 9)) + 0.2 : 1
     };
-    const arrival2 = smooth3(elapsed, T.arrive, T.arrived);
-    const leaving = smooth3(elapsed, T.retreatStart, T.retreatEnd);
-    const x = mix2(mix2(ENTRY.x, HOVER.x, arrival2), EXIT.x, leaving);
-    const y = mix2(mix2(ENTRY.y, HOVER.y, arrival2), EXIT.y, leaving);
-    const recoil = ruptured ? 0.025 * Math.max(0, 1 - since / 0.6) : 0;
-    const charge = smooth3(elapsed, T.chargeStart, T.rupture);
+    const arrival2 = easeOut(elapsed, T.approach, T.arrive);
+    const leaving = easeIn(elapsed, T.leave, T.gone);
+    const hover = elapsed >= T.arrive ? 6e-3 * Math.sin((elapsed - T.arrive) * 2.2) : 0;
+    const recoil = ruptured ? 0.02 * Math.max(0, 1 - since / 0.35) : 0;
     const prime = {
-      visible: elapsed >= T.arrive && elapsed < T.retreatEnd,
-      x,
-      y: y - recoil,
-      // Entra inclinado, se endereza al llegar y se ladea al marcharse.
-      tilt: -0.5 * (1 - arrival2) + 0.35 * leaving,
-      scale: mix2(0.55, 1, arrival2) * (1 - 0.45 * leaving),
-      alpha: elapsed < T.arrive ? 0 : 1,
-      wingSpread: smooth3(elapsed, T.unfoldStart, T.unfoldEnd) * (1 - 0.6 * leaving),
-      bladeSpread: smooth3(elapsed, T.unfoldStart + 0.5, T.unfoldEnd + 0.3) * (1 - 0.6 * leaving),
-      coreGlow: ruptured ? 1 - smooth3(since, 0.4, 2) * 0.7 : charge,
-      charge,
-      beamAlpha: smooth3(elapsed, T.beamStart, T.rupture) * (1 - smooth3(elapsed, T.rupture + 0.3, T.beamEnd))
+      visible: elapsed >= T.approach && elapsed < T.gone,
+      frame: primeFrame(elapsed, drain),
+      x: mix2(mix2(FAR.x, HOVER.x, arrival2), EXIT.x, leaving),
+      y: mix2(mix2(FAR.y, HOVER.y, arrival2), EXIT.y, leaving) + hover - recoil,
+      scale: mix2(mix2(FAR.scale, HOVER.scale, arrival2), EXIT.scale, leaving) * (1 + 0.08 * drain),
+      alpha: elapsed < T.approach ? 0 : 1,
+      // Estela de motor al llegar y al irse.
+      trail: Math.max(1 - smooth3(elapsed, T.arrive - 0.3, T.arrive + 0.2), smooth3(elapsed, T.leave, T.leave + 0.3)) * (elapsed >= T.approach ? 1 : 0),
+      heading: elapsed < T.leave ? Math.atan2(HOVER.y - FAR.y, HOVER.x - FAR.x) : Math.atan2(EXIT.y - HOVER.y, EXIT.x - HOVER.x),
+      // Onda al frenar en seco.
+      brake: elapsed >= T.arrive && elapsed < T.arrive + 0.45 ? 1 - (elapsed - T.arrive) / 0.45 : 0,
+      charge: drain,
+      nameCard: smooth3(elapsed, T.arrive, T.arrive + 0.25) * (1 - smooth3(elapsed, T.beamStart - 0.6, T.beamStart - 0.2)),
+      nameCardPunch: 1 - easeOut(elapsed, T.arrive, T.arrive + 0.3)
     };
-    const flashPeak = reducedEffects ? 0.3 : 0.6;
-    const flash = ruptured && since < T.flashSeconds ? flashPeak * (1 - since / T.flashSeconds) ** 2 : 0;
-    const fragments = ruptured ? FRAGMENTS.map((item) => {
-      const travel = since * (0.35 + 0.1 * (item.cell % 3)) + since * since * 0.03;
+    const distantLight = elapsed >= T.omen && elapsed < T.approach + 0.6 ? {
+      x: FAR.x,
+      y: FAR.y,
+      alpha: smooth3(elapsed, T.omen, T.approach) * (1 - smooth3(elapsed, T.approach, T.approach + 0.6)),
+      size: 0.02 + 0.03 * smooth3(elapsed, T.omen, T.approach)
+    } : null;
+    const drainStreams = elapsed >= T.drain && elapsed < T.rupture ? station2.sectorLights.map((light, index) => ({
+      angle: -Math.PI / 2 + (index + 0.5) * Math.PI * 2 / SECTORS,
+      alpha: smooth3(drain * SECTORS, index - 0.3, index) * (1 - smooth3(drain * SECTORS, index + 0.8, index + 1.4)) * (1 - smooth3(elapsed, T.beamStart, T.rupture)),
+      cell: 1 + (index + Math.floor(elapsed * 14)) % 6,
+      progress: ((elapsed - T.drain) * 1.8 + index * 0.37) % 1
+    })) : [];
+    const beamWindow = smooth3(elapsed, T.beamStart, T.beamStart + 0.1) * (1 - smooth3(elapsed, T.rupture + 0.05, T.fireEnd));
+    const beam = { alpha: beamWindow, width: (0.6 + 0.4 * smooth3(elapsed, T.beamStart, T.rupture)) * (1 + 0.1 * Math.sin(elapsed * 60) * motion) };
+    const flash = ruptured && since < 0.25 ? (reducedEffects ? 0.25 : 0.7) * (1 - since / 0.25) ** 2 : 0;
+    const explosionAge = ruptured ? since / T.explosionSeconds : 1;
+    const explosion = explosionAge < 1 ? {
+      frame: Math.min(7, Math.floor(explosionAge * 8)),
+      scale: 1.7 + 0.45 * easeOut(explosionAge, 0, 1),
+      alpha: 1 - smooth3(explosionAge, 0.8, 1)
+    } : null;
+    const fragments = elapsed >= T.stationGone - 0.1 ? FRAGMENTS.map((item) => {
+      const age = elapsed - (T.stationGone - 0.1);
+      const travel = age * (0.45 + 0.12 * (item.cell % 3)) + age * age * 0.04;
       return {
         cell: item.cell,
         dx: item.x * travel,
         dy: item.y * travel,
-        angle: item.spin * since,
-        scale: 0.9 + travel * 0.55,
+        angle: item.spin * age,
+        scale: 1 + travel * (item.y > 0 ? 2.2 : 1),
         alpha: 1 - smooth3(elapsed, T.fragmentsEnd - 3, T.fragmentsEnd)
       };
     }) : [];
-    return { active: true, phase, clock: elapsed, flash, station: station2, prime, fragments };
+    const darkness = 0.35 * smooth3(elapsed, T.omen, T.approach) * (1 - smooth3(elapsed, T.rupture, T.rupture + 0.6));
+    const phase = SHOTS[shotIndex][1];
+    return {
+      active: true,
+      phase,
+      shot: shotIndex + 1,
+      clock: elapsed,
+      camera,
+      darkness,
+      distantLight,
+      station: station2,
+      prime,
+      drainStreams,
+      beam,
+      flash,
+      explosion,
+      fragments
+    };
   }
 
   // src/game/combat/classic-weapons.js

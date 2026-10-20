@@ -541,7 +541,8 @@
     ctx.translate(item.x, item.y);
     ctx.rotate(item.rot);
     ctx.shadowBlur = 16;
-    ctx.shadowColor = item.spriteKey && item.spriteKey.includes("Hot") ? "#ff5b3d" : "#73a8ff";
+    // Brillo cálido: el azul se confundía con la estación y el fondo (iPhone, 20/10).
+    ctx.shadowColor = item.spriteKey && item.spriteKey.includes("Hot") ? "#ff5b3d" : "#ffb25c";
     const sprite = SPRITES[item.spriteKey] || SPRITES.debrisMetal;
     const size = item.r * (item.spriteKey === "debrisPanel" ? 3.15 : 2.90);
     if (!drawImageCentered(sprite, size, size)) {
@@ -557,7 +558,7 @@
     ctx.translate(item.x, item.y);
     ctx.rotate(item.rot);
     ctx.shadowBlur = 18;
-    ctx.shadowColor = "#8ab7ff";
+    ctx.shadowColor = "#ffc777";
     const size = item.r * 3.55;
     if (!drawImageCentered(SPRITES.satellite, size, size)) {
       ctx.fillStyle = "#718096";

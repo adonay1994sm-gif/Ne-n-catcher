@@ -18,11 +18,12 @@ export const HULL_REINFORCEMENT_RULES = Object.freeze({
  * balance choice, not a conversion of reserve points into temporary immunity.
  */
 export function resolveHullReinforcement({hull, reserve, capacity = 30,
-  amount, kind = 'collision', largeAsteroid = false} = {}) {
+  amount, kind = 'collision', largeAsteroid = false, largeAsteroidScale = 1} = {}) {
   finite(hull, 'hull'); finite(reserve, 'reserve'); finite(capacity, 'capacity');
-  finite(amount, 'damage');
+  finite(amount, 'damage'); finite(largeAsteroidScale, 'largeAsteroidScale');
   if (hull < 0 || hull > 100 || ![30, 45, 65].includes(capacity) || reserve < 0 ||
       reserve > capacity || amount < 0 || typeof largeAsteroid !== 'boolean' ||
+      largeAsteroidScale <= 0 || largeAsteroidScale > 1 ||
       !['collision', 'phaser', 'heavyPhaser', 'largeAsteroid'].includes(kind)) {
     throw new RangeError('Invalid reinforced hull damage request');
   }
@@ -31,8 +32,9 @@ export function resolveHullReinforcement({hull, reserve, capacity = 30,
   if (amount > 0 && kind === 'heavyPhaser') incoming = HULL_REINFORCEMENT_RULES.heavyPhaserDamage;
   const large = (largeAsteroid || kind === 'largeAsteroid') && incoming > 0;
   const reserveDamage = large ? reserve : Math.min(reserve, incoming);
-  const hullImpact = large ? (reserve > 0 ? HULL_REINFORCEMENT_RULES.protectedLargeAsteroidHullDamage :
-    HULL_REINFORCEMENT_RULES.largeAsteroidHullDamage) : Math.max(0, incoming - reserveDamage);
+  // largeAsteroidScale: rebaja de los tramos de aprendizaje (1.1 y 1.2).
+  const hullImpact = large ? Math.round((reserve > 0 ? HULL_REINFORCEMENT_RULES.protectedLargeAsteroidHullDamage :
+    HULL_REINFORCEMENT_RULES.largeAsteroidHullDamage) * largeAsteroidScale) : Math.max(0, incoming - reserveDamage);
   const nextHull = Math.max(0, hull - hullImpact), nextReserve = reserve - reserveDamage;
   return {
     hull: nextHull, reserve: nextReserve, capacity,

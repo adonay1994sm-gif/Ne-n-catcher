@@ -221,82 +221,154 @@
     ctx.restore();
   }
 
-  function drawCronosPrimePhaseOne(pose) {
-    const prime = pose.prime, atlas = SPRITES.cronosPrimePhaseOne;
-    if (!prime.visible || !spriteReady(atlas)) return;
-    // Con las alas abiertas mide unas 2,2 veces el tamaño: cabe en pantalla.
-    const size = W * .42 * prime.scale;
-    ctx.save(); ctx.translate(prime.x * W, prime.y * H); ctx.rotate(prime.tilt);
-    // Alas laterales (la derecha es el espejo de la izquierda) y cuchillas:
-    // llega plegado y las despliega al colocarse frente a la estación.
-    const wingSize = size * .62, wingGap = size * (.05 + .17 * prime.wingSpread);
-    for (const side of [-1, 1]) {
-      ctx.save(); ctx.scale(side, 1);
-      ctx.save(); ctx.translate(-wingGap - wingSize / 2, 0); ctx.rotate(.9 * (1 - prime.wingSpread));
-      drawAtlasCell(atlas, 2, 1, -wingSize / 2, -wingSize / 2, wingSize, wingSize);
-      ctx.restore();
-      const bladeSize = size * .42;
-      ctx.translate(-size * (.10 + .08 * prime.bladeSpread), -size * (.22 + .16 * prime.bladeSpread));
-      ctx.rotate(-.5 * (1 - prime.bladeSpread));
-      drawAtlasCell(atlas, 2, 2, -bladeSize / 2, -bladeSize / 2, bladeSize, bladeSize);
-      ctx.restore();
-    }
-    const coreSize = size * .5;
-    drawAtlasCell(atlas, 2, 0, -coreSize / 2, -coreSize / 2, coreSize, coreSize);
-    if (prime.coreGlow > 0) {
-      // Carga del disparo: el núcleo se ilumina y crece un halo blanco.
-      ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = prime.coreGlow * .6;
-      drawAtlasCell(atlas, 2, 0, -coreSize / 2, -coreSize / 2, coreSize, coreSize);
-      const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, coreSize * (.35 + .45 * prime.charge));
-      halo.addColorStop(0, "rgba(235,245,255,.95)"); halo.addColorStop(1, "rgba(120,170,255,0)");
-      ctx.globalAlpha = prime.coreGlow; ctx.fillStyle = halo;
-      ctx.fillRect(-coreSize, -coreSize, coreSize * 2, coreSize * 2);
-    }
+  // Escena del inicio bajo su propia cámara (no afecta al juego ni al HUD).
+  function withChronosIntroCamera(pose, draw) {
+    const camera = pose.camera;
+    ctx.save();
+    ctx.translate(W * (.5 + camera.shakeX), H * (.5 + camera.shakeY));
+    ctx.scale(camera.zoom, camera.zoom);
+    ctx.translate(-W * camera.cx, -H * camera.cy);
+    draw();
     ctx.restore();
   }
 
-  function drawCronosPrimeBeam(pose, targetX, targetY) {
-    // Haz de Cronos Prime desde su núcleo hasta el reactor de la estación.
-    const prime = pose.prime, atlas = SPRITES.cronosPrimePhaseOne;
-    if (!prime.visible || prime.beamAlpha <= 0 || !spriteReady(atlas)) return;
-    const fromX = prime.x * W, fromY = prime.y * H;
-    const length = Math.hypot(targetX - fromX, targetY - fromY), width = W * .3;
-    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = prime.beamAlpha;
-    ctx.translate(fromX, fromY); ctx.rotate(Math.atan2(targetY - fromY, targetX - fromX) - Math.PI / 2);
-    drawAtlasCell(atlas, 2, 3, -width / 2, -length * .08, width, length * 1.16);
+  function drawChronosIntroDarkness(pose) {
+    // El espacio (no el villano) se oscurece desde arriba cuando se acerca.
+    if (pose.darkness <= 0) return;
+    const dark = ctx.createLinearGradient(0, 0, 0, H * .75);
+    dark.addColorStop(0, `rgba(4,0,14,${pose.darkness.toFixed(3)})`); dark.addColorStop(1, "rgba(4,0,14,0)");
+    ctx.save(); ctx.globalCompositeOperation = "multiply"; ctx.fillStyle = dark; ctx.fillRect(0, 0, W, H); ctx.restore();
+  }
+
+  function drawCronosPrimeDistantLight(pose) {
+    // Antes de verse, Cronos Prime es una luz violeta que crece a lo lejos.
+    const light = pose.distantLight;
+    if (!light || light.alpha <= 0) return;
+    const x = light.x * W, y = light.y * H, radius = W * light.size;
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 3);
+    glow.addColorStop(0, `rgba(255,255,255,${light.alpha.toFixed(3)})`);
+    glow.addColorStop(.25, `rgba(190,140,255,${(.7 * light.alpha).toFixed(3)})`); glow.addColorStop(1, "rgba(90,40,200,0)");
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = glow;
+    ctx.fillRect(x - radius * 3, y - radius * 3, radius * 6, radius * 6);
+    ctx.strokeStyle = `rgba(230,215,255,${(.8 * light.alpha).toFixed(3)})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x - radius * 2.5, y); ctx.lineTo(x + radius * 2.5, y); ctx.moveTo(x, y - radius * 2.5); ctx.lineTo(x, y + radius * 2.5); ctx.stroke();
     ctx.restore();
+  }
+
+  function drawCronosPrime(pose) {
+    const prime = pose.prime, atlas = SPRITES.cronosPrimeAnim;
+    if (!prime.visible || !spriteReady(atlas)) return;
+    const x = prime.x * W, y = prime.y * H, size = W * .56 * prime.scale;
+    // Estela de motor mientras viaja (al llegar y al irse).
+    if (prime.trail > 0) {
+      const length = size * 2.6 * prime.trail, back = prime.heading + Math.PI;
+      const tx = x + Math.cos(back) * length, ty = y + Math.sin(back) * length;
+      const trail = ctx.createLinearGradient(x, y, tx, ty);
+      trail.addColorStop(0, `rgba(215,190,255,${(.85 * prime.trail).toFixed(3)})`); trail.addColorStop(1, "rgba(120,60,255,0)");
+      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.strokeStyle = trail; ctx.lineCap = "round";
+      ctx.lineWidth = size * .22; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
+      ctx.lineWidth = size * .07; ctx.strokeStyle = `rgba(255,255,255,${(.7 * prime.trail).toFixed(3)})`;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (tx - x) * .5, y + (ty - y) * .5); ctx.stroke();
+      ctx.restore();
+    }
+    // Halo de carga detrás del cuerpo.
+    if (prime.charge > 0) {
+      const halo = ctx.createRadialGradient(x, y, 0, x, y, size * (.4 + .5 * prime.charge));
+      halo.addColorStop(0, `rgba(210,190,255,${(.55 * prime.charge).toFixed(3)})`); halo.addColorStop(1, "rgba(110,70,255,0)");
+      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = halo;
+      ctx.fillRect(x - size, y - size, size * 2, size * 2); ctx.restore();
+    }
+    ctx.save(); ctx.globalAlpha = prime.alpha;
+    drawAtlasCell(atlas, 6, prime.frame, x - size / 2, y - size / 2, size, size);
+    ctx.restore();
+    // Frenazo: onda de energía que se expande y se apaga.
+    if (prime.brake > 0) {
+      const grow = 1 + (1 - prime.brake) * 1.3;
+      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = prime.brake;
+      ctx.strokeStyle = "#d9ccff"; ctx.lineWidth = 3 + 10 * prime.brake; ctx.shadowColor = "#8f6bff"; ctx.shadowBlur = 24;
+      ctx.beginPath(); ctx.ellipse(x, y, size * .48 * grow, size * .22 * grow, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawCronosPrimeBeam(pose, targetX, targetY) {
+    // Disparo vertical del núcleo a la torre: halo, núcleo blanco y descargas.
+    const prime = pose.prime, beam = pose.beam, fx = SPRITES.cronosPrimeFx;
+    if (!prime.visible || beam.alpha <= 0) return;
+    const fromX = prime.x * W, fromY = prime.y * H;
+    const length = Math.hypot(targetX - fromX, targetY - fromY), width = W * .16 * beam.width;
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = beam.alpha;
+    ctx.translate(fromX, fromY); ctx.rotate(Math.atan2(targetY - fromY, targetX - fromX) - Math.PI / 2);
+    const halo = ctx.createLinearGradient(-width, 0, width, 0);
+    halo.addColorStop(0, "rgba(110,80,255,0)"); halo.addColorStop(.5, "rgba(170,140,255,.85)"); halo.addColorStop(1, "rgba(110,80,255,0)");
+    ctx.fillStyle = halo; ctx.fillRect(-width, 0, width * 2, length);
+    const core = ctx.createLinearGradient(-width * .14, 0, width * .14, 0);
+    core.addColorStop(0, "rgba(255,255,255,0)"); core.addColorStop(.5, "rgba(255,255,255,1)"); core.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = core; ctx.fillRect(-width * .14, 0, width * .28, length);
+    if (spriteReady(fx)) for (let index = 0; index < 3; index++) {
+      const bolt = W * .2 * beam.width;
+      ctx.save(); ctx.translate(0, length * (.25 + index * .3)); ctx.rotate(index % 2 ? .5 : -.5);
+      drawAtlasCell(fx, 4, 1 + (index + Math.floor(pose.clock * 20)) % 6, -bolt / 2, -bolt / 2, bolt, bolt);
+      ctx.restore();
+    }
+    ctx.restore();
+    const spot = W * .2 * beam.width;
+    const impact = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, spot);
+    impact.addColorStop(0, `rgba(255,255,255,${beam.alpha.toFixed(3)})`); impact.addColorStop(1, "rgba(140,150,255,0)");
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = impact;
+    ctx.fillRect(targetX - spot, targetY - spot, spot * 2, spot * 2); ctx.restore();
   }
 
   function drawChronosIntroStation(view, pose) {
     const node = view.station, atlas = SPRITES.chronosIntroStation;
-    if (!node.visible) return;
     const station = pose.station;
     const unit = W * node.scale * station.zoom;
-    const x = node.x * W + station.shake * unit, y = (node.y + station.drop) * H + station.shake * unit * .6;
-    // Anillo exterior: se separa, crece y se desvanece tras la ruptura.
-    if (station.ringAlpha > 0) {
-      const ring = unit * station.ringScale;
-      ctx.save(); ctx.globalAlpha = station.ringAlpha;
-      ctx.translate(x + station.ringOffset * unit * .35, y - station.ringOffset * unit * .25);
-      ctx.rotate(station.sway); ctx.scale(1, station.tiltY); ctx.rotate(station.ringAngle);
-      drawAtlasCell(atlas, 3, 0, -ring / 2, -ring / 2, ring, ring);
+    const x = node.x * W, y = (node.y + station.drop) * H;
+    const ringPoint = (angle, radius) => [x + Math.cos(angle) * radius * unit, y + Math.sin(angle) * radius * unit * station.tiltY];
+    if (node.visible) {
+      ctx.save(); ctx.globalAlpha = station.alpha;
+      const wheel = unit * .7;
+      const wheelSpace = () => { ctx.translate(x, y); ctx.rotate(station.sway); ctx.scale(1, station.tiltY); ctx.rotate(station.wheelAngle); };
+      if (station.whole) {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(station.sway); ctx.scale(1, station.tiltY); ctx.rotate(station.ringAngle);
+        drawAtlasCell(atlas, 3, 0, -unit / 2, -unit / 2, unit, unit);
+        ctx.restore();
+        ctx.save(); wheelSpace();
+        drawAtlasCell(atlas, 3, 1, -wheel / 2, -wheel / 2, wheel, wheel);
+        ctx.restore();
+        // Luz por sectores: brillan mientras viven y se apagan uno a uno.
+        const sectors = station.sectorLights;
+        for (let index = 0; index < sectors.length; index++) {
+          const from = -Math.PI / 2 + index * Math.PI * 2 / sectors.length, to = from + Math.PI * 2 / sectors.length;
+          ctx.save(); wheelSpace(); ctx.rotate(-station.wheelAngle);
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, unit * .62, from, to); ctx.closePath(); ctx.clip();
+          ctx.rotate(station.wheelAngle);
+          if (sectors[index] > 0) {
+            ctx.globalCompositeOperation = "screen"; ctx.globalAlpha *= .4 * sectors[index];
+            drawAtlasCell(atlas, 3, 1, -wheel / 2, -wheel / 2, wheel, wheel);
+          } else {
+            ctx.globalCompositeOperation = "multiply"; ctx.globalAlpha *= .7;
+            ctx.fillStyle = "#1e1a32"; ctx.fillRect(-unit, -unit, unit * 2, unit * 2);
+          }
+          ctx.restore();
+        }
+      }
+      // Torre: intacta mientras vive; partida y a oscuras después.
+      const tower = unit * .62;
+      ctx.save(); ctx.translate(x, y + unit * .1); ctx.rotate(station.sway * .6);
+      drawAtlasCell(atlas, 3, station.towerCell, -tower / 2, -tower, tower, tower);
+      ctx.restore();
       ctx.restore();
     }
-    // Rueda con brazos: plana y girando; rota e inclinada tras la ruptura.
-    const wheel = unit * .7;
-    ctx.save(); ctx.translate(x, y); ctx.rotate(station.sway);
-    // La rueda inclinada ya viene en perspectiva: gira sin aplastarla más.
-    if (station.wheelCell === 1) ctx.scale(1, station.tiltY);
-    ctx.rotate(station.wheelCell === 1 ? station.wheelAngle : station.wheelAngle * .5);
-    drawAtlasCell(atlas, 3, station.wheelCell, -wheel / 2, -wheel / 2, wheel, wheel);
-    ctx.restore();
-    // Torre de cristal sobre el núcleo: intacta y, desde el segundo 9, rota.
-    // La torre se balancea con la estación desde su base.
-    const tower = unit * .62, towerBase = y + unit * .1 - station.towerLift * unit;
-    ctx.save(); ctx.translate(x, towerBase); ctx.rotate(station.sway * .6);
-    drawAtlasCell(atlas, 3, station.towerCell, -tower / 2, -tower, tower, tower);
-    ctx.restore();
-    // Restos de la estación que salen despedidos, la mitad hacia la nave.
+    // Explosión azul del propietario sobre el núcleo.
+    const blast = SPRITES.chronosStationExplosion;
+    if (pose.explosion && spriteReady(blast)) {
+      const size = unit * pose.explosion.scale;
+      ctx.save(); ctx.globalAlpha = pose.explosion.alpha;
+      drawAtlasCell(blast, 4, pose.explosion.frame, x - size / 2, y - size / 2, size, size);
+      ctx.restore();
+    }
+    // Restos que salen despedidos; los que van hacia la nave crecen.
     const fragments = SPRITES.chronosIntroFragments;
     if (pose.fragments.length && spriteReady(fragments)) {
       for (const piece of pose.fragments) {
@@ -308,16 +380,48 @@
         ctx.restore();
       }
     }
-    // El atacante va por delante de la estación.
-    drawCronosPrimeBeam(pose, x, y - unit * .05);
-    drawCronosPrimePhaseOne(pose);
+    // Descargas que llevan la energía de cada sector a Cronos Prime.
+    const prime = pose.prime, fx = SPRITES.cronosPrimeFx;
+    if (spriteReady(fx)) for (const stream of pose.drainStreams) {
+      if (stream.alpha <= 0) continue;
+      const [sx, sy] = ringPoint(stream.angle, .3);
+      const tx = prime.x * W, ty = prime.y * H, mx = (sx + tx) / 2 + (sx - x) * .4, my = (sy + ty) / 2;
+      const at = t => [(1 - t) ** 2 * sx + 2 * (1 - t) * t * mx + t * t * tx, (1 - t) ** 2 * sy + 2 * (1 - t) * t * my + t * t * ty];
+      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = stream.alpha;
+      for (let segment = 0; segment < 3; segment++) {
+        const [ax, ay] = at(segment / 3), [bx, by] = at((segment + 1) / 3);
+        const length = Math.hypot(bx - ax, by - ay);
+        ctx.save(); ctx.translate((ax + bx) / 2, (ay + by) / 2); ctx.rotate(Math.atan2(by - ay, bx - ax) - Math.PI / 2);
+        drawAtlasCell(fx, 4, 1 + (stream.cell + segment) % 6, -length * .35, -length * .6, length * .7, length * 1.2);
+        ctx.restore();
+      }
+      const [dx, dy] = at(stream.progress);
+      ctx.fillStyle = "#f4f0ff"; ctx.beginPath(); ctx.arc(dx, dy, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+    drawCronosPrimeDistantLight(pose);
+    drawCronosPrimeBeam(pose, x, y - unit * .3);
+    drawCronosPrime(pose);
   }
 
   function drawChronosIntroOverlay(pose) {
+    const card = pose.prime.nameCard;
+    if (card > 0) {
+      // Rótulo del villano: entra de golpe, con aberración cromática violeta.
+      const punch = 1 + .35 * pose.prime.nameCardPunch;
+      ctx.save(); ctx.globalAlpha = card; ctx.textAlign = "center";
+      ctx.translate(W / 2, H * .7); ctx.scale(punch, punch);
+      ctx.font = "900 76px 'Trebuchet MS', sans-serif";
+      ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
+      ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
+      ctx.fillStyle = "#f6f2ff"; ctx.shadowColor = "#8f6bff"; ctx.shadowBlur = 22; ctx.fillText("CRONOS PRIME", 0, 0);
+      ctx.shadowBlur = 0; ctx.fillStyle = "#c7b8ff"; ctx.font = "800 22px 'Trebuchet MS', sans-serif";
+      ctx.fillText("LA IA DEL REACTOR, DESPIERTA", 0, 40);
+      ctx.restore();
+    }
     if (pose.flash > 0) {
       ctx.save(); ctx.globalCompositeOperation = "screen";
-      ctx.fillStyle = `rgba(200,225,255,${(pose.flash * .85).toFixed(3)})`; ctx.fillRect(0, 0, W, H);
-      ctx.restore();
+      ctx.fillStyle = `rgba(215,230,255,${pose.flash.toFixed(3)})`; ctx.fillRect(0, 0, W, H); ctx.restore();
     }
   }
 
@@ -413,8 +517,9 @@
 
     const intro = chronosIntroPose(view);
     if (intro) drawTalasa(intro);
+    if (intro) drawChronosIntroDarkness(intro);
     drawChronosFlightSprite(2, chronosDestinationPresentation(view.planet));
-    if (intro) drawChronosIntroStation(view, intro);
+    if (intro) withChronosIntroCamera(intro, () => drawChronosIntroStation(view, intro));
     else if (!drawChronosDestructionStation(view, destruction)) {
       // A failed new download keeps the two preserved station poses playable.
       drawChronosFlightSprite(view.station.state === "ruptured" ? 1 : 0, view.station);

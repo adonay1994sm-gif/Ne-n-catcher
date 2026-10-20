@@ -73,17 +73,67 @@ def fragments_atlas():
     return sheet(cells, 4, size)
 
 
-def prime_atlas():
-    size = 512
-    names = ['cronos_prime_f1_nucleo_v1', 'cronos_prime_f1_ala_v1',
-             'cronos_prime_f1_cuchilla_superior_v1', 'cronos_prime_f1_haz_v1']
-    return sheet([fit(content(load(PRIME / f'{name}.webp')), size) for name in names], 2, size)
+def prime_fx_atlas():
+    """Esfera de energía y seis descargas de Cronos Prime (4×2 celdas de 384)."""
+    size = 384
+    sphere = content(load(PRIME / 'cronos_prime_nucleo_energia_v1.webp'))
+    sheet_image = load(PRIME / 'cronos_prime_descargas_v1.webp')
+    w, h = sheet_image.size
+    bolts = [content(sheet_image.crop((c * w // 3, r * h // 2, (c + 1) * w // 3, (r + 1) * h // 2)))
+             for r in range(2) for c in range(3)]
+    return sheet([fit(sphere, size)] + [fit(bolt, size) for bolt in bolts], 4, size)
+
+
+def core_center(cell):
+    """Centro del núcleo brillante (píxeles casi blancos): ancla común de los
+    fotogramas de Cronos Prime para que no bailen al animarse."""
+    rgb = cell.convert('RGB').resize((cell.width // 2, cell.height // 2))
+    alpha = cell.getchannel('A').resize(rgb.size)
+    xs = ys = n = 0
+    for (x, y), (r, g, b), a in zip(((x, y) for y in range(rgb.height) for x in range(rgb.width)), rgb.get_flattened_data(), alpha.get_flattened_data()):
+        if a > 200 and r + g + b > 690:
+            xs += x; ys += y; n += 1
+    return (xs / n * 2, ys / n * 2) if n else (cell.width / 2, cell.height / 2)
+
+
+def grid_cells(path, columns, rows):
+    image = load(path)
+    w, h = image.size
+    return [image.crop((c * w // columns, r * h // rows, (c + 1) * w // columns, (r + 1) * h // rows))
+            for r in range(rows) for c in range(columns)]
+
+
+def anchored(cell, size, anchor, scale):
+    """Copia la celda a una celda cuadrada con `anchor` en el centro."""
+    out = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    resized = cell.resize((round(cell.width * scale), round(cell.height * scale)), Image.LANCZOS)
+    out.alpha_composite(resized, (round(size / 2 - anchor[0] * scale), round(size / 2 - anchor[1] * scale)))
+    return out
+
+
+def prime_animation_atlas():
+    """24 fotogramas de Cronos Prime (12 de carga y disparo, 12 de giro) en
+    celdas de 320, alineados por el núcleo. 6×4."""
+    size, scale = 320, 320 / 400
+    frames = grid_cells(PRIME / 'cronos_prime_f1_carga_disparo_12f_v1.webp', 4, 3) + \
+        grid_cells(PRIME / 'cronos_prime_f1_giro_12f_v1.webp', 4, 3)
+    return sheet([anchored(frame, size, core_center(frame), scale) for frame in frames], 6, size)
+
+
+def station_explosion_atlas():
+    """Explosión azul de la estación en 8 fotogramas (4×2, celdas de 384)."""
+    size = 384
+    frames = grid_cells(INTRO / 'chronos_explosion_azul_8f_v1.webp', 4, 2)
+    return sheet([anchored(frame, size, (frame.width / 2, frame.height / 2), size / frame.width) for frame in frames], 4, size)
 
 
 def main():
     station_atlas().save(OUT / 'chronos_intro_station_atlas_v1.webp', 'WEBP', quality=86, method=6)
     fragments_atlas().save(OUT / 'chronos_intro_fragments_atlas_v1.webp', 'WEBP', quality=86, method=6)
-    prime_atlas().save(OUT / 'cronos_prime_phase1_atlas_v1.webp', 'WEBP', quality=86, method=6)
+    prime_fx_atlas().save(OUT / 'cronos_prime_fx_atlas_v1.webp', 'WEBP', quality=86, method=6)
+    prime_animation_atlas().save(OUT / 'cronos_prime_anim_atlas_v1.webp', 'WEBP', quality=86, method=6)
+    station_explosion_atlas().save(OUT / 'chronos_station_explosion_atlas_v1.webp', 'WEBP', quality=84, method=6)
+
 
 
 if __name__ == '__main__':
