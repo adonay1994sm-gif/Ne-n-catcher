@@ -6306,16 +6306,25 @@ var NeonCampaign = (() => {
     [0.15, 1, 1.1]
   ].map(([x, y, spin], cell) => Object.freeze({ cell, x, y, spin })));
   var INACTIVE = Object.freeze({ active: false });
-  function getChronosIntroPose(elapsed, { reducedEffects = false } = {}) {
-    if (!Number.isFinite(elapsed) || elapsed < 0 || elapsed > T.end) return INACTIVE;
+  var SPIN = Object.freeze({ wheel: 0.32, ring: -0.2, wreck: 0.22, wobble: 0.035 });
+  function getChronosIntroPose(elapsed, { reducedEffects = false, holdWreck = false } = {}) {
+    if (!Number.isFinite(elapsed) || elapsed < 0) return INACTIVE;
+    if (elapsed > T.end && !holdWreck) return INACTIVE;
+    const spinClock = elapsed;
+    elapsed = Math.min(elapsed, T.end);
     const ruptured = elapsed >= T.rupture;
     const since = elapsed - T.rupture;
+    const spinSince = spinClock - T.rupture;
     const phase = elapsed < T.arrive ? "calm" : elapsed < T.arrived ? "arrival" : elapsed < T.beamStart ? "charge" : elapsed < T.beamEnd ? "fire" : elapsed < T.retreatEnd ? "retreat" : "aftermath";
     const separation = ruptured ? smooth3(since, 0, T.ringGone - T.rupture) : 0;
     const station2 = {
       // Giros contrarios y lentos; tras la ruptura el anillo exterior gira más rápido.
-      ringAngle: -0.06 * elapsed - (ruptured ? 0.35 * since * since / (1 + since) : 0),
-      wheelAngle: 0.09 * elapsed + (ruptured ? 0.12 * since : 0),
+      ringAngle: SPIN.ring * spinClock - (ruptured ? 0.35 * since * since / (1 + since) : 0),
+      // Tras el impacto la rueda rota sigue girando, desequilibrada.
+      wheelAngle: ruptured ? SPIN.wheel * T.rupture + SPIN.wreck * spinSince + 0.25 * Math.sin(spinSince * 0.7) * smooth3(since, 0, 2) : SPIN.wheel * spinClock,
+      // Cabeceo: la elipse respira un poco (más fuerte tras el golpe).
+      tiltY: 0.8 + SPIN.wobble * Math.sin(spinClock * 0.45) + (ruptured ? 0.05 * Math.sin(spinSince * 0.9) * smooth3(since, 0, 1.5) : 0),
+      sway: 0.04 * Math.sin(spinClock * 0.3) + (ruptured ? 0.12 * Math.sin(spinSince * 0.5) * smooth3(since, 0, 2) : 0),
       ringOffset: separation * 0.55,
       ringScale: 1 + separation * 0.35,
       ringAlpha: ruptured ? 1 - smooth3(since, 2.5, T.ringGone - T.rupture) : 1,

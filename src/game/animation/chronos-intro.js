@@ -41,10 +41,20 @@ const FRAGMENTS = Object.freeze([
 
 const INACTIVE = Object.freeze({active: false});
 
-export function getChronosIntroPose(elapsed, {reducedEffects = false} = {}) {
-  if (!Number.isFinite(elapsed) || elapsed < 0 || elapsed > T.end) return INACTIVE;
+// Giro visible: la rueda da una vuelta cada ~20 s y el anillo exterior gira
+// al revés; la estación cabecea un poco, como un objeto real en órbita.
+const SPIN = Object.freeze({wheel: .32, ring: -.2, wreck: .22, wobble: .035});
+
+export function getChronosIntroPose(elapsed, {reducedEffects = false, holdWreck = false} = {}) {
+  if (!Number.isFinite(elapsed) || elapsed < 0) return INACTIVE;
+  // Pasada la secuencia, holdWreck mantiene la estación rota girando con la
+  // ruta (mismo dibujo, sin volver al antiguo); el resto queda congelado.
+  if (elapsed > T.end && !holdWreck) return INACTIVE;
+  const spinClock = elapsed;
+  elapsed = Math.min(elapsed, T.end);
   const ruptured = elapsed >= T.rupture;
   const since = elapsed - T.rupture;
+  const spinSince = spinClock - T.rupture;
   const phase = elapsed < T.arrive ? 'calm' : elapsed < T.arrived ? 'arrival'
     : elapsed < T.beamStart ? 'charge' : elapsed < T.beamEnd ? 'fire'
       : elapsed < T.retreatEnd ? 'retreat' : 'aftermath';
@@ -52,8 +62,13 @@ export function getChronosIntroPose(elapsed, {reducedEffects = false} = {}) {
   const separation = ruptured ? smooth(since, 0, T.ringGone - T.rupture) : 0;
   const station = {
     // Giros contrarios y lentos; tras la ruptura el anillo exterior gira más rápido.
-    ringAngle: -.06 * elapsed - (ruptured ? .35 * since * since / (1 + since) : 0),
-    wheelAngle: .09 * elapsed + (ruptured ? .12 * since : 0),
+    ringAngle: SPIN.ring * spinClock - (ruptured ? .35 * since * since / (1 + since) : 0),
+    // Tras el impacto la rueda rota sigue girando, desequilibrada.
+    wheelAngle: ruptured ? SPIN.wheel * T.rupture + SPIN.wreck * spinSince + .25 * Math.sin(spinSince * .7) * smooth(since, 0, 2)
+      : SPIN.wheel * spinClock,
+    // Cabeceo: la elipse respira un poco (más fuerte tras el golpe).
+    tiltY: .8 + SPIN.wobble * Math.sin(spinClock * .45) + (ruptured ? .05 * Math.sin(spinSince * .9) * smooth(since, 0, 1.5) : 0),
+    sway: .04 * Math.sin(spinClock * .3) + (ruptured ? .12 * Math.sin(spinSince * .5) * smooth(since, 0, 2) : 0),
     ringOffset: separation * .55,
     ringScale: 1 + separation * .35,
     ringAlpha: ruptured ? 1 - smooth(since, 2.5, T.ringGone - T.rupture) : 1,

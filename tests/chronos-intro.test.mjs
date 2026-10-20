@@ -83,6 +83,20 @@ test('Cronos Prime leaves the way it came while the broken station stays and ste
   assert.ok(getChronosIntroPose(T.end).station.zoom < .6 * getChronosIntroPose(1).station.zoom, 'the wreck steps back to clear the play area');
 });
 
+test('the station visibly spins, and the wreck keeps spinning after the sequence when asked to hold it', () => {
+  const a = getChronosIntroPose(1), b = getChronosIntroPose(2);
+  assert.ok(Math.abs(b.station.wheelAngle - a.station.wheelAngle) > .25, 'about a turn every twenty seconds');
+  assert.ok(Math.abs(b.station.ringAngle - a.station.ringAngle) > .15);
+  assert.ok(Math.abs(getChronosIntroPose(T.rupture + .01).station.wheelAngle - getChronosIntroPose(T.rupture - .01).station.wheelAngle) < .05,
+    'no rotation jump at the impact');
+  assert.equal(getChronosIntroPose(T.end + 5).active, false);
+  const held = getChronosIntroPose(T.end + 5, {holdWreck: true}), later = getChronosIntroPose(T.end + 6, {holdWreck: true});
+  assert.equal(held.active, true); assert.equal(held.station.towerCell, 4);
+  assert.notEqual(held.station.wheelAngle, later.station.wheelAngle);
+  assert.equal(held.prime.visible, false); assert.equal(held.flash, 0);
+  assert.equal(held.station.zoom, getChronosIntroPose(T.end).station.zoom);
+});
+
 test('poses are pure, deterministic and finite for every frame, and invalid clocks yield an inactive pose', () => {
   for (let time = 0; time <= 32; time += 1 / 30) {
     const a = getChronosIntroPose(time), b = getChronosIntroPose(time);
