@@ -4162,8 +4162,8 @@ var NeonCampaign = (() => {
     return Object.freeze({ request, update, getFrame });
   }
 
-  // src/game/progression/chronos-flight.js
-  var CHRONOS_FLIGHT_MAX_DELTA = 0.034;
+  // src/game/progression/voyage-engine.js
+  var VOYAGE_MAX_DELTA = 0.034;
   var clamp8 = (value, min, max) => Math.max(min, Math.min(max, value));
   var smooth = (value, start, end) => {
     const t = clamp8((value - start) / (end - start), 0, 1);
@@ -4172,202 +4172,310 @@ var NeonCampaign = (() => {
   var immutable = (object2) => Object.freeze(object2);
   var NOOP3 = () => {
   };
-  var CHRONOS_FLIGHT_EVENTS = immutable([
-    immutable({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
-    immutable({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
-    immutable({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
-    immutable({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
-    immutable({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
-    immutable({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
-  ]);
-  var PHASES = immutable([
-    immutable({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
-    immutable({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
-    immutable({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
-    immutable({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
-    immutable({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
-  ]);
-  var CHRONOS_VOYAGE_VERSION = "chronos-voyage-v2";
-  var CHRONOS_VOYAGE_KEY = "neonCatcher.chronosVoyage.v2";
-  var CHRONOS_VOYAGE_ROUTE_ID = "chronos-to-gaia";
-  var VOYAGE_STAGE_DATA = [
-    ["Emergencia en Chronos", 36, 4, "Recupera los primeros fragmentos del reactor", "Chronos \xB7 reactor", "Per\xEDmetro destruido", "reactor-strike", 0.18, 0.7, 0.36],
-    ["Per\xEDmetro destruido", 36, 8, "Cruza los restos y recupera el rastro de CRONIUM", "Per\xEDmetro destruido", "Campo de restos", "wreckage-crossing", 0.15, 0.8, 0.48],
-    ["Campo de restos", 36, 12, "Sigue el rastro y rescata el emisor si lo encuentras", "Campo de restos", "Salida orbital", "recoverable-module", 0.12, 0.72, 0.56],
-    ["Salida orbital", 36, 16, "Abandona la \xF3rbita de Chronos sin perder la se\xF1al", "Salida orbital", "Corredor exterior", "origin-retreat", 0.08, 0.52, 0.42],
-    ["El gran vac\xEDo", 38, 18, "Atraviesa el vac\xEDo; observa el cometa anunciado", "Corredor exterior", "Corredor de enlace", "comet-crossing", 0.025, 0.26, 0.22],
-    ["Enlace C9", 32, 18, "Configura la nave desde C9 en el HUD mientras sigues el corredor", "Corredor de enlace", "Ruta exterior de Gaia", "service-stop", 0.035, 0.34, 0.12],
-    ["Estela de regreso", 38, 24, "Prueba tu nave y recupera la se\xF1al en espacio abierto", "Ruta exterior de Gaia", "Ruta de Gaia", "equipment-trial", 0.025, 0.28, 0.44],
-    ["Gaia en la distancia", 36, 28, "Mant\xE9n la ruta hacia el planeta que crece al frente", "Ruta de Gaia", "Baliza exterior de Gaia", "destination-reveal", 0.06, 0.4, 0.52],
-    ["Se\xF1ales de Atlas", 36, 32, "Cruza la patrulla y localiza el acceso orbital", "Baliza exterior de Gaia", "Acceso orbital de Gaia", "atlas-identification", 0.12, 0.52, 0.72],
-    ["Llegada a Gaia", 36, 36, "Completa el rastro y alcanza la baliza de llegada", "Acceso orbital de Gaia", "Baliza de acceso a Gaia Nova", "persistent-arrival", 0.18, 0.62, 0.82]
-  ];
-  var voyageOffset = 0;
-  var CHRONOS_VOYAGE_STAGES = immutable(VOYAGE_STAGE_DATA.map((data, index) => {
-    const [name, duration, goal, objective, origin, destination, event2, nebulaOpacity, starDensity, threatRate] = data;
-    const stage = immutable({
-      id: `1.${index + 1}`,
-      stageId: `1.${index + 1}`,
-      number: index + 1,
-      stageNumber: index + 1,
-      chapter: 1,
-      contentVersion: CHRONOS_VOYAGE_VERSION,
-      routeId: CHRONOS_VOYAGE_ROUTE_ID,
-      name,
-      duration,
-      goal,
-      objective,
-      origin,
-      destination,
-      event: event2,
-      offset: voyageOffset,
-      nebulaOpacity,
-      starDensity,
-      threatRate
-    });
-    voyageOffset += duration;
-    return stage;
-  }));
-  var CHRONOS_VOYAGE_MIN_DURATION = voyageOffset;
-  var voyageGoal = (stage, goal) => Math.ceil(stage.goal * goal / 36);
-  var validateVoyageGoal = (goal) => {
-    if (!Number.isInteger(goal) || goal < 1) throw new RangeError("goal must be a positive integer");
-  };
-  var entryEventId = (number) => `chronos-voyage:1.${number}:start`;
-  var checkpointEventId = (number) => `chronos-voyage:1.${number}:checkpoint`;
-  var completionEventId = (number) => `chronos-voyage:1.${number}:complete`;
-  var VOYAGE_EVENTS = immutable([
-    immutable({ id: "chronos-voyage-intruder", type: "attack", at: 2.25, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
-    immutable({ id: "chronos-voyage-breach", type: "rupture", at: 9, resourceId: "cronium", cause: "hostile-reactor-strike" }),
-    immutable({ id: "chronos-voyage-perimeter-exit", type: "departure", at: 108, originId: "chronos-scientific-centre" }),
-    immutable({ id: "chronos-voyage-recovered-module", type: "twin-module-marker", at: 90, moduleId: "twin-emitter", resourceId: "cronium" }),
-    immutable({ id: "chronos-voyage-gaia-beacon", type: "gaia-beacon", at: 292, destinationId: "gaia-atlas-approach" })
-  ]);
-  var SERVICE_EVENT_ID = "chronos-voyage:1.6:service";
-  var SERVICE_COMPLETE_ID = "chronos-voyage:1.6:service-complete";
-  var SERVICE_APPROACH_SECONDS = 1.2;
-  var SERVICE_VISIBLE_APPROACH_SECONDS = 2.4;
-  var SERVICE_DEPARTURE_SECONDS = 2.4;
-  var ARRIVAL_EVENT_ID = "chronos-voyage-arrival";
-  var validVoyageEventIds = /* @__PURE__ */ new Set([
-    ...VOYAGE_EVENTS.map((event2) => event2.id),
-    SERVICE_EVENT_ID,
-    SERVICE_COMPLETE_ID,
-    ARRIVAL_EVENT_ID,
-    ...CHRONOS_VOYAGE_STAGES.flatMap((stage) => [entryEventId(stage.number), checkpointEventId(stage.number), completionEventId(stage.number)])
-  ]);
-  function checkpointForStage(stageNumber, goal, collected, eventIds = [], serviceWaiting = false) {
-    const stage = CHRONOS_VOYAGE_STAGES[stageNumber - 1];
-    return immutable({
-      version: 2,
-      contentVersion: CHRONOS_VOYAGE_VERSION,
-      routeId: CHRONOS_VOYAGE_ROUTE_ID,
-      stageIndex: stageNumber - 1,
-      stageId: stage.id,
-      stageNumber,
-      goal,
-      collected,
-      eventIds: immutable([...new Set(eventIds)]),
-      ...serviceWaiting ? { serviceWaiting: true } : {}
-    });
-  }
-  function createChronosVoyageCheckpoint(stageNumber = 1, { goal = 36, collected } = {}) {
-    validateVoyageGoal(goal);
-    if (!Number.isInteger(stageNumber) || stageNumber < 1 || stageNumber > 10) throw new RangeError("stageNumber must be between 1 and 10");
-    const minimum = stageNumber === 1 ? 0 : voyageGoal(CHRONOS_VOYAGE_STAGES[stageNumber - 2], goal);
-    const count = collected === void 0 ? minimum : collected;
-    if (!Number.isFinite(count) || count < minimum) throw new RangeError("collected is below the stage entry requirement");
-    const boundary = CHRONOS_VOYAGE_STAGES[stageNumber - 1].offset;
-    const events = VOYAGE_EVENTS.filter((event2) => event2.at <= boundary).map((event2) => event2.id);
-    for (let number = 1; number < stageNumber; number++) events.push(entryEventId(number), checkpointEventId(number), completionEventId(number));
-    if (stageNumber > 6) events.push(SERVICE_EVENT_ID, SERVICE_COMPLETE_ID);
-    return checkpointForStage(stageNumber, goal, Math.min(goal, Math.floor(count)), events);
-  }
-  function normalizeChronosVoyageCheckpoint(value, { goal = 36 } = {}) {
-    validateVoyageGoal(goal);
-    if (!value || typeof value !== "object" || Array.isArray(value) || value.version !== 2 || value.contentVersion !== CHRONOS_VOYAGE_VERSION || value.routeId !== CHRONOS_VOYAGE_ROUTE_ID || value.goal !== goal || !Number.isInteger(value.stageNumber) || value.stageNumber < 1 || value.stageNumber > 10 || value.stageIndex !== value.stageNumber - 1 || value.stageId !== `1.${value.stageNumber}` || !Number.isFinite(value.collected) || value.collected < 0 || !Array.isArray(value.eventIds) || value.eventIds.some((id) => typeof id !== "string" || !validVoyageEventIds.has(id)) || value.serviceWaiting !== void 0 && typeof value.serviceWaiting !== "boolean" || value.serviceWaiting && value.stageNumber !== 6) return null;
-    const collected = Math.min(goal, Math.floor(value.collected));
-    const minimum = value.stageNumber === 1 ? 0 : voyageGoal(CHRONOS_VOYAGE_STAGES[value.stageNumber - 2], goal);
-    if (collected < minimum || value.serviceWaiting && collected < voyageGoal(CHRONOS_VOYAGE_STAGES[5], goal)) return null;
-    const canonical = createChronosVoyageCheckpoint(value.stageNumber, { goal, collected });
-    const currentIds = value.eventIds.filter((id) => id === entryEventId(value.stageNumber) || id === checkpointEventId(value.stageNumber));
-    if (value.stageNumber === 6) {
-      const completedServicePair = value.eventIds.includes(SERVICE_EVENT_ID) && value.eventIds.includes(SERVICE_COMPLETE_ID);
-      if ((value.serviceWaiting || completedServicePair) && value.eventIds.includes(completionEventId(6))) currentIds.push(completionEventId(6));
-      if (!value.serviceWaiting && completedServicePair) {
-        currentIds.push(SERVICE_EVENT_ID, SERVICE_COMPLETE_ID);
+  function createVoyageRoute(ficha) {
+    const { chapter, version, routeId, eventPrefix, baseGoal, service } = ficha;
+    const stageCount = ficha.stages.length;
+    let offset = 0;
+    const STAGES = immutable(ficha.stages.map((data, index) => {
+      const [name, duration, goal, objective, origin, destination, event2, nebulaOpacity, starDensity, threatRate] = data;
+      const stage = immutable({
+        id: `${chapter}.${index + 1}`,
+        stageId: `${chapter}.${index + 1}`,
+        number: index + 1,
+        stageNumber: index + 1,
+        chapter,
+        contentVersion: version,
+        routeId,
+        name,
+        duration,
+        goal,
+        objective,
+        origin,
+        destination,
+        event: event2,
+        offset,
+        nebulaOpacity,
+        starDensity,
+        threatRate
+      });
+      offset += duration;
+      return stage;
+    }));
+    const MIN_DURATION = offset;
+    const voyageGoal = (stage, goal) => Math.ceil(stage.goal * goal / baseGoal);
+    const validateGoal = (goal) => {
+      if (!Number.isInteger(goal) || goal < 1) throw new RangeError("goal must be a positive integer");
+    };
+    const entryEventId = (number) => `${eventPrefix}:${chapter}.${number}:start`;
+    const checkpointEventId = (number) => `${eventPrefix}:${chapter}.${number}:checkpoint`;
+    const completionEventId = (number) => `${eventPrefix}:${chapter}.${number}:complete`;
+    const EVENTS = immutable(ficha.events.map((event2) => immutable({ ...event2 })));
+    const SERVICE_EVENT_ID = service ? `${eventPrefix}:${chapter}.${service.stage}:service` : null;
+    const SERVICE_COMPLETE_ID = service ? `${eventPrefix}:${chapter}.${service.stage}:service-complete` : null;
+    const serviceIndex = service ? service.stage - 1 : -1;
+    const ARRIVAL_EVENT_ID = `${eventPrefix}-arrival`;
+    const validEventIds = /* @__PURE__ */ new Set([
+      ...EVENTS.map((event2) => event2.id),
+      ...service ? [SERVICE_EVENT_ID, SERVICE_COMPLETE_ID] : [],
+      ARRIVAL_EVENT_ID,
+      ...STAGES.flatMap((stage) => [entryEventId(stage.number), checkpointEventId(stage.number), completionEventId(stage.number)])
+    ]);
+    function checkpointForStage(stageNumber, goal, collected, eventIds = [], serviceWaiting = false) {
+      const stage = STAGES[stageNumber - 1];
+      return immutable({
+        version: 2,
+        contentVersion: version,
+        routeId,
+        stageIndex: stageNumber - 1,
+        stageId: stage.id,
+        stageNumber,
+        goal,
+        collected,
+        eventIds: immutable([...new Set(eventIds)]),
+        ...serviceWaiting ? { serviceWaiting: true } : {}
+      });
+    }
+    function createCheckpoint(stageNumber = 1, { goal = baseGoal, collected } = {}) {
+      validateGoal(goal);
+      if (!Number.isInteger(stageNumber) || stageNumber < 1 || stageNumber > stageCount) {
+        throw new RangeError(`stageNumber must be between 1 and ${stageCount}`);
       }
+      const minimum = stageNumber === 1 ? 0 : voyageGoal(STAGES[stageNumber - 2], goal);
+      const count = collected === void 0 ? minimum : collected;
+      if (!Number.isFinite(count) || count < minimum) throw new RangeError("collected is below the stage entry requirement");
+      const boundary = STAGES[stageNumber - 1].offset;
+      const events = EVENTS.filter((event2) => event2.at <= boundary).map((event2) => event2.id);
+      for (let number = 1; number < stageNumber; number++) events.push(entryEventId(number), checkpointEventId(number), completionEventId(number));
+      if (service && stageNumber > service.stage) events.push(SERVICE_EVENT_ID, SERVICE_COMPLETE_ID);
+      return checkpointForStage(stageNumber, goal, Math.min(goal, Math.floor(count)), events);
     }
-    return checkpointForStage(value.stageNumber, goal, collected, [
-      ...canonical.eventIds,
-      ...currentIds,
-      ...value.serviceWaiting ? [SERVICE_EVENT_ID] : []
-    ], Boolean(value.serviceWaiting));
+    function normalizeCheckpoint(value, { goal = baseGoal } = {}) {
+      validateGoal(goal);
+      if (!value || typeof value !== "object" || Array.isArray(value) || value.version !== 2 || value.contentVersion !== version || value.routeId !== routeId || value.goal !== goal || !Number.isInteger(value.stageNumber) || value.stageNumber < 1 || value.stageNumber > stageCount || value.stageIndex !== value.stageNumber - 1 || value.stageId !== `${chapter}.${value.stageNumber}` || !Number.isFinite(value.collected) || value.collected < 0 || !Array.isArray(value.eventIds) || value.eventIds.some((id) => typeof id !== "string" || !validEventIds.has(id)) || value.serviceWaiting !== void 0 && typeof value.serviceWaiting !== "boolean" || value.serviceWaiting && (!service || value.stageNumber !== service.stage)) return null;
+      const collected = Math.min(goal, Math.floor(value.collected));
+      const minimum = value.stageNumber === 1 ? 0 : voyageGoal(STAGES[value.stageNumber - 2], goal);
+      if (collected < minimum || value.serviceWaiting && collected < voyageGoal(STAGES[serviceIndex], goal)) return null;
+      const canonical = createCheckpoint(value.stageNumber, { goal, collected });
+      const currentIds = value.eventIds.filter((id) => id === entryEventId(value.stageNumber) || id === checkpointEventId(value.stageNumber));
+      if (service && value.stageNumber === service.stage) {
+        const completedServicePair = value.eventIds.includes(SERVICE_EVENT_ID) && value.eventIds.includes(SERVICE_COMPLETE_ID);
+        if ((value.serviceWaiting || completedServicePair) && value.eventIds.includes(completionEventId(service.stage))) {
+          currentIds.push(completionEventId(service.stage));
+        }
+        if (!value.serviceWaiting && completedServicePair) currentIds.push(SERVICE_EVENT_ID, SERVICE_COMPLETE_ID);
+      }
+      return checkpointForStage(value.stageNumber, goal, collected, [
+        ...canonical.eventIds,
+        ...currentIds,
+        ...value.serviceWaiting ? [SERVICE_EVENT_ID] : []
+      ], Boolean(value.serviceWaiting));
+    }
+    function create({ goal = baseGoal, checkpoint = null } = {}) {
+      validateGoal(goal);
+      const restored = checkpoint === null ? null : normalizeCheckpoint(checkpoint, { goal });
+      if (checkpoint !== null && !restored) throw new TypeError(ficha.invalidCheckpointMessage || "Invalid voyage checkpoint");
+      let stageIndex = restored?.stageIndex || 0, collected = restored?.collected || 0;
+      const restoredServiceCompleted = service && stageIndex === serviceIndex && restored?.eventIds.includes(SERVICE_COMPLETE_ID);
+      const restoredLegacyService = service && stageIndex === serviceIndex && restored?.eventIds.includes(completionEventId(service.stage)) && (restored.serviceWaiting || restoredServiceCompleted);
+      let stageElapsed = restoredLegacyService ? STAGES[stageIndex].duration : restored?.serviceWaiting || restoredServiceCompleted ? service.approach : 0;
+      let serviceWaiting = Boolean(restored?.serviceWaiting), arrived = false;
+      const fired = new Set(restored?.eventIds || []);
+      let entryCheckpoint = restored || createCheckpoint(1, { goal });
+      function exportCheckpoint() {
+        if (serviceWaiting) return checkpointForStage(service.stage, goal, collected, [...fired], true);
+        return entryCheckpoint;
+      }
+      function relayState(elapsed, serviceCompleted) {
+        if (!service) return { visible: false, arrival: 0, exit: 0, active: false, state: "approach" };
+        const serviceAt = STAGES[serviceIndex].offset + service.approach;
+        const arrival2 = smooth(elapsed, serviceAt - service.visibleApproach, serviceAt);
+        const exit = serviceCompleted && stageIndex === serviceIndex ? smooth(stageElapsed, service.approach, service.approach + service.departure) : 0;
+        const visible = stageIndex <= serviceIndex && elapsed >= serviceAt - service.visibleApproach && (!serviceCompleted || exit < 1);
+        const state = serviceWaiting ? "service" : serviceCompleted ? "departing" : arrival2 < 0.48 ? "approach" : "docking";
+        return { visible, arrival: arrival2, exit, active: serviceWaiting, state };
+      }
+      function snapshot() {
+        const stage = STAGES[stageIndex], stageProgress = clamp8(stageElapsed / stage.duration, 0, 1);
+        const elapsed = stage.offset + stageElapsed, p = elapsed / MIN_DURATION;
+        const stageGoal = voyageGoal(stage, goal);
+        const objectiveComplete = collected >= goal, quotaComplete = collected >= stageGoal;
+        const serviceCompleted = Boolean(service) && fired.has(SERVICE_COMPLETE_ID);
+        const renamed = service && stageIndex === serviceIndex && serviceCompleted;
+        const scenery = ficha.scenery({ elapsed, p, stageIndex, stage, arrived, relay: relayState(elapsed, serviceCompleted) });
+        return immutable({
+          version,
+          contentVersion: version,
+          routeId,
+          chapter,
+          elapsed,
+          minDuration: MIN_DURATION,
+          cinematicDuration: ficha.cinematicDuration,
+          routeProgress: p,
+          phase: arrived ? "arrived" : ficha.phase(stageIndex, elapsed),
+          stageId: stage.id,
+          stageNumber: stage.number,
+          stageName: renamed ? service.renamedStage : stage.name,
+          stageProgress,
+          stageElapsed,
+          stageDuration: stage.duration,
+          stageGoal,
+          stageObjective: renamed ? service.renamedObjective : stage.objective,
+          stageOrigin: stage.origin,
+          stageDestination: stage.destination,
+          stageEvent: stage.event,
+          stageQuotaComplete: quotaComplete,
+          threatRate: stage.threatRate,
+          origin: ficha.origin,
+          destination: ficha.destination,
+          collected,
+          goal,
+          remaining: Math.max(0, goal - collected),
+          collectionFraction: collected / goal,
+          objectiveComplete,
+          canFinish: arrived,
+          recoveryActive: elapsed >= ficha.recoveryAt && !arrived,
+          waitingFor: serviceWaiting ? "service" : stageProgress === 1 && !quotaComplete ? "cronium" : null,
+          ...scenery,
+          distance: immutable({ unit: "tramo", covered: p, total: 1, stage: stage.number, stages: stageCount })
+        });
+      }
+      function emitOnce(event2, emit) {
+        if (fired.has(event2.id)) return;
+        fired.add(event2.id);
+        if (event2.type === "checkpoint") entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
+        if (event2.type === "service-complete") entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
+        emit(immutable({
+          ...event2,
+          version,
+          stageId: `${chapter}.${stageIndex + 1}`,
+          stageNumber: stageIndex + 1,
+          elapsed: STAGES[stageIndex].offset + stageElapsed,
+          routeProgress: snapshot().routeProgress,
+          ...event2.type === "checkpoint" ? { checkpoint: entryCheckpoint } : {}
+        }));
+      }
+      function ensureEntryEvents(emit) {
+        emitOnce({ id: entryEventId(stageIndex + 1), type: "stage-start" }, emit);
+        emitOnce({ id: checkpointEventId(stageIndex + 1), type: "checkpoint" }, emit);
+      }
+      function enterNextStage(emit) {
+        stageIndex++;
+        stageElapsed = 0;
+        entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
+        ensureEntryEvents(emit);
+      }
+      function resolveService(emit = NOOP3) {
+        if (typeof emit !== "function") throw new TypeError("emit must be a function");
+        if (!serviceWaiting) return snapshot();
+        serviceWaiting = false;
+        emitOnce({ id: SERVICE_COMPLETE_ID, type: "service-complete" }, emit);
+        if (stageElapsed === STAGES[stageIndex].duration) enterNextStage(emit);
+        return snapshot();
+      }
+      function advance(dt, collectionCount = collected, emit = NOOP3) {
+        if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
+        if (!Number.isFinite(collectionCount) || collectionCount < 0) throw new RangeError("collectionCount must be nonnegative");
+        if (typeof emit !== "function") throw new TypeError("emit must be a function");
+        if (dt === 0 || arrived || serviceWaiting) return snapshot();
+        ensureEntryEvents(emit);
+        collected = Math.min(goal, Math.max(collected, Math.floor(collectionCount)));
+        const stage = STAGES[stageIndex];
+        stageElapsed = Math.min(stage.duration, stageElapsed + Math.min(dt, VOYAGE_MAX_DELTA));
+        if (stage.duration - stageElapsed < 1e-8) stageElapsed = stage.duration;
+        const elapsed = stage.offset + stageElapsed;
+        for (const event2 of EVENTS) {
+          if (elapsed + 1e-10 >= event2.at) emitOnce(event2, emit);
+        }
+        if (service && stage.number === service.stage && !fired.has(SERVICE_COMPLETE_ID) && stageElapsed + 1e-10 >= service.approach && collected >= voyageGoal(stage, goal)) {
+          stageElapsed = service.approach;
+          serviceWaiting = true;
+          emitOnce({ id: SERVICE_EVENT_ID, type: "service", stationId: "c9" }, emit);
+          return snapshot();
+        }
+        if (stageElapsed === stage.duration && collected >= voyageGoal(stage, goal)) {
+          emitOnce({ id: completionEventId(stage.number), type: "stage-complete" }, emit);
+          if (stage.number === stageCount) {
+            arrived = true;
+            emitOnce({ id: ARRIVAL_EVENT_ID, type: "arrival", destinationId: ficha.arrivalDestinationId }, emit);
+          } else enterNextStage(emit);
+        }
+        return snapshot();
+      }
+      return immutable({ advance, snapshot, exportCheckpoint, resolveService });
+    }
+    return immutable({
+      id: ficha.id,
+      chapter,
+      version,
+      saveKey: ficha.saveKey,
+      routeId,
+      stages: STAGES,
+      minDuration: MIN_DURATION,
+      stageCount,
+      createCheckpoint,
+      normalizeCheckpoint,
+      create
+    });
   }
-  function createChronosVoyage({ goal = 36, checkpoint = null } = {}) {
-    validateVoyageGoal(goal);
-    const restored = checkpoint === null ? null : normalizeChronosVoyageCheckpoint(checkpoint, { goal });
-    if (checkpoint !== null && !restored) throw new TypeError("Invalid Chronos voyage checkpoint");
-    let stageIndex = restored?.stageIndex || 0, collected = restored?.collected || 0;
-    const restoredServiceCompleted = stageIndex === 5 && restored?.eventIds.includes(SERVICE_COMPLETE_ID);
-    const restoredLegacyService = stageIndex === 5 && restored?.eventIds.includes(completionEventId(6)) && (restored.serviceWaiting || restoredServiceCompleted);
-    let stageElapsed = restoredLegacyService ? CHRONOS_VOYAGE_STAGES[stageIndex].duration : restored?.serviceWaiting || restoredServiceCompleted ? SERVICE_APPROACH_SECONDS : 0;
-    let serviceWaiting = Boolean(restored?.serviceWaiting), arrived = false;
-    const fired = new Set(restored?.eventIds || []);
-    let entryCheckpoint = restored || createChronosVoyageCheckpoint(1, { goal });
-    function exportCheckpoint() {
-      if (serviceWaiting) return checkpointForStage(6, goal, collected, [...fired], true);
-      return entryCheckpoint;
-    }
-    function snapshot() {
-      const stage = CHRONOS_VOYAGE_STAGES[stageIndex], stageProgress = clamp8(stageElapsed / stage.duration, 0, 1);
-      const elapsed = stage.offset + stageElapsed, p = elapsed / CHRONOS_VOYAGE_MIN_DURATION;
-      const departure = smooth(p, 0.025, 0.43), approach2 = smooth(p, 0.7, 1), stageGoal = voyageGoal(stage, goal);
+
+  // src/game/progression/voyages/s1-v1-chronos-gaia.js
+  var immutable2 = (object2) => Object.freeze(object2);
+  var S1_V1_CHRONOS_GAIA = immutable2({
+    id: "S1-V1",
+    sector: 1,
+    number: 1,
+    title: "Escapa de Chronos",
+    chapter: 1,
+    version: "chronos-voyage-v2",
+    saveKey: "neonCatcher.chronosVoyage.v2",
+    routeId: "chronos-to-gaia",
+    eventPrefix: "chronos-voyage",
+    baseGoal: 36,
+    origin: "Centro Chronos",
+    destination: "Baliza de acceso a Gaia Nova",
+    arrivalDestinationId: "gaia-atlas-approach",
+    cinematicDuration: 90,
+    recoveryAt: 9,
+    invalidCheckpointMessage: "Invalid Chronos voyage checkpoint",
+    stages: immutable2([
+      ["Emergencia en Chronos", 36, 4, "Recupera los primeros fragmentos del reactor", "Chronos \xB7 reactor", "Per\xEDmetro destruido", "reactor-strike", 0.18, 0.7, 0.36],
+      ["Per\xEDmetro destruido", 36, 8, "Cruza los restos y recupera el rastro de CRONIUM", "Per\xEDmetro destruido", "Campo de restos", "wreckage-crossing", 0.15, 0.8, 0.48],
+      ["Campo de restos", 36, 12, "Sigue el rastro y rescata el emisor si lo encuentras", "Campo de restos", "Salida orbital", "recoverable-module", 0.12, 0.72, 0.56],
+      ["Salida orbital", 36, 16, "Abandona la \xF3rbita de Chronos sin perder la se\xF1al", "Salida orbital", "Corredor exterior", "origin-retreat", 0.08, 0.52, 0.42],
+      ["El gran vac\xEDo", 38, 18, "Atraviesa el vac\xEDo; observa el cometa anunciado", "Corredor exterior", "Corredor de enlace", "comet-crossing", 0.025, 0.26, 0.22],
+      ["Enlace C9", 32, 18, "Configura la nave desde C9 en el HUD mientras sigues el corredor", "Corredor de enlace", "Ruta exterior de Gaia", "service-stop", 0.035, 0.34, 0.12],
+      ["Estela de regreso", 38, 24, "Prueba tu nave y recupera la se\xF1al en espacio abierto", "Ruta exterior de Gaia", "Ruta de Gaia", "equipment-trial", 0.025, 0.28, 0.44],
+      ["Gaia en la distancia", 36, 28, "Mant\xE9n la ruta hacia el planeta que crece al frente", "Ruta de Gaia", "Baliza exterior de Gaia", "destination-reveal", 0.06, 0.4, 0.52],
+      ["Se\xF1ales de Atlas", 36, 32, "Cruza la patrulla y localiza el acceso orbital", "Baliza exterior de Gaia", "Acceso orbital de Gaia", "atlas-identification", 0.12, 0.52, 0.72],
+      ["Llegada a Gaia", 36, 36, "Completa el rastro y alcanza la baliza de llegada", "Acceso orbital de Gaia", "Baliza de acceso a Gaia Nova", "persistent-arrival", 0.18, 0.62, 0.82]
+    ].map((stage) => immutable2(stage))),
+    events: immutable2([
+      { id: "chronos-voyage-intruder", type: "attack", at: 2.25, attackerId: "cronium-raider", targetId: "chronos-reactor" },
+      { id: "chronos-voyage-breach", type: "rupture", at: 9, resourceId: "cronium", cause: "hostile-reactor-strike" },
+      { id: "chronos-voyage-perimeter-exit", type: "departure", at: 108, originId: "chronos-scientific-centre" },
+      { id: "chronos-voyage-recovered-module", type: "twin-module-marker", at: 90, moduleId: "twin-emitter", resourceId: "cronium" },
+      { id: "chronos-voyage-gaia-beacon", type: "gaia-beacon", at: 292, destinationId: "gaia-atlas-approach" }
+    ].map((event2) => immutable2(event2))),
+    // C9 atraca poco después de entrar en el tramo 6 (aproximación visible) y
+    // el resto del tramo es la salida tras el servicio.
+    service: immutable2({
+      stage: 6,
+      approach: 1.2,
+      visibleApproach: 2.4,
+      departure: 2.4,
+      renamedStage: "Corredor de Gaia",
+      renamedObjective: "Prueba tu nave en el corredor; C9 contin\xFAa disponible en el panel"
+    }),
+    phase(stageIndex, elapsed) {
+      return stageIndex === 0 ? elapsed < 9 ? "emergency" : "recovery" : stageIndex < 3 ? "recovery" : stageIndex === 3 ? "departure" : stageIndex < 7 ? "deep-space" : "gaia-approach";
+    },
+    scenery({ elapsed, p, stageIndex, stage, arrived, relay }) {
+      const departure = smooth(p, 0.025, 0.43), approach2 = smooth(p, 0.7, 1);
       const attackApproach = smooth(elapsed, 1.35, 4.95), attackExit = smooth(elapsed, 10.8, 21.6);
-      const objectiveComplete = collected >= goal, quotaComplete = collected >= stageGoal;
       const reactorState = elapsed < 6.3 ? "stable" : elapsed < 9 ? "struck" : "ruptured";
       const attackerState = elapsed < 4.95 ? "approach" : elapsed < 6.3 ? "charge" : elapsed < 9 ? "fire" : "retreat";
-      const phase = arrived ? "arrived" : stageIndex === 0 ? elapsed < 9 ? "emergency" : "recovery" : stageIndex < 3 ? "recovery" : stageIndex === 3 ? "departure" : stageIndex < 7 ? "deep-space" : "gaia-approach";
-      const serviceCompleted = fired.has(SERVICE_COMPLETE_ID);
-      const serviceAt = CHRONOS_VOYAGE_STAGES[5].offset + SERVICE_APPROACH_SECONDS;
-      const relayArrival = smooth(elapsed, serviceAt - SERVICE_VISIBLE_APPROACH_SECONDS, serviceAt);
-      const relayExit = serviceCompleted && stageIndex === 5 ? smooth(stageElapsed, SERVICE_APPROACH_SECONDS, SERVICE_APPROACH_SECONDS + SERVICE_DEPARTURE_SECONDS) : 0;
-      const relayVisible = stageIndex <= 5 && elapsed >= serviceAt - SERVICE_VISIBLE_APPROACH_SECONDS && (!serviceCompleted || relayExit < 1);
-      const relayState = serviceWaiting ? "service" : serviceCompleted ? "departing" : relayArrival < 0.48 ? "approach" : "docking";
-      return immutable({
-        version: CHRONOS_VOYAGE_VERSION,
-        contentVersion: CHRONOS_VOYAGE_VERSION,
-        routeId: CHRONOS_VOYAGE_ROUTE_ID,
-        chapter: 1,
-        elapsed,
-        minDuration: CHRONOS_VOYAGE_MIN_DURATION,
-        cinematicDuration: 90,
-        routeProgress: p,
-        phase,
-        stageId: stage.id,
-        stageNumber: stage.number,
-        stageName: stageIndex === 5 && serviceCompleted ? "Corredor de Gaia" : stage.name,
-        stageProgress,
-        stageElapsed,
-        stageDuration: stage.duration,
-        stageGoal,
-        stageObjective: stageIndex === 5 && serviceCompleted ? "Prueba tu nave en el corredor; C9 contin\xFAa disponible en el panel" : stage.objective,
-        stageOrigin: stage.origin,
-        stageDestination: stage.destination,
-        stageEvent: stage.event,
-        stageQuotaComplete: quotaComplete,
-        threatRate: stage.threatRate,
-        origin: "Centro Chronos",
-        destination: "Baliza de acceso a Gaia Nova",
-        collected,
-        goal,
-        remaining: Math.max(0, goal - collected),
-        collectionFraction: collected / goal,
-        objectiveComplete,
-        canFinish: arrived,
-        recoveryActive: elapsed >= 9 && !arrived,
-        waitingFor: serviceWaiting ? "service" : stageProgress === 1 && !quotaComplete ? "cronium" : null,
-        station: immutable({
+      return {
+        station: immutable2({
           x: 0.48 - 0.72 * departure,
           y: 0.43 + 0.94 * departure,
           scale: 1.12 * Math.pow(0.032, departure),
@@ -4376,7 +4484,7 @@ var NeonCampaign = (() => {
           alpha: 1,
           state: reactorState
         }),
-        planet: immutable({
+        planet: immutable2({
           x: 0.79 - 0.15 * approach2,
           y: 0.06 + 0.03 * approach2,
           scale: 0.014 + 0.71 * approach2 * approach2,
@@ -4384,7 +4492,7 @@ var NeonCampaign = (() => {
           visible: true,
           alpha: 1
         }),
-        beacon: immutable({
+        beacon: immutable2({
           x: 0.54 + 0.08 * (1 - approach2),
           y: 0.16 + 0.1 * approach2,
           scale: 0.012 + 0.216 * approach2,
@@ -4392,16 +4500,16 @@ var NeonCampaign = (() => {
           alpha: 1,
           active: p >= 292 / 360
         }),
-        relay: immutable({
-          visible: relayVisible,
-          x: 0.77 - 0.09 * relayArrival - 0.48 * relayExit,
-          y: 0.08 + 0.16 * relayArrival + 0.84 * relayExit,
-          scale: (0.025 + 0.15 * relayArrival) * (1 - 0.85 * relayExit),
+        relay: immutable2({
+          visible: relay.visible,
+          x: 0.77 - 0.09 * relay.arrival - 0.48 * relay.exit,
+          y: 0.08 + 0.16 * relay.arrival + 0.84 * relay.exit,
+          scale: (0.025 + 0.15 * relay.arrival) * (1 - 0.85 * relay.exit),
           alpha: 1,
-          active: serviceWaiting,
-          state: relayState
+          active: relay.active,
+          state: relay.state
         }),
-        attacker: immutable({
+        attacker: immutable2({
           x: 1.12 - 0.48 * attackApproach - 0.95 * attackExit,
           y: 0.13 + 0.11 * attackApproach - 0.15 * attackExit,
           scale: 0.1 + 0.07 * attackApproach - 0.05 * attackExit,
@@ -4409,7 +4517,7 @@ var NeonCampaign = (() => {
           visible: elapsed >= 1.35 && elapsed < 21.6,
           state: attackerState
         }),
-        deepSpace: immutable({
+        deepSpace: immutable2({
           travel: p,
           offsetX: -0.16 * p,
           offsetY: 2.4 * p,
@@ -4419,81 +4527,44 @@ var NeonCampaign = (() => {
           starDensity: stage.starDensity,
           dustDensity: stageIndex >= 4 && stageIndex <= 6 ? 0.1 : 0.32
         }),
-        debris: immutable({
+        debris: immutable2({
           visible: elapsed >= 9 && !arrived,
           travel: p,
           directionX: -0.28,
           directionY: 0.96,
           depth: smooth(p, 0.025, 0.35),
           density: stageIndex >= 4 && stageIndex <= 6 ? 0.22 : 0.7
-        }),
-        distance: immutable({ unit: "tramo", covered: p, total: 1, stage: stage.number, stages: 10 })
-      });
+        })
+      };
     }
-    function emitOnce(event2, emit) {
-      if (fired.has(event2.id)) return;
-      fired.add(event2.id);
-      if (event2.type === "checkpoint") entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
-      if (event2.type === "service-complete") entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
-      emit(immutable({
-        ...event2,
-        version: CHRONOS_VOYAGE_VERSION,
-        stageId: `1.${stageIndex + 1}`,
-        stageNumber: stageIndex + 1,
-        elapsed: CHRONOS_VOYAGE_STAGES[stageIndex].offset + stageElapsed,
-        routeProgress: snapshot().routeProgress,
-        ...event2.type === "checkpoint" ? { checkpoint: entryCheckpoint } : {}
-      }));
-    }
-    function ensureEntryEvents(emit) {
-      emitOnce({ id: entryEventId(stageIndex + 1), type: "stage-start" }, emit);
-      emitOnce({ id: checkpointEventId(stageIndex + 1), type: "checkpoint" }, emit);
-    }
-    function enterNextStage(emit) {
-      stageIndex++;
-      stageElapsed = 0;
-      entryCheckpoint = checkpointForStage(stageIndex + 1, goal, collected, [...fired]);
-      ensureEntryEvents(emit);
-    }
-    function resolveService(emit = NOOP3) {
-      if (typeof emit !== "function") throw new TypeError("emit must be a function");
-      if (!serviceWaiting) return snapshot();
-      serviceWaiting = false;
-      emitOnce({ id: SERVICE_COMPLETE_ID, type: "service-complete" }, emit);
-      if (stageElapsed === CHRONOS_VOYAGE_STAGES[stageIndex].duration) enterNextStage(emit);
-      return snapshot();
-    }
-    function advance(dt, collectionCount = collected, emit = NOOP3) {
-      if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
-      if (!Number.isFinite(collectionCount) || collectionCount < 0) throw new RangeError("collectionCount must be nonnegative");
-      if (typeof emit !== "function") throw new TypeError("emit must be a function");
-      if (dt === 0 || arrived || serviceWaiting) return snapshot();
-      ensureEntryEvents(emit);
-      collected = Math.min(goal, Math.max(collected, Math.floor(collectionCount)));
-      const stage = CHRONOS_VOYAGE_STAGES[stageIndex];
-      stageElapsed = Math.min(stage.duration, stageElapsed + Math.min(dt, CHRONOS_FLIGHT_MAX_DELTA));
-      if (stage.duration - stageElapsed < 1e-8) stageElapsed = stage.duration;
-      const elapsed = stage.offset + stageElapsed;
-      for (const event2 of VOYAGE_EVENTS) {
-        if (elapsed + 1e-10 >= event2.at) emitOnce(event2, emit);
-      }
-      if (stage.number === 6 && !fired.has(SERVICE_COMPLETE_ID) && stageElapsed + 1e-10 >= SERVICE_APPROACH_SECONDS && collected >= voyageGoal(stage, goal)) {
-        stageElapsed = SERVICE_APPROACH_SECONDS;
-        serviceWaiting = true;
-        emitOnce({ id: SERVICE_EVENT_ID, type: "service", stationId: "c9" }, emit);
-        return snapshot();
-      }
-      if (stageElapsed === stage.duration && collected >= voyageGoal(stage, goal)) {
-        emitOnce({ id: completionEventId(stage.number), type: "stage-complete" }, emit);
-        if (stage.number === 10) {
-          arrived = true;
-          emitOnce({ id: ARRIVAL_EVENT_ID, type: "arrival", destinationId: "gaia-atlas-approach" }, emit);
-        } else enterNextStage(emit);
-      }
-      return snapshot();
-    }
-    return immutable({ advance, snapshot, exportCheckpoint, resolveService });
-  }
+  });
+
+  // src/game/progression/chronos-flight.js
+  var immutable3 = (object2) => Object.freeze(object2);
+  var CHRONOS_FLIGHT_EVENTS = immutable3([
+    immutable3({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
+    immutable3({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
+    immutable3({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
+    immutable3({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
+    immutable3({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
+    immutable3({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
+  ]);
+  var PHASES = immutable3([
+    immutable3({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
+    immutable3({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
+    immutable3({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
+    immutable3({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
+    immutable3({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
+  ]);
+  var CHRONOS_VOYAGE_ROUTE = createVoyageRoute(S1_V1_CHRONOS_GAIA);
+  var CHRONOS_VOYAGE_VERSION = S1_V1_CHRONOS_GAIA.version;
+  var CHRONOS_VOYAGE_KEY = S1_V1_CHRONOS_GAIA.saveKey;
+  var CHRONOS_VOYAGE_ROUTE_ID = S1_V1_CHRONOS_GAIA.routeId;
+  var CHRONOS_VOYAGE_STAGES = CHRONOS_VOYAGE_ROUTE.stages;
+  var CHRONOS_VOYAGE_MIN_DURATION = CHRONOS_VOYAGE_ROUTE.minDuration;
+  var createChronosVoyageCheckpoint = CHRONOS_VOYAGE_ROUTE.createCheckpoint;
+  var normalizeChronosVoyageCheckpoint = CHRONOS_VOYAGE_ROUTE.normalizeCheckpoint;
+  var createChronosVoyage = CHRONOS_VOYAGE_ROUTE.create;
 
   // src/game/presentation/voyage-transitions.js
   var VOYAGE_CROSSING_SECONDS = 1.6;
