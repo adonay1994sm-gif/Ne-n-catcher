@@ -1,9 +1,0 @@
-file:///workspace/Ne-n-catcher/scripts/update-production-progress.mjs:8
-const fail = (message) => { throw new Error(message); };
-                                  ^
-
-Error: El catálogo cambió de tamaño: revisar el alcance.
-    at fail (file:///workspace/Ne-n-catcher/scripts/update-production-progress.mjs:8:35)
-    at file:///workspace/Ne-n-catcher/scripts/update-production-progress.mjs:18:64
-
-Node.js v24.19.0

@@ -1,5 +1,0 @@
-[C9 polish] the declared damaged stage-entry save starts through the real selector; the original loop draws a clean modular hull
-[C9 polish] one real Pulse press emits a vertical moving projectile and at least two centered authored poses before C9 opens
-[C9 polish] C9 opens at the actual1.2-second arrival; service freezes route and battery, heals and only prepares the recovered component
-[C9 polish] Continue leaves the station within2.4s, persists a healed same-stage milestone and reload never reopens C9
-{"status":"failed","exitCode":1,"passed":3,"failed":1,"durationMs":13781,"output":"/tmp/neon-c9-polish-01","error":"AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at /workspace/Ne-n-catcher/scripts/c9-polish-browser-smoke.cjs:277:55\n    at async check (/workspace/Ne-n-catcher/scripts/c9-polish-browser-smoke.cjs:54:22)\n    at async /workspace/Ne-n-catcher/scripts/c9-polish-browser-smoke.cjs:247:3"}

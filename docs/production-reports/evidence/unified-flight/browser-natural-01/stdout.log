@@ -1,6 +1,0 @@
-[Unified flight natural] first launch uses the single main journey entry, without QA unlocks
-[Unified flight natural] real relative touch press does not jump, drag moves both axes and release is recoverable
-[Unified flight natural] one real shot spends a charge; pause freezes route, projectiles and recharge
-[Unified flight natural] play the attack, evacuation, deep-space recovery and arrival through natural controls
-[Unified flight natural] recover the part, install it at C9 and continue into Gaia using the real workshop
-{"status":"passed","exitCode":0,"checks":[{"name":"first launch uses the single main journey entry, without QA unlocks","status":"passed"},{"name":"real relative touch press does not jump, drag moves both axes and release is recoverable","status":"passed"},{"name":"one real shot spends a charge; pause freezes route, projectiles and recharge","status":"passed"},{"name":"play the attack, evacuation, deep-space recovery and arrival through natural controls","status":"passed"},{"name":"recover the part, install it at C9 and continue into Gaia using the real workshop","status":"passed"}],"output":"/workspace/Ne-n-catcher/docs/production-reports/evidence/unified-flight/browser-natural-01"}

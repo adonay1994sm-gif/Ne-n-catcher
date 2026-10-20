@@ -1,6 +1,0 @@
-[Chapter offline upgrade] install the actual previous launcher/game workers and seed declared prior-save fixtures
-[Chapter offline upgrade] replace only the temporary package, update both native workers and retire the old generations
-[Chapter offline upgrade] new online launcher/manifests fit 390px without booting the upgraded game yet
-[Chapter offline upgrade] offline first boot retains prior progress and migrates the zero-money historical wallet with backup
-[Chapter offline upgrade] offline CONTINUAR resumes fixture stage 1.3 and draws the actual modular ship with one RAF
-{"status":"failed","exitCode":1,"durationMs":20517,"passed":4,"failed":1,"error":"AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'1' !== '1.3'\n\n    at /workspace/Ne-n-catcher/scripts/chapter-one-offline-smoke.cjs:363:12\n    at async step (/workspace/Ne-n-catcher/scripts/chapter-one-offline-smoke.cjs:57:24)\n    at async /workspace/Ne-n-catcher/scripts/chapter-one-offline-smoke.cjs:354:3","output":"/tmp/neon-chapter-qa-f634/offline-02"}
