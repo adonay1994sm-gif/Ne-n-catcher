@@ -2,7 +2,7 @@
 
 Aventura arcade espacial en desarrollo. Nombre vigente desde el 17/10/2026; anteriormente NEON CATCHER. Rama de integración: `continuity-assets-audit-20261013`.
 
-[Web privada de pruebas](https://neon-catcher-pruebas.chictide18.chatgpt.site) · [Estado vigente](docs/CODEX_STATUS.md) · [Visión de producto](docs/PRODUCT_VISION.md) · [Dirección artística](ART_DIRECTION_NEON_CRONIUM.md).
+[Web de pruebas (Netlify)](https://continuity-assets-audit-20261013--neon-preview-deploy.netlify.app) · [Web privada anterior](https://neon-catcher-pruebas.chictide18.chatgpt.site) · [Estado vigente](docs/CODEX_STATUS.md) · [Visión de producto](docs/PRODUCT_VISION.md) · [Dirección artística](ART_DIRECTION_NEON_CRONIUM.md).
 
 La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recuperación de CRONIUM, taller C9 desde el HUD y Atlas móvil como guardián de acceso. Las campañas y partidas anteriores se conservan. Los nombres técnicos de guardado/instalación y la URL histórica permanecen compatibles; las nuevas compilaciones y archivos de entrega se identifican como NEON CRONIUM. Los informes y ZIP previos conservan su nombre/procedencia histórica. Motor V1 desactivado; sin publicación comercial.
 
@@ -10,7 +10,7 @@ La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recupe
 
 `npm ci`, `npm run build:preview`, `npm run test:engine`, `npm run test:architecture`, `npm run test:content`, `npm run test:static`, `npm test`, `npm run test:preview`. El paquete aislado se crea en `preview-dist/`; las fuentes se regeneran hacia web/iOS con el pipeline existente.
 
-[Preparar Netlify de pruebas](docs/agents/NETLIFY_TEST_SETUP.md) · [Skills y fuentes abiertas](docs/agents/OPEN_SOURCE_REVIEW.md) · [Equipo especialista](docs/agents/SPECIALIST_TEAM.md). `npm run audit:repository` inventaría el repositorio sin borrar archivos. Las carpetas `www/` e `ios/App/App/public/` son salidas regeneradas por el build y se excluyen de Git.
+[Preparar Netlify de pruebas](docs/agents/NETLIFY_TEST_SETUP.md) · [Skills y fuentes abiertas](docs/agents/OPEN_SOURCE_REVIEW.md) · [Equipo especialista](docs/agents/SPECIALIST_TEAM.md). `npm run audit:repository` inventaría el repositorio sin borrar archivos. Limpieza del 20/10/2026 (capturas antiguas y assets sin uso fuera): [informe](docs/publicacion/LIMPIEZA_2026-10-20.md). Las carpetas `www/` e `ios/App/App/public/` son salidas regeneradas por el build y se excluyen de Git.
 
 ## Mapa de carpetas
 
@@ -28,8 +28,8 @@ La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recupe
 | `docs/` | Documentación. Estado vigente en `docs/CODEX_STATUS.md`; tareas en `docs/production-tasks.json`. |
 | `docs/publicacion/` | Preparación para la App Store: checklist, progreso e informes. |
 | `docs/propuestas/` | Propuestas pendientes de decisión del propietario. |
-| `docs/historico/` | Informes y notas de versiones anteriores. |
-| `docs/production-reports/` | Informes de producción y su evidencia. |
+| `docs/historico/` | Notas de versiones anteriores. |
+| `docs/production-reports/` | Informes de producción. Sus capturas antiguas se retiraron el 20/10/2026 y siguen en el historial de git. |
 | `engine/`, `js/engine/`, `engine-preview.html`, `render/` | Demo aislada del motor experimental (solo web). |
 | `design/`, `preview/`, `tools/`, `.agents/` | Diseño de campaña, lanzador de preview, terceros revisados y skills de agentes. |
 | `www/` | Paquete web generado por `npm run build` (no está en Git). |

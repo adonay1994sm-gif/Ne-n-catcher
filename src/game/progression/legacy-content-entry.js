@@ -1,26 +1,22 @@
-export {createFlightTutorial, FLIGHT_TUTORIAL_VERSION, FLIGHT_TUTORIAL_CUES} from '../narrative/flight-tutorial.js';
+export {createFlightTutorial} from '../narrative/flight-tutorial.js';
 import {AUTHORED_LEVELS} from './level-designs.js';
 export {createVoyageScore} from '../audio/voyage-score.js';
 export {createChapterScore} from '../audio/chapter-score.js';
-export {createChronosChapterStory, normalizeChronosChapterCheckpoint, CHRONOS_CHAPTER_VERSION,
-  CHRONOS_CHAPTER_STORY_KEY, CHRONOS_CHAPTER_OPENING_SECONDS, CHRONOS_CHAPTER_ACTORS,
-  CHRONOS_CHAPTER_DIALOGUES} from '../narrative/chronos-chapter.js';
-export {HULL_REINFORCEMENT_RULES, resolveHullReinforcement} from '../combat/hull-reinforcement.js';
+export {createChronosChapterStory, normalizeChronosChapterCheckpoint} from '../narrative/chronos-chapter.js';
+export {resolveHullReinforcement} from '../combat/hull-reinforcement.js';
 export {createCompletionJournal} from './completion-journal.js';
-export {SCRAP_ECONOMY_KEY, SCRAP_ECONOMY_RULES, SCRAP_REWARDS, SCRAP_UPGRADES,
-  createScrapLedger, rewardForEnemy, formatDenominations, hullReserveCapacity, classicWorkshopState} from './scrap-economy.js';
-export {VOYAGE_HAZARD_VERSION, VOYAGE_HAZARD_PROFILES, createVoyageHazardField, advanceVoyageHazardField,
-  largestUpperGap} from './voyage-hazards.js';
-export {COMET_SHOWER_VERSION, createCometShower, advanceCometShower, advanceShowerComet,
-  releaseCometShowerItem, showerCometIntersectsCircle, cometShowerSnapshot} from './comet-shower.js';
-export {createClassicEquipment,normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,canEquipClassicWeapon,syncClassicWorkshopWeapons} from './classic-arsenal.js';
-export {EncounterDirector, advanceEnemy, makeLegacyEntity} from './encounter-director.js';
+export {SCRAP_ECONOMY_KEY, SCRAP_UPGRADES,
+  createScrapLedger, rewardForEnemy, formatDenominations, classicWorkshopState} from './scrap-economy.js';
+export {createVoyageHazardField, advanceVoyageHazardField} from './voyage-hazards.js';
+export {createCometShower, advanceCometShower, advanceShowerComet,
+  releaseCometShowerItem, cometShowerSnapshot} from './comet-shower.js';
+export {normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,syncClassicWorkshopWeapons} from './classic-arsenal.js';
+export {EncounterDirector, advanceEnemy} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../combat/classic-pursuit.js';
-export {createCh02Animator, CH02_ATLAS} from '../animation/ch02-animator.js';
+export {createCh02Animator} from '../animation/ch02-animator.js';
 export {getVoyageTransitionPresentation} from '../presentation/voyage-transitions.js';
-export {createJourneyDemo, JOURNEY_DEMO_SAVE_KEY, JOURNEY_DEMO_VERSION} from './journey-demo.js';
-export {GENERATOR_VERSION} from './generator.js';
+export {createJourneyDemo, JOURNEY_DEMO_SAVE_KEY} from './journey-demo.js';
 export {createGuardianAtlas, advanceGuardianAtlas, hitGuardianAtlas, GUARDIAN_ATLAS_RULES} from '../combat/guardian-atlas.js';
 export {guardianAtlasAnimation} from '../animation/guardian-atlas-animator.js';
 export {createCombatSfx} from '../audio/combat-sfx.js';
@@ -49,8 +45,7 @@ export const LEVELS = Object.freeze(AUTHORED_LEVELS.map(design => Object.freeze(
   sectorId: design.sectorId, bossEncounter: design.isBoss
 })));
 
-export {createChronosFlight, CHRONOS_FLIGHT_VERSION} from './chronos-flight.js';
-export {createChronosVoyage, CHRONOS_VOYAGE_VERSION, CHRONOS_VOYAGE_KEY,
+export {createChronosVoyage, CHRONOS_VOYAGE_KEY,
   CHRONOS_VOYAGE_STAGES, normalizeChronosVoyageCheckpoint, createChronosVoyageCheckpoint} from './chronos-flight.js';
 export {getChronosDestructionPose} from '../animation/chronos-destruction.js';
 export {getChronosIntroPose, CHRONOS_INTRO_TIMELINE} from '../animation/chronos-intro.js';

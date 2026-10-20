@@ -1,1 +1,0 @@
-{"status":"passed","mode":"write","tasks":366,"assets":171,"states":{"PENDING":200,"IN_PROGRESS":13,"BLOCKED":8,"IN_REVIEW":118,"DONE":27}}

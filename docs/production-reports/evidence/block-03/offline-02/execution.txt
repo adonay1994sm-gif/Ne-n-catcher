@@ -1,7 +1,0 @@
-[offline] seed foreign caches and normal saves before installing preview workers
-[offline] launcher activates its real worker and manifest resolves to the selector
-[offline] both real game modes load online under the game worker
-[offline] offline reload preserves N-7, then selector opens classic and N-7 offline
-{"status":"passed","exitCode":0,"steps":4,"output":"/workspace/Ne-n-catcher/docs/production-reports/evidence/block-03/offline-02","durationMs":62811}
-
-EXIT_CODE=0

@@ -1,1 +1,0 @@
-{"status":"passed","exitCode":0,"checks":[{"name":"restored stage 1.2 has no pursuer before its seven-second encounter grace","status":"passed"},{"name":"the naturally scheduled pursuer appears after seven seconds and freezes on pause","status":"passed"}],"output":"/tmp/neon-pursuit-resume-browser-03"}

@@ -20,37 +20,19 @@ var NeonCampaign = (() => {
   // src/game/progression/legacy-content-entry.js
   var legacy_content_entry_exports = {};
   __export(legacy_content_entry_exports, {
-    CH02_ATLAS: () => CH02_ATLAS,
-    CHRONOS_CHAPTER_ACTORS: () => CHRONOS_CHAPTER_ACTORS,
-    CHRONOS_CHAPTER_DIALOGUES: () => CHRONOS_CHAPTER_DIALOGUES,
-    CHRONOS_CHAPTER_OPENING_SECONDS: () => CHRONOS_CHAPTER_OPENING_SECONDS,
-    CHRONOS_CHAPTER_STORY_KEY: () => CHRONOS_CHAPTER_STORY_KEY,
-    CHRONOS_CHAPTER_VERSION: () => CHRONOS_CHAPTER_VERSION,
-    CHRONOS_FLIGHT_VERSION: () => CHRONOS_FLIGHT_VERSION,
     CHRONOS_INTRO_TIMELINE: () => CHRONOS_INTRO_TIMELINE,
     CHRONOS_VOYAGE_KEY: () => CHRONOS_VOYAGE_KEY,
     CHRONOS_VOYAGE_STAGES: () => CHRONOS_VOYAGE_STAGES,
-    CHRONOS_VOYAGE_VERSION: () => CHRONOS_VOYAGE_VERSION,
     CLASSIC_PURSUIT_VERSION: () => CLASSIC_PURSUIT_VERSION,
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
-    COMET_SHOWER_VERSION: () => COMET_SHOWER_VERSION,
     EncounterDirector: () => EncounterDirector,
-    FLIGHT_TUTORIAL_CUES: () => FLIGHT_TUTORIAL_CUES,
-    FLIGHT_TUTORIAL_VERSION: () => FLIGHT_TUTORIAL_VERSION,
-    GENERATOR_VERSION: () => GENERATOR_VERSION,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
-    HULL_REINFORCEMENT_RULES: () => HULL_REINFORCEMENT_RULES,
     JOURNEY_DEMO_SAVE_KEY: () => JOURNEY_DEMO_SAVE_KEY,
-    JOURNEY_DEMO_VERSION: () => JOURNEY_DEMO_VERSION,
     LEVELS: () => LEVELS,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
-    SCRAP_ECONOMY_RULES: () => SCRAP_ECONOMY_RULES,
-    SCRAP_REWARDS: () => SCRAP_REWARDS,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
     SHIP_FLEET: () => SHIP_FLEET,
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
-    VOYAGE_HAZARD_PROFILES: () => VOYAGE_HAZARD_PROFILES,
-    VOYAGE_HAZARD_VERSION: () => VOYAGE_HAZARD_VERSION,
     advanceClassicPursuer: () => advanceClassicPursuer,
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
@@ -63,7 +45,6 @@ var NeonCampaign = (() => {
     awardClassicBossWeapon: () => awardClassicBossWeapon,
     beginFlightInput: () => beginFlightInput,
     calculateFlightBounds: () => calculateFlightBounds,
-    canEquipClassicWeapon: () => canEquipClassicWeapon,
     canTriggerClassicMissile: () => canTriggerClassicMissile,
     classicWeaponSnapshot: () => classicWeaponSnapshot,
     classicWorkshopState: () => classicWorkshopState,
@@ -71,10 +52,8 @@ var NeonCampaign = (() => {
     createCh02Animator: () => createCh02Animator,
     createChapterScore: () => createChapterScore,
     createChronosChapterStory: () => createChronosChapterStory,
-    createChronosFlight: () => createChronosFlight,
     createChronosVoyage: () => createChronosVoyage,
     createChronosVoyageCheckpoint: () => createChronosVoyageCheckpoint,
-    createClassicEquipment: () => createClassicEquipment,
     createClassicPursuer: () => createClassicPursuer,
     createClassicScout: () => createClassicScout,
     createClassicWeapons: () => createClassicWeapons,
@@ -96,9 +75,6 @@ var NeonCampaign = (() => {
     guardianAtlasAnimation: () => guardianAtlasAnimation,
     hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
-    hullReserveCapacity: () => hullReserveCapacity,
-    largestUpperGap: () => largestUpperGap,
-    makeLegacyEntity: () => makeLegacyEntity,
     moveFlightInput: () => moveFlightInput,
     n7Dialogue: () => n7Dialogue,
     normalizeChronosChapterCheckpoint: () => normalizeChronosChapterCheckpoint,
@@ -116,7 +92,6 @@ var NeonCampaign = (() => {
     shipAssemblyPose: () => shipAssemblyPose,
     shipNozzleAnchors: () => shipNozzleAnchors,
     shipPartFrame: () => shipPartFrame,
-    showerCometIntersectsCircle: () => showerCometIntersectsCircle,
     syncClassicWorkshopWeapons: () => syncClassicWorkshopWeapons,
     triggerClassicMissile: () => triggerClassicMissile,
     triggerClassicWeapon: () => triggerClassicWeapon,
@@ -681,7 +656,6 @@ var NeonCampaign = (() => {
 
   // src/game/narrative/chronos-chapter.js
   var CHRONOS_CHAPTER_VERSION = "chronos-chapter-v1";
-  var CHRONOS_CHAPTER_STORY_KEY = "neonCatcher.chronosChapterStory.v1";
   var CHRONOS_CHAPTER_OPENING_SECONDS = 26;
   var CHRONOS_CHAPTER_AFTERMATH_SECONDS = 8;
   var CHRONOS_CHAPTER_ROUTE_SECONDS = 360;
@@ -2332,17 +2306,6 @@ var NeonCampaign = (() => {
     state.active = state.active.filter((entry) => entry.item.id !== id);
     return state.active.length < before;
   }
-  function showerCometIntersectsCircle(item, circle) {
-    if (!item?.showerComet || ![circle?.x, circle?.y, circle?.r].every(Number.isFinite) || circle.r < 0) {
-      throw new TypeError("Shower comet and finite target circle required");
-    }
-    const startX = item.previousX ?? item.x, startY = item.previousY ?? item.y;
-    const dx = item.x - startX, dy = item.y - startY;
-    const denominator = dx * dx + dy * dy;
-    const t = denominator > 0 ? clamp3(((circle.x - startX) * dx + (circle.y - startY) * dy) / denominator, 0, 1) : 0;
-    const x = startX + t * dx, y = startY + t * dy;
-    return Math.hypot(circle.x - x, circle.y - y) <= item.r * 0.94 + circle.r;
-  }
   function cometShowerSnapshot(state) {
     return Object.freeze({
       version: state.version,
@@ -2360,16 +2323,6 @@ var NeonCampaign = (() => {
   var WEAPON_IDS = Object.freeze(["pulse", "twin", "lance", "scatter", "needle"]);
   var BOSS_WEAPONS = Object.freeze({ "guardian-atlas": "twin" });
   var owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
-  function createClassicEquipment() {
-    return {
-      version: 1,
-      recoveredTwin: false,
-      unlocked: ["pulse"],
-      selected: "pulse",
-      twinPrepared: false,
-      bossRewards: []
-    };
-  }
   function normalizeClassicEquipment(value) {
     if (!value || typeof value !== "object" || Array.isArray(value) || value.version !== 1 || typeof value.recoveredTwin !== "boolean" || !Array.isArray(value.unlocked) || !value.unlocked.includes("pulse") || [...value.unlocked].some((id) => !WEAPON_IDS.includes(id)) || !WEAPON_IDS.includes(value.selected) || !value.unlocked.includes(value.selected) || value.unlocked.includes("twin") && !value.recoveredTwin || owns(value, "lanceCalibrated") && typeof value.lanceCalibrated !== "boolean" || value.unlocked.includes("lance") && (!value.lanceCalibrated || !value.unlocked.includes("twin")) || owns(value, "twinPrepared") && typeof value.twinPrepared !== "boolean" || value.twinPrepared && !value.recoveredTwin || owns(value, "bossRewards") && (!Array.isArray(value.bossRewards) || [...value.bossRewards].some((id) => typeof id !== "string" || !owns(BOSS_WEAPONS, id)))) return null;
     if (value.bossRewards?.some((id) => !value.unlocked.includes(BOSS_WEAPONS[id]))) return null;
@@ -2403,10 +2356,6 @@ var NeonCampaign = (() => {
     next.twinPrepared = true;
     if (granted) next.unlocked.push(weaponId);
     return { equipment: next, granted, weaponId };
-  }
-  function canEquipClassicWeapon(equipment, id) {
-    if (!WEAPON_IDS.includes(id)) throw new RangeError("Unknown classic weapon");
-    return equipmentCopy(equipment).unlocked.includes(id);
   }
   function syncClassicWorkshopWeapons(equipment, record) {
     const next = equipmentCopy(equipment);
@@ -4545,8 +4494,6 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/chronos-flight.js
-  var CHRONOS_FLIGHT_VERSION = "chronos-flight-v1";
-  var CHRONOS_FLIGHT_MIN_DURATION = 60;
   var CHRONOS_FLIGHT_MAX_DELTA = 0.034;
   var clamp9 = (value, min, max) => Math.max(min, Math.min(max, value));
   var smooth = (value, start, end) => {
@@ -4571,110 +4518,6 @@ var NeonCampaign = (() => {
     immutable({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
     immutable({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
   ]);
-  function createChronosFlight({ goal = 36, minDuration = CHRONOS_FLIGHT_MIN_DURATION } = {}) {
-    if (!Number.isInteger(goal) || goal < 1) throw new RangeError("goal must be a positive integer");
-    if (!Number.isFinite(minDuration) || minDuration < 20) throw new RangeError("minDuration must be at least 20 seconds");
-    let elapsed = 0, routeProgress = 0, collected = 0;
-    const fired = /* @__PURE__ */ new Set();
-    function snapshot() {
-      const p = routeProgress, phase = PHASES.find((candidate) => p < candidate.to) || PHASES[PHASES.length - 1];
-      const departure = smooth(p, 0.08, 0.6), approach2 = smooth(p, 0.58, 1);
-      const attackApproach = smooth(p, 0.015, 0.055), attackExit = smooth(p, 0.12, 0.24);
-      const objectiveComplete = collected >= goal, canFinish = objectiveComplete && p === 1;
-      const reactorState = p < 0.07 ? "stable" : p < 0.1 ? "struck" : "ruptured";
-      const attackerState = p < 0.055 ? "approach" : p < 0.07 ? "charge" : p < 0.1 ? "fire" : "retreat";
-      return immutable({
-        version: CHRONOS_FLIGHT_VERSION,
-        elapsed,
-        minDuration,
-        routeProgress: p,
-        phase: canFinish ? "arrived" : phase.id,
-        stageName: canFinish ? "Acceso a Gaia localizado" : phase.name,
-        origin: "Centro Chronos",
-        destination: "Baliza de acceso a Gaia Nova",
-        collected,
-        goal,
-        remaining: Math.max(0, goal - collected),
-        collectionFraction: collected / goal,
-        objectiveComplete,
-        canFinish,
-        recoveryActive: p >= 0.1 && !canFinish,
-        waitingFor: !objectiveComplete && p >= 0.66 + 0.2 * (collected / goal) - 1e-10 ? "cronium" : null,
-        // The origin physically retreats and becomes smaller; alpha stays one.
-        // Keep the reactor below the tactical HUD during its rupture. Its exit
-        // endpoint and route timing stay unchanged; this is backdrop framing.
-        station: immutable({
-          x: 0.48 - 0.72 * departure,
-          y: 0.43 + 0.94 * departure,
-          scale: 1.12 * Math.pow(0.075, departure),
-          rotation: -0.1 * departure,
-          visible: p < 0.62,
-          alpha: 1,
-          state: reactorState
-        }),
-        // Gaia is a distant destination that grows during the approach.
-        planet: immutable({
-          x: 0.79 - 0.15 * approach2,
-          y: 0.06 + 0.03 * approach2,
-          scale: 0.035 + 0.69 * approach2 * approach2,
-          rotation: 0.06 * p,
-          visible: true,
-          alpha: 1
-        }),
-        beacon: immutable({
-          x: 0.54 + 0.08 * (1 - approach2),
-          y: 0.16 + 0.1 * approach2,
-          scale: 0.018 + 0.21 * approach2,
-          visible: p >= 0.78,
-          alpha: 1,
-          active: p >= 0.83
-        }),
-        attacker: immutable({
-          x: 1.12 - 0.48 * attackApproach - 0.95 * attackExit,
-          y: 0.13 + 0.11 * attackApproach - 0.15 * attackExit,
-          scale: 0.1 + 0.07 * attackApproach - 0.05 * attackExit,
-          rotation: -0.18 - 0.65 * attackExit,
-          visible: p >= 0.015 && p < 0.24,
-          state: attackerState
-        }),
-        deepSpace: immutable({
-          travel: p,
-          offsetX: -0.09 * p,
-          offsetY: 0.54 * p,
-          speed: 0.22 + 0.78 * smooth(p, 0.25, 0.56),
-          alpha: 1
-        }),
-        debris: immutable({
-          visible: p >= 0.1 && !canFinish,
-          travel: p,
-          directionX: -0.28,
-          directionY: 0.96,
-          depth: smooth(p, 0.1, 0.45)
-        }),
-        distance: immutable({ unit: "tramo", covered: p, total: 1 })
-      });
-    }
-    function advance(dt, collectionCount = collected, emit = NOOP3) {
-      if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
-      if (!Number.isFinite(collectionCount) || collectionCount < 0) throw new RangeError("collectionCount must be nonnegative");
-      if (typeof emit !== "function") throw new TypeError("emit must be a function");
-      if (dt === 0 || routeProgress === 1) return snapshot();
-      const step = Math.min(dt, CHRONOS_FLIGHT_MAX_DELTA);
-      elapsed += step;
-      collected = Math.min(goal, Math.max(collected, Math.floor(collectionCount)));
-      const collectionCap = collected >= goal ? 1 : 0.66 + 0.2 * (collected / goal);
-      const target = Math.min(1, elapsed / minDuration, collectionCap);
-      routeProgress = Math.min(target, routeProgress + step / minDuration);
-      if (collected >= goal && 1 - routeProgress < 1e-10 && elapsed >= minDuration - 1e-8) routeProgress = 1;
-      for (const event2 of CHRONOS_FLIGHT_EVENTS) {
-        if (routeProgress + 1e-10 < event2.at || fired.has(event2.id)) continue;
-        fired.add(event2.id);
-        emit(immutable({ ...event2, version: CHRONOS_FLIGHT_VERSION, elapsed, routeProgress }));
-      }
-      return snapshot();
-    }
-    return immutable({ advance, snapshot });
-  }
   var CHRONOS_VOYAGE_VERSION = "chronos-voyage-v2";
   var CHRONOS_VOYAGE_KEY = "neonCatcher.chronosVoyage.v2";
   var CHRONOS_VOYAGE_ROUTE_ID = "chronos-to-gaia";
