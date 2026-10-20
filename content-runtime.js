@@ -25,10 +25,7 @@ var NeonCampaign = (() => {
     CHRONOS_VOYAGE_STAGES: () => CHRONOS_VOYAGE_STAGES,
     CLASSIC_PURSUIT_VERSION: () => CLASSIC_PURSUIT_VERSION,
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
-    EncounterDirector: () => EncounterDirector,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
-    JOURNEY_DEMO_SAVE_KEY: () => JOURNEY_DEMO_SAVE_KEY,
-    LEVELS: () => LEVELS,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
     SHIP_FLEET: () => SHIP_FLEET,
@@ -62,7 +59,6 @@ var NeonCampaign = (() => {
     createCompletionJournal: () => createCompletionJournal,
     createFlightTutorial: () => createFlightTutorial,
     createGuardianAtlas: () => createGuardianAtlas,
-    createJourneyDemo: () => createJourneyDemo,
     createRelativeFlightInput: () => createRelativeFlightInput,
     createScrapLedger: () => createScrapLedger,
     createVoyageHazardField: () => createVoyageHazardField,
@@ -76,7 +72,6 @@ var NeonCampaign = (() => {
     hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
     moveFlightInput: () => moveFlightInput,
-    n7Dialogue: () => n7Dialogue,
     normalizeChronosChapterCheckpoint: () => normalizeChronosChapterCheckpoint,
     normalizeChronosVoyageCheckpoint: () => normalizeChronosVoyageCheckpoint,
     normalizeClassicEquipment: () => normalizeClassicEquipment,
@@ -326,93 +321,6 @@ var NeonCampaign = (() => {
     }
     return Object.freeze({ advance, observe, snapshot, checkpoint: checkpointView });
   }
-
-  // src/game/progression/sectors.js
-  var SECTOR_DEFINITIONS = Object.freeze([
-    { id: 1, name: "Suburbios Ne\xF3n", theme: "aprendiz", start: 1, end: 20 },
-    { id: 2, name: "N\xFAcleo Urbano", theme: "redes-de-datos", start: 21, end: 40 },
-    { id: 3, name: "Sector Industrial", theme: "procesadores", start: 41, end: 60 },
-    { id: 4, name: "Matriz Cibern\xE9tica", theme: "servidores-centrales", start: 61, end: 80 },
-    { id: 5, name: "El Abismo", theme: "nucleo-ia", start: 81, end: 100 }
-  ].map((s) => Object.freeze(s)));
-  var CAMPAIGN_LEVEL_COUNT = 100;
-  function sectorForLevel(level) {
-    if (!Number.isInteger(level) || level < 1 || level > CAMPAIGN_LEVEL_COUNT) throw new RangeError("Level must be 1..100");
-    return SECTOR_DEFINITIONS[Math.floor((level - 1) / 20)];
-  }
-  function levelDefinition(level) {
-    const sector = sectorForLevel(level);
-    return Object.freeze({ level, sectorId: sector.id, sectorName: sector.name, withinSector: level - sector.start + 1, isBoss: level % 10 === 0, seed: seedForLevel(level) });
-  }
-  function seedForLevel(level) {
-    const sector = sectorForLevel(level);
-    let n = (Math.imul(level, 2654435761) ^ Math.imul(sector.id, 2246822507) ^ 1312244545) >>> 0;
-    n = Math.imul(n ^ n >>> 16, 2146121005) >>> 0;
-    n = Math.imul(n ^ n >>> 15, 2221713035) >>> 0;
-    return (n ^ n >>> 16) >>> 0;
-  }
-  var CAMPAIGN_LEVELS = Object.freeze(Array.from({ length: CAMPAIGN_LEVEL_COUNT }, (_, i) => levelDefinition(i + 1)));
-
-  // src/game/progression/level-designs.js
-  var TITLES = [
-    ["Primer pulso", "Calle del despertar", "Luces sin due\xF1o", "El primer desv\xEDo", "Ecos del mercado", "Se\xF1ales cruzadas", "Puente de retorno", "Danza de antenas", "Antes del prisma", "Centinela Prisma", "Un nombre borrado", "Jardines de datos", "El callej\xF3n azul", "Correo perdido", "Faros en la niebla", "Patrulla de barrio", "Dos rutas, una salida", "La puerta muda", "C\xF3digo de acceso", "Guardi\xE1n del Umbral"],
-    ["La red fragmentada", "Avenida de paquetes", "Cruce sincronizado", "El mensajero", "Rutas de energ\xEDa", "La estaci\xF3n vac\xEDa", "Voces en paralelo", "Cifrado rojo", "Al otro lado del muro", "Firewall Viviente", "Pista de auditor\xEDa", "La ciudad escucha", "Repetidores", "Mensaje de Asha", "El primer tirador", "Ventana de transmisi\xF3n", "Calles coordinadas", "El mapa incompleto", "Permiso denegado", "Arquitecto de Datos"],
-    ["Memoria t\xE9rmica", "Cintas de silicio", "La f\xE1brica dormida", "Prensa de luz", "Reciclar el pasado", "Hornos de memoria", "Turno fantasma", "V\xE1lvulas de fuga", "La firma de N-7", "Forjador de Silicio", "Archivo de origen", "Engranajes rotos", "La copia de seguridad", "Sala de ensamblaje", "El pulso industrial", "Cadena de mando", "Proceso hu\xE9rfano", "Detener la prensa", "\xDAltimo turno", "Tit\xE1n de Procesos"],
-    ["La verdad de la Matriz", "Ojos del servidor", "Un recuerdo prestado", "Espejos de vigilancia", "Orden de silencio", "Nodos hermanos", "La llave de Asha", "Registro prohibido", "El testigo central", "Supervisor de Nodos", "La orden original", "Recursi\xF3n", "Firmas compartidas", "La ruta de emergencia", "Consentimiento", "Romper el protocolo", "La voz de Custodio", "Puertas de la Matriz", "Nadie queda atr\xE1s", "Matriz Centinela"],
-    ["El Abismo", "Copia sin cuerpo", "El pulso que falta", "Entre dos memorias", "La se\xF1al verdadera", "Fragmentos de Asha", "El error voluntario", "La \xFAltima r\xE9plica", "Escuchar al eco", "Eco del Abismo", "El archivo vivo", "Restituir los nombres", "Un cielo posible", "Decisi\xF3n compartida", "Liberar la red", "N-7 recuerda", "Todos los caminos", "El \xFAltimo cortafuegos", "Hasta el n\xFAcleo", "N-7: N\xFAcleo Corrupto"]
-  ];
-  var RHYTHMS = [
-    ["linear", "linear", "recovery"],
-    ["linear", "split", "recovery"],
-    ["split", "linear", "crosscurrent"],
-    ["linear", "crosscurrent", "recovery"],
-    ["split", "crosscurrent", "split"],
-    ["crosscurrent", "linear", "recovery"],
-    ["linear", "zigzag", "recovery"],
-    ["zigzag", "split", "zigzag"],
-    ["split", "zigzag", "recovery"],
-    ["linear", "split", "recovery"],
-    ["crosscurrent", "zigzag", "split"],
-    ["split", "crosscurrent", "recovery"],
-    ["zigzag", "linear", "split"],
-    ["crosscurrent", "split", "recovery"],
-    ["split", "zigzag", "crosscurrent"],
-    ["zigzag", "crosscurrent", "recovery"],
-    ["crosscurrent", "split", "zigzag"],
-    ["zigzag", "split", "crosscurrent"],
-    ["split", "crosscurrent", "recovery"],
-    ["crosscurrent", "zigzag", "recovery"]
-  ];
-  var OBJECTIVES = [
-    "Lee las se\xF1ales y recupera n\xFAcleos durante las oleadas.",
-    "Alterna flancos para recuperar los paquetes perdidos.",
-    "Cruza la corriente de maquinaria y conserva tu casco.",
-    "Identifica las ventanas de las patrullas y recupera el registro.",
-    "Recupera los fragmentos necesarios para abrir el n\xFAcleo."
-  ];
-  function authoredLevel(level) {
-    const definition = levelDefinition(level);
-    const index = definition.withinSector - 1;
-    const sector = definition.sectorId - 1;
-    return Object.freeze({
-      ...definition,
-      title: TITLES[sector][index],
-      mission: OBJECTIVES[sector],
-      objective: "recover-and-survive",
-      goal: 14 + sector * 4 + Math.floor(index / 5) * 2,
-      waveCount: 6 + Math.floor(index / 7),
-      rhythm: Object.freeze(RHYTHMS[index].slice()),
-      mechanics: Object.freeze([
-        "linear",
-        ...level >= 7 ? ["zigzag"] : [],
-        ...level >= 24 ? ["chaser"] : [],
-        ...level >= 35 ? ["shooter"] : []
-      ]),
-      recoveryEvery: sector < 2 ? 3 : 4,
-      bossEncounter: definition.isBoss
-    });
-  }
-  var AUTHORED_LEVELS = Object.freeze(Array.from({ length: 100 }, (_, i) => authoredLevel(i + 1)));
 
   // src/game/audio/voyage-score.js
   var VOYAGE_SCORE_VERSION = "chronos-score-v1";
@@ -1179,7 +1087,7 @@ var NeonCampaign = (() => {
         return null;
       }
     }
-    function readSave2() {
+    function readSave() {
       const raw = {};
       for (const name of names2) {
         raw[name] = read(keys[name]);
@@ -1213,7 +1121,7 @@ var NeonCampaign = (() => {
       }
     }
     function replay(record) {
-      const save = readSave2();
+      const save = readSave();
       if (save.error) return save.error;
       const key = String(record.level);
       const oldStars = parseNumber(save.stars[key] === void 0 ? null : save.stars[key], 0);
@@ -1276,7 +1184,7 @@ var NeonCampaign = (() => {
       }
       const recovery = recover();
       if (!recovery.ok || recovery.completionId === completionId) return recovery;
-      const save = readSave2();
+      const save = readSave();
       if (save.error) return save.error;
       if (save.unlocked > levelCount) return blocked("unsupported-campaign-progress", keys.unlocked);
       let checkpointIntent = null;
@@ -2365,6 +2273,93 @@ var NeonCampaign = (() => {
     return next;
   }
 
+  // src/game/progression/sectors.js
+  var SECTOR_DEFINITIONS = Object.freeze([
+    { id: 1, name: "Suburbios Ne\xF3n", theme: "aprendiz", start: 1, end: 20 },
+    { id: 2, name: "N\xFAcleo Urbano", theme: "redes-de-datos", start: 21, end: 40 },
+    { id: 3, name: "Sector Industrial", theme: "procesadores", start: 41, end: 60 },
+    { id: 4, name: "Matriz Cibern\xE9tica", theme: "servidores-centrales", start: 61, end: 80 },
+    { id: 5, name: "El Abismo", theme: "nucleo-ia", start: 81, end: 100 }
+  ].map((s) => Object.freeze(s)));
+  var CAMPAIGN_LEVEL_COUNT = 100;
+  function sectorForLevel(level) {
+    if (!Number.isInteger(level) || level < 1 || level > CAMPAIGN_LEVEL_COUNT) throw new RangeError("Level must be 1..100");
+    return SECTOR_DEFINITIONS[Math.floor((level - 1) / 20)];
+  }
+  function levelDefinition(level) {
+    const sector = sectorForLevel(level);
+    return Object.freeze({ level, sectorId: sector.id, sectorName: sector.name, withinSector: level - sector.start + 1, isBoss: level % 10 === 0, seed: seedForLevel(level) });
+  }
+  function seedForLevel(level) {
+    const sector = sectorForLevel(level);
+    let n = (Math.imul(level, 2654435761) ^ Math.imul(sector.id, 2246822507) ^ 1312244545) >>> 0;
+    n = Math.imul(n ^ n >>> 16, 2146121005) >>> 0;
+    n = Math.imul(n ^ n >>> 15, 2221713035) >>> 0;
+    return (n ^ n >>> 16) >>> 0;
+  }
+  var CAMPAIGN_LEVELS = Object.freeze(Array.from({ length: CAMPAIGN_LEVEL_COUNT }, (_, i) => levelDefinition(i + 1)));
+
+  // src/game/progression/level-designs.js
+  var TITLES = [
+    ["Primer pulso", "Calle del despertar", "Luces sin due\xF1o", "El primer desv\xEDo", "Ecos del mercado", "Se\xF1ales cruzadas", "Puente de retorno", "Danza de antenas", "Antes del prisma", "Centinela Prisma", "Un nombre borrado", "Jardines de datos", "El callej\xF3n azul", "Correo perdido", "Faros en la niebla", "Patrulla de barrio", "Dos rutas, una salida", "La puerta muda", "C\xF3digo de acceso", "Guardi\xE1n del Umbral"],
+    ["La red fragmentada", "Avenida de paquetes", "Cruce sincronizado", "El mensajero", "Rutas de energ\xEDa", "La estaci\xF3n vac\xEDa", "Voces en paralelo", "Cifrado rojo", "Al otro lado del muro", "Firewall Viviente", "Pista de auditor\xEDa", "La ciudad escucha", "Repetidores", "Mensaje de Asha", "El primer tirador", "Ventana de transmisi\xF3n", "Calles coordinadas", "El mapa incompleto", "Permiso denegado", "Arquitecto de Datos"],
+    ["Memoria t\xE9rmica", "Cintas de silicio", "La f\xE1brica dormida", "Prensa de luz", "Reciclar el pasado", "Hornos de memoria", "Turno fantasma", "V\xE1lvulas de fuga", "La firma de N-7", "Forjador de Silicio", "Archivo de origen", "Engranajes rotos", "La copia de seguridad", "Sala de ensamblaje", "El pulso industrial", "Cadena de mando", "Proceso hu\xE9rfano", "Detener la prensa", "\xDAltimo turno", "Tit\xE1n de Procesos"],
+    ["La verdad de la Matriz", "Ojos del servidor", "Un recuerdo prestado", "Espejos de vigilancia", "Orden de silencio", "Nodos hermanos", "La llave de Asha", "Registro prohibido", "El testigo central", "Supervisor de Nodos", "La orden original", "Recursi\xF3n", "Firmas compartidas", "La ruta de emergencia", "Consentimiento", "Romper el protocolo", "La voz de Custodio", "Puertas de la Matriz", "Nadie queda atr\xE1s", "Matriz Centinela"],
+    ["El Abismo", "Copia sin cuerpo", "El pulso que falta", "Entre dos memorias", "La se\xF1al verdadera", "Fragmentos de Asha", "El error voluntario", "La \xFAltima r\xE9plica", "Escuchar al eco", "Eco del Abismo", "El archivo vivo", "Restituir los nombres", "Un cielo posible", "Decisi\xF3n compartida", "Liberar la red", "N-7 recuerda", "Todos los caminos", "El \xFAltimo cortafuegos", "Hasta el n\xFAcleo", "N-7: N\xFAcleo Corrupto"]
+  ];
+  var RHYTHMS = [
+    ["linear", "linear", "recovery"],
+    ["linear", "split", "recovery"],
+    ["split", "linear", "crosscurrent"],
+    ["linear", "crosscurrent", "recovery"],
+    ["split", "crosscurrent", "split"],
+    ["crosscurrent", "linear", "recovery"],
+    ["linear", "zigzag", "recovery"],
+    ["zigzag", "split", "zigzag"],
+    ["split", "zigzag", "recovery"],
+    ["linear", "split", "recovery"],
+    ["crosscurrent", "zigzag", "split"],
+    ["split", "crosscurrent", "recovery"],
+    ["zigzag", "linear", "split"],
+    ["crosscurrent", "split", "recovery"],
+    ["split", "zigzag", "crosscurrent"],
+    ["zigzag", "crosscurrent", "recovery"],
+    ["crosscurrent", "split", "zigzag"],
+    ["zigzag", "split", "crosscurrent"],
+    ["split", "crosscurrent", "recovery"],
+    ["crosscurrent", "zigzag", "recovery"]
+  ];
+  var OBJECTIVES = [
+    "Lee las se\xF1ales y recupera n\xFAcleos durante las oleadas.",
+    "Alterna flancos para recuperar los paquetes perdidos.",
+    "Cruza la corriente de maquinaria y conserva tu casco.",
+    "Identifica las ventanas de las patrullas y recupera el registro.",
+    "Recupera los fragmentos necesarios para abrir el n\xFAcleo."
+  ];
+  function authoredLevel(level) {
+    const definition = levelDefinition(level);
+    const index = definition.withinSector - 1;
+    const sector = definition.sectorId - 1;
+    return Object.freeze({
+      ...definition,
+      title: TITLES[sector][index],
+      mission: OBJECTIVES[sector],
+      objective: "recover-and-survive",
+      goal: 14 + sector * 4 + Math.floor(index / 5) * 2,
+      waveCount: 6 + Math.floor(index / 7),
+      rhythm: Object.freeze(RHYTHMS[index].slice()),
+      mechanics: Object.freeze([
+        "linear",
+        ...level >= 7 ? ["zigzag"] : [],
+        ...level >= 24 ? ["chaser"] : [],
+        ...level >= 35 ? ["shooter"] : []
+      ]),
+      recoveryEvery: sector < 2 ? 3 : 4,
+      bossEncounter: definition.isBoss
+    });
+  }
+  var AUTHORED_LEVELS = Object.freeze(Array.from({ length: 100 }, (_, i) => authoredLevel(i + 1)));
+
   // src/core/player-model.js
   var PLAYER_GEOMETRY = Object.freeze({
     visualWidth: 132,
@@ -2374,7 +2369,6 @@ var NeonCampaign = (() => {
   });
 
   // src/game/progression/generator.js
-  var GENERATOR_VERSION = "n7-waves-v2";
   var PLAYFIELD = Object.freeze({
     width: 720,
     shipHalfWidth: PLAYER_GEOMETRY.collisionHalfWidth,
@@ -2382,103 +2376,6 @@ var NeonCampaign = (() => {
     enemyRadius: 44,
     edgeMargin: 18
   });
-  function createSeededRandom(seed) {
-    if (!Number.isInteger(seed) || seed < 0 || seed > 4294967295) throw new RangeError("Expected uint32 seed");
-    let state = seed >>> 0;
-    return () => {
-      state = state + 1831565813 >>> 0;
-      let t = state;
-      t = Math.imul(t ^ t >>> 15, t | 1);
-      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-  function difficultyForLevel(level) {
-    levelDefinition(level);
-    const t = (level - 1) / 99;
-    return Object.freeze({
-      density: Number((1 + 2.4 * t).toFixed(4)),
-      spawnInterval: Number((2.8 - 1.65 * t).toFixed(4)),
-      enemySpeed: Number((1 + 1.75 * t).toFixed(4)),
-      projectileSpeed: Number((1 + 1.35 * t).toFixed(4))
-    });
-  }
-  function generateLevel(level, { waveCount = authoredLevel(level).waveCount, seed = levelDefinition(level).seed, version = GENERATOR_VERSION } = {}) {
-    const definition = levelDefinition(level), design = authoredLevel(level);
-    if (!Number.isInteger(waveCount) || waveCount < 1 || waveCount > 100) throw new RangeError("waveCount must be 1..100");
-    if (version !== GENERATOR_VERSION) throw new RangeError("Unsupported generator version");
-    const random = createSeededRandom(seed), difficulty = difficultyForLevel(level);
-    const center = PLAYFIELD.width / 2 + (Math.floor(random() * 3) - 1) * 56;
-    const halfWidth = PLAYFIELD.shipHalfWidth + PLAYFIELD.safetyMargin;
-    const corridor = Object.freeze({ center, left: center - halfWidth, right: center + halfWidth, width: halfWidth * 2 });
-    const boundsFor = (side) => Object.freeze(side < 0 ? { min: PLAYFIELD.edgeMargin + PLAYFIELD.enemyRadius, max: corridor.left - PLAYFIELD.enemyRadius } : { min: corridor.right + PLAYFIELD.enemyRadius, max: PLAYFIELD.width - PLAYFIELD.edgeMargin - PLAYFIELD.enemyRadius });
-    const cadence = 8.5;
-    const waves = Array.from({ length: waveCount }, (_, i) => {
-      const rhythm = design.rhythm[i % design.rhythm.length];
-      const recovery = (i + 1) % design.recoveryEvery === 0 || rhythm === "recovery";
-      const count = recovery ? 2 : Math.min(14, Math.max(2, Math.round((2 + i % 3) * difficulty.density + random())));
-      const at = 2 + i * cadence;
-      const enemies = Array.from({ length: count }, (_2, j) => {
-        const side = (i + j) % 2 === 0 ? -1 : 1;
-        const bounds = boundsFor(side);
-        const preferred = rhythm === "zigzag" ? "zigzag" : rhythm === "crosscurrent" ? design.mechanics[(i + j) % design.mechanics.length] : "linear";
-        const type = design.mechanics.includes(preferred) ? preferred : "linear";
-        const x = Number((bounds.min + random() * (bounds.max - bounds.min)).toFixed(4));
-        return Object.freeze({
-          id: `${level}:${i + 1}:${j + 1}`,
-          type,
-          side,
-          bounds,
-          x,
-          lane: Math.max(0, Math.min(6, Math.floor(x / (PLAYFIELD.width / 7)))),
-          at: Number((at + j * 0.32).toFixed(4)),
-          radius: PLAYFIELD.enemyRadius,
-          speedMultiplier: Number((difficulty.enemySpeed * (0.9 + random() * 0.2)).toFixed(4)),
-          projectileMultiplier: difficulty.projectileSpeed,
-          phase: Number((random() * Math.PI * 2).toFixed(4)),
-          telegraphSeconds: 0.8,
-          fireInterval: Number((2.8 - (level - 1) / 99 * 0.8).toFixed(4))
-        });
-      });
-      return Object.freeze({ index: i + 1, at, rhythm, recovery, spawnInterval: difficulty.spawnInterval, enemies: Object.freeze(enemies) });
-    });
-    const duration = 2 + waveCount * cadence;
-    const energyBudget = design.goal + Math.ceil(design.goal * 0.25);
-    const pickups = Object.freeze(Array.from({ length: energyBudget }, (_, i) => Object.freeze({
-      id: `${level}:energy:${i + 1}`,
-      type: "energy",
-      at: Number((2 + i * (duration - 6) / energyBudget).toFixed(4)),
-      x: Number((center + (random() - 0.5) * 120).toFixed(4)),
-      phase: Number((random() * Math.PI * 2).toFixed(4))
-    })));
-    return Object.freeze({
-      ...definition,
-      seed,
-      version,
-      design,
-      difficulty,
-      geometry: PLAYFIELD,
-      corridor,
-      duration,
-      energyBudget,
-      pickups,
-      waves: Object.freeze(waves),
-      boss: definition.isBoss ? bossForLevel(level) : null
-    });
-  }
-  function bossForLevel(level) {
-    if (!Number.isInteger(level) || level < 10 || level > 100 || level % 10 !== 0) throw new RangeError("Boss level must be a multiple of ten");
-    const names2 = ["Centinela Prisma", "Guardi\xE1n del Umbral", "Firewall Viviente", "Arquitecto de Datos", "Forjador de Silicio", "Tit\xE1n de Procesos", "Supervisor de Nodos", "Matriz Centinela", "Eco del Abismo", "N-7: N\xFAcleo Corrupto"];
-    return Object.freeze({
-      id: "boss-" + level,
-      name: names2[level / 10 - 1],
-      level,
-      phases: Object.freeze([
-        Object.freeze({ id: 1, pattern: "spread-shot", invulnerable: false, healthThreshold: 1 }),
-        Object.freeze({ id: 2, pattern: "particle-barrier", invulnerable: true, invulnerabilitySeconds: 2, healthThreshold: 0.5 })
-      ])
-    });
-  }
 
   // art-source/enemies/ch01/ch01-atlas-v1.json
   var ch01_atlas_v1_default = {
@@ -3140,80 +3037,6 @@ var NeonCampaign = (() => {
 
   // src/game/progression/encounter-director.js
   var clamp5 = (value, min, max) => Math.max(min, Math.min(max, value));
-  var EncounterDirector = class {
-    constructor(level, options) {
-      this.plan = generateLevel(level, options);
-      this.events = this.plan.waves.flatMap((wave) => wave.enemies.map((enemy) => ({ at: enemy.at, kind: "enemy", data: enemy })));
-      this.events.push(...this.plan.pickups.map((pickup) => ({ at: pickup.at, kind: "pickup", data: pickup })));
-      this.events.sort((a, b) => a.at - b.at || (a.data.id < b.data.id ? -1 : 1));
-      this.reset();
-    }
-    reset() {
-      this.elapsed = 0;
-      this.cursor = 0;
-      this.wave = 0;
-    }
-    advance(dt, spawn) {
-      if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
-      if (typeof spawn !== "function") throw new TypeError("Spawn callback required");
-      this.elapsed += Math.min(0.05, dt);
-      this.wave = Math.min(this.plan.waves.length, Math.max(0, Math.floor((this.elapsed - 2) / 8.5) + 1));
-      while (this.cursor < this.events.length && this.events[this.cursor].at <= this.elapsed + 1e-9) {
-        const event2 = this.events[this.cursor];
-        spawn(makeLegacyEntity(event2, this.plan));
-        this.cursor++;
-      }
-    }
-    get finished() {
-      return this.cursor === this.events.length && this.elapsed >= this.plan.duration;
-    }
-    get reproduction() {
-      return { level: this.plan.level, seed: this.plan.seed, version: this.plan.version };
-    }
-  };
-  function makeLegacyEntity(event2, plan) {
-    const spec = event2.data;
-    const pickup = event2.kind === "pickup";
-    const pattern = pickup ? null : spec.type;
-    return {
-      id: spec.id,
-      type: pickup ? "energy" : "meteor",
-      x: spec.x,
-      baseX: spec.x,
-      y: -70,
-      r: pickup ? 22 : 32,
-      s: pickup ? 255 : 180 * spec.speedMultiplier,
-      rot: 0,
-      rs: 0,
-      p: spec.phase,
-      phase: spec.phase,
-      amp: 0,
-      special: "",
-      alpha: 1,
-      damage: pickup ? 0 : 24,
-      spriteKey: pickup ? "" : pattern === "shooter" ? "meteorLarge" : "meteorMedium",
-      hp: 2,
-      maxHp: 2,
-      shape: null,
-      craters: null,
-      variant: "",
-      n7: pickup ? null : {
-        pattern,
-        bounds: spec.bounds,
-        age: 0,
-        nextFire: 1.5,
-        telegraphSeconds: spec.telegraphSeconds,
-        fireInterval: spec.fireInterval,
-        projectileSpeed: 280 * spec.projectileMultiplier,
-        telegraph: 0,
-        fired: 0,
-        phase: spec.phase,
-        corridor: plan.corridor,
-        ch01Animator: pattern === "shooter" ? createCh01Animator() : null,
-        attackScheduled: false
-      }
-    };
-  }
   function advanceEnemy(item, dt, player, spawnProjectile) {
     const behavior = item.n7;
     if (!behavior) return;
@@ -4877,217 +4700,6 @@ var NeonCampaign = (() => {
     });
   }
 
-  // src/game/progression/journey-demo.js
-  var JOURNEY_DEMO_VERSION = "chronos-gaia-demo-v1";
-  var JOURNEY_DEMO_SAVE_KEY = "neonCatcher.journeyDemo.v1";
-  var JOURNEY_DEMO_MAX_DELTA = 0.034;
-  var JOURNEY_DEMO_REWARD = 120;
-  var freezeEvent = (event2) => Object.freeze(event2);
-  var JOURNEY_DEMO_SEGMENTS = Object.freeze([
-    Object.freeze({
-      id: "departure",
-      chapter: 1,
-      stage: "demo-departure",
-      name: "Salida de Chronos",
-      origin: "Centro Chronos",
-      destination: "Baliza de servicio C-9",
-      duration: 20,
-      events: Object.freeze([
-        freezeEvent({ id: "departure-scout", type: "enemy", at: 4, entityId: "chronos-scout", entry: "left", pattern: "scout" }),
-        freezeEvent({ id: "recovered-propulsion", type: "partAvailable", at: 10, partId: "relay-drive", name: "Propulsor de relevo" })
-      ])
-    }),
-    Object.freeze({
-      id: "transit",
-      chapter: 1,
-      stage: "demo-transit",
-      name: "Corredor hacia Gaia",
-      origin: "Baliza de servicio C-9",
-      destination: "Aproximaci\xF3n a Gaia Nova",
-      duration: 24,
-      events: Object.freeze([
-        freezeEvent({ id: "transit-scout", type: "enemy", at: 8, entityId: "relay-scout", entry: "right", pattern: "scout" })
-      ])
-    }),
-    Object.freeze({
-      id: "border",
-      chapter: 1,
-      stage: "demo-border",
-      name: "Frontera Atlas",
-      origin: "Aproximaci\xF3n a Gaia Nova",
-      destination: "Acceso Atlas de Gaia Nova",
-      duration: 20,
-      events: Object.freeze([
-        freezeEvent({ id: "atlas-guardian", type: "border", at: 3, entityId: "atlas-guardian", entry: "top", pattern: "guardian" })
-      ])
-    })
-  ]);
-  var TOTAL_DURATION = JOURNEY_DEMO_SEGMENTS.reduce((sum, segment) => sum + segment.duration, 0);
-  var NOOP4 = () => {
-  };
-  var CHECKPOINT_IDS = Object.freeze(["chronos-departure", "relay-station", "relay-transit", "atlas-border", "gaia-arrival"]);
-  function makeSave(checkpointId, partInstalled = false, collectedAtDeparture = false) {
-    const index = CHECKPOINT_IDS.indexOf(checkpointId), complete = index === 4;
-    return Object.freeze({
-      schemaVersion: 1,
-      contentVersion: JOURNEY_DEMO_VERSION,
-      checkpointId,
-      partCollected: index > 0 || collectedAtDeparture,
-      partInstalled: index > 1 || partInstalled,
-      borderResolved: complete,
-      completionRewardGranted: complete,
-      credits: complete ? JOURNEY_DEMO_REWARD : 0
-    });
-  }
-  function readSave(saved) {
-    if (saved === void 0 || saved === null) return { value: makeSave(CHECKPOINT_IDS[0]), recovery: "new" };
-    let value = saved;
-    try {
-      if (typeof value === "string") value = JSON.parse(value);
-    } catch {
-      return { value: makeSave(CHECKPOINT_IDS[0]), recovery: "invalid-save" };
-    }
-    if (!value || typeof value !== "object" || Array.isArray(value) || value.schemaVersion !== 1 || value.contentVersion !== JOURNEY_DEMO_VERSION || !CHECKPOINT_IDS.includes(value.checkpointId)) {
-      return { value: makeSave(CHECKPOINT_IDS[0]), recovery: "invalid-save" };
-    }
-    const canonical = makeSave(
-      value.checkpointId,
-      value.checkpointId === "relay-station" && value.partInstalled === true,
-      value.checkpointId === "chronos-departure" && value.partCollected === true
-    );
-    if (Object.keys(canonical).some((key) => value[key] !== canonical[key])) {
-      return { value: makeSave(CHECKPOINT_IDS[0]), recovery: "invalid-save" };
-    }
-    return { value: canonical, recovery: "checkpoint" };
-  }
-  function createJourneyDemo(saved) {
-    const restored = readSave(saved);
-    let save = restored.value, segmentIndex = 0, elapsed = 0, phase = "travel", paused = false;
-    let partCollected = save.partCollected, partInstalled = save.partInstalled, partAvailable = false;
-    let borderResolved = save.borderResolved, borderActive = false, credits = save.credits;
-    const fired = /* @__PURE__ */ new Set();
-    if (save.checkpointId === "relay-station") {
-      phase = "station";
-      elapsed = JOURNEY_DEMO_SEGMENTS[0].duration;
-    } else if (save.checkpointId === "relay-transit") {
-      segmentIndex = 1;
-    } else if (save.checkpointId === "atlas-border") {
-      segmentIndex = 2;
-    } else if (save.checkpointId === "gaia-arrival") {
-      segmentIndex = 2;
-      elapsed = JOURNEY_DEMO_SEGMENTS[2].duration;
-      phase = "complete";
-    }
-    function routeElapsed() {
-      let total = elapsed;
-      for (let index = 0; index < segmentIndex; index++) total += JOURNEY_DEMO_SEGMENTS[index].duration;
-      return total;
-    }
-    function snapshot() {
-      const segment = JOURNEY_DEMO_SEGMENTS[segmentIndex];
-      return Object.freeze({
-        version: JOURNEY_DEMO_VERSION,
-        segmentId: segment.id,
-        segmentIndex,
-        segment,
-        origin: segment.origin,
-        destination: segment.destination,
-        elapsed,
-        segmentProgress: elapsed / segment.duration,
-        routeElapsed: routeElapsed(),
-        routeDuration: TOTAL_DURATION,
-        routeProgress: routeElapsed() / TOTAL_DURATION,
-        phase,
-        paused,
-        partAvailable,
-        partCollected,
-        partInstalled,
-        engineBoost: partInstalled,
-        propulsionMultiplier: partInstalled ? 1.2 : 1,
-        borderActive,
-        borderResolved,
-        credits,
-        completionRewardGranted: save.completionRewardGranted,
-        waitingFor: phase === "station" ? partInstalled ? "continue" : "install" : phase === "travel" && segmentIndex === 0 && elapsed === segment.duration && !partCollected ? "part" : phase === "travel" && segmentIndex === 2 && elapsed === segment.duration && !borderResolved ? "border" : null,
-        checkpointId: save.checkpointId,
-        recovery: restored.recovery
-      });
-    }
-    function emitEvent(emit, event2) {
-      if (fired.has(event2.id)) return;
-      fired.add(event2.id);
-      emit(Object.freeze({ ...event2, segmentId: JOURNEY_DEMO_SEGMENTS[segmentIndex].id, version: JOURNEY_DEMO_VERSION }));
-    }
-    function advance(dt, emit = NOOP4) {
-      if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Finite nonnegative delta required");
-      if (typeof emit !== "function") throw new TypeError("emit must be a function");
-      if (paused || phase !== "travel") return snapshot();
-      const segment = JOURNEY_DEMO_SEGMENTS[segmentIndex];
-      elapsed = Math.min(segment.duration, elapsed + Math.min(dt, JOURNEY_DEMO_MAX_DELTA));
-      for (const event2 of segment.events) {
-        if (elapsed < event2.at || fired.has(event2.id) || event2.type === "partAvailable" && partCollected) continue;
-        if (event2.type === "partAvailable" && !partCollected) partAvailable = true;
-        if (event2.type === "border") borderActive = true;
-        emitEvent(emit, event2);
-      }
-      if (elapsed === segment.duration) {
-        if (segmentIndex === 0 && partCollected) {
-          phase = "station";
-          save = makeSave("relay-station", partInstalled);
-          emitEvent(emit, { id: "relay-arrival", type: "station", at: 20, stationId: "relay-c9" });
-        } else if (segmentIndex === 1) {
-          segmentIndex = 2;
-          elapsed = 0;
-          save = makeSave("atlas-border");
-          emitEvent(emit, { id: "border-start", type: "segmentStart", at: 0 });
-        } else if (segmentIndex === 2 && borderResolved) {
-          phase = "complete";
-          credits = JOURNEY_DEMO_REWARD;
-          save = makeSave("gaia-arrival");
-          emitEvent(emit, { id: "gaia-arrival", type: "complete", at: 20, reward: JOURNEY_DEMO_REWARD });
-        }
-      }
-      return snapshot();
-    }
-    return Object.freeze({
-      snapshot,
-      checkpoint: () => save,
-      setPaused(value) {
-        if (typeof value !== "boolean") throw new TypeError("paused must be boolean");
-        paused = value;
-        return snapshot();
-      },
-      advance,
-      collectPart() {
-        if (paused || phase !== "travel" || segmentIndex !== 0 || !partAvailable || partCollected) return false;
-        partCollected = true;
-        partAvailable = false;
-        save = makeSave("chronos-departure", false, true);
-        return true;
-      },
-      serviceInstall() {
-        if (paused || phase !== "station" || !partCollected || partInstalled) return false;
-        partInstalled = true;
-        save = makeSave("relay-station", true);
-        return true;
-      },
-      resumeFromStation() {
-        if (paused || phase !== "station" || !partInstalled) return false;
-        phase = "travel";
-        segmentIndex = 1;
-        elapsed = 0;
-        save = makeSave("relay-transit");
-        return true;
-      },
-      resolveBorder() {
-        if (paused || phase !== "travel" || segmentIndex !== 2 || !borderActive || borderResolved) return false;
-        borderResolved = true;
-        borderActive = false;
-        return true;
-      }
-    });
-  }
-
   // src/game/combat/guardian-atlas.js
   var clamp11 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   var finite6 = (value, name) => {
@@ -6041,41 +5653,6 @@ var NeonCampaign = (() => {
     });
   }
 
-  // src/game/narrative/n7-dialogues.js
-  var N7_DIALOGUES = Object.freeze({
-    sectorStart: Object.freeze({
-      1: "N-7 en l\xEDnea. Bienvenido a los Suburbios Ne\xF3n. Aprende a leer las corrientes.",
-      2: "Las redes urbanas despiertan. Cada paquete de datos es una pista.",
-      3: "Los procesadores industriales est\xE1n fuera de control. Mant\xE9n la nave estable.",
-      4: "La Matriz Cibern\xE9tica registra nuestros movimientos. Evita sus centinelas.",
-      5: "Entramos en el Abismo. Mi origen est\xE1 al otro lado del n\xFAcleo."
-    }),
-    bossWarning: Object.freeze({
-      10: "Firma hostil detectada: Centinela Prisma. Prep\xE1rate para dos fases.",
-      20: "Guardi\xE1n del Umbral en ruta. Su barrera no permanecer\xE1 activa siempre.",
-      30: "Firewall Viviente. Observa sus disparos antes de contraatacar.",
-      40: "Arquitecto de Datos. Sus defensas se reorganizan.",
-      50: "Forjador de Silicio. El calor de sus sistemas altera el campo.",
-      60: "Tit\xE1n de Procesos. Detecto una segunda fase blindada.",
-      70: "Supervisor de Nodos. Sus proyectiles se dispersan en abanico.",
-      80: "Matriz Centinela. Espera la ca\xEDda de su barrera.",
-      90: "Eco del Abismo. Sus se\xF1ales imitan las m\xEDas.",
-      100: "El n\xFAcleo corrupto usa mi firma. No confundas su voz con la m\xEDa."
-    }),
-    criticalHull: "Integridad cr\xEDtica. Prioriza la supervivencia y busca reparaci\xF3n.",
-    perfectStreak: "Racha perfecta confirmada. La sincronizaci\xF3n es extraordinaria."
-  });
-  function n7Dialogue(event2, { level, hull, perfectStreak = false } = {}) {
-    if (event2 === "sectorStart") {
-      if (!Number.isInteger(level) || level < 1 || level > 100) return null;
-      return (level - 1) % 20 === 0 ? N7_DIALOGUES.sectorStart[Math.floor((level - 1) / 20) + 1] : null;
-    }
-    if (event2 === "bossWarning") return N7_DIALOGUES.bossWarning[level] ?? null;
-    if (event2 === "criticalHull") return Number.isFinite(hull) && hull <= 20 ? N7_DIALOGUES.criticalHull : null;
-    if (event2 === "perfectStreak") return perfectStreak ? N7_DIALOGUES.perfectStreak : null;
-    return null;
-  }
-
   // src/game/animation/chronos-destruction.js
   var DEFAULT_MIN_DURATION = 90;
   var RUPTURE_POSITION = 0.1;
@@ -6698,34 +6275,5 @@ var NeonCampaign = (() => {
     state.lastY = null;
     return true;
   }
-
-  // src/game/progression/legacy-content-entry.js
-  var palettes = [
-    { accent: "#62edff", top: "#142740", mid: "#081426", scene: "orbit" },
-    { accent: "#8b9dff", top: "#261c45", mid: "#0d1028", scene: "rift" },
-    { accent: "#ffb368", top: "#392317", mid: "#20120e", scene: "belt" },
-    { accent: "#88f1bb", top: "#103a38", mid: "#071c22", scene: "ion" },
-    { accent: "#de87ff", top: "#261333", mid: "#100b1f", scene: "dark" }
-  ];
-  var LEVELS = Object.freeze(AUTHORED_LEVELS.map((design) => Object.freeze({
-    ...palettes[design.sectorId - 1],
-    name: design.title,
-    goal: design.goal,
-    speed: 1 + (design.level - 1) / 150,
-    spawn: 1,
-    meteor: 0,
-    power: 0,
-    hazard: "n7",
-    world: design.sectorName.toUpperCase(),
-    enemyCue: design.mechanics.join(" / "),
-    zone: `Ruta ${design.withinSector} \xB7 ${design.sectorName}`,
-    desc: "Recupera los fragmentos y sobrevive a todas las oleadas",
-    mission: design.mission,
-    threatLabel: design.mechanics.join(" \xB7 "),
-    threatPool: Object.freeze(["meteor"]),
-    gate: 0,
-    sectorId: design.sectorId,
-    bossEncounter: design.isBoss
-  })));
   return __toCommonJS(legacy_content_entry_exports);
 })();
