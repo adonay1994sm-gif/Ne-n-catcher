@@ -1280,6 +1280,9 @@
     ui.briefingVisual.dataset.scene = lv.scene;
     ui.briefingPanel.style.setProperty("--brief-accent", lv.accent);
     buildChronosStageGrid();
+    // El inicio de Chronos empieza a cargar al abrir la ficha, no al despegar.
+    if(pendingLevel===0)[SPRITES.chronosIntroStation,SPRITES.chronosIntroFragments,SPRITES.cronosPrimeVideo,
+      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx].forEach(ensureSprite);
     overlay(ui.briefing);
   }
 

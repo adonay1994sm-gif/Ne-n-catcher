@@ -98,6 +98,8 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
         // The owner's piece-by-piece intro replaces the six-pose station when it
         // loads; 'missing' exercises the preserved fallback scene.
         this.naturalWidth = introAsset === 'loaded' ? 1920 : 0; this.naturalHeight = introAsset === 'loaded' ? 1280 : 0;
+        // 'missing' = la descarga falló: solo entonces vuelve la escena antigua.
+        if (introAsset === 'missing') this._loadError = true;
       }
     }
   };
@@ -550,6 +552,15 @@ test('without the new intro art, the real Chronos renderer selects all six illus
   assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
   assert.equal(h.snapshot().destructionPose.waveVisible, false);
   assert.equal(h.pending.size, 1);
+});
+
+test('while the new intro art is still downloading the old station never flashes on screen', t => {
+  const h = harness(t, {introAsset: 'pending'}); h.api.prepare();
+  for (const seconds of [0, 1, 3]) {
+    if (seconds) h.advance(seconds);
+    h.clearDrawCalls(); h.api.background(seconds * 1000 + 1);
+    assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false, `no old station at ${seconds} s`);
+  }
 });
 
 test('with the owner pieces loaded, the real renderer turns the station, breaks its tower at nine seconds and drops the six-pose layer', t => {
