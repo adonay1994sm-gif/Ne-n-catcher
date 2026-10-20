@@ -1,4 +1,4 @@
-# Guion plano a plano · Inicio de Chronos (v4)
+# Guion plano a plano · Inicio de Chronos (v5)
 
 Crítica del propietario a la v2 (20/10/2026): la ruptura parece un juguete,
 el villano no tiene carácter, el ataque no impresiona, Chronos se ve siempre
@@ -37,7 +37,27 @@ escena (zoom, encuadre, temblor) que no afecta al juego.
 | 7 | 11,5–13,6 | **Desprecio** | Cronos Prime gira hacia la nave, el ojo se vuelve rojo un instante y se marcha en un salto (estela vertical + destello). | Fija. | — |
 | 8 | 13,6–26 | **Huida** | Estación rota con incendios, oscurecida, alejándose; la partida ya es protagonista. | Alejamiento. | Ruta de emergencia |
 
-## Cambios de la v4 (revisión de los agentes de competencia)
+## v5 (nota del propietario a la v4: 3/10)
+
+Le gustó el plano de la estación; no le gustaron las láminas superpuestas, la
+"sombra negra" (grieta), la aparición sin sentido ni los ataques. Entregó la
+animación de Cronos Prime (carga, disparo, enfriamiento, giro) y una
+explosión azul de 8 fotogramas. La v5:
+
+1. Mantiene el plano de escala de la estación.
+2. Cronos Prime **llega desde fuera**: una luz violeta lejana que se acerca
+   girando (fotogramas de giro), frena en seco sobre la torre (onda) y se
+   presenta con su rótulo.
+3. Carga con sus fotogramas mientras Chronos se apaga sector a sector.
+4. Dispara en vertical (fotograma de disparo + haz hasta la torre).
+5. **Explosión azul** del propietario; tras ella la estación ya no está
+   entera: solo la torre partida, lejana, y los restos.
+6. Se enfría, se gira y se marcha por donde vino.
+
+Retirados: láminas pintadas en el juego, grieta y Cronos Prime por piezas
+(los originales siguen en `art-source/`).
+
+## Cambios de la v4 (histórico)
 
 - El impacto corta (dos fotogramas en blanco) a las **láminas pintadas** de la
   ruptura: 01–05 rápidas con empuje y sacudida, 06–10 más lentas y fundido al
