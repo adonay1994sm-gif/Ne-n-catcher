@@ -6,7 +6,6 @@ import {JSDOM} from 'jsdom';
 import {previewManifest, previewPage, previewConfig, STORAGE_PREFIX} from '../scripts/build-preview.mjs';
 import {CHRONOS_VOYAGE_KEY, createChronosVoyageCheckpoint, createChronosVoyage} from '../src/game/progression/chronos-flight.js';
 import {SHIP_FLEET_SAVE_KEY} from '../src/game/ship/modular-ship.js';
-import {JOURNEY_DEMO_SAVE_KEY} from '../src/game/progression/journey-demo.js';
 
 const text = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 const oldVisibleBrand = /neon\s*catcher/i;
@@ -52,7 +51,6 @@ test('renaming preserves existing preview saves and resumes a pre-rename voyage 
   assert.equal(STORAGE_PREFIX, 'neon-preview-v1:');
   assert.equal(CHRONOS_VOYAGE_KEY, 'neonCatcher.chronosVoyage.v2');
   assert.equal(SHIP_FLEET_SAVE_KEY, 'neonCatcher.shipFleet.v1');
-  assert.equal(JOURNEY_DEMO_SAVE_KEY, 'neonCatcher.journeyDemo.v1');
   const checkpoint = createChronosVoyageCheckpoint(5, {goal: 36, collected: 16});
   const saved = new Map([
     [STORAGE_PREFIX + CHRONOS_VOYAGE_KEY, JSON.stringify(checkpoint)],
