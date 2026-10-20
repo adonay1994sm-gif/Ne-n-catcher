@@ -1,6 +1,8 @@
 # Capítulo 2 · «Perímetro Atlas» — de Gaia a Vulkar
 
-> Estado: **PLAN PARA APROBAR** (20/10/2026). No cambia el juego todavía.
+> Estado: **SUSTITUIDO EN PARTE** por `DECISIONES_VIAJES_2026-10-20.md`
+> (dos jefes por viaje, Titan Vulkar como jefe final; HALO, Pinza Roja y
+> Magma Serpent descartados). Se conserva como historial del debate.
 > Todas las cifras, nombres y diálogos son propuestas reversibles.
 
 ## 1. Por qué este capítulo es Gaia → Vulkar
