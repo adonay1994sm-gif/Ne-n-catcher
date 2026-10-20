@@ -1405,7 +1405,7 @@
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
       ensureSprite(SPRITES.ch01);
       ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeAnim);ensureSprite(SPRITES.chronosStationExplosion);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
       ensureSprite(SPRITES.guardianAtlas);
     }
 

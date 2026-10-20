@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {getChronosIntroPose, CHRONOS_INTRO_TIMELINE as T, CRONOS_PRIME_FRAMES as F} from '../src/game/animation/chronos-intro.js';
+import {getChronosIntroPose, CHRONOS_INTRO_TIMELINE as T, CRONOS_PRIME_FRAMES as F, STATION_BURST_FRAMES} from '../src/game/animation/chronos-intro.js';
 
 const finiteDeep = value => {
   if (typeof value === 'number') return Number.isFinite(value);
@@ -34,15 +34,15 @@ test('shot 1 keeps the station shot the owner liked: very close, then pulling ba
   assert.equal(pose(1).prime.visible, false); assert.equal(lit(pose(1)), 8);
 });
 
-test('Cronos Prime arrives from outside: a distant light, then it closes in turning and brakes over the tower', () => {
+test('Cronos Prime arrives from outside: a distant light, then it closes in and brakes over the tower', () => {
   assert.equal(pose(T.omen - .1).distantLight, null);
   assert.ok(pose(T.approach - .1).distantLight.alpha > .8, 'a violet light far above first');
   const far = pose(T.approach + .05).prime, near = pose(T.arrive).prime;
   assert.ok(far.visible && far.scale < .2 && far.x > .65, 'small and far at first');
   assert.ok(Math.abs(near.scale - 1) < .02 && Math.abs(near.x - .48) < .01 && Math.abs(near.y - .25) < .02);
   assert.ok(far.trail > .9 && pose(T.arrive + .5).prime.trail === 0, 'engine trail only while moving');
-  for (const frame of framesBetween(T.approach, T.arrive - .4)) assert.ok(F.side.includes(frame), 'it turns (rotation frames) while closing in');
-  assert.ok(F.front.includes(pose(T.arrive).prime.frame), 'and faces the station when it brakes');
+  for (const frame of framesBetween(T.approach, T.drain)) assert.ok(F.idle.includes(frame), 'idle loop from the video while closing in');
+  assert.ok(framesBetween(T.approach, T.drain).size >= 6, 'the idle loop is animated, not a still');
   assert.ok(pose(T.arrive + .05).prime.brake > .8, 'it brakes hard');
   assert.ok(pose(T.arrive + .5).prime.nameCard > .9);
   assert.equal(pose(T.approach + .3).station.whole, true);
@@ -50,26 +50,27 @@ test('Cronos Prime arrives from outside: a distant light, then it closes in turn
 
 test('it charges with the owner frames while the station goes dark sector by sector, then fires straight down', () => {
   const charge = framesBetween(T.drain, T.beamStart);
-  assert.deepEqual([...charge].sort((a, b) => a - b), F.charge);
+  assert.deepEqual([...charge].sort((a, b) => a - b), [...F.wake, ...F.charge], 'it wakes up and charges with the video frames');
   let previous = 8;
   for (let time = T.drain; time <= T.beamStart; time += .1) {
     const count = lit(pose(time)); assert.ok(count <= previous); previous = count;
   }
   assert.equal(lit(pose(T.beamStart)), 0);
   assert.ok(pose(T.drain + .9).drainStreams.some(stream => stream.alpha > .5));
-  assert.equal(pose(T.beamStart + .1).prime.frame, F.fire);
+  assert.ok(F.fire.includes(pose(T.beamStart + .1).prime.frame));
+  assert.equal(framesBetween(T.beamStart, T.fireEnd).size, F.fire.length, 'the whole firing sequence plays');
   assert.ok(pose(T.rupture).beam.alpha > .9); assert.equal(pose(T.fireEnd + .01).beam.alpha, 0);
   assert.ok(Math.abs(pose(T.rupture).prime.x - .48) < .02, 'right above the tower: a vertical shot');
 });
 
-test('the blue explosion plays its eight frames and the station is gone behind it, leaving only debris', () => {
+test('the station itself bursts through the owner frames and is never whole again, leaving only debris', () => {
   const frames = [];
   for (let time = T.rupture; time < T.rupture + T.explosionSeconds; time += .02) frames.push(pose(time).explosion.frame);
-  assert.deepEqual([...new Set(frames)], [0, 1, 2, 3, 4, 5, 6, 7]);
+  assert.deepEqual([...new Set(frames)], Array.from({length: STATION_BURST_FRAMES}, (_, index) => index));
   assert.equal(pose(T.rupture + T.explosionSeconds + .01).explosion, null);
-  assert.equal(pose(T.stationGone - .01).station.whole, true);
-  assert.equal(pose(T.stationGone + .01).station.whole, false, 'never whole again');
-  assert.ok(pose(T.stationGone).explosion.frame >= 2, 'the swap happens while the blast covers it');
+  assert.equal(pose(T.rupture - .01).station.whole, true);
+  assert.equal(pose(T.rupture).station.whole, false, 'the burst frames are the station: no visible swap');
+  assert.ok(pose(T.rupture + .1).explosion.blend > 0, 'burst frames cross-fade');
   assert.equal(pose(20).station.whole, false); assert.ok(pose(20).station.alpha < .5);
   assert.ok(pose(T.rupture + 2).fragments.some(item => item.scale > 2.5));
   assert.ok(pose(T.rupture + .05).flash > 0 && pose(T.rupture + .3).flash === 0, 'a short flash, no white screen');
@@ -77,10 +78,9 @@ test('the blue explosion plays its eight frames and the station is gone behind i
   assert.equal(pose(T.rupture + .1, {reducedEffects: true}).camera.shakeX, 0);
 });
 
-test('after the blast it cools down, turns and leaves the way it came, without fading out on the spot', () => {
-  for (const frame of framesBetween(T.fireEnd, T.turn)) assert.ok(F.cooldown.includes(frame));
-  const turning = framesBetween(T.turn, T.gone);
-  assert.ok([...turning].some(frame => F.side.includes(frame)), 'it turns away');
+test('after the blast it cools down and leaves the way it came, without fading out on the spot', () => {
+  for (const frame of framesBetween(T.fireEnd, T.leave)) assert.ok(F.cooldown.includes(frame));
+  for (const frame of framesBetween(T.leave + .2, T.gone)) assert.ok(F.idle.includes(frame));
   assert.ok(pose(T.gone - .05).prime.x > .85, 'it flies off the way it came');
   assert.ok(pose(T.gone - .05).prime.scale < .2);
   assert.equal(pose(T.gone).prime.visible, false);
@@ -95,7 +95,8 @@ test('frames cross-fade into the next one (no visible jumps) except the sharp cu
       assert.ok(prime.blend > .9, `the hand-over is invisible at ${time.toFixed(2)}`);
     }
   }
-  assert.equal(pose(T.beamStart + .01).prime.blend, 0, 'the shot cuts in');
+  assert.equal(pose(T.beamStart - .01).prime.blend, 0, 'the shot cuts in: the charge never fades into it');
+  assert.ok(F.fire.includes(pose(T.beamStart + .01).prime.frame));
 });
 
 test('the scene stays owned by the intro after it ends and poses are pure, deterministic and finite', () => {

@@ -2,7 +2,7 @@
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
   "assetCount": 102,
-  "runtimeBytes": 15036856,
+  "runtimeBytes": 17562042,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1260,10 +1260,10 @@
       "precache": false
     },
     {
-      "id": "cronos-prime-anim-atlas-v1",
-      "path": "assets/cronos_prime_anim_atlas_v1.webp",
-      "master": "art-source/cronos-prime/cronos_prime_f1_carga_disparo_12f_v1.webp + cronos_prime_f1_giro_12f_v1.webp",
-      "dimensions": "2400x1600; 6x4 celdas de 400 a resolución original, alineadas por el núcleo: 0–2 reposo, 3–7 carga, 8 disparo, 9–11 enfriamiento, 12–23 giro",
+      "id": "cronos-prime-video-atlas-v1",
+      "path": "assets/cronos_prime_video_atlas_v1.webp",
+      "master": "art-source/cronos-prime/cronos_prime_f1_video_croma_v1.mp4",
+      "dimensions": "4096x2560; 8x5 celdas de 512 sacadas del vídeo con croma (cuerpo ~94 % de la celda): 0–7 reposo, 8–13 despertar, 14–23 carga, 24–33 disparo, 34–39 enfriamiento",
       "format": "webp-alpha",
       "use": "Cronos Prime animado en el inicio de Chronos",
       "level": 1,
@@ -1271,25 +1271,25 @@
       "status": "IN_REVIEW",
       "origin": "arte del propietario (ChatGPT), entregas del 20/10/2026; empaquetado con scripts/build-chronos-intro-assets.py",
       "version": "chronos-intro-v1",
-      "size": 1622316,
+      "size": 3045724,
       "precache": false,
-      "sha256": "1a0197b21941d5324775fd4ffdd9e878ad5981b6c52a6adbeedfedb35ecee8e9"
+      "sha256": "b8e45e9362e687797b4da4451b3cdf8b887cb84f839f877b358b70f4861ec867"
     },
     {
-      "id": "chronos-station-explosion-atlas-v1",
-      "path": "assets/chronos_station_explosion_atlas_v1.webp",
-      "master": "art-source/chronos-inicio/chronos_explosion_azul_8f_v1.webp",
-      "dimensions": "1536x768; 4x2 celdas de 384",
+      "id": "chronos-station-burst-atlas-v1",
+      "path": "assets/chronos_station_burst_atlas_v1.webp",
+      "master": "art-source/chronos-inicio/chronos_estacion_estallido_a_v1.webp + chronos_estacion_estallido_b_v1.webp",
+      "dimensions": "2560x1024; 5x2 celdas de 512 alineadas por el núcleo: 0–4 anillo entero, 5–9 ruptura y dispersión",
       "format": "webp-alpha",
-      "use": "Explosión azul de Chronos en la ruptura",
+      "use": "La estación de Chronos estallando",
       "level": 1,
       "animation": "Pose pura src/game/animation/chronos-intro.js sobre el reloj de ruta",
       "status": "IN_REVIEW",
       "origin": "arte del propietario (ChatGPT), entregas del 20/10/2026; empaquetado con scripts/build-chronos-intro-assets.py",
       "version": "chronos-intro-v1",
-      "size": 513638,
+      "size": 1615416,
       "precache": false,
-      "sha256": "abe6b2b69547afbd4a2cc1f2b45fdfc7a352a21baf0581d27ec6bb7c11fcd126"
+      "sha256": "add6964e529598c38d56e48901d34fe153c86b5ab5d7be7ec4f2bff3c706fd8a"
     },
     {
       "id": "cronos-prime-fx-atlas-v1",
