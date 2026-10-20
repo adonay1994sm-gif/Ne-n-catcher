@@ -197,8 +197,11 @@
       ? clamp((player.targetY - previousBounds.minY) / (previousBounds.maxY - previousBounds.minY), 0, 1) : fractionY;
     W = 720;
     H = Math.max(1180, Math.round(W * rect.height / rect.width));
-    canvas.width = W;
-    canvas.height = H;
+    // Reasignar el tamaño borra el lienzo aunque sea el mismo valor; Safari
+    // lo muestra como un parpadeo al rotar o al mostrar la barra. Solo se
+    // asigna si de verdad cambia.
+    if (canvas.width !== W) canvas.width = W;
+    if (canvas.height !== H) canvas.height = H;
     if (isUnifiedClassic()) {
       refreshClassicFlightBounds(!previousBounds);
       // Atlas derives its arena from a stable lower anchor, not from the

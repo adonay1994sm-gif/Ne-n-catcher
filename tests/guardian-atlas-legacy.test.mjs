@@ -570,7 +570,11 @@ test('slow time shares the real Atlas and projectile clock before firing another
     }
   }
   assert.ok(measuredBulletStep, 'The test must observe actual projectile movement');
-  assert.deepEqual([...volleys].sort(), [0, 1, 2], 'All three adaptive phase-two salvos must be emitted');
+  // v8 picks the first phase-two routine with more randomness (two or three salvos):
+  // every scheduled salvo of that routine must still be emitted in order.
+  const salvos = [...volleys].sort();
+  assert.ok(salvos.length >= 2 && salvos.every((volley, index) => volley === index),
+    `All adaptive phase-two salvos must be emitted: ${salvos}`);
   assert.ok(nextWarning, 'The encounter must progress to its next attack preparation under slow time');
   assert.ok(emittedIds.size>0);
   assert.deepEqual([...clearedIds].sort(),[...emittedIds].sort(),

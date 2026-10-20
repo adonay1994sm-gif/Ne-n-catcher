@@ -158,7 +158,7 @@ async function touch(type, x, y) {
       weapons:classicWeapons?NeonCampaign.classicWeaponSnapshot(classicWeapons):null,
       equipment:JSON.parse(JSON.stringify(classicEquipment)),
       items:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,vx:item.vx,vy:item.vy,
-        rot:item.rot,rs:item.rs,hp:item.hp,circles:collisionCircles(item),flightComet:Boolean(item.flightComet),
+        rot:item.rot,rs:item.rs,hp:item.hp,circles:collisionCircles(item).map(circle=>({...circle})),flightComet:Boolean(item.flightComet),
         flightPatrol:Boolean(item.flightPatrol),guardianProjectile:Boolean(item.guardianProjectile)})),
       unlocked:getUnlocked(),keys:{...KEYS},saves:Object.fromEntries(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)]))});\n`;
     await route.fulfill({response, body: source.replace(marker, hook + marker)});

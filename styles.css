@@ -352,6 +352,9 @@ body.flight-mode .briefing-grid span{font-size:9px;letter-spacing:.05em;color:#b
 body.flight-mode .briefing-grid b{font-size:13px;line-height:1.35;color:#f1faff;overflow-wrap:anywhere}
 body.flight-mode .briefing-mission{margin:12px 0 16px!important;font-size:13px;line-height:1.5;color:#d1dee7}
 body.flight-mode #briefing button,body.flight-mode #complete button,body.flight-mode #levelSelect button{min-height:44px;line-height:1.3;touch-action:manipulation}
+/* Iniciar/Volver quedan siempre visibles abajo del panel aunque la lista de tramos sea larga. */
+body.flight-mode .briefing-actions{position:sticky;bottom:-24px;z-index:2;margin:0 -6px -24px;padding:12px 6px 24px;background:linear-gradient(180deg,rgba(9,21,34,0),#091522 16px)}
+body.flight-mode .briefing-actions>button:first-child{margin-top:0}
 body.flight-mode #complete .summary-grid{gap:6px;margin:12px 0}
 body.flight-mode #complete .summary-grid span{font-size:9px;letter-spacing:.04em;color:#b3c7d4}
 body.flight-mode #complete .summary-grid b{font-size:18px}

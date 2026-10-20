@@ -131,6 +131,7 @@
   let classicVoyageRequestedStage = null;
   let classicVoyageSpawnTimer = 0;
   let classicVoyageHazardTimer = 0;
+  let classicVoyageHazards = null;
   let classicVoyageStageId = "";
   let classicThreatSequence = 0;
   let flightDockReturn = 'menu';

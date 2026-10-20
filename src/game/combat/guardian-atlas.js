@@ -5,9 +5,10 @@ const finite = (value, name) => {
 };
 
 export const GUARDIAN_ATLAS_RULES = Object.freeze({
-  version: 'guardian-atlas-v7', maxHp: 96, maxDelta: .05,
+  version: 'guardian-atlas-v8', maxHp: 96, maxDelta: .05,
   entrySeconds: 2.2, closedSeconds: .85,
-  openingSeconds: .65, exposedSeconds: 3.8, closingSeconds: .55,
+  // v8: ventana de núcleo más corta (antes 3,8 s) y más corta aún en la fase 2.
+  openingSeconds: .65, exposedSeconds: 3.0, exposedPhaseTwoSeconds: 2.5, closingSeconds: .55,
   phaseBreakSeconds: 1.25, shutdownSeconds: 1.55, hurtSeconds: .16,
   coreRadius: 42, maxProjectilesPerAttack: 10, tailClearance: 56,
   phaseOne: Object.freeze({projectileSpeed: 460, projectileDamage: 13}),
@@ -17,8 +18,15 @@ export const GUARDIAN_ATLAS_RULES = Object.freeze({
   attacks: Object.freeze({
     basic: Object.freeze({chargeSeconds: .36, volleyTimes: Object.freeze([0]), damage: 13}),
     medium: Object.freeze({chargeSeconds: .52, volleyTimes: Object.freeze([0, .34]), damage: 15}),
-    superpower: Object.freeze({chargeSeconds: .86, volleyTimes: Object.freeze([0, .45]), damage: 22})
+    superpower: Object.freeze({chargeSeconds: .86, volleyTimes: Object.freeze([0, .45]), damage: 22}),
+    // Ataque fulminante: carga larga y visible, un muro de orbes pesados con
+    // un único hueco alcanzable que obliga a moverse.
+    fulminant: Object.freeze({chargeSeconds: 1.05, volleyTimes: Object.freeze([0]), damage: 26})
   }),
+  fulminant: Object.freeze({spacing: 64, gapHalf: 115, phaseTwoGapHalf: 100, speed: 390, phaseTwoSpeed: 440,
+    minPlayerDistance: 170, everyAttacks: Object.freeze([3, 5]), phaseTwoEveryAttacks: Object.freeze([2, 4])}),
+  // Ataques encadenados antes de abrir el núcleo, una vez presentadas las rutinas.
+  chains: Object.freeze({phaseOneChance: .45, phaseTwoMinimum: 1, phaseTwoExtraChance: .4}),
   patterns: Object.freeze({
     duelBurst: Object.freeze({volleyTimes: Object.freeze([0, .24]), projectiles: 2}),
     staggeredSalvo: Object.freeze({volleyTimes: Object.freeze([0, .25, .58]), projectiles: 3}),
@@ -55,7 +63,8 @@ export function createGuardianAtlas({width = 720, height = 1280,
     attackId: 0, attackTier: null, volley: 0, attackClearanceSeconds: 0,
     observation: null, nextObservationAt: 0, lastPattern: null, attackDecision: null,
     previousPatterns: {basic: null, medium: null, superpower: null}, tacticalManeuver: 'patrol',
-    attacksSinceSuperpower: 0, motionDecision: 0, nextMotionAt: 0,
+    attacksSinceSuperpower: 0, attacksSinceFulminant: 0, nextFulminantAfter: 4, chainRemaining: 0,
+    motionDecision: 0, nextMotionAt: 0,
     motionX: width / 2, motionY: targetY, motionVx: 0, motionVy: 0,
     motionSide: seed % 2 ? -1 : 1,
     flash: 0, lastHitAt: null,
@@ -148,10 +157,16 @@ function transition(boss, next, events) {
   events.push({type: 'state', state: next, phase: boss.phase, attackId: boss.attackId});
   if (next === 'opening') events.push({type: 'opening', phase: boss.phase});
   if (next === 'exposed') events.push({type: 'coreExposed', phase: boss.phase,
-    seconds: GUARDIAN_ATLAS_RULES.exposedSeconds, coreRadius: boss.coreRadius});
+    seconds: boss.phase === 1 ? GUARDIAN_ATLAS_RULES.exposedSeconds : GUARDIAN_ATLAS_RULES.exposedPhaseTwoSeconds,
+    coreRadius: boss.coreRadius});
   if (next === 'closing') events.push({type: 'coreClosed', phase: boss.phase});
 }
-function beginCharge(boss, player, events) {
+function scheduleFulminant(boss) {
+  const [low, high] = boss.phase === 1 ? GUARDIAN_ATLAS_RULES.fulminant.everyAttacks
+    : GUARDIAN_ATLAS_RULES.fulminant.phaseTwoEveryAttacks;
+  boss.nextFulminantAfter = low + Math.floor(nextRandom(boss) * (high - low + 1));
+}
+function beginCharge(boss, player, events, chained = false) {
   boss.attackId++; boss.phaseAttacks++; boss.volley = 0; boss.attackClearanceSeconds = 0;
   const tiers = boss.phase === 1 ? ['basic', 'medium', 'superpower'] : ['medium', 'basic', 'superpower'];
   const sample = boss.observation || {x: player.x, y: boss.playerY, vx: 0, at: boss.age};
@@ -159,18 +174,31 @@ function beginCharge(boss, player, events) {
   // rather than repeating the same basic/medium/superpower turn forever.
   if (boss.phaseAttacks <= 3) {
     boss.attackTier = tiers[boss.phaseAttacks - 1]; boss.attackDecision = 'introduce-routine';
+  } else if (boss.attacksSinceFulminant >= boss.nextFulminantAfter) {
+    boss.attackTier = 'fulminant'; boss.attackDecision = 'crono-rupture';
   } else if (boss.attacksSinceSuperpower >= 3) {
     boss.attackTier = 'superpower'; boss.attackDecision = 'reactor-recharged';
   } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * .27) {
-    boss.attackTier = 'medium'; boss.attackDecision = 'intercept-flank';
+    // v8: el flanqueo suele responderse con un ataque medio, pero no siempre.
+    boss.attackTier = nextRandom(boss) < .7 ? 'medium' : 'basic'; boss.attackDecision = 'intercept-flank';
   } else {
-    boss.attackTier = boss.attackTier === 'basic' ? 'medium' : 'basic'; boss.attackDecision = 'pressure-observed-lane';
+    boss.attackTier = nextRandom(boss) < .5 ? 'medium' : 'basic'; boss.attackDecision = 'pressure-observed-lane';
   }
   boss.attacksSinceSuperpower = boss.attackTier === 'superpower' ? 0 : boss.attacksSinceSuperpower + 1;
+  if (boss.attackTier === 'fulminant') { boss.attacksSinceFulminant = 0; scheduleFulminant(boss); }
+  else if (boss.phaseAttacks > 3) boss.attacksSinceFulminant++;
+  // Tras presentar las rutinas, cada ciclo de la fase 1 puede encadenar un
+  // ataque más antes de abrir el núcleo; la fase 2 siempre encadena 1-2.
+  if (!chained) {
+    const chains = GUARDIAN_ATLAS_RULES.chains;
+    boss.chainRemaining = boss.phase === 2
+      ? chains.phaseTwoMinimum + (nextRandom(boss) < chains.phaseTwoExtraChance ? 1 : 0)
+      : boss.phaseAttacks <= 3 ? 0 : nextRandom(boss) < chains.phaseOneChance ? 1 : 0;
+  }
   const tier = boss.attackTier;
-  let pattern = tier === 'superpower' ? 'reactorBarrage' : tier === 'medium'
+  let pattern = tier === 'fulminant' ? 'cronoRupture' : tier === 'superpower' ? 'reactorBarrage' : tier === 'medium'
     ? boss.phase === 1 ? 'crossfire' : 'rakingSalvo' : boss.phase === 1 ? 'focusedSalvo' : 'leadSalvo';
-  if (boss.phaseAttacks > 3 || boss.phase === 2) {
+  if ((boss.phaseAttacks > 3 || boss.phase === 2) && tier !== 'fulminant') {
     const options = tier === 'basic' ? ['duelBurst'] : tier === 'medium'
       ? Math.abs(sample.vx) >= 85 ? ['flankSalvo', 'staggeredSalvo'] : ['staggeredSalvo', 'flankSalvo']
       : ['reactorSweep', 'reactorPincer'];
@@ -184,7 +212,8 @@ function beginCharge(boss, player, events) {
   // A maneuver is committed with the attack. New samples cannot rotate an
   // already emitted shot or move the sweep's destination under the player.
   const sweepDirection = sample.vx ? Math.sign(sample.vx) : sample.x < boss.width / 2 ? 1 : -1;
-  boss.tacticalManeuver = pattern === 'flankSalvo' || pattern === 'staggeredSalvo' ? 'flank'
+  boss.tacticalManeuver = tier === 'fulminant' ? 'withdraw'
+    : pattern === 'flankSalvo' || pattern === 'staggeredSalvo' ? 'flank'
     : tier === 'superpower' ? 'withdraw' : 'pressure';
   boss.nextMotionAt = boss.age;
   boss.telegraph = {kind: 'mechanicalDeployment', pattern, attackTier: tier, progress: 0,
@@ -200,9 +229,13 @@ function beginCharge(boss, player, events) {
   // Animation-only compatibility event. Integration must not reveal aim or a
   // future safe lane through HUD warnings, reticles or helper lines.
   events.push({type: 'warning', phase: boss.phase, ...boss.telegraph});
+  // Alarma propia del ataque fulminante (sonido/destello de pantalla). No
+  // revela dónde quedará el hueco.
+  if (tier === 'fulminant') events.push({type: 'fulminant', phase: boss.phase, attackId: boss.attackId,
+    seconds: attackRules(boss).chargeSeconds});
 }
 function projectile(boss, x, y, vx, vy, ordinal, targetX) {
-  const aim = boss.telegraph, heavy = boss.attackTier === 'superpower';
+  const aim = boss.telegraph, heavy = boss.attackTier === 'superpower' || boss.attackTier === 'fulminant';
   const damage = boss.attackTier === 'basic' ? phaseRules(boss).projectileDamage : attackRules(boss).damage;
   return {type: 'meteor', guardianProjectile: true, pattern: aim.pattern,
     attackTier: boss.attackTier, heavy, attackId: boss.attackId, volley: boss.volley,
@@ -213,7 +246,39 @@ function projectile(boss, x, y, vx, vy, ordinal, targetX) {
     targetX, targetY: aim.targetY, rot: Math.atan2(vy, vx) - Math.PI / 2,
     rs: 0, p: 0, phase: 0, amp: 0, special: '', alpha: 1, hp: 1, maxHp: 1};
 }
+// Cortina de la Ruptura Crono: Atlas libera orbes pesados a lo largo de una
+// línea a su altura que caen rectos y cubren todo el ancho salvo un hueco,
+// elegido al azar y preferiblemente lejos de la posición observada. Al caer
+// en vertical, el hueco a la altura de la nave es exacto.
+function fireCronoRupture(boss, events, fireTime) {
+  const rule = GUARDIAN_ATLAS_RULES.fulminant, aim = boss.telegraph;
+  const originY = boss.y + boss.r * .7;
+  const gapHalf = Math.min(boss.phase === 1 ? rule.gapHalf : rule.phaseTwoGapHalf, boss.width * .3);
+  const low = gapHalf + 12, high = boss.width - gapHalf - 12;
+  let gapX = (low + high) / 2, best = -1;
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const candidate = low + nextRandom(boss) * Math.max(0, high - low);
+    const distance = Math.abs(candidate - aim.observedX);
+    if (distance >= rule.minPlayerDistance) { gapX = candidate; break; }
+    if (distance > best) { best = distance; gapX = candidate; }
+  }
+  const spacing = Math.min(rule.spacing, (boss.width - 48) / 8);
+  const speed = boss.phase === 1 ? rule.speed : rule.phaseTwoSpeed;
+  let ordinal = 0;
+  for (let x = 24; x <= boss.width - 24 + 1e-9 && ordinal < GUARDIAN_ATLAS_RULES.maxProjectilesPerAttack; x += spacing) {
+    if (Math.abs(x - gapX) < gapHalf) continue;
+    const shot = projectile(boss, x, originY, 0, speed, ordinal++, x);
+    shot.targetY = Math.max(originY + 180, aim.targetY); shot.fulminant = true;
+    boss.attackClearanceSeconds = Math.max(boss.attackClearanceSeconds,
+      fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy);
+    events.push({type: 'projectile', projectile: shot});
+  }
+  events.push({type: 'volley', attackId: boss.attackId, phase: boss.phase,
+    attackTier: boss.attackTier, volley: boss.volley, x: boss.x, y: originY, fulminant: true});
+  boss.volley++;
+}
 function fireVolley(boss, events, fireTime = boss.stateTime) {
+  if (boss.attackTier === 'fulminant') return fireCronoRupture(boss, events, fireTime);
   const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === 'superpower';
   const crossfire = ['crossfire', 'flankSalvo', 'reactorPincer'].includes(aim.pattern);
   const originSide = (boss.volley === 0 ? -1 : 1) * (aim.pattern === 'crossfire' ? 1 : aim.sweepDirection);
@@ -261,7 +326,7 @@ function stateDuration(boss) {
   if (boss.state === 'fire') return Math.max(volleyTimes(boss).at(-1) + .08,
     boss.attackClearanceSeconds + .12);
   if (boss.state === 'opening') return rule.openingSeconds;
-  if (boss.state === 'exposed') return rule.exposedSeconds;
+  if (boss.state === 'exposed') return boss.phase === 1 ? rule.exposedSeconds : rule.exposedPhaseTwoSeconds;
   if (boss.state === 'closing') return rule.closingSeconds;
   if (boss.state === 'phaseBreak') return rule.phaseBreakSeconds;
   if (boss.state === 'disabled') return rule.shutdownSeconds;
@@ -275,7 +340,11 @@ function finishState(boss, player, events) {
   } else if (boss.state === 'closed') beginCharge(boss, player, events);
   else if (boss.state === 'charge') {
     transition(boss, 'fire', events); boss.telegraph.progress = 1; fireVolley(boss, events);
-  } else if (boss.state === 'fire') { boss.telegraph = null; transition(boss, 'opening', events); }
+  } else if (boss.state === 'fire') {
+    boss.telegraph = null;
+    if (boss.chainRemaining > 0) { boss.chainRemaining--; beginCharge(boss, player, events, true); }
+    else transition(boss, 'opening', events);
+  }
   else if (boss.state === 'opening') transition(boss, 'exposed', events);
   else if (boss.state === 'exposed') transition(boss, 'closing', events);
   else if (boss.state === 'closing' || boss.state === 'phaseBreak') transition(boss, 'closed', events);
@@ -345,7 +414,8 @@ export function hitGuardianAtlas(boss, damage = 1, contact = null) {
     boss.disabled = true; boss.telegraph = null; transition(boss, 'disabled', events);
     events.push({type: 'shutdown', rewardId: 'guardian-atlas-access', recordId: boss.recordId});
   } else if (boss.phase === 1 && boss.hp <= boss.maxHp / 2) {
-    boss.phase = 2; boss.phaseAttacks = 0; boss.telegraph = null;
+    boss.phase = 2; boss.phaseAttacks = 0; boss.telegraph = null; boss.chainRemaining = 0;
+    boss.attacksSinceFulminant = 0; scheduleFulminant(boss);
     transition(boss, 'phaseBreak', events); events.push({type: 'phase', phase: 2, clearProjectiles: true});
   }
   return {accepted: true, damage: lost, events};

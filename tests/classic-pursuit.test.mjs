@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../src/game/combat/classic-pursuit.js';
+import {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION, CLASSIC_PURSUIT_VOLLEY} from '../src/game/combat/classic-pursuit.js';
 
 const DT = .02;
 function enemyAt({x = 360, y = -85, role = 'raider', seed = 0, width = 720, height = 1280,
@@ -144,8 +144,14 @@ test('100 seeds across three roles keep readable, finite, bounded attacks and an
       assert.ok(Number.isFinite(item.s) && item.s >= -82 && item.s <= 202.5);
     }
     assert.ok(shots.length > 0, `${role}/${seed} presents an actual attack`);
-    assert.ok(shots.length <= ({raider: 8, scout: 7, interceptor: 10}[role]));
-    assert.equal(new Set(shots.map(shot => shot.attackSerial)).size, shots.length);
+    const serials = new Set(shots.map(shot => shot.attackSerial));
+    assert.ok(serials.size <= ({raider: 8, scout: 7, interceptor: 10}[role]), 'bounded number of attacks');
+    for (const serial of serials) {
+      assert.ok(shots.filter(shot => shot.attackSerial === serial).length <= CLASSIC_PURSUIT_VOLLEY.maxProjectiles,
+        'one charge emits at most a three-shot volley');
+    }
+    assert.equal(shots.filter(shot => shot.attackSerial === Math.min(...serials)).length, 1,
+      'the first attack is always a single teaching shot');
     for (const shot of shots) {
       totalShots++;
       assert.ok(shot.y <= player.y - 230 + 1e-8, 'minimum reaction distance');
@@ -311,10 +317,42 @@ test('undamaged enemies remain engaged beyond three attacks with a bounded proje
     assert.ok(item.classicScout.combatStartedAt !== null);
     until(item, player, () => item.classicScout.state === 'retreat', shots, 1600);
     assert.ok(item.classicScout.age - atFourth > 1);
-    const activeAt = seconds => shots.filter(shot => shot.at <= seconds && shot.at + shot.life > seconds).length;
+    // A shot occupies the screen until it leaves the bottom edge (or its life ends).
+    const onScreen = shot => Math.min(shot.life, (1280 - shot.y) / shot.vy);
+    const activeAt = seconds => shots.filter(shot => shot.at <= seconds && shot.at + onScreen(shot) > seconds).length;
     for (let seconds = 0; seconds < item.classicScout.age; seconds += .1) {
-      assert.ok(activeAt(seconds) <= 4, `${role} cannot saturate the screen with unlimited persistent shots`);
+      assert.ok(activeAt(seconds) <= 6, `${role} cannot saturate the screen with unlimited persistent shots`);
     }
-    assert.ok(shots.length >= 4 && shots.length <= 10);
+    assert.ok(shots.length >= 4 && shots.length <= 10 * CLASSIC_PURSUIT_VOLLEY.maxProjectiles);
+    assert.ok(new Set(shots.map(shot => shot.volley)).size >= 2, `${role} varies its volleys`);
   }
+});
+
+test('v5 opponents mix single, double and spread volleys with irregular waits instead of one fixed rhythm', () => {
+  const kinds = new Set(), waits = new Set();
+  let doubles = 0, spreads = 0;
+  for (const role of ['raider', 'scout', 'interceptor']) for (const seed of [3, 21, 58, 90]) {
+    const item = enemyAt({role, seed}), player = {x: 360, y: 1080}, shots = [];
+    until(item, player, () => item.classicScout.state === 'retreat', shots, 3000);
+    const bySerial = new Map();
+    for (const shot of shots) bySerial.set(shot.attackSerial, [...(bySerial.get(shot.attackSerial) || []), shot]);
+    const starts = [...bySerial.values()].map(volley => volley[0].at);
+    for (let index = 1; index < starts.length; index++) waits.add((starts[index] - starts[index - 1]).toFixed(2));
+    for (const volley of bySerial.values()) {
+      kinds.add(volley[0].volley);
+      if (volley[0].volley === 'double') {
+        doubles++;
+        if (volley.length === 2) assert.ok(Math.abs(volley[1].at - volley[0].at - CLASSIC_PURSUIT_VOLLEY.doubleGap) < .03);
+      }
+      if (volley[0].volley === 'spread') {
+        spreads++;
+        assert.equal(volley.length, 3);
+        assert.ok(new Set(volley.map(shot => shot.vx.toFixed(3))).size === 3, 'a fan has three distinct directions');
+        for (const shot of volley) assert.ok(shot.vy > 0 && Math.abs(shot.vx / shot.vy) <= CLASSIC_PURSUIT_VOLLEY.cone + 1e-9);
+      }
+    }
+  }
+  assert.deepEqual([...kinds].sort(), ['double', 'single', 'spread']);
+  assert.ok(doubles > 0 && spreads > 0);
+  assert.ok(waits.size >= 10, 'waits between attacks are irregular');
 });

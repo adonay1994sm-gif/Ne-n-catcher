@@ -343,6 +343,7 @@
   let classicVoyageRequestedStage = null;
   let classicVoyageSpawnTimer = 0;
   let classicVoyageHazardTimer = 0;
+  let classicVoyageHazards = null;
   let classicVoyageStageId = "";
   let classicThreatSequence = 0;
   let flightDockReturn = 'menu';
@@ -753,8 +754,11 @@
       ? clamp((player.targetY - previousBounds.minY) / (previousBounds.maxY - previousBounds.minY), 0, 1) : fractionY;
     W = 720;
     H = Math.max(1180, Math.round(W * rect.height / rect.width));
-    canvas.width = W;
-    canvas.height = H;
+    // Reasignar el tamaño borra el lienzo aunque sea el mismo valor; Safari
+    // lo muestra como un parpadeo al rotar o al mostrar la barra. Solo se
+    // asigna si de verdad cambia.
+    if (canvas.width !== W) canvas.width = W;
+    if (canvas.height !== H) canvas.height = H;
     if (isUnifiedClassic()) {
       refreshClassicFlightBounds(!previousBounds);
       // Atlas derives its arena from a stable lower anchor, not from the
@@ -1213,7 +1217,8 @@
     const stages = document.createElement("section");
     stages.id="chronosStages"; stages.className="chronos-stages cockpit-stage-list hidden";
     stages.innerHTML='<small>CHRONOS → GAIA · TRAMOS DEL VIAJE</small><div id="chronosStageGrid" class="chronos-stage-grid"></div><p id="chronosStagesNote"></p>';
-    $("launch").before(stages);
+    // La lista va encima del bloque de botones, que queda fijo abajo del panel.
+    ($("briefingActions") || $("launch")).before(stages);
     syncClassicFlightHud();
   }
 
@@ -1304,6 +1309,12 @@
       classicVoyageWritable=copies.includes(raw)||storage.setJSON(backup,[...copies,raw]);
     }
   }
+
+  // Al reanudar o reintentar un tramo se restaura el casco guardado a su
+  // entrada, pero nunca por debajo de este mínimo: si se entró al tramo de
+  // Atlas casi destruido, cada reintento sería una derrota segura. Valor de
+  // trabajo reversible; el guardado conserva el casco real de entrada.
+  const CLASSIC_RESUME_HULL_FLOOR = 50;
 
   function classicVoyageCheckpointRecord(checkpoint,completed=false) {
     if(!checkpoint)return null;
@@ -1642,16 +1653,26 @@
     if(![5,6].includes(n)) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
-        if(items.filter(item=>item.flightPatrol).length<(n===1?1:2))spawnClassicFlightPatrol(n<7?"raider":n>=9&&classicPatrolSequence%2?"interceptor":"scout");
-        classicPatrolTimer=n<3?12:n>=9?8:n===7?13:10;
+        // Más presencia y una mezcla de tipos que crece durante el viaje.
+        const cap=n===1?1:[3,8,9,10].includes(n)?3:2;
+        const roster=n<=2?["raider"]:n<=4?["raider","scout","raider"]:n<=8?["scout","raider","interceptor"]:["interceptor","raider","scout","interceptor"];
+        if(items.filter(item=>item.flightPatrol).length<cap)spawnClassicFlightPatrol(roster[classicPatrolSequence%roster.length]);
+        classicPatrolTimer=(n<3?9:n>=9?6:8)*(.8+Math.random()*.4);
       }
     }
-    if([2,4,8].includes(n)) {
-      classicVoyageHazardTimer-=dt;
-      if(classicVoyageHazardTimer<=0 && items.filter(isThreat).length<2) {
-        const wreck=createThreat("debris",level());wreck.x=wreck.baseX=W*(n%2?.23:.77);wreck.y=-95;wreck.s=110+n*4;
-        items.push(wreck);classicVoyageHazardTimer=20;
-      }
+    // Campo de meteoritos, restos de naves y satélites con densidad propia de
+    // cada tramo y un hueco transitable garantizado. Las pruebas que quieren
+    // un tramo vacío lo desactivan con un temporizador muy alto (>=900).
+    if(classicVoyageHazardTimer<900) {
+      if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
+        stageNumber:n,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+      const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
+        !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
+      NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
+        const threat=createThreat(hazard.type,level());
+        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        items.push(threat);
+      });
     }
     if([5,9].includes(n)) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
@@ -1859,6 +1880,13 @@
       items = items.filter(item => !item.guardianProjectile);
     }
     if (event.type === "volley") combatSound(event.attackTier==="basic"?"enemy-phaser":"enemy-heavy",event.x??atlasBoss.x);
+    // Ruptura Crono: alarma durante la carga y golpe al soltar la cortina. El
+    // aviso no indica dónde quedará el hueco.
+    if (event.type === "fulminant") {
+      combatSound("atlas-charge",atlasBoss.x);flash=Math.max(flash,.22);
+      showStoryTransmission("COMANDANTE IRIA · GAIA","¡Ruptura Crono! Atlas va a barrer la pantalla: busca el hueco.",1.6);
+    }
+    if (event.type === "volley" && event.fulminant) { shake=Math.max(shake,6);cameraKickY=Math.max(cameraKickY,4); }
     if (event.type === "phase") { signalClassicChapter("atlas-phase-two"); cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
@@ -2514,7 +2542,7 @@
     collected = 0;
     if(classicFlight){
       collected=classicFlightView.collected;
-      if(voyageEntry){hull=voyageEntry.hull;classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
+      if(voyageEntry){hull=Math.max(voyageEntry.hull,CLASSIC_RESUME_HULL_FLOOR);classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
     }
     ammo = classicWeapons?classicWeapons.charges:INITIAL_AMMO;
     manualShotCooldown = 0;
@@ -2778,6 +2806,8 @@
     if (score > oldBest) ui.newBest.classList.remove("hidden");
     ui.final.textContent = score;
     ui.reward.classList.toggle("hidden", continued || supplyFailed);
+    // En el viaje se reintenta desde la entrada del tramo guardado, no el sector entero.
+    $("retry").textContent = classicFlightView?.stageId ? `REINTENTAR TRAMO ${classicFlightView.stageId}` : "REINTENTAR SECTOR";
     overlay(ui.over);
     registerRun();
     tone(110, 0.30, "sawtooth", 0.06);
@@ -3069,37 +3099,69 @@
     return dx * dx + dy * dy;
   }
 
+  // Círculos de colisión reutilizables por forma. collisionCircles se llama
+  // por objeto y fotograma; rellenar estos arrays en sitio evita crear
+  // basura. Quien llama debe usar el resultado al momento y no guardarlo
+  // (copiarlo si necesita conservarlo).
+  const SINGLE_COLLISION_CIRCLE = [{ x: 0, y: 0, r: 0 }];
+  const SATELLITE_COLLISION_CIRCLES = [{ x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }];
+  const PANEL_COLLISION_CIRCLES = [{ x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }, { x: 0, y: 0, r: 0 }];
+
+  function singleCollisionCircle(radius) {
+    const circle = SINGLE_COLLISION_CIRCLE[0];
+    circle.x = 0;
+    circle.y = 0;
+    circle.r = radius;
+    return SINGLE_COLLISION_CIRCLE;
+  }
+
+  function tripleCollisionCircles(circles, item, offset, sideRadius, centerRadius) {
+    circles[0].x = -item.r * offset; circles[0].y = 0; circles[0].r = item.r * sideRadius;
+    circles[1].x = 0; circles[1].y = 0; circles[1].r = item.r * centerRadius;
+    circles[2].x = item.r * offset; circles[2].y = 0; circles[2].r = item.r * sideRadius;
+    return circles;
+  }
+
   function collisionCircles(item) {
-    if (item.type === "energy") return [{ x: 0, y: 0, r: item.r * 1.10 }];
+    if (item.type === "energy") return singleCollisionCircle(item.r * 1.10);
     if (!isThreat(item)) {
       const factor = item.type === "repair" ? 1.05 : (item.type === "tractor" || item.type === "phaser") ? 0.92 : 1.0;
-      return [{ x: 0, y: 0, r: item.r * factor }];
+      return singleCollisionCircle(item.r * factor);
     }
-    if (item.classicScout || item.classicScoutProjectile) return [{ x: 0, y: 0, r: item.r * 0.94 }];
-    if (item.special === "comet") return [{ x: 0, y: 0, r: item.r * 0.94 }];
-    if (item.type === "satellite") {
-      return [
-        { x: -item.r * 0.92, y: 0, r: item.r * 0.58 },
-        { x: 0, y: 0, r: item.r * 0.70 },
-        { x: item.r * 0.92, y: 0, r: item.r * 0.58 }
-      ];
-    }
+    if (item.classicScout || item.classicScoutProjectile) return singleCollisionCircle(item.r * 0.94);
+    if (item.special === "comet") return singleCollisionCircle(item.r * 0.94);
+    if (item.type === "satellite") return tripleCollisionCircles(SATELLITE_COLLISION_CIRCLES, item, 0.92, 0.58, 0.70);
     if (item.type === "debris" && item.spriteKey === "debrisPanel") {
-      return [
-        { x: -item.r * 0.68, y: 0, r: item.r * 0.62 },
-        { x: 0, y: 0, r: item.r * 0.66 },
-        { x: item.r * 0.68, y: 0, r: item.r * 0.62 }
-      ];
+      return tripleCollisionCircles(PANEL_COLLISION_CIRCLES, item, 0.68, 0.62, 0.66);
     }
-    if (item.type === "debris") return [{ x: 0, y: 0, r: item.r * 1.08 }];
-    if (item.spriteKey === "meteorLarge") return [{ x: 0, y: 0, r: item.r * 1.22 }];
-    if (item.spriteKey && item.spriteKey.includes("Medium")) return [{ x: 0, y: 0, r: item.r * 1.12 }];
-    return [{ x: 0, y: 0, r: item.r * 1.04 }];
+    if (item.type === "debris") return singleCollisionCircle(item.r * 1.08);
+    if (item.spriteKey === "meteorLarge") return singleCollisionCircle(item.r * 1.22);
+    if (item.spriteKey && item.spriteKey.includes("Medium")) return singleCollisionCircle(item.r * 1.12);
+    return singleCollisionCircle(item.r * 1.04);
+  }
+
+  // Rectángulo envolvente de la silueta de colisión para descartar rápido los
+  // objetos lejanos. Se calcula una sola vez, en el primer uso, cuando la
+  // silueta ya está escalada. Solo es un filtro previo: la prueba exacta
+  // sigue siendo el polígono.
+  let shipCollisionBounds = null;
+  function getShipCollisionBounds() {
+    if (!shipCollisionBounds) {
+      shipCollisionBounds = SHIP_COLLISION_OUTLINE.reduce((bounds, [x, y]) => {
+        bounds.left = Math.min(bounds.left, x);
+        bounds.right = Math.max(bounds.right, x);
+        bounds.top = Math.min(bounds.top, y);
+        bounds.bottom = Math.max(bounds.bottom, y);
+        return bounds;
+      }, { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity });
+    }
+    return shipCollisionBounds;
   }
 
   function circleHitsShip(localX, localY, radius) {
-    if (localX + radius < -112 || localX - radius > 112 ||
-        localY + radius < -151 || localY - radius > 98) return false;
+    const bounds = getShipCollisionBounds();
+    if (localX + radius < bounds.left || localX - radius > bounds.right ||
+        localY + radius < bounds.top || localY - radius > bounds.bottom) return false;
     if (pointInsidePolygon(localX, localY, SHIP_COLLISION_OUTLINE)) return true;
     const radiusSquared = radius * radius;
     for (let index = 0; index < SHIP_COLLISION_OUTLINE.length; index++) {
@@ -3122,8 +3184,9 @@
   function sweptCircleHitsShip(startX, startY, endX, endY, radius) {
     // Sweep the authored collision polygon itself. Fast nuclei and enemy
     // projectiles must not jump across it, and cosmetic tails never damage it.
-    if(Math.max(startX,endX)+radius< -112 || Math.min(startX,endX)-radius>112 ||
-      Math.max(startY,endY)+radius< -151 || Math.min(startY,endY)-radius>98)return false;
+    const bounds=getShipCollisionBounds();
+    if(Math.max(startX,endX)+radius<bounds.left || Math.min(startX,endX)-radius>bounds.right ||
+      Math.max(startY,endY)+radius<bounds.top || Math.min(startY,endY)-radius>bounds.bottom)return false;
     if(circleHitsShip(startX,startY,radius)||circleHitsShip(endX,endY,radius))return true;
     const radiusSquared=radius*radius;
     for(let index=0;index<SHIP_COLLISION_OUTLINE.length;index++) {
@@ -5043,19 +5106,52 @@
   function drawAtlasProjectile(item) {
     ctx.save(); ctx.translate(item.x, item.y);
     ctx.rotate(Math.atan2(item.vy || 1, item.vx || 0) + Math.PI / 2);
-    if (!drawHostileOrdnance(item, 2, 64)) drawAtlasVfx(0, 27, 68, 1, .90);
+    // Los orbes de la Ruptura Crono se dibujan mayores; su colisión no cambia.
+    const size = item.fulminant ? 80 : 64;
+    if (!drawHostileOrdnance(item, 2, size)) drawAtlasVfx(0, 27, size + 4, 1, .90);
     ctx.restore();
   }
 
   // The illustrated core and its short wake share the physics pivot. No aim
   // line, predicted landing point or additional update clock is drawn.
+  // El disparo básico enemigo (fila 0) era azul-cian, igual que los del
+  // jugador. Se recolorea una sola vez a rojo hostil en un lienzo aparte con
+  // la misma disposición; si no se puede (sin DOM), se usa el original.
+  let hostileScoutTint = null;
+  function hostileOrdnanceSource(atlas, row) {
+    if (row !== 0) return atlas;
+    if (hostileScoutTint?.source === atlas) return hostileScoutTint.canvas || atlas;
+    hostileScoutTint = { source: atlas, canvas: null };
+    try {
+      const width = atlas.naturalWidth, cell = width / 4;
+      const canvas = document.createElement("canvas");
+      canvas.width = width; canvas.height = cell;
+      const tint = canvas.getContext("2d");
+      tint.drawImage(atlas, 0, 0, width, cell, 0, 0, width, cell);
+      const pixels = tint.getImageData(0, 0, width, cell), data = pixels.data;
+      for (let index = 0; index < data.length; index += 4) {
+        const red = data[index], green = data[index + 1], blue = data[index + 2];
+        data[index] = blue;
+        data[index + 1] = green * .32;
+        data[index + 2] = Math.min(255, red * .55 + green * .25);
+      }
+      tint.putImageData(pixels, 0, 0);
+      hostileScoutTint.canvas = canvas;
+    } catch {
+      // Sin lienzo disponible: se mantiene el arte original.
+    }
+    return hostileScoutTint.canvas || atlas;
+  }
+
   function drawHostileOrdnance(item, row = 0, size = 52) {
     const atlas = SPRITES.hostileOrdnance;
     if (!spriteReady(atlas)) return false;
     const age = Number.isFinite(item.life) ? Math.max(0, 6 - item.life) : 0;
     const cell = atlas.naturalWidth / 4;
     const frame = Math.floor(age * (row === 2 ? 10 : 12)) % 4;
-    ctx.drawImage(atlas, frame * cell, row * cell, cell, cell,
+    // La copia recoloreada solo contiene la fila 0, así que su recorte empieza en y=0.
+    const source = hostileOrdnanceSource(atlas, row);
+    ctx.drawImage(source, frame * cell, source === atlas ? row * cell : 0, cell, cell,
       -size / 2, -size / 2, size, size);
     return true;
   }

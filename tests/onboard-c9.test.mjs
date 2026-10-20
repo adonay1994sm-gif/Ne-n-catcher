@@ -331,6 +331,19 @@ test('a preserved legacy service-waiting checkpoint resumes in flight and record
   assert.equal(h.snapshot().hull, 70); assert.equal(h.pending.size, 1);
 });
 
+test('resuming or retrying a stage restores the saved entry hull but never below the retry floor', t => {
+  for (const [entryHull, expected] of [[18, 50], [72, 72]]) {
+    const voyage = {version: 2, checkpoint: createChronosVoyageCheckpoint(10, {collected: 32}), unlockedStage: 10,
+      completed: false, entry: {hull: entryHull, reserve: 0, score: 300, maxCombo: 2, collected: 32}};
+    const h = harness(t, {voyage}); h.api.prepare();
+    assert.equal(h.snapshot().route.stageNumber, 10); assert.equal(h.snapshot().hull, expected);
+    h.api.damageHullForFixture(5); h.api.prepare();
+    assert.equal(h.snapshot().hull, expected, 'a retry after damage starts from the same floor-protected entry');
+    assert.equal(JSON.parse(h.stored(VOYAGE_KEY)).entry.hull, entryHull, 'the saved entry hull itself is not rewritten');
+    assert.equal(h.pending.size, 1);
+  }
+});
+
 test('Atlas blocks the onboard workshop instead of permitting combat avoidance by repeatedly opening C9', t => {
   const h = harness(t); h.api.prepare(); h.api.fixtureBoss();
   assert.equal(h.node('classicC9').disabled, true);

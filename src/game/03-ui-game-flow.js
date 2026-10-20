@@ -267,7 +267,8 @@
     const stages = document.createElement("section");
     stages.id="chronosStages"; stages.className="chronos-stages cockpit-stage-list hidden";
     stages.innerHTML='<small>CHRONOS → GAIA · TRAMOS DEL VIAJE</small><div id="chronosStageGrid" class="chronos-stage-grid"></div><p id="chronosStagesNote"></p>';
-    $("launch").before(stages);
+    // La lista va encima del bloque de botones, que queda fijo abajo del panel.
+    ($("briefingActions") || $("launch")).before(stages);
     syncClassicFlightHud();
   }
 
@@ -358,6 +359,12 @@
       classicVoyageWritable=copies.includes(raw)||storage.setJSON(backup,[...copies,raw]);
     }
   }
+
+  // Al reanudar o reintentar un tramo se restaura el casco guardado a su
+  // entrada, pero nunca por debajo de este mínimo: si se entró al tramo de
+  // Atlas casi destruido, cada reintento sería una derrota segura. Valor de
+  // trabajo reversible; el guardado conserva el casco real de entrada.
+  const CLASSIC_RESUME_HULL_FLOOR = 50;
 
   function classicVoyageCheckpointRecord(checkpoint,completed=false) {
     if(!checkpoint)return null;
@@ -696,16 +703,26 @@
     if(![5,6].includes(n)) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
-        if(items.filter(item=>item.flightPatrol).length<(n===1?1:2))spawnClassicFlightPatrol(n<7?"raider":n>=9&&classicPatrolSequence%2?"interceptor":"scout");
-        classicPatrolTimer=n<3?12:n>=9?8:n===7?13:10;
+        // Más presencia y una mezcla de tipos que crece durante el viaje.
+        const cap=n===1?1:[3,8,9,10].includes(n)?3:2;
+        const roster=n<=2?["raider"]:n<=4?["raider","scout","raider"]:n<=8?["scout","raider","interceptor"]:["interceptor","raider","scout","interceptor"];
+        if(items.filter(item=>item.flightPatrol).length<cap)spawnClassicFlightPatrol(roster[classicPatrolSequence%roster.length]);
+        classicPatrolTimer=(n<3?9:n>=9?6:8)*(.8+Math.random()*.4);
       }
     }
-    if([2,4,8].includes(n)) {
-      classicVoyageHazardTimer-=dt;
-      if(classicVoyageHazardTimer<=0 && items.filter(isThreat).length<2) {
-        const wreck=createThreat("debris",level());wreck.x=wreck.baseX=W*(n%2?.23:.77);wreck.y=-95;wreck.s=110+n*4;
-        items.push(wreck);classicVoyageHazardTimer=20;
-      }
+    // Campo de meteoritos, restos de naves y satélites con densidad propia de
+    // cada tramo y un hueco transitable garantizado. Las pruebas que quieren
+    // un tramo vacío lo desactivan con un temporizador muy alto (>=900).
+    if(classicVoyageHazardTimer<900) {
+      if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
+        stageNumber:n,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+      const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
+        !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
+      NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
+        const threat=createThreat(hazard.type,level());
+        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        items.push(threat);
+      });
     }
     if([5,9].includes(n)) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
@@ -913,6 +930,13 @@
       items = items.filter(item => !item.guardianProjectile);
     }
     if (event.type === "volley") combatSound(event.attackTier==="basic"?"enemy-phaser":"enemy-heavy",event.x??atlasBoss.x);
+    // Ruptura Crono: alarma durante la carga y golpe al soltar la cortina. El
+    // aviso no indica dónde quedará el hueco.
+    if (event.type === "fulminant") {
+      combatSound("atlas-charge",atlasBoss.x);flash=Math.max(flash,.22);
+      showStoryTransmission("COMANDANTE IRIA · GAIA","¡Ruptura Crono! Atlas va a barrer la pantalla: busca el hueco.",1.6);
+    }
+    if (event.type === "volley" && event.fulminant) { shake=Math.max(shake,6);cameraKickY=Math.max(cameraKickY,4); }
     if (event.type === "phase") { signalClassicChapter("atlas-phase-two"); cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
@@ -1568,7 +1592,7 @@
     collected = 0;
     if(classicFlight){
       collected=classicFlightView.collected;
-      if(voyageEntry){hull=voyageEntry.hull;classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
+      if(voyageEntry){hull=Math.max(voyageEntry.hull,CLASSIC_RESUME_HULL_FLOOR);classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
     }
     ammo = classicWeapons?classicWeapons.charges:INITIAL_AMMO;
     manualShotCooldown = 0;
@@ -1832,6 +1856,8 @@
     if (score > oldBest) ui.newBest.classList.remove("hidden");
     ui.final.textContent = score;
     ui.reward.classList.toggle("hidden", continued || supplyFailed);
+    // En el viaje se reintenta desde la entrada del tramo guardado, no el sector entero.
+    $("retry").textContent = classicFlightView?.stageId ? `REINTENTAR TRAMO ${classicFlightView.stageId}` : "REINTENTAR SECTOR";
     overlay(ui.over);
     registerRun();
     tone(110, 0.30, "sawtooth", 0.06);

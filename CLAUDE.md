@@ -1,0 +1,63 @@
+# NEON CRONIUM — guía rápida para Claude
+
+Juego arcade espacial en **Canvas 2D**, lienzo lógico **720×1280** (vertical).
+Se distribuye como PWA (Netlify publica `www/`) y como app iOS con Capacitor.
+Las instrucciones detalladas del propietario están en `AGENTS.md`; esta guía
+solo resume lo imprescindible.
+
+## Estado del juego
+
+El juego **no está terminado**: solo el capítulo 1 de la campaña objetivo
+(10 capítulos × 10 etapas) está jugable y en pulido. Preparar la publicación
+no significa que esté listo para la tienda.
+
+## Idioma
+
+- Explica todo en **español** y con lenguaje sencillo.
+- Mensajes de commit en español, cortos y claros: un cambio por commit.
+
+## Dónde se edita el código
+
+- El juego vive en `src/game/` (módulos `00-…` a `08-…` y subcarpetas).
+- `game.js`, `core-runtime.js`, `content-runtime.js`, `www/` e
+  `ios/App/App/public/` son **salidas generadas**. No se editan a mano.
+- `game.js` está versionado: si el build lo regenera, va en el mismo commit
+  que el cambio en `src/game/`.
+- Mapa de módulos: `src/game/README.md`.
+
+## Comandos
+
+```bash
+npm ci                 # instalar dependencias exactas
+npm run build          # regenera game.js, runtimes, www/ e iOS public
+npm test               # pruebas de juego (JSDOM)
+npm run test:static    # coherencia de paquete, manifiesto, SW, iOS
+npm run test:content   # suites node:test de contenido
+npm run test:architecture
+npm run test:preview   # paquete de preview y service worker
+```
+
+Después de cada commit: `npm run build && npm test && npm run test:static`.
+Si algo falla por el cambio, se deshace ese commit y se anota.
+
+## Ramas
+
+- Base de integración: `continuity-assets-audit-20261013`.
+- Rama de trabajo de publicación: `claude/preparar-publicacion-rtfl9q`.
+- **No tocar `main`**, ni el PR #3, ni hacer force push.
+
+## Publicidad
+
+- Solo **IDs de prueba** de Google AdMob (`ca-app-pub-3940256099942544…`).
+- No poner IDs reales ni cambiar `ads-config.js`, `native-admob.js` o
+  `ad-bridge.js` sin orden expresa del propietario.
+
+## Reglas de trabajo
+
+- Cambios pequeños y reversibles. No borrar archivos; mover con `git mv`.
+- No cambiar balance, dificultad, economía ni guardados sin orden expresa.
+- No tocar iOS/Capacitor (`ios/`, `capacitor.config.ts`) salvo indicación.
+- `USE_ENGINE_V1 = false` y un único bucle `requestAnimationFrame`.
+- No inventar datos legales, contactos ni IDs: escribir `[COMPLETAR]`
+  o "sin comprobar".
+- Progreso de la preparación de publicación: `docs/publicacion/PROGRESO.md`.

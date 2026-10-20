@@ -48,6 +48,8 @@ var NeonCampaign = (() => {
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
     SHIP_FLEET: () => SHIP_FLEET,
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
+    VOYAGE_HAZARD_PROFILES: () => VOYAGE_HAZARD_PROFILES,
+    VOYAGE_HAZARD_VERSION: () => VOYAGE_HAZARD_VERSION,
     advanceClassicPursuer: () => advanceClassicPursuer,
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
@@ -56,6 +58,7 @@ var NeonCampaign = (() => {
     advanceGuardianAtlas: () => advanceGuardianAtlas,
     advanceShipBank: () => advanceShipBank,
     advanceShowerComet: () => advanceShowerComet,
+    advanceVoyageHazardField: () => advanceVoyageHazardField,
     awardClassicBossWeapon: () => awardClassicBossWeapon,
     beginFlightInput: () => beginFlightInput,
     calculateFlightBounds: () => calculateFlightBounds,
@@ -82,6 +85,7 @@ var NeonCampaign = (() => {
     createJourneyDemo: () => createJourneyDemo,
     createRelativeFlightInput: () => createRelativeFlightInput,
     createScrapLedger: () => createScrapLedger,
+    createVoyageHazardField: () => createVoyageHazardField,
     createVoyageScore: () => createVoyageScore,
     endFlightInput: () => endFlightInput,
     formatDenominations: () => formatDenominations,
@@ -91,6 +95,7 @@ var NeonCampaign = (() => {
     hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
     hullReserveCapacity: () => hullReserveCapacity,
+    largestUpperGap: () => largestUpperGap,
     makeLegacyEntity: () => makeLegacyEntity,
     moveFlightInput: () => moveFlightInput,
     n7Dialogue: () => n7Dialogue,
@@ -1873,22 +1878,35 @@ var NeonCampaign = (() => {
     });
   }
 
-  // src/game/progression/comet-shower.js
-  var COMET_SHOWER_VERSION = "comet-shower-v3";
-  var COMET_SHOWER_RULES = Object.freeze({
-    maxActive: 5,
-    warningSeconds: 2,
-    resumeGraceSeconds: 7,
+  // src/game/progression/voyage-hazards.js
+  var VOYAGE_HAZARD_VERSION = "voyage-hazards-v1";
+  var VOYAGE_HAZARD_RULES = Object.freeze({
     maxDelta: 0.05,
-    shipWidth: 208 * 0.52,
-    shipSideClearance: 119 * 0.52,
-    corridorClearance: 40,
-    minSpeed: 700,
-    maxSpeed: 950,
-    boundsMargin: 128,
-    burstStarts: Object.freeze([7, 16, 25])
+    upperBand: 0.45,
+    gapMargin: 50,
+    footprint: 1.3,
+    edgeMargin: 46,
+    attempts: 8
   });
-  var clamp3 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var profile = (gap, cap, cluster, mix2, speed) => Object.freeze({
+    gap: Object.freeze(gap),
+    cap,
+    cluster,
+    mix: Object.freeze(mix2),
+    speed: Object.freeze(speed)
+  });
+  var VOYAGE_HAZARD_PROFILES = Object.freeze({
+    1: profile([1.7, 2.7], 3, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260]),
+    2: profile([1.1, 1.9], 4, 0.3, { meteor: 0.3, debris: 0.55, satellite: 0.15 }, [160, 250]),
+    3: profile([0.9, 1.6], 5, 0.35, { meteor: 0.35, debris: 0.5, satellite: 0.15 }, [170, 270]),
+    4: profile([1.3, 2.1], 4, 0.25, { meteor: 0.5, debris: 0.4, satellite: 0.1 }, [190, 290]),
+    5: profile([2.3, 3.4], 2, 0.1, { meteor: 0.8, debris: 0.2 }, [210, 320]),
+    6: profile([2.8, 4], 2, 0.05, { meteor: 0.6, debris: 0.4 }, [170, 250]),
+    7: profile([1.5, 2.3], 3, 0.2, { meteor: 0.55, debris: 0.35, satellite: 0.1 }, [200, 300]),
+    8: profile([1.2, 2], 4, 0.3, { meteor: 0.55, debris: 0.35, satellite: 0.1 }, [210, 310]),
+    9: profile([1.6, 2.5], 3, 0.2, { meteor: 0.5, debris: 0.35, satellite: 0.15 }, [210, 320]),
+    10: profile([1, 1.7], 5, 0.35, { meteor: 0.45, debris: 0.4, satellite: 0.15 }, [220, 330])
+  });
   var finite2 = (value, label) => {
     if (!Number.isFinite(value)) throw new RangeError(`${label} must be finite`);
     return value;
@@ -1902,8 +1920,128 @@ var NeonCampaign = (() => {
       return ((value ^ value >>> 14) >>> 0) / 4294967296;
     };
   };
-  var validateDelta = (delta) => {
+  var RADIUS_ESTIMATE = Object.freeze({ meteor: 42, debris: 35, satellite: 46 });
+  function createVoyageHazardField({
+    stageNumber,
+    seed = 0,
+    width = 720,
+    height = 1280,
+    shipWidth = 208 * 0.52
+  } = {}) {
+    for (const [label, value] of Object.entries({ stageNumber, seed, width, height, shipWidth })) finite2(value, label);
+    const stage = VOYAGE_HAZARD_PROFILES[stageNumber];
+    if (!stage || width < 250 || height < 300 || shipWidth <= 0) throw new RangeError("Invalid voyage hazard stage or viewport");
+    const random = randomFor(Math.trunc(seed) >>> 0 ^ Math.imul(stageNumber, 2654435769));
+    return {
+      version: VOYAGE_HAZARD_VERSION,
+      stageNumber,
+      width,
+      height,
+      shipWidth,
+      random,
+      // La primera aparición llega pronto para que el tramo no empiece vacío.
+      wait: 0.6 + random() * 0.8,
+      emitted: 0,
+      skipped: 0
+    };
+  }
+  function pickType(mix2, random) {
+    const entries = Object.entries(mix2);
+    let roll = random() * entries.reduce((sum, [, weight]) => sum + weight, 0);
+    for (const [type, weight] of entries) {
+      roll -= weight;
+      if (roll <= 0) return type;
+    }
+    return entries[entries.length - 1][0];
+  }
+  function largestUpperGap(field, threats) {
+    const band = field.height * VOYAGE_HAZARD_RULES.upperBand;
+    const spans = threats.filter((item) => item.y < band).map((item) => [item.x - item.r * VOYAGE_HAZARD_RULES.footprint, item.x + item.r * VOYAGE_HAZARD_RULES.footprint]).sort((a, b) => a[0] - b[0]);
+    let cursor = 0, best = 0;
+    for (const [left, right] of spans) {
+      best = Math.max(best, left - cursor);
+      cursor = Math.max(cursor, right);
+    }
+    return Math.max(best, field.width - cursor);
+  }
+  function placeHazard(field, profileData, threats) {
+    const required = field.shipWidth + VOYAGE_HAZARD_RULES.gapMargin;
+    const type = pickType(profileData.mix, field.random);
+    const r = RADIUS_ESTIMATE[type];
+    for (let attempt = 0; attempt < VOYAGE_HAZARD_RULES.attempts; attempt++) {
+      const margin = VOYAGE_HAZARD_RULES.edgeMargin;
+      const x = margin + field.random() * (field.width - margin * 2);
+      if (threats.some((item) => item.y < field.height * 0.2 && Math.abs(item.x - x) < item.r + r + 24)) continue;
+      const candidate = { x, y: -95, r };
+      if (largestUpperGap(field, [...threats, candidate]) < required) continue;
+      const [low, high] = profileData.speed;
+      return { type, x, speed: low + field.random() * (high - low), r };
+    }
+    return null;
+  }
+  function advanceVoyageHazardField(field, delta, threats, emit) {
+    if (field?.version !== VOYAGE_HAZARD_VERSION) throw new TypeError("Voyage hazard field required");
+    if (typeof emit !== "function") throw new TypeError("Voyage hazard callback required");
     finite2(delta, "delta");
+    if (delta < 0) throw new RangeError("delta must not be negative");
+    const step = Math.min(delta, VOYAGE_HAZARD_RULES.maxDelta);
+    const profileData = VOYAGE_HAZARD_PROFILES[field.stageNumber];
+    field.wait -= step;
+    if (field.wait > 0) return 0;
+    const [low, high] = profileData.gap;
+    field.wait = low + field.random() * (high - low);
+    const live = threats.map((item) => ({ x: item.x, y: item.y, r: item.r }));
+    const wanted = field.random() < profileData.cluster ? 2 + (field.random() < 0.35 ? 1 : 0) : 1;
+    let count = 0;
+    for (let index = 0; index < wanted && live.length < profileData.cap; index++) {
+      const hazard = placeHazard(field, profileData, live);
+      if (!hazard) {
+        field.skipped++;
+        break;
+      }
+      live.push({ x: hazard.x, y: -95 - index * 70, r: hazard.r });
+      field.emitted++;
+      count++;
+      emit(Object.freeze({ type: hazard.type, x: hazard.x, speed: hazard.speed, delayY: index * 70 }));
+    }
+    return count;
+  }
+
+  // src/game/progression/comet-shower.js
+  var COMET_SHOWER_VERSION = "comet-shower-v4";
+  var COMET_SHOWER_RULES = Object.freeze({
+    // v4: oleadas más grandes y dispersas (cada cometa con su propio borde,
+    // lado del pasillo e intervalo) en lugar de trenes de 3-4 en fila.
+    maxActive: 9,
+    warningSeconds: 2,
+    resumeGraceSeconds: 7,
+    burstSizes: Object.freeze([7, 9, 8]),
+    spawnGap: Object.freeze([0.18, 0.75]),
+    maxDelta: 0.05,
+    shipWidth: 208 * 0.52,
+    shipSideClearance: 119 * 0.52,
+    corridorClearance: 40,
+    minSpeed: 700,
+    maxSpeed: 950,
+    boundsMargin: 128,
+    burstStarts: Object.freeze([7, 16, 25])
+  });
+  var clamp3 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var finite3 = (value, label) => {
+    if (!Number.isFinite(value)) throw new RangeError(`${label} must be finite`);
+    return value;
+  };
+  var randomFor2 = (seed) => {
+    let state = seed >>> 0;
+    return () => {
+      state += 1831565813;
+      let value = Math.imul(state ^ state >>> 15, 1 | state);
+      value ^= value + Math.imul(value ^ value >>> 7, 61 | value);
+      return ((value ^ value >>> 14) >>> 0) / 4294967296;
+    };
+  };
+  var validateDelta = (delta) => {
+    finite3(delta, "delta");
     if (delta < 0) throw new RangeError("delta must not be negative");
     return Math.min(delta, COMET_SHOWER_RULES.maxDelta);
   };
@@ -1915,7 +2053,7 @@ var NeonCampaign = (() => {
     const corridorWidth = shipWidth + COMET_SHOWER_RULES.corridorClearance;
     const minimum = Math.min(Math.max(shipSideClearance, corridorWidth / 2), width / 2);
     const maximum = width - minimum;
-    const random = randomFor(seed ^ Math.imul(burst + 3, 2654435769));
+    const random = randomFor2(seed ^ Math.imul(burst + 3, 2654435769));
     const side = random() < 0.5 ? -1 : 1;
     const center = clamp3(width * (side < 0 ? 0.22 + random() * 0.15 : 0.63 + random() * 0.15), minimum, maximum);
     return Object.freeze({
@@ -1963,7 +2101,7 @@ var NeonCampaign = (() => {
   }
   function makeCandidate(state, burst, ordinal, mode, attempt = 0) {
     const { width, height } = state, corridor = state.corridors[burst];
-    const random = randomFor(state.seed + burst * 1013 + ordinal * 7919 + mode * 211 + attempt * 65537);
+    const random = randomFor2(state.seed + burst * 1013 + ordinal * 7919 + mode * 211 + attempt * 65537);
     const speed = COMET_SHOWER_RULES.minSpeed + random() * (COMET_SHOWER_RULES.maxSpeed - COMET_SHOWER_RULES.minSpeed);
     const margin = 96, dangerSide = -corridor.side;
     let x, y, vx, vy, ax, ay, entryEdge;
@@ -1977,17 +2115,19 @@ var NeonCampaign = (() => {
       ax = -direction * (15 + random() * 35);
       ay = (random() * 2 - 1) * Math.min(28, height * 0.025);
     } else {
-      const laneMinimum = dangerSide < 0 ? 24 : corridor.right + 42;
-      const laneMaximum = dangerSide < 0 ? corridor.left - 42 : width - 24;
+      const lanes = [[24, corridor.left - 42, -1], [corridor.right + 42, width - 24, 1]].filter(([low, high]) => high - low >= 30);
+      const lane = lanes.length ? lanes[Math.floor(random() * lanes.length)] : null;
+      const laneSide = lane ? lane[2] : dangerSide;
+      const laneMinimum = lane ? lane[0] : 1, laneMaximum = lane ? lane[1] : 0;
       const referenceX = laneMinimum <= laneMaximum ? clamp3(width * (0.4 + random() * 0.2), laneMinimum, laneMaximum) : width / 2;
       y = mode === 1 ? -margin : height + margin;
       entryEdge = mode === 1 ? "top" : "bottom";
       const verticalDirection = mode === 1 ? 1 : -1;
-      ax = dangerSide * (16 + random() * 65) * (random() < 0.32 ? -1 : 1);
+      ax = laneSide * (16 + random() * 65) * (random() < 0.32 ? -1 : 1);
       ay = verticalDirection * (10 + random() * 20);
       const referenceY = height * (0.6 + random() * 0.24);
       const referenceTime = Math.abs(referenceY - y) / speed;
-      vx = dangerSide * (18 + random() * 130) - ax * referenceTime;
+      vx = laneSide * (18 + random() * 130) - ax * referenceTime;
       vx = clamp3(vx, -speed * 0.32, speed * 0.32);
       vy = verticalDirection * Math.sqrt(speed * speed - vx * vx);
       const time = (-Math.abs(vy) + Math.sqrt(vy * vy + 2 * Math.abs(ay) * Math.abs(referenceY - y))) / Math.abs(ay);
@@ -2036,7 +2176,8 @@ var NeonCampaign = (() => {
   }
   function makeComet(state, burst, ordinal) {
     const primaryMode = state.burstModes[burst];
-    const mode = ordinal > 0 && randomFor(state.seed + burst * 211 + ordinal * 2017)() < 0.25 ? 0 : primaryMode;
+    const roll = randomFor2(state.seed + burst * 211 + ordinal * 2017)();
+    const mode = ordinal === 0 || roll < 0.4 ? primaryMode : roll < 0.6 ? 0 : roll < 0.8 ? 1 : 2;
     for (let attempt = 0; attempt < 18; attempt++) {
       const item = makeCandidate(state, burst, ordinal, mode, attempt);
       if (item.x < -128 || item.x > state.width + 128) continue;
@@ -2054,12 +2195,12 @@ var NeonCampaign = (() => {
     shipWidth = COMET_SHOWER_RULES.shipWidth,
     shipSideClearance = COMET_SHOWER_RULES.shipSideClearance
   } = {}) {
-    for (const [label, value] of Object.entries({ width, height, seed, elapsed, shipWidth, shipSideClearance })) finite2(value, label);
+    for (const [label, value] of Object.entries({ width, height, seed, elapsed, shipWidth, shipSideClearance })) finite3(value, label);
     if (width < 250 || height < 300 || elapsed < 0 || shipWidth <= 0 || shipSideClearance < shipWidth / 2 || !["1.5", "1.9"].includes(stageId)) {
       throw new RangeError("Invalid comet shower route or viewport");
     }
     const normalizedSeed = Math.trunc(seed) >>> 0;
-    const random = randomFor(normalizedSeed ^ 2230561051), burstModes = [0, 1, 2];
+    const random = randomFor2(normalizedSeed ^ 2230561051), burstModes = [0, 1, 2];
     for (let index = burstModes.length - 1; index > 0; index--) {
       const swap = Math.floor(random() * (index + 1));
       [burstModes[index], burstModes[swap]] = [burstModes[swap], burstModes[index]];
@@ -2072,9 +2213,12 @@ var NeonCampaign = (() => {
       const warningAt = at - COMET_SHOWER_RULES.warningSeconds;
       if (warningAt <= elapsed) continue;
       schedule.push({ at: warningAt, kind: "warning", burst });
-      const count = burst === 1 ? 4 : 3;
-      for (let ordinal = 0; ordinal < count; ordinal++) {
-        schedule.push({ at: at + ordinal * 0.42, kind: "spawn", burst, ordinal });
+      const count = COMET_SHOWER_RULES.burstSizes[burst];
+      const [gapLow, gapHigh] = COMET_SHOWER_RULES.spawnGap;
+      const timing = randomFor2(normalizedSeed ^ Math.imul(burst + 11, 668265263));
+      for (let ordinal = 0, offset = 0; ordinal < count; ordinal++) {
+        schedule.push({ at: at + offset, kind: "spawn", burst, ordinal });
+        offset += gapLow + timing() * (gapHigh - gapLow);
       }
     }
     schedule.sort((left, right) => left.at - right.at);
@@ -2857,7 +3001,7 @@ var NeonCampaign = (() => {
 
   // src/game/animation/ch01-animator.js
   var EPSILON_MS = 1e-7;
-  var finite3 = (value, name) => {
+  var finite4 = (value, name) => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
@@ -2909,10 +3053,10 @@ var NeonCampaign = (() => {
     bankThreshold = 16,
     initialState = "spawn"
   } = {}) {
-    finite3(maxHp, "maxHp");
-    finite3(hp, "hp");
-    finite3(maxDeltaSeconds, "maxDeltaSeconds");
-    finite3(bankThreshold, "bankThreshold");
+    finite4(maxHp, "maxHp");
+    finite4(hp, "hp");
+    finite4(maxDeltaSeconds, "maxDeltaSeconds");
+    finite4(bankThreshold, "bankThreshold");
     if (maxHp <= 0 || maxDeltaSeconds <= 0 || maxDeltaSeconds > 1 || bankThreshold < 0) {
       throw new RangeError("Invalid CH-01 animator bounds");
     }
@@ -2966,13 +3110,13 @@ var NeonCampaign = (() => {
       return true;
     }
     function update(dt, sample = {}) {
-      finite3(dt, "dt");
+      finite4(dt, "dt");
       if (dt < 0) throw new RangeError("dt must be nonnegative");
-      const nextMax = sample.maxHp === void 0 ? maximumHealth : finite3(sample.maxHp, "maxHp");
+      const nextMax = sample.maxHp === void 0 ? maximumHealth : finite4(sample.maxHp, "maxHp");
       if (nextMax <= 0) throw new RangeError("maxHp must be positive");
-      const nextHealth = clamp4(sample.hp === void 0 ? health : finite3(sample.hp, "hp"), 0, nextMax);
-      const nextVx = sample.vx === void 0 ? vx : finite3(sample.vx, "vx");
-      const nextVy = sample.vy === void 0 ? vy : finite3(sample.vy, "vy");
+      const nextHealth = clamp4(sample.hp === void 0 ? health : finite4(sample.hp, "hp"), 0, nextMax);
+      const nextVx = sample.vx === void 0 ? vx : finite4(sample.vx, "vx");
+      const nextVy = sample.vy === void 0 ? vy : finite4(sample.vy, "vy");
       if (dt === 0) return [];
       if (!animations[state].terminal) {
         const lostHealth = nextHealth < health;
@@ -3252,9 +3396,10 @@ var NeonCampaign = (() => {
   }
 
   // src/game/combat/classic-pursuit.js
-  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v4";
+  var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v5";
   var clamp7 = (value, low, high) => Math.max(low, Math.min(high, value));
   var approach = (value, target, amount) => value + clamp7(target - value, -amount, amount);
+  var MAX_LATERAL_SPEED = 176;
   var profiles = Object.freeze({
     raider: Object.freeze({
       warning: 0.32,
@@ -3270,7 +3415,10 @@ var NeonCampaign = (() => {
       depthSweep: 25,
       projectileSpeed: 360,
       leadSeconds: 0.32,
-      damage: 14
+      damage: 14,
+      volleys: Object.freeze({ single: 0.45, double: 0.35, spread: 0.2 }),
+      flipChance: 0.7,
+      dashChance: 0.15
     }),
     scout: Object.freeze({
       warning: 0.38,
@@ -3286,7 +3434,10 @@ var NeonCampaign = (() => {
       depthSweep: 32,
       projectileSpeed: 335,
       leadSeconds: 0.22,
-      damage: 12
+      damage: 12,
+      volleys: Object.freeze({ single: 0.5, double: 0.15, spread: 0.35 }),
+      flipChance: 0.6,
+      dashChance: 0.1
     }),
     interceptor: Object.freeze({
       warning: 0.3,
@@ -3302,7 +3453,10 @@ var NeonCampaign = (() => {
       depthSweep: 40,
       projectileSpeed: 390,
       leadSeconds: 0.38,
-      damage: 15
+      damage: 15,
+      volleys: Object.freeze({ single: 0.25, double: 0.45, spread: 0.3 }),
+      flipChance: 0.75,
+      dashChance: 0.35
     })
   });
   function observePlayer(enemy, player, interval) {
@@ -3324,6 +3478,22 @@ var NeonCampaign = (() => {
     value = Math.imul(value ^ value >>> 16, 3266489909);
     return ((value ^ value >>> 13) >>> 0) / 4294967296;
   }
+  function nextRandom(enemy) {
+    enemy.rng = enemy.rng + 1831565813 >>> 0;
+    let value = Math.imul(enemy.rng ^ enemy.rng >>> 15, 1 | enemy.rng);
+    value ^= value + Math.imul(value ^ value >>> 7, 61 | value);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  }
+  function chooseVolley(enemy, weights) {
+    if (enemy.fired === 0) return "single";
+    let roll = nextRandom(enemy);
+    for (const [kind, weight] of Object.entries(weights)) {
+      roll -= weight;
+      if (roll <= 0) return kind;
+    }
+    return "single";
+  }
+  var CLASSIC_PURSUIT_VOLLEY = Object.freeze({ maxProjectiles: 3, doubleGap: 0.2, spreadAngle: 0.24, cone: 0.65 });
   function createClassicPursuer({
     x,
     width = 720,
@@ -3381,6 +3551,10 @@ var NeonCampaign = (() => {
       firedSerial: -1,
       previousHp: null,
       chargeStartedAt: null,
+      rng: (Math.imul(Math.trunc(seed) >>> 0, 2654435769) ^ 1374496523) >>> 0,
+      volley: "single",
+      followUp: null,
+      dashing: false,
       animator: createCh01Animator({ hp: 2, maxHp: 2 })
     };
   }
@@ -3392,12 +3566,12 @@ var NeonCampaign = (() => {
     if (![item.x, item.y, item.s, player?.x, player?.y].every(Number.isFinite)) {
       throw new TypeError("Finite pursuer and player positions required");
     }
-    const step = Math.min(dt, 0.05), profile = profiles[enemy.role];
+    const step = Math.min(dt, 0.05), profile2 = profiles[enemy.role];
     const hp = item.hp ?? 2, maxHp = item.maxHp ?? 2;
     enemy.baseSpeed ??= Math.max(1, item.s);
     enemy.age += step;
     enemy.stateAge += step;
-    observePlayer(enemy, player, profile.sampleInterval);
+    observePlayer(enemy, player, profile2.sampleInterval);
     const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
     enemy.previousHp = hp;
     const enter = (state) => {
@@ -3407,14 +3581,14 @@ var NeonCampaign = (() => {
     const combatX = (value) => clamp7(value, enemy.combatMinX, enemy.combatMaxX);
     const minimumHoldY = enemy.minAttackY + 52;
     const maximumHoldY = Math.max(minimumHoldY, Math.min(enemy.height * 0.52, player.y - 350));
-    const flightPhase = enemy.phase + enemy.age * profile.orbitRate * enemy.manoeuvreRate;
-    const depthArc = Math.cos(flightPhase) * profile.depthSweep * (["charge", "fire"].includes(enemy.state) ? 0.35 : 1);
+    const flightPhase = enemy.phase + enemy.age * profile2.orbitRate * enemy.manoeuvreRate;
+    const depthArc = Math.cos(flightPhase) * profile2.depthSweep * (["charge", "fire"].includes(enemy.state) ? 0.35 : 1);
     enemy.holdY = clamp7(
-      enemy.height * profile.depth + depthArc + Math.sin(enemy.phase) * 12,
+      enemy.height * profile2.depth + depthArc + Math.sin(enemy.phase) * 12,
       minimumHoldY,
       maximumHoldY
     );
-    const canAttack = () => hp > 0 && enemy.state !== "retreat" && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 && enemy.fired < profile.maxAttacks;
+    const canAttack = () => hp > 0 && enemy.state !== "retreat" && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 && enemy.fired < profile2.maxAttacks;
     const clearCharge = () => {
       enemy.telegraph = 0;
       enemy.attackScheduled = false;
@@ -3424,30 +3598,34 @@ var NeonCampaign = (() => {
       const sample = enemy.observation;
       const observedX = combatX(sample.x + clamp7(sample.vx * 0.18, -64, 64));
       const span = Math.min(enemy.width * 0.24, 140);
-      const sweep = Math.sin(flightPhase) * span * profile.lateralSweep * enemy.sweepScale;
+      const sweep = Math.sin(flightPhase) * span * profile2.lateralSweep * enemy.sweepScale;
       return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span * 0.68 + sweep : enemy.role === "scout" ? enemy.baseX * 0.45 + observedX * 0.55 + enemy.side * span * 0.2 + sweep : observedX + enemy.side * span * 0.42 + sweep);
     };
     const reposition = () => {
       clearCharge();
-      enemy.side *= -1;
+      enemy.followUp = null;
+      if (nextRandom(enemy) < profile2.flipChance) enemy.side *= -1;
+      enemy.dashing = nextRandom(enemy) < profile2.dashChance;
       enemy.repositionCount++;
       enemy.targetX = laneTarget();
-      enemy.nextTargetAt = enemy.age + profile.sampleInterval;
-      enemy.nextFire = enemy.age + profile.recovery;
+      enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
+      enemy.nextFire = enemy.age + profile2.recovery * (0.65 + nextRandom(enemy) * 0.7);
       enter("reposition");
     };
     const retreat = (reason) => {
       clearCharge();
+      enemy.followUp = null;
       enemy.retreatReason = reason;
       enemy.targetX = player.x < enemy.width / 2 ? enemy.width - 56 : 56;
       enter("retreat");
     };
     if (hp <= 0) {
       clearCharge();
+      enemy.followUp = null;
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-      if (heldFor >= profile.holdSeconds || enemy.age >= profile.holdSeconds + 8) {
+      if (heldFor >= profile2.holdSeconds || enemy.age >= profile2.holdSeconds + 8) {
         retreat("time-limit");
       } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {
         reposition();
@@ -3459,26 +3637,26 @@ var NeonCampaign = (() => {
     if (enemy.state === "brake" && Math.abs(item.y - enemy.holdY) <= 32 && Math.abs(item.s) <= 62 && item.x >= enemy.combatMinX && item.x <= enemy.combatMaxX) {
       enemy.combatStartedAt ??= enemy.age;
       enemy.targetX = laneTarget();
-      enemy.nextTargetAt = enemy.age + profile.sampleInterval;
+      enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
       enter("track");
     }
     if (enemy.state === "fire" && enemy.stateAge >= 0.34) {
-      if (enemy.fired >= profile.maxAttacks) retreat("attack-budget");
+      if (enemy.fired >= profile2.maxAttacks) retreat("attack-budget");
       else reposition();
     }
     if (enemy.state === "reposition" && enemy.age >= enemy.nextFire) enter("track");
     if (enemy.state === "reposition" && enemy.age >= enemy.nextTargetAt) {
       enemy.targetX = laneTarget();
-      enemy.nextTargetAt = enemy.age + profile.sampleInterval;
+      enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
     }
     if (enemy.state === "track") {
       if (enemy.age >= enemy.nextTargetAt) {
         enemy.targetX = laneTarget();
-        enemy.nextTargetAt = enemy.age + profile.sampleInterval;
+        enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
       }
       if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
         const sample = enemy.observation;
-        enemy.leadOffset = clamp7(sample.vx * profile.leadSeconds, -110, 110);
+        enemy.leadOffset = clamp7(sample.vx * profile2.leadSeconds, -110, 110);
         enemy.observedTarget = Object.freeze({ ...sample });
         enemy.lockedTarget = Object.freeze({
           x: clamp7(sample.x + enemy.leadOffset, 24, enemy.width - 24),
@@ -3487,19 +3665,21 @@ var NeonCampaign = (() => {
         enemy.targetX = item.x;
         enemy.chargeStartedAt = enemy.age;
         enemy.chargeSerial++;
+        enemy.volley = chooseVolley(enemy, profile2.volleys);
         enter("charge");
       }
     }
     if (enemy.state === "charge") {
       const warningElapsed = enemy.age - enemy.chargeStartedAt;
-      enemy.telegraph = clamp7(warningElapsed / profile.warning, 0, 1);
-      if (warningElapsed >= profile.warning && !enemy.attackScheduled) {
+      enemy.telegraph = clamp7(warningElapsed / profile2.warning, 0, 1);
+      if (warningElapsed >= profile2.warning && !enemy.attackScheduled) {
         enemy.attackScheduled = enemy.animator.request("attack");
       }
     }
     const previousX = item.x;
-    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp7((enemy.targetX - item.x) * 2.8, -profile.lateralSpeed, profile.lateralSpeed);
-    enemy.vx = approach(enemy.vx, desiredVelocity, profile.acceleration * step);
+    const lateralLimit = enemy.dashing && enemy.state === "reposition" ? Math.min(MAX_LATERAL_SPEED, profile2.lateralSpeed * 1.3) : profile2.lateralSpeed;
+    const desiredVelocity = ["charge", "fire", "destroyed"].includes(enemy.state) ? 0 : clamp7((enemy.targetX - item.x) * 2.8, -lateralLimit, lateralLimit);
+    enemy.vx = approach(enemy.vx, desiredVelocity, profile2.acceleration * step);
     const minimumX = enemy.state === "retreat" ? 52 : Math.min(item.x, enemy.combatMinX);
     const maximumX = enemy.state === "retreat" ? enemy.width - 52 : Math.max(item.x, enemy.combatMaxX);
     item.x = clamp7(item.x + enemy.vx * step, minimumX, maximumX);
@@ -3507,24 +3687,24 @@ var NeonCampaign = (() => {
     const desiredVertical = enemy.state === "destroyed" ? 0 : enemy.state === "retreat" ? enemy.baseSpeed * 1.35 : clamp7((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
     item.s = approach(item.s, desiredVertical, enemy.baseSpeed * 1.8 * step);
     const events = enemy.animator.update(step, { hp, maxHp, vx: enemy.vx, vy: item.s });
-    for (const event2 of events) {
-      if (event2.name === "attackCanceled" && enemy.state === "charge") reposition();
-      if (event2.name !== "fire" || enemy.state !== "charge" || !enemy.attackScheduled || enemy.firedSerial === enemy.chargeSerial || !canAttack()) continue;
+    const launch = (angleOffset) => {
       const aim = enemy.lockedTarget;
       const dy = Math.max(1, aim.y - (item.y + 38));
-      const dx = clamp7(aim.x - item.x, -dy * 0.65, dy * 0.65);
-      const length = Math.hypot(dx, dy), speed = profile.projectileSpeed;
-      const shot = {
+      const dx = clamp7(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
+      const limit = Math.atan(CLASSIC_PURSUIT_VOLLEY.cone);
+      const angle = clamp7(Math.atan2(dx, dy) + angleOffset, -limit, limit);
+      const speed = profile2.projectileSpeed;
+      spawnProjectile({
         type: "meteor",
         x: item.x,
         baseX: item.x,
         y: item.y + 38,
         r: 9,
         s: speed,
-        vx: dx / length * speed,
-        vy: dy / length * speed,
+        vx: Math.sin(angle) * speed,
+        vy: Math.cos(angle) * speed,
         life: 5,
-        damage: profile.damage,
+        damage: profile2.damage,
         rot: 0,
         rs: 0,
         p: 0,
@@ -3538,15 +3718,29 @@ var NeonCampaign = (() => {
         tacticsVersion: CLASSIC_PURSUIT_VERSION,
         attackSerial: enemy.chargeSerial,
         role: enemy.role,
+        volley: enemy.volley,
         observedTarget: { ...enemy.observedTarget },
         leadOffset: enemy.leadOffset
-      };
+      });
+    };
+    if (enemy.followUp !== null && enemy.state === "fire" && enemy.age >= enemy.followUp) {
+      enemy.followUp = null;
+      if (canAttack() && enemy.lockedTarget) launch(0);
+    }
+    for (const event2 of events) {
+      if (event2.name === "attackCanceled" && enemy.state === "charge") reposition();
+      if (event2.name !== "fire" || enemy.state !== "charge" || !enemy.attackScheduled || enemy.firedSerial === enemy.chargeSerial || !canAttack()) continue;
       enemy.firedSerial = enemy.chargeSerial;
       enemy.fired++;
       enemy.telegraph = 0;
       enemy.attackScheduled = false;
       enter("fire");
-      spawnProjectile(shot);
+      if (enemy.volley === "spread") {
+        for (const offset of [0, -CLASSIC_PURSUIT_VOLLEY.spreadAngle, CLASSIC_PURSUIT_VOLLEY.spreadAngle]) launch(offset);
+      } else {
+        launch(0);
+        if (enemy.volley === "double") enemy.followUp = enemy.age + CLASSIC_PURSUIT_VOLLEY.doubleGap;
+      }
     }
   }
 
@@ -4162,7 +4356,7 @@ var NeonCampaign = (() => {
 
   // src/game/animation/ch02-animator.js
   var EPSILON_MS2 = 1e-7;
-  var finite4 = (value, name) => {
+  var finite5 = (value, name) => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
@@ -4214,10 +4408,10 @@ var NeonCampaign = (() => {
     bankThreshold = 16,
     initialState = "spawn"
   } = {}) {
-    finite4(maxHp, "maxHp");
-    finite4(hp, "hp");
-    finite4(maxDeltaSeconds, "maxDeltaSeconds");
-    finite4(bankThreshold, "bankThreshold");
+    finite5(maxHp, "maxHp");
+    finite5(hp, "hp");
+    finite5(maxDeltaSeconds, "maxDeltaSeconds");
+    finite5(bankThreshold, "bankThreshold");
     if (maxHp <= 0 || maxDeltaSeconds <= 0 || maxDeltaSeconds > 1 || bankThreshold < 0) {
       throw new RangeError("Invalid CH-02 animator bounds");
     }
@@ -4271,13 +4465,13 @@ var NeonCampaign = (() => {
       return true;
     }
     function update(dt, sample = {}) {
-      finite4(dt, "dt");
+      finite5(dt, "dt");
       if (dt < 0) throw new RangeError("dt must be nonnegative");
-      const nextMax = sample.maxHp === void 0 ? maximumHealth : finite4(sample.maxHp, "maxHp");
+      const nextMax = sample.maxHp === void 0 ? maximumHealth : finite5(sample.maxHp, "maxHp");
       if (nextMax <= 0) throw new RangeError("maxHp must be positive");
-      const nextHealth = clamp8(sample.hp === void 0 ? health : finite4(sample.hp, "hp"), 0, nextMax);
-      const nextVx = sample.vx === void 0 ? vx : finite4(sample.vx, "vx");
-      const nextVy = sample.vy === void 0 ? vy : finite4(sample.vy, "vy");
+      const nextHealth = clamp8(sample.hp === void 0 ? health : finite5(sample.hp, "hp"), 0, nextMax);
+      const nextVx = sample.vx === void 0 ? vx : finite5(sample.vx, "vx");
+      const nextVy = sample.vy === void 0 ? vy : finite5(sample.vy, "vy");
       if (dt === 0) return [];
       if (!animations2[state].terminal) {
         const lostHealth = nextHealth < health;
@@ -5051,18 +5245,20 @@ var NeonCampaign = (() => {
 
   // src/game/combat/guardian-atlas.js
   var clamp11 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
-  var finite5 = (value, name) => {
+  var finite6 = (value, name) => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
   var GUARDIAN_ATLAS_RULES = Object.freeze({
-    version: "guardian-atlas-v7",
+    version: "guardian-atlas-v8",
     maxHp: 96,
     maxDelta: 0.05,
     entrySeconds: 2.2,
     closedSeconds: 0.85,
+    // v8: ventana de núcleo más corta (antes 3,8 s) y más corta aún en la fase 2.
     openingSeconds: 0.65,
-    exposedSeconds: 3.8,
+    exposedSeconds: 3,
+    exposedPhaseTwoSeconds: 2.5,
     closingSeconds: 0.55,
     phaseBreakSeconds: 1.25,
     shutdownSeconds: 1.55,
@@ -5083,8 +5279,23 @@ var NeonCampaign = (() => {
     attacks: Object.freeze({
       basic: Object.freeze({ chargeSeconds: 0.36, volleyTimes: Object.freeze([0]), damage: 13 }),
       medium: Object.freeze({ chargeSeconds: 0.52, volleyTimes: Object.freeze([0, 0.34]), damage: 15 }),
-      superpower: Object.freeze({ chargeSeconds: 0.86, volleyTimes: Object.freeze([0, 0.45]), damage: 22 })
+      superpower: Object.freeze({ chargeSeconds: 0.86, volleyTimes: Object.freeze([0, 0.45]), damage: 22 }),
+      // Ataque fulminante: carga larga y visible, un muro de orbes pesados con
+      // un único hueco alcanzable que obliga a moverse.
+      fulminant: Object.freeze({ chargeSeconds: 1.05, volleyTimes: Object.freeze([0]), damage: 26 })
     }),
+    fulminant: Object.freeze({
+      spacing: 64,
+      gapHalf: 115,
+      phaseTwoGapHalf: 100,
+      speed: 390,
+      phaseTwoSpeed: 440,
+      minPlayerDistance: 170,
+      everyAttacks: Object.freeze([3, 5]),
+      phaseTwoEveryAttacks: Object.freeze([2, 4])
+    }),
+    // Ataques encadenados antes de abrir el núcleo, una vez presentadas las rutinas.
+    chains: Object.freeze({ phaseOneChance: 0.45, phaseTwoMinimum: 1, phaseTwoExtraChance: 0.4 }),
     patterns: Object.freeze({
       duelBurst: Object.freeze({ volleyTimes: Object.freeze([0, 0.24]), projectiles: 2 }),
       staggeredSalvo: Object.freeze({ volleyTimes: Object.freeze([0, 0.25, 0.58]), projectiles: 3 }),
@@ -5099,9 +5310,9 @@ var NeonCampaign = (() => {
     playerY = height - 135,
     seed = 1096043585
   } = {}) {
-    finite5(width, "width");
-    finite5(height, "height");
-    finite5(playerY, "playerY");
+    finite6(width, "width");
+    finite6(height, "height");
+    finite6(playerY, "playerY");
     if (width < 280 || height < 540 || playerY < 180 || playerY > height - 16 || !Number.isInteger(seed)) throw new RangeError("Invalid Guardian Atlas arena");
     const radius = Math.min(104, width * 0.19);
     const targetY = Math.max(64, Math.min(height * 0.22, playerY - 240));
@@ -5148,6 +5359,9 @@ var NeonCampaign = (() => {
       previousPatterns: { basic: null, medium: null, superpower: null },
       tacticalManeuver: "patrol",
       attacksSinceSuperpower: 0,
+      attacksSinceFulminant: 0,
+      nextFulminantAfter: 4,
+      chainRemaining: 0,
       motionDecision: 0,
       nextMotionAt: 0,
       motionX: width / 2,
@@ -5161,7 +5375,7 @@ var NeonCampaign = (() => {
       recordId: "chronos-sabotage-atlas-log"
     };
   }
-  function nextRandom(boss) {
+  function nextRandom2(boss) {
     let value = boss.seed;
     value ^= value << 13;
     value ^= value >>> 17;
@@ -5214,13 +5428,13 @@ var NeonCampaign = (() => {
     if (tacticalAttack && boss.tacticalManeuver === "flank") {
       boss.motionSide = boss.telegraph.sweepDirection;
     }
-    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom(boss) * 0.17);
+    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom2(boss) * 0.17);
     const lead = clamp11(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
     const target = exposed ? boss.x + boss.motionSide * flank : tacticalAttack && boss.tacticalManeuver === "withdraw" ? boss.width / 2 + boss.motionSide * space * 0.34 : sample.x + lead + boss.motionSide * flank;
     boss.motionX = clamp11(target, bounds.left, bounds.right);
     const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
     boss.motionY = clamp11(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
-    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom(boss) * 0.5);
+    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom2(boss) * 0.5);
     boss.motionDecision++;
   }
   function moveAtlas(boss, dt) {
@@ -5249,12 +5463,16 @@ var NeonCampaign = (() => {
     if (next === "exposed") events.push({
       type: "coreExposed",
       phase: boss.phase,
-      seconds: GUARDIAN_ATLAS_RULES.exposedSeconds,
+      seconds: boss.phase === 1 ? GUARDIAN_ATLAS_RULES.exposedSeconds : GUARDIAN_ATLAS_RULES.exposedPhaseTwoSeconds,
       coreRadius: boss.coreRadius
     });
     if (next === "closing") events.push({ type: "coreClosed", phase: boss.phase });
   }
-  function beginCharge(boss, player, events) {
+  function scheduleFulminant(boss) {
+    const [low, high] = boss.phase === 1 ? GUARDIAN_ATLAS_RULES.fulminant.everyAttacks : GUARDIAN_ATLAS_RULES.fulminant.phaseTwoEveryAttacks;
+    boss.nextFulminantAfter = low + Math.floor(nextRandom2(boss) * (high - low + 1));
+  }
+  function beginCharge(boss, player, events, chained = false) {
     boss.attackId++;
     boss.phaseAttacks++;
     boss.volley = 0;
@@ -5264,30 +5482,41 @@ var NeonCampaign = (() => {
     if (boss.phaseAttacks <= 3) {
       boss.attackTier = tiers[boss.phaseAttacks - 1];
       boss.attackDecision = "introduce-routine";
+    } else if (boss.attacksSinceFulminant >= boss.nextFulminantAfter) {
+      boss.attackTier = "fulminant";
+      boss.attackDecision = "crono-rupture";
     } else if (boss.attacksSinceSuperpower >= 3) {
       boss.attackTier = "superpower";
       boss.attackDecision = "reactor-recharged";
     } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * 0.27) {
-      boss.attackTier = "medium";
+      boss.attackTier = nextRandom2(boss) < 0.7 ? "medium" : "basic";
       boss.attackDecision = "intercept-flank";
     } else {
-      boss.attackTier = boss.attackTier === "basic" ? "medium" : "basic";
+      boss.attackTier = nextRandom2(boss) < 0.5 ? "medium" : "basic";
       boss.attackDecision = "pressure-observed-lane";
     }
     boss.attacksSinceSuperpower = boss.attackTier === "superpower" ? 0 : boss.attacksSinceSuperpower + 1;
+    if (boss.attackTier === "fulminant") {
+      boss.attacksSinceFulminant = 0;
+      scheduleFulminant(boss);
+    } else if (boss.phaseAttacks > 3) boss.attacksSinceFulminant++;
+    if (!chained) {
+      const chains = GUARDIAN_ATLAS_RULES.chains;
+      boss.chainRemaining = boss.phase === 2 ? chains.phaseTwoMinimum + (nextRandom2(boss) < chains.phaseTwoExtraChance ? 1 : 0) : boss.phaseAttacks <= 3 ? 0 : nextRandom2(boss) < chains.phaseOneChance ? 1 : 0;
+    }
     const tier = boss.attackTier;
-    let pattern = tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
-    if (boss.phaseAttacks > 3 || boss.phase === 2) {
+    let pattern = tier === "fulminant" ? "cronoRupture" : tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
+    if ((boss.phaseAttacks > 3 || boss.phase === 2) && tier !== "fulminant") {
       const options = tier === "basic" ? ["duelBurst"] : tier === "medium" ? Math.abs(sample.vx) >= 85 ? ["flankSalvo", "staggeredSalvo"] : ["staggeredSalvo", "flankSalvo"] : ["reactorSweep", "reactorPincer"];
       const candidates = options.filter((candidate) => candidate !== boss.previousPatterns[tier]);
-      pattern = candidates[Math.floor(nextRandom(boss) * candidates.length)] || options[0];
+      pattern = candidates[Math.floor(nextRandom2(boss) * candidates.length)] || options[0];
     }
     boss.previousPatterns[tier] = pattern;
     const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp11(sample.vx * 0.28, -100, 100);
     const originY = boss.y + boss.r * 0.7;
     boss.lastPattern = pattern;
     const sweepDirection = sample.vx ? Math.sign(sample.vx) : sample.x < boss.width / 2 ? 1 : -1;
-    boss.tacticalManeuver = pattern === "flankSalvo" || pattern === "staggeredSalvo" ? "flank" : tier === "superpower" ? "withdraw" : "pressure";
+    boss.tacticalManeuver = tier === "fulminant" ? "withdraw" : pattern === "flankSalvo" || pattern === "staggeredSalvo" ? "flank" : tier === "superpower" ? "withdraw" : "pressure";
     boss.nextMotionAt = boss.age;
     boss.telegraph = {
       kind: "mechanicalDeployment",
@@ -5313,9 +5542,15 @@ var NeonCampaign = (() => {
     };
     transition(boss, "charge", events);
     events.push({ type: "warning", phase: boss.phase, ...boss.telegraph });
+    if (tier === "fulminant") events.push({
+      type: "fulminant",
+      phase: boss.phase,
+      attackId: boss.attackId,
+      seconds: attackRules(boss).chargeSeconds
+    });
   }
   function projectile(boss, x, y, vx, vy, ordinal, targetX) {
-    const aim = boss.telegraph, heavy = boss.attackTier === "superpower";
+    const aim = boss.telegraph, heavy = boss.attackTier === "superpower" || boss.attackTier === "fulminant";
     const damage = boss.attackTier === "basic" ? phaseRules(boss).projectileDamage : attackRules(boss).damage;
     return {
       type: "meteor",
@@ -5354,7 +5589,52 @@ var NeonCampaign = (() => {
       maxHp: 1
     };
   }
+  function fireCronoRupture(boss, events, fireTime) {
+    const rule = GUARDIAN_ATLAS_RULES.fulminant, aim = boss.telegraph;
+    const originY = boss.y + boss.r * 0.7;
+    const gapHalf = Math.min(boss.phase === 1 ? rule.gapHalf : rule.phaseTwoGapHalf, boss.width * 0.3);
+    const low = gapHalf + 12, high = boss.width - gapHalf - 12;
+    let gapX = (low + high) / 2, best = -1;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const candidate = low + nextRandom2(boss) * Math.max(0, high - low);
+      const distance = Math.abs(candidate - aim.observedX);
+      if (distance >= rule.minPlayerDistance) {
+        gapX = candidate;
+        break;
+      }
+      if (distance > best) {
+        best = distance;
+        gapX = candidate;
+      }
+    }
+    const spacing = Math.min(rule.spacing, (boss.width - 48) / 8);
+    const speed = boss.phase === 1 ? rule.speed : rule.phaseTwoSpeed;
+    let ordinal = 0;
+    for (let x = 24; x <= boss.width - 24 + 1e-9 && ordinal < GUARDIAN_ATLAS_RULES.maxProjectilesPerAttack; x += spacing) {
+      if (Math.abs(x - gapX) < gapHalf) continue;
+      const shot = projectile(boss, x, originY, 0, speed, ordinal++, x);
+      shot.targetY = Math.max(originY + 180, aim.targetY);
+      shot.fulminant = true;
+      boss.attackClearanceSeconds = Math.max(
+        boss.attackClearanceSeconds,
+        fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy
+      );
+      events.push({ type: "projectile", projectile: shot });
+    }
+    events.push({
+      type: "volley",
+      attackId: boss.attackId,
+      phase: boss.phase,
+      attackTier: boss.attackTier,
+      volley: boss.volley,
+      x: boss.x,
+      y: originY,
+      fulminant: true
+    });
+    boss.volley++;
+  }
   function fireVolley(boss, events, fireTime = boss.stateTime) {
+    if (boss.attackTier === "fulminant") return fireCronoRupture(boss, events, fireTime);
     const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === "superpower";
     const crossfire = ["crossfire", "flankSalvo", "reactorPincer"].includes(aim.pattern);
     const originSide = (boss.volley === 0 ? -1 : 1) * (aim.pattern === "crossfire" ? 1 : aim.sweepDirection);
@@ -5409,7 +5689,7 @@ var NeonCampaign = (() => {
       boss.attackClearanceSeconds + 0.12
     );
     if (boss.state === "opening") return rule.openingSeconds;
-    if (boss.state === "exposed") return rule.exposedSeconds;
+    if (boss.state === "exposed") return boss.phase === 1 ? rule.exposedSeconds : rule.exposedPhaseTwoSeconds;
     if (boss.state === "closing") return rule.closingSeconds;
     if (boss.state === "phaseBreak") return rule.phaseBreakSeconds;
     if (boss.state === "disabled") return rule.shutdownSeconds;
@@ -5432,7 +5712,10 @@ var NeonCampaign = (() => {
       fireVolley(boss, events);
     } else if (boss.state === "fire") {
       boss.telegraph = null;
-      transition(boss, "opening", events);
+      if (boss.chainRemaining > 0) {
+        boss.chainRemaining--;
+        beginCharge(boss, player, events, true);
+      } else transition(boss, "opening", events);
     } else if (boss.state === "opening") transition(boss, "exposed", events);
     else if (boss.state === "exposed") transition(boss, "closing", events);
     else if (boss.state === "closing" || boss.state === "phaseBreak") transition(boss, "closed", events);
@@ -5450,7 +5733,7 @@ var NeonCampaign = (() => {
   }
   function advanceGuardianAtlas(boss, dt, player, emit = () => {
   }) {
-    finite5(dt, "delta");
+    finite6(dt, "delta");
     if (dt < 0) throw new RangeError("Finite nonnegative delta required");
     if (typeof emit !== "function") throw new TypeError("Event callback required");
     if (!player || !Number.isFinite(player.x)) throw new TypeError("Player x must be finite");
@@ -5483,7 +5766,7 @@ var NeonCampaign = (() => {
     return events;
   }
   function hitGuardianAtlas(boss, damage = 1, contact = null) {
-    finite5(damage, "damage");
+    finite6(damage, "damage");
     if (damage <= 0) throw new RangeError("Damage must be positive");
     if (contact !== null) {
       if (!contact || ![contact.x, contact.y, contact.radius ?? 0].every(Number.isFinite) || (contact.radius ?? 0) < 0) throw new TypeError("Finite core contact required");
@@ -5511,6 +5794,9 @@ var NeonCampaign = (() => {
       boss.phase = 2;
       boss.phaseAttacks = 0;
       boss.telegraph = null;
+      boss.chainRemaining = 0;
+      boss.attacksSinceFulminant = 0;
+      scheduleFulminant(boss);
       transition(boss, "phaseBreak", events);
       events.push({ type: "phase", phase: 2, clearProjectiles: true });
     }
@@ -5980,7 +6266,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/combat/classic-weapons.js
-  var finite6 = (value, name) => {
+  var finite7 = (value, name) => {
     if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
     return value;
   };
@@ -6068,7 +6354,7 @@ var NeonCampaign = (() => {
     return type;
   }
   function rechargeInterval(seconds) {
-    finite6(seconds, "recharge interval");
+    finite7(seconds, "recharge interval");
     if (seconds < 1 || seconds > CLASSIC_WEAPON_RULES.rechargeSeconds) {
       throw new RangeError("Recharge interval must be between 1 and 2 seconds");
     }
@@ -6082,8 +6368,8 @@ var NeonCampaign = (() => {
     rechargeSeconds = CLASSIC_WEAPON_RULES.rechargeSeconds
   } = {}) {
     rechargeInterval(rechargeSeconds);
-    finite6(width, "width");
-    finite6(height, "height");
+    finite7(width, "width");
+    finite7(height, "height");
     knownType(type);
     if (width < 240 || height < 240) throw new RangeError("Invalid weapon arena");
     if (!Array.isArray(unlocked) || unlocked.length === 0) {
@@ -6164,9 +6450,9 @@ var NeonCampaign = (() => {
     return state.missileCooldown <= 1e-9 && state.projectiles.length < CLASSIC_WEAPON_RULES.maxProjectiles;
   }
   function triggerClassicMissile(state, { x, y, angle = -Math.PI / 2, shotId } = {}) {
-    finite6(x, "origin x");
-    finite6(y, "origin y");
-    finite6(angle, "angle");
+    finite7(x, "origin x");
+    finite7(y, "origin y");
+    finite7(angle, "angle");
     if (typeof shotId !== "string" || !/^missile:[1-9]\d*$/.test(shotId) || !Number.isSafeInteger(Number(shotId.slice(8)))) throw new TypeError("Durable missile:N receipt required");
     const receipt = Number(shotId.slice(8));
     if (receipt <= state.missileSequence) return { accepted: false, reason: "duplicate", events: [], projectiles: [] };
@@ -6214,9 +6500,9 @@ var NeonCampaign = (() => {
     return { accepted: true, events: [event(state, "selected", { weapon: type })] };
   }
   function triggerClassicWeapon(state, { x, y, angle = -Math.PI / 2 } = {}) {
-    finite6(x, "origin x");
-    finite6(y, "origin y");
-    finite6(angle, "angle");
+    finite7(x, "origin x");
+    finite7(y, "origin y");
+    finite7(angle, "angle");
     if (!state.unlimitedFire && state.charges === 0) return { accepted: false, reason: "empty", events: [], projectiles: [] };
     if (state.cooldown > 1e-9) return { accepted: false, reason: "cooldown", events: [], projectiles: [] };
     const definition = tunedWeaponDefinition(state);
@@ -6261,7 +6547,7 @@ var NeonCampaign = (() => {
     return { accepted: true, shotId, events, projectiles };
   }
   function advanceClassicWeapons(state, delta) {
-    finite6(delta, "delta");
+    finite7(delta, "delta");
     if (delta < 0) throw new RangeError("Finite nonnegative delta required");
     if (delta === 0) return [];
     const dt = Math.min(delta, CLASSIC_WEAPON_RULES.maxDelta);
@@ -6345,7 +6631,7 @@ var NeonCampaign = (() => {
   var SIDE_CLEARANCE = 119;
   var NOSE_CLEARANCE = 158;
   var TAIL_CLEARANCE = 104;
-  function finite7(value, name) {
+  function finite8(value, name) {
     if (typeof value !== "number" || !Number.isFinite(value)) {
       throw new RangeError(`${name} must be finite`);
     }
@@ -6361,13 +6647,13 @@ var NeonCampaign = (() => {
     }
     if (state.active) {
       pointerId(state.id);
-      finite7(state.lastX, "lastX");
-      finite7(state.lastY, "lastY");
+      finite8(state.lastX, "lastX");
+      finite8(state.lastY, "lastY");
     }
   }
   function checkedBounds(bounds) {
     if (!bounds || typeof bounds !== "object") throw new TypeError("Flight bounds are required");
-    for (const key of ["minX", "maxX", "minY", "maxY"]) finite7(bounds[key], key);
+    for (const key of ["minX", "maxX", "minY", "maxY"]) finite8(bounds[key], key);
     if (bounds.minX > bounds.maxX || bounds.minY > bounds.maxY) {
       throw new RangeError("Flight bounds must be ordered");
     }
@@ -6375,11 +6661,11 @@ var NeonCampaign = (() => {
   }
   var clamp15 = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   function calculateFlightBounds({ width, height, hudBottom, controlsTop, shipScale = 1 }) {
-    finite7(width, "width");
-    finite7(height, "height");
-    finite7(hudBottom, "hudBottom");
-    finite7(controlsTop, "controlsTop");
-    finite7(shipScale, "shipScale");
+    finite8(width, "width");
+    finite8(height, "height");
+    finite8(hudBottom, "hudBottom");
+    finite8(controlsTop, "controlsTop");
+    finite8(shipScale, "shipScale");
     if (width <= 0 || height <= 0 || hudBottom < 0 || controlsTop > height || hudBottom > controlsTop || shipScale <= 0 || shipScale > 4) {
       throw new RangeError("A positive viewport and ordered HUD/control boundaries are required");
     }
@@ -6403,8 +6689,8 @@ var NeonCampaign = (() => {
   function beginFlightInput(state, { id, x, y }) {
     inputState(state);
     pointerId(id);
-    finite7(x, "x");
-    finite7(y, "y");
+    finite8(x, "x");
+    finite8(y, "y");
     if (state.active) return false;
     state.active = true;
     state.id = id;
@@ -6423,11 +6709,11 @@ var NeonCampaign = (() => {
   }) {
     inputState(state);
     pointerId(id);
-    finite7(x, "x");
-    finite7(y, "y");
-    finite7(targetX, "targetX");
-    finite7(targetY, "targetY");
-    finite7(sensitivity, "sensitivity");
+    finite8(x, "x");
+    finite8(y, "y");
+    finite8(targetX, "targetX");
+    finite8(targetY, "targetY");
+    finite8(sensitivity, "sensitivity");
     checkedBounds(bounds);
     if (sensitivity <= 0) throw new RangeError("Sensitivity must be positive");
     if (!state.active || state.id !== id) {
@@ -6439,8 +6725,8 @@ var NeonCampaign = (() => {
     }
     const nextX = targetX + (x - state.lastX) * sensitivity;
     const nextY = targetY + (y - state.lastY) * sensitivity;
-    finite7(nextX, "computed targetX");
-    finite7(nextY, "computed targetY");
+    finite8(nextX, "computed targetX");
+    finite8(nextY, "computed targetY");
     const moved = x !== state.lastX || y !== state.lastY;
     state.lastX = x;
     state.lastY = y;

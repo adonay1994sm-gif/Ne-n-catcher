@@ -1,21 +1,26 @@
 import {createCh01Animator} from '../animation/ch01-animator.js';
 
-export const CLASSIC_PURSUIT_VERSION = 'classic-pursuit-v4';
+export const CLASSIC_PURSUIT_VERSION = 'classic-pursuit-v5';
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 const approach = (value, target, amount) => value + clamp(target - value, -amount, amount);
+// Acelerón ocasional al reposicionarse, nunca por encima de este límite.
+const MAX_LATERAL_SPEED = 176;
 const profiles = Object.freeze({
   raider: Object.freeze({warning: .32, recovery: 1.25, maxAttacks: 8, holdSeconds: 20,
     depth: .30, lateralSpeed: 140, acceleration: 265, sampleInterval: .24,
     orbitRate: .96, lateralSweep: .68, depthSweep: 25,
-    projectileSpeed: 360, leadSeconds: .32, damage: 14}),
+    projectileSpeed: 360, leadSeconds: .32, damage: 14,
+    volleys: Object.freeze({single: .45, double: .35, spread: .20}), flipChance: .7, dashChance: .15}),
   scout: Object.freeze({warning: .38, recovery: 1.6, maxAttacks: 7, holdSeconds: 22,
     depth: .29, lateralSpeed: 104, acceleration: 190, sampleInterval: .32,
     orbitRate: .76, lateralSweep: .72, depthSweep: 32,
-    projectileSpeed: 335, leadSeconds: .22, damage: 12}),
+    projectileSpeed: 335, leadSeconds: .22, damage: 12,
+    volleys: Object.freeze({single: .50, double: .15, spread: .35}), flipChance: .6, dashChance: .1}),
   interceptor: Object.freeze({warning: .30, recovery: 1.15, maxAttacks: 10, holdSeconds: 24,
     depth: .27, lateralSpeed: 176, acceleration: 315, sampleInterval: .2,
     orbitRate: 1.23, lateralSweep: .9, depthSweep: 40,
-    projectileSpeed: 390, leadSeconds: .38, damage: 15})
+    projectileSpeed: 390, leadSeconds: .38, damage: 15,
+    volleys: Object.freeze({single: .25, double: .45, spread: .30}), flipChance: .75, dashChance: .35})
 });
 
 // Only already observed positions can influence a lead. Sampling limits both
@@ -37,6 +42,30 @@ function variationFor(seed) {
   return ((value ^ value >>> 13) >>> 0) / 4294967296;
 }
 
+// v5: secuencia aleatoria propia de cada enemigo (reproducible por semilla)
+// para variar ráfagas, esperas y cambios de lado sin que dos partidas iguales
+// se memoricen. Nunca afecta a un proyectil ya lanzado.
+function nextRandom(enemy) {
+  enemy.rng = (enemy.rng + 0x6D2B79F5) >>> 0;
+  let value = Math.imul(enemy.rng ^ enemy.rng >>> 15, 1 | enemy.rng);
+  value ^= value + Math.imul(value ^ value >>> 7, 61 | value);
+  return ((value ^ value >>> 14) >>> 0) / 4294967296;
+}
+
+function chooseVolley(enemy, weights) {
+  // El primer ataque es siempre un tiro simple: enseña el aviso antes de
+  // combinar ráfagas dobles y abanicos de tres.
+  if (enemy.fired === 0) return 'single';
+  let roll = nextRandom(enemy);
+  for (const [kind, weight] of Object.entries(weights)) {
+    roll -= weight;
+    if (roll <= 0) return kind;
+  }
+  return 'single';
+}
+
+// Proyectiles por ataque, separación de la ráfaga doble y apertura del abanico.
+export const CLASSIC_PURSUIT_VOLLEY = Object.freeze({maxProjectiles: 3, doubleGap: .2, spreadAngle: .24, cone: .65});
 
 /** An encounter policy inside the existing item/update loop; owns no clock or RAF.
  * Aim uses bounded lead from past position samples, locked at weapon deployment.
@@ -70,6 +99,8 @@ export function createClassicPursuer({x, width = 720, height = 1280,
     baseSpeed, nextTargetAt: 0, nextFire: 1.25,
     fired: 0, telegraph: 0, lockedTarget: null, attackScheduled: false,
     chargeSerial: 0, firedSerial: -1, previousHp: null, chargeStartedAt: null,
+    rng: (Math.imul(Math.trunc(seed) >>> 0, 0x9E3779B9) ^ 0x51ED270B) >>> 0,
+    volley: 'single', followUp: null, dashing: false,
     animator: createCh01Animator({hp: 2, maxHp: 2})
   };
 }
@@ -125,15 +156,19 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   };
   const reposition = () => {
     clearCharge();
-    enemy.side *= -1;
+    enemy.followUp = null;
+    // No siempre cambia de flanco, a veces acelera, y la espera varía.
+    if (nextRandom(enemy) < profile.flipChance) enemy.side *= -1;
+    enemy.dashing = nextRandom(enemy) < profile.dashChance;
     enemy.repositionCount++;
     enemy.targetX = laneTarget();
     enemy.nextTargetAt = enemy.age + profile.sampleInterval;
-    enemy.nextFire = enemy.age + profile.recovery;
+    enemy.nextFire = enemy.age + profile.recovery * (.65 + nextRandom(enemy) * .7);
     enter('reposition');
   };
   const retreat = reason => {
     clearCharge();
+    enemy.followUp = null;
     enemy.retreatReason = reason;
     // Only the final departure uses the outer lane. Combat targets stay in
     // the player's reachable interior, and retreat still has real collision.
@@ -143,6 +178,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
 
   if (hp <= 0) {
     clearCharge();
+    enemy.followUp = null;
     if (enemy.state !== 'destroyed') enter('destroyed');
   } else if (enemy.state !== 'retreat' && enemy.state !== 'destroyed') {
     const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
@@ -194,6 +230,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
       enemy.targetX = item.x;
       enemy.chargeStartedAt = enemy.age;
       enemy.chargeSerial++;
+      enemy.volley = chooseVolley(enemy, profile.volleys);
       enter('charge');
     }
   }
@@ -209,8 +246,10 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   }
 
   const previousX = item.x;
+  const lateralLimit = enemy.dashing && enemy.state === 'reposition'
+    ? Math.min(MAX_LATERAL_SPEED, profile.lateralSpeed * 1.3) : profile.lateralSpeed;
   const desiredVelocity = ['charge', 'fire', 'destroyed'].includes(enemy.state) ? 0 :
-    clamp((enemy.targetX - item.x) * 2.8, -profile.lateralSpeed, profile.lateralSpeed);
+    clamp((enemy.targetX - item.x) * 2.8, -lateralLimit, lateralLimit);
   enemy.vx = approach(enemy.vx, desiredVelocity, profile.acceleration * step);
   const minimumX = enemy.state === 'retreat' ? 52 : Math.min(item.x, enemy.combatMinX);
   const maximumX = enemy.state === 'retreat' ? enemy.width - 52 : Math.max(item.x, enemy.combatMaxX);
@@ -221,28 +260,45 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     : clamp((enemy.holdY - item.y) * 1.8, -82, enemy.baseSpeed);
   item.s = approach(item.s, desiredVertical, enemy.baseSpeed * 1.8 * step);
   const events = enemy.animator.update(step, {hp, maxHp, vx: enemy.vx, vy: item.s});
+  const launch = angleOffset => {
+    const aim = enemy.lockedTarget;
+    const dy = Math.max(1, aim.y - (item.y + 38));
+    const dx = clamp(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
+    // Los laterales del abanico se abren desde el tiro apuntado y se quedan
+    // dentro del mismo cono hacia abajo; ninguno persigue tras salir.
+    const limit = Math.atan(CLASSIC_PURSUIT_VOLLEY.cone);
+    const angle = clamp(Math.atan2(dx, dy) + angleOffset, -limit, limit);
+    const speed = profile.projectileSpeed;
+    spawnProjectile({
+      type: 'meteor', x: item.x, baseX: item.x, y: item.y + 38,
+      r: 9, s: speed, vx: Math.sin(angle) * speed, vy: Math.cos(angle) * speed, life: 5,
+      damage: profile.damage, rot: 0, rs: 0, p: 0, phase: 0,
+      amp: 0, special: '', alpha: 1, hp: 1, maxHp: 1,
+      classicScoutProjectile: true, tacticsVersion: CLASSIC_PURSUIT_VERSION,
+      attackSerial: enemy.chargeSerial, role: enemy.role, volley: enemy.volley,
+      observedTarget: {...enemy.observedTarget}, leadOffset: enemy.leadOffset
+    });
+  };
+  // Segundo disparo de la ráfaga doble: mismo blanco fijado, poco después,
+  // solo si el enemigo sigue vivo y en posición de disparo.
+  if (enemy.followUp !== null && enemy.state === 'fire' && enemy.age >= enemy.followUp) {
+    enemy.followUp = null;
+    if (canAttack() && enemy.lockedTarget) launch(0);
+  }
   for (const event of events) {
     if (event.name === 'attackCanceled' && enemy.state === 'charge') reposition();
     if (event.name !== 'fire' || enemy.state !== 'charge' || !enemy.attackScheduled ||
         enemy.firedSerial === enemy.chargeSerial || !canAttack()) continue;
-    const aim = enemy.lockedTarget;
-    const dy = Math.max(1, aim.y - (item.y + 38));
-    const dx = clamp(aim.x - item.x, -dy * .65, dy * .65);
-    const length = Math.hypot(dx, dy), speed = profile.projectileSpeed;
-    const shot = {
-      type: 'meteor', x: item.x, baseX: item.x, y: item.y + 38,
-      r: 9, s: speed, vx: dx / length * speed, vy: dy / length * speed, life: 5,
-      damage: profile.damage, rot: 0, rs: 0, p: 0, phase: 0,
-      amp: 0, special: '', alpha: 1, hp: 1, maxHp: 1,
-      classicScoutProjectile: true, tacticsVersion: CLASSIC_PURSUIT_VERSION,
-      attackSerial: enemy.chargeSerial, role: enemy.role,
-      observedTarget: {...enemy.observedTarget}, leadOffset: enemy.leadOffset
-    };
     enemy.firedSerial = enemy.chargeSerial;
     enemy.fired++;
     enemy.telegraph = 0;
     enemy.attackScheduled = false;
     enter('fire');
-    spawnProjectile(shot);
+    if (enemy.volley === 'spread') {
+      for (const offset of [0, -CLASSIC_PURSUIT_VOLLEY.spreadAngle, CLASSIC_PURSUIT_VOLLEY.spreadAngle]) launch(offset);
+    } else {
+      launch(0);
+      if (enemy.volley === 'double') enemy.followUp = enemy.age + CLASSIC_PURSUIT_VOLLEY.doubleGap;
+    }
   }
 }

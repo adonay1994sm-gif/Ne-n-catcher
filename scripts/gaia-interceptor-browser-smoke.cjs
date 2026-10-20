@@ -222,7 +222,7 @@ function pilotTarget(q, enemy, collecting = false) {
       weapons:classicWeapons?{...NeonCampaign.classicWeaponSnapshot(classicWeapons),shotSequence:classicWeapons.shotSequence}:null,
       atlas:{ready:spriteReady(SPRITES.ch02),width:SPRITES.ch02.naturalWidth,height:SPRITES.ch02.naturalHeight,source:SPRITES.ch02.currentSrc||SPRITES.ch02.src},
       items:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,hp:item.hp,maxHp:item.maxHp,
-        rot:item.rot,rs:item.rs,vx:item.vx,vy:item.vy,circles:collisionCircles(item),
+        rot:item.rot,rs:item.rs,vx:item.vx,vy:item.vy,circles:collisionCircles(item).map(circle=>({...circle})),
         salvageDropId:item.salvageDropId,salvagePickup:!!item.salvagePickup,dropId:item.dropId,enemyType:item.enemyType,amount:item.amount,
         classicScoutProjectile:Boolean(item.classicScoutProjectile),attackSerial:item.attackSerial,role:item.role,
         classicScout:item.classicScout?{tacticsVersion:item.classicScout.tacticsVersion,role:item.classicScout.role,
@@ -378,7 +378,7 @@ function pilotTarget(q, enemy, collecting = false) {
         if (!record.animationStates.includes(enemy.classicScout.frame.state)) record.animationStates.push(enemy.classicScout.frame.state);
         if (!record.frames.includes(enemy.classicScout.frame.frameIndex)) record.frames.push(enemy.classicScout.frame.frameIndex);
         if (record.hp.at(-1) !== enemy.hp) record.hp.push(enemy.hp);
-        assert.equal(enemy.classicScout.tacticsVersion, 'classic-pursuit-v4');
+        assert.equal(enemy.classicScout.tacticsVersion, 'classic-pursuit-v5');
         assert.equal(enemy.classicScout.frame.image, 'assets/ch02_interceptor_atlas_v1.webp');
         assert.ok(enemy.classicScout.fired <= 10, 'An interceptor exceeded its finite pursuit-v3 attack budget');
         assert.ok(enemy.classicScout.firedSerial<=enemy.classicScout.chargeSerial,'A projectile cannot precede its mechanical cannon-deployment state');

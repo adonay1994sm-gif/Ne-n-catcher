@@ -221,7 +221,7 @@ function combatTarget(q) {
       unlocked:getUnlocked(),saves:Object.fromEntries(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)])),
       items:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,vx:item.vx,vy:item.vy,
         observedVx:item.classicScout?.vx??item.vx??0,rot:item.rot,rs:item.rs,hp:item.hp,maxHp:item.maxHp,
-        circles:collisionCircles(item),isPursuer:!!item.classicScout,role:item.classicScout?.role,
+        circles:collisionCircles(item).map(circle=>({...circle})),isPursuer:!!item.classicScout,role:item.classicScout?.role,
         pose:item.classicScout?.state,classicScoutProjectile:!!item.classicScoutProjectile,
         guardianProjectile:!!item.guardianProjectile,projectileId:item.projectileId,attackId:item.attackId,
         showerComet:!!item.showerComet,salvagePickup:!!item.salvagePickup,
@@ -326,7 +326,7 @@ function combatTarget(q) {
       }
       assert.equal(q.state,'playing');
       if(q.boss){
-        assert.equal(q.currentLevel,0);assert.equal(q.boss.version,'guardian-atlas-v7');assert.equal(q.boss.maxHp,96);
+        assert.equal(q.currentLevel,0);assert.equal(q.boss.version,'guardian-atlas-v8');assert.equal(q.boss.maxHp,96);
         assert.ok(q.flight.canFinish);assert.equal(q.flight.stageNumber,10);assert.ok(q.flight.elapsed>=360);
         if(!initialBossBattery)initialBossBattery={charges:q.weapons.charges,recharge:q.weapons.recharge};
         if(!q.boss.disabled){assert.equal(q.weapons.unlimitedFire,true);

@@ -156,7 +156,7 @@ function choosePilotTarget(q,attackObserved){
       unlocked:getUnlocked(),saves:Object.fromEntries(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)])),
       items:items.map(item=>({id:item.id,type:item.type,x:item.x,y:item.y,s:item.s,r:item.r,vx:item.vx,vy:item.vy,
         observedVx:item.classicScout?.vx??item.vx??0,rot:item.rot,rs:item.rs,hp:item.hp,maxHp:item.maxHp,
-        circles:collisionCircles(item),isPursuer:!!item.classicScout,role:item.classicScout?.role,
+        circles:collisionCircles(item).map(circle=>({...circle})),isPursuer:!!item.classicScout,role:item.classicScout?.role,
         pose:item.classicScout?.state,classicScoutProjectile:!!item.classicScoutProjectile,
         showerComet:!!item.showerComet,salvagePickup:!!item.salvagePickup,
         salvageDropId:item.salvageDropId,dropId:item.dropId,enemyType:item.enemyType,amount:item.amount}))});\n`;

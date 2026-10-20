@@ -26,7 +26,7 @@ const HULL={half:47.6*1.3,top:63.2*1.3,bottom:41.6*1.3};
 
 test('entry arrives closed, identifies the falsified ID and exposes no free initial damage',()=>{
   const boss=createGuardianAtlas(),initial=boss.y;
-  assert.equal(boss.version,'guardian-atlas-v7');assert.equal(boss.hp,96);
+  assert.equal(boss.version,'guardian-atlas-v8');assert.equal(boss.hp,96);
   assert.equal(hitGuardianAtlas(boss,10).reason,'armored');
   const events=runFor(boss,1);assert.ok(boss.y>initial&&boss.y<boss.targetY);
   assert.equal(events.some(e=>e.type==='projectile'),false);
@@ -281,7 +281,8 @@ test('adaptive Atlas uses five distinct follow-up routines with staggered emissi
   until(boss,b=>b.phaseAttacks>=15&&b.state==='exposed',player,events);
   const deployments=events.filter(event=>event.type==='warning');
   assert.deepEqual(deployments.slice(0,3).map(event=>event.pattern),['focusedSalvo','crossfire','reactorBarrage']);
-  const followups=deployments.slice(3),seen=new Set(followups.map(event=>event.pattern));
+  // The fulminant Crono Rupture is a deliberate single-gap wall with its own tests below.
+  const followups=deployments.slice(3).filter(event=>event.attackTier!=='fulminant'),seen=new Set(followups.map(event=>event.pattern));
   assert.deepEqual([...seen].sort(),Object.keys(R.patterns).sort());
   const previous=new Map();
   for(const attack of followups){
@@ -474,4 +475,46 @@ test('invalid input never advances combat and low pilot positions do not crash i
 test('encounter owns no scheduler, browser clock, random global or save operation',async()=>{
   const source=await readFile(new URL('../src/game/combat/guardian-atlas.js',import.meta.url),'utf8');
   assert.doesNotMatch(source,/requestAnimationFrame|cancelAnimationFrame|setInterval|setTimeout|Date\.now|Math\.random|localStorage/);
+});
+
+test('v8 Crono Rupture is a charged single-gap wall that forces movement but always leaves a reachable escape',()=>{
+  let walls=0;
+  for(const height of [568,1280,1560])for(const targetX of [145,360,575])for(const phase of [1,2])for(const seed of [17,507,9001]){
+    const playerY=height===568?450:height-135,pilot={x:targetX,y:playerY};
+    const boss=ready({height,playerY,seed});if(phase===2){expose(boss);hitGuardianAtlas(boss,boss.maxHp/2);}
+    const events=[];until(boss,b=>b.phaseAttacks>=12&&b.state==='exposed',pilot,events);
+    for(const attack of events.filter(event=>event.type==='warning'&&event.attackTier==='fulminant')){
+      walls++;
+      assert.equal(attack.pattern,'cronoRupture');assert.equal(attack.seconds,R.attacks.fulminant.chargeSeconds);
+      assert.ok(events.some(event=>event.type==='fulminant'&&event.attackId===attack.attackId),'its own alarm event');
+      const shots=events.filter(event=>event.type==='projectile'&&event.projectile.attackId===attack.attackId).map(event=>event.projectile);
+      assert.ok(shots.length>=5&&shots.length<=R.maxProjectilesPerAttack,`wall of ${shots.length}`);
+      assert.ok(shots.every(shot=>shot.damage===R.attacks.fulminant.damage&&shot.heavy&&shot.vy>0&&shot.safeGap===null));
+      const clear=x=>shots.every(shot=>[playerY-HULL.top-shot.r,playerY+HULL.bottom+shot.r].every(y=>{
+        const crossing=shot.x+shot.vx*((y-shot.y)/shot.vy);return Math.abs(crossing-x)>HULL.half+shot.r+2;}));
+      const lanes=[];for(let x=HULL.half;x<=720-HULL.half;x+=4)if(clear(x))lanes.push(x);
+      assert.ok(lanes.length>0,`${height}/${targetX}/${phase}/${seed}: the wall keeps one complete escape`);
+      const escape=lanes.sort((a,b)=>Math.abs(a-targetX)-Math.abs(b-targetX))[0];
+      const firstContact=Math.min(...shots.map(shot=>(playerY-HULL.top-shot.r-shot.y)/shot.vy));
+      assert.ok(Math.abs(escape-targetX)/720<attack.seconds+firstContact,'the escape is reachable before contact');
+      // Everything outside the gap is covered: staying still in the wall is punished.
+      assert.ok(lanes.every(x=>Math.abs(x-lanes[0])<260),'only one gap, not several free lanes');
+    }
+  }
+  assert.ok(walls>=30,`fulminant walls actually occur (${walls})`);
+});
+
+test('v8 chains attacks before opening the core and shortens the exposed window, especially in phase two',()=>{
+  const boss=ready({seed:17}),events=[];
+  until(boss,b=>b.phaseAttacks>=14&&b.state==='exposed',player,events);
+  const order=events.filter(event=>event.type==='warning'||event.type==='opening').map(event=>event.type);
+  let longest=0,run=0;for(const type of order){run=type==='warning'?run+1:0;longest=Math.max(longest,run);}
+  assert.ok(longest>=2,'at least one cycle chains two attacks before the core opens');
+  const exposures=events.filter(event=>event.type==='coreExposed');
+  assert.ok(exposures.every(event=>event.seconds===R.exposedSeconds)&&R.exposedSeconds<3.8);
+  const second=expose(ready({seed:17}));hitGuardianAtlas(second,second.maxHp/2);
+  const later=[];until(second,b=>b.phaseAttacks>=6&&b.state==='exposed',player,later);
+  assert.ok(later.filter(event=>event.type==='coreExposed').every(event=>event.seconds===R.exposedPhaseTwoSeconds));
+  const phaseTwoOrder=later.filter(event=>event.type==='warning'||event.type==='opening').map(event=>event.type);
+  assert.equal(phaseTwoOrder.indexOf('opening')>=2,true,'phase two never opens after a single attack');
 });

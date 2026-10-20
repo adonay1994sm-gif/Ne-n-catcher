@@ -3,9 +3,12 @@
  * second route clock or update loop. The legacy caller advances it with played
  * delta only and integrates emitted items once with advanceShowerComet.
  */
-export const COMET_SHOWER_VERSION = 'comet-shower-v3';
+export const COMET_SHOWER_VERSION = 'comet-shower-v4';
 export const COMET_SHOWER_RULES = Object.freeze({
-  maxActive: 5, warningSeconds: 2, resumeGraceSeconds: 7,
+  // v4: oleadas más grandes y dispersas (cada cometa con su propio borde,
+  // lado del pasillo e intervalo) en lugar de trenes de 3-4 en fila.
+  maxActive: 9, warningSeconds: 2, resumeGraceSeconds: 7,
+  burstSizes: Object.freeze([7, 9, 8]), spawnGap: Object.freeze([.18, .75]),
   maxDelta: .05, shipWidth: 208 * .52, shipSideClearance: 119 * .52, corridorClearance: 40,
   minSpeed: 700, maxSpeed: 950, boundsMargin: 128,
   burstStarts: Object.freeze([7, 16, 25])
@@ -110,18 +113,23 @@ function makeCandidate(state, burst, ordinal, mode, attempt = 0) {
     // Solve an authored ballistic arc through a varying useful flight lane.
     // Unlike v2, this is neither an almost vertical fixed side train nor a
     // route-wide alternating pattern. The full curve must pass safety below.
-    const laneMinimum = dangerSide < 0 ? 24 : corridor.right + 42;
-    const laneMaximum = dangerSide < 0 ? corridor.left - 42 : width - 24;
+    // Cada cometa elige su propio lado del pasillo (si cabe), de modo que la
+    // oleada cae a ambos lados en vez de formar una fila por un solo flanco.
+    const lanes = [[24, corridor.left - 42, -1], [corridor.right + 42, width - 24, 1]]
+      .filter(([low, high]) => high - low >= 30);
+    const lane = lanes.length ? lanes[Math.floor(random() * lanes.length)] : null;
+    const laneSide = lane ? lane[2] : dangerSide;
+    const laneMinimum = lane ? lane[0] : 1, laneMaximum = lane ? lane[1] : 0;
     const referenceX = laneMinimum <= laneMaximum
       ? clamp(width * (.40 + random() * .20), laneMinimum, laneMaximum) : width / 2;
     y = mode === 1 ? -margin : height + margin;
     entryEdge = mode === 1 ? 'top' : 'bottom';
     const verticalDirection = mode === 1 ? 1 : -1;
-    ax = dangerSide * (16 + random() * 65) * (random() < .32 ? -1 : 1);
+    ax = laneSide * (16 + random() * 65) * (random() < .32 ? -1 : 1);
     ay = verticalDirection * (10 + random() * 20);
     const referenceY = height * (.60 + random() * .24);
     const referenceTime = Math.abs(referenceY - y) / speed;
-    vx = dangerSide * (18 + random() * 130) - ax * referenceTime;
+    vx = laneSide * (18 + random() * 130) - ax * referenceTime;
     vx = clamp(vx, -speed * .32, speed * .32);
     vy = verticalDirection * Math.sqrt(speed * speed - vx * vx);
     const time = (-Math.abs(vy) + Math.sqrt(vy * vy + 2 * Math.abs(ay) * Math.abs(referenceY - y))) / Math.abs(ay);
@@ -143,9 +151,11 @@ function makeCandidate(state, burst, ordinal, mode, attempt = 0) {
 
 function makeComet(state, burst, ordinal) {
   const primaryMode = state.burstModes[burst];
-  // Later members may cross above a lower train, so individual trajectories
-  // cannot be memorised by counting a fixed vertical line of identical bodies.
-  const mode = ordinal > 0 && randomFor(state.seed + burst * 211 + ordinal * 2017)() < .25 ? 0 : primaryMode;
+  // El primero respeta la entrada anunciada; el resto elige su propio borde
+  // (lateral alto, desde arriba o adelantando desde abajo) para dispersar la
+  // oleada y que no se pueda memorizar como una fila.
+  const roll = randomFor(state.seed + burst * 211 + ordinal * 2017)();
+  const mode = ordinal === 0 || roll < .4 ? primaryMode : roll < .6 ? 0 : roll < .8 ? 1 : 2;
   for (let attempt = 0; attempt < 18; attempt++) {
     const item = makeCandidate(state, burst, ordinal, mode, attempt);
     if (item.x < -128 || item.x > state.width + 128) continue;
@@ -179,9 +189,12 @@ export function createCometShower({width = 720, height = 1280, seed = 0,
     const warningAt = at - COMET_SHOWER_RULES.warningSeconds;
     if (warningAt <= elapsed) continue;
     schedule.push({at: warningAt, kind: 'warning', burst});
-    const count = burst === 1 ? 4 : 3;
-    for (let ordinal = 0; ordinal < count; ordinal++) {
-      schedule.push({at: at + ordinal * .42, kind: 'spawn', burst, ordinal});
+    const count = COMET_SHOWER_RULES.burstSizes[burst];
+    const [gapLow, gapHigh] = COMET_SHOWER_RULES.spawnGap;
+    const timing = randomFor(normalizedSeed ^ Math.imul(burst + 11, 0x27D4EB2F));
+    for (let ordinal = 0, offset = 0; ordinal < count; ordinal++) {
+      schedule.push({at: at + offset, kind: 'spawn', burst, ordinal});
+      offset += gapLow + timing() * (gapHigh - gapLow);
     }
   }
   schedule.sort((left, right) => left.at - right.at);
