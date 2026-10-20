@@ -79,7 +79,10 @@ export function getChronosIntroPose(elapsed, {reducedEffects = false, holdWreck 
     shake: ruptured && !reducedEffects ? .03 * Math.max(0, 1 - since / .8) * Math.sin(since * 55) : 0,
     // Alejamiento de presentación: la estación rota se aleja más deprisa que
     // la ruta para dejar sitio al juego. Solo afecta al dibujo.
-    zoom: STATION_FRAME.zoom * (1 - .45 * smooth(elapsed, T.rupture + 1, 24)),
+    zoom: STATION_FRAME.zoom * (1 - .5 * smooth(elapsed, T.rupture + 1, 18)),
+    // Tras la ruptura la estación pasa a ser fondo: se oscurece para que los
+    // peligros y enemigos se lean por encima.
+    alpha: 1 - .45 * smooth(elapsed, T.rupture + 2, T.rupture + 6),
     drop: STATION_FRAME.drop
   };
 

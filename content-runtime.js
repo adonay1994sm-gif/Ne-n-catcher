@@ -5598,7 +5598,10 @@ var NeonCampaign = (() => {
       shake: ruptured && !reducedEffects ? 0.03 * Math.max(0, 1 - since / 0.8) * Math.sin(since * 55) : 0,
       // Alejamiento de presentación: la estación rota se aleja más deprisa que
       // la ruta para dejar sitio al juego. Solo afecta al dibujo.
-      zoom: STATION_FRAME.zoom * (1 - 0.45 * smooth3(elapsed, T.rupture + 1, 24)),
+      zoom: STATION_FRAME.zoom * (1 - 0.5 * smooth3(elapsed, T.rupture + 1, 18)),
+      // Tras la ruptura la estación pasa a ser fondo: se oscurece para que los
+      // peligros y enemigos se lean por encima.
+      alpha: 1 - 0.45 * smooth3(elapsed, T.rupture + 2, T.rupture + 6),
       drop: STATION_FRAME.drop
     };
     const arrival2 = smooth3(elapsed, T.arrive, T.arrived);

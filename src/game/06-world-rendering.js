@@ -272,11 +272,12 @@
     if (!node.visible) return;
     const station = pose.station;
     const unit = W * node.scale * station.zoom;
+    ctx.save(); ctx.globalAlpha = station.alpha;
     const x = node.x * W + station.shake * unit, y = (node.y + station.drop) * H + station.shake * unit * .6;
     // Anillo exterior: se separa, crece y se desvanece tras la ruptura.
     if (station.ringAlpha > 0) {
       const ring = unit * station.ringScale;
-      ctx.save(); ctx.globalAlpha = station.ringAlpha;
+      ctx.save(); ctx.globalAlpha *= station.ringAlpha;
       ctx.translate(x + station.ringOffset * unit * .35, y - station.ringOffset * unit * .25);
       ctx.rotate(station.sway); ctx.scale(1, station.tiltY); ctx.rotate(station.ringAngle);
       drawAtlasCell(atlas, 3, 0, -ring / 2, -ring / 2, ring, ring);
@@ -302,12 +303,13 @@
       for (const piece of pose.fragments) {
         if (piece.alpha <= 0) continue;
         const size = unit * .16 * piece.scale;
-        ctx.save(); ctx.globalAlpha = piece.alpha;
+        ctx.save(); ctx.globalAlpha *= piece.alpha;
         ctx.translate(x + piece.dx * unit * .9, y + piece.dy * unit * .9); ctx.rotate(piece.angle);
         drawAtlasCell(fragments, 4, piece.cell, -size / 2, -size / 2, size, size);
         ctx.restore();
       }
     }
+    ctx.restore();
     // El atacante va por delante de la estación.
     drawCronosPrimeBeam(pose, x, y - unit * .05);
     drawCronosPrimePhaseOne(pose);

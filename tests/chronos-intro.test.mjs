@@ -80,7 +80,9 @@ test('Cronos Prime leaves the way it came while the broken station stays and ste
   assert.equal(getChronosIntroPose(T.ringGone + .1).station.ringAlpha, 0);
   assert.equal(getChronosIntroPose(20).station.towerCell, 4);
   assert.equal(getChronosIntroPose(T.rupture).station.zoom, getChronosIntroPose(1).station.zoom, 'no zoom jump at the rupture');
-  assert.ok(getChronosIntroPose(T.end).station.zoom < .6 * getChronosIntroPose(1).station.zoom, 'the wreck steps back to clear the play area');
+  assert.ok(getChronosIntroPose(18).station.zoom <= .5 * getChronosIntroPose(1).station.zoom + 1e-9, 'the wreck steps back quickly to clear the play area');
+  assert.equal(getChronosIntroPose(T.rupture).station.alpha, 1);
+  assert.ok(getChronosIntroPose(T.rupture + 6).station.alpha <= .56, 'the wreck dims into the background');
 });
 
 test('the station visibly spins, and the wreck keeps spinning after the sequence when asked to hold it', () => {
