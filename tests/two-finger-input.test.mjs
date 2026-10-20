@@ -49,8 +49,7 @@ function harness(t, {pointerEvents = true, introActive = false} = {}) {
     const classicFlightBounds={minX:119,maxX:601,minY:350,maxY:1300};
     let shotCount=0,charges=3,cooldown=0;
     let missileCount=0,missileAmmo=3;
-    function isUnifiedClassic(){return true;}
-    const classicChapterStory=isUnifiedClassic()?NeonCampaign.createChronosChapterStory():null;
+    const classicChapterStory=NeonCampaign.createChronosChapterStory();
     let classicChapterView=classicChapterStory?.snapshot()||null;
     function classicChapterControlsLocked(){return Boolean(classicChapterView?.opening?.controlsLocked);}
     function syncClassicChapterPresentation(){ui.fire.disabled=classicChapterControlsLocked();}
@@ -67,7 +66,7 @@ function harness(t, {pointerEvents = true, introActive = false} = {}) {
       shotCount++;charges--;cooldown=.32;return true;
     }
     function fireClassicMissile(){
-      if(!isUnifiedClassic()||state!=='playing'||classicChapterControlsLocked()||missileAmmo===0)return false;
+      if(state!=='playing'||classicChapterControlsLocked()||missileAmmo===0)return false;
       missileCount++;missileAmmo--;return true;
     }
     function update(dt){cooldown=Math.max(0,cooldown-dt);}
@@ -84,7 +83,7 @@ function harness(t, {pointerEvents = true, introActive = false} = {}) {
     ${visibilitySource}
     window.__input={
       snapshot:()=>({state,player:{...player},pilot:{...classicFlightInput},
-        fire:fireInput?{...fireInput}:null,missile:missileInput?{...missileInput}:null,missileCount,missileAmmo,legacyPilotId,shotCount,charges,cooldown,
+        fire:fireInput?{...fireInput}:null,missile:missileInput?{...missileInput}:null,missileCount,missileAmmo,shotCount,charges,cooldown,
         chapter:classicChapterView,controlsLocked:classicChapterControlsLocked()}),
       tick(dt=.034){last=0;frame(dt*1000);},
       pause:pauseGame,resume:resumeGame,reset:resetGameInput,skipIntro:skipIntroForControlFixture,

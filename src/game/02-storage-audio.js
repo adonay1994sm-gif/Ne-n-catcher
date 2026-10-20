@@ -128,7 +128,6 @@
   // DOM geometry is sampled on layout changes, never from the drawing loop.
   // All returned coordinates use the same logical Canvas units as collisions.
   function refreshClassicFlightBounds(reset = false) {
-    if (!isUnifiedClassic()) return null;
     const canvasRect = canvas.getBoundingClientRect();
     if (!canvasRect.width || !canvasRect.height) return classicFlightBounds;
     const verticalScale = H / canvasRect.height;
@@ -202,24 +201,14 @@
     // asigna si de verdad cambia.
     if (canvas.width !== W) canvas.width = W;
     if (canvas.height !== H) canvas.height = H;
-    if (isUnifiedClassic()) {
-      refreshClassicFlightBounds(!previousBounds);
-      // Atlas derives its arena from a stable lower anchor, not from the
-      // player's current vertical maneuver; refresh never calls back into it.
-      positionAtlasArena();
-      const next = refreshClassicFlightBounds();
-      if (next) {
-        player.y = next.minY + fractionY * (next.maxY - next.minY);
-        player.targetY = next.minY + targetFractionY * (next.maxY - next.minY);
-      }
-    } else {
-      // Preserve the experimental campaigns' existing horizontal flight line.
-      const controlBandCss = 104;
-      const clearance = 110 + controlBandCss * H / rect.height;
-      player.y = H - Math.max(260, clearance);
-      player.x = clamp(player.x, 80, W - 80);
-      player.target = clamp(player.target, 80, W - 80);
-      positionAtlasArena();
+    refreshClassicFlightBounds(!previousBounds);
+    // Atlas derives its arena from a stable lower anchor, not from the
+    // player's current vertical maneuver; refresh never calls back into it.
+    positionAtlasArena();
+    const next = refreshClassicFlightBounds();
+    if (next) {
+      player.y = next.minY + fractionY * (next.maxY - next.minY);
+      player.targetY = next.minY + targetFractionY * (next.maxY - next.minY);
     }
     for (const star of stars) {
       star.x = clamp(star.x, 0, W);
@@ -259,10 +248,10 @@
       voyageScore = NeonCampaign.createVoyageScore({context: ac, output: musicGain});
       voyageScore.setContext(voyageScoreContext);
     }
-    if(!chapterScore&&isUnifiedClassic()&&ac.createMediaElementSource) {
+    if(!chapterScore&&ac.createMediaElementSource) {
       try {chapterScore=NeonCampaign.createChapterScore({context:ac,output:musicGain});} catch {chapterScore=null;}
     }
-    if(!combatSfx&&isUnifiedClassic()&&typeof NeonCampaign.createCombatSfx==="function") {
+    if(!combatSfx&&typeof NeonCampaign.createCombatSfx==="function") {
       combatSfx=NeonCampaign.createCombatSfx({context:ac,output:ac.destination});
       combatSfx?.load();
     }
@@ -278,9 +267,9 @@
   }
 
   function updateScore(dt, paused = false) {
-    combatSfx?.setPaused(paused||scoreSuspended||!isUnifiedClassic()||state!=="playing");
+    combatSfx?.setPaused(paused||scoreSuspended||state!=="playing");
     if (!voyageScore) return;
-    const rendered=chapterScore?.update({active:isUnifiedClassic()&&Boolean(classicChapterStory),
+    const rendered=chapterScore?.update({active:Boolean(classicChapterStory),
       elapsed:classicFlightView?.elapsed||0,paused:paused||scoreSuspended,enabled:settings.music>0});
     voyageScore.setPaused(paused || scoreSuspended || Boolean(rendered));
     voyageScore.advance(dt);
@@ -314,7 +303,7 @@
     voyageScore?.setEnabled(settings.music > 0);
     combatSfx?.setEnabled(settings.fx>0);
     combatSfx?.setVolume(settings.fx/100);
-    combatSfx?.setPaused(scoreSuspended||!isUnifiedClassic()||state!=="playing");
+    combatSfx?.setPaused(scoreSuspended||state!=="playing");
     if (settings.fx <= 0) stopToneVoices();
     if(settings.music<=0)chapterScore?.suspend();
     if (musicGain && audioCtx) {
@@ -324,8 +313,8 @@
   }
 
   function combatSound(cue,x=player.x,eventId=null) {
-    if(isUnifiedClassic()&&(state!=="playing"||scoreSuspended||settings.fx<=0))return;
-    if(isUnifiedClassic()&&combatSfx?.snapshot().ready) {
+    if(state!=="playing"||scoreSuspended||settings.fx<=0)return;
+    if(combatSfx?.snapshot().ready) {
       // A rejected voice means muted/paused/throttled, never a fallback beep.
       combatSfx.play(cue,{pan:clamp(x/W*2-1,-.75,.75),eventId});return;
     }

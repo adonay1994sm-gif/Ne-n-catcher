@@ -22,7 +22,7 @@ function harness({reserve=0,atlasGradient=false}={}) {
     return key in properties?properties[key]:(...args)=>calls.push({method:key,args});
   },set(_target,key,value){properties[key]=value;if(key==='shadowBlur')stats.blurWrites.push(value);return true;}});
   const sandbox=vm.createContext({Math,ctx,SHIP_VISUAL:visualContract(),
-    isUnifiedClassic:()=>true,state:'playing',playerVisible:true,
+    state:'playing',playerVisible:true,
     player:{x:360,y:1000,target:360,targetY:1000,drift:0,visualBank:.6},
     powers:{shield:4},classicHullReserve:reserve,classicShieldImpact:.2,
     hull:100,elapsed:2.5,impactReactionTimer:0,

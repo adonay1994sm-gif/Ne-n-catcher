@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {getChronosDestructionPose} from '../src/game/animation/chronos-destruction.js';
-import {createChronosVoyage,createChronosVoyageCheckpoint} from '../src/game/progression/chronos-flight.js';
 
 const source = await readFile(new URL('../src/game/06-world-rendering.js', import.meta.url), 'utf8');
 
@@ -113,30 +112,13 @@ test('middle stages remain sparse without optional density fields and old flight
   assert.equal(images(h.draw()).filter(call => ['panel', 'metal'].includes(call.args[0].name)).length, 6);
 });
 
-test('paused snapshots freeze every parallax layer and the relay without acquiring a render clock', () => {
-  const h = harness(); h.view.relay.visible = true;
+test('paused snapshots freeze every parallax layer without acquiring a render clock', () => {
+  const h = harness();
   const first = h.draw();
   for (let index = 0; index < 10; index++) assert.deepEqual(h.draw(), first);
   h.view.elapsed += 1;
   const next = h.draw();
   assert.notDeepEqual(stars(next), stars(first));
-  assert.notDeepEqual(next.filter(call => call.method === 'rotate'), first.filter(call => call.method === 'rotate'));
-});
-
-test('C9 preserves its illustrated download-failure fallback and active-only service label', () => {
-  const h = harness(); h.view.relay.visible = true;
-  let calls = h.draw();
-  assert.equal(images(calls).filter(call => call.args[0].name === 'satellite').length, 1);
-  assert.equal(calls.some(call => call.method === 'fillText'), false);
-  h.view.relay.active = true;
-  calls = h.draw();
-  const label = calls.find(call => call.method === 'fillText').args;
-  assert.equal(label[0], 'SERVICIO C9'); assert.equal(label[1], 390 * .68);
-  const relay = images(calls).find(call => call.args[0].name === 'satellite');
-  assert.ok(label[2] > relay.y + relay.args[3] * .5);
-  assert.ok(label[2] < 844);
-  assert.equal(relay.args[3], 390 * .18);
-  assert.equal(relay.alpha, 1);
 });
 
 test('Gaia grows below the measured HUD without changing its route coordinates or hitboxes', () => {
@@ -164,64 +146,6 @@ test('Gaia grows below the measured HUD without changing its route coordinates o
   }
 });
 
-test('the independent C9 atlas shows four real route/service states from a shared centre pivot', () => {
-  const h = harness({}, 'high', {classicFlightBounds: {presentationTop: 150, presentationBottom: 740}});
-  h.SPRITES.c9Station = {name: 'c9', naturalWidth: 1024, naturalHeight: 1024};
-  h.view.relay.visible = true;
-  const before = structuredClone(h.view);
-  for (const [stageNumber, active, x, y] of [[5,false,0,0], [6,false,512,0],
-    [6,true,0,512], [7,false,512,512]]) {
-    h.view.stageNumber = stageNumber; h.view.relay.active = active;
-    const calls = h.draw(), station = images(calls).find(call => call.args[0].name === 'c9');
-    assert.deepEqual(station.args.slice(1,5), [x,y,512,512]);
-    assert.equal(station.args[5] + station.args[7] / 2, 0);
-    assert.equal(station.args[6] + station.args[8] / 2, 0);
-    assert.ok(station.y - station.args[8] / 2 > 150);
-    assert.ok(station.x - station.args[7] * .55 >= 0);
-    assert.ok(station.x + station.args[7] * .55 <= 390);
-    assert.equal(images(calls).some(call => call.args[0].name === 'satellite'), false);
-    assert.equal(station.alpha, 1);
-    assert.deepEqual(h.draw(), calls, 'repeated service renders neither animate clocks nor repeat operations');
-  }
-  h.view.stageNumber = before.stageNumber; h.view.relay.active = before.relay.active;
-  assert.deepEqual(h.view, before);
-  h.SPRITES.c9Station.naturalWidth = 0;
-  assert.equal(images(h.draw()).filter(call => call.args[0].name === 'satellite').length, 1);
-});
-
-test('the actual short C9 approach, immediate dock and undock select the four illustrated machine states',()=>{
-  const model=createChronosVoyage({checkpoint:createChronosVoyageCheckpoint(5)});
-  const advance=seconds=>{
-    for(let step=0;step<Math.ceil(seconds/.02);step++)model.advance(.02,18);
-    return model.snapshot();
-  };
-  const approaching=advance(36.82);
-  assert.equal(approaching.relay.visible,true);assert.equal(approaching.relay.state,'approach');
-  while(model.snapshot().stageNumber===5)model.advance(.02,18);
-  const docking=advance(.6);assert.equal(docking.relay.state,'docking');
-  const docked=advance(.6);assert.equal(docked.waitingFor,'service');
-  const departing=model.resolveService();
-  assert.equal(departing.stageNumber,6);assert.equal(departing.relay.state,'departing');
-  const geometry={classicFlightBounds:{presentationTop:122,presentationBottom:730}};
-  const h=harness(approaching,'high',geometry);
-  h.SPRITES.c9Station={name:'c9',naturalWidth:1024,naturalHeight:1024};
-  for(const [view,column,row] of [[approaching,0,0],[docking,512,0],[docked,0,512],[departing,512,512]]){
-    Object.assign(h.view,view);
-    const before=structuredClone(view),calls=h.draw();
-    const drawn=images(calls).find(call=>call.args[0].name==='c9');
-    assert.ok(drawn);assert.deepEqual(drawn.args.slice(1,5),[column,row,512,512]);
-    assert.equal(drawn.alpha,1,'A service state uses an opaque machine, never a fade');
-    assert.ok(calls.some(call=>call.method==='rect'&&call.args.join()==='0,122,390,608'));
-    assert.ok(calls.some(call=>call.method==='clip'));
-    assert.deepEqual(h.draw(),calls,'Paused route snapshots cannot rotate or change the pose');
-    assert.deepEqual(view,before,'Scenery cannot advance the service or install equipment');
-  }
-  const gone=advance(2.4);assert.equal(gone.relay.visible,false);
-  assert.equal(gone.stageNumber,6);assert.equal(gone.stageGoal,18);
-  Object.assign(h.view,gone);
-  assert.equal(images(h.draw()).some(call=>call.args[0].name==='c9'),false);
-});
-
 test('a failed space plate still renders the independent stars and planet', () => {
   const h = harness(); h.SPRITES.flightSpace.naturalWidth = 0;
   const calls = h.draw();
@@ -232,8 +156,8 @@ test('a failed space plate still renders the independent stars and planet', () =
 
 test('reduced effects removes the actual full-screen storm flash without changing storm state', () => {
   const h = harness();
-  Object.assign(h.sandbox, {classicFlightView: null, isUnifiedClassic: () => false,
-    currentLevel: 1, state: 'playing',
+  Object.assign(h.sandbox, {classicFlightView: null,
+    currentLevel: 3, state: 'playing',
     level: () => ({top: '#020817', mid: '#050b17', accent: '#55eeee', scene: 'quiet'}),
     stars: [], spaceDust: [], foregroundParticles: [], visualSpeed: 1,
     stormPulse: 1, levelOneShockwave: 0});

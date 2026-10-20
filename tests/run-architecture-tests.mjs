@@ -19,7 +19,7 @@ await test("estado central integrado", async()=>{
   assert.doesNotMatch(source,/^\s*state = "(?:menu|briefing|playing|paused|destroying|gameover|complete)";/m);
 });
 await test("daño resuelto por servicio aislado", async()=>{
-  assert.match(await text("game.js"),/NeonCore\.resolveDamage/);
+  assert.match(await text("game.js"),/NeonCampaign\.resolveHullReinforcement/);
 });
 await test("partículas reutilizadas mediante object pool", async()=>{
   const source=await text("game.js");

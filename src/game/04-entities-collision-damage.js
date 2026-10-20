@@ -1,5 +1,5 @@
   function availablePowers() {
-    const available = [isUnifiedClassic()?"repair":"shield"];
+    const available = ["repair"];
     if (currentLevel >= 1) available.push("tractor");
     if (currentLevel >= 2) available.push("slow");
     if (currentLevel >= 3) available.push("double");
@@ -71,7 +71,7 @@
   // happens to hit it: damage order and repeated death animation callbacks
   // must never turn one physical fragment into several paid rewards.
   function stampClassicWreckageSalvage(item) {
-    if (!isUnifiedClassic() || !["debris", "satellite"].includes(item.type) ||
+    if (!["debris", "satellite"].includes(item.type) ||
         !classicSalvageRunId || !classicSalvageState || item.salvageDropId) return item;
     const stage = classicFlightView?.stageId || `${currentLevel + 1}.0`;
     const ordinal = classicSalvageEnemySequence++;
@@ -450,7 +450,7 @@
       return;
     }
 
-    if(type==="shield" && isUnifiedClassic()) {
+    if(type==="shield") {
       powers.shield=0;classicHullReserve=classicHullReserveCapacity;
       classicShieldAge=0;classicShieldImpact=0;ensureSprite(SPRITES.forceShieldAtlas);
       hud();
@@ -460,7 +460,7 @@
     burst(item.x, item.y, 20, effectKind);
     pulseRing(item.x, item.y, effectColor, 105, 0.58);
     const names = {
-      shield: isUnifiedClassic() ? "Reserva de casco restaurada" : "Escudo operativo",
+      shield: "Reserva de casco restaurada",
       tractor: "Rayo tractor conectado",
       slow: "Estabilizador activo",
       double: "Sobrecarga de núcleos",
@@ -476,20 +476,17 @@
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
     const impactAngle = Math.atan2(y - player.y, x - player.x);
-    const classicDamage=isUnifiedClassic();
-    const damageResult = classicDamage ? NeonCampaign.resolveHullReinforcement({hull,amount,
+    const damageResult = NeonCampaign.resolveHullReinforcement({hull,amount,
       reserve:classicHullReserve,capacity:classicHullReserveCapacity,
-      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true}) :
-      NeonCore.resolveDamage({ hull, amount, shieldActive: powers.shield > 0 });
-    if(classicDamage)classicHullReserve=damageResult.reserve;
+      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true});
+    classicHullReserve=damageResult.reserve;
     if (damageResult.absorbed) {
-      if(isUnifiedClassic())classicShieldImpact=.18;
-      if(!classicDamage)score += 10;
+      classicShieldImpact=.18;
       burst(x, y, 18, "cyan");
       pulseRing(x, y, "#62fff1", 90, 0.42);
       addImpactEffect(x, y, 0.85, impactAngle);
-      if(classicDamage)combatSound("hull-hit",x);else tone(230, 0.08, "square", 0.045);
-      if(classicDamage)hud();
+      combatSound("hull-hit",x);
+      hud();
       return;
     }
 
@@ -507,7 +504,7 @@
     burst(x, y, 28, "red");
     pulseRing(x, y, "#ff496f", 110, 0.48);
     addImpactEffect(x, y, 1.05, impactAngle);
-    if(classicDamage)combatSound("hull-hit",x);else tone(95, 0.22, "sawtooth", 0.08);
+    combatSound("hull-hit",x);
     vibrate([45, 35, 60]);
     hud();
 
@@ -563,9 +560,9 @@
     } else if (isThreat(item)) {
       // Guardian weapons have authored tier damage (13/15/22). Only patrol
       // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
-      const enemyPhaser=isUnifiedClassic()&&item.classicScoutProjectile&&!item.guardianProjectile;
+      const enemyPhaser=item.classicScoutProjectile&&!item.guardianProjectile;
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
-        largeAsteroid:isUnifiedClassic()&&item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
+        largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
     } else {
       activatePower(item.type, item);
     }
@@ -679,63 +676,9 @@
   }
 
   function fireManualShot() {
-    if(isUnifiedClassic()) {
-      if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
-      if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
-      return fireClassicWeapon();
-    }
-    if (state !== "playing" || (!atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
-
-    if (!atlasBoss) ammo -= 1;
-    manualShotCooldown = 0.28;
-    cameraKickY = Math.max(cameraKickY, 5);
-    shake = Math.max(shake, 3.2);
-    if (fireAtlasPulse("pulse")) { updateAmmoHud(); return true; }
-
-    const candidates = items
-      .filter(isThreat)
-      .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 145)
-      .sort((a, b) => {
-        const aAim = Math.abs(a.x - player.x) * 1.4 + (player.y - a.y) * 0.08;
-        const bAim = Math.abs(b.x - player.x) * 1.4 + (player.y - b.y) * 0.08;
-        return aAim - bAim;
-      });
-    const target = candidates[0];
-    const muzzleY = player.y - SHIP_VISUAL.phaserMuzzleOffset;
-
-    if (target) {
-      target.hp = Math.max(0, (target.hp || 1) - 1);
-      const destroyed = target.hp <= 0;
-      animateScoutHit(target, destroyed);
-      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-      shots.push({
-        x1: player.x, y1: muzzleY, x2: target.x, y2: target.y,
-        life: 0.24, duration: 0.24, hit: true, destroyed,
-        impactX: target.x, impactY: target.y,
-        impactScale: target.type === "satellite" ? 1.2 : target.r > 39 ? 1.1 : 0.82,
-        kind: "pulse"
-      });
-      score += destroyed ? (target.type === "satellite" ? 15 : 10) : 3;
-      if (destroyed) {
-        const targetIndex = items.indexOf(target);
-        if (targetIndex >= 0) items.splice(targetIndex, 1);
-      }
-      tone(destroyed ? 1040 : 820, 0.09, "square", 0.055);
-    } else {
-      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-      shots.push({
-        x1: player.x, y1: muzzleY, x2: player.x, y2: 86,
-        life: 0.22, duration: 0.22, hit: false, kind: "pulse"
-      });
-      tone(780, 0.07, "square", 0.045);
-    }
-
-    vibrate(18);
-    updateAmmoHud();
-    window.AnalyticsManager?.track("ability_used", {
-      ability: "pulse_shot", level: currentLevel + 1, ammoRemaining: ammo
-    });
-    return true;
+    if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
+    if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
+    return fireClassicWeapon();
   }
 
   function checkSupplyFailure() {

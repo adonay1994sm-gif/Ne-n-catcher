@@ -151,7 +151,7 @@ function legacyHarness(music = 35, fx = 70, {withMedia = false, story = false, a
   };
   const h = vm.createContext({ settings: { music, fx }, musicGain: null, audioCtx: null,
     addEventListener() {}, window: { AudioContext: function AudioContext() { return ac; } },
-    isUnifiedClassic:()=>true,classicChapterStory:story?{}:null,classicFlightView:null,
+    classicChapterStory:story?{}:null,classicFlightView:null,
     NeonCampaign: { createVoyageScore,createChapterScore:options=>createChapterScore({...options,createAudio:()=>media}) } });
   vm.runInContext(legacySource, h);
   return { h, ac, records,media,mediaSources:()=>mediaSources,mediaPlays:()=>mediaPlays,

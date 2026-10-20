@@ -7,7 +7,7 @@ const source=readFileSync(new URL('../src/game/04-entities-collision-damage.js',
 
 test('actual collision dispatch preserves the three guardian damage tiers and the patrol Phaser table',()=>{
   const collisions=[];
-  const context=vm.createContext({isUnifiedClassic:()=>true,isThreat:()=>true,hud(){},
+  const context=vm.createContext({isThreat:()=>true,hud(){},
     player:{x:360,y:900},hull:100,classicHullReserve:0,classicHullReserveCapacity:30,
     state:'playing',NeonCampaign:{resolveHullReinforcement}});
   vm.runInContext(source,context);

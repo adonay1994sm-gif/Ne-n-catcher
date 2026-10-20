@@ -259,10 +259,10 @@
     player.previousCollisionX=player.x;player.previousCollisionY=player.y;
     const follow = 9 + (settings.sensitivity / 100) * 8;
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
-    if(isUnifiedClassic())player.visualBank=NeonCampaign.advanceShipBank(player.visualBank||0,
+    player.visualBank=NeonCampaign.advanceShipBank(player.visualBank||0,
       clamp((player.target+player.drift-player.x)/95,-1,1),dt);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
-    if(isUnifiedClassic() && classicFlightBounds) {
+    if(classicFlightBounds) {
       player.x=clamp(player.x,classicFlightBounds.minX,classicFlightBounds.maxX);
       player.y+=(player.targetY-player.y)*Math.min(1,dt*follow);
       player.y=clamp(player.y,classicFlightBounds.minY,classicFlightBounds.maxY);
@@ -280,7 +280,7 @@
       return;
     }
 
-    if(isUnifiedClassic())advanceClassicFlight(dt);
+    advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
     if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
@@ -319,10 +319,8 @@
     for (const key in powers) {
       if (powers[key] > 0) powers[key] = Math.max(0, powers[key] - dt);
     }
-    if(isUnifiedClassic()) {
-      if(classicHullReserve>0)classicShieldAge+=dt;
-      classicShieldImpact=Math.max(0,classicShieldImpact-dt);
-    }
+    if(classicHullReserve>0)classicShieldAge+=dt;
+    classicShieldImpact=Math.max(0,classicShieldImpact-dt);
     if (powers.tractor <= 0) tractorTarget = null;
     updatePowerHud();
 
@@ -339,7 +337,7 @@
     if (powers.tractor > 0 && (!tractorTarget || !items.includes(tractorTarget))) selectTractorTarget();
 
     advanceClassicWeaponField(dt);
-    if (isUnifiedClassic() && settings.autoFire && !atlasBoss && classicFlightView?.waitingFor!=="service") fireManualShot();
+    if (settings.autoFire && !atlasBoss && classicFlightView?.waitingFor!=="service") fireManualShot();
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
@@ -376,7 +374,7 @@
 
       if (item.classicScout) {
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
-        advance(item,dt*scale,player,shot=>{items.push(shot);if(isUnifiedClassic())combatSound("enemy-phaser",shot.x);});
+        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
       }
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";

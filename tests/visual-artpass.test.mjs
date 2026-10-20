@@ -52,7 +52,7 @@ test('Atlas perimeter draws its own illustrated Gaia Nova environment', async ()
 
 test('Vulkar level 3 uses separate illustrated space and planet layers with the played clock', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /isUnifiedClassic\(\) && currentLevel===2.*drawVulkarOrbitBackground/);
+  assert.match(src, /currentLevel===2.*drawVulkarOrbitBackground/);
   const orbit=src.slice(src.indexOf('function drawVulkarOrbitBackground'),src.indexOf('function background(t)'));
   assert.match(orbit,/SPRITES\.vulkarOrbitBackground,planet=SPRITES\.vulkarOrbitPlanet/);
   assert.match(orbit,/ctx\.drawImage\(planet/);
