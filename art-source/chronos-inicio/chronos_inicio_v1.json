@@ -86,5 +86,115 @@
       "sha256": "a01df7917a236263a1a2e7af967dfcce0c79941556220dff883fa9aff7d90f8f",
       "notas": "Fondo vertical sin estación: Tálasa y relámpagos de la onda. Para después de la ruptura."
     }
+  ],
+  "piezas_entrega_3": [
+    {
+      "archivo": "chronos_pieza_torre_intacta_v1.webp",
+      "tamano": [
+        530,
+        1206
+      ],
+      "sha256": "56280d189c95a89eb7eb3914ee6933c4f580bfa2b5068ab866037185315e3b61",
+      "notas": "Recortado a su contenido; fondo transparente."
+    },
+    {
+      "archivo": "chronos_pieza_rueda_inclinada_v1.webp",
+      "tamano": [
+        638,
+        700
+      ],
+      "sha256": "a48c93360ba8abe144bd7dbdf743e66450ab5c403024f26cf8a84b80b6dccfd8",
+      "notas": "Recortado a su contenido; fondo transparente."
+    },
+    {
+      "archivo": "chronos_pieza_anillo_exterior_antenas_v1.webp",
+      "tamano": [
+        1129,
+        974
+      ],
+      "sha256": "126542a6116727b98af90221d30991ad97784d2be57a8b2e16bc66041f60531b",
+      "notas": "Recortado a su contenido; fondo transparente."
+    },
+    {
+      "archivo": "chronos_pieza_torre_rota_v1.webp",
+      "tamano": [
+        534,
+        1008
+      ],
+      "sha256": "de3183279570f017c580de8af15545768d96ee4a9beb0ac0ff31b0369332c7b7",
+      "notas": "Recortado a su contenido; fondo transparente."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_01_v1.webp",
+      "tamano": [
+        306,
+        557
+      ],
+      "sha256": "ef374bcf59d019d507160a5dc07d5adbfafb10a42e73c46d24d139bf400c49c0",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_02_v1.webp",
+      "tamano": [
+        274,
+        603
+      ],
+      "sha256": "4a35580aab6dc6a706d29e2c41ed8566be055027a7e61b118d1d3fc4ecee8d79",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_03_v1.webp",
+      "tamano": [
+        244,
+        435
+      ],
+      "sha256": "8f2da88565480264d53ddf51d8b2bae29a66da86c1f43fc865a226155a5b9ce4",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_04_v1.webp",
+      "tamano": [
+        280,
+        497
+      ],
+      "sha256": "753b595bbc85fafcb2569ef02268feb6510b2d1298c7bcf079cac14ef0c9ea33",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_05_v1.webp",
+      "tamano": [
+        292,
+        450
+      ],
+      "sha256": "11b5277a5c617082b02ccd1a8f190a762f20fc98420bfb9c0fad03cbce27c1b8",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_06_v1.webp",
+      "tamano": [
+        302,
+        390
+      ],
+      "sha256": "33aca15cd1d728da2ed5c8132683f0bf466145e2f00faa018adfaecb158d24dc",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_07_v1.webp",
+      "tamano": [
+        308,
+        451
+      ],
+      "sha256": "874180a90e590f1109551e2953959573a1a2fe08ee9ca3b276cab6f0aebaf811",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    },
+    {
+      "archivo": "chronos_pieza_fragmento_08_v1.webp",
+      "tamano": [
+        230,
+        525
+      ],
+      "sha256": "6e12a6d6370939a08189db074c59129191a70b82d37fb9982d9402c5198ef169",
+      "notas": "Fragmento de la hoja 4x2, recortado."
+    }
   ]
 }

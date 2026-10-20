@@ -60,12 +60,23 @@ queda bien sobre el fondo. Diferencias de estilo menores con las ilustraciones
 de la ruptura (estas piezas son algo más oscuras); el destello del disparo
 oculta el cambio.
 
+### 20/10/2026 · Torre y fragmentos (tercera entrega) — `art-source/chronos-inicio/`
+
+| Archivo | Qué es | Uso previsto | Estado |
+|---|---|---|---|
+| `chronos_pieza_torre_intacta_v1.webp` | Torre de cristal encendida sobre su base | Centro de la estación antes del disparo | RECIBIDO |
+| `chronos_pieza_torre_rota_v1.webp` | Torre partida y apagada, con chispas | Cambio instantáneo al recibir el disparo (misma base y posición, comprobado) | RECIBIDO |
+| `chronos_pieza_fragmento_01_v1.webp` … `_08_v1.webp` | 8 restos sueltos (tramos de anillo, módulos, brazos) | Salen despedidos girando hacia la nave | RECIBIDO |
+| `chronos_pieza_rueda_inclinada_v1.webp` | Rueda vista en ángulo con brazos sueltos | Fase de ruptura: la rueda se inclina al separarse | RECIBIDO |
+| `chronos_pieza_anillo_exterior_antenas_v1.webp` | Anillo exterior con antenas, en perspectiva | Alternativa más detallada al anillo exterior | RECIBIDO |
+
+Con esta entrega la estación queda completa por piezas: ya se puede romper
+de verdad dentro del juego.
+
 ## Pendiente de pedir (sugerencias de Claude)
 
 | Qué | Para qué | Notas para ChatGPT |
 |---|---|---|
-| Torre central sola: intacta y rota | Que el disparo la parta | Misma torre de cristal que la estación completa, vista cenital, fondo transparente |
-| 8 fragmentos sueltos de la estación | Restos que vuelan hacia la nave | Cuadrícula 4×2, separados, fondo transparente |
 | Fondo tranquilo (sin relámpagos) | Antes del ataque | Mismo fondo que `chronos_fondo_tras_ruptura_v1` pero en calma |
 | Vista grande de cada planeta (≈2048 px) | La llegada, cuando el planeta llena la pantalla | Una sola imagen, misma cara que la vista 1 de su hoja, fondo transparente |
 | Gaia en rotación (como las de esta entrega) | Que Gaia combine con los demás planetas | Mismo estilo y tamaño que estas hojas |
