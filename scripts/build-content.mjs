@@ -6,6 +6,6 @@ await build({
   entryPoints: ['src/game/progression/legacy-content-entry.js'],
   outfile: 'content-runtime.js',
   bundle: true, format: 'iife', globalName: 'NeonCampaign',
-  target: ['safari15'], sourcemap: true, legalComments: 'none'
+  target: ['safari15'], sourcemap: 'external', legalComments: 'none'
 });
 console.log('[NEON CRONIUM] content-runtime.js: deterministic campaign modules; no RAF owner.');
