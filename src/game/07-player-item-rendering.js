@@ -93,7 +93,7 @@
   }
 
   function drawClassicProjectiles() {
-    if (!isUnifiedClassic() || !classicWeapons) return;
+    if (!classicWeapons) return;
     for (const shot of classicWeapons.projectiles) {
       ctx.save(); ctx.translate(shot.x, shot.y);
       ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
@@ -117,7 +117,7 @@
   }
 
   function drawFlightModule(item) {
-    if (!isUnifiedClassic() || !spriteReady(SPRITES.flightWeapons)) return;
+    if (!spriteReady(SPRITES.flightWeapons)) return;
     const atlas = SPRITES.flightWeapons;
     ctx.save(); ctx.translate(item.x, item.y);
     ctx.globalAlpha *= itemVisualAlpha(item);
@@ -134,8 +134,7 @@
 
   function hasClassicTwinMounts() {
     // Some isolated render fixtures deliberately do not install campaign UI.
-    return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
-      typeof classicEquipment !== "undefined" &&
+    return typeof classicEquipment !== "undefined" &&
       (["twin","lance"].includes(classicEquipment.selected) || classicEquipment.twinPrepared === true);
   }
 
@@ -284,7 +283,7 @@
   }
 
   function drawClassicDock(t) {
-    if (!isUnifiedClassic() || !ui.flightDockCanvas || !ui.flightDock?.classList.contains("show")) return;
+    if (!ui.flightDockCanvas || !ui.flightDock?.classList.contains("show")) return;
     const preview = ui.flightDockCanvas;
     const target = preview.getContext("2d");
     target.clearRect(0, 0, preview.width, preview.height);
@@ -361,24 +360,12 @@
     ctx.save();
     ctx.translate(player.x, player.y);
 
-    const classic=typeof isUnifiedClassic==="function"&&isUnifiedClassic();
     const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
     const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8*shipScale;
 
-    if (powers.shield > 0 && !classic) {
-      const shieldFrame = Math.sin(t * 0.012) > 0.45 ? SPRITES.shieldEffect : SPRITES.shieldIdle;
-      ctx.save();
-      ctx.translate(0, -26 * SHIP_VISUAL.scale + bob);
-      ctx.globalCompositeOperation = "screen";
-      ctx.shadowBlur = 30;
-      ctx.shadowColor = "#4cffe9";
-      drawImageCentered(shieldFrame, SHIP_VISUAL.shieldSize, SHIP_VISUAL.shieldSize, elapsed * 0.08, 0.42);
-      ctx.restore();
-    }
-
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
-    const steering=classic&&Number.isFinite(player.visualBank)?player.visualBank:clamp((player.target+player.drift-player.x)/95,-1,1);
-    const reserve=classic&&typeof classicHullReserve==="number"&&classicHullReserve>0
+    const steering=Number.isFinite(player.visualBank)?player.visualBank:clamp((player.target+player.drift-player.x)/95,-1,1);
+    const reserve=typeof classicHullReserve==="number"&&classicHullReserve>0
       ?.08+(typeof classicShieldImpact==="number"?classicShieldImpact:0):0;
     const assembled = drawModularShip(ctx, shipLoadout, assemblySize, elapsed,
       steering, hull, impactReactionTimer,hasClassicTwinMounts()?classicTwinFrame():null,
@@ -410,7 +397,7 @@
 
     }
 
-    if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && classicWeapons && classicWeapons.cooldown > (classicEquipment.selected==="lance"?.38:.20)) {
+    if(classicWeapons && classicWeapons.cooldown > (classicEquipment.selected==="lance"?.38:.20)) {
       // Tiny flashes at the physical emitters; no diagonal fake convergence rays.
       for(const offset of classicEquipment.selected==="twin" ? [-10,10] : [0]) {
         ctx.save();ctx.translate(offset*shipScale,-(SHIP_VISUAL.muzzleOffset??125));
@@ -467,80 +454,19 @@
   }
 
   function drawEnergy(item) {
-    if (typeof isUnifiedClassic === "function" && isUnifiedClassic()) {
-      // V2 is actual animated energy, padded on every cell. Preserve the whole
-      // illustration: no rectangular crop, metal bezel or opaque fragment.
-      const phase = Number.isFinite(item.phase) ? item.phase : 0;
-      const atlas=SPRITES.croniumEnergy,frame=Math.floor(elapsed*8+phase)%4;
-      const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
-      ctx.save(); ctx.translate(item.x, item.y);
-      ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
-      ctx.shadowBlur = 0;ctx.globalCompositeOperation="screen";
-      const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*4;
-      if(halo)ctx.drawImage(halo,-glow/2,-glow/2,glow,glow);
-      if(spriteReady(atlas)) {
-        const cell=atlas.naturalWidth/2;
-        ctx.drawImage(atlas,(frame%2)*cell,Math.floor(frame/2)*cell,cell,cell,-size/2,-size/2,size,size);
-      }
-      ctx.restore(); return;
-    }
-    ctx.save();
-    ctx.globalAlpha = itemVisualAlpha(item);
-    ctx.translate(item.x, item.y);
-    // Visual scale only: the proven collection radius and tractor stay intact.
-    const orbVisualScale=typeof isUnifiedClassic==="function" && isUnifiedClassic() ? .5 : 1;
-    ctx.scale(orbVisualScale,orbVisualScale);
-    const distanceToShip = Math.hypot(player.x - item.x, player.y - item.y);
-    const proximity = state === "playing" ? clamp(1 - distanceToShip / 330, 0, 1) : 0;
-    const pulseSequence = [0,1,2,3,4,5,4,3,2,1];
-    const frame = frameFrom("core", pulseSequence[Math.floor((elapsed * 9 + item.phase) % pulseSequence.length)]);
-    const breath = 0.5 + 0.5 * Math.sin(elapsed * 3.4 + item.phase);
-    const pulse = 1 + breath * 0.055 + proximity * 0.08;
-    ctx.scale(pulse, pulse);
-    ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = (24 + proximity * 24)*orbVisualScale;
-    ctx.shadowColor = "#33f4ff";
-
-    const halo = ctx.createRadialGradient(0, 0, item.r * 0.15, 0, 0, item.r * (2.35 + proximity * 0.45));
-    halo.addColorStop(0, `rgba(255,255,255,${0.62 + proximity * 0.25})`);
-    halo.addColorStop(0.18, `rgba(98,246,255,${0.42 + proximity * 0.24})`);
-    halo.addColorStop(0.54, "rgba(38,190,255,.16)");
-    halo.addColorStop(1, "rgba(20,86,255,0)");
-    ctx.fillStyle = halo;
-    ctx.beginPath(); ctx.arc(0, 0, item.r * (2.35 + proximity * 0.45), 0, Math.PI * 2); ctx.fill();
-
-    ctx.strokeStyle = `rgba(126,247,255,${0.30 + breath * 0.25 + proximity * 0.25})`;
-    ctx.lineWidth = 1.5 + proximity * 1.5;
-    ctx.beginPath(); ctx.arc(0, 0, item.r * 1.35, 0, Math.PI * 2); ctx.stroke();
-    ctx.globalAlpha *= 0.72;
-    ctx.beginPath(); ctx.arc(0, 0, item.r * 1.72, 0, Math.PI * 2); ctx.stroke();
-    ctx.globalAlpha /= 0.72;
-
-    const crystalReady = spriteReady(SPRITES.croniumFragment);
-    if (frame && crystalReady) {
-      drawImageCentered(frame, item.r * 2.85, item.r * 2.85, -item.rot * 0.08, 0.34 + breath * 0.18);
-    }
-    if (crystalReady) {
-      drawImageCentered(SPRITES.croniumFragment, item.r * 2.62, item.r * 2.62, item.rot * 0.06, 0.94);
-    } else if (!drawImageCentered(frame, item.r * 2.85, item.r * 2.85, item.rot * 0.10)) {
-      const gradient = ctx.createRadialGradient(-7, -8, 2, 0, 0, item.r);
-      gradient.addColorStop(0, "#fff"); gradient.addColorStop(0.2, "#caffff");
-      gradient.addColorStop(0.48, "#63efff"); gradient.addColorStop(1, "#1554d8");
-      ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(0, 0, item.r, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.fillStyle = "rgba(255,255,255,.96)";
-    ctx.shadowBlur = (18 + proximity * 16)*orbVisualScale;
-    ctx.beginPath(); ctx.arc(0, 0, Math.max(3, item.r * 0.22), 0, Math.PI * 2); ctx.fill();
-
-    if (proximity > 0.05 && settings.effects) {
-      for (let index = 0; index < 5; index++) {
-        const travel = (elapsed * (0.65 + index * 0.06) + item.phase + index * 0.19) % 1;
-        const radius = item.r * (2.7 - travel * 2.1);
-        const angle = item.phase + index * 2.17 + elapsed * (1.2 + proximity);
-        ctx.globalAlpha = proximity * (0.28 + travel * 0.55);
-        ctx.fillStyle = index % 2 ? "#bfffff" : "#4ceaff";
-        ctx.beginPath(); ctx.arc(Math.cos(angle) * radius, Math.sin(angle) * radius, 1.2 + proximity * 1.6, 0, Math.PI * 2); ctx.fill();
-      }
+    // V2 is actual animated energy, padded on every cell. Preserve the whole
+    // illustration: no rectangular crop, metal bezel or opaque fragment.
+    const phase = Number.isFinite(item.phase) ? item.phase : 0;
+    const atlas=SPRITES.croniumEnergy,frame=Math.floor(elapsed*8+phase)%4;
+    const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
+    ctx.shadowBlur = 0;ctx.globalCompositeOperation="screen";
+    const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*4;
+    if(halo)ctx.drawImage(halo,-glow/2,-glow/2,glow,glow);
+    if(spriteReady(atlas)) {
+      const cell=atlas.naturalWidth/2;
+      ctx.drawImage(atlas,(frame%2)*cell,Math.floor(frame/2)*cell,cell,cell,-size/2,-size/2,size,size);
     }
     ctx.restore();
   }
@@ -551,7 +477,7 @@
     const sprite=frame.image==="assets/ch02_interceptor_atlas_v1.webp"?SPRITES.ch02:SPRITES.ch01;
     if(!spriteReady(sprite))return false;
     const {x, y, width, height} = frame.rect;
-    ctx.shadowBlur = typeof isUnifiedClassic === "function" && isUnifiedClassic() ? 0 : 17;
+    ctx.shadowBlur = 0;
     ctx.shadowColor = frame.damaged ? "#ff6079" : "#50e8ff";
     ctx.drawImage(sprite, x, y, width, height,
       -frame.drawSize * frame.pivot.x, -frame.drawSize * frame.pivot.y,
@@ -564,34 +490,13 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
-    if (item.n7Projectile || item.classicScoutProjectile) {
-      if (item.classicScoutProjectile) {
-        ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
-        if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
-          item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
-        ctx.restore(); return;
-      }
-      const atlasPulse = item.classicScoutProjectile;
-      ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
-      ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
-      ctx.shadowBlur = 12;
-      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42,
-        item.tacticsVersion?Math.atan2(item.vy,item.vx):Math.PI/2)) {
-        ctx.fillRect(-4, -12, 8, 24);
-      }
-      ctx.restore();
-      return;
+    if (item.classicScoutProjectile) {
+      ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
+      if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
+        item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
+      ctx.restore(); return;
     }
-    const telegraph = item.n7?.telegraph || 0;
-    if (telegraph > 0) {
-      ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
-      ctx.lineWidth = 2;
-      const aim=item.classicScout?.lockedTarget;
-      const angle=aim?Math.atan2(aim.y-item.y,aim.x-item.x):Math.PI/2;
-      ctx.beginPath();ctx.moveTo(Math.cos(angle)*35,Math.sin(angle)*35);
-      ctx.lineTo(Math.cos(angle)*145,Math.sin(angle)*145);ctx.stroke();
-    }
-    if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
+    if (drawCh01Frame(item.classicScout?.animator)) {
       ctx.restore();
       return;
     }

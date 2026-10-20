@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {resolveHullReinforcement,HULL_REINFORCEMENT_RULES} from '../src/game/combat/hull-reinforcement.js';
-import {resolveDamage} from '../src/core/damage-service.js';
 
 const damage=(request={})=>resolveHullReinforcement({hull:100,reserve:30,amount:10,...request});
 
@@ -64,13 +63,13 @@ test('invalid damage cannot silently normalize a malformed hull or grant reserve
   assert.doesNotMatch(source,/requestAnimationFrame|setInterval|setTimeout|Date\.now|localStorage|window\./);
 });
 
-function runtime(classic){
+function runtime(){
   const source=readFileSync(new URL('../src/game/04-entities-collision-damage.js',import.meta.url),'utf8');
   const start=source.indexOf('  function activatePower('),end=source.indexOf('  function collectItem(',start);
   const calls={hud:0};const no=()=>{};
   const sandbox=vm.createContext({hull:100,classicHullReserve:30,classicHullReserveCapacity:30,
     player:{x:360,y:1000},state:'playing',powers:{shield:0},score:0,classicShieldAge:0,classicShieldImpact:0,
-    NeonCore:{resolveDamage},NeonCampaign:{resolveHullReinforcement},isUnifiedClassic:()=>classic,
+    NeonCampaign:{resolveHullReinforcement},
     burst:no,pulseRing:no,addImpactEffect:no,tone:no,combatSound:no,vibrate:no,toast:no,ensureSprite:no,updatePowerHud:no,
     hud:()=>{calls.hud++;},SPRITES:{forceShieldAtlas:{}},window:{},currentLevel:0,
     impactReactionTimer:0,impactReactionSide:0,damageSmokeLocked:false,damageSmokeSide:0,
@@ -80,21 +79,13 @@ function runtime(classic){
 }
 
 test('actual classic damage ignores a timed legacy shield and consumes reserve before hull',()=>{
-  const {sandbox:s,calls}=runtime(true);s.powers.shield=100;
+  const {sandbox:s,calls}=runtime();s.powers.shield=100;
   s.damageShip(35,380,1000);assert.equal(s.classicHullReserve,0);assert.equal(s.hull,95);
   assert.equal(s.score,0);assert.equal(s.combo,1);assert.equal(calls.hud,1);
 });
 
-test('actual legacy campaign damage retains its historical timed-shield protection and reward',()=>{
-  const {sandbox:s}=runtime(false);s.powers.shield=7;
-  s.damageShip(35,380,1000);assert.equal(s.hull,100);assert.equal(s.classicHullReserve,30);
-  assert.equal(s.powers.shield,7);assert.equal(s.score,10);
-});
-
-test('actual classic shield pickup restores persistent reserve with no timer while legacy still uses seven seconds',()=>{
+test('actual classic shield pickup restores persistent reserve with no timer',()=>{
   const item={x:360,y:900};
-  const classic=runtime(true).sandbox;classic.classicHullReserve=3;classic.classicHullReserveCapacity=45;
+  const classic=runtime().sandbox;classic.classicHullReserve=3;classic.classicHullReserveCapacity=45;
   classic.activatePower('shield',item);assert.equal(classic.classicHullReserve,45);assert.equal(classic.powers.shield,0);
-  const legacy=runtime(false).sandbox;legacy.activatePower('shield',item);
-  assert.equal(legacy.powers.shield,7);assert.equal(legacy.classicHullReserve,30);
 });

@@ -67,7 +67,7 @@ function harness({assembled = true, health = 100, selected = 'pulse', ready = tr
   if (gaiaReady) sprites.gaiaPulse = image('gaia-pulse-v3',1024,1024);
   const sandbox = vm.createContext({ctx, SPRITES: sprites,
     spriteReady: image => Boolean(image?.complete && image.naturalWidth && image.naturalHeight),
-    isUnifiedClassic: () => true, classicWeapons: {projectiles: [], cooldown: 0},
+    classicWeapons: {projectiles: [], cooldown: 0},
     classicEquipment: {selected},
     state: 'playing', playerVisible: true, player: {x: 360, y: 1000, target: 360, drift: 0},
     powers: {shield: 0}, hull: health, elapsed: 2.3,

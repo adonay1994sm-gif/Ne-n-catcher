@@ -10,7 +10,6 @@ export {createVoyageHazardField, advanceVoyageHazardField} from './voyage-hazard
 export {createCometShower, advanceCometShower, advanceShowerComet,
   releaseCometShowerItem, cometShowerSnapshot} from './comet-shower.js';
 export {normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,syncClassicWorkshopWeapons} from './classic-arsenal.js';
-export {advanceEnemy} from './encounter-director.js';
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../combat/classic-pursuit.js';
 export {createCh02Animator} from '../animation/ch02-animator.js';

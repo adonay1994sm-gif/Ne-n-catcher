@@ -1,7 +1,5 @@
   const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
 
-  function isUnifiedClassic() { return true; }
-
   function classicChapterControlsLocked() {
     return Boolean(classicChapterView?.opening?.controlsLocked);
   }
@@ -36,7 +34,6 @@
   }
 
   function loadClassicSalvage() {
-    if(!isUnifiedClassic())return false;
     if(!classicSalvageLedger)classicSalvageLedger=NeonCampaign.createScrapLedger({storage});
     const result=classicSalvageLedger.load();
     classicSalvageState=result.ok?result.state:null;
@@ -72,7 +69,6 @@
   }
 
   function applyClassicSalvageShield() {
-    if(!isUnifiedClassic())return;
     // Kept as the existing checkpoint call site: changing a stage must neither
     // refill reinforcement nor create a timed shield.
     powers.shield=0;
@@ -91,7 +87,7 @@
   }
 
   function buyClassicC9Upgrade(sku) {
-    if(!isUnifiedClassic()||!classicSalvageLedger)return false;
+    if(!classicSalvageLedger)return false;
     if(sku==="twin-preparation"&&(!classicEquipment.recoveredTwin||classicEquipment.twinPrepared||classicEquipment.unlocked.includes("twin")))return false;
     const sequence=classicSalvageState?.missileRefillSequence||0;
     const result=classicSalvageLedger.purchase({transactionId:sku==="missile-refill"?`c9:missiles:${sequence+1}`:`c9:${sku}`,sku});
@@ -117,11 +113,11 @@
   }
 
   function spawnClassicScrap(target) {
-    if(!isUnifiedClassic()||!target||target.salvageDropped||!classicSalvageRunId||!classicSalvageState)return null;
+    if(!target||target.salvageDropped||!classicSalvageRunId||!classicSalvageState)return null;
     if(target.salvageRunId&&target.salvageRunId!==classicSalvageRunId)return null;
     const boss=target.bossSalvage===true;
     const wreckage=["debris","satellite"].includes(target.type);
-    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.n7Projectile||target.guardianProjectile))return null;
+    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
     const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
@@ -139,7 +135,7 @@
   }
 
   function collectClassicScrap(item) {
-    if(!isUnifiedClassic()||!item?.salvagePickup||!classicSalvageLedger)return false;
+    if(!item?.salvagePickup||!classicSalvageLedger)return false;
     const result=classicSalvageLedger.claimDrop({runId:item.runId,dropId:item.dropId,enemyType:item.enemyType});
     if(!result.ok) {
       if(!item.salvageSaveWarning){item.salvageSaveWarning=true;toast("No se ha guardado la chatarra. La recogida se reintentará sin duplicarla.");}
@@ -167,7 +163,7 @@
       validateEquipment:value=>NeonCampaign.normalizeClassicEquipment(value)!==null});
     const result=completionJournal.recover();
     completionPersistenceBlocked=!result.ok;
-    if(result.ok&&isUnifiedClassic()) {
+    if(result.ok) {
       const recovered=NeonCampaign.normalizeClassicEquipment(storage.getJSON(CLASSIC_EQUIPMENT_KEY,null));
       if(recovered)classicEquipment=recovered;
     }
@@ -176,7 +172,6 @@
   }
 
   function setupClassicFlight() {
-    if (!isUnifiedClassic()) return;
     loadClassicVoyage();
     const raw = storage.getRaw(CLASSIC_EQUIPMENT_KEY);
     if (raw !== null) {
@@ -387,8 +382,8 @@
 
   function buildChronosStageGrid() {
     const section=$("chronosStages");if(!section)return;
-    section.classList.toggle("hidden",!isUnifiedClassic()||pendingLevel!==0);
-    if(!isUnifiedClassic()||pendingLevel!==0)return;
+    section.classList.toggle("hidden",pendingLevel!==0);
+    if(pendingLevel!==0)return;
     const selected=classicVoyageRequestedStage||(!classicVoyageRecord?.completed?classicVoyageRecord?.checkpoint.stageNumber:1)||1;
     const unlocked=classicVoyageRecord?.unlockedStage||1,grid=$("chronosStageGrid");grid.innerHTML="";
     for(const stage of NeonCampaign.CHRONOS_VOYAGE_STAGES){
@@ -453,7 +448,6 @@
   }
 
   function openClassicDock(from="menu") {
-    if (!isUnifiedClassic()) return false;
     if(from==="hud") {
       if(state!=="playing"||atlasBoss||classicChapterControlsLocked())return false;
       if(typeof resetGameInput==="function")resetGameInput();
@@ -540,7 +534,7 @@
   }
 
   function syncClassicFlightHud() {
-    if (!isUnifiedClassic() || !ui.flightRoute) return;
+    if (!ui.flightRoute) return;
     $("openFlightDock")?.classList.toggle("hidden",!classicEquipment.recoveredTwin);
     const view=classicFlightView;
     if(ui.classicC9){
@@ -649,7 +643,6 @@
   }
 
   function advanceClassicFlight(dt) {
-    if(!isUnifiedClassic())return;
     const introBefore=classicFlightView?.elapsed;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
     // Cronos Prime carga el disparo: suena la alarma al empezar a cargar y al abrir fuego.
@@ -781,7 +774,7 @@
   }
 
   function fireClassicMissile() {
-    if(!isUnifiedClassic()||state!=="playing"||warpTimer>0||classicChapterControlsLocked()||
+    if(state!=="playing"||warpTimer>0||classicChapterControlsLocked()||
       atlasBoss?.disabled||!classicWeapons||!classicSalvageLedger||!NeonCampaign.canTriggerClassicMissile(classicWeapons))return false;
     const inventory=classicSalvageLedger.load();
     if(!inventory.ok){syncClassicMissileHud();return false;}
@@ -823,7 +816,7 @@
   }
 
   function interceptClassicProjectile(item) {
-    if(!isUnifiedClassic() || !classicWeapons || atlasBoss || !isThreat(item))return false;
+    if(!classicWeapons || atlasBoss || !isThreat(item))return false;
     if(!item.id)item.id=`classic-target:${++classicThreatSequence}`;
     for(const shot of [...classicWeapons.projectiles]) {
       const ax=shot.previousX??shot.x,ay=shot.previousY??shot.y,dx=shot.x-ax,dy=shot.y-ay;
@@ -839,7 +832,7 @@
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);
       if(shot.weapon==="missile")addMissileImpact(item.x,item.y);else addImpactEffect(item.x,item.y,.8);
-      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
+      score+=item.classicScoutProjectile?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
       hudScoreTarget=score;
       if(destroyed){
         if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
@@ -867,7 +860,7 @@
     if (!atlasBoss) return;
     const rect = canvas.getBoundingClientRect();
     const horizontal = rect.height < 500;
-    const anchorY = isUnifiedClassic() ? (classicFlightAnchorY || player.y) : player.y;
+    const anchorY = classicFlightAnchorY || player.y;
     atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = anchorY;
     const hudBottom = Math.max($('hud').getBoundingClientRect().bottom,
       ui.atlasEncounter?.getBoundingClientRect().bottom || 0,
@@ -898,7 +891,7 @@
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
-    setClassicFlightHudVisible(isUnifiedClassic());
+    setClassicFlightHudVisible(true);
     ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
     hideWarning(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
@@ -975,7 +968,7 @@
     if (!atlasBoss || atlasBoss.disabled || !spriteReady(SPRITES.guardianAtlas)) return false;
     // Exactly the same straight, physical battery projectiles as in the field.
     // A misplaced tap can miss; no ray is bent toward the boss or deleted.
-    if (isUnifiedClassic() && kind !== "phaser") return fireClassicWeapon();
+    if (kind !== "phaser") return fireClassicWeapon();
     // A collected temporary phaser is a separate timed power, never AUTO input.
     if (kind === "phaser") {
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
@@ -1124,7 +1117,7 @@
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     const percent = Math.round((completed / LEVELS.length) * 100);
     const finished = completed === LEVELS.length;
-    const target = isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed ? 0 : finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
+    const target = classicVoyageRecord&&!classicVoyageRecord.completed ? 0 : finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
 
     ui.best.textContent = bestScore();
     ui.unlockedText.textContent = `${unlocked}/${LEVELS.length}`;
@@ -1133,7 +1126,7 @@
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
     ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
-    if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
+    if(target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -1146,15 +1139,13 @@
     ui.score.textContent = Math.round(displayedScore);
     ui.goal.textContent = `${collected}/${level().goal}`;
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
-    if(isUnifiedClassic()) {
-      ui.hull.title=`Casco ${Math.ceil(hull)} de 100. Refuerzo ${Math.ceil(classicHullReserve)} de ${classicHullReserveCapacity}, sin temporizador.`;
-      let reserve=$("hullReserve");
-      if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
-      reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
-    }
+    ui.hull.title=`Casco ${Math.ceil(hull)} de 100. Refuerzo ${Math.ceil(classicHullReserve)} de ${classicHullReserveCapacity}, sin temporizador.`;
+    let reserve=$("hullReserve");
+    if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
+    reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
     ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = isUnifiedClassic() ? "NIVEL" : "SECTOR";
-    if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
+    ui.hudLevel.previousElementSibling.textContent = "NIVEL";
+    ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
       ? "linear-gradient(90deg,#63ffc4,#64e9ff)"
@@ -1175,7 +1166,7 @@
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
-    if(isUnifiedClassic() && classicWeapons) {
+    if(classicWeapons) {
       ammo=classicWeapons.charges;
       ui.ammo.textContent="";
       ui.fire.disabled=state!=="playing" || warpTimer>0;
@@ -1239,7 +1230,7 @@
     }
     // Only additions/removals can resize the row. Countdown frames must not
     // measure layout; a newly collected power must not cover the ship's tail.
-    if (layoutChanged && isUnifiedClassic() && state === "playing") refreshClassicFlightBounds();
+    if (layoutChanged && state === "playing") refreshClassicFlightBounds();
   }
 
   function updateEncounterHud() {
@@ -1329,7 +1320,7 @@
   }
 
   function showStoryTransmission(speaker, text, duration = 4.6) {
-    if(isUnifiedClassic() && ui.flightRoute) {
+    if(ui.flightRoute) {
       flightTransmission={speaker,speakerId:/MIRA/.test(speaker)?"mira":/IRIA/.test(speaker)?"iria":/LIRA/.test(speaker)?"lira":null,text,remaining:duration};syncClassicFlightHud();return;
     }
     if (!ui.storyTransmission) return;
@@ -1382,21 +1373,21 @@
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     let voyageEntry=null,voyageCheckpoint=null;
-    if(isUnifiedClassic()&&currentLevel===0){
+    if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
       if(resume){voyageCheckpoint=classicVoyageRecord.checkpoint;voyageEntry=classicVoyageRecord.entry;}
       else if(requested){voyageCheckpoint=NeonCampaign.createChronosVoyageCheckpoint(requested,{goal:LEVELS[0].goal});}
     }
     classicVoyageRequestedStage=null;
-    classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
+    classicFlight=currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     classicChapterStory=classicFlight?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;classicChapterOutroStartedAt=null;
     classicTutorial=classicFlight?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
     classicTutorialAnchor=null;classicTutorialSignature='';
-    classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
-    if(isUnifiedClassic())beginClassicSalvageRun(Boolean(voyageEntry));
+    classicWeapons=NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H});
+    beginClassicSalvageRun(Boolean(voyageEntry));
     resetClassicCometShower();
     // A restored entry has already emitted its checkpoint event. Initialize
     // the same encounter grace here instead of waiting for that event to replay.
@@ -1404,17 +1395,15 @@
     classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
-    if(isUnifiedClassic()) {
-      ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
-      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
-      if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
-      if(classicFlight){
-        ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
-        ensureSprite(SPRITES.ch01);
-        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-        ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimePhaseOne);
-        ensureSprite(SPRITES.guardianAtlas);
-      }
+    ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
+    ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
+    if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
+    if(classicFlight){
+      ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
+      ensureSprite(SPRITES.ch01);
+      ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimePhaseOne);
+      ensureSprite(SPRITES.guardianAtlas);
     }
 
     atlasBoss = null;
@@ -1497,10 +1486,9 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
-    if(isUnifiedClassic()){setClassicFlightHudVisible(true);refreshClassicFlightBounds(true);}
+    setClassicFlightHudVisible(true);refreshClassicFlightBounds(true);
     hud();
     updateEncounterHud();
-    if(!isUnifiedClassic()) showBanner();
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     if(classicFlightView?.waitingFor==="service")beginClassicVoyageService();
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
@@ -1644,9 +1632,9 @@
         ? `Nivel ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
-    ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
+    ui.nextLevel.textContent=currentLevel===0
       ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE NIVEL →";
-    if(isUnifiedClassic()&&currentLevel===0) {
+    if(currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";
       ui.completeTitle.textContent="El registro ha llegado a Gaia";
@@ -1743,9 +1731,8 @@
     gateCountdown = level().gate ? 7 : Infinity;
 
     // Breve protección para evitar morir de nuevo en el mismo instante.
-    if(isUnifiedClassic()) {powers.shield=0;classicHullReserve=Math.max(classicHullReserve,15);}
-    else powers.shield = Math.max(powers.shield, 4);
-    if(isUnifiedClassic() && classicWeapons) {classicWeapons.charges=Math.max(classicWeapons.charges,1);classicWeapons.cooldown=0;classicWeapons.projectiles.length=0;}
+    powers.shield=0;classicHullReserve=Math.max(classicHullReserve,15);
+    if(classicWeapons) {classicWeapons.charges=Math.max(classicWeapons.charges,1);classicWeapons.cooldown=0;classicWeapons.projectiles.length=0;}
     ammo = Math.max(ammo, 1);
     manualShotCooldown = 0;
 
@@ -1753,7 +1740,7 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
-    setClassicFlightHudVisible(isUnifiedClassic());
+    setClassicFlightHudVisible(true);
     hud();
     updatePowerHud();
     refreshClassicFlightBounds();

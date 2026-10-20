@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import * as shower from '../src/game/progression/comet-shower.js';
+import {advanceShipBank} from '../src/game/ship/modular-ship.js';
 
 const [collisionSource,updateSource,runtimeSource]=await Promise.all([
   readFile(new URL('../src/game/04-entities-collision-damage.js',import.meta.url),'utf8'),
@@ -12,7 +13,7 @@ const [collisionSource,updateSource,runtimeSource]=await Promise.all([
 const outlineSource=runtimeSource.match(/const SHIP_COLLISION_OUTLINE = \[[\s\S]*?\n  \];/)[0];
 
 function fixture() {
-  const sandbox=vm.createContext({Math,NeonCampaign:shower,W:720,H:1280,
+  const sandbox=vm.createContext({Math,NeonCampaign:{...shower,advanceShipBank},W:720,H:1280,
     clamp:(n,min,max)=>Math.max(min,Math.min(max,n)),
     player:{x:360,y:900,target:360,targetY:900,drift:0,w:208,h:240},
     isThreat:item=>['meteor','scout','satellite','debris'].includes(item.type),
@@ -24,7 +25,8 @@ function fixture() {
     warpTimer:0,spawnTimer:999,currentLevel:0,atlasBoss:null,
     comboTimer:0,hull:100,powers:{tractor:0,shield:0,slow:0,phaser:0},shake:0,flash:0,stormPulse:0,
     tractorTarget:null,classicFlightView:null,
-    isUnifiedClassic:()=>false,
+    classicFlightBounds:null,classicHullReserve:0,classicShieldAge:0,classicShieldImpact:0,
+    advanceClassicFlight:()=>{},combatSound:()=>{},
     updateHudVisual:()=>{},updateLevelStory:()=>{},engineTrail:()=>{},
     updatePowerHud:()=>{},advanceClassicWeaponField:()=>{},hideWarning:()=>{},
     interceptClassicProjectile:()=>false,checkSupplyFailure:()=>{},hud:()=>{},

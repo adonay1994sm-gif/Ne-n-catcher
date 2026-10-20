@@ -12,7 +12,7 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
+      if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "energy") drawEnergy(item);
@@ -100,7 +100,6 @@
     return (point.clientY - rect.top) * H / rect.height;
   }
 
-  let legacyPilotId = null;
   let fireInput = null;
   let suppressNextFireClick = false;
   let missileInput = null;
@@ -138,10 +137,9 @@
   // Lifecycle callers use this as well as blur/cancellation. An action thumb
   // must never survive a pause, restart or return to the menu.
   function resetGameInput() {
-    const pilotId = classicFlightInput.active ? classicFlightInput.id : legacyPilotId;
+    const pilotId = classicFlightInput.active ? classicFlightInput.id : null;
     const previousFire = fireInput;
     const previousMissile = missileInput;
-    legacyPilotId = null;
     fireInput = null;
     missileInput = null;
     NeonCampaign.endFlightInput(classicFlightInput);
@@ -200,29 +198,7 @@
     if (state !== "playing") return;
     if (event.type.startsWith("touch") && window.PointerEvent) return;
     event.preventDefault();
-    if (isUnifiedClassic()) { moveClassicFlight(event); return; }
-    const press = event.type === "pointerdown" || event.type === "touchstart";
-    let point = event;
-    let id = event.pointerId ?? "mouse";
-    if (event.touches) {
-      point = press ? event.changedTouches?.[0]
-        : Array.from(event.touches).find(touch => touch.identifier === legacyPilotId);
-      if (!point) return;
-      id = point.identifier;
-    }
-    const mouseHover = !event.touches && (!event.pointerType || event.pointerType === "mouse") &&
-      !event.buttons && legacyPilotId === null;
-    if (press) {
-      if (legacyPilotId !== null) return;
-      legacyPilotId = id;
-      if (event.pointerId !== undefined) {
-        try { canvas.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
-      }
-    } else if (id !== legacyPilotId && !mouseHover) return;
-    const x = pointerX(event, point);
-    if (!Number.isFinite(x)) return;
-    const factor = settings.sensitivity / 100;
-    player.target = clamp(player.x + (x - player.x) * factor, 70, W - 70);
+    moveClassicFlight(event);
   }
 
   canvas.addEventListener("pointerdown", move, { passive: false });
@@ -236,9 +212,6 @@
       ids = Array.from(event.changedTouches || [], touch => touch.identifier);
     } else ids = [event.pointerId ?? "mouse"];
     for (const id of ids) {
-      if (id === legacyPilotId) {
-        legacyPilotId = null;
-      }
       if(NeonCampaign.endFlightInput(classicFlightInput, id))hidePilotGuide();
     }
   }
@@ -291,7 +264,7 @@
   function startMissileInput(event) {
     const touchFallback=event.type==="touchstart";
     if(touchFallback&&window.PointerEvent)return;
-    if(!isUnifiedClassic()||state!=="playing"||classicChapterControlsLocked()||ui.classicMissile?.disabled)return;
+    if(state!=="playing"||classicChapterControlsLocked()||ui.classicMissile?.disabled)return;
     if(!touchFallback&&event.pointerType==="mouse"&&event.button!==0)return;
     const id=touchFallback?event.changedTouches?.[0]?.identifier:event.pointerId??"mouse";
     if(id===undefined)return;
@@ -337,26 +310,21 @@
   }
 
   addEventListener("keydown", (event) => {
-    if (isUnifiedClassic()) {
-      if (state === "playing" && !classicChapterControlsLocked() && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
-        event.preventDefault();
-        const bounds = classicFlightBounds || refreshClassicFlightBounds();
-        if (bounds) {
-          const dx = event.key === "ArrowLeft" ? -85 : event.key === "ArrowRight" ? 85 : 0;
-          const dy = event.key === "ArrowUp" ? -85 : event.key === "ArrowDown" ? 85 : 0;
-          player.target = clamp(player.target + dx, bounds.minX, bounds.maxX);
-          player.targetY = clamp(player.targetY + dy, bounds.minY, bounds.maxY);
-        }
+    if (state === "playing" && !classicChapterControlsLocked() && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+      event.preventDefault();
+      const bounds = classicFlightBounds || refreshClassicFlightBounds();
+      if (bounds) {
+        const dx = event.key === "ArrowLeft" ? -85 : event.key === "ArrowRight" ? 85 : 0;
+        const dy = event.key === "ArrowUp" ? -85 : event.key === "ArrowDown" ? 85 : 0;
+        player.target = clamp(player.target + dx, bounds.minX, bounds.maxX);
+        player.targetY = clamp(player.targetY + dy, bounds.minY, bounds.maxY);
       }
-    } else {
-      if (event.key === "ArrowLeft") player.target -= 85;
-      if (event.key === "ArrowRight") player.target += 85;
     }
     if (event.key === " " && state === "playing") {
       event.preventDefault();
       fireManualShot();
     }
-    if(event.key.toLowerCase()==="m"&&state==="playing"&&isUnifiedClassic()&&!event.repeat){event.preventDefault();fireClassicMissile();}
+    if(event.key.toLowerCase()==="m"&&state==="playing"&&!event.repeat){event.preventDefault();fireClassicMissile();}
     if (event.key === "Escape") {
       resetGameInput();
       state === "paused" ? resumeGame() : pauseGame();
@@ -364,7 +332,7 @@
   });
 
   $("play").onclick = () => {
-    if(isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -397,7 +365,7 @@
   $("retry").onclick = () => startLevel(currentLevel);
   $("replayLevel").onclick = () => startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
-    if(isUnifiedClassic()&&currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
+    if(currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
       startLevel(1);
       showStoryTransmission("IRIA · MANDO GAIA","Tu autorización es válida. Sigue la señal por el corredor orbital; el registro apunta hacia Vulkar.",5.5);
       return;

@@ -1,6 +1,6 @@
   function drawClassicChapterOpening() {
     const opening=classicChapterView?.opening;
-    if(!isUnifiedClassic()||state!=="playing"||!opening?.active||opening.backgroundAlpha<=0||
+    if(state!=="playing"||!opening?.active||opening.backgroundAlpha<=0||
       !spriteReady(SPRITES.chapterIntro))return;
     // Four authored shots precede the same live station, reactor and wave.
     // The route snapshot owns all cuts and camera motion; pause freezes them.
@@ -344,49 +344,6 @@
     return { ...node, scale, y: y / H };
   }
 
-  function drawChronosServiceRelay(view) {
-    if(typeof isUnifiedClassic==="function"&&isUnifiedClassic())return; // C9 is now the onboard HUD workshop.
-    const relay = view.relay || view.service;
-    if (!relay?.visible) return;
-    const station = SPRITES.c9Station;
-    ensureSprite(station);
-    const illustratedStation = spriteReady(station);
-    const image = illustratedStation ? station : SPRITES.satellite;
-    if (!spriteReady(image)) return;
-    const frame = chronosSceneryFrame();
-    const size = illustratedStation ? clamp(W * relay.scale * 4, 36, Math.min(W * .76, frame.height * .78))
-      : Math.max(22, W * relay.scale);
-    const x = clamp(W * relay.x, size * .56, W - size * .56);
-    const y = Math.max(frame.top + frame.gap + relay.y * (H - frame.top),
-      frame.top + frame.gap + size * .56);
-    ctx.save(); ctx.beginPath(); ctx.rect(0, frame.top, W, frame.height); ctx.clip();
-    ctx.save(); ctx.translate(x, y);
-    ctx.rotate(-.08 + Math.sin(view.elapsed * .06) * .035);
-    if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
-    if (illustratedStation) {
-      // Four real machine states, 2x2, one shared centre pivot. Rendering a
-      // repair pose does not install anything or replay a gameplay event.
-      const poses = {approach: 0, docking: 1, service: 2, departing: 3};
-      const pose = Object.hasOwn(poses, relay.state) ? poses[relay.state]
-        : view.stageNumber >= 7 ? 3 : relay.active ? 2 : view.stageNumber === 6 ? 1 : 0;
-      const cellWidth = image.naturalWidth / 2, cellHeight = image.naturalHeight / 2;
-      ctx.drawImage(image, pose % 2 * cellWidth, Math.floor(pose / 2) * cellHeight,
-        cellWidth, cellHeight, -size / 2, -size / 2, size, size);
-    } else {
-      // The historical relay remains a download-failure fallback, not the new
-      // station's final illustration. It stays available to older campaigns.
-      ctx.drawImage(image, -size / 2, -size / 2, size, size);
-    }
-    ctx.restore();
-    if (relay.active) {
-      ctx.save(); ctx.textAlign = "center"; ctx.font = `bold ${Math.max(15, W * .032)}px sans-serif`;
-      ctx.fillStyle = "#bcefff"; ctx.shadowColor = "#020817"; ctx.shadowBlur = 5;
-      ctx.fillText("SERVICIO C9", x, y + size * .56 + frame.gap);
-      ctx.restore();
-    }
-    ctx.restore();
-  }
-
   function drawChronosRouteCrossing(transition) {
     const cue = transition?.cue;
     if (!cue) return;
@@ -484,7 +441,6 @@
       }
     }
 
-    drawChronosServiceRelay(view);
     drawChronosRouteCrossing(transition);
 
     if (view.beacon.visible && !atlasBoss && spriteReady(SPRITES.guardianAtlas)) {
@@ -637,9 +593,9 @@
   }
 
   function background(t) {
-    if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
-    if(isUnifiedClassic() && currentLevel===1 && drawGaiaOrbitBackground()) {return;}
-    if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
+    if (classicFlightView) { drawChronosFlightBackground(); return; }
+    if(currentLevel===1 && drawGaiaOrbitBackground()) {return;}
+    if(currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
     gradient.addColorStop(0, lv.top);

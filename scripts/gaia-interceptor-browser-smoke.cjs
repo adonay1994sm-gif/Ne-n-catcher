@@ -238,12 +238,12 @@ function pilotTarget(q, enemy, collecting = false) {
       destruction:explosions.filter(effect=>effect.ch01Animator).map(effect=>({x:effect.x,y:effect.y,life:effect.life,
         frame:effect.ch01Animator.getFrame()})),
       unlocked:getUnlocked(),keys:{...KEYS}});\n`;
-    const rewardMarker='score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);';
+    const rewardMarker='score+=item.classicScoutProjectile?0:(destroyed?10:3);';
     assert.equal(source.split(rewardMarker).length,2,'Classic projectile reward observation marker changed');
     const observeReward=`if(item.classicScout?.role==='interceptor'&&window.__INTERCEPTOR_HITS_QA__.length<200)
       window.__INTERCEPTOR_HITS_QA__.push({targetId:item.id,shotId:shot.id,projectileId:shot.id,
         at:elapsed,damage:impact.damage,hp:item.hp,maxHp:item.maxHp,destroyed,
-        reward:(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3),score});`;
+        reward:item.classicScoutProjectile?0:(destroyed?10:3),score});`;
     // Add a bounded observation immediately after the original reward statement;
     // the statement, collision result, HP and scoring execution stay untouched.
     const observed=source.replace(rewardMarker,rewardMarker+observeReward);

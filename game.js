@@ -664,7 +664,6 @@
   // DOM geometry is sampled on layout changes, never from the drawing loop.
   // All returned coordinates use the same logical Canvas units as collisions.
   function refreshClassicFlightBounds(reset = false) {
-    if (!isUnifiedClassic()) return null;
     const canvasRect = canvas.getBoundingClientRect();
     if (!canvasRect.width || !canvasRect.height) return classicFlightBounds;
     const verticalScale = H / canvasRect.height;
@@ -738,24 +737,14 @@
     // asigna si de verdad cambia.
     if (canvas.width !== W) canvas.width = W;
     if (canvas.height !== H) canvas.height = H;
-    if (isUnifiedClassic()) {
-      refreshClassicFlightBounds(!previousBounds);
-      // Atlas derives its arena from a stable lower anchor, not from the
-      // player's current vertical maneuver; refresh never calls back into it.
-      positionAtlasArena();
-      const next = refreshClassicFlightBounds();
-      if (next) {
-        player.y = next.minY + fractionY * (next.maxY - next.minY);
-        player.targetY = next.minY + targetFractionY * (next.maxY - next.minY);
-      }
-    } else {
-      // Preserve the experimental campaigns' existing horizontal flight line.
-      const controlBandCss = 104;
-      const clearance = 110 + controlBandCss * H / rect.height;
-      player.y = H - Math.max(260, clearance);
-      player.x = clamp(player.x, 80, W - 80);
-      player.target = clamp(player.target, 80, W - 80);
-      positionAtlasArena();
+    refreshClassicFlightBounds(!previousBounds);
+    // Atlas derives its arena from a stable lower anchor, not from the
+    // player's current vertical maneuver; refresh never calls back into it.
+    positionAtlasArena();
+    const next = refreshClassicFlightBounds();
+    if (next) {
+      player.y = next.minY + fractionY * (next.maxY - next.minY);
+      player.targetY = next.minY + targetFractionY * (next.maxY - next.minY);
     }
     for (const star of stars) {
       star.x = clamp(star.x, 0, W);
@@ -795,10 +784,10 @@
       voyageScore = NeonCampaign.createVoyageScore({context: ac, output: musicGain});
       voyageScore.setContext(voyageScoreContext);
     }
-    if(!chapterScore&&isUnifiedClassic()&&ac.createMediaElementSource) {
+    if(!chapterScore&&ac.createMediaElementSource) {
       try {chapterScore=NeonCampaign.createChapterScore({context:ac,output:musicGain});} catch {chapterScore=null;}
     }
-    if(!combatSfx&&isUnifiedClassic()&&typeof NeonCampaign.createCombatSfx==="function") {
+    if(!combatSfx&&typeof NeonCampaign.createCombatSfx==="function") {
       combatSfx=NeonCampaign.createCombatSfx({context:ac,output:ac.destination});
       combatSfx?.load();
     }
@@ -814,9 +803,9 @@
   }
 
   function updateScore(dt, paused = false) {
-    combatSfx?.setPaused(paused||scoreSuspended||!isUnifiedClassic()||state!=="playing");
+    combatSfx?.setPaused(paused||scoreSuspended||state!=="playing");
     if (!voyageScore) return;
-    const rendered=chapterScore?.update({active:isUnifiedClassic()&&Boolean(classicChapterStory),
+    const rendered=chapterScore?.update({active:Boolean(classicChapterStory),
       elapsed:classicFlightView?.elapsed||0,paused:paused||scoreSuspended,enabled:settings.music>0});
     voyageScore.setPaused(paused || scoreSuspended || Boolean(rendered));
     voyageScore.advance(dt);
@@ -850,7 +839,7 @@
     voyageScore?.setEnabled(settings.music > 0);
     combatSfx?.setEnabled(settings.fx>0);
     combatSfx?.setVolume(settings.fx/100);
-    combatSfx?.setPaused(scoreSuspended||!isUnifiedClassic()||state!=="playing");
+    combatSfx?.setPaused(scoreSuspended||state!=="playing");
     if (settings.fx <= 0) stopToneVoices();
     if(settings.music<=0)chapterScore?.suspend();
     if (musicGain && audioCtx) {
@@ -860,8 +849,8 @@
   }
 
   function combatSound(cue,x=player.x,eventId=null) {
-    if(isUnifiedClassic()&&(state!=="playing"||scoreSuspended||settings.fx<=0))return;
-    if(isUnifiedClassic()&&combatSfx?.snapshot().ready) {
+    if(state!=="playing"||scoreSuspended||settings.fx<=0)return;
+    if(combatSfx?.snapshot().ready) {
       // A rejected voice means muted/paused/throttled, never a fallback beep.
       combatSfx.play(cue,{pan:clamp(x/W*2-1,-.75,.75),eventId});return;
     }
@@ -929,8 +918,6 @@
   }
   const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
 
-  function isUnifiedClassic() { return true; }
-
   function classicChapterControlsLocked() {
     return Boolean(classicChapterView?.opening?.controlsLocked);
   }
@@ -965,7 +952,6 @@
   }
 
   function loadClassicSalvage() {
-    if(!isUnifiedClassic())return false;
     if(!classicSalvageLedger)classicSalvageLedger=NeonCampaign.createScrapLedger({storage});
     const result=classicSalvageLedger.load();
     classicSalvageState=result.ok?result.state:null;
@@ -1001,7 +987,6 @@
   }
 
   function applyClassicSalvageShield() {
-    if(!isUnifiedClassic())return;
     // Kept as the existing checkpoint call site: changing a stage must neither
     // refill reinforcement nor create a timed shield.
     powers.shield=0;
@@ -1020,7 +1005,7 @@
   }
 
   function buyClassicC9Upgrade(sku) {
-    if(!isUnifiedClassic()||!classicSalvageLedger)return false;
+    if(!classicSalvageLedger)return false;
     if(sku==="twin-preparation"&&(!classicEquipment.recoveredTwin||classicEquipment.twinPrepared||classicEquipment.unlocked.includes("twin")))return false;
     const sequence=classicSalvageState?.missileRefillSequence||0;
     const result=classicSalvageLedger.purchase({transactionId:sku==="missile-refill"?`c9:missiles:${sequence+1}`:`c9:${sku}`,sku});
@@ -1046,11 +1031,11 @@
   }
 
   function spawnClassicScrap(target) {
-    if(!isUnifiedClassic()||!target||target.salvageDropped||!classicSalvageRunId||!classicSalvageState)return null;
+    if(!target||target.salvageDropped||!classicSalvageRunId||!classicSalvageState)return null;
     if(target.salvageRunId&&target.salvageRunId!==classicSalvageRunId)return null;
     const boss=target.bossSalvage===true;
     const wreckage=["debris","satellite"].includes(target.type);
-    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.n7Projectile||target.guardianProjectile))return null;
+    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
     const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
@@ -1068,7 +1053,7 @@
   }
 
   function collectClassicScrap(item) {
-    if(!isUnifiedClassic()||!item?.salvagePickup||!classicSalvageLedger)return false;
+    if(!item?.salvagePickup||!classicSalvageLedger)return false;
     const result=classicSalvageLedger.claimDrop({runId:item.runId,dropId:item.dropId,enemyType:item.enemyType});
     if(!result.ok) {
       if(!item.salvageSaveWarning){item.salvageSaveWarning=true;toast("No se ha guardado la chatarra. La recogida se reintentará sin duplicarla.");}
@@ -1096,7 +1081,7 @@
       validateEquipment:value=>NeonCampaign.normalizeClassicEquipment(value)!==null});
     const result=completionJournal.recover();
     completionPersistenceBlocked=!result.ok;
-    if(result.ok&&isUnifiedClassic()) {
+    if(result.ok) {
       const recovered=NeonCampaign.normalizeClassicEquipment(storage.getJSON(CLASSIC_EQUIPMENT_KEY,null));
       if(recovered)classicEquipment=recovered;
     }
@@ -1105,7 +1090,6 @@
   }
 
   function setupClassicFlight() {
-    if (!isUnifiedClassic()) return;
     loadClassicVoyage();
     const raw = storage.getRaw(CLASSIC_EQUIPMENT_KEY);
     if (raw !== null) {
@@ -1316,8 +1300,8 @@
 
   function buildChronosStageGrid() {
     const section=$("chronosStages");if(!section)return;
-    section.classList.toggle("hidden",!isUnifiedClassic()||pendingLevel!==0);
-    if(!isUnifiedClassic()||pendingLevel!==0)return;
+    section.classList.toggle("hidden",pendingLevel!==0);
+    if(pendingLevel!==0)return;
     const selected=classicVoyageRequestedStage||(!classicVoyageRecord?.completed?classicVoyageRecord?.checkpoint.stageNumber:1)||1;
     const unlocked=classicVoyageRecord?.unlockedStage||1,grid=$("chronosStageGrid");grid.innerHTML="";
     for(const stage of NeonCampaign.CHRONOS_VOYAGE_STAGES){
@@ -1382,7 +1366,6 @@
   }
 
   function openClassicDock(from="menu") {
-    if (!isUnifiedClassic()) return false;
     if(from==="hud") {
       if(state!=="playing"||atlasBoss||classicChapterControlsLocked())return false;
       if(typeof resetGameInput==="function")resetGameInput();
@@ -1469,7 +1452,7 @@
   }
 
   function syncClassicFlightHud() {
-    if (!isUnifiedClassic() || !ui.flightRoute) return;
+    if (!ui.flightRoute) return;
     $("openFlightDock")?.classList.toggle("hidden",!classicEquipment.recoveredTwin);
     const view=classicFlightView;
     if(ui.classicC9){
@@ -1578,7 +1561,6 @@
   }
 
   function advanceClassicFlight(dt) {
-    if(!isUnifiedClassic())return;
     const introBefore=classicFlightView?.elapsed;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
     // Cronos Prime carga el disparo: suena la alarma al empezar a cargar y al abrir fuego.
@@ -1710,7 +1692,7 @@
   }
 
   function fireClassicMissile() {
-    if(!isUnifiedClassic()||state!=="playing"||warpTimer>0||classicChapterControlsLocked()||
+    if(state!=="playing"||warpTimer>0||classicChapterControlsLocked()||
       atlasBoss?.disabled||!classicWeapons||!classicSalvageLedger||!NeonCampaign.canTriggerClassicMissile(classicWeapons))return false;
     const inventory=classicSalvageLedger.load();
     if(!inventory.ok){syncClassicMissileHud();return false;}
@@ -1752,7 +1734,7 @@
   }
 
   function interceptClassicProjectile(item) {
-    if(!isUnifiedClassic() || !classicWeapons || atlasBoss || !isThreat(item))return false;
+    if(!classicWeapons || atlasBoss || !isThreat(item))return false;
     if(!item.id)item.id=`classic-target:${++classicThreatSequence}`;
     for(const shot of [...classicWeapons.projectiles]) {
       const ax=shot.previousX??shot.x,ay=shot.previousY??shot.y,dx=shot.x-ax,dy=shot.y-ay;
@@ -1768,7 +1750,7 @@
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);
       if(shot.weapon==="missile")addMissileImpact(item.x,item.y);else addImpactEffect(item.x,item.y,.8);
-      score+=(item.n7Projectile||item.classicScoutProjectile)?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
+      score+=item.classicScoutProjectile?0:(destroyed?10:3);combatSound(destroyed?"enemy-break":"impact-metal",item.x);
       hudScoreTarget=score;
       if(destroyed){
         if(!item.classicScout?.tacticsVersion)addExplosion(item.x,item.y,.7,.5);
@@ -1796,7 +1778,7 @@
     if (!atlasBoss) return;
     const rect = canvas.getBoundingClientRect();
     const horizontal = rect.height < 500;
-    const anchorY = isUnifiedClassic() ? (classicFlightAnchorY || player.y) : player.y;
+    const anchorY = classicFlightAnchorY || player.y;
     atlasBoss.width = W; atlasBoss.height = H; atlasBoss.playerY = anchorY;
     const hudBottom = Math.max($('hud').getBoundingClientRect().bottom,
       ui.atlasEncounter?.getBoundingClientRect().bottom || 0,
@@ -1827,7 +1809,7 @@
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
-    setClassicFlightHudVisible(isUnifiedClassic());
+    setClassicFlightHudVisible(true);
     ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
     hideWarning(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
@@ -1904,7 +1886,7 @@
     if (!atlasBoss || atlasBoss.disabled || !spriteReady(SPRITES.guardianAtlas)) return false;
     // Exactly the same straight, physical battery projectiles as in the field.
     // A misplaced tap can miss; no ray is bent toward the boss or deleted.
-    if (isUnifiedClassic() && kind !== "phaser") return fireClassicWeapon();
+    if (kind !== "phaser") return fireClassicWeapon();
     // A collected temporary phaser is a separate timed power, never AUTO input.
     if (kind === "phaser") {
       if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
@@ -2053,7 +2035,7 @@
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     const percent = Math.round((completed / LEVELS.length) * 100);
     const finished = completed === LEVELS.length;
-    const target = isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed ? 0 : finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
+    const target = classicVoyageRecord&&!classicVoyageRecord.completed ? 0 : finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
 
     ui.best.textContent = bestScore();
     ui.unlockedText.textContent = `${unlocked}/${LEVELS.length}`;
@@ -2062,7 +2044,7 @@
     ui.campaignFill.style.width = `${percent}%`;
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
     ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
-    if(isUnifiedClassic()&&target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
+    if(target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -2075,15 +2057,13 @@
     ui.score.textContent = Math.round(displayedScore);
     ui.goal.textContent = `${collected}/${level().goal}`;
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
-    if(isUnifiedClassic()) {
-      ui.hull.title=`Casco ${Math.ceil(hull)} de 100. Refuerzo ${Math.ceil(classicHullReserve)} de ${classicHullReserveCapacity}, sin temporizador.`;
-      let reserve=$("hullReserve");
-      if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
-      reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
-    }
+    ui.hull.title=`Casco ${Math.ceil(hull)} de 100. Refuerzo ${Math.ceil(classicHullReserve)} de ${classicHullReserveCapacity}, sin temporizador.`;
+    let reserve=$("hullReserve");
+    if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
+    reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
     ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = isUnifiedClassic() ? "NIVEL" : "SECTOR";
-    if(isUnifiedClassic())ui.goal.previousElementSibling.textContent="CRONIUM";
+    ui.hudLevel.previousElementSibling.textContent = "NIVEL";
+    ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
       ? "linear-gradient(90deg,#63ffc4,#64e9ff)"
@@ -2104,7 +2084,7 @@
 
   function updateAmmoHud() {
     if (!ui.fire || !ui.ammo) return;
-    if(isUnifiedClassic() && classicWeapons) {
+    if(classicWeapons) {
       ammo=classicWeapons.charges;
       ui.ammo.textContent="";
       ui.fire.disabled=state!=="playing" || warpTimer>0;
@@ -2168,7 +2148,7 @@
     }
     // Only additions/removals can resize the row. Countdown frames must not
     // measure layout; a newly collected power must not cover the ship's tail.
-    if (layoutChanged && isUnifiedClassic() && state === "playing") refreshClassicFlightBounds();
+    if (layoutChanged && state === "playing") refreshClassicFlightBounds();
   }
 
   function updateEncounterHud() {
@@ -2258,7 +2238,7 @@
   }
 
   function showStoryTransmission(speaker, text, duration = 4.6) {
-    if(isUnifiedClassic() && ui.flightRoute) {
+    if(ui.flightRoute) {
       flightTransmission={speaker,speakerId:/MIRA/.test(speaker)?"mira":/IRIA/.test(speaker)?"iria":/LIRA/.test(speaker)?"lira":null,text,remaining:duration};syncClassicFlightHud();return;
     }
     if (!ui.storyTransmission) return;
@@ -2311,21 +2291,21 @@
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     let voyageEntry=null,voyageCheckpoint=null;
-    if(isUnifiedClassic()&&currentLevel===0){
+    if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
       if(resume){voyageCheckpoint=classicVoyageRecord.checkpoint;voyageEntry=classicVoyageRecord.entry;}
       else if(requested){voyageCheckpoint=NeonCampaign.createChronosVoyageCheckpoint(requested,{goal:LEVELS[0].goal});}
     }
     classicVoyageRequestedStage=null;
-    classicFlight=isUnifiedClassic() && currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
+    classicFlight=currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     classicChapterStory=classicFlight?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;classicChapterOutroStartedAt=null;
     classicTutorial=classicFlight?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
     classicTutorialAnchor=null;classicTutorialSignature='';
-    classicWeapons=isUnifiedClassic() ? NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H}) : null;
-    if(isUnifiedClassic())beginClassicSalvageRun(Boolean(voyageEntry));
+    classicWeapons=NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H});
+    beginClassicSalvageRun(Boolean(voyageEntry));
     resetClassicCometShower();
     // A restored entry has already emitted its checkpoint event. Initialize
     // the same encounter grace here instead of waiting for that event to replay.
@@ -2333,17 +2313,15 @@
     classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
     NeonCampaign.endFlightInput(classicFlightInput);
-    if(isUnifiedClassic()) {
-      ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
-      ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
-      if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
-      if(classicFlight){
-        ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
-        ensureSprite(SPRITES.ch01);
-        ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-        ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimePhaseOne);
-        ensureSprite(SPRITES.guardianAtlas);
-      }
+    ensureSprite(SPRITES.chapterMissile);ensureSprite(SPRITES.chapterPortraits);ensureSprite(SPRITES.croniumEnergy);
+    ensureSprite(SPRITES.atlasVfx);ensureSprite(SPRITES.gaiaPulse);ensureSprite(SPRITES.hostileOrdnance);ensureSprite(SPRITES.flightWeapons);ensureSprite(SPRITES.forceShieldAtlas);
+    if(classicEquipment.selected==="lance")SPRITE_GROUPS.phaser.forEach(ensureSprite);
+    if(classicFlight){
+      ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
+      ensureSprite(SPRITES.ch01);
+      ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimePhaseOne);
+      ensureSprite(SPRITES.guardianAtlas);
     }
 
     atlasBoss = null;
@@ -2426,10 +2404,9 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
-    if(isUnifiedClassic()){setClassicFlightHudVisible(true);refreshClassicFlightBounds(true);}
+    setClassicFlightHudVisible(true);refreshClassicFlightBounds(true);
     hud();
     updateEncounterHud();
-    if(!isUnifiedClassic()) showBanner();
     tone(540 + currentLevel * 22, 0.11, "triangle", 0.07);
     if(classicFlightView?.waitingFor==="service")beginClassicVoyageService();
     window.AnalyticsManager?.track("game_start", { level: currentLevel + 1 });
@@ -2573,9 +2550,9 @@
         ? `Nivel ${currentLevel + 2} desbloqueado`
         : "Puedes repetirlo para mejorar el resultado";
     ui.nextLevel.classList.toggle("hidden", currentLevel === LEVELS.length - 1);
-    ui.nextLevel.textContent=isUnifiedClassic()&&currentLevel===0
+    ui.nextLevel.textContent=currentLevel===0
       ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE NIVEL →";
-    if(isUnifiedClassic()&&currentLevel===0) {
+    if(currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";
       ui.completeTitle.textContent="El registro ha llegado a Gaia";
@@ -2672,9 +2649,8 @@
     gateCountdown = level().gate ? 7 : Infinity;
 
     // Breve protección para evitar morir de nuevo en el mismo instante.
-    if(isUnifiedClassic()) {powers.shield=0;classicHullReserve=Math.max(classicHullReserve,15);}
-    else powers.shield = Math.max(powers.shield, 4);
-    if(isUnifiedClassic() && classicWeapons) {classicWeapons.charges=Math.max(classicWeapons.charges,1);classicWeapons.cooldown=0;classicWeapons.projectiles.length=0;}
+    powers.shield=0;classicHullReserve=Math.max(classicHullReserve,15);
+    if(classicWeapons) {classicWeapons.charges=Math.max(classicWeapons.charges,1);classicWeapons.cooldown=0;classicWeapons.projectiles.length=0;}
     ammo = Math.max(ammo, 1);
     manualShotCooldown = 0;
 
@@ -2682,7 +2658,7 @@
     ui.hud.classList.remove("hidden");
     ui.powerHud.classList.remove("hidden");
     ui.fire.classList.remove("hidden");
-    setClassicFlightHudVisible(isUnifiedClassic());
+    setClassicFlightHudVisible(true);
     hud();
     updatePowerHud();
     refreshClassicFlightBounds();
@@ -2691,7 +2667,7 @@
     return true;
   }
   function availablePowers() {
-    const available = [isUnifiedClassic()?"repair":"shield"];
+    const available = ["repair"];
     if (currentLevel >= 1) available.push("tractor");
     if (currentLevel >= 2) available.push("slow");
     if (currentLevel >= 3) available.push("double");
@@ -2763,7 +2739,7 @@
   // happens to hit it: damage order and repeated death animation callbacks
   // must never turn one physical fragment into several paid rewards.
   function stampClassicWreckageSalvage(item) {
-    if (!isUnifiedClassic() || !["debris", "satellite"].includes(item.type) ||
+    if (!["debris", "satellite"].includes(item.type) ||
         !classicSalvageRunId || !classicSalvageState || item.salvageDropId) return item;
     const stage = classicFlightView?.stageId || `${currentLevel + 1}.0`;
     const ordinal = classicSalvageEnemySequence++;
@@ -3142,7 +3118,7 @@
       return;
     }
 
-    if(type==="shield" && isUnifiedClassic()) {
+    if(type==="shield") {
       powers.shield=0;classicHullReserve=classicHullReserveCapacity;
       classicShieldAge=0;classicShieldImpact=0;ensureSprite(SPRITES.forceShieldAtlas);
       hud();
@@ -3152,7 +3128,7 @@
     burst(item.x, item.y, 20, effectKind);
     pulseRing(item.x, item.y, effectColor, 105, 0.58);
     const names = {
-      shield: isUnifiedClassic() ? "Reserva de casco restaurada" : "Escudo operativo",
+      shield: "Reserva de casco restaurada",
       tractor: "Rayo tractor conectado",
       slow: "Estabilizador activo",
       double: "Sobrecarga de núcleos",
@@ -3168,20 +3144,17 @@
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
     const impactAngle = Math.atan2(y - player.y, x - player.x);
-    const classicDamage=isUnifiedClassic();
-    const damageResult = classicDamage ? NeonCampaign.resolveHullReinforcement({hull,amount,
+    const damageResult = NeonCampaign.resolveHullReinforcement({hull,amount,
       reserve:classicHullReserve,capacity:classicHullReserveCapacity,
-      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true}) :
-      NeonCore.resolveDamage({ hull, amount, shieldActive: powers.shield > 0 });
-    if(classicDamage)classicHullReserve=damageResult.reserve;
+      kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true});
+    classicHullReserve=damageResult.reserve;
     if (damageResult.absorbed) {
-      if(isUnifiedClassic())classicShieldImpact=.18;
-      if(!classicDamage)score += 10;
+      classicShieldImpact=.18;
       burst(x, y, 18, "cyan");
       pulseRing(x, y, "#62fff1", 90, 0.42);
       addImpactEffect(x, y, 0.85, impactAngle);
-      if(classicDamage)combatSound("hull-hit",x);else tone(230, 0.08, "square", 0.045);
-      if(classicDamage)hud();
+      combatSound("hull-hit",x);
+      hud();
       return;
     }
 
@@ -3199,7 +3172,7 @@
     burst(x, y, 28, "red");
     pulseRing(x, y, "#ff496f", 110, 0.48);
     addImpactEffect(x, y, 1.05, impactAngle);
-    if(classicDamage)combatSound("hull-hit",x);else tone(95, 0.22, "sawtooth", 0.08);
+    combatSound("hull-hit",x);
     vibrate([45, 35, 60]);
     hud();
 
@@ -3255,9 +3228,9 @@
     } else if (isThreat(item)) {
       // Guardian weapons have authored tier damage (13/15/22). Only patrol
       // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
-      const enemyPhaser=isUnifiedClassic()&&item.classicScoutProjectile&&!item.guardianProjectile;
+      const enemyPhaser=item.classicScoutProjectile&&!item.guardianProjectile;
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
-        largeAsteroid:isUnifiedClassic()&&item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
+        largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge"});
     } else {
       activatePower(item.type, item);
     }
@@ -3325,7 +3298,7 @@
       spawnClassicScrap(target);
       releaseClassicShowerComet(target);
     }
-    const animator = target.n7?.ch01Animator || target.classicScout?.animator;
+    const animator = target.classicScout?.animator;
     if (!animator) return;
     animator.request(destroyed ? "destroy" : "hurt");
     if (destroyed) {
@@ -3371,63 +3344,9 @@
   }
 
   function fireManualShot() {
-    if(isUnifiedClassic()) {
-      if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
-      if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
-      return fireClassicWeapon();
-    }
-    if (state !== "playing" || (!atlasBoss && ammo <= 0) || manualShotCooldown > 0 || warpTimer > 0) return false;
-
-    if (!atlasBoss) ammo -= 1;
-    manualShotCooldown = 0.28;
-    cameraKickY = Math.max(cameraKickY, 5);
-    shake = Math.max(shake, 3.2);
-    if (fireAtlasPulse("pulse")) { updateAmmoHud(); return true; }
-
-    const candidates = items
-      .filter(isThreat)
-      .filter((item) => item.y < player.y && Math.abs(item.x - player.x) < 145)
-      .sort((a, b) => {
-        const aAim = Math.abs(a.x - player.x) * 1.4 + (player.y - a.y) * 0.08;
-        const bAim = Math.abs(b.x - player.x) * 1.4 + (player.y - b.y) * 0.08;
-        return aAim - bAim;
-      });
-    const target = candidates[0];
-    const muzzleY = player.y - SHIP_VISUAL.phaserMuzzleOffset;
-
-    if (target) {
-      target.hp = Math.max(0, (target.hp || 1) - 1);
-      const destroyed = target.hp <= 0;
-      animateScoutHit(target, destroyed);
-      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-      shots.push({
-        x1: player.x, y1: muzzleY, x2: target.x, y2: target.y,
-        life: 0.24, duration: 0.24, hit: true, destroyed,
-        impactX: target.x, impactY: target.y,
-        impactScale: target.type === "satellite" ? 1.2 : target.r > 39 ? 1.1 : 0.82,
-        kind: "pulse"
-      });
-      score += destroyed ? (target.type === "satellite" ? 15 : 10) : 3;
-      if (destroyed) {
-        const targetIndex = items.indexOf(target);
-        if (targetIndex >= 0) items.splice(targetIndex, 1);
-      }
-      tone(destroyed ? 1040 : 820, 0.09, "square", 0.055);
-    } else {
-      if (shots.length >= EFFECT_LIMITS.shots) shots.shift();
-      shots.push({
-        x1: player.x, y1: muzzleY, x2: player.x, y2: 86,
-        life: 0.22, duration: 0.22, hit: false, kind: "pulse"
-      });
-      tone(780, 0.07, "square", 0.045);
-    }
-
-    vibrate(18);
-    updateAmmoHud();
-    window.AnalyticsManager?.track("ability_used", {
-      ability: "pulse_shot", level: currentLevel + 1, ammoRemaining: ammo
-    });
-    return true;
+    if(state!=="playing" || manualShotCooldown>0 || warpTimer>0)return false;
+    if(atlasBoss){const fired=fireAtlasPulse("pulse");updateAmmoHud();return fired;}
+    return fireClassicWeapon();
   }
 
   function checkSupplyFailure() {
@@ -3709,10 +3628,10 @@
     player.previousCollisionX=player.x;player.previousCollisionY=player.y;
     const follow = 9 + (settings.sensitivity / 100) * 8;
     player.x += (player.target + player.drift - player.x) * Math.min(1, dt * follow);
-    if(isUnifiedClassic())player.visualBank=NeonCampaign.advanceShipBank(player.visualBank||0,
+    player.visualBank=NeonCampaign.advanceShipBank(player.visualBank||0,
       clamp((player.target+player.drift-player.x)/95,-1,1),dt);
     player.x = clamp(player.x, player.w / 2 + 18, W - player.w / 2 - 18);
-    if(isUnifiedClassic() && classicFlightBounds) {
+    if(classicFlightBounds) {
       player.x=clamp(player.x,classicFlightBounds.minX,classicFlightBounds.maxX);
       player.y+=(player.targetY-player.y)*Math.min(1,dt*follow);
       player.y=clamp(player.y,classicFlightBounds.minY,classicFlightBounds.maxY);
@@ -3730,7 +3649,7 @@
       return;
     }
 
-    if(isUnifiedClassic())advanceClassicFlight(dt);
+    advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
     if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
@@ -3769,10 +3688,8 @@
     for (const key in powers) {
       if (powers[key] > 0) powers[key] = Math.max(0, powers[key] - dt);
     }
-    if(isUnifiedClassic()) {
-      if(classicHullReserve>0)classicShieldAge+=dt;
-      classicShieldImpact=Math.max(0,classicShieldImpact-dt);
-    }
+    if(classicHullReserve>0)classicShieldAge+=dt;
+    classicShieldImpact=Math.max(0,classicShieldImpact-dt);
     if (powers.tractor <= 0) tractorTarget = null;
     updatePowerHud();
 
@@ -3789,7 +3706,7 @@
     if (powers.tractor > 0 && (!tractorTarget || !items.includes(tractorTarget))) selectTractorTarget();
 
     advanceClassicWeaponField(dt);
-    if (isUnifiedClassic() && settings.autoFire && !atlasBoss && classicFlightView?.waitingFor!=="service") fireManualShot();
+    if (settings.autoFire && !atlasBoss && classicFlightView?.waitingFor!=="service") fireManualShot();
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
@@ -3820,13 +3737,11 @@
       } else item.y += item.s * dt * scale;
       item.rot += item.rs * dt;
       item.p += dt * 4;
-      if (item.n7) NeonCampaign.advanceEnemy(item, dt * scale, player, (shot) => items.push(shot));
-      if(item.flightPatrol && item.n7 && item.n7.pattern!=="shooter") item.n7.ch01Animator?.update(dt*scale,{hp:item.hp,maxHp:item.maxHp,vy:item.s});
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
       if (item.classicScout) {
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
-        advance(item,dt*scale,player,shot=>{items.push(shot);if(isUnifiedClassic())combatSound("enemy-phaser",shot.x);});
+        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
       }
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
@@ -3891,7 +3806,7 @@
   }
   function drawClassicChapterOpening() {
     const opening=classicChapterView?.opening;
-    if(!isUnifiedClassic()||state!=="playing"||!opening?.active||opening.backgroundAlpha<=0||
+    if(state!=="playing"||!opening?.active||opening.backgroundAlpha<=0||
       !spriteReady(SPRITES.chapterIntro))return;
     // Four authored shots precede the same live station, reactor and wave.
     // The route snapshot owns all cuts and camera motion; pause freezes them.
@@ -4235,49 +4150,6 @@
     return { ...node, scale, y: y / H };
   }
 
-  function drawChronosServiceRelay(view) {
-    if(typeof isUnifiedClassic==="function"&&isUnifiedClassic())return; // C9 is now the onboard HUD workshop.
-    const relay = view.relay || view.service;
-    if (!relay?.visible) return;
-    const station = SPRITES.c9Station;
-    ensureSprite(station);
-    const illustratedStation = spriteReady(station);
-    const image = illustratedStation ? station : SPRITES.satellite;
-    if (!spriteReady(image)) return;
-    const frame = chronosSceneryFrame();
-    const size = illustratedStation ? clamp(W * relay.scale * 4, 36, Math.min(W * .76, frame.height * .78))
-      : Math.max(22, W * relay.scale);
-    const x = clamp(W * relay.x, size * .56, W - size * .56);
-    const y = Math.max(frame.top + frame.gap + relay.y * (H - frame.top),
-      frame.top + frame.gap + size * .56);
-    ctx.save(); ctx.beginPath(); ctx.rect(0, frame.top, W, frame.height); ctx.clip();
-    ctx.save(); ctx.translate(x, y);
-    ctx.rotate(-.08 + Math.sin(view.elapsed * .06) * .035);
-    if (relay.active) { ctx.shadowColor = "#81f3e6"; ctx.shadowBlur = 9; }
-    if (illustratedStation) {
-      // Four real machine states, 2x2, one shared centre pivot. Rendering a
-      // repair pose does not install anything or replay a gameplay event.
-      const poses = {approach: 0, docking: 1, service: 2, departing: 3};
-      const pose = Object.hasOwn(poses, relay.state) ? poses[relay.state]
-        : view.stageNumber >= 7 ? 3 : relay.active ? 2 : view.stageNumber === 6 ? 1 : 0;
-      const cellWidth = image.naturalWidth / 2, cellHeight = image.naturalHeight / 2;
-      ctx.drawImage(image, pose % 2 * cellWidth, Math.floor(pose / 2) * cellHeight,
-        cellWidth, cellHeight, -size / 2, -size / 2, size, size);
-    } else {
-      // The historical relay remains a download-failure fallback, not the new
-      // station's final illustration. It stays available to older campaigns.
-      ctx.drawImage(image, -size / 2, -size / 2, size, size);
-    }
-    ctx.restore();
-    if (relay.active) {
-      ctx.save(); ctx.textAlign = "center"; ctx.font = `bold ${Math.max(15, W * .032)}px sans-serif`;
-      ctx.fillStyle = "#bcefff"; ctx.shadowColor = "#020817"; ctx.shadowBlur = 5;
-      ctx.fillText("SERVICIO C9", x, y + size * .56 + frame.gap);
-      ctx.restore();
-    }
-    ctx.restore();
-  }
-
   function drawChronosRouteCrossing(transition) {
     const cue = transition?.cue;
     if (!cue) return;
@@ -4375,7 +4247,6 @@
       }
     }
 
-    drawChronosServiceRelay(view);
     drawChronosRouteCrossing(transition);
 
     if (view.beacon.visible && !atlasBoss && spriteReady(SPRITES.guardianAtlas)) {
@@ -4528,9 +4399,9 @@
   }
 
   function background(t) {
-    if (classicFlightView && isUnifiedClassic()) { drawChronosFlightBackground(); return; }
-    if(isUnifiedClassic() && currentLevel===1 && drawGaiaOrbitBackground()) {return;}
-    if(isUnifiedClassic() && currentLevel===2) {drawVulkarOrbitBackground();return;}
+    if (classicFlightView) { drawChronosFlightBackground(); return; }
+    if(currentLevel===1 && drawGaiaOrbitBackground()) {return;}
+    if(currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
     gradient.addColorStop(0, lv.top);
@@ -5047,7 +4918,7 @@
   }
 
   function drawClassicProjectiles() {
-    if (!isUnifiedClassic() || !classicWeapons) return;
+    if (!classicWeapons) return;
     for (const shot of classicWeapons.projectiles) {
       ctx.save(); ctx.translate(shot.x, shot.y);
       ctx.rotate(Math.atan2(shot.vy, shot.vx) + Math.PI / 2);
@@ -5071,7 +4942,7 @@
   }
 
   function drawFlightModule(item) {
-    if (!isUnifiedClassic() || !spriteReady(SPRITES.flightWeapons)) return;
+    if (!spriteReady(SPRITES.flightWeapons)) return;
     const atlas = SPRITES.flightWeapons;
     ctx.save(); ctx.translate(item.x, item.y);
     ctx.globalAlpha *= itemVisualAlpha(item);
@@ -5088,8 +4959,7 @@
 
   function hasClassicTwinMounts() {
     // Some isolated render fixtures deliberately do not install campaign UI.
-    return typeof isUnifiedClassic === "function" && isUnifiedClassic() &&
-      typeof classicEquipment !== "undefined" &&
+    return typeof classicEquipment !== "undefined" &&
       (["twin","lance"].includes(classicEquipment.selected) || classicEquipment.twinPrepared === true);
   }
 
@@ -5238,7 +5108,7 @@
   }
 
   function drawClassicDock(t) {
-    if (!isUnifiedClassic() || !ui.flightDockCanvas || !ui.flightDock?.classList.contains("show")) return;
+    if (!ui.flightDockCanvas || !ui.flightDock?.classList.contains("show")) return;
     const preview = ui.flightDockCanvas;
     const target = preview.getContext("2d");
     target.clearRect(0, 0, preview.width, preview.height);
@@ -5315,24 +5185,12 @@
     ctx.save();
     ctx.translate(player.x, player.y);
 
-    const classic=typeof isUnifiedClassic==="function"&&isUnifiedClassic();
     const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
     const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8*shipScale;
 
-    if (powers.shield > 0 && !classic) {
-      const shieldFrame = Math.sin(t * 0.012) > 0.45 ? SPRITES.shieldEffect : SPRITES.shieldIdle;
-      ctx.save();
-      ctx.translate(0, -26 * SHIP_VISUAL.scale + bob);
-      ctx.globalCompositeOperation = "screen";
-      ctx.shadowBlur = 30;
-      ctx.shadowColor = "#4cffe9";
-      drawImageCentered(shieldFrame, SHIP_VISUAL.shieldSize, SHIP_VISUAL.shieldSize, elapsed * 0.08, 0.42);
-      ctx.restore();
-    }
-
     ctx.save(); ctx.translate(0, bob + SHIP_VISUAL.centerYOffset);
-    const steering=classic&&Number.isFinite(player.visualBank)?player.visualBank:clamp((player.target+player.drift-player.x)/95,-1,1);
-    const reserve=classic&&typeof classicHullReserve==="number"&&classicHullReserve>0
+    const steering=Number.isFinite(player.visualBank)?player.visualBank:clamp((player.target+player.drift-player.x)/95,-1,1);
+    const reserve=typeof classicHullReserve==="number"&&classicHullReserve>0
       ?.08+(typeof classicShieldImpact==="number"?classicShieldImpact:0):0;
     const assembled = drawModularShip(ctx, shipLoadout, assemblySize, elapsed,
       steering, hull, impactReactionTimer,hasClassicTwinMounts()?classicTwinFrame():null,
@@ -5364,7 +5222,7 @@
 
     }
 
-    if(typeof isUnifiedClassic==="function" && isUnifiedClassic() && classicWeapons && classicWeapons.cooldown > (classicEquipment.selected==="lance"?.38:.20)) {
+    if(classicWeapons && classicWeapons.cooldown > (classicEquipment.selected==="lance"?.38:.20)) {
       // Tiny flashes at the physical emitters; no diagonal fake convergence rays.
       for(const offset of classicEquipment.selected==="twin" ? [-10,10] : [0]) {
         ctx.save();ctx.translate(offset*shipScale,-(SHIP_VISUAL.muzzleOffset??125));
@@ -5421,80 +5279,19 @@
   }
 
   function drawEnergy(item) {
-    if (typeof isUnifiedClassic === "function" && isUnifiedClassic()) {
-      // V2 is actual animated energy, padded on every cell. Preserve the whole
-      // illustration: no rectangular crop, metal bezel or opaque fragment.
-      const phase = Number.isFinite(item.phase) ? item.phase : 0;
-      const atlas=SPRITES.croniumEnergy,frame=Math.floor(elapsed*8+phase)%4;
-      const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
-      ctx.save(); ctx.translate(item.x, item.y);
-      ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
-      ctx.shadowBlur = 0;ctx.globalCompositeOperation="screen";
-      const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*4;
-      if(halo)ctx.drawImage(halo,-glow/2,-glow/2,glow,glow);
-      if(spriteReady(atlas)) {
-        const cell=atlas.naturalWidth/2;
-        ctx.drawImage(atlas,(frame%2)*cell,Math.floor(frame/2)*cell,cell,cell,-size/2,-size/2,size,size);
-      }
-      ctx.restore(); return;
-    }
-    ctx.save();
-    ctx.globalAlpha = itemVisualAlpha(item);
-    ctx.translate(item.x, item.y);
-    // Visual scale only: the proven collection radius and tractor stay intact.
-    const orbVisualScale=typeof isUnifiedClassic==="function" && isUnifiedClassic() ? .5 : 1;
-    ctx.scale(orbVisualScale,orbVisualScale);
-    const distanceToShip = Math.hypot(player.x - item.x, player.y - item.y);
-    const proximity = state === "playing" ? clamp(1 - distanceToShip / 330, 0, 1) : 0;
-    const pulseSequence = [0,1,2,3,4,5,4,3,2,1];
-    const frame = frameFrom("core", pulseSequence[Math.floor((elapsed * 9 + item.phase) % pulseSequence.length)]);
-    const breath = 0.5 + 0.5 * Math.sin(elapsed * 3.4 + item.phase);
-    const pulse = 1 + breath * 0.055 + proximity * 0.08;
-    ctx.scale(pulse, pulse);
-    ctx.globalCompositeOperation = "screen";
-    ctx.shadowBlur = (24 + proximity * 24)*orbVisualScale;
-    ctx.shadowColor = "#33f4ff";
-
-    const halo = ctx.createRadialGradient(0, 0, item.r * 0.15, 0, 0, item.r * (2.35 + proximity * 0.45));
-    halo.addColorStop(0, `rgba(255,255,255,${0.62 + proximity * 0.25})`);
-    halo.addColorStop(0.18, `rgba(98,246,255,${0.42 + proximity * 0.24})`);
-    halo.addColorStop(0.54, "rgba(38,190,255,.16)");
-    halo.addColorStop(1, "rgba(20,86,255,0)");
-    ctx.fillStyle = halo;
-    ctx.beginPath(); ctx.arc(0, 0, item.r * (2.35 + proximity * 0.45), 0, Math.PI * 2); ctx.fill();
-
-    ctx.strokeStyle = `rgba(126,247,255,${0.30 + breath * 0.25 + proximity * 0.25})`;
-    ctx.lineWidth = 1.5 + proximity * 1.5;
-    ctx.beginPath(); ctx.arc(0, 0, item.r * 1.35, 0, Math.PI * 2); ctx.stroke();
-    ctx.globalAlpha *= 0.72;
-    ctx.beginPath(); ctx.arc(0, 0, item.r * 1.72, 0, Math.PI * 2); ctx.stroke();
-    ctx.globalAlpha /= 0.72;
-
-    const crystalReady = spriteReady(SPRITES.croniumFragment);
-    if (frame && crystalReady) {
-      drawImageCentered(frame, item.r * 2.85, item.r * 2.85, -item.rot * 0.08, 0.34 + breath * 0.18);
-    }
-    if (crystalReady) {
-      drawImageCentered(SPRITES.croniumFragment, item.r * 2.62, item.r * 2.62, item.rot * 0.06, 0.94);
-    } else if (!drawImageCentered(frame, item.r * 2.85, item.r * 2.85, item.rot * 0.10)) {
-      const gradient = ctx.createRadialGradient(-7, -8, 2, 0, 0, item.r);
-      gradient.addColorStop(0, "#fff"); gradient.addColorStop(0.2, "#caffff");
-      gradient.addColorStop(0.48, "#63efff"); gradient.addColorStop(1, "#1554d8");
-      ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(0, 0, item.r, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.fillStyle = "rgba(255,255,255,.96)";
-    ctx.shadowBlur = (18 + proximity * 16)*orbVisualScale;
-    ctx.beginPath(); ctx.arc(0, 0, Math.max(3, item.r * 0.22), 0, Math.PI * 2); ctx.fill();
-
-    if (proximity > 0.05 && settings.effects) {
-      for (let index = 0; index < 5; index++) {
-        const travel = (elapsed * (0.65 + index * 0.06) + item.phase + index * 0.19) % 1;
-        const radius = item.r * (2.7 - travel * 2.1);
-        const angle = item.phase + index * 2.17 + elapsed * (1.2 + proximity);
-        ctx.globalAlpha = proximity * (0.28 + travel * 0.55);
-        ctx.fillStyle = index % 2 ? "#bfffff" : "#4ceaff";
-        ctx.beginPath(); ctx.arc(Math.cos(angle) * radius, Math.sin(angle) * radius, 1.2 + proximity * 1.6, 0, Math.PI * 2); ctx.fill();
-      }
+    // V2 is actual animated energy, padded on every cell. Preserve the whole
+    // illustration: no rectangular crop, metal bezel or opaque fragment.
+    const phase = Number.isFinite(item.phase) ? item.phase : 0;
+    const atlas=SPRITES.croniumEnergy,frame=Math.floor(elapsed*8+phase)%4;
+    const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * .04;
+    ctx.save(); ctx.translate(item.x, item.y);
+    ctx.globalAlpha = itemVisualAlpha(item); ctx.scale(.5 * pulse, .5 * pulse);
+    ctx.shadowBlur = 0;ctx.globalCompositeOperation="screen";
+    const halo=preparedCroniumHalo(),glow=item.r*4.1,size=item.r*4;
+    if(halo)ctx.drawImage(halo,-glow/2,-glow/2,glow,glow);
+    if(spriteReady(atlas)) {
+      const cell=atlas.naturalWidth/2;
+      ctx.drawImage(atlas,(frame%2)*cell,Math.floor(frame/2)*cell,cell,cell,-size/2,-size/2,size,size);
     }
     ctx.restore();
   }
@@ -5505,7 +5302,7 @@
     const sprite=frame.image==="assets/ch02_interceptor_atlas_v1.webp"?SPRITES.ch02:SPRITES.ch01;
     if(!spriteReady(sprite))return false;
     const {x, y, width, height} = frame.rect;
-    ctx.shadowBlur = typeof isUnifiedClassic === "function" && isUnifiedClassic() ? 0 : 17;
+    ctx.shadowBlur = 0;
     ctx.shadowColor = frame.damaged ? "#ff6079" : "#50e8ff";
     ctx.drawImage(sprite, x, y, width, height,
       -frame.drawSize * frame.pivot.x, -frame.drawSize * frame.pivot.y,
@@ -5518,34 +5315,13 @@
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
-    if (item.n7Projectile || item.classicScoutProjectile) {
-      if (item.classicScoutProjectile) {
-        ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
-        if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
-          item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
-        ctx.restore(); return;
-      }
-      const atlasPulse = item.classicScoutProjectile;
-      ctx.fillStyle = atlasPulse ? "#8bf6ff" : "#ff7bce";
-      ctx.shadowColor = atlasPulse ? "#37dfff" : "#ff4bbb";
-      ctx.shadowBlur = 12;
-      if (!atlasPulse || !drawImageCentered(frameFrom("phaser", Math.floor(elapsed * 12)), 24, 42,
-        item.tacticsVersion?Math.atan2(item.vy,item.vx):Math.PI/2)) {
-        ctx.fillRect(-4, -12, 8, 24);
-      }
-      ctx.restore();
-      return;
+    if (item.classicScoutProjectile) {
+      ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
+      if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
+        item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
+      ctx.restore(); return;
     }
-    const telegraph = item.n7?.telegraph || 0;
-    if (telegraph > 0) {
-      ctx.strokeStyle = `rgba(255,130,100,${telegraph})`;
-      ctx.lineWidth = 2;
-      const aim=item.classicScout?.lockedTarget;
-      const angle=aim?Math.atan2(aim.y-item.y,aim.x-item.x):Math.PI/2;
-      ctx.beginPath();ctx.moveTo(Math.cos(angle)*35,Math.sin(angle)*35);
-      ctx.lineTo(Math.cos(angle)*145,Math.sin(angle)*145);ctx.stroke();
-    }
-    if (drawCh01Frame(item.n7?.ch01Animator || item.classicScout?.animator)) {
+    if (drawCh01Frame(item.classicScout?.animator)) {
       ctx.restore();
       return;
     }
@@ -5911,7 +5687,7 @@
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
     for (const item of items) {
-      if (item.guardianProjectile || (isUnifiedClassic() && item.n7Projectile)) drawAtlasProjectile(item);
+      if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "energy") drawEnergy(item);
@@ -5999,7 +5775,6 @@
     return (point.clientY - rect.top) * H / rect.height;
   }
 
-  let legacyPilotId = null;
   let fireInput = null;
   let suppressNextFireClick = false;
   let missileInput = null;
@@ -6037,10 +5812,9 @@
   // Lifecycle callers use this as well as blur/cancellation. An action thumb
   // must never survive a pause, restart or return to the menu.
   function resetGameInput() {
-    const pilotId = classicFlightInput.active ? classicFlightInput.id : legacyPilotId;
+    const pilotId = classicFlightInput.active ? classicFlightInput.id : null;
     const previousFire = fireInput;
     const previousMissile = missileInput;
-    legacyPilotId = null;
     fireInput = null;
     missileInput = null;
     NeonCampaign.endFlightInput(classicFlightInput);
@@ -6099,29 +5873,7 @@
     if (state !== "playing") return;
     if (event.type.startsWith("touch") && window.PointerEvent) return;
     event.preventDefault();
-    if (isUnifiedClassic()) { moveClassicFlight(event); return; }
-    const press = event.type === "pointerdown" || event.type === "touchstart";
-    let point = event;
-    let id = event.pointerId ?? "mouse";
-    if (event.touches) {
-      point = press ? event.changedTouches?.[0]
-        : Array.from(event.touches).find(touch => touch.identifier === legacyPilotId);
-      if (!point) return;
-      id = point.identifier;
-    }
-    const mouseHover = !event.touches && (!event.pointerType || event.pointerType === "mouse") &&
-      !event.buttons && legacyPilotId === null;
-    if (press) {
-      if (legacyPilotId !== null) return;
-      legacyPilotId = id;
-      if (event.pointerId !== undefined) {
-        try { canvas.setPointerCapture?.(event.pointerId); } catch { /* Synthetic events cannot capture. */ }
-      }
-    } else if (id !== legacyPilotId && !mouseHover) return;
-    const x = pointerX(event, point);
-    if (!Number.isFinite(x)) return;
-    const factor = settings.sensitivity / 100;
-    player.target = clamp(player.x + (x - player.x) * factor, 70, W - 70);
+    moveClassicFlight(event);
   }
 
   canvas.addEventListener("pointerdown", move, { passive: false });
@@ -6135,9 +5887,6 @@
       ids = Array.from(event.changedTouches || [], touch => touch.identifier);
     } else ids = [event.pointerId ?? "mouse"];
     for (const id of ids) {
-      if (id === legacyPilotId) {
-        legacyPilotId = null;
-      }
       if(NeonCampaign.endFlightInput(classicFlightInput, id))hidePilotGuide();
     }
   }
@@ -6190,7 +5939,7 @@
   function startMissileInput(event) {
     const touchFallback=event.type==="touchstart";
     if(touchFallback&&window.PointerEvent)return;
-    if(!isUnifiedClassic()||state!=="playing"||classicChapterControlsLocked()||ui.classicMissile?.disabled)return;
+    if(state!=="playing"||classicChapterControlsLocked()||ui.classicMissile?.disabled)return;
     if(!touchFallback&&event.pointerType==="mouse"&&event.button!==0)return;
     const id=touchFallback?event.changedTouches?.[0]?.identifier:event.pointerId??"mouse";
     if(id===undefined)return;
@@ -6236,26 +5985,21 @@
   }
 
   addEventListener("keydown", (event) => {
-    if (isUnifiedClassic()) {
-      if (state === "playing" && !classicChapterControlsLocked() && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
-        event.preventDefault();
-        const bounds = classicFlightBounds || refreshClassicFlightBounds();
-        if (bounds) {
-          const dx = event.key === "ArrowLeft" ? -85 : event.key === "ArrowRight" ? 85 : 0;
-          const dy = event.key === "ArrowUp" ? -85 : event.key === "ArrowDown" ? 85 : 0;
-          player.target = clamp(player.target + dx, bounds.minX, bounds.maxX);
-          player.targetY = clamp(player.targetY + dy, bounds.minY, bounds.maxY);
-        }
+    if (state === "playing" && !classicChapterControlsLocked() && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+      event.preventDefault();
+      const bounds = classicFlightBounds || refreshClassicFlightBounds();
+      if (bounds) {
+        const dx = event.key === "ArrowLeft" ? -85 : event.key === "ArrowRight" ? 85 : 0;
+        const dy = event.key === "ArrowUp" ? -85 : event.key === "ArrowDown" ? 85 : 0;
+        player.target = clamp(player.target + dx, bounds.minX, bounds.maxX);
+        player.targetY = clamp(player.targetY + dy, bounds.minY, bounds.maxY);
       }
-    } else {
-      if (event.key === "ArrowLeft") player.target -= 85;
-      if (event.key === "ArrowRight") player.target += 85;
     }
     if (event.key === " " && state === "playing") {
       event.preventDefault();
       fireManualShot();
     }
-    if(event.key.toLowerCase()==="m"&&state==="playing"&&isUnifiedClassic()&&!event.repeat){event.preventDefault();fireClassicMissile();}
+    if(event.key.toLowerCase()==="m"&&state==="playing"&&!event.repeat){event.preventDefault();fireClassicMissile();}
     if (event.key === "Escape") {
       resetGameInput();
       state === "paused" ? resumeGame() : pauseGame();
@@ -6263,7 +6007,7 @@
   });
 
   $("play").onclick = () => {
-    if(isUnifiedClassic()&&classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -6296,7 +6040,7 @@
   $("retry").onclick = () => startLevel(currentLevel);
   $("replayLevel").onclick = () => startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
-    if(isUnifiedClassic()&&currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
+    if(currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
       startLevel(1);
       showStoryTransmission("IRIA · MANDO GAIA","Tu autorización es válida. Sigue la señal por el corredor orbital; el registro apunta hacia Vulkar.",5.5);
       return;
