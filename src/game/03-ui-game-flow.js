@@ -688,6 +688,9 @@
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
     if(view.elapsed<9 || view.canFinish)return;
+    // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
+    const rules=NeonCampaign.getVoyageStageRules(view.routeId,n);
+    if(!rules)return;
     classicVoyageSpawnTimer-=dt;
     // Recoverable signals form a short trail rather than an endless rain.
     // Missed fragments are reissued while this stage's objective is incomplete.
@@ -699,14 +702,13 @@
     }
     // Escape pressure after the actual rupture, with quiet space and C9 left
     // intact. A two-enemy cap includes survivors from the preceding crossing.
-    if(![5,6].includes(n)) {
+    if(rules.patrol) {
       classicPatrolTimer-=dt;
       if(classicPatrolTimer<=0) {
         // Más presencia y una mezcla de tipos que crece durante el viaje.
-        const cap=n===1?1:[3,8,9,10].includes(n)?3:2;
-        const roster=n<=2?["raider"]:n<=4?["raider","scout","raider"]:n<=8?["scout","raider","interceptor"]:["interceptor","raider","scout","interceptor"];
+        const {cap,roster,gap}=rules.patrol;
         if(items.filter(item=>item.flightPatrol).length<cap)spawnClassicFlightPatrol(roster[classicPatrolSequence%roster.length]);
-        classicPatrolTimer=(n<3?9:n>=9?6:8)*(.8+Math.random()*.4);
+        classicPatrolTimer=gap*(.8+Math.random()*.4);
       }
     }
     // Campo de meteoritos, restos de naves y satélites con densidad propia de
@@ -714,7 +716,7 @@
     // un tramo vacío lo desactivan con un temporizador muy alto (>=900).
     if(classicVoyageHazardTimer<900) {
       if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
-        stageNumber:n,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+        stageNumber:n,profile:rules.hazards,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
       const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
         !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
@@ -724,14 +726,14 @@
         items.push(threat);
       });
     }
-    if([5,9].includes(n)) {
+    if(rules.comets) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
       NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
         if(event.type==="warning")showStoryTransmission("N-7",event.text,2);
         if(event.type==="spawn")items.push(event.item);
       });
     }
-    if([4,8].includes(n) && view.stageElapsed>=15 && classicCometWarning!==n) {
+    if(rules.repairAt!==null && view.stageElapsed>=rules.repairAt && classicCometWarning!==n) {
       classicCometWarning=n;const x=W*.45;
       items.push({type:"repair",x,baseX:x,y:-45,r:22,s:150,rot:0,rs:.15,p:0,phase:0,amp:18,special:"",alpha:1});
     }

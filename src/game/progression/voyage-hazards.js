@@ -55,12 +55,13 @@ const randomFor = seed => {
 const RADIUS_ESTIMATE = Object.freeze({meteor: 42, debris: 35, satellite: 46});
 
 export function createVoyageHazardField({stageNumber, seed = 0, width = 720, height = 1280,
-  shipWidth = 208 * .52} = {}) {
+  shipWidth = 208 * .52, profile = null} = {}) {
   for (const [label, value] of Object.entries({stageNumber, seed, width, height, shipWidth})) finite(value, label);
-  const stage = VOYAGE_HAZARD_PROFILES[stageNumber];
+  // Cada ficha de viaje puede traer su perfil; sin él se usa el del viaje 1.
+  const stage = profile || VOYAGE_HAZARD_PROFILES[stageNumber];
   if (!stage || width < 250 || height < 300 || shipWidth <= 0) throw new RangeError('Invalid voyage hazard stage or viewport');
   const random = randomFor((Math.trunc(seed) >>> 0) ^ Math.imul(stageNumber, 0x9E3779B9));
-  return {version: VOYAGE_HAZARD_VERSION, stageNumber, width, height, shipWidth, random,
+  return {version: VOYAGE_HAZARD_VERSION, stageNumber, profile: stage, width, height, shipWidth, random,
     // La primera aparición llega pronto para que el tramo no empiece vacío.
     wait: stage.start + .6 + random() * .8, emitted: 0, skipped: 0};
 }
@@ -116,7 +117,7 @@ export function advanceVoyageHazardField(field, delta, threats, emit) {
   finite(delta, 'delta');
   if (delta < 0) throw new RangeError('delta must not be negative');
   const step = Math.min(delta, VOYAGE_HAZARD_RULES.maxDelta);
-  const profileData = VOYAGE_HAZARD_PROFILES[field.stageNumber];
+  const profileData = field.profile;
   field.wait -= step;
   if (field.wait > 0) return 0;
   const [low, high] = profileData.gap;

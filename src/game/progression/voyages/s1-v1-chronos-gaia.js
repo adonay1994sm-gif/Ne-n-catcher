@@ -4,8 +4,19 @@
  * Identificadores, claves de guardado y textos se conservan tal cual.
  */
 import {smooth} from '../voyage-engine.js';
+import {VOYAGE_HAZARD_PROFILES} from '../voyage-hazards.js';
 
 const immutable = object => Object.freeze(object);
+const ROSTERS = immutable({
+  escape: immutable(['raider']), mixed: immutable(['raider', 'scout', 'raider']),
+  hunters: immutable(['scout', 'raider', 'interceptor']), ambush: immutable(['interceptor', 'raider', 'scout', 'interceptor'])
+});
+// Encuentros por tramo: patrullas (tope, mezcla, segundos entre salidas),
+// campo de peligros, lluvia de cometas y reparación a mitad de tramo.
+const encounter = (stage, patrol, {comets = false, repairAt = null} = {}) => immutable({
+  patrol: patrol && immutable({cap: patrol[0], roster: patrol[1], gap: patrol[2]}),
+  hazards: VOYAGE_HAZARD_PROFILES[stage], comets, repairAt
+});
 
 export const S1_V1_CHRONOS_GAIA = immutable({
   id: 'S1-V1', sector: 1, number: 1, title: 'Escapa de Chronos',
@@ -37,6 +48,18 @@ export const S1_V1_CHRONOS_GAIA = immutable({
   // el resto del tramo es la salida tras el servicio.
   service: immutable({stage: 6, approach: 1.2, visibleApproach: 2.4, departure: 2.4,
     renamedStage: 'Corredor de Gaia', renamedObjective: 'Prueba tu nave en el corredor; C9 continúa disponible en el panel'}),
+  encounters: immutable([
+    encounter(1, [1, ROSTERS.escape, 9]),
+    encounter(2, [2, ROSTERS.escape, 9]),
+    encounter(3, [3, ROSTERS.mixed, 8]),
+    encounter(4, [2, ROSTERS.mixed, 8], {repairAt: 15}),
+    encounter(5, null, {comets: true}),
+    encounter(6, null),
+    encounter(7, [2, ROSTERS.hunters, 8]),
+    encounter(8, [3, ROSTERS.hunters, 8], {repairAt: 15}),
+    encounter(9, [3, ROSTERS.ambush, 6], {comets: true}),
+    encounter(10, [3, ROSTERS.ambush, 6])
+  ]),
   phase(stageIndex, elapsed) {
     return stageIndex === 0 ? (elapsed < 9 ? 'emergency' : 'recovery') :
       stageIndex < 3 ? 'recovery' : stageIndex === 3 ? 'departure' : stageIndex < 7 ? 'deep-space' : 'gaia-approach';
