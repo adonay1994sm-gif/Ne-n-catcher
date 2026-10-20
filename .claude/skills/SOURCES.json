@@ -411,6 +411,26 @@
       "license": "MIT",
       "sha256": "091df1629510af1b92fc4abd6f96732ebedb4cb2c0f3457e8f2740b0504a2438",
       "modified": false
+    },
+    {
+      "file": "i-have-adhd/LICENSE",
+      "repo": "ayghri/i-have-adhd",
+      "commit": "1ecea1993b7fce257ffbd686c070948b5e07eda6",
+      "upstream_path": "LICENSE",
+      "source_url": "https://github.com/ayghri/i-have-adhd/blob/1ecea1993b7fce257ffbd686c070948b5e07eda6/LICENSE",
+      "license": "MIT",
+      "sha256": "8acbb618089b738404f76ac60fca1aaa995d9a87995eddf95f0b777acd7f7d2c",
+      "modified": false
+    },
+    {
+      "file": "i-have-adhd/SKILL.md",
+      "repo": "ayghri/i-have-adhd",
+      "commit": "1ecea1993b7fce257ffbd686c070948b5e07eda6",
+      "upstream_path": "skills/i-have-adhd/SKILL.md",
+      "source_url": "https://github.com/ayghri/i-have-adhd/blob/1ecea1993b7fce257ffbd686c070948b5e07eda6/skills/i-have-adhd/SKILL.md",
+      "license": "MIT",
+      "sha256": "88955c019bbb1419ff4b49dbb1f80a867467de6233d7865af2e06a7d7b76c7d3",
+      "modified": false
     }
   ]
 }
