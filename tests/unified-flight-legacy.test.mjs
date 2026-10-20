@@ -19,6 +19,7 @@ const fundedSalvage = balance => {
 const VOYAGE_KEY = 'neonCatcher.chronosVoyage.v2';
 const DESTRUCTION_PATH = 'assets/chronos_destruction_atlas_v1.webp';
 const FLIGHT_KIT_PATH = 'assets/chronos_flight_atlas_v1.webp';
+const INTRO_STATION_PATH = 'assets/chronos_intro_station_atlas_v1.webp';
 const plain = value => JSON.parse(JSON.stringify(value));
 const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-7,
   `${message || 'Values differ'}: ${actual} !== ${expected}`);
@@ -34,7 +35,7 @@ const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expec
  * chapter flow; injected model damage is never presented as a playable victory.
  */
 function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBackup = false,
-  destructionAsset = 'loaded', rects = {}, unlocked = 2, savedVoyage, randomSeed, savedSalvage, failSalvageWrite = false} = {}) {
+  destructionAsset = 'loaded', introAsset = 'loaded', rects = {}, unlocked = 2, savedVoyage, randomSeed, savedSalvage, failSalvageWrite = false} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   const {window} = dom; t.after(() => window.close());
@@ -93,6 +94,11 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       this.path = value; images.set(value, this);
       if (value === DESTRUCTION_PATH) configureDestructionImage(this, destructionAsset);
       if (value === FLIGHT_KIT_PATH) { this.naturalWidth = 1536; this.naturalHeight = 1024; }
+      if (value === INTRO_STATION_PATH) {
+        // The owner's piece-by-piece intro replaces the six-pose station when it
+        // loads; 'missing' exercises the preserved fallback scene.
+        this.naturalWidth = introAsset === 'loaded' ? 1920 : 0; this.naturalHeight = introAsset === 'loaded' ? 1280 : 0;
+      }
     }
   };
   const pending = new Map(); let id = 0;
@@ -525,8 +531,8 @@ test('the Chronos attack and reactor rupture occur once in route order and canno
   assert.equal(h.pending.size, 1);
 });
 
-test('the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station', t => {
-  const h = harness(t); h.api.prepare();
+test('without the new intro art, the real Chronos renderer selects all six illustrated source cells and preserves the destroyed station', t => {
+  const h = harness(t, {introAsset: 'missing'}); h.api.prepare();
   let previousTime = 0;
   for (const [time, frame] of [[0, 0], [9.1, 1], [9.6, 2], [10.5, 3], [11.6, 4], [13.6, 5], [23.6, 5]]) {
     h.advance(time - previousTime); previousTime = time;
@@ -543,6 +549,23 @@ test('the real Chronos renderer selects all six illustrated source cells and pre
   }
   assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
   assert.equal(h.snapshot().destructionPose.waveVisible, false);
+  assert.equal(h.pending.size, 1);
+});
+
+test('with the owner pieces loaded, the real renderer turns the station, breaks its tower at nine seconds and drops the six-pose layer', t => {
+  const h = harness(t); h.api.prepare();
+  const towerCells = () => h.drawCalls.filter(call => call.path === INTRO_STATION_PATH && call.args[1] === 640)
+    .map(call => call.args[0] / 640);
+  h.clearDrawCalls(); h.api.background(0);
+  assert.ok(h.drawCalls.some(call => call.path === INTRO_STATION_PATH), 'the piece-by-piece station is drawn');
+  assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
+  assert.deepEqual(towerCells().filter(cell => cell === 0 || cell === 1), [0], 'intact tower before the rupture');
+  h.advance(9.2);
+  h.clearDrawCalls(); h.api.background(1e9);
+  assert.ok(towerCells().includes(1), 'broken tower after the rupture');
+  assert.ok(h.drawCalls.some(call => call.path === 'assets/chronos_intro_fragments_atlas_v1.webp'), 'fragments fly');
+  assert.equal(h.drawCalls.some(call => call.path === DESTRUCTION_PATH), false);
+  assert.equal(h.snapshot().events.filter(event => event.type === 'rupture').length, 1);
   assert.equal(h.pending.size, 1);
 });
 
@@ -573,7 +596,7 @@ test('pause and repeated real background renders freeze the Chronos pose, clock 
 });
 
 test('a pending destruction atlas holds the flight clock and an actual load error enables the preserved station fallback', t => {
-  const h = harness(t, {destructionAsset: 'unresolved'}); h.api.prepare();
+  const h = harness(t, {destructionAsset: 'unresolved', introAsset: 'missing'}); h.api.prepare();
   const initial = h.snapshot();
   assert.deepEqual(initial.destructionAsset, {ready: false, failed: false});
   h.advance(3);

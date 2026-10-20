@@ -44,6 +44,9 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - [x] Lluvia de cometas dispersa v4 (7-9 cometas por oleada, varios bordes).
 - [x] Enemigos v5: ráfagas dobles, abanicos, esperas irregulares; más patrullas.
 - [x] Atlas v8: Ruptura Crono, ataques encadenados, núcleo menos expuesto.
+- [x] Nuevo inicio de Chronos con el arte del propietario: estación por piezas,
+  Cronos Prime fase 1 la destruye a los 9 s, restos, destello y láminas de la
+  ruptura (`src/game/animation/chronos-intro.js`). Sin las piezas, inicio anterior.
 - [ ] Prueba del propietario en iPhone de todo lo anterior (valores reversibles).
 - [ ] Partida natural completa automática sobre esta rama (el piloto solo genera
   preview desde la rama autorizada).

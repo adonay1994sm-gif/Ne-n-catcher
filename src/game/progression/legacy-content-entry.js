@@ -53,6 +53,7 @@ export {createChronosFlight, CHRONOS_FLIGHT_VERSION} from './chronos-flight.js';
 export {createChronosVoyage, CHRONOS_VOYAGE_VERSION, CHRONOS_VOYAGE_KEY,
   CHRONOS_VOYAGE_STAGES, normalizeChronosVoyageCheckpoint, createChronosVoyageCheckpoint} from './chronos-flight.js';
 export {getChronosDestructionPose} from '../animation/chronos-destruction.js';
+export {getChronosIntroPose, CHRONOS_INTRO_TIMELINE} from '../animation/chronos-intro.js';
 export {CLASSIC_WEAPON_RULES, createClassicWeapons, triggerClassicWeapon, advanceClassicWeapons,
   hitClassicProjectile, unlockClassicWeapon, selectClassicWeapon, classicWeaponSnapshot,
   setClassicRechargeInterval, setClassicWeaponTuning, setClassicUnlimitedFire, canTriggerClassicMissile,
