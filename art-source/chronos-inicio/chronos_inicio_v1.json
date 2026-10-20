@@ -64,5 +64,27 @@
       "numero_en_la_entrega": 11,
       "sha256": "76f6b2611bea147562b2b88f52aa938deee639d4a8a0a2f2a52e33f69be0f964"
     }
+  ],
+  "piezas_entrega_2": [
+    {
+      "archivo": "chronos_pieza_rueda_v1.webp",
+      "sha256": "935f9a5bc7c8515839751163ebd7f6f7fb9253233508050d4f9402b0d2a2d458",
+      "notas": "Anillo interior con 8 brazos, vista cenital. Transparente."
+    },
+    {
+      "archivo": "chronos_pieza_anillo_exterior_v1.webp",
+      "sha256": "b9b4aac869ed75883230304055877e452483f5f144c2457194aeef8c7c713b52",
+      "notas": "Anillo exterior en perspectiva (óvalo 1177x947). Para encajar con la rueda se estira en vertical x1,243 hasta quedar circular. Transparente."
+    },
+    {
+      "archivo": "chronos_estacion_por_piezas_completa_v1.webp",
+      "sha256": "dd66422dc39f6ddb3a054fe39e9050ee35ccd1413a9994991bcd89b5065dc672",
+      "notas": "Estación completa con torre de cristal, vista cenital inclinada. Transparente. Estado intacto del inicio."
+    },
+    {
+      "archivo": "chronos_fondo_tras_ruptura_v1.webp",
+      "sha256": "a01df7917a236263a1a2e7af967dfcce0c79941556220dff883fa9aff7d90f8f",
+      "notas": "Fondo vertical sin estación: Tálasa y relámpagos de la onda. Para después de la ruptura."
+    }
   ]
 }

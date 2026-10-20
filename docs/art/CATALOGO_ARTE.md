@@ -46,11 +46,27 @@ con la cámara alejándose, el corte a la explosión oculto por el destello del
 disparo y los elementos del juego por encima. Ver `docs/design/BIBLIA_HISTORIA.md`
 §7. Pendiente de la estación por piezas que el propietario pedirá a ChatGPT.
 
+### 20/10/2026 · Estación por piezas (segunda entrega) — `art-source/chronos-inicio/`
+
+| Archivo | Qué es | Uso previsto | Estado |
+|---|---|---|---|
+| `chronos_estacion_por_piezas_completa_v1.webp` | Estación completa con torre de cristal, transparente | Estación intacta del inicio | RECIBIDO |
+| `chronos_pieza_rueda_v1.webp` | Anillo interior con 8 brazos, vista cenital | Gira; al romperse sale despedida girando | RECIBIDO |
+| `chronos_pieza_anillo_exterior_v1.webp` | Anillo exterior, **en perspectiva** | Se estira ×1,243 en vertical para encajar; gira en sentido contrario y se separa | RECIBIDO |
+| `chronos_fondo_tras_ruptura_v1.webp` | Fondo con Tálasa y relámpagos, sin estación | Fondo justo después de la ruptura | RECIBIDO |
+
+Comprobado: rueda + anillo corregido encajan como una estación; la completa
+queda bien sobre el fondo. Diferencias de estilo menores con las ilustraciones
+de la ruptura (estas piezas son algo más oscuras); el destello del disparo
+oculta el cambio.
+
 ## Pendiente de pedir (sugerencias de Claude)
 
 | Qué | Para qué | Notas para ChatGPT |
 |---|---|---|
-| Estación 1 por piezas | Romper la estación de verdad en el juego | Ver la lista de 7 piezas acordada en el chat del 20/10 |
+| Torre central sola: intacta y rota | Que el disparo la parta | Misma torre de cristal que la estación completa, vista cenital, fondo transparente |
+| 8 fragmentos sueltos de la estación | Restos que vuelan hacia la nave | Cuadrícula 4×2, separados, fondo transparente |
+| Fondo tranquilo (sin relámpagos) | Antes del ataque | Mismo fondo que `chronos_fondo_tras_ruptura_v1` pero en calma |
 | Vista grande de cada planeta (≈2048 px) | La llegada, cuando el planeta llena la pantalla | Una sola imagen, misma cara que la vista 1 de su hoja, fondo transparente |
 | Gaia en rotación (como las de esta entrega) | Que Gaia combine con los demás planetas | Mismo estilo y tamaño que estas hojas |
 | Titan Omega en rotación | Destino del viaje 8 | Planeta naranja industrial, mismo estilo |
