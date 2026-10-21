@@ -467,6 +467,7 @@
     chronosIntroFragments: loadSprite("assets/chronos_intro_fragments_atlas_v1.webp", false),
     // Cronos Prime animado (40 fotogramas del vídeo) y la estación estallando.
     cronosPrimeVideo: loadSprite("assets/cronos_prime_video_atlas_v1.webp", false),
+    cronosPrimeTrail: loadSprite("assets/cronos_prime_trail_v1.webp", false),
     chronosStationBurst: loadSprite("assets/chronos_station_burst_atlas_v1.webp", false),
     cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
@@ -4316,8 +4317,7 @@
     glow.addColorStop(.25, `rgba(190,140,255,${(.7 * light.alpha).toFixed(3)})`); glow.addColorStop(1, "rgba(90,40,200,0)");
     ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = glow;
     ctx.fillRect(x - radius * 3, y - radius * 3, radius * 6, radius * 6);
-    ctx.strokeStyle = `rgba(230,215,255,${(.8 * light.alpha).toFixed(3)})`; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(x - radius * 2.5, y); ctx.lineTo(x + radius * 2.5, y); ctx.moveTo(x, y - radius * 2.5); ctx.lineTo(x, y + radius * 2.5); ctx.stroke();
+    // Sin cruz de destello: su línea fina cruzaba el planeta (tablero, a06).
     ctx.restore();
   }
 
@@ -4327,7 +4327,17 @@
     // El cuerpo llena ~94 % de la celda (fotogramas sacados del vídeo).
     const x = prime.x * W, y = prime.y * H, size = W * .52 * prime.scale;
     // Estela de motor mientras viaja (al llegar y al irse).
-    if (prime.trail > 0) {
+    if (prime.trail > 0 && spriteReady(SPRITES.cronosPrimeTrail)) {
+      // Estela pintada (baúl, encargo a06): 4 fotogramas verticales con el
+      // origen arriba en el centro; se orienta hacia detrás de la nave.
+      const trailAtlas = SPRITES.cronosPrimeTrail, back = prime.heading + Math.PI;
+      const length = size * 2.4 * prime.trail, width = length * .5;
+      const cell = trailAtlas.naturalWidth / 4, frame = Math.floor(elapsed * 12) % 4;
+      ctx.save(); ctx.translate(x + Math.cos(back) * size * .18, y + Math.sin(back) * size * .18);
+      ctx.rotate(back - Math.PI / 2); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, prime.trail * 1.2);
+      ctx.drawImage(trailAtlas, frame * cell, 0, cell, trailAtlas.naturalHeight, -width / 2, 0, width, length);
+      ctx.restore();
+    } else if (prime.trail > 0) {
       const length = size * 2.6 * prime.trail, back = prime.heading + Math.PI;
       const tx = x + Math.cos(back) * length, ty = y + Math.sin(back) * length;
       const trail = ctx.createLinearGradient(x, y, tx, ty);

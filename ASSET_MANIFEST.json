@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 101,
-  "runtimeBytes": 16386474,
+  "assetCount": 102,
+  "runtimeBytes": 16553994,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1311,6 +1311,22 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "origin": "GPT image generation uploaded to the asset vault (encargo a05); resized to runtime size",
+      "version": 1
+    },
+    {
+      "id": "cronos-prime-trail-v1",
+      "path": "assets/cronos_prime_trail_v1.webp",
+      "master": "art-source/cronos-prime-trail/cronos_prime_trail_2048x1024.png",
+      "dimensions": "1024x512",
+      "format": "webp-alpha",
+      "size": 167520,
+      "sha256": "afbdfcec3d8b3d232e1b47e7fac43fb6d67495b5aac6cb36cacbf9bd8697470f",
+      "use": "Cronos Prime engine trail in the Chronos intro, 4 vertical frames (256x512), origin at top centre, oriented behind the ship at 12 fps; replaces the flat bar when loaded.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault (encargo a06); resized to runtime size",
       "version": 1
     }
   ],
