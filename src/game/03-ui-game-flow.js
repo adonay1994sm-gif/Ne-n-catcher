@@ -724,11 +724,15 @@
     if(classicVoyageHazardTimer<900) {
       if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
         stageNumber:n,profile:rules.hazards,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+      if(rules.hazards.mix.lavaCore||rules.hazards.mix.plasmaMine)ensureSprite(SPRITES.lavaCoreMine);
       const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
         !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
-        const threat=createThreat(hazard.type,level());
-        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        // Núcleo de lava y mina de plasma (sector 2); sin su hoja, un meteorito.
+        const vulkar=hazard.type==="lavaCore"||hazard.type==="plasmaMine";
+        const threat=vulkar&&spriteReady(SPRITES.lavaCoreMine)?createVulkarHazard(hazard.type,level()):
+          createThreat(vulkar?"meteor":hazard.type,level());
+        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed*(threat.speedScale||1);threat.amp=0;
         threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.hazardDamageScale=hazard.damageScale??1;
         items.push(threat);
       });

@@ -141,6 +141,20 @@
     });
   }
 
+  // Peligros de Vulkar (sector 2, encargo enc-nucleo). Para el resto del juego
+  // son meteoritos (choque, disparos, daño); solo cambian aspecto y aguante.
+  // Núcleo de lava: avanza despacio y aguanta 4 impactos. Mina de plasma:
+  // cae como un meteorito, se rompe de 1 impacto y estalla al romperse; el
+  // estallido es solo visual (sin daño en área), así no necesita aviso previo.
+  // Radios del dibujo: el círculo de choque (r·1,04) cubre la roca o el cuerpo
+  // de la mina; las puntas de la mina quedan fuera, a favor del jugador.
+  function createVulkarHazard(kind, lv) {
+    const threat = createThreat("meteor", lv), core = kind === "lavaCore", hp = core ? 4 : 1;
+    return Object.assign(threat, { vulkarHazard: kind, spriteKey: kind, special: "", damage: 34,
+      r: core ? 40 : 30, hp, maxHp: hp, rs: core ? (Math.random() - 0.5) * 0.8 : 0,
+      speedScale: core ? 0.65 : 1, shape: null, craters: null });
+  }
+
   function addItem() {
     const lv = level();
     const roll = Math.random();
@@ -434,6 +448,14 @@
     impactEffects.push({ x, y, scale: 1, angle, life: 0.5, duration: 0.5, hullSparks: true });
   }
 
+  // Estallido de la mina de plasma (último fotograma de su hoja): crece y se
+  // apaga en 0,45 s. Solo presentación.
+  function addPlasmaBlast(x, y) {
+    if (!spriteReady(SPRITES.lavaCoreMine)) return;
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x, y, scale: 1, angle: Math.random() * Math.PI * 2, life: 0.45, duration: 0.45, plasmaBlast: true });
+  }
+
   // Explosión de Atlas vencido (baúl, encargo a04): 8 fotogramas en 0,8 s
   // centrados en su núcleo, con una sacudida corta. Solo presentación.
   function addAtlasExplosion(boss) {
@@ -584,6 +606,7 @@
       // Guardian weapons have authored tier damage (13/15/22). Only patrol
       // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
       const enemyPhaser=item.classicScoutProjectile&&!item.guardianProjectile;
+      if(item.vulkarHazard==="plasmaMine")addPlasmaBlast(item.x,item.y);
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
         largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge",
         largeAsteroidScale:item.hazardDamageScale||1});
@@ -652,6 +675,7 @@
   }
 
   function animateScoutHit(target, destroyed) {
+    if(destroyed&&target.vulkarHazard==="plasmaMine")addPlasmaBlast(target.x,target.y);
     if(destroyed) {
       spawnClassicScrap(target);
       releaseClassicShowerComet(target);

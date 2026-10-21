@@ -39,6 +39,20 @@ export const VOYAGE_HAZARD_PROFILES = Object.freeze({
   10: profile([1.0, 1.7], 5, .35, {meteor: .45, debris: .40, satellite: .15}, [220, 330])
 });
 
+// Sector 2 (Vulkar): mismos huecos, topes y velocidades que el perfil de
+// origen; solo cambia la mezcla. Un 35 % de las apariciones pasan a ser
+// núcleos de lava y minas de plasma (encargo enc-nucleo), así la presión
+// total (`stagePressure`, que mira tope y huecos) no sube.
+export const VULKAR_HAZARD_SHARE = Object.freeze({lavaCore: .20, plasmaMine: .15});
+const vulkarProfile = base => {
+  const total = Object.values(base.mix).reduce((sum, weight) => sum + weight, 0);
+  const keep = 1 - VULKAR_HAZARD_SHARE.lavaCore - VULKAR_HAZARD_SHARE.plasmaMine;
+  const mix = Object.fromEntries(Object.entries(base.mix).map(([type, weight]) => [type, weight / total * keep]));
+  return Object.freeze({...base, mix: Object.freeze({...mix, ...VULKAR_HAZARD_SHARE})});
+};
+export const VULKAR_HAZARD_PROFILES = Object.freeze(Object.fromEntries(
+  Object.entries(VOYAGE_HAZARD_PROFILES).map(([stage, base]) => [stage, vulkarProfile(base)])));
+
 const finite = (value, label) => {
   if (!Number.isFinite(value)) throw new RangeError(`${label} must be finite`);
   return value;
@@ -54,7 +68,7 @@ const randomFor = seed => {
   };
 };
 
-const RADIUS_ESTIMATE = Object.freeze({meteor: 42, debris: 35, satellite: 46});
+const RADIUS_ESTIMATE = Object.freeze({meteor: 42, debris: 35, satellite: 46, lavaCore: 44, plasmaMine: 36});
 
 export function createVoyageHazardField({stageNumber, seed = 0, width = 720, height = 1280,
   shipWidth = 208 * .52, profile = null} = {}) {
