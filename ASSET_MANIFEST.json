@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 98,
-  "runtimeBytes": 16163854,
+  "assetCount": 100,
+  "runtimeBytes": 16372178,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1263,6 +1263,38 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "origin": "GPT image generation uploaded to the asset vault; resized to runtime size",
+      "version": 1
+    },
+    {
+      "id": "mission-sector1-v1",
+      "path": "assets/mission_sector1_v1.webp",
+      "master": "art-source/mission-art/ficha_sector1_v1.png",
+      "dimensions": "1280x720",
+      "format": "webp",
+      "size": 108110,
+      "sha256": "e661f547c1740c770db106d6f5377beed43ca012ce089f432ea536ef4a1630e8",
+      "use": "Sector 1 illustration (Chronos station and Gaia Nova) for the briefing and completion panels; CSS background on .briefing-visual.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault (encargo art-ficha); resized to runtime size",
+      "version": 1
+    },
+    {
+      "id": "mission-sector2-v1",
+      "path": "assets/mission_sector2_v1.webp",
+      "master": "art-source/mission-art/ficha_sector2_v1.png",
+      "dimensions": "1280x720",
+      "format": "webp",
+      "size": 100214,
+      "sha256": "6450e94f6990c9f222badd6c632aec6aa1e2f4501a7a8103e5ae9ed8a0003a35",
+      "use": "Sector 2 illustration (Vulkar and its orbital refinery) for the briefing and completion panels; CSS background on .briefing-visual.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault (encargo art-ficha); resized to runtime size",
       "version": 1
     }
   ],

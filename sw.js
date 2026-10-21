@@ -13,6 +13,8 @@ const CORE = [
   "assets/comet_flight_atlas_v3.webp",
   "assets/sector_map_icons_v1.webp",
   "assets/character_portraits_v1.webp",
+  "assets/mission_sector1_v1.webp",
+  "assets/mission_sector2_v1.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",
