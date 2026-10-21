@@ -277,6 +277,10 @@
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
     chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
     vulkarOrbitPlanet: loadSprite("assets/vulkar_orbit_planet_v1.webp", false),
+    planetVolcanico: loadSprite("assets/planet_volcanico_atlas_v1.webp", false),
+    planetGlacial: loadSprite("assets/planet_glacial_atlas_v1.webp", false),
+    planetVioleta: loadSprite("assets/planet_violeta_atlas_v1.webp", false),
+    planetTormentoso: loadSprite("assets/planet_tormentoso_atlas_v1.webp", false),
   };
 
   function frameFrom(group, index) {

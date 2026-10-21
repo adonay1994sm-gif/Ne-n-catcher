@@ -15,6 +15,7 @@ export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../combat/classic-pursuit.js';
 export {createCh02Animator} from '../animation/ch02-animator.js';
 export {getVoyageTransitionPresentation} from '../presentation/voyage-transitions.js';
+export {sectorPlanetPose} from '../presentation/sector-planets.js';
 export {createGuardianAtlas, advanceGuardianAtlas, hitGuardianAtlas, GUARDIAN_ATLAS_RULES} from '../combat/guardian-atlas.js';
 export {guardianAtlasAnimation} from '../animation/guardian-atlas-animator.js';
 export {createCombatSfx} from '../audio/combat-sfx.js';
