@@ -989,7 +989,7 @@
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
     setClassicFlightHudVisible(true);
-    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
+    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); ensureSprite(SPRITES.atlasExplosion);
     hideWarning(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
     ui.atlasEncounter.classList.remove("hidden");
@@ -1036,6 +1036,9 @@
     if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
+      // Explosión del baúl durante el apagado (1,55 s): el completado llega
+      // como siempre, ~0,75 s después de que se apague. Sin imagen, como antes.
+      if(spriteReady(SPRITES.atlasExplosion))addAtlasExplosion(atlasBoss);
       spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
     }
     if (event.type === "disabled") completeLevel();

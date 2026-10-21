@@ -491,6 +491,7 @@
     gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
     hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
+    atlasExplosion: loadSprite("assets/atlas_explosion_v1.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
@@ -1931,7 +1932,7 @@
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
     setClassicFlightHudVisible(true);
-    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
+    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); ensureSprite(SPRITES.atlasExplosion);
     hideWarning(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
     ui.atlasEncounter.classList.remove("hidden");
@@ -1978,6 +1979,9 @@
     if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
+      // Explosión del baúl durante el apagado (1,55 s): el completado llega
+      // como siempre, ~0,75 s después de que se apague. Sin imagen, como antes.
+      if(spriteReady(SPRITES.atlasExplosion))addAtlasExplosion(atlasBoss);
       spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
     }
     if (event.type === "disabled") completeLevel();
@@ -3327,6 +3331,15 @@
     impactEffects.push({ x, y, scale: 1, angle, life: 0.5, duration: 0.5, hullSparks: true });
   }
 
+  // Explosión de Atlas vencido (baúl, encargo a04): 8 fotogramas en 0,8 s
+  // centrados en su núcleo, con una sacudida corta. Solo presentación.
+  function addAtlasExplosion(boss) {
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x: boss.x, y: boss.y, scale: 1, angle: 0, life: 0.8, duration: 0.8,
+      atlasExplosion: true, size: (boss.visualSize || 350) * 1.5 });
+    shake = Math.max(shake, 14);
+  }
+
   function addMissileImpact(x,y) {
     if(!settings.effects)return;
     if(impactEffects.length>=EFFECT_LIMITS.impacts)impactEffects.shift();
@@ -3521,7 +3534,9 @@
       if (explosions[index].life <= 0) explosions.splice(index, 1);
     }
     for (let index = impactEffects.length - 1; index >= 0; index--) {
-      impactEffects[index].life -= dt;
+      // La explosión de Atlas va al mismo reloj que Atlas (mitad con Estabilizador),
+      // para que el completado siga llegando justo después de ella.
+      impactEffects[index].life -= impactEffects[index].atlasExplosion && powers.slow > 0 ? dt * .5 : dt;
       if (impactEffects[index].life <= 0) impactEffects.splice(index, 1);
     }
   }
@@ -5908,6 +5923,21 @@
         ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
         ctx.globalCompositeOperation = "lighter";
         ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
+      }
+      if (effect.atlasExplosion && spriteReady(SPRITES.atlasExplosion)) {
+        // Rejilla 4×2: destello, bola de fuego, anillo cian con escombros y
+        // humo que se apaga, a 10 fps. Destello blanco breve solo sin
+        // «Reducir efectos».
+        const atlas = SPRITES.atlasExplosion, cell = atlas.naturalWidth / 4;
+        const frame = Math.min(7, Math.floor(progress * 8)), age = effect.duration - effect.life;
+        if (!settings.reduceEffects && age < .18) {
+          ctx.save(); ctx.fillStyle = `rgba(255,236,210,${(.38 * (1 - age / .18)).toFixed(3)})`;
+          ctx.fillRect(0, 0, W, H); ctx.restore();
+        }
+        ctx.save(); ctx.translate(effect.x, effect.y);
+        ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell,
+          -effect.size / 2, -effect.size / 2, effect.size, effect.size);
         ctx.restore(); continue;
       }
       if (effect.atlasImpact) {

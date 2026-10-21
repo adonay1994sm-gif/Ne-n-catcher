@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 102,
-  "runtimeBytes": 16553994,
+  "assetCount": 103,
+  "runtimeBytes": 16661914,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1327,6 +1327,22 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "origin": "GPT image generation uploaded to the asset vault (encargo a06); resized to runtime size",
+      "version": 1
+    },
+    {
+      "id": "atlas-explosion-v1",
+      "path": "assets/atlas_explosion_v1.webp",
+      "master": "art-source/atlas-explosion/encargo-a04-v1.png",
+      "dimensions": "1024x512",
+      "format": "webp-alpha",
+      "size": 107920,
+      "sha256": "cbcb8b5675a37b4755b642c72d4dac5a5977e0405c147ed8ab8705d12f7ea61d",
+      "use": "Guardian Atlas defeat explosion in S1-V5, 8 frames 4x2 (256 cells): flash, fireball, cyan ring with debris, fading smoke; 0.8 s at 10 fps centred on Atlas when its core shuts down. Without it the old shutdown plays.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault (encargo a04); resized to runtime size",
       "version": 1
     }
   ],

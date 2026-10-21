@@ -18,7 +18,7 @@ const plain = value => JSON.parse(JSON.stringify(value));
  * obstacles and pilots the ship in memory to isolate boss lifecycle/save rules.
  * The separate Chromium test never uses these mutations.
  */
-function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], failEquipmentWrite = false, failBackupWrite = false} = {}) {
+function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], failEquipmentWrite = false, failBackupWrite = false, brokenImages = []} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   t.after(() => dom.window.close());
@@ -34,8 +34,11 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
     x: 0, y: 0, left: 0, top: 0, right: 390, bottom: 844, width: 390, height: 844
   });
   window.Image = class {
-    constructor() { this.complete = true; this.naturalWidth = this.naturalHeight = 1024; }
+    constructor() { this.complete = true; this.naturalHeight = 1024; }
+    // An image listed in brokenImages never decodes (naturalWidth 0).
+    get naturalWidth() { return brokenImages.some(path => String(this.path || this._assetPath || '').endsWith(path)) ? 0 : 1024; }
     set src(value) { this.path = value; }
+    get src() { return this.path || ''; }
   };
   const pending = new Map(); let id = 0;
   window.requestAnimationFrame = callback => (pending.set(++id, callback), id);
@@ -172,6 +175,8 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
       projectiles:items.filter(item=>item.guardianProjectile).map(item=>({
         id:item.projectileId,attackId:item.attackId,volley:item.volley,
         x:item.x,y:item.y,vx:item.vx,vy:item.vy,r:item.r,life:item.life})),
+      atlasExplosions:impactEffects.filter(effect=>effect.atlasExplosion).map(effect=>({x:effect.x,y:effect.y,life:effect.life,duration:effect.duration})),
+      shake,
       boss:atlasBoss?JSON.parse(JSON.stringify(atlasBoss)):null})
   };\n`;
   window.eval(game.replace(marker, hook + marker));
@@ -824,4 +829,38 @@ test('a save left in the middle of the old S1-V1 Atlas fight resumes at its stag
   assert.deepEqual(JSON.parse(restored.window.localStorage.getItem('neonCatcher.flightEquipment.v1')).unlocked,['pulse','twin']);
   assert.match(restored.window.document.getElementById('unlockMessage').textContent,/Gemelo ×2/);
   assert.equal(restored.pending.size,1);
+});
+
+// Explosión del baúl (encargo a04): al vencer a Atlas en S1-V5 se ve la
+// explosión centrada en él y la pantalla de completado llega después.
+test('beating Atlas in S1-V5 plays the vault explosion on Atlas and the completion screen follows it', t => {
+  const h=harness(t);
+  h.api.prepareAtlasVoyage();h.collectGoal();
+  const down=h.until(q=>q.boss?.disabled,60*240,true);
+  assert.equal(down.state,'playing');
+  assert.equal(down.atlasExplosions.length,1,'The defeat starts exactly one explosion');
+  const [blast]=down.atlasExplosions;
+  assert.equal(blast.x,down.boss.x);assert.equal(blast.y,down.boss.y);
+  assert.ok(blast.duration>=.7&&blast.duration<=.9,'About 0.8 s (8 frames at 10 fps)');
+  assert.ok(down.shake>0,'A short screen shake accompanies the explosion');
+  let frames=0;
+  while(h.snapshot().atlasExplosions.length){
+    assert.equal(h.snapshot().state,'playing','The completion screen never covers the explosion');
+    h.api.isolatedFrame(1/60);frames++;
+    assert.ok(frames<120,'The explosion ends');
+  }
+  let after=0;
+  while(h.snapshot().state!=='complete'){h.api.isolatedFrame(1/60);after++;assert.ok(after<=66,'Completion arrives at most ~1 s after the explosion');}
+  assert.equal(s1v5Done(h),true);
+  assert.ok(h.snapshot().equipment.unlocked.includes('twin'));
+  assert.equal(h.pending.size,1,'No second animation loop');
+});
+
+test('without the explosion image Atlas ends exactly as before', t => {
+  const h=harness(t,'',{brokenImages:['assets/atlas_explosion_v1.webp']});
+  h.api.prepareAtlasVoyage();h.collectGoal();
+  const down=h.until(q=>q.boss?.disabled,60*240,true);
+  assert.equal(down.atlasExplosions.length,0);
+  const finished=h.until(q=>q.state==='complete');
+  assert.equal(s1v5Done(h),true);assert.ok(finished.equipment.unlocked.includes('twin'));
 });

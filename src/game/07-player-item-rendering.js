@@ -832,6 +832,21 @@
         ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
         ctx.restore(); continue;
       }
+      if (effect.atlasExplosion && spriteReady(SPRITES.atlasExplosion)) {
+        // Rejilla 4×2: destello, bola de fuego, anillo cian con escombros y
+        // humo que se apaga, a 10 fps. Destello blanco breve solo sin
+        // «Reducir efectos».
+        const atlas = SPRITES.atlasExplosion, cell = atlas.naturalWidth / 4;
+        const frame = Math.min(7, Math.floor(progress * 8)), age = effect.duration - effect.life;
+        if (!settings.reduceEffects && age < .18) {
+          ctx.save(); ctx.fillStyle = `rgba(255,236,210,${(.38 * (1 - age / .18)).toFixed(3)})`;
+          ctx.fillRect(0, 0, W, H); ctx.restore();
+        }
+        ctx.save(); ctx.translate(effect.x, effect.y);
+        ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell,
+          -effect.size / 2, -effect.size / 2, effect.size, effect.size);
+        ctx.restore(); continue;
+      }
       if (effect.atlasImpact) {
         ctx.save(); ctx.translate(effect.x, effect.y);
         if(!drawArcadePulse("impact",effect.duration-effect.life,60,1-progress*.4))drawAtlasVfx(2,58,52,1-progress);
