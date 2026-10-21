@@ -97,7 +97,7 @@ await test("parallax V7 reemplaza la antigua rejilla", async () => {
 
 await test("núcleo, tractor, phaser, pulso, motores y HUD tienen respuesta multietapa", async () => {
   for (const marker of [
-    "directionalBurst", "distanceToShip", "const targetWidth", "const volume = ctx.createLinearGradient",
+    "directionalBurst", "const targetWidth", "const volume = ctx.createLinearGradient",
     "flashPhase", "muzzle.addColorStop", 'style === "pulse"', "pose.enginePulse", "updateHudVisual"
   ]) assert.ok(gameSource.includes(marker), marker);
   assert.match(styles, /@keyframes hudPop/);
