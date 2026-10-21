@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {JSDOM} from 'jsdom';
 import {createChronosVoyageCheckpoint} from '../src/game/progression/chronos-flight.js';
+import {createChronosChapterStory} from '../src/game/narrative/chronos-chapter.js';
 
 const root = new URL('..', import.meta.url);
 const [html, core, content, game] = await Promise.all(
@@ -95,6 +96,11 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
       return completionJournal.complete({completionId:KEYS.unlocked+':1:legacy-atlas',level:1,stars:3,score:500,
         checkpoint:{version:2,checkpoint,entry:{hull:100,score:0,maxCombo:1,collected:36},chapter:null,unlockedStage:10,completed:true},
         equipment:NeonCampaign.awardClassicBossWeapon(classicEquipment,'guardian-atlas').equipment});
+    },
+    // S1-V1 from the entry of a chosen stage, as the stage picker does.
+    prepareChronosStage(stage) {
+      classicVoyageRequestedStage=stage;startLevel(0);warpTimer=0;spawnTimer=999;classicScoutTimer=999;
+      items=[];gates=[];
     },
     prepareFresh(index=0) {
       if(index===0){classicVoyageRecord=null;classicVoyageRequestedStage=1;}
@@ -754,3 +760,65 @@ test('S1-V5 Atlas health still scales with the difficulty mode', t => {
   }
 });
 
+// C · Guardados de builds anteriores, donde Atlas cerraba S1-V1.
+function oldVictoryChapter() {
+  // The chapter record such a victory saved: Atlas beats and Iria's epilogue.
+  const story=createChronosChapterStory({routeElapsed:0,introEnabled:false});
+  story.advance({elapsed:360});
+  for(const name of ['atlas-entry','atlas-phase-two','atlas-disabled'])assert.equal(story.signal(name),true);
+  story.advance({elapsed:360,aftermathElapsed:8});
+  assert.equal(story.snapshot().aftermathReady,true);
+  return plain(story.checkpoint());
+}
+
+test('a player who beat Atlas in the old S1-V1 keeps the weapon and the completed voyage, and S1-V5 adds nothing twice', t => {
+  const chapter=oldVictoryChapter();
+  const voyage=JSON.stringify({version:2,checkpoint:createChronosVoyageCheckpoint(10,{collected:36}),
+    entry:{hull:100,score:0,maxCombo:1,collected:36},chapter,unlockedStage:10,completed:true});
+  const equipment=JSON.stringify({version:1,recoveredTwin:true,unlocked:['pulse','twin'],selected:'twin',
+    bossRewards:['guardian-atlas'],twinPrepared:true});
+  const h=harness(t,'',{storageEntries:[['neon-unlocked-v2','2'],['neon-stars-v2','{"1":3}'],
+    ['neonCatcher.chronosVoyage.v2',voyage],['neonCatcher.flightEquipment.v1',equipment]]});
+  assert.equal(h.window.localStorage.getItem('neonCatcher.chronosVoyage.v2:invalid-backups'),null,
+    'The old chapter record with Atlas signals is still a valid save');
+  assert.equal(h.snapshot().unlocked,2);
+  assert.deepEqual(h.snapshot().equipment.unlocked,['pulse','twin']);assert.equal(h.snapshot().equipment.selected,'twin');
+  // Replaying S1-V1 now ends at the arrival, without Atlas, and keeps everything.
+  h.api.prepareChronosStage(10);assert.equal(h.snapshot().side,null);assert.equal(h.snapshot().flight.elapsed,324);
+  while(h.snapshot().collected<36)h.api.collectEnergy();
+  let sawAtlas=false;
+  for(let frame=0;frame<60*400&&h.snapshot().state==='playing';frame++){h.api.isolatedFrame(1/60);sawAtlas=sawAtlas||Boolean(h.snapshot().boss);}
+  assert.equal(h.snapshot().state,'complete');assert.equal(sawAtlas,false);
+  assert.equal(h.snapshot().unlocked,2);
+  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCatcher.chronosVoyage.v2')).completed,true);
+  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),equipment,'Replaying S1-V1 never rewrites the weapon');
+  // Winning S1-V5 confirms the existing authorization without a new notice.
+  winAtlasVoyage(h);
+  const after=JSON.parse(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'));
+  assert.deepEqual(after.unlocked,['pulse','twin']);assert.deepEqual(after.bossRewards,['guardian-atlas']);
+  assert.equal(after.selected,'twin','The equipped weapon is preserved');
+  assert.equal(h.window.document.getElementById('completeTitle').textContent,'Atlas ha abierto el paso');
+  assert.doesNotMatch(h.window.document.getElementById('unlockMessage').textContent,/Gemelo/);
+  assert.equal(h.pending.size,1);
+});
+
+test('a save left in the middle of the old S1-V1 Atlas fight resumes at its stage and completes without Atlas or reward', t => {
+  // Builds with Atlas in S1-V1 never saved the fight itself: the record on
+  // disk is the stage-10 entry (route 324 s, 32 CRONIUM), as in this fixture.
+  const h=harness(t);
+  const before=JSON.parse(h.window.localStorage.getItem('neonCatcher.chronosVoyage.v2'));
+  assert.equal(before.checkpoint.stageNumber,10);assert.equal(before.completed,false);
+  h.api.prepare();
+  assert.equal(h.snapshot().flight.elapsed,324);assert.equal(h.snapshot().collected,32);
+  while(h.snapshot().collected<36)h.api.collectEnergy();
+  const finished=h.until(q=>q.state==='complete');
+  assert.equal(finished.boss,null);assert.equal(finished.unlocked,2);
+  assert.deepEqual(finished.equipment.unlocked,['pulse'],'Gemelo now waits for S1-V5');
+  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),null);
+  const restored=harness(t,'',{storageEntries:Object.entries(h.window.localStorage)});
+  assert.equal(restored.snapshot().unlocked,2);assert.deepEqual(restored.snapshot().equipment.unlocked,['pulse']);
+  winAtlasVoyage(restored);
+  assert.deepEqual(JSON.parse(restored.window.localStorage.getItem('neonCatcher.flightEquipment.v1')).unlocked,['pulse','twin']);
+  assert.match(restored.window.document.getElementById('unlockMessage').textContent,/Gemelo ×2/);
+  assert.equal(restored.pending.size,1);
+});
