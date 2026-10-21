@@ -356,3 +356,15 @@ test('v5 opponents mix single, double and spread volleys with irregular waits in
   assert.ok(doubles > 0 && spreads > 0);
   assert.ok(waits.size >= 10, 'waits between attacks are irregular');
 });
+
+test('a surviving patrol leaves within ~15 s, so the spawn cap rotates instead of parking enemies on screen', () => {
+  // Propietario (21/10): «los enemigos no se van por más que se acumulen».
+  // Con una patrulla nueva cada 5-9 s, cada enemigo debe dejar su hueco pronto.
+  for (const role of ['raider', 'scout', 'interceptor']) for (let seed = 0; seed < 6; seed++) {
+    const item = enemyAt({role, seed}), enemy = item.classicScout, player = {x: 200 + seed * 50, y: 1080};
+    until(item, player, () => enemy.state === 'retreat', [], 1900);
+    assert.ok(enemy.age <= 15, `${role}/${seed} starts leaving after ${enemy.age.toFixed(1)} s`);
+    until(item, player, () => item.y - item.r > 1280, [], 1200);
+    assert.ok(enemy.age <= 22, `${role}/${seed} is off screen after ${enemy.age.toFixed(1)} s`);
+  }
+});

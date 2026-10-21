@@ -6,17 +6,17 @@ const approach = (value, target, amount) => value + clamp(target - value, -amoun
 // Acelerón ocasional al reposicionarse, nunca por encima de este límite.
 const MAX_LATERAL_SPEED = 176;
 const profiles = Object.freeze({
-  raider: Object.freeze({warning: .32, recovery: 1.25, maxAttacks: 8, holdSeconds: 20,
+  raider: Object.freeze({warning: .32, recovery: 1.25, maxAttacks: 8, holdSeconds: 9,
     depth: .30, lateralSpeed: 140, acceleration: 265, sampleInterval: .24,
     orbitRate: .96, lateralSweep: .68, depthSweep: 25,
     projectileSpeed: 360, leadSeconds: .32, damage: 14,
     volleys: Object.freeze({single: .45, double: .35, spread: .20}), flipChance: .7, dashChance: .15}),
-  scout: Object.freeze({warning: .38, recovery: 1.6, maxAttacks: 7, holdSeconds: 22,
+  scout: Object.freeze({warning: .38, recovery: 1.6, maxAttacks: 7, holdSeconds: 10,
     depth: .29, lateralSpeed: 104, acceleration: 190, sampleInterval: .32,
     orbitRate: .76, lateralSweep: .72, depthSweep: 32,
     projectileSpeed: 335, leadSeconds: .22, damage: 12,
     volleys: Object.freeze({single: .50, double: .15, spread: .35}), flipChance: .6, dashChance: .1}),
-  interceptor: Object.freeze({warning: .30, recovery: 1.15, maxAttacks: 10, holdSeconds: 24,
+  interceptor: Object.freeze({warning: .30, recovery: 1.15, maxAttacks: 10, holdSeconds: 11,
     depth: .27, lateralSpeed: 176, acceleration: 315, sampleInterval: .2,
     orbitRate: 1.23, lateralSweep: .9, depthSweep: 40,
     projectileSpeed: 390, leadSeconds: .38, damage: 15,
@@ -182,7 +182,9 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     if (enemy.state !== 'destroyed') enter('destroyed');
   } else if (enemy.state !== 'retreat' && enemy.state !== 'destroyed') {
     const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-    if (heldFor >= profile.holdSeconds || enemy.age >= profile.holdSeconds + 8) {
+    // Propietario (21/10): se quedaban 20-24 s y, con una patrulla nueva cada
+    // 5-9 s, el tope siempre estaba lleno de enemigos parados. Ahora rotan.
+    if (heldFor >= profile.holdSeconds || enemy.age >= profile.holdSeconds + 5) {
       retreat('time-limit');
     } else if (lostHealth && !['entry', 'brake'].includes(enemy.state)) {
       // Same HP sample reaches the animator below: hurt cancels its fire event.

@@ -4470,7 +4470,7 @@ var NeonCampaign = (() => {
       warning: 0.32,
       recovery: 1.25,
       maxAttacks: 8,
-      holdSeconds: 20,
+      holdSeconds: 9,
       depth: 0.3,
       lateralSpeed: 140,
       acceleration: 265,
@@ -4489,7 +4489,7 @@ var NeonCampaign = (() => {
       warning: 0.38,
       recovery: 1.6,
       maxAttacks: 7,
-      holdSeconds: 22,
+      holdSeconds: 10,
       depth: 0.29,
       lateralSpeed: 104,
       acceleration: 190,
@@ -4508,7 +4508,7 @@ var NeonCampaign = (() => {
       warning: 0.3,
       recovery: 1.15,
       maxAttacks: 10,
-      holdSeconds: 24,
+      holdSeconds: 11,
       depth: 0.27,
       lateralSpeed: 176,
       acceleration: 315,
@@ -4690,7 +4690,7 @@ var NeonCampaign = (() => {
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-      if (heldFor >= profile2.holdSeconds || enemy.age >= profile2.holdSeconds + 8) {
+      if (heldFor >= profile2.holdSeconds || enemy.age >= profile2.holdSeconds + 5) {
         retreat("time-limit");
       } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {
         reposition();
