@@ -50,10 +50,17 @@
    reactor acepta límites. Tema: memoria, deuda, duelo, identidad y poder.
 10. Frase final: **«Una estrella no es un destino.»**
 
-**Punto a confirmar:** la biblia dice que el C-17 perfora el reactor; el
-guion v5 del inicio muestra a Cronos Prime disparando. Propuesta para que
-encajen: el C-17 abre la puerta con la firma falsa y Cronos Prime, ya
-despierto, da el golpe. Nadie sabe aún qué es; se nombra en S10.
+**Confirmado por el propietario (21/10/2026):** el C-17 abre la puerta con
+la firma falsa y Cronos Prime, ya despierto, da el golpe. Nadie sabe aún
+qué es; se nombra en S10.
+
+**Destino de Lira (decidido por Claude, el propietario delegó la
+historia):** Lira se queda en la torre para enviar el registro y su señal
+se apaga con la ruptura; el piloto la da por muerta (duelo). En S7-V2 su
+eco revela que el sabotaje estaba previsto. En S9 se descubre que la flota
+de extracción se la llevó viva a Titan Omega, porque conoce los códigos del
+reactor. Se la rescata en S9-V5 y en S10 es ella quien fija los límites
+del reactor junto al piloto.
 
 ## 2. Familias de jefe intermedio (V1–V4 y mitad de V5)
 
@@ -102,7 +109,7 @@ tramos aproximados.
 | S1-V4 | **Sigue la señal falsa** | Órbita alta → lado nocturno de Gaia | Alguien emite tu firma copiada para culparte: una escolta del C-17. | C17 · Escolta C-17 (primera aparición; huye dañada) | Oscuridad: lado nocturno, solo se ven luces y disparos | 3 | 8 |
 | S1-V5 | **Convence a Atlas** | Lado nocturno → acceso orbital de Gaia Nova | Atlas bloquea; al vencerlo verifica el registro. Iria: «El convoy vino de Vulkar.» | SAT · Par de CH-03 enlazados por un haz | Lluvia de meteoritos en el acceso | 3 | 8 |
 
-**Cómo encaja el viaje actual (decide el propietario):**
+**Cómo encaja el viaje actual — decidido: opción B (propietario, 21/10/2026).**
 
 - **Opción A · S1-V1 con Atlas, como hoy.** No se toca nada hecho.
   Problema: el jefe de S1-V5 no puede ser Atlas otra vez sin repetir la
@@ -436,7 +443,7 @@ Solo personajes de la biblia y del manuscrito; no hay datos reales.
 | **Piloto** | Huye con el registro | Persigue al C-17 | Ve la deuda | Busca desaparecidos | Decide calmar, no matar | Duda de su ruta | Se enfrenta a su eco | Ve mundos desmontados | Rechaza el mapa | No decide por todos |
 | **N-7** (IA de la nave) | Calcula y avisa | Detecta el CRONIUM | Lee el manifiesto | Guía en la ventisca | Pierde señal bajo el hielo | Confunde ecos y reales | Pierde la referencia del tiempo | Calcula pozos | Analiza a la Cartógrafa | «Navegar sin final garantizado» |
 | **Mira** (C9) | Primer taller | Cobra la reparación | Compra chatarra de forja | Taller en frío | Repara tras el Leviatán | Taller en la tormenta | Taller | Taller | Taller | Vuelve a Chronos «a limpiar» |
-| **Lira Venn** | Prólogo y voz en V1 | — | — | — | — | — | Eco del pasado (S7-V2) | — | — | Su destino tras el prólogo **no está fijado**: lo decide el propietario |
+| **Lira Venn** | Prólogo y voz en V1 | — | — | — | — | — | Eco del pasado (S7-V2) | — | — | Se la cree muerta; viva en Titan Omega (S9), rescatada en S9-V5; fija los límites del reactor en S10 |
 | **Iria** | Verifica la prueba tras Atlas | Paso libre (S2-V1) | — | — | — | — | — | — | — | Responde con Gaia (S10-V2) |
 | **Atlas** | Bloqueo y jefe | — | — | — | — | — | — | — | — | — |
 | **Yara Kest** | — | Pide ayuda (S2-V4) | Voz del sindicato | — | — | — | — | — | — | Aliada (S10-V2) |
@@ -450,10 +457,10 @@ Solo personajes de la biblia y del manuscrito; no hay datos reales.
 | **La Cartógrafa** | — | — | Pista: el sindicato le debe | — | Pista: borró Cryon | — | El sabotaje estaba previsto | Su flota | **Se revela** | Buque insignia y epílogo |
 | **Cronos Prime** | Inicio (guion v5) | — | — | — | — | — | — | — | — | Jefe final (5 fases) |
 
-## 7. Decisiones pendientes del propietario
+## 7. Decisiones del propietario
 
-1. S1-V1: opción A (Atlas en V1) u opción B (Atlas en S1-V5, recomendada).
-2. Nombre y forma del jefe de S3 (propuesta: **Crisol**).
-3. Quién dispara al reactor en el prólogo (C-17, Cronos Prime o ambos).
-4. Las 7 armas nuevas y las mejoras: nombres, orden y si se compran o se ganan.
-5. El destino de Lira Venn después del prólogo.
+1. ✔ S1-V1: **opción B** (Atlas pasa a S1-V5).
+2. ⏳ Jefe de S3 (propuesta: **Crisol**): «vamos viéndolo».
+3. ✔ Prólogo: el C-17 abre la puerta, Cronos Prime da el golpe.
+4. ⏸ Armas nuevas y mejoras: aparcadas; el propietario las está diseñando.
+5. ✔ Lira: la historia la decide Claude (ver §1).
