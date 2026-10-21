@@ -17,6 +17,7 @@
       reduceEffects: typeof source.reduceEffects === "boolean" ? source.reduceEffects
         : Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches),
       effectsQuality: savedQuality,
+      difficulty: ["facil", "normal", "hardcore"].includes(source.difficulty) ? source.difficulty : DEFAULT_SETTINGS.difficulty,
       flightTutorial: source.flightTutorial&&typeof source.flightTutorial==='object' ? source.flightTutorial : null,
       effects: savedQuality !== "low"
     };
@@ -361,6 +362,7 @@
     ui.sensitivity.value = settings.sensitivity;
     ui.vibration.checked = settings.vibration;
     ui.effectsQuality.value = settings.effectsQuality;
+    if (ui.difficulty) ui.difficulty.value = settings.difficulty;
     ui.reduceEffects.checked = settings.reduceEffects;
     ui.autoFire.checked = settings.autoFire;
     ui.musicValue.textContent = `${settings.music}%`;

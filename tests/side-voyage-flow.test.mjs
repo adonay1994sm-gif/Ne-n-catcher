@@ -33,7 +33,7 @@ function harness({unlocked = '2', query = ''} = {}) {
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
   w.eval(core); w.eval(content);
-  const hook = `window.T={startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
+  const hook = `window.T={requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
@@ -112,4 +112,13 @@ test('?dev=1 opens every voyage and stage with a separate save and an optional i
   const god = w.document.getElementById('devInvulnerable'); god.checked = true; god.dispatchEvent(new w.Event('change'));
   assert.equal(T.hit(40), 100, 'the invulnerable hull ignores damage');
   assert.equal(T.st().state, 'playing');
+});
+
+test('a stage picked for S1-V1 never leaks into another voyage and going home clears the side voyage', () => {
+  const {T} = harness();
+  T.requestStage(9);
+  T.startSideVoyage('S1-V2');
+  assert.deepEqual([T.st().state, T.st().side], ['playing', 'S1-V2']);
+  T.goHome();
+  assert.equal(T.st().side, null);
 });

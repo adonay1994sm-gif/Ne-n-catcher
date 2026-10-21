@@ -475,6 +475,10 @@
 
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
+    // Daño recibido según el modo de dificultad (Normal = 1).
+    const difficultyDamage = typeof NeonCampaign !== "undefined" && typeof settings !== "undefined"
+      ? NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.damage ?? 1 : 1;
+    amount *= difficultyDamage;
     const impactAngle = Math.atan2(y - player.y, x - player.x);
     const damageResult = NeonCampaign.resolveHullReinforcement({hull,amount,
       reserve:classicHullReserve,capacity:classicHullReserveCapacity,

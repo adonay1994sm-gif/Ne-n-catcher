@@ -403,6 +403,9 @@
     settings.vibration = event.target.checked;
     if (settings.vibration) vibrate(20);
   };
+  if (ui.difficulty) ui.difficulty.onchange = (event) => {
+    settings.difficulty = ["facil", "normal", "hardcore"].includes(event.target.value) ? event.target.value : "normal";
+  };
   ui.effectsQuality.onchange = (event) => {
     settings.effectsQuality = ["low", "normal", "high"].includes(event.target.value) ? event.target.value : "normal";
     settings.effects = settings.effectsQuality !== "low";

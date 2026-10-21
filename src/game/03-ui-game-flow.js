@@ -697,7 +697,7 @@
     const view=classicFlightView,n=view.stageNumber;
     if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
-    const rules=NeonCampaign.getVoyageStageRules(view.routeId,n);
+    const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;
     classicVoyageSpawnTimer-=dt;
     // Recoverable signals form a short trail rather than an endless rain.
@@ -876,7 +876,8 @@
   function startSideVoyage(voyageId) {
     const ficha=NeonCampaign.getVoyageFicha(NeonCampaign.VOYAGES.find(item=>item.id===voyageId)?.routeId);
     if(!ficha)return false;
-    classicSideVoyagePending=ficha;startLevel(0);return true;
+    // Un tramo elegido en la ficha de S1-V1 no se arrastra a otro viaje.
+    classicVoyageRequestedStage=null;classicSideVoyagePending=ficha;startLevel(0);return true;
   }
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
@@ -927,6 +928,9 @@
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
+    // Vida de Atlas según el modo de dificultad (Normal = la de siempre).
+    const bossHealth=NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.bossHealth??1;
+    if(bossHealth!==1)atlasBoss.hp=atlasBoss.maxHp=Math.round(atlasBoss.maxHp*bossHealth);
     NeonCampaign.setClassicUnlimitedFire(classicWeapons,true);
     document.body.classList.add("atlas-combat");ui.atlasEncounter.classList.remove("hidden");
     signalClassicChapter("atlas-entry");
@@ -1417,6 +1421,7 @@
   }
 
   function closeBriefing() {
+    classicVoyageRequestedStage=null;
     if (briefingReturn === "levels") overlay(ui.levelSelect);
     else if (briefingReturn === "complete") overlay(ui.complete);
     else overlay(ui.menu);
@@ -1514,7 +1519,8 @@
     if(classicSideVoyage){
       const record=loadSideVoyageRecord(classicSideVoyage.ficha);
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
-      if(classicVoyageRequestedStage)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(classicVoyageRequestedStage,{goal:LEVELS[0].goal});
+      const requested=classicVoyageRequestedStage;
+      if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
       else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
@@ -1661,6 +1667,7 @@
 
   function goHome() {
     if (typeof resetGameInput === "function") resetGameInput();
+    classicSideVoyage=null;
     classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;classicChapterOutroStartedAt=null;
     syncClassicChapterPresentation();
     if(classicWeapons)classicWeapons.projectiles.length=0;

@@ -119,6 +119,7 @@
     sensitivity: $("sensitivity"),
     vibration: $("vibration"),
     effectsQuality: $("effectsQuality"),
+    difficulty: $("difficulty"),
     reduceEffects: $("reduceEffects"),
     autoFire: $("autoFire"),
     musicValue: $("musicValue"),
@@ -219,7 +220,7 @@
     settings: "neon-settings-v5"
   };
   const LEGACY_KEYS = { best: "neon-best-v1" };
-  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true };
+  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true, difficulty: "normal" };
   const storage = NeonCore.createStorageService(window.NeonDev?.storage);
 
   function migrateLegacyStorage() {
@@ -572,6 +573,7 @@
       reduceEffects: typeof source.reduceEffects === "boolean" ? source.reduceEffects
         : Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches),
       effectsQuality: savedQuality,
+      difficulty: ["facil", "normal", "hardcore"].includes(source.difficulty) ? source.difficulty : DEFAULT_SETTINGS.difficulty,
       flightTutorial: source.flightTutorial&&typeof source.flightTutorial==='object' ? source.flightTutorial : null,
       effects: savedQuality !== "low"
     };
@@ -916,6 +918,7 @@
     ui.sensitivity.value = settings.sensitivity;
     ui.vibration.checked = settings.vibration;
     ui.effectsQuality.value = settings.effectsQuality;
+    if (ui.difficulty) ui.difficulty.value = settings.difficulty;
     ui.reduceEffects.checked = settings.reduceEffects;
     ui.autoFire.checked = settings.autoFire;
     ui.musicValue.textContent = `${settings.music}%`;
@@ -1634,7 +1637,7 @@
     const view=classicFlightView,n=view.stageNumber;
     if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
-    const rules=NeonCampaign.getVoyageStageRules(view.routeId,n);
+    const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;
     classicVoyageSpawnTimer-=dt;
     // Recoverable signals form a short trail rather than an endless rain.
@@ -1813,7 +1816,8 @@
   function startSideVoyage(voyageId) {
     const ficha=NeonCampaign.getVoyageFicha(NeonCampaign.VOYAGES.find(item=>item.id===voyageId)?.routeId);
     if(!ficha)return false;
-    classicSideVoyagePending=ficha;startLevel(0);return true;
+    // Un tramo elegido en la ficha de S1-V1 no se arrastra a otro viaje.
+    classicVoyageRequestedStage=null;classicSideVoyagePending=ficha;startLevel(0);return true;
   }
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
@@ -1864,6 +1868,9 @@
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
+    // Vida de Atlas según el modo de dificultad (Normal = la de siempre).
+    const bossHealth=NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.bossHealth??1;
+    if(bossHealth!==1)atlasBoss.hp=atlasBoss.maxHp=Math.round(atlasBoss.maxHp*bossHealth);
     NeonCampaign.setClassicUnlimitedFire(classicWeapons,true);
     document.body.classList.add("atlas-combat");ui.atlasEncounter.classList.remove("hidden");
     signalClassicChapter("atlas-entry");
@@ -2354,6 +2361,7 @@
   }
 
   function closeBriefing() {
+    classicVoyageRequestedStage=null;
     if (briefingReturn === "levels") overlay(ui.levelSelect);
     else if (briefingReturn === "complete") overlay(ui.complete);
     else overlay(ui.menu);
@@ -2451,7 +2459,8 @@
     if(classicSideVoyage){
       const record=loadSideVoyageRecord(classicSideVoyage.ficha);
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
-      if(classicVoyageRequestedStage)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(classicVoyageRequestedStage,{goal:LEVELS[0].goal});
+      const requested=classicVoyageRequestedStage;
+      if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
       else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
@@ -2598,6 +2607,7 @@
 
   function goHome() {
     if (typeof resetGameInput === "function") resetGameInput();
+    classicSideVoyage=null;
     classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;classicChapterOutroStartedAt=null;
     syncClassicChapterPresentation();
     if(classicWeapons)classicWeapons.projectiles.length=0;
@@ -3309,6 +3319,10 @@
 
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
+    // Daño recibido según el modo de dificultad (Normal = 1).
+    const difficultyDamage = typeof NeonCampaign !== "undefined" && typeof settings !== "undefined"
+      ? NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.damage ?? 1 : 1;
+    amount *= difficultyDamage;
     const impactAngle = Math.atan2(y - player.y, x - player.x);
     const damageResult = NeonCampaign.resolveHullReinforcement({hull,amount,
       reserve:classicHullReserve,capacity:classicHullReserveCapacity,
@@ -6247,6 +6261,9 @@
   ui.vibration.onchange = (event) => {
     settings.vibration = event.target.checked;
     if (settings.vibration) vibrate(20);
+  };
+  if (ui.difficulty) ui.difficulty.onchange = (event) => {
+    settings.difficulty = ["facil", "normal", "hardcore"].includes(event.target.value) ? event.target.value : "normal";
   };
   ui.effectsQuality.onchange = (event) => {
     settings.effectsQuality = ["low", "normal", "high"].includes(event.target.value) ? event.target.value : "normal";

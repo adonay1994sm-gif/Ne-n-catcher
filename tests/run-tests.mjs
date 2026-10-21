@@ -422,11 +422,12 @@ await test("guardados corruptos se normalizan sin romper el menú ni el control"
   gameWindow.localStorage.setItem(api.keys.settings, JSON.stringify({
     music: 900, fx: -40, sensitivity: "broken", vibration: "yes", effects: null
   }));
+  gameWindow.localStorage.setItem(api.keys.settings, JSON.stringify({ music: 900, fx: -40, sensitivity: "broken", vibration: "yes", effects: null, difficulty: "imposible" }));
   assert.equal(api.getUnlocked(), 1);
   assert.deepEqual({ ...api.getStars() }, { 1: 3, 3: 2 });
   assert.deepEqual({ ...api.getLevelBest() }, { 2: 900 });
   assert.deepEqual({ ...api.loadSettings() }, {
-    music: 100, fx: 0, sensitivity: 100, autoFire: false, vibration: true, reduceEffects: false, effectsQuality: "normal", flightTutorial: null, effects: true
+    music: 100, fx: 0, sensitivity: 100, autoFire: false, vibration: true, reduceEffects: false, effectsQuality: "normal", difficulty: "normal", flightTutorial: null, effects: true
   });
   gameWindow.localStorage.setItem("neonCatcher.atlasAutoFire.v1", "true");
   assert.equal(api.loadSettings().autoFire, false, "El antiguo AUTO predeterminado no autoriza el nuevo ajuste");

@@ -25,6 +25,7 @@ var NeonCampaign = (() => {
     CHRONOS_VOYAGE_STAGES: () => CHRONOS_VOYAGE_STAGES,
     CLASSIC_PURSUIT_VERSION: () => CLASSIC_PURSUIT_VERSION,
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
+    DIFFICULTY_MODES: () => DIFFICULTY_MODES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
@@ -73,6 +74,7 @@ var NeonCampaign = (() => {
     getChronosIntroPose: () => getChronosIntroPose,
     getVoyageFicha: () => getVoyageFicha,
     getVoyageStageRules: () => getVoyageStageRules,
+    getVoyageStageRulesFor: () => getVoyageStageRulesFor,
     getVoyageTransitionPresentation: () => getVoyageTransitionPresentation,
     guardianAtlasAnimation: () => guardianAtlasAnimation,
     hitClassicProjectile: () => hitClassicProjectile,
@@ -81,6 +83,7 @@ var NeonCampaign = (() => {
     normalizeChronosChapterCheckpoint: () => normalizeChronosChapterCheckpoint,
     normalizeChronosVoyageCheckpoint: () => normalizeChronosVoyageCheckpoint,
     normalizeClassicEquipment: () => normalizeClassicEquipment,
+    normalizeDifficulty: () => normalizeDifficulty,
     normalizeShipLoadout: () => normalizeShipLoadout,
     prepareClassicTwin: () => prepareClassicTwin,
     releaseCometShowerItem: () => releaseCometShowerItem,
@@ -2318,6 +2321,73 @@ var NeonCampaign = (() => {
     }
   });
 
+  // src/game/progression/difficulty.js
+  var freeze2 = Object.freeze;
+  var DIFFICULTY_MODES = freeze2({
+    facil: freeze2({
+      id: "facil",
+      label: "F\xE1cil",
+      note: "Menos enemigos y da\xF1o; para disfrutar la historia",
+      pressure: 0.72,
+      capDelta: -1,
+      damage: 0.6,
+      bossHealth: 0.67,
+      repairEarlier: 4
+    }),
+    normal: freeze2({
+      id: "normal",
+      label: "Normal",
+      note: "La experiencia prevista",
+      pressure: 1,
+      capDelta: 0,
+      damage: 1,
+      bossHealth: 1,
+      repairEarlier: 0
+    }),
+    hardcore: freeze2({
+      id: "hardcore",
+      label: "Hardcore",
+      note: "M\xE1s enemigos, m\xE1s r\xE1pidos y m\xE1s da\xF1o; sin descanso",
+      pressure: 1.18,
+      capDelta: 1,
+      damage: 1.25,
+      bossHealth: 1.3,
+      repairEarlier: -6
+    })
+  });
+  var DIFFICULTY_DEFAULT = "normal";
+  var normalizeDifficulty = (value) => DIFFICULTY_MODES[value] ? value : DIFFICULTY_DEFAULT;
+  var voyageNumber = (ficha) => (Math.max(1, ficha?.sector || 1) - 1) * 5 + Math.max(1, ficha?.number || 1);
+  function voyagePressure(number) {
+    const n = Math.max(1, Math.trunc(Number(number) || 1));
+    return Math.min(3, 1 + 0.07 * Math.min(n - 1, 9) + 0.03 * Math.max(0, n - 10));
+  }
+  var stagePressure = (rules) => (rules.patrol ? rules.patrol.cap / rules.patrol.gap : 0) + rules.hazards.cap / ((rules.hazards.gap[0] + rules.hazards.gap[1]) / 2);
+  function calibrate(stageRules, { voyage = 1, reference }) {
+    const mean = stageRules.reduce((sum, rules) => sum + stagePressure(rules), 0) / stageRules.length;
+    return voyage === 1 ? 1 : reference * voyagePressure(voyage) / mean;
+  }
+  var DIFFICULTY_LIMITS = freeze2({ patrolGapMin: 5, patrolCapMax: 4, hazardGapMin: 0.45, hazardCapMax: 6, speedMax: 1.3 });
+  function applyDifficulty(rules, { factor = 1, mode = DIFFICULTY_DEFAULT } = {}) {
+    if (!rules) return rules;
+    const settings = DIFFICULTY_MODES[normalizeDifficulty(mode)];
+    const pressure = factor * settings.pressure;
+    if (pressure === 1 && settings.capDelta === 0 && settings.repairEarlier === 0) return rules;
+    const patrol = rules.patrol && freeze2({
+      ...rules.patrol,
+      cap: Math.max(1, Math.min(DIFFICULTY_LIMITS.patrolCapMax, rules.patrol.cap + settings.capDelta)),
+      gap: Math.max(Math.min(rules.patrol.gap, DIFFICULTY_LIMITS.patrolGapMin), rules.patrol.gap / pressure)
+    });
+    const hazards = rules.hazards && freeze2({
+      ...rules.hazards,
+      gap: freeze2(rules.hazards.gap.map((value) => Math.max(DIFFICULTY_LIMITS.hazardGapMin, value / pressure))),
+      cap: Math.max(1, Math.min(DIFFICULTY_LIMITS.hazardCapMax, rules.hazards.cap + settings.capDelta)),
+      speed: freeze2(rules.hazards.speed.map((value) => Math.round(value * Math.min(DIFFICULTY_LIMITS.speedMax, Math.sqrt(pressure)))))
+    });
+    const repairAt = rules.repairAt === null ? null : Math.max(6, rules.repairAt - settings.repairEarlier);
+    return freeze2({ ...rules, patrol, hazards, repairAt });
+  }
+
   // src/game/progression/voyages/s1-v2-gaia-outer-net.js
   var immutable3 = (object2) => Object.freeze(object2);
   var ROSTERS2 = immutable3({
@@ -3166,51 +3236,60 @@ var NeonCampaign = (() => {
   var PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter((ficha) => ficha.playable !== false));
   var byRoute = new Map(VOYAGES.map((ficha) => [ficha.routeId, ficha]));
   var getVoyageFicha = (routeId) => byRoute.get(routeId) || null;
+  var rulesOf = (ficha) => ficha.encounters;
+  var REFERENCE = rulesOf(S1_V1_CHRONOS_GAIA).reduce((sum, rules) => sum + stagePressure(rules), 0) / S1_V1_CHRONOS_GAIA.encounters.length;
+  var FACTORS = new Map(VOYAGES.map((ficha) => [
+    ficha.routeId,
+    ficha === S1_V1_CHRONOS_GAIA ? 1 : calibrate(rulesOf(ficha), { voyage: voyageNumber(ficha), reference: REFERENCE })
+  ]));
+  function getVoyageStageRulesFor(routeId, stageNumber, mode = "normal") {
+    return applyDifficulty(getVoyageStageRules(routeId, stageNumber), { factor: FACTORS.get(routeId) ?? 1, mode });
+  }
   function getVoyageStageRules(routeId, stageNumber) {
     return getVoyageFicha(routeId)?.encounters[stageNumber - 1] || null;
   }
 
   // src/game/progression/sector-map.js
-  var freeze2 = Object.freeze;
-  var SECTOR_MAPS = freeze2({
-    1: freeze2({
+  var freeze3 = Object.freeze;
+  var SECTOR_MAPS = freeze3({
+    1: freeze3({
       id: 1,
       title: "SECTOR 1 \xB7 HUIDA DE CHRONOS",
-      places: freeze2([
-        freeze2({ id: "chronos", label: "Chronos", note: "Estaci\xF3n en ruinas", kind: "ruin", x: 0.16, y: 0.07 }),
-        freeze2({ id: "baliza", label: "Baliza exterior", kind: "waypoint", x: 0.8, y: 0.24 }),
-        freeze2({ id: "anillo", label: "Anillo de sat\xE9lites", kind: "waypoint", x: 0.2, y: 0.41 }),
-        freeze2({ id: "orbita", label: "\xD3rbita alta", kind: "waypoint", x: 0.8, y: 0.57 }),
-        freeze2({ id: "nocturno", label: "Lado nocturno", kind: "waypoint", x: 0.22, y: 0.72 }),
-        freeze2({ id: "gaia", label: "Gaia Nova", note: "Base \xB7 Iria", kind: "base", actor: "iria", x: 0.76, y: 0.86 }),
-        freeze2({ id: "c9", label: "Taller C9", note: "Base m\xF3vil \xB7 Mira", kind: "base", actor: "mira", x: 0.88, y: 0.4 })
+      places: freeze3([
+        freeze3({ id: "chronos", label: "Chronos", note: "Estaci\xF3n en ruinas", kind: "ruin", x: 0.16, y: 0.07 }),
+        freeze3({ id: "baliza", label: "Baliza exterior", kind: "waypoint", x: 0.8, y: 0.24 }),
+        freeze3({ id: "anillo", label: "Anillo de sat\xE9lites", kind: "waypoint", x: 0.2, y: 0.41 }),
+        freeze3({ id: "orbita", label: "\xD3rbita alta", kind: "waypoint", x: 0.8, y: 0.57 }),
+        freeze3({ id: "nocturno", label: "Lado nocturno", kind: "waypoint", x: 0.22, y: 0.72 }),
+        freeze3({ id: "gaia", label: "Gaia Nova", note: "Base \xB7 Iria", kind: "base", actor: "iria", x: 0.76, y: 0.86 }),
+        freeze3({ id: "c9", label: "Taller C9", note: "Base m\xF3vil \xB7 Mira", kind: "base", actor: "mira", x: 0.88, y: 0.4 })
       ]),
-      routes: freeze2([
-        freeze2({ voyage: "S1-V1", title: "Escapa de Chronos", from: "chronos", to: "baliza" }),
-        freeze2({ voyage: "S1-V2", title: "Cruza la red exterior de Gaia", from: "baliza", to: "anillo" }),
-        freeze2({ voyage: "S1-V3", title: "Escolta a los evacuados", from: "anillo", to: "orbita" }),
-        freeze2({ voyage: "S1-V4", title: "Sigue la se\xF1al falsa", from: "orbita", to: "nocturno" }),
-        freeze2({ voyage: "S1-V5", title: "Convence a Atlas", from: "nocturno", to: "gaia" })
+      routes: freeze3([
+        freeze3({ voyage: "S1-V1", title: "Escapa de Chronos", from: "chronos", to: "baliza" }),
+        freeze3({ voyage: "S1-V2", title: "Cruza la red exterior de Gaia", from: "baliza", to: "anillo" }),
+        freeze3({ voyage: "S1-V3", title: "Escolta a los evacuados", from: "anillo", to: "orbita" }),
+        freeze3({ voyage: "S1-V4", title: "Sigue la se\xF1al falsa", from: "orbita", to: "nocturno" }),
+        freeze3({ voyage: "S1-V5", title: "Convence a Atlas", from: "nocturno", to: "gaia" })
       ])
     }),
-    2: freeze2({
+    2: freeze3({
       id: 2,
       title: "SECTOR 2 \xB7 EL RASTRO DEL C-17",
-      places: freeze2([
-        freeze2({ id: "gaia", label: "Gaia Nova", note: "Paso libre", kind: "planet", x: 0.18, y: 0.07 }),
-        freeze2({ id: "borde", label: "Borde de Gaia", kind: "waypoint", x: 0.78, y: 0.24 }),
-        freeze2({ id: "carga", label: "Ruta de carga", kind: "waypoint", x: 0.2, y: 0.41 }),
-        freeze2({ id: "escoria", label: "Cintur\xF3n de escoria", kind: "waypoint", x: 0.8, y: 0.57 }),
-        freeze2({ id: "orbita-vulkar", label: "\xD3rbita de Vulkar", kind: "waypoint", x: 0.22, y: 0.72 }),
-        freeze2({ id: "vulkar", label: "Forjas de Vulkar", note: "Tit\xE1n de Vulkar", kind: "planet", x: 0.74, y: 0.86 }),
-        freeze2({ id: "c9", label: "Taller C9", note: "Base m\xF3vil \xB7 Mira", kind: "base", actor: "mira", x: 0.88, y: 0.4 })
+      places: freeze3([
+        freeze3({ id: "gaia", label: "Gaia Nova", note: "Paso libre", kind: "planet", x: 0.18, y: 0.07 }),
+        freeze3({ id: "borde", label: "Borde de Gaia", kind: "waypoint", x: 0.78, y: 0.24 }),
+        freeze3({ id: "carga", label: "Ruta de carga", kind: "waypoint", x: 0.2, y: 0.41 }),
+        freeze3({ id: "escoria", label: "Cintur\xF3n de escoria", kind: "waypoint", x: 0.8, y: 0.57 }),
+        freeze3({ id: "orbita-vulkar", label: "\xD3rbita de Vulkar", kind: "waypoint", x: 0.22, y: 0.72 }),
+        freeze3({ id: "vulkar", label: "Forjas de Vulkar", note: "Tit\xE1n de Vulkar", kind: "planet", x: 0.74, y: 0.86 }),
+        freeze3({ id: "c9", label: "Taller C9", note: "Base m\xF3vil \xB7 Mira", kind: "base", actor: "mira", x: 0.88, y: 0.4 })
       ]),
-      routes: freeze2([
-        freeze2({ voyage: "S2-V1", title: "Sal de Gaia con paso libre", from: "gaia", to: "borde" }),
-        freeze2({ voyage: "S2-V2", title: "Sigue al C-17", from: "borde", to: "carga" }),
-        freeze2({ voyage: "S2-V3", title: "Cruza el cintur\xF3n de escoria", from: "carga", to: "escoria" }),
-        freeze2({ voyage: "S2-V4", title: "Responde a la llamada de Yara", from: "escoria", to: "orbita-vulkar" }),
-        freeze2({ voyage: "S2-V5", title: "Det\xE9n al Tit\xE1n de Vulkar", from: "orbita-vulkar", to: "vulkar" })
+      routes: freeze3([
+        freeze3({ voyage: "S2-V1", title: "Sal de Gaia con paso libre", from: "gaia", to: "borde" }),
+        freeze3({ voyage: "S2-V2", title: "Sigue al C-17", from: "borde", to: "carga" }),
+        freeze3({ voyage: "S2-V3", title: "Cruza el cintur\xF3n de escoria", from: "carga", to: "escoria" }),
+        freeze3({ voyage: "S2-V4", title: "Responde a la llamada de Yara", from: "escoria", to: "orbita-vulkar" }),
+        freeze3({ voyage: "S2-V5", title: "Det\xE9n al Tit\xE1n de Vulkar", from: "orbita-vulkar", to: "vulkar" })
       ])
     })
   });
@@ -3223,34 +3302,34 @@ var NeonCampaign = (() => {
     const routes = map.routes.map((route) => {
       const status = done.has(route.voyage) ? "done" : previousDone && canPlay.has(route.voyage) ? "open" : "locked";
       previousDone = status === "done";
-      return freeze2({ ...route, status });
+      return freeze3({ ...route, status });
     });
-    return freeze2({ ...map, open: !previous || done.has(previous.routes.at(-1).voyage), routes: freeze2(routes) });
+    return freeze3({ ...map, open: !previous || done.has(previous.routes.at(-1).voyage), routes: freeze3(routes) });
   }
 
   // src/game/narrative/base-dialogues.js
-  var freeze3 = Object.freeze;
-  var line = (text) => freeze3({ text });
-  var BASE_ACTORS = freeze3({
-    mira: freeze3({ id: "mira", name: "Mira", role: "Mec\xE1nica del taller C9" }),
-    iria: freeze3({ id: "iria", name: "Comandante Iria", role: "Mando de Gaia Nova" })
+  var freeze4 = Object.freeze;
+  var line = (text) => freeze4({ text });
+  var BASE_ACTORS = freeze4({
+    mira: freeze4({ id: "mira", name: "Mira", role: "Mec\xE1nica del taller C9" }),
+    iria: freeze4({ id: "iria", name: "Comandante Iria", role: "Mando de Gaia Nova" })
   });
-  var SCRIPTS = freeze3({
-    c9: freeze3({ actor: "mira", before: freeze3([
+  var SCRIPTS = freeze4({
+    c9: freeze4({ actor: "mira", before: freeze4([
       line("Llegas con el casco humeante y un registro que quema. T\xEDpico."),
       line("Tr\xE1eme chatarra de los restos y te dejo la nave como nueva."),
       line("Ese emisor gemelo de Chronos\u2026 si lo rescatas, puedo montarlo."),
       line("Y no me mires as\xED: el taller cobra, la guerra no paga facturas.")
-    ]), after: freeze3([
+    ]), after: freeze4([
       line("As\xED que Atlas te dej\xF3 pasar. Te debo una cena, piloto."),
       line("Si vas a Vulkar, vas a necesitar m\xE1s que un casco remendado."),
       line("Trae piezas. Yo pongo las manos.")
     ]) }),
-    gaia: freeze3({ actor: "iria", before: freeze3([
+    gaia: freeze4({ actor: "iria", before: freeze4([
       line("\u2026aqu\xED Gaia Nova. Su firma coincide con el convoy atacante."),
       line("Detenga los motores. Atlas tiene orden de bloquear el corredor."),
       line("Si trae pruebas, tendr\xE1 que llegar hasta Atlas con ellas.")
-    ]), after: freeze3([
+    ]), after: freeze4([
       line("El registro es aut\xE9ntico. Le pido disculpas, piloto."),
       line("El convoy C-17 sali\xF3 de Vulkar. Alguien pag\xF3 esas firmas."),
       line("Gaia le abre su corredor. Encuentre a quien lo pag\xF3.")
@@ -3259,7 +3338,7 @@ var NeonCampaign = (() => {
   function baseConversation(baseId, { atlasConvinced = false } = {}) {
     const script = SCRIPTS[baseId];
     if (!script) return null;
-    return freeze3({
+    return freeze4({
       baseId,
       actor: BASE_ACTORS[script.actor],
       lines: atlasConvinced ? script.after : script.before
