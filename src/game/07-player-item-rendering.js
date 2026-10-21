@@ -512,8 +512,10 @@
       const sourceX = frame * sourceWidth;
       const direction = item.flightComet ? Math.atan2(item.vy,item.vx) : Math.PI / 2;
       ctx.rotate(direction);
-      ctx.shadowBlur = 9;
-      ctx.shadowColor = "#8cdeff";
+      // Amenaza = cálido (DESIGN §9.1): el halo naranja la separa del CRONIUM cian.
+      ctx.fillStyle = "rgba(255,140,70,.3)"; ctx.beginPath(); ctx.arc(0, 0, item.r * 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = "#ff8a4f";
       // Authored +X comet: keep the nucleus at the physical item centre. The
       // long decorative tail has no collision and trails opposite velocity.
       ctx.drawImage(
