@@ -35,7 +35,9 @@ const HOOK = `window.__V2__={start:id=>startSideVoyage(id),status:()=>({state,cu
   await page.screenshot({path: `${out}-mapa.png`});
   const saved = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), saveKey);
   const v1After = await page.evaluate(() => localStorage.getItem('neonCatcher.chronosVoyage.v2'));
-  const routeDone = await page.locator(`.sector-route[data-voyage="${voyage}"]`).getAttribute('data-status');
+  // Si el sector del viaje aún no está abierto, el mapa muestra el sector 1.
+  const routeNode = page.locator(`.sector-route[data-voyage="${voyage}"]`);
+  const routeDone = await routeNode.count() ? await routeNode.getAttribute('data-status') : 'sector-cerrado';
   console.log(JSON.stringify({playing, finish, saved: {voyage: saved?.voyage, completed: saved?.completed, stage: saved?.checkpoint?.stageNumber}, v1Untouched: v1Before === v1After, routeDone, errors}, null, 1));
   await browser.close(); await server.close();
 })();
