@@ -56,7 +56,9 @@
   let maxCombo = 1;
   let comboTimer = 0;
   let collected = 0;
-  let currentLevel = Math.max(0, Math.min(LEVELS.length - 1, getUnlocked() - 1));
+  // Solo existe el nivel 0 (la campaña de viajes): los guardados antiguos con
+  // niveles clásicos desbloqueados ya no cambian el escenario del menú.
+  let currentLevel = 0;
   let continued = false;
   let shake = 0;
   let flash = 0;

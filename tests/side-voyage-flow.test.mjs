@@ -33,7 +33,7 @@ function harness({unlocked = '2', query = ''} = {}) {
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
   w.eval(core); w.eval(content);
-  const hook = `window.T={requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
+  const hook = `window.T={forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
@@ -66,11 +66,19 @@ test('replaying a finished voyage keeps it done on the map and keeps the next ro
   assert.equal(route('S1-V2'), 'done'); assert.equal(route('S1-V3'), 'open');
 });
 
-test('finishing a side voyage returns to the map with the flight HUD and fire button hidden', () => {
+test('finishing a side voyage shows its completion screen with the next voyage, and the HUD hidden', () => {
   const {w, T, route} = harness();
   T.startSideVoyage('S1-V2'); T.adv(1); T.finish();
-  assert.deepEqual([T.st().state, T.st().hud, T.st().fire], ['menu', false, false]);
-  assert.equal(w.document.getElementById('levelSelect').classList.contains('show'), true);
+  assert.deepEqual([T.st().state, T.st().hud, T.st().fire], ['complete', false, false]);
+  assert.equal(w.document.getElementById('complete').classList.contains('show'), true);
+  assert.match(w.document.getElementById('completeTitle').textContent, /S1-V2/);
+  assert.match(w.document.getElementById('nextLevel').textContent, /SIGUIENTE VIAJE: S1-V3/);
+  w.document.getElementById('replayLevel').click();
+  assert.deepEqual([T.st().state, T.st().side], ['playing', 'S1-V2'], 'Repeat replays the same voyage');
+  T.finish();
+  w.document.getElementById('nextLevel').click();
+  assert.deepEqual([T.st().state, T.st().side], ['playing', 'S1-V3'], 'Next starts the next voyage');
+  T.goHome(); T.buildLevelGrid();
   assert.equal(route('S1-V2'), 'done');
 });
 
@@ -141,5 +149,20 @@ test('classic levels are gone from the game: RUTA only shows the voyage map and 
   assert.ok(w.document.querySelector('.sector-route'));
   assert.match(w.document.getElementById('unlockedText').textContent, /^1\/10$/, 'only S1-V1 counts as done');
   w.document.getElementById('play').click();
-  assert.equal(T.st().side, 'S1-V2', 'Play never opens a classic level');
+  assert.equal(T.st().side, 'S1-V2', 'Play continues with the next voyage');
+});
+
+test('with every voyage done, Play opens the map and Next never starts a classic level', () => {
+  const {w, T} = harness({unlocked: '10'});
+  for (const id of ['S1-V2', 'S1-V3', 'S1-V4', 'S1-V5', 'S2-V1', 'S2-V2', 'S2-V3', 'S2-V4', 'S2-V5']) {
+    T.startSideVoyage(id); T.finish(); T.goHome();
+  }
+  assert.equal(T.level(), 0, 'old saves with classic levels unlocked start at level 0');
+  w.document.getElementById('play').click();
+  assert.equal(T.st().state, 'menu');
+  assert.equal(w.document.getElementById('levelSelect').classList.contains('show'), true, 'Play opens the map');
+  T.startLevel(0); T.forceComplete();
+  w.document.getElementById('nextLevel').click();
+  assert.equal(T.level(), 0, 'Next after replaying S1-V1 never opens classic level 2');
+  assert.equal(T.st().state, 'menu');
 });

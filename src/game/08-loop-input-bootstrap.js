@@ -369,15 +369,12 @@
   $("completeHome").onclick = goHome;
   $("retry").onclick = () => startLevel(currentLevel);
   $("replayLevel").onclick = () => startLevel(currentLevel);
+  // Tras cualquier viaje: el siguiente viaje del mapa o, si no queda
+  // ninguno, el mapa. Nunca un nivel clásico (ya no forman parte del juego).
   ui.nextLevel.onclick = () => {
-    if(currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
-      const nextVoyage=nextCampaignVoyage();
-      if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
-      startLevel(1);
-      showStoryTransmission("IRIA · MANDO GAIA","Tu autorización es válida. Sigue la señal por el corredor orbital; el registro apunta hacia Vulkar.",5.5);
-      return;
-    }
-    prepareLevel(Math.min(LEVELS.length - 1, currentLevel + 1), "complete");
+    const nextVoyage=nextCampaignVoyage();
+    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
+    goHome();buildLevelGrid();overlay(ui.levelSelect);
   };
 
   ui.musicVolume.oninput = (event) => {
