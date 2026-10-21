@@ -1968,6 +1968,9 @@
     // A different clock could announce a new corridor over an older curtain.
     const previousState=atlasBoss.state;
     NeonCampaign.advanceGuardianAtlas(atlasBoss, dt * (powers.slow > 0 ? .5 : 1), player, consumeAtlasEvent);
+    // En un viaje del mapa la victoria completa el viaje dentro del evento y
+    // retira a Atlas; no queda nada que actualizar en este fotograma.
+    if(!atlasBoss)return;
     if(atlasBoss.state==="charge"&&previousState!=="charge")combatSound("atlas-charge",atlasBoss.x);
     if (state !== "playing") return;
     atlasFireTimer = Math.max(0, atlasFireTimer - dt);

@@ -17,7 +17,7 @@ const plain = value => JSON.parse(JSON.stringify(value));
  * obstacles and pilots the ship in memory to isolate boss lifecycle/save rules.
  * The separate Chromium test never uses these mutations.
  */
-function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], failEquipmentWrite = false} = {}) {
+function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], failEquipmentWrite = false, failBackupWrite = false} = {}) {
   const dom = new JSDOM(html, {url: `https://neon.test/${campaign ? '?campaign=' + campaign : ''}`,
     runScripts: 'outside-only', pretendToBeVisual: true});
   t.after(() => dom.window.close());
@@ -57,6 +57,7 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
   window.Storage.prototype.setItem = function(key, value) {
     if (equipmentWriteBlocked && key === 'neonCatcher.flightEquipment.v1') throw new Error('Fixture: equipment save interrupted');
     if (salvageWriteBlocked && key === 'neonCatcher.classicSalvage.v1') throw new Error('Fixture: missile save interrupted');
+    if (failBackupWrite && key === 'neonCatcher.flightEquipment.v1:invalid-backups') throw new Error('Fixture: backup refused');
     return storageWrite.call(this, key, value);
   };
   window.eval(core); window.eval(content);
@@ -79,6 +80,13 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
     prepare(index=0) {
       startLevel(index); warpTimer=0; spawnTimer=999; classicScoutTimer=999;
       items=[]; gates=[];
+    },
+    // S1-V5 (viaje del mapa con Atlas), desde la entrada del tramo pedido.
+    prepareAtlasVoyage(stage=8) {
+      classicSideVoyagePending=NeonCampaign.getVoyageFicha(NeonCampaign.VOYAGES.find(item=>item.id==='S1-V5').routeId);
+      classicVoyageRequestedStage=stage;
+      startLevel(0);warpTimer=0;spawnTimer=999;classicScoutTimer=999;
+      items=[];gates=[];
     },
     prepareFresh(index=0) {
       if(index===0){classicVoyageRecord=null;classicVoyageRequestedStage=1;}
@@ -136,7 +144,7 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
       player.x=player.target=best;
       update(dt);
     },
-    snapshot:()=>({state,hull,score,collected,ammo,manualShotCooldown,currentLevel,runToken,
+    snapshot:()=>({state,hull,score,collected,side:classicSideVoyage?.ficha.id||null,ammo,manualShotCooldown,currentLevel,runToken,
       elapsed,unlocked:getUnlocked(),stars:getStars(),continued,autoFire:settings.autoFire,slow:powers.slow,
       flight:classicFlightView?{elapsed:classicFlightView.elapsed,stageElapsed:classicFlightView.stageElapsed,canFinish:classicFlightView.canFinish}:null,
       chapter:classicChapterView?JSON.parse(JSON.stringify(classicChapterView)):null,
@@ -159,7 +167,8 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
     while (snapshot().collected < 36) api.collectEnergy();
     for(let frame=0;frame<60*40&&!snapshot().boss;frame++)api.isolatedFrame(1/60);
     assert.ok(snapshot().boss, 'The fixture must reach route end plus quota before Atlas starts');
-    assert.equal(snapshot().flight.elapsed,360);
+    assert.equal(snapshot().flight.canFinish,true);
+    if(!snapshot().side)assert.equal(snapshot().flight.elapsed,360);
     return snapshot();
   }
   // The twenty-round magazine remains finite outside Atlas. During Atlas,
@@ -577,4 +586,16 @@ test('slow time shares the real Atlas and projectile clock before firing another
   assert.deepEqual([...clearedIds].sort(),[...emittedIds].sort(),
     `Every actual previous projectile must be observed passing the full tail before another pattern is prepared; vanished=${JSON.stringify(vanished)}`);
   assert.equal(h.pending.size, 1);
+});
+
+test('winning Atlas in S1-V5 completes the map voyage without an exception in the same frame', t => {
+  const h=harness(t);
+  h.api.prepareAtlasVoyage();assert.equal(h.snapshot().side,'S1-V5');
+  h.collectGoal();
+  h.until(q=>q.boss?.disabled,60*240,true);
+  const finished=h.until(q=>q.state==='complete');
+  assert.equal(finished.boss,null,'The victory retires Atlas inside its own event');
+  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')).completed,true);
+  for(let frame=0;frame<30;frame++)h.api.update(1/60);
+  assert.equal(h.snapshot().state,'complete');assert.equal(h.pending.size,1);
 });
