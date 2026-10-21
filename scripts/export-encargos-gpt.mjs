@@ -12,23 +12,25 @@ import {join} from 'node:path';
 const folder = process.argv[2];
 if (!folder) throw new Error('Uso: node scripts/export-encargos-gpt.mjs <carpeta-con-las-tareas>');
 const BAUL = 'https://neon-cronium-video-referencia.chictide18.chatgpt.site';
+const OUT = new URL('../docs/art/', import.meta.url);
 const RAW = 'https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/continuity-assets-audit-20261013/docs/art';
 
 const tasks = [];
 for (const name of (await readdir(folder)).filter(file => file.endsWith('.json')).sort()) {
   const doc = JSON.parse(await readFile(join(folder, name), 'utf8'));
   const data = doc.data || doc;
-  if (data.prompt && data.estado !== 'hecho') tasks.push({id: doc.id || name.replace(/\.json$/, ''), ...data});
+  if (data.prompt && data.estado !== 'hecho') tasks.push({...data, id: String(doc.id || name.replace(/\.json$/, ''))});
 }
-tasks.sort((a, b) => (a.prioridad || 2) - (b.prioridad || 2) || a.id.localeCompare(b.id));
+tasks.sort((a, b) => (a.prioridad ?? 2) - (b.prioridad ?? 2) || a.id.localeCompare(b.id));
 
+const oneLine = text => String(text).replace(/\s*\n\s*/g, ' ');
 const encargos = tasks.map(task => ({
-  id: task.id, titulo: task.titulo, prioridad: task.prioridad || 2,
-  archivo: `encargo-${task.id}-v1.png`, prompt: task.prompt, nota: task.nota || ''
+  id: task.id, titulo: oneLine(task.titulo || task.id), prioridad: task.prioridad ?? 2,
+  archivo: `encargo-${task.id}-v1.png`, prompt: task.prompt, nota: oneLine(task.nota || '')
 }));
 const updated = new Date().toISOString().slice(0, 10);
 
-await writeFile(join('docs/art', 'encargos-gpt.json'), JSON.stringify({
+await writeFile(new URL('encargos-gpt.json', OUT), JSON.stringify({
   proyecto: 'NEON CRONIUM', actualizado: updated, baul: BAUL,
   instrucciones: 'Genera cada encargo por orden de prioridad (1 primero), súbelo al baúl con el nombre de "archivo" en la carpeta encargos/ y añádelo a catalog.json con el campo "encargo" igual a su id. Si un encargo pide varias imágenes, numéralas: encargo-<id>-v1-1.png, -2.png… No cambies medidas, rejilla ni el fondo que pide cada prompt.',
   encargos
@@ -46,8 +48,10 @@ const md = [`# Encargos de arte para GPT · NEON CRONIUM`, '',
 for (const item of encargos) {
   md.push(`## ${item.titulo}`, '', `- **Id:** \`${item.id}\` · **Prioridad:** ${item.prioridad} · **Archivo:** \`${item.archivo}\``);
   if (item.nota) md.push(`- **Para qué:** ${item.nota}`);
-  md.push('', '```text', item.prompt, '```', '');
+  // Valla más larga que cualquier serie de ` del prompt, para que no cierre el bloque.
+  const fence = '`'.repeat(Math.max(3, ...(item.prompt.match(/`+/g) || []).map(run => run.length + 1)));
+  md.push('', fence + 'text', item.prompt, fence, '');
 }
 if (!encargos.length) md.push('No hay encargos pendientes.', '');
-await writeFile(join('docs/art', 'ENCARGOS_GPT.md'), md.join('\n'));
+await writeFile(new URL('ENCARGOS_GPT.md', OUT), md.join('\n'));
 console.log(`${encargos.length} encargos → docs/art/ENCARGOS_GPT.md y docs/art/encargos-gpt.json`);
