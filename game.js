@@ -1412,8 +1412,8 @@
       syncClassicFlightHud();ui.classicC9?.focus({preventScroll:true});return;
     }
     if(flightDockReturn==="voyage"){resumeClassicVoyageService();return;}
-    if(flightDockReturn==="complete")prepareLevel(Math.min(LEVELS.length-1,currentLevel+1),"complete");
-    else {goHome();$("openFlightDock")?.focus();}
+    // Sin niveles clásicos: volver de la Forja nunca abre la ficha de otro nivel.
+    goHome();$("openFlightDock")?.focus();
   }
 
   function setC9Label(button,text) {
@@ -1833,7 +1833,8 @@
     atlasBoss=null;ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
     hideWarning();hideStoryTransmission();
     ui.hud.classList.add("hidden");ui.powerHud.classList.add("hidden");ui.fire.classList.add("hidden");ui.banner.classList.remove("show");
-    registerRun();
+    // Sin registerRun: contar partidas cambia la frecuencia de anuncios y eso
+    // lo decide el propietario (tablero, revisión del PR #32).
     const next=nextCampaignVoyage();
     ui.completeLabel.textContent=`VIAJE COMPLETADO · SECTOR ${ficha.sector}`;
     ui.completeTitle.textContent=`${ficha.id} · ${ficha.title}`;
@@ -2362,7 +2363,7 @@
     pendingLevel = clamp(index, 0, getUnlocked() - 1);
     briefingReturn = returnTo;
     const lv = LEVELS[pendingLevel];
-    ui.briefingSector.textContent = `NIVEL ${pendingLevel + 1}`;
+    ui.briefingSector.textContent = "VIAJE S1-V1";
     ui.briefingName.textContent = lv.name;
     ui.briefingZone.textContent = `${lv.world} · ${lv.zone}`;
     ui.briefingGoal.textContent = `${lv.goal} CRONIUM`;
@@ -6261,7 +6262,9 @@
   ui.nextLevel.onclick = () => {
     const nextVoyage=nextCampaignVoyage();
     if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
-    goHome();buildLevelGrid();overlay(ui.levelSelect);
+    // El mapa se abre en el sector del viaje recién hecho.
+    const sector=classicSideVoyage?.ficha.sector||1;
+    goHome();sectorMapShown=sector;buildLevelGrid();overlay(ui.levelSelect);
   };
 
   ui.musicVolume.oninput = (event) => {
@@ -6363,7 +6366,7 @@
   }
 
   recoverCampaignCompletion();
-  currentLevel=Math.max(0,Math.min(LEVELS.length-1,getUnlocked()-1));
+  currentLevel=0; // solo existe la campaña de viajes (nivel 0)
   setupClassicFlight();
   setupClassicMissileInput();
   resizeCanvas();

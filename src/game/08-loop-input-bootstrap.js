@@ -374,7 +374,9 @@
   ui.nextLevel.onclick = () => {
     const nextVoyage=nextCampaignVoyage();
     if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
-    goHome();buildLevelGrid();overlay(ui.levelSelect);
+    // El mapa se abre en el sector del viaje recién hecho.
+    const sector=classicSideVoyage?.ficha.sector||1;
+    goHome();sectorMapShown=sector;buildLevelGrid();overlay(ui.levelSelect);
   };
 
   ui.musicVolume.oninput = (event) => {
@@ -476,7 +478,7 @@
   }
 
   recoverCampaignCompletion();
-  currentLevel=Math.max(0,Math.min(LEVELS.length-1,getUnlocked()-1));
+  currentLevel=0; // solo existe la campaña de viajes (nivel 0)
   setupClassicFlight();
   setupClassicMissileInput();
   resizeCanvas();

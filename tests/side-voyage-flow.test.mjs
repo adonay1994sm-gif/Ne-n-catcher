@@ -154,10 +154,10 @@ test('classic levels are gone from the game: RUTA only shows the voyage map and 
 
 test('with every voyage done, Play opens the map and Next never starts a classic level', () => {
   const {w, T} = harness({unlocked: '10'});
+  assert.equal(T.level(), 0, 'old saves with classic levels unlocked start at level 0');
   for (const id of ['S1-V2', 'S1-V3', 'S1-V4', 'S1-V5', 'S2-V1', 'S2-V2', 'S2-V3', 'S2-V4', 'S2-V5']) {
     T.startSideVoyage(id); T.finish(); T.goHome();
   }
-  assert.equal(T.level(), 0, 'old saves with classic levels unlocked start at level 0');
   w.document.getElementById('play').click();
   assert.equal(T.st().state, 'menu');
   assert.equal(w.document.getElementById('levelSelect').classList.contains('show'), true, 'Play opens the map');
@@ -165,4 +165,5 @@ test('with every voyage done, Play opens the map and Next never starts a classic
   w.document.getElementById('nextLevel').click();
   assert.equal(T.level(), 0, 'Next after replaying S1-V1 never opens classic level 2');
   assert.equal(T.st().state, 'menu');
+  assert.equal(w.document.getElementById('levelSelect').classList.contains('show'), true, 'it opens the map instead');
 });
