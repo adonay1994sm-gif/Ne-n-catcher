@@ -295,7 +295,7 @@
       // origen arriba en el centro; se orienta hacia detrás de la nave.
       const trailAtlas = SPRITES.cronosPrimeTrail, back = prime.heading + Math.PI;
       const length = size * 2.4 * prime.trail, width = length * .5;
-      const cell = trailAtlas.naturalWidth / 4, frame = Math.floor(elapsed * 12) % 4;
+      const cell = trailAtlas.naturalWidth / 4, frame = settings.reduceEffects ? 0 : Math.floor(elapsed * 12) % 4;
       ctx.save(); ctx.translate(x + Math.cos(back) * size * .18, y + Math.sin(back) * size * .18);
       ctx.rotate(back - Math.PI / 2); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, prime.trail * 1.2);
       ctx.drawImage(trailAtlas, frame * cell, 0, cell, trailAtlas.naturalHeight, -width / 2, 0, width, length);

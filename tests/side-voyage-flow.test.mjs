@@ -33,7 +33,7 @@ function harness({unlocked = '2', query = ''} = {}) {
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
   w.eval(core); w.eval(content);
-  const hook = `window.T={forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
+  const hook = `window.T={effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
@@ -238,4 +238,14 @@ test('S1-V1 adds no stars until it is done, even with old stars saved', () => {
   w.localStorage.setItem('neon-stars-v2', JSON.stringify({1: 3}));
   T.goHome();
   assert.equal(w.document.getElementById('totalStars').textContent, '0/30');
+});
+
+test('a hull hit shows the painted sparks, and with effects off keeps the old hit', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5);
+  T.hit(5);
+  assert.equal(T.effects().filter(effect => effect.hullSparks).length, 1);
+  T.setEffects(false); T.adv(1);
+  T.hit(5);
+  assert.equal(T.effects().filter(effect => effect.hullSparks).length, 0, 'the first sparks faded and no new ones appear with effects off');
 });

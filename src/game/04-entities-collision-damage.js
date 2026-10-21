@@ -514,7 +514,8 @@
     flash = 0.26;
     // Golpe al casco: chispas pintadas (baúl, encargo a05) hacia el lado del
     // impacto. El aro rosa con puntos antiguo queda solo si la hoja no cargó.
-    if (typeof spriteReady === "function" && spriteReady(SPRITES.hullSparks)) addHullSparks(x, y, impactAngle);
+    // Sin efectos (ajustes) se queda el golpe antiguo, que ya respeta la calidad.
+    if (typeof spriteReady === "function" && settings.effects !== false && spriteReady(SPRITES.hullSparks)) addHullSparks(x, y, impactAngle);
     else { burst(x, y, 28, "red"); pulseRing(x, y, "#ff496f", 110, 0.48); }
     addImpactEffect(x, y, 1.05, impactAngle);
     combatSound("hull-hit",x);

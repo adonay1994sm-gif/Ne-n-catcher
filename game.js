@@ -2397,7 +2397,7 @@
     buildChronosStageGrid();
     // El inicio de Chronos empieza a cargar al abrir la ficha, no al despegar.
     if(pendingLevel===0)[SPRITES.chronosIntroStation,SPRITES.chronosIntroFragments,SPRITES.cronosPrimeVideo,
-      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx].forEach(ensureSprite);
+      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeTrail].forEach(ensureSprite);
     overlay(ui.briefing);
   }
 
@@ -3399,7 +3399,8 @@
     flash = 0.26;
     // Golpe al casco: chispas pintadas (baúl, encargo a05) hacia el lado del
     // impacto. El aro rosa con puntos antiguo queda solo si la hoja no cargó.
-    if (typeof spriteReady === "function" && spriteReady(SPRITES.hullSparks)) addHullSparks(x, y, impactAngle);
+    // Sin efectos (ajustes) se queda el golpe antiguo, que ya respeta la calidad.
+    if (typeof spriteReady === "function" && settings.effects !== false && spriteReady(SPRITES.hullSparks)) addHullSparks(x, y, impactAngle);
     else { burst(x, y, 28, "red"); pulseRing(x, y, "#ff496f", 110, 0.48); }
     addImpactEffect(x, y, 1.05, impactAngle);
     combatSound("hull-hit",x);
@@ -4332,7 +4333,7 @@
       // origen arriba en el centro; se orienta hacia detrás de la nave.
       const trailAtlas = SPRITES.cronosPrimeTrail, back = prime.heading + Math.PI;
       const length = size * 2.4 * prime.trail, width = length * .5;
-      const cell = trailAtlas.naturalWidth / 4, frame = Math.floor(elapsed * 12) % 4;
+      const cell = trailAtlas.naturalWidth / 4, frame = settings.reduceEffects ? 0 : Math.floor(elapsed * 12) % 4;
       ctx.save(); ctx.translate(x + Math.cos(back) * size * .18, y + Math.sin(back) * size * .18);
       ctx.rotate(back - Math.PI / 2); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, prime.trail * 1.2);
       ctx.drawImage(trailAtlas, frame * cell, 0, cell, trailAtlas.naturalHeight, -width / 2, 0, width, length);
