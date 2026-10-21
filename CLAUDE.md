@@ -66,6 +66,21 @@ Si algo falla por el cambio, se deshace ese commit y se anota.
   o "sin comprobar".
 - Progreso de la preparación de publicación: `docs/publicacion/PROGRESO.md`.
 
+## Tablero, baúl y revisiones (orden del propietario, 21/10/2026)
+
+- **Tablero del proyecto:** https://claude.ai/artifact/MgQvtqMaPSzRLsTMJgCUMy
+  (organigrama con lo hecho, en curso, pendiente y decisiones del
+  propietario; colección `tareas`). Cada cambio que se implementa se marca
+  allí, y **todo lo que se encuentra y no se termina se añade** como tarea
+  hasta que esté hecho.
+- **Cada necesidad visual lleva su prompt para GPT** en la tarea (campo
+  `prompt`, reglas de `DESIGN.md` §13). El propietario lo genera con GPT.
+- **Baúl de assets:** https://neon-cronium-video-referencia.chictide18.chatgpt.site
+  (`catalog.json`). El propietario sube ahí lo que hace GPT; revisarlo al
+  empezar cada trabajo y usar lo nuevo.
+- **Tras cada actualización de la rama** (PR fusionado), pasar una revisión
+  de `auditor-codigo` sobre ese cambio y llevar sus hallazgos al tablero.
+
 ## Cuatro reglas antes de programar
 
 Adaptadas de [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)

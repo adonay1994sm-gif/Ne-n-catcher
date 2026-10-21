@@ -879,15 +879,35 @@
     // Un tramo elegido en la ficha de S1-V1 no se arrastra a otro viaje.
     classicVoyageRequestedStage=null;classicSideVoyagePending=ficha;startLevel(0);return true;
   }
+  // Pantalla de completado de un viaje del mapa: misma pantalla que S1-V1,
+  // con su puntuación y «Siguiente viaje». La ficha se conserva mientras se
+  // ve, para que «Repetir» vuelva a lanzar este mismo viaje.
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
     const saved=saveSideVoyage(classicFlight.exportCheckpoint(),true);
-    classicSideVoyage=null;
-    if(classicWeapons)NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);
-    // Misma limpieza que volver al menú (HUD, disparo, Atlas, avisos) y luego el mapa.
-    goHome();
-    sectorMapShown=ficha.sector;buildLevelGrid();overlay(ui.levelSelect);
-    if(saved)toast(`${ficha.id} · ${ficha.title}: viaje completado.`);
+    if (typeof resetGameInput === "function") resetGameInput();
+    runToken += 1;cancelSupplyFailureTimer();
+    setState("complete");setClassicFlightHudVisible(false);
+    if(classicWeapons){classicWeapons.projectiles.length=0;NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);}
+    atlasBoss=null;ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
+    hideWarning();hideStoryTransmission();
+    ui.hud.classList.add("hidden");ui.powerHud.classList.add("hidden");ui.fire.classList.add("hidden");ui.banner.classList.remove("show");
+    registerRun();
+    const next=nextCampaignVoyage();
+    ui.completeLabel.textContent=`VIAJE COMPLETADO · SECTOR ${ficha.sector}`;
+    ui.completeTitle.textContent=`${ficha.id} · ${ficha.title}`;
+    if(ui.completeVisual)ui.completeVisual.dataset.scene=ficha.sector===2?"belt":"rift";
+    ui.starsAwarded.innerHTML="";
+    ui.levelScore.textContent=Math.max(0,Math.floor(score));
+    ui.levelHull.textContent=`${Math.ceil(hull)}%`;
+    ui.maxCombo.textContent=`x${maxCombo}`;
+    ui.unlockMessage.textContent=!saved?"No se pudo guardar el viaje en este dispositivo."
+      :next?`Siguiente: ${next.voyage} · ${next.title}.`:"Has completado todos los viajes disponibles.";
+    ui.nextLevel.classList.remove("hidden");
+    ui.nextLevel.textContent=next?`SIGUIENTE VIAJE: ${next.voyage} →`:"VER EL MAPA →";
+    overlay(ui.complete);
+    tone(760,.12,"triangle",.08);setTimeout(()=>tone(980,.18,"sine",.07),120);vibrate([30,40,70]);
+    updateMenu();
   }
 
   function setupAtlasEncounter() {
@@ -1159,7 +1179,6 @@
   }
 
   function updateMenu() {
-    const target = 0;
 
     ui.best.textContent = bestScore();
     // El progreso del menú cuenta los viajes de la campaña, no los niveles.
@@ -1171,8 +1190,7 @@
     ui.campaignPercent.textContent = `${voyagePercent}%`;
     ui.campaignFill.style.width = `${voyagePercent}%`;
     ui.playLabel.textContent = "CONTINUAR VIAJE";
-    ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
-    if(target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
+    ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
     const nextVoyage=classicVoyageRecord&&!classicVoyageRecord.completed?null:nextCampaignVoyage();
     if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
@@ -1512,7 +1530,7 @@
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     let voyageEntry=null,voyageCheckpoint=null;
     // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
-    const sideFicha=classicSideVoyagePending||(["paused","gameover"].includes(state)?classicSideVoyage?.ficha:null);
+    const sideFicha=classicSideVoyagePending||(["paused","gameover","complete"].includes(state)?classicSideVoyage?.ficha:null);
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){
@@ -1789,12 +1807,11 @@
       ?"CRUZAR HACIA GAIA NOVA →":"SIGUIENTE NIVEL →";
     if(currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
-      ui.completeLabel.textContent="NIVEL 1 · FRONTERA DE GAIA ABIERTA";
+      ui.completeLabel.textContent="VIAJE COMPLETADO · S1-V1";
       ui.completeTitle.textContent="El registro ha llegado a Gaia";
       ui.unlockMessage.textContent="IRIA · MANDO ORBITAL: El convoy utilizó tu identificación. El registro demuestra el sabotaje. Tienes autorización de recuperación; la siguiente señal procede de Vulkar.";
-      ui.nextLevel.textContent="CONTINUAR POR EL PERÍMETRO DE GAIA →";
       const nextVoyage=nextCampaignVoyage();
-      if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.nextLevel.textContent=`SIGUIENTE VIAJE: ${nextVoyage.voyage} →`;
+      ui.nextLevel.textContent=nextVoyage&&nextVoyage.voyage!=="S1-V1"?`SIGUIENTE VIAJE: ${nextVoyage.voyage} →`:"VER EL MAPA →";
     }
     if(isAtlasMission()&&atlasBoss?.resolved&&progressSaved)ui.unlockMessage.textContent+=" Segundo cañón autorizado: Gemelo ×2 disponible en el taller.";
     overlay(ui.complete);
