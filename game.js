@@ -4079,6 +4079,9 @@
   }
 
   function drawSectorEnvironment(t, lv) {
+    // Con un planeta pintado en el cielo no se dibujan las figuras vectoriales
+    // antiguas (líneas, anillos, rayas): mezclaban dos estilos (DESIGN §9.4).
+    if (currentLevel === 2 || sectorPlanet()) return;
     ctx.save();
     ctx.globalCompositeOperation = "screen";
 
@@ -4462,7 +4465,8 @@
       // Rótulo del villano: entra de golpe, con aberración cromática violeta.
       const punch = 1 + .35 * pose.prime.nameCardPunch;
       ctx.save(); ctx.globalAlpha = card; ctx.textAlign = "center";
-      ctx.translate(W / 2, H * .7); ctx.scale(punch, punch);
+      // Por encima de la franja de subtítulos (H*.70) para no pisarla.
+      ctx.translate(W / 2, H * .52); ctx.scale(punch, punch);
       ctx.font = "900 76px 'Trebuchet MS', sans-serif";
       ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
       ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
