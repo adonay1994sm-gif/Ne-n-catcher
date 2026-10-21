@@ -333,6 +333,9 @@
 
   $("play").onclick = () => {
     if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    // Tras S1-V1, la campaña sigue por el siguiente viaje abierto del mapa.
+    const nextVoyage=nextCampaignVoyage();
+    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -368,6 +371,8 @@
   $("replayLevel").onclick = () => startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
     if(currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
+      const nextVoyage=nextCampaignVoyage();
+      if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
       startLevel(1);
       showStoryTransmission("IRIA · MANDO GAIA","Tu autorización es válida. Sigue la señal por el corredor orbital; el registro apunta hacia Vulkar.",5.5);
       return;

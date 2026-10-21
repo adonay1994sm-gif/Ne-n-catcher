@@ -122,3 +122,13 @@ test('a stage picked for S1-V1 never leaks into another voyage and going home cl
   T.goHome();
   assert.equal(T.st().side, null);
 });
+
+test('after S1-V1, Play continues the voyage campaign with the next open route', () => {
+  const {w, T} = harness({unlocked: '2'});
+  assert.match(w.document.getElementById('playSector').textContent, /S1-V2/);
+  w.document.getElementById('play').click();
+  assert.deepEqual([T.st().state, T.st().side], ['playing', 'S1-V2']);
+  T.finish();
+  T.goHome();
+  assert.match(w.document.getElementById('playSector').textContent, /S1-V3/);
+});

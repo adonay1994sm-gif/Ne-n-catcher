@@ -2114,6 +2114,12 @@
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
     ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     if(target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
+    // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
+    const nextVoyage=target!==0?nextCampaignVoyage():null;
+    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){
+      ui.playLabel.textContent="CONTINUAR VIAJE";
+      ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
+    }
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -2227,14 +2233,29 @@
   // Mapa de sector (docs/design/MAPA_SECTOR.md): rutas del sector 1 y bases
   // con conversación. Sin guardado propio: S1-V1 está hecho si Gaia se abrió.
   let sectorMapShown = 1;
-  function buildSectorMap() {
-    if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
+  // Progreso de la campaña de viajes: qué viajes están hechos y estado de
+  // cada sector. Lo usan el mapa, «Jugar» y la pantalla de completado.
+  function campaignSectors() {
+    if (typeof NeonCampaign.sectorMapState !== "function") return [];
     const firstDone = getUnlocked() >= 2;
     const sideDone = NeonCampaign.PLAYABLE_VOYAGES.filter(ficha => ficha.id !== "S1-V1" && loadSideVoyageRecord(ficha)?.completed)
       .map(ficha => ficha.id);
     const progress = {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
       completed: [...(firstDone ? ["S1-V1"] : []), ...sideDone]};
-    const sectors = Object.keys(NeonCampaign.SECTOR_MAPS).map(Number).map(id => NeonCampaign.sectorMapState(id, progress));
+    return Object.keys(NeonCampaign.SECTOR_MAPS).map(Number).map(id => NeonCampaign.sectorMapState(id, progress));
+  }
+  /** Siguiente viaje de la campaña (la primera ruta abierta), o null. */
+  function nextCampaignVoyage() {
+    for (const sector of campaignSectors()) {
+      const route = sector.routes.find(item => item.status === "open");
+      if (route) return route;
+    }
+    return null;
+  }
+  function buildSectorMap() {
+    if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
+    const sectors = campaignSectors();
+    const sideDone = sectors.flatMap(sector => sector.routes).filter(route => route.status === "done").map(route => route.voyage);
     if (!sectors.find(item => item.id === sectorMapShown)?.open) sectorMapShown = 1;
     const map = sectors.find(item => item.id === sectorMapShown);
     const place = id => map.places.find(item => item.id === id);
@@ -2734,6 +2755,8 @@
       ui.completeTitle.textContent="El registro ha llegado a Gaia";
       ui.unlockMessage.textContent="IRIA · MANDO ORBITAL: El convoy utilizó tu identificación. El registro demuestra el sabotaje. Tienes autorización de recuperación; la siguiente señal procede de Vulkar.";
       ui.nextLevel.textContent="CONTINUAR POR EL PERÍMETRO DE GAIA →";
+      const nextVoyage=nextCampaignVoyage();
+      if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.nextLevel.textContent=`SIGUIENTE VIAJE: ${nextVoyage.voyage} →`;
     }
     if(isAtlasMission()&&atlasBoss?.resolved&&progressSaved)ui.unlockMessage.textContent+=" Segundo cañón autorizado: Gemelo ×2 disponible en el taller.";
     overlay(ui.complete);
@@ -6192,6 +6215,9 @@
 
   $("play").onclick = () => {
     if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    // Tras S1-V1, la campaña sigue por el siguiente viaje abierto del mapa.
+    const nextVoyage=nextCampaignVoyage();
+    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -6227,6 +6253,8 @@
   $("replayLevel").onclick = () => startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
     if(currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
+      const nextVoyage=nextCampaignVoyage();
+      if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
       startLevel(1);
       showStoryTransmission("IRIA · MANDO GAIA","Tu autorización es válida. Sigue la señal por el corredor orbital; el registro apunta hacia Vulkar.",5.5);
       return;
