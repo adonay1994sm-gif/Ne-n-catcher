@@ -862,13 +862,14 @@
   function loadSideVoyageRecord(ficha) {
     const route=NeonCampaign.createVoyageRoute(ficha),raw=storage.getJSON(ficha.saveKey,null);
     const checkpoint=raw?.version===1&&raw.voyage===ficha.id?route.normalizeCheckpoint(raw.checkpoint,{goal:ficha.baseGoal}):null;
-    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true}:null;
+    const stars=Math.trunc(Math.min(3,Math.max(0,Number(raw?.stars)||0)));
+    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,stars}:null;
   }
-  function saveSideVoyage(checkpoint,completed=false) {
+  function saveSideVoyage(checkpoint,completed=false,stars=0) {
     if(!classicSideVoyage||!checkpoint)return false;
-    // Rejugar un viaje hecho no borra su marca: el mapa no se vuelve a cerrar.
-    const {ficha}=classicSideVoyage,record={version:1,voyage:ficha.id,checkpoint,
-      completed:completed||loadSideVoyageRecord(ficha)?.completed===true};
+    // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas.
+    const {ficha}=classicSideVoyage,previous=loadSideVoyageRecord(ficha),record={version:1,voyage:ficha.id,checkpoint,
+      completed:completed||previous?.completed===true,stars:Math.max(stars,previous?.stars||0)};
     const saved=storage.setJSON(ficha.saveKey,record);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
     return saved;
@@ -885,7 +886,8 @@
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
     const firstTime=loadSideVoyageRecord(ficha)?.completed!==true;
-    const saved=saveSideVoyage(classicFlight.exportCheckpoint(),true);
+    const earned=runStars();
+    const saved=saveSideVoyage(classicFlight.exportCheckpoint(),true,earned);
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;cancelSupplyFailureTimer();
     setState("complete");setClassicFlightHudVisible(false);
@@ -900,7 +902,7 @@
     ui.completeLabel.textContent=`VIAJE COMPLETADO · SECTOR ${ficha.sector}`;
     ui.completeTitle.textContent=`${ficha.id} · ${ficha.title}`;
     if(ui.completeVisual)ui.completeVisual.dataset.scene=ficha.sector===2?"belt":"rift";
-    ui.starsAwarded.innerHTML="";
+    ui.starsAwarded.innerHTML=[1,2,3].map(value=>`<span class="${value<=earned?"":"off"}">★</span>`).join("");
     ui.levelScore.textContent=Math.max(0,Math.floor(score));
     ui.levelHull.textContent=`${Math.ceil(hull)}%`;
     ui.maxCombo.textContent=`x${maxCombo}`;
@@ -1189,7 +1191,7 @@
     const voyagesDone = routes.filter(route => route.status === "done").length;
     const voyagePercent = routes.length ? Math.round(voyagesDone / routes.length * 100) : 0;
     ui.unlockedText.textContent = `${voyagesDone}/${routes.length}`;
-    ui.totalStars.textContent = `${totalStars()}/${LEVELS.length * 3}`;
+    ui.totalStars.textContent = `${routes.reduce((sum, route) => sum + voyageStars(route.voyage), 0)}/${routes.length * 3}`;
     ui.campaignPercent.textContent = `${voyagePercent}%`;
     ui.campaignFill.style.width = `${voyagePercent}%`;
     ui.playLabel.textContent = "CONTINUAR VIAJE";
@@ -1316,6 +1318,18 @@
   let sectorMapShown = 1;
   // Progreso de la campaña de viajes: qué viajes están hechos y estado de
   // cada sector. Lo usan el mapa, «Jugar» y la pantalla de completado.
+  // Estrellas de una ronda (misma regla para S1-V1 y los viajes del mapa):
+  // 3 con casco ≥90 % y casi todo el CRONIUM, 2 con casco ≥55 %, si no 1.
+  function runStars() {
+    const missed = energySpawned - collected;
+    return hull >= 90 && missed <= Math.ceil(energyBudget * 0.1) ? 3 : hull >= 55 ? 2 : 1;
+  }
+  /** Mejores estrellas guardadas de un viaje (0 si no se ha completado). */
+  function voyageStars(voyageId) {
+    if (voyageId === "S1-V1") return getStars()[1] || 0;
+    const ficha = NeonCampaign.PLAYABLE_VOYAGES.find(item => item.id === voyageId);
+    return ficha ? loadSideVoyageRecord(ficha)?.stars || 0 : 0;
+  }
   function campaignSectors() {
     if (typeof NeonCampaign.sectorMapState !== "function") return [];
     const firstDone = getUnlocked() >= 2;
@@ -1380,7 +1394,8 @@
       node.type = "button"; node.className = "sector-route"; node.dataset.status = route.status;
       node.dataset.voyage = route.voyage;
       node.style.left = pct((from.x + to.x) / 2); node.style.top = pct((from.y + to.y) / 2);
-      node.innerHTML = `<small>${route.voyage}${route.status === "done" ? " · HECHO" : route.status === "locked" ? " · EN PREPARACIÓN" : ""}</small><b>${route.title}</b>`;
+      const stars = route.status === "done" ? ` ${"★".repeat(voyageStars(route.voyage))}${"☆".repeat(3 - voyageStars(route.voyage))}` : "";
+      node.innerHTML = `<small>${route.voyage}${route.status === "done" ? " · HECHO" + stars : route.status === "locked" ? " · EN PREPARACIÓN" : ""}</small><b>${route.title}</b>`;
       node.disabled = route.status === "locked";
       if (route.status !== "locked") node.onclick = () => route.voyage === "S1-V1" ? prepareLevel(0, "levels") : startSideVoyage(route.voyage);
       ui.sectorMap.append(node);
@@ -1757,8 +1772,7 @@
     ui.fire.classList.add("hidden");
     ui.banner.classList.remove("show");
 
-    const missed = energySpawned - collected;
-    const earned = hull >= 90 && missed <= Math.ceil(energyBudget * 0.1) ? 3 : hull >= 55 ? 2 : 1;
+    const earned = runStars();
     const completedVoyage=classicFlightView?.canFinish
       ? classicVoyageCheckpointRecord(classicFlight.exportCheckpoint(),true) : null;
     // A corrupt equipment record is recoverable only after its exact bytes
