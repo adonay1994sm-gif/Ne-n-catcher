@@ -9,7 +9,7 @@
     let enabled = false;
     try { enabled = new URLSearchParams(window.location.search).get("dev") === "1"; } catch {}
     if (!enabled) return null;
-    const base = window.NeonPreview?.storage || window.localStorage, prefix = "neon-dev-v1:";
+    const base = window.localStorage, prefix = "neon-dev-v1:";
     const store = Object.freeze({
       getItem: key => base.getItem(prefix + key),
       setItem: (key, value) => base.setItem(prefix + key, value),

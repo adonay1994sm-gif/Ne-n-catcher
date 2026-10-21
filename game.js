@@ -9,7 +9,7 @@
     let enabled = false;
     try { enabled = new URLSearchParams(window.location.search).get("dev") === "1"; } catch {}
     if (!enabled) return null;
-    const base = window.NeonPreview?.storage || window.localStorage, prefix = "neon-dev-v1:";
+    const base = window.localStorage, prefix = "neon-dev-v1:";
     const store = Object.freeze({
       getItem: key => base.getItem(prefix + key),
       setItem: (key, value) => base.setItem(prefix + key, value),
@@ -6352,7 +6352,7 @@
     god.innerHTML = '<input type="checkbox" id="devInvulnerable"> Casco invencible';
     god.querySelector("input").onchange = event => { DEV.invulnerable = event.target.checked; };
     options.append(god, button("Borrar progreso de prueba", () => {
-      const prefix = (window.NeonPreview?.storagePrefix || "") + window.NeonDev.prefix;
+      const prefix = window.NeonDev.prefix;
       for (const key of Object.keys(window.localStorage)) if (key.startsWith(prefix)) window.localStorage.removeItem(key);
       window.location.reload();
     }), button("Volver", close));
