@@ -38,4 +38,4 @@ Reglas de cada tarea:
       solo cuando V2–V5 sean jugables.
 - [x] **N7 · Lanzar S1-V2 desde el mapa.** Hecho como «viaje secundario» (`scripts/side-voyage-smoke.cjs`). Seguir los pasos 1–6 de
       `FASE_B_ACOPLAMIENTOS.md`; S1-V1 debe seguir idéntico (pruebas actuales).
-- [ ] **N8 · Fichas S1-V3, S1-V4 y S1-V5** (V5 con Atlas, opción B).
+- [~] **N8 · Fichas S1-V3, S1-V4 y S1-V5** (V5 con Atlas, opción B). V3 y V4 jugables; falta V5 con Atlas.
