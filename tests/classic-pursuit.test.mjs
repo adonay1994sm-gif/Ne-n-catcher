@@ -145,7 +145,10 @@ test('100 seeds across three roles keep readable, finite, bounded attacks and an
     }
     assert.ok(shots.length > 0, `${role}/${seed} presents an actual attack`);
     const serials = new Set(shots.map(shot => shot.attackSerial));
-    assert.ok(serials.size <= ({raider: 8, scout: 7, interceptor: 10}[role]), 'bounded number of attacks');
+    // 40 s de combate: sin retirada (propietario, 21/10), pero con un ritmo
+    // acotado incluso en la intensidad máxima (recarga ×0,46).
+    const fastestGap = {raider: 1.25, scout: 1.6, interceptor: 1.15}[role] * .46 * .65 + .6;
+    assert.ok(serials.size <= Math.ceil(40 / fastestGap), 'bounded number of attacks');
     for (const serial of serials) {
       assert.ok(shots.filter(shot => shot.attackSerial === serial).length <= CLASSIC_PURSUIT_VOLLEY.maxProjectiles,
         'one charge emits at most a three-shot volley');
@@ -171,7 +174,7 @@ test('100 seeds across three roles keep readable, finite, bounded attacks and an
 test('a surviving opponent brakes into a visible band and re-engages instead of merely crossing the screen', () => {
   for (const role of ['raider', 'scout', 'interceptor']) {
     const item = enemyAt({role}), player = {x: 360, y: 1080}, shots = [], held = [], states = new Set();
-    for (let frame = 0; frame < 1800 && item.classicScout.state !== 'retreat'; frame++) {
+    for (let frame = 0; frame < 1800; frame++) {
       step(item, player, shots);
       const enemy = item.classicScout;
       states.add(enemy.state);
@@ -183,7 +186,7 @@ test('a surviving opponent brakes into a visible band and re-engages instead of 
           'active opponent does not hide in the old inaccessible edge lane');
       }
     }
-    for (const state of ['entry', 'brake', 'charge', 'fire', 'reposition', 'retreat']) {
+    for (const state of ['entry', 'brake', 'charge', 'fire', 'reposition']) {
       assert.ok(states.has(state), `${role} actually traverses ${state}`);
     }
     assert.ok(shots.length >= 3, `${role} completes repeated attacks with real animation events`);
@@ -193,7 +196,9 @@ test('a surviving opponent brakes into a visible band and re-engages instead of 
       'the new physical depth arcs stay in a bounded combat band, never descending past the ship');
     assert.ok(held.some(q => Math.abs(q.speed) < 1), 'vertical velocity genuinely settles');
     assert.equal(item.hp, 2, 'persistence does not inflate HP');
-    assert.ok(['attack-budget', 'time-limit'].includes(item.classicScout.retreatReason));
+    // Propietario (21/10): si no lo eliminas, no se va y sube de intensidad.
+    assert.notEqual(item.classicScout.state, 'retreat', `${role} keeps fighting while it can attack`);
+    assert.ok(item.classicScout.intensity >= 2, `${role} escalates the longer it survives`);
   }
 });
 
@@ -265,12 +270,11 @@ test('small widths preserve reachable fighting lanes, pause freezes the whole en
       for (let count = 0; count < 200; count++) advanceClassicPursuer(item, 0, player, () => assert.fail('paused emission'));
       assert.deepEqual({x: item.x, y: item.y, s: item.s, age: enemy.age, stateAge: enemy.stateAge,
         telegraph: enemy.telegraph, lock: enemy.lockedTarget, frame: enemy.animator.getFrame().frameIndex}, paused);
-      until(item, player, () => enemy.state === 'retreat', shots, 1900);
-      const atRetreat = enemy.age, fired = shots.length;
-      until(item, player, () => item.y - item.r > 844, shots, 1000);
-      assert.ok(enemy.age - atRetreat < 7, 'retirement exits through the legacy removal boundary');
-      assert.equal(shots.length, fired, 'retreat is communicated by cessation of attacks');
-      assert.ok(enemy.age < 41, 'a surviving opponent cannot hold a stage spawn slot forever');
+      const firedBefore = shots.length;
+      for (let frame = 0; frame < 1500; frame++) step(item, player, shots);
+      assert.notEqual(enemy.state, 'retreat', 'a surviving opponent keeps its slot while it can attack');
+      assert.ok(shots.length > firedBefore, 'and keeps attacking within the reachable lanes');
+      assert.ok(item.x >= enemy.combatMinX && item.x <= enemy.combatMaxX && item.y < 844);
     }
   }
 });
@@ -315,7 +319,8 @@ test('undamaged enemies remain engaged beyond three attacks with a bounded proje
     assert.notEqual(item.classicScout.state, 'retreat');
     const atFourth = item.classicScout.age;
     assert.ok(item.classicScout.combatStartedAt !== null);
-    until(item, player, () => item.classicScout.state === 'retreat', shots, 1600);
+    for (let frame = 0; frame < 1600; frame++) step(item, player, shots);
+    assert.notEqual(item.classicScout.state, 'retreat');
     assert.ok(item.classicScout.age - atFourth > 1);
     // A shot occupies the screen until it leaves the bottom edge (or its life ends).
     const onScreen = shot => Math.min(shot.life, (1280 - shot.y) / shot.vy);
@@ -323,7 +328,7 @@ test('undamaged enemies remain engaged beyond three attacks with a bounded proje
     for (let seconds = 0; seconds < item.classicScout.age; seconds += .1) {
       assert.ok(activeAt(seconds) <= 6, `${role} cannot saturate the screen with unlimited persistent shots`);
     }
-    assert.ok(shots.length >= 4 && shots.length <= 10 * CLASSIC_PURSUIT_VOLLEY.maxProjectiles);
+    assert.ok(shots.length >= 4 && shots.length <= 40 * CLASSIC_PURSUIT_VOLLEY.maxProjectiles);
     assert.ok(new Set(shots.map(shot => shot.volley)).size >= 2, `${role} varies its volleys`);
   }
 });
@@ -333,7 +338,7 @@ test('v5 opponents mix single, double and spread volleys with irregular waits in
   let doubles = 0, spreads = 0;
   for (const role of ['raider', 'scout', 'interceptor']) for (const seed of [3, 21, 58, 90]) {
     const item = enemyAt({role, seed}), player = {x: 360, y: 1080}, shots = [];
-    until(item, player, () => item.classicScout.state === 'retreat', shots, 3000);
+    for (let frame = 0; frame < 3000; frame++) step(item, player, shots);
     const bySerial = new Map();
     for (const shot of shots) bySerial.set(shot.attackSerial, [...(bySerial.get(shot.attackSerial) || []), shot]);
     const starts = [...bySerial.values()].map(volley => volley[0].at);
@@ -357,14 +362,19 @@ test('v5 opponents mix single, double and spread volleys with irregular waits in
   assert.ok(waits.size >= 10, 'waits between attacks are irregular');
 });
 
-test('a surviving patrol leaves within ~15 s, so the spawn cap rotates instead of parking enemies on screen', () => {
-  // Propietario (21/10): «los enemigos no se van por más que se acumulen».
-  // Con una patrulla nueva cada 5-9 s, cada enemigo debe dejar su hueco pronto.
-  for (const role of ['raider', 'scout', 'interceptor']) for (let seed = 0; seed < 6; seed++) {
-    const item = enemyAt({role, seed}), enemy = item.classicScout, player = {x: 200 + seed * 50, y: 1080};
-    until(item, player, () => enemy.state === 'retreat', [], 1900);
-    assert.ok(enemy.age <= 15, `${role}/${seed} starts leaving after ${enemy.age.toFixed(1)} s`);
-    until(item, player, () => item.y - item.r > 1280, [], 1200);
-    assert.ok(enemy.age <= 22, `${role}/${seed} is off screen after ${enemy.age.toFixed(1)} s`);
+test('an enemy you do not destroy stays and attacks more often the longer it survives', () => {
+  // Propietario (21/10): «si no lo eliminas, que siga atacando y con más
+  // intensidad», para que con muchas patrullas haya que decidir a quién derribar.
+  for (const role of ['raider', 'scout', 'interceptor']) for (let seed = 0; seed < 4; seed++) {
+    const item = enemyAt({role, seed}), player = {x: 220 + seed * 60, y: 1080}, shots = [];
+    for (let frame = 0; frame < 2500; frame++) step(item, player, shots);
+    const enemy = item.classicScout;
+    assert.notEqual(enemy.state, 'retreat', `${role}/${seed} never leaves while it can attack`);
+    assert.equal(enemy.intensity, 3, `${role}/${seed} reaches the top intensity`);
+    const starts = [...new Map(shots.map(shot => [shot.attackSerial, shot.at])).values()];
+    const gap = list => (list.at(-1) - list[0]) / (list.length - 1);
+    const early = starts.filter(at => at < enemy.combatStartedAt + 9), late = starts.filter(at => at > 36);
+    assert.ok(early.length >= 2 && late.length >= 2);
+    assert.ok(gap(late) < gap(early), `${role}/${seed} attacks more often late (${gap(late).toFixed(2)} s) than early (${gap(early).toFixed(2)} s)`);
   }
 });

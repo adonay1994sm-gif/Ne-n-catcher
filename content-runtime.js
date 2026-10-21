@@ -4601,6 +4601,7 @@ var NeonCampaign = (() => {
       combatStartedAt: null,
       retreatReason: null,
       repositionCount: 0,
+      intensity: 0,
       observation: null,
       nextObservationAt: 0,
       observedTarget: null,
@@ -4653,7 +4654,7 @@ var NeonCampaign = (() => {
       minimumHoldY,
       maximumHoldY
     );
-    const canAttack = () => hp > 0 && enemy.state !== "retreat" && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 && enemy.fired < profile2.maxAttacks;
+    const canAttack = () => hp > 0 && enemy.state !== "retreat" && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230;
     const clearCharge = () => {
       enemy.telegraph = 0;
       enemy.attackScheduled = false;
@@ -4674,7 +4675,7 @@ var NeonCampaign = (() => {
       enemy.repositionCount++;
       enemy.targetX = laneTarget();
       enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
-      enemy.nextFire = enemy.age + profile2.recovery * (0.65 + nextRandom(enemy) * 0.7);
+      enemy.nextFire = enemy.age + profile2.recovery * (1 - 0.18 * enemy.intensity) * (0.65 + nextRandom(enemy) * 0.7);
       enter("reposition");
     };
     const retreat = (reason) => {
@@ -4690,7 +4691,8 @@ var NeonCampaign = (() => {
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-      if (heldFor >= profile2.holdSeconds || enemy.age >= profile2.holdSeconds + 5) {
+      enemy.intensity = Math.min(3, Math.floor(heldFor / profile2.holdSeconds));
+      if (enemy.fired === 0 && heldFor >= profile2.holdSeconds || enemy.combatStartedAt === null && enemy.age >= profile2.holdSeconds + 8) {
         retreat("time-limit");
       } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {
         reposition();
@@ -4706,8 +4708,7 @@ var NeonCampaign = (() => {
       enter("track");
     }
     if (enemy.state === "fire" && enemy.stateAge >= 0.34) {
-      if (enemy.fired >= profile2.maxAttacks) retreat("attack-budget");
-      else reposition();
+      reposition();
     }
     if (enemy.state === "reposition" && enemy.age >= enemy.nextFire) enter("track");
     if (enemy.state === "reposition" && enemy.age >= enemy.nextTargetAt) {
