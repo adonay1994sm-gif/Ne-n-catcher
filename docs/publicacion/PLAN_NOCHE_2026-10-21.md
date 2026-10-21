@@ -27,10 +27,10 @@ Reglas de cada tarea:
 - [x] **N3 · Especificación del mapa de sector.** `docs/design/MAPA_SECTOR.md`:
       planetas, rutas, bases, misiones y diálogo con personajes; qué existe y
       qué falta. Con los planetas del catálogo.
-- [ ] **N4 · Mapa de sector jugable (sector 1).** Pantalla entre viajes con
+- [x] **N4 · Mapa de sector jugable (sector 1).** Hecho dentro de RUTA (Jugar sigue retomando el viaje). Pantalla entre viajes con
       Chronos, la baliza y Gaia, rutas S1-V1…S1-V5 y la base C9; solo S1-V1
       abre por ahora. Sin cambiar guardados existentes.
-- [ ] **N5 · Diálogo con personajes en las bases.** Escena de conversación
+- [x] **N5 · Diálogo con personajes en las bases.** (Mira en C9, Iria en Gaia; retratos pequeños: pedir grandes.) Escena de conversación
       con retrato, nombre y frases cortas (Mira en C9, Iria en Gaia), usando
       los retratos que ya existen.
 - [ ] **N6 · Fase B · fichas S1-V2…S1-V5.** Rutas nuevas con el motor por

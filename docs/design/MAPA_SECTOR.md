@@ -30,7 +30,8 @@ demás repiten el mismo esquema con sus datos.
 
 ## 2. Flujo
 
-1. Menú → «Jugar» → **mapa del sector actual**.
+1. Menú → «RUTA» → **mapa del sector actual** («Jugar» sigue retomando el
+   viaje en curso; así no se rompe el acceso rápido ni las pruebas).
 2. Mapa → ruta → briefing de tramos → vuelo (sin cambios).
 3. Al terminar un viaje → vuelta al mapa con la ruta marcada como hecha.
 4. «Niveles» sigue existiendo mientras convivan los 10 niveles antiguos.
