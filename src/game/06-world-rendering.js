@@ -558,7 +558,8 @@
     const intro = chronosIntroPose(view);
     if (intro) drawTalasa(intro);
     if (intro) drawChronosIntroDarkness(intro);
-    drawChronosFlightSprite(2, chronosDestinationPresentation(view.planet));
+    const destination = chronosDestinationPresentation(view.planet);
+    if (!drawVoyagePlanet(destination)) drawChronosFlightSprite(2, destination);
     if (intro) withChronosIntroCamera(intro, () => drawChronosIntroStation(view, intro));
     else if (!drawChronosDestructionStation(view, destruction)) {
       // A failed new download keeps the two preserved station poses playable.
@@ -728,6 +729,27 @@
       ctx.drawImage(image, frame % 4 * cell, Math.floor(frame / 4) * cell, cell, cell, x, y, size, size);
     };
     ctx.save(); draw(pose.frame, 1); if (pose.blend > 0) draw(pose.next, pose.blend); ctx.restore();
+  }
+
+  // Planeta propio de una ficha (p. ej. Vulkar en el sector 2): atlas de 7
+  // fotogramas de giro con fundido, en la posición y escala de la ruta.
+  function drawVoyagePlanet(node) {
+    const key = typeof classicSideVoyage === "undefined" ? null : classicSideVoyage?.ficha.planet;
+    if (!key || !node?.visible) return false;
+    const image = SPRITES[SECTOR_PLANET_SPRITES[key]];
+    if (!image) return false;
+    ensureSprite(image);
+    if (!spriteReady(image)) return true;
+    const position = elapsed / .9, frame = Math.floor(position) % 7, blend = position % 1;
+    const cell = image.naturalWidth / 4, size = W * node.scale;
+    ctx.save(); ctx.translate(node.x * W, node.y * H); ctx.rotate(node.rotation || 0);
+    for (const [index, alpha] of [[frame, node.alpha ?? 1], [(frame + 1) % 7, (node.alpha ?? 1) * blend]]) {
+      if (alpha <= 0) continue;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(image, index % 4 * cell, Math.floor(index / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
+    }
+    ctx.restore();
+    return true;
   }
 
   function drawVulkarOrbitBackground() {
