@@ -33,6 +33,9 @@ Reglas de cada tarea:
 - [x] **N5 · Diálogo con personajes en las bases.** (Mira en C9, Iria en Gaia; retratos pequeños: pedir grandes.) Escena de conversación
       con retrato, nombre y frases cortas (Mira en C9, Iria en Gaia), usando
       los retratos que ya existen.
-- [ ] **N6 · Fase B · fichas S1-V2…S1-V5.** Rutas nuevas con el motor por
+- [~] **N6 · Fase B · fichas S1-V2…S1-V5.** Ficha S1-V2 hecha y probada con el motor (aún no jugable); mapa de acoplamientos en `docs/design/FASE_B_ACOPLAMIENTOS.md`. Rutas nuevas con el motor por
       fichas (paisaje y encuentros propios); Atlas pasa a S1-V5 (opción B)
       solo cuando V2–V5 sean jugables.
+- [ ] **N7 · Lanzar S1-V2 desde el mapa.** Seguir los pasos 1–6 de
+      `FASE_B_ACOPLAMIENTOS.md`; S1-V1 debe seguir idéntico (pruebas actuales).
+- [ ] **N8 · Fichas S1-V3, S1-V4 y S1-V5** (V5 con Atlas, opción B).
