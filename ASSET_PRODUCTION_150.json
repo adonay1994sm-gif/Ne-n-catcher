@@ -464,9 +464,9 @@
           "reference": "art-source/comet_animation_master_v1.png"
         }
       ],
-      "runtimePath": "assets/comet_flight_atlas_v2.webp",
-      "masterPath": "art-source/comet-rework/comet_flight_atlas_master.png",
-      "metadataPath": "art-source/comet-rework/comet_flight_atlas_v2.json",
+      "runtimePath": "assets/comet_flight_atlas_v3.webp",
+      "masterPath": "art-source/comet-ambar/cometa_ambar_spritesheet_1.0.0.png",
+      "metadataPath": "art-source/comet-ambar/asset.json",
       "animation": "4 distinct states;8fps;0.5s loop;played clock;tail decorative",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING"

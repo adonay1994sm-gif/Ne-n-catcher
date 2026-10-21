@@ -489,7 +489,7 @@
     arcadePulse: loadSprite("assets/arcade_pulse_atlas_v2.webp", false),
     hostileOrdnance: loadSprite("assets/hostile_ordnance_atlas_v1.webp", false),
     gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
-    comet: loadSprite("assets/comet_flight_atlas_v2.webp"),
+    comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
