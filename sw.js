@@ -31,7 +31,6 @@ const CORE = [
   "assets/chronos_destruction_atlas_v1.webp",
   "assets/chronos_flight_weapons_v1.webp",
   "assets/chronos_flight_space_v1.webp",
-  "assets/vulkar_orbit_background_v1.webp",
   "assets/vulkar_orbit_planet_v1.webp",
   "assets/force_shield_atlas_v1.webp",
   "assets/core_frame_00.webp",
@@ -89,18 +88,8 @@ const CORE = [
   "assets/shield_effect.webp",
   "assets/shield_idle.webp",
   "assets/explosion_small.webp",
-  "assets/cronos_level1_background.webp",
   "assets/chronos_shockwave_atlas_v1.webp",
-  "assets/chronos_detached_module_v1.webp",
-  "assets/atlas_perimeter_background_v1.webp",
-  "assets/vulkar_descent_background_v1.webp",
-  "assets/vulkar_magma_tunnel_background_v1.webp",
-  "assets/cryon_whiteout_background_v1.webp",
-  "assets/cryon_leviathan_rift_background_v1.webp",
-  "assets/aether_echo_cemetery_background_v1.webp",
-  "assets/aether_phantom_threshold_background_v1.webp",
-  "assets/titan_omega_graveyard_background_v1.webp",
-  "assets/chronos_collapse_background_v1.webp"
+  "assets/chronos_detached_module_v1.webp"
 ];
 
 // addAll es "todo o nada": si un solo archivo falla, la instalación entera

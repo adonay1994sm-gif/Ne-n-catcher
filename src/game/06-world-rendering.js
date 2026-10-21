@@ -104,7 +104,7 @@
         ctx.arc(x, y, 7 + (index % 4) * 4, 0, Math.PI * 2);
         ctx.fill();
       }
-    } else if (lv.scene === "ion" && currentLevel !== 3) {
+    } else if (lv.scene === "ion") {
       ctx.strokeStyle = "rgba(191,126,255,.34)";
       ctx.lineWidth = 3;
       ctx.shadowBlur = 15;
@@ -116,14 +116,14 @@
         ctx.bezierCurveTo(W * 0.25, y - 70, W * 0.62, y + 75, W + 30, y - 25);
         ctx.stroke();
       }
-    } else if (lv.scene === "crimson" && currentLevel !== 4) {
+    } else if (lv.scene === "crimson") {
       drawPlanet(W * 0.19, H * 0.16, 92, ["#fff5c7", "#ff744f", "#761737"], false);
       ctx.globalAlpha = 0.14 + Math.sin(t * 0.004) * 0.03;
       ctx.fillStyle = "#ff4965";
       ctx.beginPath();
       ctx.arc(W * 0.19, H * 0.16, 145, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "gravity" && currentLevel !== 5) {
+    } else if (lv.scene === "gravity") {
       const x = W * 0.74;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(80,255,208,.48)";
@@ -137,7 +137,7 @@
       ctx.beginPath();
       ctx.arc(x, y, 61, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "ghost" && currentLevel !== 6) {
+    } else if (lv.scene === "ghost") {
       ctx.globalAlpha = 0.20;
       ctx.fillStyle = "#b99bea";
       ctx.fillRect(W * 0.10, H * 0.17, W * 0.80, 12);
@@ -149,7 +149,7 @@
       fog.addColorStop(1, "rgba(174,132,232,0)");
       ctx.fillStyle = fog;
       ctx.fillRect(0, H * 0.12, W, H * 0.62);
-    } else if (lv.scene === "overdrive" && currentLevel !== 7) {
+    } else if (lv.scene === "overdrive") {
       ctx.globalAlpha = 0.20;
       ctx.strokeStyle = "#fff27b";
       ctx.lineWidth = 2;
@@ -160,13 +160,13 @@
         ctx.lineTo(x - 130, H * 0.70);
         ctx.stroke();
       }
-    } else if (lv.scene === "dark" && currentLevel !== 8) {
+    } else if (lv.scene === "dark") {
       drawPlanet(W * 0.73, H * 0.18, 112, ["#6d2d73", "#27102f", "#05030a"], false);
       ctx.fillStyle = "rgba(255,92,233,.12)";
       ctx.beginPath();
       ctx.arc(W * 0.73, H * 0.18, 130, 0, Math.PI * 2);
       ctx.fill();
-    } else if (lv.scene === "collapse" && currentLevel !== 9) {
+    } else if (lv.scene === "collapse") {
       const x = W * 0.50;
       const y = H * 0.20;
       ctx.strokeStyle = "rgba(93,255,236,.58)";
@@ -652,7 +652,7 @@
   function drawGaiaOrbitBackground() {
     const space = SPRITES.flightSpace;
     // These independent illustrated layers are shared with the journey that
-    // just arrived here. The old perimeter painting below remains a fallback.
+    // just arrived here. Without them the drawn sector sky is the fallback.
     if (!spriteReady(space) || !spriteReady(SPRITES.flightKit)) return false;
     const frame = chronosSceneryFrame();
     const progress = clamp(collected / level().goal, 0, 1);
@@ -706,19 +706,10 @@
   }
 
   function drawVulkarOrbitBackground() {
-    const plate=SPRITES.vulkarOrbitBackground,planet=SPRITES.vulkarOrbitPlanet;
-    ensureSprite(plate);ensureSprite(planet);
-    ctx.fillStyle="#020710";ctx.fillRect(0,0,W,H);
+    const planet=SPRITES.vulkarOrbitPlanet;
+    ensureSprite(planet);
     const progress=clamp(collected/level().goal,0,1);
-    // Both layers use played time: pause and backgrounding freeze this view.
-    // The refinery is in the plate; the transparent planet is a separate asset.
-    if(spriteReady(plate)) {
-      const scale=Math.max(W/plate.naturalWidth,H/plate.naturalHeight)*1.08;
-      const width=plate.naturalWidth*scale,height=plate.naturalHeight*scale;
-      const x=(W-width)/2+Math.sin(elapsed*.025)*12;
-      const y=(H-height)/2+Math.cos(elapsed*.018)*20;
-      ctx.drawImage(plate,x,y,width,height);
-    }
+    // The planet uses played time: pause and backgrounding freeze this view.
     if(spriteReady(planet)) {
       const size=W*(.88+progress*.22);
       const x=W*(.89-progress*.06)+Math.sin(elapsed*.035)*6;
@@ -740,7 +731,6 @@
   function background(t) {
     if (classicFlightView) { drawChronosFlightBackground(); return; }
     if(currentLevel===1 && drawGaiaOrbitBackground()) {return;}
-    if(currentLevel===2) {drawVulkarOrbitBackground();return;}
     const lv = level();
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
     gradient.addColorStop(0, lv.top);
@@ -771,194 +761,6 @@
     }
     ctx.restore();
 
-    if (currentLevel === 1) ensureSprite(SPRITES.atlasBackground);
-    if (currentLevel === 2) ensureSprite(SPRITES.vulkarBackground);
-    if (currentLevel === 3) ensureSprite(SPRITES.magmaTunnelBackground);
-    if (currentLevel === 4) ensureSprite(SPRITES.cryonWhiteoutBackground);
-    if (currentLevel === 5) ensureSprite(SPRITES.cryonRiftBackground);
-    if (currentLevel === 6) ensureSprite(SPRITES.aetherEchoBackground);
-    if (currentLevel === 7) ensureSprite(SPRITES.aetherThresholdBackground);
-    if (currentLevel === 8) ensureSprite(SPRITES.titanGraveyardBackground);
-    if (currentLevel === 9) ensureSprite(SPRITES.chronosCollapseBackground);
-    if (lv.scene === "cronos" && spriteReady(SPRITES.cronosBackground)) {
-      const image = SPRITES.cronosBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      ctx.save();
-      ctx.globalAlpha = 0.62;
-      ctx.drawImage(image, (W - width) / 2, (H - height) / 2 - H * 0.08, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(3,9,24,.06)");
-      readability.addColorStop(0.45, "rgba(3,8,20,.32)");
-      readability.addColorStop(1, "rgba(2,3,10,.76)");
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 1 && spriteReady(SPRITES.atlasBackground)) {
-      const image = SPRITES.atlasBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.04;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00018) * W * 0.018;
-      const driftY = Math.cos(t * 0.00011) * H * 0.009;
-      ctx.save();
-      ctx.globalAlpha = 0.86;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 - H * 0.025 + driftY,
-        width, height);
-      ctx.globalAlpha = 1;
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(3,8,23,.12)");
-      readability.addColorStop(0.58, "rgba(2,7,20,.16)");
-      readability.addColorStop(1, "rgba(2,4,11,.36)");
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 2 && spriteReady(SPRITES.vulkarBackground)) {
-      const image = SPRITES.vulkarBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00014) * W * 0.012;
-      const driftY = Math.cos(t * 0.00009) * H * 0.008;
-      ctx.save();
-      ctx.globalAlpha = 0.85;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(18,4,4,.08)");
-      readability.addColorStop(0.48, "rgba(14,3,4,.19)");
-      readability.addColorStop(1, "rgba(9,2,3,.42)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 3 && spriteReady(SPRITES.magmaTunnelBackground)) {
-      const image = SPRITES.magmaTunnelBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.025;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00013) * W * 0.012;
-      const driftY = Math.cos(t * 0.00008) * H * 0.008;
-      ctx.save();
-      ctx.globalAlpha = 0.88;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(14,4,3,.12)");
-      readability.addColorStop(0.55, "rgba(12,3,3,.18)");
-      readability.addColorStop(1, "rgba(10,2,3,.42)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 4 && spriteReady(SPRITES.cryonWhiteoutBackground)) {
-      const image = SPRITES.cryonWhiteoutBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00011) * W * 0.011;
-      const driftY = Math.cos(t * 0.00008) * H * 0.006;
-      ctx.save();
-      ctx.globalAlpha = 0.86;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(4,10,28,.12)");
-      readability.addColorStop(0.53, "rgba(4,12,31,.13)");
-      readability.addColorStop(1, "rgba(2,6,19,.43)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 5 && spriteReady(SPRITES.cryonRiftBackground)) {
-      const image = SPRITES.cryonRiftBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00010) * W * 0.010;
-      const driftY = Math.cos(t * 0.00007) * H * 0.006;
-      ctx.save();
-      ctx.globalAlpha = 0.87;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(3,11,29,.1)");
-      readability.addColorStop(0.50, "rgba(3,11,29,.13)");
-      readability.addColorStop(1, "rgba(2,7,20,.47)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 6 && spriteReady(SPRITES.aetherEchoBackground)) {
-      const image = SPRITES.aetherEchoBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00010) * W * 0.013;
-      const driftY = Math.cos(t * 0.00007) * H * 0.006;
-      ctx.save();
-      ctx.globalAlpha = 0.86;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(9,3,23,.08)");
-      readability.addColorStop(0.55, "rgba(8,3,21,.16)");
-      readability.addColorStop(1, "rgba(4,2,15,.43)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 7 && spriteReady(SPRITES.aetherThresholdBackground)) {
-      const image = SPRITES.aetherThresholdBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00009) * W * 0.011;
-      const driftY = Math.cos(t * 0.00007) * H * 0.006;
-      ctx.save();
-      ctx.globalAlpha = 0.87;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(12,4,25,.10)");
-      readability.addColorStop(0.55, "rgba(11,4,26,.16)");
-      readability.addColorStop(1, "rgba(4,2,17,.43)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 8 && spriteReady(SPRITES.titanGraveyardBackground)) {
-      const image = SPRITES.titanGraveyardBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00010) * W * 0.012;
-      const driftY = Math.cos(t * 0.00007) * H * 0.006;
-      ctx.save();
-      ctx.globalAlpha = 0.87;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(10,5,14,.09)");
-      readability.addColorStop(0.55, "rgba(7,3,12,.14)");
-      readability.addColorStop(1, "rgba(3,2,8,.38)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    } else if (currentLevel === 9 && spriteReady(SPRITES.chronosCollapseBackground)) {
-      const image = SPRITES.chronosCollapseBackground;
-      const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight) * 1.035;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const driftX = Math.sin(t * 0.00012) * W * 0.013;
-      const driftY = Math.cos(t * 0.00008) * H * 0.006;
-      ctx.save();
-      ctx.globalAlpha = 0.86;
-      ctx.drawImage(image, (W - width) / 2 + driftX, (H - height) / 2 + driftY, width, height);
-      const readability = ctx.createLinearGradient(0, 0, 0, H);
-      readability.addColorStop(0, "rgba(3,5,19,.26)");
-      readability.addColorStop(0.50, "rgba(3,5,19,.10)");
-      readability.addColorStop(1, "rgba(1,3,12,.39)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = readability;
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    }
 
     // Start the authored VFX download while the level is still in its menu;
     // the scripted reactor accident happens thirty-one seconds into play.
@@ -985,6 +787,8 @@
     }
     ctx.restore();
 
+    // Vulkar: el planeta va sobre el cielo dibujado (ya no hay imagen de fondo).
+    if (currentLevel === 2) drawVulkarOrbitBackground();
     drawSectorEnvironment(t, lv);
 
     // Capa media: polvo y restos minúsculos con una deriva independiente.

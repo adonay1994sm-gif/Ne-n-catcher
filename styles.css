@@ -311,16 +311,6 @@ body.flight-mode .flight-dock button:focus-visible{outline:2px solid #c4f7ff;out
 
 /* Mission transitions show the actual destination art, without a stock planet
    pasted over it. These are previews; the playfield remains the canvas. */
-body.flight-mode [data-scene="cronos"]{--mission-art:url("assets/cronos_level1_background.webp")}
-body.flight-mode [data-scene="rift"]{--mission-art:url("assets/atlas_perimeter_background_v1.webp")}
-body.flight-mode [data-scene="belt"]{--mission-art:url("assets/vulkar_orbit_background_v1.webp")}
-body.flight-mode [data-scene="ion"]{--mission-art:url("assets/vulkar_magma_tunnel_background_v1.webp")}
-body.flight-mode [data-scene="crimson"]{--mission-art:url("assets/cryon_whiteout_background_v1.webp")}
-body.flight-mode [data-scene="gravity"]{--mission-art:url("assets/cryon_leviathan_rift_background_v1.webp")}
-body.flight-mode [data-scene="ghost"]{--mission-art:url("assets/aether_echo_cemetery_background_v1.webp")}
-body.flight-mode [data-scene="overdrive"]{--mission-art:url("assets/aether_phantom_threshold_background_v1.webp")}
-body.flight-mode [data-scene="dark"]{--mission-art:url("assets/titan_omega_graveyard_background_v1.webp")}
-body.flight-mode [data-scene="collapse"]{--mission-art:url("assets/chronos_collapse_background_v1.webp")}
 body.flight-mode #briefing,body.flight-mode #complete,body.flight-mode #levelSelect{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
 body.flight-mode .briefing-panel,body.flight-mode .complete-panel{width:min(100%,440px);padding:18px 16px;transform:none;border-radius:20px;background:#091522;scrollbar-width:thin;scrollbar-color:#4b8194 #091522}
 body.flight-mode .briefing-panel::before{display:none}
@@ -373,7 +363,7 @@ body.flight-mode #briefing button:focus-visible,body.flight-mode #complete butto
 }
 
 /* The orbital destination preview uses the same two independent exports. */
-body.flight-mode .briefing-visual[data-scene="belt"]{background-image:linear-gradient(180deg,rgba(1,6,13,.02),rgba(1,6,13,.12)),url("assets/vulkar_orbit_planet_v1.webp"),url("assets/vulkar_orbit_background_v1.webp");background-size:cover,auto 150%,cover;background-position:center,right -45px center,center;background-repeat:no-repeat}
+body.flight-mode .briefing-visual[data-scene="belt"]{background-image:linear-gradient(180deg,rgba(1,6,13,.02),rgba(1,6,13,.12)),url("assets/vulkar_orbit_planet_v1.webp");background-size:cover,auto 150%;background-position:center,right -45px center;background-repeat:no-repeat}
 
 /* Each action thumb owns its contact; browser gestures must not cancel fire
    while the other finger continues relative flight on the Canvas. */
