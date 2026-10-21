@@ -18,18 +18,6 @@ test('art pass preserves the nine-source game bundle', async () => {
   assert.equal(await text('game.js'), parts.join(''));
 });
 
-test('Chronos background uses the authored image and bounded readability veil', async () => {
-  const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /spriteReady\(SPRITES\.cronosBackground\)/);
-  assert.match(src, /ctx\.globalAlpha = 0\.62;/);
-  assert.match(src, /const readability = ctx\.createLinearGradient/);
-  const sceneStart = src.indexOf('if (lv.scene === "cronos")');
-  const sceneEnd = src.indexOf('} else if (lv.scene === "orbit")', sceneStart);
-  assert.ok(sceneStart > 0 && sceneEnd > sceneStart);
-  const cronosScene = src.slice(sceneStart, sceneEnd);
-  assert.equal(cronosScene.includes('for (let index = 0; index < 13; index++)'), false);
-});
-
 test('Chronos accident uses four authored atlas phases instead of a drawn ring', async () => {
   const src = await text('src/game/06-world-rendering.js');
   const scene = src.slice(src.indexOf('if (currentLevel === 0 && levelOneShockwave > 0)'),
@@ -41,81 +29,17 @@ test('Chronos accident uses four authored atlas phases instead of a drawn ring',
   assert.ok(atlas.byteLength > 100_000);
 });
 
-test('Atlas perimeter draws its own illustrated Gaia Nova environment', async () => {
-  const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /currentLevel === 1 && spriteReady\(SPRITES\.atlasBackground\)/);
-  assert.match(src, /ctx\.drawImage\(image, \(W - width\) \/ 2 \+ driftX/);
-  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/02/atlas-perimeter-master.png'));
-  const runtime = await readFile(join(root, 'assets/atlas_perimeter_background_v1.webp'));
-  assert.ok(master.byteLength > runtime.byteLength);
-});
-
-test('Vulkar level 3 uses separate illustrated space and planet layers with the played clock', async () => {
-  const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /currentLevel===2.*drawVulkarOrbitBackground/);
-  const orbit=src.slice(src.indexOf('function drawVulkarOrbitBackground'),src.indexOf('function background(t)'));
-  assert.match(orbit,/SPRITES\.vulkarOrbitBackground,planet=SPRITES\.vulkarOrbitPlanet/);
-  assert.match(orbit,/ctx\.drawImage\(planet/);
-  assert.match(orbit,/elapsed\*/);
-  assert.doesNotMatch(orbit,/Date\.now|performance\.now|requestAnimationFrame/);
-  const assets = await text('src/game/01-runtime-assets.js');
-  assert.match(assets, /assets\/vulkar_orbit_background_v1\.webp/);
-  assert.match(assets, /assets\/vulkar_orbit_planet_v1\.webp/);
-  // The previous illustration remains recoverable, not silently deleted.
-  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/03/vulkar-descent-master.png'));
-  const runtime = await readFile(join(root, 'assets/vulkar_descent_background_v1.webp'));
-  assert.ok(master.byteLength > runtime.byteLength);
-});
-
-test('Vulkar magma tunnel has a separate level 4 illustration and no purple ion overlay', async () => {
-  const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /currentLevel === 3 && spriteReady\(SPRITES\.magmaTunnelBackground\)/);
-  assert.match(src, /lv\.scene === "ion" && currentLevel !== 3/);
-  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/04/vulkar-magma-tunnel-master.png'));
-  const runtime = await readFile(join(root, 'assets/vulkar_magma_tunnel_background_v1.webp'));
-  assert.ok(master.byteLength > runtime.byteLength);
-});
-
-test('Cryon whiteout has a dedicated illustrated classic level 5 scene', async () => {
-  const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /currentLevel === 4 && spriteReady\(SPRITES\.cryonWhiteoutBackground\)/);
-  assert.match(src, /lv\.scene === "crimson" && currentLevel !== 4/);
-  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/05/cryon-whiteout-master.png'));
-  const runtime = await readFile(join(root, 'assets/cryon_whiteout_background_v1.webp'));
-  assert.ok(master.byteLength > runtime.byteLength);
-});
-
-test('Cryon Leviathan rift has its own classic level 6 scene', async () => {
-  const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /currentLevel === 5 && spriteReady\(SPRITES\.cryonRiftBackground\)/);
-  assert.match(src, /lv\.scene === "gravity" && currentLevel !== 5/);
-  const master = await readFile(join(root, 'art-source/visual-rebirth/levels/06/cryon-leviathan-rift-master.png'));
-  const runtime = await readFile(join(root, 'assets/cryon_leviathan_rift_background_v1.webp'));
-  assert.ok(master.byteLength > runtime.byteLength);
-});
-
-test('Aether cemetery and phantom threshold are separate classic scenes', async () => {
-  const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /currentLevel === 6 && spriteReady\(SPRITES\.aetherEchoBackground\)/);
-  assert.match(src, /currentLevel === 7 && spriteReady\(SPRITES\.aetherThresholdBackground\)/);
-  for (const [master, runtime] of [
-    ['art-source/visual-rebirth/levels/07/aether-echo-cemetery-master.png', 'assets/aether_echo_cemetery_background_v1.webp'],
-    ['art-source/visual-rebirth/levels/08/aether-phantom-threshold-master.png', 'assets/aether_phantom_threshold_background_v1.webp']
-  ]) {
-    assert.ok((await readFile(join(root, master))).byteLength > (await readFile(join(root, runtime))).byteLength);
+test('static painted backgrounds are gone: every sector sky is drawn live', async () => {
+  // Orden del propietario (21/10/2026): fuera los fondos fijos; la aventura
+  // se cuenta con planetas, rutas y bases vivas, no con láminas pintadas.
+  const runtime = (await Promise.all(['src/game/01-runtime-assets.js', 'src/game/06-world-rendering.js',
+    'styles.css', 'sw.js', 'ASSET_MANIFEST.json'].map(text))).join('\n');
+  assert.doesNotMatch(runtime, /assets\/[a-z0-9_]+_background(_v1)?\.webp/);
+  for (const level of [3, 4, 5, 6, 7, 8, 9]) {
+    assert.doesNotMatch(await text('src/game/06-world-rendering.js'), new RegExp(`currentLevel !== ${level}\\)`));
   }
-});
-
-test('Titan Omega and final Chronos collapse use authored classic backgrounds', async () => {
   const src = await text('src/game/06-world-rendering.js');
-  assert.match(src, /currentLevel === 8 && spriteReady\(SPRITES\.titanGraveyardBackground\)/);
-  assert.match(src, /currentLevel === 9 && spriteReady\(SPRITES\.chronosCollapseBackground\)/);
-  for (const [master, runtime] of [
-    ['art-source/visual-rebirth/levels/09/titan-omega-graveyard-master.png', 'assets/titan_omega_graveyard_background_v1.webp'],
-    ['art-source/visual-rebirth/levels/10/chronos-collapse-master.png', 'assets/chronos_collapse_background_v1.webp']
-  ]) {
-    assert.ok((await readFile(join(root, master))).byteLength > (await readFile(join(root, runtime))).byteLength);
-  }
+  assert.match(src, /if \(currentLevel === 2\) drawVulkarOrbitBackground\(\);/, 'Vulkar keeps its planet over the drawn sky');
 });
 
 test('level one shockwave retains a graphical fallback while the atlas loads', async () => {

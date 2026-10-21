@@ -20,6 +20,10 @@
     const opening=classicChapterView?.opening;
     const active=Boolean(state==="playing"&&opening?.active);
     document.body.classList.toggle("chapter-opening",active&&opening.controlsLocked);
+    // Al acabar (o saltar) la animación del inicio, la nave entra desde abajo.
+    const locked=classicChapterControlsLocked();
+    if(classicFilmLocked&&!locked)classicShipEntry=.9;
+    classicFilmLocked=locked;
     ui.chapterSkip?.classList.toggle("hidden",!active||!opening.canSkip);
     if(ui.chapterSkip)ui.chapterSkip.disabled=state!=="playing";
     syncClassicMissileHud();
@@ -579,7 +583,8 @@
   }
 
   function advanceClassicTutorial() {
-    if(!classicTutorial||!classicFlightView)return;
+    // Durante la animación del inicio no hay tutorial: empieza al aparecer la nave.
+    if(!classicTutorial||!classicFlightView||classicChapterControlsLocked())return;
     classicTutorial.advance({elapsed:classicFlightView.elapsed,playing:state==='playing',
       shots:classicWeapons?.shotSequence||0,collected,workshopOpened:classicWorkshopOpened,
       moduleRecovered:Boolean(classicEquipment.recoveredTwin),missilesFired:classicSalvageState?.missileShotsSpent||0,
@@ -651,6 +656,7 @@
       for(const cue of [timeline.arrive,timeline.drain,timeline.beamStart])
         if(introBefore<cue&&classicFlightView.elapsed>=cue)combatSound("atlas-charge",W*.5);
     }
+    classicShipEntry=Math.max(0,classicShipEntry-dt);
     if(classicChapterStory&&classicFlightView) {
       classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
         aftermathElapsed:classicChapterOutroStartedAt===null?0:elapsed-classicChapterOutroStartedAt},classicChapterEvent);
@@ -687,7 +693,7 @@
 
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
-    if(view.elapsed<9 || view.canFinish)return;
+    if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
     const rules=NeonCampaign.getVoyageStageRules(view.routeId,n);
     if(!rules)return;

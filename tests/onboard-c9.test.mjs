@@ -96,7 +96,8 @@ function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null, 
     window.__ONBOARD_C9_TEST__={
       update,render,startLevel,openClassicDock,closeClassicDock,resumeGame,pauseGame,goHome,
       fireManualShot,beginClassicVoyageService,
-      prepare(index=0){startLevel(index);spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;},
+      prepare(index=0,{skipOpening=true}={}){startLevel(index);spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;
+        if(skipOpening){classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;syncClassicChapterPresentation();}},
       seedCombatResources(){
         hull=61;classicHullReserve=12;
         items=[{id:'onboard-live-wreckage',type:'debris',x:W*.15,baseX:W*.15,y:H*.35,
@@ -152,10 +153,16 @@ const gameplay = snapshot => {
     weapons, salvage, items, shots, events, transmission};
 };
 
-test('fresh classic launch stays in the Chronos world with immediate controls and no cinematic image request', t => {
-  const h = harness(t, {unlocked: 1}); h.api.prepare();
-  const q = h.snapshot();
+test('fresh classic launch plays the Chronos opening as a skippable film, then gives immediate controls without a cinematic image request', t => {
+  const h = harness(t, {unlocked: 1}); h.api.prepare(0, {skipOpening: false});
+  let q = h.snapshot();
   assert.equal(q.state, 'playing'); assert.equal(q.route.elapsed, 0);
+  assert.equal(q.chapter.opening.film, true); assert.equal(q.controlsLocked, true);
+  assert.equal(h.api.fireManualShot(), false, 'no combat while the film plays');
+  h.api.update(1 / 60);
+  assert.equal(h.document.body.classList.contains('chapter-opening'), true, 'the HUD hides during the film');
+  assert.equal(h.node('chapterSkip').classList.contains('hidden'), false, 'the film can be skipped');
+  h.node('chapterSkip').click(); q = h.snapshot();
   assert.equal(q.chapter.opening.active, false); assert.equal(q.controlsLocked, false);
   assert.equal(h.document.body.classList.contains('chapter-opening'), false);
   assert.equal(h.node('chapterSkip').classList.contains('hidden'), true);
@@ -164,7 +171,7 @@ test('fresh classic launch stays in the Chronos world with immediate controls an
   assert.equal(h.node('flightWeapon').classList.contains('hidden'), true, 'one owned weapon needs no selector');
   assert.equal(h.node('fireWeapon').textContent, 'PHASER');
   assert.equal(h.node('flightPilotHint').textContent.includes('DESLIZA'), true);
-  assert.equal(h.api.fireManualShot(), true, 'manual combat works at route time zero');
+  assert.equal(h.api.fireManualShot(), true, 'manual combat works as soon as the film is skipped');
   h.api.render(0);
   assert.equal(h.drawCalls.includes(INTRO_PATH), false, 'rendering does not sneak the cinematic back in');
   assert.equal(h.pending.size, 1);

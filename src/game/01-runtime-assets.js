@@ -108,6 +108,8 @@
   let classicChapterStory = null;
   let classicChapterView = null;
   let classicChapterOutroStartedAt = null;
+  let classicShipEntry = 0; // segundos que quedan de la entrada de la nave tras el inicio
+  let classicFilmLocked = false;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
   let classicPursuitAnnounced = new Set();
@@ -273,19 +275,8 @@
     shieldIdle: loadSprite("assets/shield_idle.webp"),
     explosionSmall: loadSprite("assets/explosion_small.webp"),
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
-    cronosBackground: loadSprite("assets/cronos_level1_background.webp", true),
     chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
-    atlasBackground: loadSprite("assets/atlas_perimeter_background_v1.webp", false),
-    vulkarBackground: loadSprite("assets/vulkar_descent_background_v1.webp", false),
-    vulkarOrbitBackground: loadSprite("assets/vulkar_orbit_background_v1.webp", false),
     vulkarOrbitPlanet: loadSprite("assets/vulkar_orbit_planet_v1.webp", false),
-    magmaTunnelBackground: loadSprite("assets/vulkar_magma_tunnel_background_v1.webp", false),
-    cryonWhiteoutBackground: loadSprite("assets/cryon_whiteout_background_v1.webp", false),
-    cryonRiftBackground: loadSprite("assets/cryon_leviathan_rift_background_v1.webp", false),
-    aetherEchoBackground: loadSprite("assets/aether_echo_cemetery_background_v1.webp", false),
-    aetherThresholdBackground: loadSprite("assets/aether_phantom_threshold_background_v1.webp", false),
-    titanGraveyardBackground: loadSprite("assets/titan_omega_graveyard_background_v1.webp", false),
-    chronosCollapseBackground: loadSprite("assets/chronos_collapse_background_v1.webp", false)
   };
 
   function frameFrom(group, index) {

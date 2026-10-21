@@ -47,7 +47,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .debris-corridor{position:relative;width:32px;height:32px;flex:0 0 32px;border-radius:8px;background:linear-gradient(90deg,transparent 37%,rgba(84,255,238,.22) 37% 63%,transparent 63%);box-shadow:inset 0 0 0 1px rgba(100,255,241,.32),0 0 10px rgba(76,240,255,.24)}.debris-corridor::before,.debris-corridor::after{content:"";position:absolute;top:5px;width:10px;height:22px;background:radial-gradient(circle at 25% 30%,#ff775f 0 2px,transparent 3px),linear-gradient(145deg,#7f8da4,#343d50 48%,#9b5e53);clip-path:polygon(9% 12%,72% 0,100% 38%,78% 92%,17% 100%,0 55%);filter:drop-shadow(0 0 4px rgba(255,89,74,.55))}.debris-corridor::before{left:1px}.debris-corridor::after{right:1px;transform:scaleX(-1)}
 .build-version{align-self:flex-start;margin-top:3px;padding:2px 7px;border-radius:999px;border:1px solid rgba(98,255,228,.28);background:rgba(98,255,228,.08);color:#70ffe7;font-size:8px;font-weight:1000;letter-spacing:.12em}.settings-build{margin:12px 0 0!important;color:#7881a9!important;font-size:9px!important;letter-spacing:.08em}.menu-topline>div{align-items:flex-start}
 
-.story-transmission{position:absolute;z-index:8;left:50%;bottom:calc(max(24px,env(safe-area-inset-bottom)) + 88px);width:min(88%,560px);transform:translate(-50%,18px);display:flex;gap:11px;align-items:center;padding:11px 14px;border:1px solid rgba(92,238,255,.35);border-radius:16px;background:linear-gradient(180deg,rgba(7,24,48,.94),rgba(3,12,28,.94));box-shadow:0 14px 36px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08);opacity:0;pointer-events:none;transition:.25s}.story-transmission.show{opacity:1;transform:translate(-50%,0)}.story-signal{width:35px;height:35px;display:grid;place-items:center;flex:0 0 35px;border-radius:50%;border:1px solid #68efff;color:#aef8ff;font:1000 10px/1 system-ui;box-shadow:0 0 18px rgba(80,236,255,.35)}.story-transmission div{display:flex;min-width:0;flex-direction:column;gap:3px}.story-transmission small{font-size:8px;letter-spacing:.18em;color:#62ecff;font-weight:1000}.story-transmission b{font-size:12px;line-height:1.3;color:#eefcff}.briefing-visual[data-scene="cronos"]{background-image:linear-gradient(180deg,rgba(4,14,35,.10),rgba(2,7,20,.72)),url("assets/cronos_level1_background.webp");background-size:cover;background-position:center 42%}.briefing-visual[data-scene="cronos"] .briefing-planet{opacity:.25;filter:saturate(.75)}.briefing-visual[data-scene="cronos"] .briefing-ring{border-color:#89f7ff;box-shadow:0 0 18px #6ef2ff;transform:scale(1.35)}
+.story-transmission{position:absolute;z-index:8;left:50%;bottom:calc(max(24px,env(safe-area-inset-bottom)) + 88px);width:min(88%,560px);transform:translate(-50%,18px);display:flex;gap:11px;align-items:center;padding:11px 14px;border:1px solid rgba(92,238,255,.35);border-radius:16px;background:linear-gradient(180deg,rgba(7,24,48,.94),rgba(3,12,28,.94));box-shadow:0 14px 36px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08);opacity:0;pointer-events:none;transition:.25s}.story-transmission.show{opacity:1;transform:translate(-50%,0)}.story-signal{width:35px;height:35px;display:grid;place-items:center;flex:0 0 35px;border-radius:50%;border:1px solid #68efff;color:#aef8ff;font:1000 10px/1 system-ui;box-shadow:0 0 18px rgba(80,236,255,.35)}.story-transmission div{display:flex;min-width:0;flex-direction:column;gap:3px}.story-transmission small{font-size:8px;letter-spacing:.18em;color:#62ecff;font-weight:1000}.story-transmission b{font-size:12px;line-height:1.3;color:#eefcff}.briefing-visual[data-scene="cronos"]{background-image:linear-gradient(180deg,rgba(4,14,35,.10),rgba(2,7,20,.72));background-size:cover;background-position:center 42%}.briefing-visual[data-scene="cronos"] .briefing-planet{opacity:.25;filter:saturate(.75)}.briefing-visual[data-scene="cronos"] .briefing-ring{border-color:#89f7ff;box-shadow:0 0 18px #6ef2ff;transform:scale(1.35)}
 
 /* V7 · respuesta visual del HUD */
 .hud-pop{animation:hudPop .32s cubic-bezier(.2,.9,.25,1.35)}
@@ -311,16 +311,6 @@ body.flight-mode .flight-dock button:focus-visible{outline:2px solid #c4f7ff;out
 
 /* Mission transitions show the actual destination art, without a stock planet
    pasted over it. These are previews; the playfield remains the canvas. */
-body.flight-mode [data-scene="cronos"]{--mission-art:url("assets/cronos_level1_background.webp")}
-body.flight-mode [data-scene="rift"]{--mission-art:url("assets/atlas_perimeter_background_v1.webp")}
-body.flight-mode [data-scene="belt"]{--mission-art:url("assets/vulkar_orbit_background_v1.webp")}
-body.flight-mode [data-scene="ion"]{--mission-art:url("assets/vulkar_magma_tunnel_background_v1.webp")}
-body.flight-mode [data-scene="crimson"]{--mission-art:url("assets/cryon_whiteout_background_v1.webp")}
-body.flight-mode [data-scene="gravity"]{--mission-art:url("assets/cryon_leviathan_rift_background_v1.webp")}
-body.flight-mode [data-scene="ghost"]{--mission-art:url("assets/aether_echo_cemetery_background_v1.webp")}
-body.flight-mode [data-scene="overdrive"]{--mission-art:url("assets/aether_phantom_threshold_background_v1.webp")}
-body.flight-mode [data-scene="dark"]{--mission-art:url("assets/titan_omega_graveyard_background_v1.webp")}
-body.flight-mode [data-scene="collapse"]{--mission-art:url("assets/chronos_collapse_background_v1.webp")}
 body.flight-mode #briefing,body.flight-mode #complete,body.flight-mode #levelSelect{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
 body.flight-mode .briefing-panel,body.flight-mode .complete-panel{width:min(100%,440px);padding:18px 16px;transform:none;border-radius:20px;background:#091522;scrollbar-width:thin;scrollbar-color:#4b8194 #091522}
 body.flight-mode .briefing-panel::before{display:none}
@@ -373,7 +363,7 @@ body.flight-mode #briefing button:focus-visible,body.flight-mode #complete butto
 }
 
 /* The orbital destination preview uses the same two independent exports. */
-body.flight-mode .briefing-visual[data-scene="belt"]{background-image:linear-gradient(180deg,rgba(1,6,13,.02),rgba(1,6,13,.12)),url("assets/vulkar_orbit_planet_v1.webp"),url("assets/vulkar_orbit_background_v1.webp");background-size:cover,auto 150%,cover;background-position:center,right -45px center,center;background-repeat:no-repeat}
+body.flight-mode .briefing-visual[data-scene="belt"]{background-image:linear-gradient(180deg,rgba(1,6,13,.02),rgba(1,6,13,.12)),url("assets/vulkar_orbit_planet_v1.webp");background-size:cover,auto 150%;background-position:center,right -45px center;background-repeat:no-repeat}
 
 /* Each action thumb owns its contact; browser gestures must not cancel fire
    while the other finger continues relative flight on the Canvas. */
@@ -554,6 +544,8 @@ body.flight-mode .flight-pilot-stick::before{width:52px;height:1px}
 body.flight-mode .flight-pilot-stick::after{width:1px;height:52px}
 body.flight-mode .flight-pilot-stick span{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px;border:1px solid #9df5f2;border-radius:50%;background:radial-gradient(circle at 40% 35%,#d9ffff 0 8%,#62d9df 14%,#173a51 72%);box-shadow:0 0 14px rgba(92,231,238,.52);will-change:transform}
 body.chapter-opening #classicC9,body.chapter-opening .flight-pilot-hint{visibility:hidden}
+/* El inicio es una animación: fuera todo el HUD salvo el botón de saltar. */
+body.chapter-opening #hud,body.chapter-opening #flightHud,body.chapter-opening #flightRoute,body.chapter-opening #powerHud,body.chapter-opening #storyTransmission{visibility:hidden}
 @media(max-width:360px){body.flight-mode .classic-missile{right:124px}body.flight-mode .flight-pilot-hint{font-size:8px;letter-spacing:.04em}}
 @media(prefers-reduced-motion:reduce){body.flight-mode .flight-pilot-hint{transition:none}}
 

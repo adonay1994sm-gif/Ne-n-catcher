@@ -567,6 +567,7 @@ var NeonCampaign = (() => {
   // src/game/narrative/chronos-chapter.js
   var CHRONOS_CHAPTER_VERSION = "chronos-chapter-v1";
   var CHRONOS_CHAPTER_OPENING_SECONDS = 26;
+  var CHRONOS_CHAPTER_CINEMATIC_SECONDS = 14;
   var CHRONOS_CHAPTER_AFTERMATH_SECONDS = 8;
   var CHRONOS_CHAPTER_ROUTE_SECONDS = 360;
   var ROUTE_ID = "chronos-to-gaia";
@@ -622,28 +623,28 @@ var NeonCampaign = (() => {
     dialogue(
       "routine",
       "lira",
-      "Piloto, desliza el dedo para maniobrar. Chronos te recibe.",
+      "Chronos, turno de guardia. La ruta del CRONIUM est\xE1 estable.",
       3,
       { at: 0, shotIndex: 0, phase: "opening", visualCue: "chronos-routine", audioCue: "chronos-room-tone" }
     ),
     dialogue(
       "convoy-clearance",
       "lira",
-      "Convoy C-17: acceso autorizado. Traigan el suministro.",
+      "Convoy C-17: firma aceptada. Abro el escudo del reactor.",
       3.3,
       { at: 3, shotIndex: 1, phase: "opening", visualCue: "convoy-clearance", audioCue: "radio-valid" }
     ),
     dialogue(
       "false-clearance",
       "lira",
-      "Esa firma\u2026 \xA1No est\xE1n frenando!",
+      "Esa firma era falsa\u2026 \xA1Algo enorme se posa sobre la torre!",
       2.7,
       { at: 6.3, shotIndex: 2, phase: "opening", visualCue: "sabotage-lock", audioCue: "access-anomaly" }
     ),
     dialogue(
       "evacuate",
       "lira",
-      "\xA1Han perforado el reactor! Todas las naves: evacuaci\xF3n.",
+      "\xA1Ha perforado el reactor! Todas las naves: evacuaci\xF3n.",
       4.2,
       { at: 9, shotIndex: 3, phase: "opening", visualCue: "reactor-breach", audioCue: "reactor-trip" }
     ),
@@ -850,6 +851,7 @@ var NeonCampaign = (() => {
     function snapshot() {
       const active = openingEnabled && elapsed < CHRONOS_CHAPTER_OPENING_SECONDS;
       const shot = [...CHRONOS_CHAPTER_OPENING].reverse().find((cue2) => elapsed >= cue2.at) || CHRONOS_CHAPTER_OPENING[0];
+      const film = active && presentation === "in-world" && elapsed < CHRONOS_CHAPTER_CINEMATIC_SECONDS;
       const aftermathActive = signals.has("atlas-disabled") && aftermathElapsed < CHRONOS_CHAPTER_AFTERMATH_SECONDS;
       const line = aftermathActive ? [...CHRONOS_CHAPTER_AFTERMATH].reverse().find((cue2) => aftermathElapsed >= cue2.at) : null;
       return freeze({
@@ -858,9 +860,10 @@ var NeonCampaign = (() => {
         routeElapsed: elapsed,
         introSeen,
         opening: freeze({
-          active: active && presentation === "cinematic",
-          controlsLocked: active && presentation === "cinematic" && elapsed < 9,
-          canSkip: active && presentation === "cinematic",
+          active: active && presentation === "cinematic" || film,
+          controlsLocked: active && presentation === "cinematic" && elapsed < 9 || film,
+          canSkip: active && presentation === "cinematic" || film,
+          film,
           shotIndex: shot.shotIndex,
           visualCue: shot.visualCue,
           progress: clamp2(elapsed / CHRONOS_CHAPTER_OPENING_SECONDS, 0, 1),

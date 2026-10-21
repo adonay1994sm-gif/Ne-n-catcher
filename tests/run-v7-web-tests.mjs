@@ -52,21 +52,17 @@ const swContext = {
 };
 vm.runInNewContext(`${serviceWorkerSource}\nglobalThis.__SW_TEST__ = { CACHE, CORE };`, swContext);
 
-await test("PWA precarga código, legales, sprites y fondo de Cronos", async () => {
+await test("PWA precarga código, legales y sprites", async () => {
   assert.equal(swContext.__SW_TEST__.CACHE,"neon-cronium-pre-release-7-2-0-orbital-hud-2");
   const paths = new Set(swContext.__SW_TEST__.CORE.map(withoutQuery));
   const manifest = JSON.parse(await text("ASSET_MANIFEST.json"));
   for (const path of [
     "index.html", "styles.css", "game.js", "core-runtime.js", "manifest.webmanifest",
     "privacy.html", "terms.html", "analytics-manager.js", "assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/core_frame_00.webp",
-    "assets/cronium_fragment_v1.webp", "assets/cronos_level1_background.webp",
-    "assets/chronos_shockwave_atlas_v1.webp", "assets/atlas_perimeter_background_v1.webp",
+    "assets/cronium_fragment_v1.webp",
+    "assets/chronos_shockwave_atlas_v1.webp",
     "assets/ch02_interceptor_atlas_v1.webp", "assets/guardian_atlas_states_v2.webp", "assets/cronium_energy_atlas_v2.webp",
-    "assets/combat_sfx_atlas_v2.m4a", "assets/combat_sfx_atlas_v2.json", "assets/c9_upgrade_icons_v1.webp", "assets/forja_modules_atlas_v1.webp",
-    "assets/vulkar_descent_background_v1.webp", "assets/vulkar_magma_tunnel_background_v1.webp",
-    "assets/cryon_whiteout_background_v1.webp", "assets/cryon_leviathan_rift_background_v1.webp",
-    "assets/aether_echo_cemetery_background_v1.webp", "assets/aether_phantom_threshold_background_v1.webp",
-    "assets/titan_omega_graveyard_background_v1.webp", "assets/chronos_collapse_background_v1.webp"
+    "assets/combat_sfx_atlas_v2.m4a", "assets/combat_sfx_atlas_v2.json", "assets/c9_upgrade_icons_v1.webp", "assets/forja_modules_atlas_v1.webp"
   ]) assert.ok(paths.has(path), path);
   // The live ship and its emergency portrait must agree with the inventory;
   // preserved artwork is not a reason to restore retired images to precache.
@@ -101,7 +97,7 @@ await test("parallax V7 reemplaza la antigua rejilla", async () => {
 
 await test("núcleo, tractor, phaser, pulso, motores y HUD tienen respuesta multietapa", async () => {
   for (const marker of [
-    "directionalBurst", "distanceToShip", "const targetWidth", "const volume = ctx.createLinearGradient",
+    "directionalBurst", "const targetWidth", "const volume = ctx.createLinearGradient",
     "flashPhase", "muzzle.addColorStop", 'style === "pulse"', "pose.enginePulse", "updateHudVisual"
   ]) assert.ok(gameSource.includes(marker), marker);
   assert.match(styles, /@keyframes hudPop/);

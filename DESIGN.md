@@ -469,7 +469,10 @@ propietario: v4 3/10, v5 8/10 en iPhone):
 1. **Planos, no animaciones sueltas.** Cada momento es un plano con
    tiempo, qué se ve, cámara y sonido (tabla en
    `docs/design/GUION_INICIO_CHRONOS.md`). La cámara de escena (zoom,
-   encuadre, temblor) no afecta al juego, y los controles nunca se bloquean.
+   encuadre, temblor) no afecta al juego. El inicio de Chronos es una
+   **animación**: sin HUD ni nave y sin control hasta 14 s (o «Omitir»),
+   con franjas de cine y el diálogo como subtítulo (orden del propietario,
+   21/10/2026).
 2. **Escala.** Lo colosal se cuenta con cámara pegada (zoom 2,1 → 1,0) y
    referencias pequeñas (naves del convoy). El villano llega de lejos
    (escala 0,07 → 1) en vez de aparecer de golpe sin motivo.

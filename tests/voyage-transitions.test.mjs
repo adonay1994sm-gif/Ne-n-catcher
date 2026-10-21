@@ -177,7 +177,7 @@ test('Gaia orbital scenery separates illustrated space, growing planet and relay
   }
 });
 
-test('Gaia keeps its existing painting fallback until both independent illustrations are ready', () => {
+test('Gaia falls back to the drawn sky until both independent illustrations are ready', () => {
   const renderer = recordingRenderer(390,844,{presentationTop:122,presentationBottom:730});
   for (const name of ['flightSpace','flightKit']) {
     const previous = renderer.SPRITES[name].naturalWidth;
@@ -186,5 +186,5 @@ test('Gaia keeps its existing painting fallback until both independent illustrat
     renderer.SPRITES[name].naturalWidth = previous;
   }
   assert.match(source,/currentLevel===1 && drawGaiaOrbitBackground\(\)/);
-  assert.match(source,/currentLevel === 1 && spriteReady\(SPRITES\.atlasBackground\)/);
+  assert.doesNotMatch(source,/SPRITES\.atlasBackground/,'the static perimeter painting is gone');
 });
