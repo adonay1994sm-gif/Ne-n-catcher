@@ -270,6 +270,8 @@
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
     hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
     atlasExplosion: loadSprite("assets/atlas_explosion_v1.webp", false),
+    // Peligros del sector 2 (baúl, encargo enc-nucleo): núcleo de lava y mina de plasma.
+    lavaCoreMine: loadSprite("assets/lava_core_mine_atlas_v1.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),

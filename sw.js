@@ -18,6 +18,7 @@ const CORE = [
   "assets/hull_impact_sparks_v1.webp",
   "assets/cronos_prime_trail_v1.webp",
   "assets/atlas_explosion_v1.webp",
+  "assets/lava_core_mine_atlas_v1.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",
