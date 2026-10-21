@@ -58,7 +58,7 @@ await test("PWA precarga código, legales y sprites", async () => {
   const manifest = JSON.parse(await text("ASSET_MANIFEST.json"));
   for (const path of [
     "index.html", "styles.css", "game.js", "core-runtime.js", "manifest.webmanifest",
-    "privacy.html", "terms.html", "analytics-manager.js", "assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/core_frame_00.webp",
+    "privacy.html", "terms.html", "analytics-manager.js", "assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v3.webp", "assets/core_frame_00.webp",
     "assets/cronium_fragment_v1.webp",
     "assets/chronos_shockwave_atlas_v1.webp",
     "assets/ch02_interceptor_atlas_v1.webp", "assets/guardian_atlas_states_v2.webp", "assets/cronium_energy_atlas_v2.webp",
@@ -66,7 +66,7 @@ await test("PWA precarga código, legales y sprites", async () => {
   ]) assert.ok(paths.has(path), path);
   // The live ship and its emergency portrait must agree with the inventory;
   // preserved artwork is not a reason to restore retired images to precache.
-  for (const active of ["assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v2.webp", "assets/ch02_interceptor_atlas_v1.webp"]) {
+  for (const active of ["assets/player_ship_identity_v1.webp", "assets/ship_modular_atlas_v1.webp", "assets/comet_flight_atlas_v3.webp", "assets/ch02_interceptor_atlas_v1.webp"]) {
     const entry = manifest.standalone.find(asset => asset.path === active);
     assert.ok(entry, `recurso activo sin inventario: ${active}`);
     assert.notEqual(entry.activeRuntime, false, active);

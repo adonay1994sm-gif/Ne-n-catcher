@@ -10,7 +10,7 @@ const CORE = [
   "assets/c9_upgrade_icons_v1.webp",
   "assets/forja_modules_atlas_v1.webp",
   "assets/player_ship_identity_v1.webp",
-  "assets/comet_flight_atlas_v2.webp",
+  "assets/comet_flight_atlas_v3.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",

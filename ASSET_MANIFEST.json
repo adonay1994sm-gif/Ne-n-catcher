@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 95,
-  "runtimeBytes": 15766024,
+  "assetCount": 96,
+  "runtimeBytes": 16013472,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -587,13 +587,32 @@
       "sha256": "6d2989e816f6817c6b979395e299f19a32ba1d344904c4b727579f77d896ad6d",
       "decodedRGBABytes": 2359296,
       "use": "Four real illustrated comet states; core pivot(288,192),+X forward,8fps,played clock; tail is not a hitbox.",
+      "activeRuntime": false,
+      "precache": false,
+      "status": "RETIRED",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "origin": "Original built-in image generation; provenance/master/export in metadata",
+      "version": 2
+    },
+    {
+      "id": "comet-flight-v3",
+      "path": "assets/comet_flight_atlas_v3.webp",
+      "master": "art-source/comet-ambar/cometa_ambar_spritesheet_1.0.0.png",
+      "metadata": "art-source/comet-ambar/asset.json",
+      "dimensions": "1536x384",
+      "format": "webp-alpha",
+      "size": 247448,
+      "sha256": "c6db43e0fedd76002fbeacd8c194ce7aa954b3271001b23f5bddacf062b05751",
+      "decodedRGBABytes": 2359296,
+      "use": "Four amber comet states (baúl cometa-ambar-flicker 1.0.0): warm tail, no cyan; core pivot(288,192),+X forward,8fps,played clock; tail is not a hitbox.",
       "activeRuntime": true,
       "precache": true,
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
-      "origin": "Original built-in image generation; provenance/master/export in metadata",
-      "version": 2
+      "origin": "GPT image generation uploaded to the asset vault (cometa-ambar-flicker 1.0.0); resized to 1536x384 lossless",
+      "version": 3
     },
     {
       "id": "c9-station-v1",

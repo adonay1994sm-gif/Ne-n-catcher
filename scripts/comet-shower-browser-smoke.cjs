@@ -114,7 +114,7 @@ function frozenState(q){return{state:q.state,elapsed:q.elapsed,hull:q.hull,route
   const prefix=report.buildInfo.storagePrefix;assert.ok(typeof prefix==='string'&&prefix.length);
   report.packageFiles={};
   for(const file of ['build-info.json','juego/game.js','juego/content-runtime.js','juego/styles.css',
-    'juego/assets/comet_flight_atlas_v2.webp']){
+    'juego/assets/comet_flight_atlas_v3.webp']){
     const bytes=await fs.readFile(path.join(root,file));report.packageFiles[file]={bytes:bytes.length,sha256:sha256(bytes)};
   }
   server=await startStaticServer(root);
@@ -156,7 +156,7 @@ function frozenState(q){return{state:q.state,elapsed:q.elapsed,hull:q.hull,route
     CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
       const result=Reflect.apply(draw,this,[image,...args]);
       const source=image?.currentSrc||image?.src||'';
-      if(this.canvas.id==='canvas'&&source.includes('/comet_flight_atlas_v2.webp')&&args.length===8){
+      if(this.canvas.id==='canvas'&&source.includes('/comet_flight_atlas_v3.webp')&&args.length===8){
         const matrix=this.getTransform(),cell=args.slice(0,4).join(',');observer.draws++;observer.cells.add(cell);
         observer.recentDraws.push({frame:observer.frames,cell,sourceRect:args.slice(0,4),
           destination:args.slice(4),transform:{a:matrix.a,b:matrix.b,c:matrix.c,d:matrix.d,e:matrix.e,f:matrix.f}});
