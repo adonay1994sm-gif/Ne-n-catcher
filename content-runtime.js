@@ -82,6 +82,7 @@ var NeonCampaign = (() => {
     releaseCometShowerItem: () => releaseCometShowerItem,
     resolveHullReinforcement: () => resolveHullReinforcement,
     rewardForEnemy: () => rewardForEnemy,
+    sectorPlanetPose: () => sectorPlanetPose,
     selectClassicWeapon: () => selectClassicWeapon,
     setClassicRechargeInterval: () => setClassicRechargeInterval,
     setClassicUnlimitedFire: () => setClassicUnlimitedFire,
@@ -4654,6 +4655,35 @@ var NeonCampaign = (() => {
       // Navigation stars are secondary presentation; comfort mode retains the
       // same route/environment but removes this brief acceleration embellishment.
       starStretch: boundary !== null && !reducedEffects ? Math.sin(depth * Math.PI) : 0
+    });
+  }
+
+  // src/game/presentation/sector-planets.js
+  var SECTOR_PLANET_FRAMES = 7;
+  var SECTOR_PLANET_FRAME_SECONDS = 0.9;
+  var SECTOR_PLANETS = Object.freeze({
+    3: Object.freeze({ key: "volcanico", x: 0.76, y: 0.25, size: 0.52 }),
+    4: Object.freeze({ key: "glacial", x: 0.74, y: 0.24, size: 0.5 }),
+    5: Object.freeze({ key: "glacial", x: 0.26, y: 0.25, size: 0.56 }),
+    6: Object.freeze({ key: "violeta", x: 0.76, y: 0.24, size: 0.52 }),
+    7: Object.freeze({ key: "violeta", x: 0.27, y: 0.26, size: 0.54 }),
+    8: Object.freeze({ key: "tormentoso", x: 0.74, y: 0.25, size: 0.54 })
+  });
+  var clamp01 = (value) => Math.max(0, Math.min(1, value));
+  function sectorPlanetPose(levelIndex, elapsed, progress = 0) {
+    const planet = SECTOR_PLANETS[levelIndex];
+    if (!planet || !Number.isFinite(elapsed) || elapsed < 0) return null;
+    const done = clamp01(Number.isFinite(progress) ? progress : 0);
+    const position = elapsed / SECTOR_PLANET_FRAME_SECONDS;
+    const frame = Math.floor(position) % SECTOR_PLANET_FRAMES;
+    return Object.freeze({
+      key: planet.key,
+      frame,
+      next: (frame + 1) % SECTOR_PLANET_FRAMES,
+      blend: position % 1,
+      x: planet.x + Math.sin(elapsed * 0.03) * 0.01,
+      y: planet.y + done * 0.03,
+      size: planet.size * (1 + done * 0.15)
     });
   }
 

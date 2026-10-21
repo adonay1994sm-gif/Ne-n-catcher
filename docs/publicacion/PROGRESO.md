@@ -72,6 +72,11 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
       decisiones del propietario).
 - [ ] Fase B: sector 1 en 5 viajes (S1-V1…S1-V5).
 
+## Noche 21/10/2026 (plan en `PLAN_NOCHE_2026-10-21.md`)
+
+- [x] Planetas animados del propietario en los sectores 4–9.
+- [x] `scripts/capture-levels.cjs` para capturar cualquier nivel.
+
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y
   rompía 35 pruebas de `npm run test:content` (cargan el módulo sin la

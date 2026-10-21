@@ -480,6 +480,10 @@
     croniumFragment: loadSprite("assets/cronium_fragment_v1.webp", true),
     chronosShockwave: loadSprite("assets/chronos_shockwave_atlas_v1.webp", false),
     vulkarOrbitPlanet: loadSprite("assets/vulkar_orbit_planet_v1.webp", false),
+    planetVolcanico: loadSprite("assets/planet_volcanico_atlas_v1.webp", false),
+    planetGlacial: loadSprite("assets/planet_glacial_atlas_v1.webp", false),
+    planetVioleta: loadSprite("assets/planet_violeta_atlas_v1.webp", false),
+    planetTormentoso: loadSprite("assets/planet_tormentoso_atlas_v1.webp", false),
   };
 
   function frameFrom(group, index) {
@@ -3933,7 +3937,7 @@
         ctx.stroke();
       }
     } else if (lv.scene === "crimson") {
-      drawPlanet(W * 0.19, H * 0.16, 92, ["#fff5c7", "#ff744f", "#761737"], false);
+      if (!sectorPlanet()) drawPlanet(W * 0.19, H * 0.16, 92, ["#fff5c7", "#ff744f", "#761737"], false);
       ctx.globalAlpha = 0.14 + Math.sin(t * 0.004) * 0.03;
       ctx.fillStyle = "#ff4965";
       ctx.beginPath();
@@ -3977,7 +3981,7 @@
         ctx.stroke();
       }
     } else if (lv.scene === "dark") {
-      drawPlanet(W * 0.73, H * 0.18, 112, ["#6d2d73", "#27102f", "#05030a"], false);
+      if (!sectorPlanet()) drawPlanet(W * 0.73, H * 0.18, 112, ["#6d2d73", "#27102f", "#05030a"], false);
       ctx.fillStyle = "rgba(255,92,233,.12)";
       ctx.beginPath();
       ctx.arc(W * 0.73, H * 0.18, 130, 0, Math.PI * 2);
@@ -4521,6 +4525,31 @@
     return true;
   }
 
+  // Planeta animado del sector (pose pura de NeonCampaign.sectorPlanetPose):
+  // 7 fotogramas de giro con fundido; sustituye a los fondos fijos.
+  const SECTOR_PLANET_SPRITES = {volcanico: "planetVolcanico", glacial: "planetGlacial",
+    violeta: "planetVioleta", tormentoso: "planetTormentoso"};
+  function sectorPlanet() {
+    if (typeof NeonCampaign.sectorPlanetPose !== "function") return null;
+    const pose = NeonCampaign.sectorPlanetPose(currentLevel, elapsed, collected / Math.max(1, level().goal));
+    const image = pose && SPRITES[SECTOR_PLANET_SPRITES[pose.key]];
+    if (!image) return null;
+    ensureSprite(image);
+    return spriteReady(image) ? {pose, image} : null;
+  }
+
+  function drawSectorPlanet() {
+    const planet = sectorPlanet();
+    if (!planet) return;
+    const {pose, image} = planet, cell = image.naturalWidth / 4, size = W * pose.size;
+    const x = W * pose.x - size / 2, y = H * pose.y - size / 2;
+    const draw = (frame, alpha) => {
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(image, frame % 4 * cell, Math.floor(frame / 4) * cell, cell, cell, x, y, size, size);
+    };
+    ctx.save(); draw(pose.frame, 1); if (pose.blend > 0) draw(pose.next, pose.blend); ctx.restore();
+  }
+
   function drawVulkarOrbitBackground() {
     const planet=SPRITES.vulkarOrbitPlanet;
     ensureSprite(planet);
@@ -4605,6 +4634,7 @@
 
     // Vulkar: el planeta va sobre el cielo dibujado (ya no hay imagen de fondo).
     if (currentLevel === 2) drawVulkarOrbitBackground();
+    drawSectorPlanet();
     drawSectorEnvironment(t, lv);
 
     // Capa media: polvo y restos minúsculos con una deriva independiente.
