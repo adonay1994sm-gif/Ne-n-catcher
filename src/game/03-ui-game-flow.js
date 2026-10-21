@@ -886,7 +886,7 @@
     atlasBoss=null;document.body.classList.remove("atlas-combat");ui.atlasEncounter?.classList.add("hidden");
     if(classicWeapons)NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);
     setClassicFlightHudVisible(false);setState("menu");
-    buildLevelGrid();overlay(ui.levelSelect);
+    sectorMapShown=ficha.sector;buildLevelGrid();overlay(ui.levelSelect);
     toast(`${ficha.id} · ${ficha.title}: viaje completado.`);
   }
 
@@ -1283,17 +1283,32 @@
 
   // Mapa de sector (docs/design/MAPA_SECTOR.md): rutas del sector 1 y bases
   // con conversación. Sin guardado propio: S1-V1 está hecho si Gaia se abrió.
+  let sectorMapShown = 1;
   function buildSectorMap() {
     if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
     const firstDone = getUnlocked() >= 2;
     const sideDone = NeonCampaign.PLAYABLE_VOYAGES.filter(ficha => ficha.id !== "S1-V1" && loadSideVoyageRecord(ficha)?.completed)
       .map(ficha => ficha.id);
-    const map = NeonCampaign.sectorMapState(1, {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
-      completed: [...(firstDone ? ["S1-V1"] : []), ...sideDone]});
+    const progress = {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
+      completed: [...(firstDone ? ["S1-V1"] : []), ...sideDone]};
+    const sectors = Object.keys(NeonCampaign.SECTOR_MAPS).map(Number).map(id => NeonCampaign.sectorMapState(id, progress));
+    if (!sectors.find(item => item.id === sectorMapShown)?.open) sectorMapShown = 1;
+    const map = sectors.find(item => item.id === sectorMapShown);
     const place = id => map.places.find(item => item.id === id);
     const pct = value => `${(value * 100).toFixed(1)}%`;
     ui.sectorMap.replaceChildren();
     ui.sectorMap.setAttribute("aria-label", map.title);
+    // Pestañas de sector: un sector se abre al terminar el anterior.
+    const tabs = document.createElement("div"); tabs.className = "sector-tabs"; tabs.setAttribute("role", "tablist");
+    for (const sector of sectors) {
+      const tab = document.createElement("button");
+      tab.type = "button"; tab.className = "sector-tab"; tab.setAttribute("role", "tab");
+      tab.dataset.sector = String(sector.id); tab.textContent = sector.open ? `SECTOR ${sector.id}` : `SECTOR ${sector.id} 🔒`;
+      tab.disabled = !sector.open; tab.setAttribute("aria-selected", String(sector.id === map.id));
+      tab.onclick = () => { sectorMapShown = sector.id; closeBaseTalk(); buildSectorMap(); };
+      tabs.append(tab);
+    }
+    ui.sectorMap.append(tabs);
     const lines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     lines.setAttribute("viewBox", "0 0 100 100"); lines.setAttribute("preserveAspectRatio", "none");
     lines.setAttribute("aria-hidden", "true"); lines.classList.add("sector-map-lines");

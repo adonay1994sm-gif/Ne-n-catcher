@@ -22,6 +22,23 @@ export const SECTOR_MAPS = freeze({
       freeze({voyage: 'S1-V3', title: 'Escolta a los evacuados', from: 'anillo', to: 'orbita'}),
       freeze({voyage: 'S1-V4', title: 'Sigue la señal falsa', from: 'orbita', to: 'nocturno'}),
       freeze({voyage: 'S1-V5', title: 'Convence a Atlas', from: 'nocturno', to: 'gaia'})
+    ])}),
+  2: freeze({id: 2, title: 'SECTOR 2 · EL RASTRO DEL C-17',
+    places: freeze([
+      freeze({id: 'gaia', label: 'Gaia Nova', note: 'Paso libre', kind: 'planet', x: .18, y: .07}),
+      freeze({id: 'borde', label: 'Borde de Gaia', kind: 'waypoint', x: .78, y: .24}),
+      freeze({id: 'carga', label: 'Ruta de carga', kind: 'waypoint', x: .20, y: .41}),
+      freeze({id: 'escoria', label: 'Cinturón de escoria', kind: 'waypoint', x: .80, y: .57}),
+      freeze({id: 'orbita-vulkar', label: 'Órbita de Vulkar', kind: 'waypoint', x: .22, y: .72}),
+      freeze({id: 'vulkar', label: 'Forjas de Vulkar', note: 'Titán de Vulkar', kind: 'planet', x: .74, y: .86}),
+      freeze({id: 'c9', label: 'Taller C9', note: 'Base móvil · Mira', kind: 'base', actor: 'mira', x: .88, y: .40})
+    ]),
+    routes: freeze([
+      freeze({voyage: 'S2-V1', title: 'Sal de Gaia con paso libre', from: 'gaia', to: 'borde'}),
+      freeze({voyage: 'S2-V2', title: 'Sigue al C-17', from: 'borde', to: 'carga'}),
+      freeze({voyage: 'S2-V3', title: 'Cruza el cinturón de escoria', from: 'carga', to: 'escoria'}),
+      freeze({voyage: 'S2-V4', title: 'Responde a la llamada de Yara', from: 'escoria', to: 'orbita-vulkar'}),
+      freeze({voyage: 'S2-V5', title: 'Detén al Titán de Vulkar', from: 'orbita-vulkar', to: 'vulkar'})
     ])})
 });
 
@@ -33,12 +50,14 @@ export function sectorMapState(sectorId, {playable = [], completed = []} = {}) {
   const map = SECTOR_MAPS[sectorId];
   if (!map) return null;
   const canPlay = new Set(playable), done = new Set(completed);
-  let previousDone = true;
+  // Un sector se abre al terminar el último viaje del anterior.
+  const previous = SECTOR_MAPS[sectorId - 1];
+  let previousDone = !previous || done.has(previous.routes.at(-1).voyage);
   const routes = map.routes.map(route => {
     const status = done.has(route.voyage) ? 'done'
       : previousDone && canPlay.has(route.voyage) ? 'open' : 'locked';
     previousDone = status === 'done';
     return freeze({...route, status});
   });
-  return freeze({...map, routes: freeze(routes)});
+  return freeze({...map, open: !previous || done.has(previous.routes.at(-1).voyage), routes: freeze(routes)});
 }

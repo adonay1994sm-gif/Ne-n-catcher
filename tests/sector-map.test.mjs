@@ -23,6 +23,11 @@ test('only the next playable voyage opens; finished ones stay done; the rest wai
   assert.deepEqual(sectorMapState(1, {playable: ['S1-V1'], completed: ['S1-V1']}).routes
     .map(route => route.status), ['done', 'locked', 'locked', 'locked', 'locked'], 'no card, no route');
   assert.equal(sectorMapState(99), null);
+  // El sector 2 se abre al terminar S1-V5.
+  assert.equal(sectorMapState(2, {playable: ['S2-V1']}).open, false);
+  assert.equal(sectorMapState(2, {playable: ['S2-V1']}).routes[0].status, 'locked');
+  const second = sectorMapState(2, {playable: ['S2-V1'], completed: ['S1-V5']});
+  assert.equal(second.open, true); assert.equal(second.routes[0].status, 'open');
 });
 
 test('base conversations are short, in character and change once Atlas is convinced', () => {
