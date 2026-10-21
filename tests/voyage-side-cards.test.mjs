@@ -29,8 +29,9 @@ test('every side voyage card flies to its arrival with one event per stage and i
   }
 });
 
-test('the map has a route for every card and S1-V2 to S1-V4 are playable in order', () => {
+test('the map has a route for every card and S1-V2 to S1-V5 are playable in order', () => {
   const mapped = new Set(SECTOR_MAPS[1].routes.map(route => route.voyage));
   for (const ficha of VOYAGES) assert.ok(mapped.has(ficha.id), ficha.id);
-  assert.deepEqual(PLAYABLE_VOYAGES.map(ficha => ficha.id), ['S1-V1', 'S1-V2', 'S1-V3', 'S1-V4']);
+  assert.deepEqual(PLAYABLE_VOYAGES.map(ficha => ficha.id), ['S1-V1', 'S1-V2', 'S1-V3', 'S1-V4', 'S1-V5']);
+  assert.deepEqual(VOYAGES.filter(ficha => ficha.boss === 'atlas').map(ficha => ficha.id), ['S1-V5'], 'Atlas guards the end of the sector');
 });
