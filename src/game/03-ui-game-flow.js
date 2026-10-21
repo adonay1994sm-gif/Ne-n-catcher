@@ -694,7 +694,9 @@
 
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
-    if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
+    // Los 9 s de espera son el inicio propio de S1-V1 (estación y tutorial).
+    // Los viajes del mapa no tienen ese inicio: su primer CRONIUM llega en ~1 s.
+    if(view.elapsed<(classicSideVoyage?0:9) || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
     const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;

@@ -41,7 +41,7 @@ function harness({unlocked = '2', query = ''} = {}) {
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
     toGaiaBeacon:()=>{collected=36;for(let i=0;i<30000&&!classicFlightView?.beacon.active;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);return classicFlightView.beacon.active;},
-    draw:()=>render(performance.now()),hull:()=>hull,stars:()=>runStars(),miss:n=>{energySpawned+=n;},
+    draw:()=>render(performance.now()),hull:()=>hull,stars:()=>runStars(),croniumOnScreen:()=>items.filter(item=>item.type==='energy'&&item.y>0&&item.y<H).length,miss:n=>{energySpawned+=n;},
     toStage:n=>{for(let i=0;i<30000&&classicFlightView.stageNumber<n;i++){const add=Math.max(0,classicFlightView.stageGoal-collected);collected+=add;energySpawned+=add;classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);}return classicFlightView.stageNumber;},
     finish:()=>{collected=36;for(let i=0;i<30000&&!classicFlight.snapshot().canFinish;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
       completeLevel();if(atlasBoss){atlasBoss.resolved=true;completeLevel();}}};\n`;
@@ -344,4 +344,13 @@ test('old map voyage records without the entry fields still resume', () => {
   T.startSideVoyage('S1-V2');
   assert.deepEqual([T.st().state, T.st().side, T.hull()], ['playing', 'S1-V2', 100]);
   assert.equal(T.stars(), 3);
+});
+
+test('every map voyage shows CRONIUM within its first 3 seconds', () => {
+  for (const id of ['S1-V2', 'S1-V3', 'S1-V4', 'S1-V5', 'S2-V1', 'S2-V2', 'S2-V3', 'S2-V4', 'S2-V5']) {
+    const {T} = harness({unlocked: '10'});
+    T.startSideVoyage(id); T.adv(3);
+    assert.equal(T.st().side, id);
+    assert.ok(T.croniumOnScreen() > 0, `${id}: CRONIUM on screen at 3 s`);
+  }
 });
