@@ -45,7 +45,8 @@ test('new shower is isolated from route content/checkpoints and rejects impossib
   const state = createCometShower();
   assert.equal(state.stageId, '1.5');
   assert.equal(state.elapsed, 0);
-  assert.throws(() => createCometShower({stageId: '1.4'}), RangeError);
+  for (const stageId of ['', 'x', '1', 15]) assert.throws(() => createCometShower({stageId}), RangeError);
+  assert.equal(createCometShower({stageId: '2.4'}).stageId, '2.4', 'any voyage card may ask for a shower');
   assert.throws(() => createCometShower({width: 200}), RangeError);
   assert.throws(() => createCometShower({seed: Infinity}), RangeError);
   assert.throws(() => createCometShower({elapsed: -1}), RangeError);

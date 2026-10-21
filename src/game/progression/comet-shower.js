@@ -172,7 +172,8 @@ export function createCometShower({width = 720, height = 1280, seed = 0,
   shipSideClearance = COMET_SHOWER_RULES.shipSideClearance} = {}) {
   for (const [label, value] of Object.entries({width, height, seed, elapsed, shipWidth, shipSideClearance})) finite(value, label);
   if (width < 250 || height < 300 || elapsed < 0 || shipWidth <= 0 || shipSideClearance < shipWidth / 2 ||
-      !['1.5', '1.9'].includes(stageId)) {
+      // Qué tramos tienen lluvia lo decide la ficha del viaje (getVoyageStageRules).
+      typeof stageId !== 'string' || !/^\d+\.\d+$/.test(stageId)) {
     throw new RangeError('Invalid comet shower route or viewport');
   }
   const normalizedSeed = Math.trunc(seed) >>> 0;
