@@ -1806,7 +1806,7 @@
     atlasBoss=null;document.body.classList.remove("atlas-combat");ui.atlasEncounter?.classList.add("hidden");
     if(classicWeapons)NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);
     setClassicFlightHudVisible(false);setState("menu");
-    buildLevelGrid();overlay(ui.levelSelect);
+    sectorMapShown=ficha.sector;buildLevelGrid();overlay(ui.levelSelect);
     toast(`${ficha.id} · ${ficha.title}: viaje completado.`);
   }
 
@@ -2203,17 +2203,32 @@
 
   // Mapa de sector (docs/design/MAPA_SECTOR.md): rutas del sector 1 y bases
   // con conversación. Sin guardado propio: S1-V1 está hecho si Gaia se abrió.
+  let sectorMapShown = 1;
   function buildSectorMap() {
     if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
     const firstDone = getUnlocked() >= 2;
     const sideDone = NeonCampaign.PLAYABLE_VOYAGES.filter(ficha => ficha.id !== "S1-V1" && loadSideVoyageRecord(ficha)?.completed)
       .map(ficha => ficha.id);
-    const map = NeonCampaign.sectorMapState(1, {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
-      completed: [...(firstDone ? ["S1-V1"] : []), ...sideDone]});
+    const progress = {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
+      completed: [...(firstDone ? ["S1-V1"] : []), ...sideDone]};
+    const sectors = Object.keys(NeonCampaign.SECTOR_MAPS).map(Number).map(id => NeonCampaign.sectorMapState(id, progress));
+    if (!sectors.find(item => item.id === sectorMapShown)?.open) sectorMapShown = 1;
+    const map = sectors.find(item => item.id === sectorMapShown);
     const place = id => map.places.find(item => item.id === id);
     const pct = value => `${(value * 100).toFixed(1)}%`;
     ui.sectorMap.replaceChildren();
     ui.sectorMap.setAttribute("aria-label", map.title);
+    // Pestañas de sector: un sector se abre al terminar el anterior.
+    const tabs = document.createElement("div"); tabs.className = "sector-tabs"; tabs.setAttribute("role", "tablist");
+    for (const sector of sectors) {
+      const tab = document.createElement("button");
+      tab.type = "button"; tab.className = "sector-tab"; tab.setAttribute("role", "tab");
+      tab.dataset.sector = String(sector.id); tab.textContent = sector.open ? `SECTOR ${sector.id}` : `SECTOR ${sector.id} 🔒`;
+      tab.disabled = !sector.open; tab.setAttribute("aria-selected", String(sector.id === map.id));
+      tab.onclick = () => { sectorMapShown = sector.id; closeBaseTalk(); buildSectorMap(); };
+      tabs.append(tab);
+    }
+    ui.sectorMap.append(tabs);
     const lines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     lines.setAttribute("viewBox", "0 0 100 100"); lines.setAttribute("preserveAspectRatio", "none");
     lines.setAttribute("aria-hidden", "true"); lines.classList.add("sector-map-lines");
@@ -4493,7 +4508,8 @@
     const intro = chronosIntroPose(view);
     if (intro) drawTalasa(intro);
     if (intro) drawChronosIntroDarkness(intro);
-    drawChronosFlightSprite(2, chronosDestinationPresentation(view.planet));
+    const destination = chronosDestinationPresentation(view.planet);
+    if (!drawVoyagePlanet(destination)) drawChronosFlightSprite(2, destination);
     if (intro) withChronosIntroCamera(intro, () => drawChronosIntroStation(view, intro));
     else if (!drawChronosDestructionStation(view, destruction)) {
       // A failed new download keeps the two preserved station poses playable.
@@ -4663,6 +4679,27 @@
       ctx.drawImage(image, frame % 4 * cell, Math.floor(frame / 4) * cell, cell, cell, x, y, size, size);
     };
     ctx.save(); draw(pose.frame, 1); if (pose.blend > 0) draw(pose.next, pose.blend); ctx.restore();
+  }
+
+  // Planeta propio de una ficha (p. ej. Vulkar en el sector 2): atlas de 7
+  // fotogramas de giro con fundido, en la posición y escala de la ruta.
+  function drawVoyagePlanet(node) {
+    const key = typeof classicSideVoyage === "undefined" ? null : classicSideVoyage?.ficha.planet;
+    if (!key || !node?.visible) return false;
+    const image = SPRITES[SECTOR_PLANET_SPRITES[key]];
+    if (!image) return false;
+    ensureSprite(image);
+    if (!spriteReady(image)) return true;
+    const position = elapsed / .9, frame = Math.floor(position) % 7, blend = position % 1;
+    const cell = image.naturalWidth / 4, size = W * node.scale;
+    ctx.save(); ctx.translate(node.x * W, node.y * H); ctx.rotate(node.rotation || 0);
+    for (const [index, alpha] of [[frame, node.alpha ?? 1], [(frame + 1) % 7, (node.alpha ?? 1) * blend]]) {
+      if (alpha <= 0) continue;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(image, index % 4 * cell, Math.floor(index / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
+    }
+    ctx.restore();
+    return true;
   }
 
   function drawVulkarOrbitBackground() {

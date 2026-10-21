@@ -940,3 +940,7 @@ button.sector-place{cursor:pointer}button.sector-place:focus-visible{outline:2px
 .base-talk-text{flex:1 1 60%;min-width:0}.base-talk-text small{color:#ffcf8a;font-size:9px;letter-spacing:.06em}.base-talk-text p{margin:4px 0 0;color:#fff4e4;font-size:13px;line-height:1.35}
 .base-talk-actions{display:flex;gap:8px;width:100%;justify-content:flex-end}.base-talk-actions button{min-height:44px;padding:8px 14px}
 .level-grid-title{display:block;margin-top:4px;color:#8fb3c4;letter-spacing:.08em;font-size:10px}
+.sector-tabs{position:absolute;z-index:2;top:8px;right:8px;display:flex;gap:6px}
+.sector-tab{min-height:32px;padding:4px 9px;border:1px solid #2c5870;border-radius:8px;background:rgba(6,18,32,.92);color:#cfe9f5;font-size:9px;letter-spacing:.06em}
+.sector-tab[aria-selected="true"]{border-color:#9df5f2;color:#9df5f2}.sector-tab:disabled{opacity:.5}
+.sector-place[data-place="vulkar"] i{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd29a,#e2531f 42%,#3a0d08 82%);box-shadow:0 0 22px rgba(255,110,40,.7)}
