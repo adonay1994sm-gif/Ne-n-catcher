@@ -554,6 +554,8 @@ body.flight-mode .flight-pilot-stick::before{width:52px;height:1px}
 body.flight-mode .flight-pilot-stick::after{width:1px;height:52px}
 body.flight-mode .flight-pilot-stick span{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px;border:1px solid #9df5f2;border-radius:50%;background:radial-gradient(circle at 40% 35%,#d9ffff 0 8%,#62d9df 14%,#173a51 72%);box-shadow:0 0 14px rgba(92,231,238,.52);will-change:transform}
 body.chapter-opening #classicC9,body.chapter-opening .flight-pilot-hint{visibility:hidden}
+/* El inicio es una animación: fuera todo el HUD salvo el botón de saltar. */
+body.chapter-opening #hud,body.chapter-opening #flightHud,body.chapter-opening #flightRoute,body.chapter-opening #powerHud,body.chapter-opening #storyTransmission{visibility:hidden}
 @media(max-width:360px){body.flight-mode .classic-missile{right:124px}body.flight-mode .flight-pilot-hint{font-size:8px;letter-spacing:.04em}}
 @media(prefers-reduced-motion:reduce){body.flight-mode .flight-pilot-hint{transition:none}}
 

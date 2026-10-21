@@ -311,6 +311,8 @@
   let classicChapterStory = null;
   let classicChapterView = null;
   let classicChapterOutroStartedAt = null;
+  let classicShipEntry = 0; // segundos que quedan de la entrada de la nave tras el inicio
+  let classicFilmLocked = false;
   let classicPatrolTimer = 0;
   let classicPatrolSequence = 0;
   let classicPursuitAnnounced = new Set();
@@ -941,6 +943,10 @@
     const opening=classicChapterView?.opening;
     const active=Boolean(state==="playing"&&opening?.active);
     document.body.classList.toggle("chapter-opening",active&&opening.controlsLocked);
+    // Al acabar (o saltar) la animación del inicio, la nave entra desde abajo.
+    const locked=classicChapterControlsLocked();
+    if(classicFilmLocked&&!locked)classicShipEntry=.9;
+    classicFilmLocked=locked;
     ui.chapterSkip?.classList.toggle("hidden",!active||!opening.canSkip);
     if(ui.chapterSkip)ui.chapterSkip.disabled=state!=="playing";
     syncClassicMissileHud();
@@ -1500,7 +1506,8 @@
   }
 
   function advanceClassicTutorial() {
-    if(!classicTutorial||!classicFlightView)return;
+    // Durante la animación del inicio no hay tutorial: empieza al aparecer la nave.
+    if(!classicTutorial||!classicFlightView||classicChapterControlsLocked())return;
     classicTutorial.advance({elapsed:classicFlightView.elapsed,playing:state==='playing',
       shots:classicWeapons?.shotSequence||0,collected,workshopOpened:classicWorkshopOpened,
       moduleRecovered:Boolean(classicEquipment.recoveredTwin),missilesFired:classicSalvageState?.missileShotsSpent||0,
@@ -1572,6 +1579,7 @@
       for(const cue of [timeline.arrive,timeline.drain,timeline.beamStart])
         if(introBefore<cue&&classicFlightView.elapsed>=cue)combatSound("atlas-charge",W*.5);
     }
+    classicShipEntry=Math.max(0,classicShipEntry-dt);
     if(classicChapterStory&&classicFlightView) {
       classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
         aftermathElapsed:classicChapterOutroStartedAt===null?0:elapsed-classicChapterOutroStartedAt},classicChapterEvent);
@@ -1608,7 +1616,7 @@
 
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
-    if(view.elapsed<9 || view.canFinish)return;
+    if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
     const rules=NeonCampaign.getVoyageStageRules(view.routeId,n);
     if(!rules)return;
@@ -3817,8 +3825,32 @@
     }
     updateEffects(dt);
   }
+  // Inicio como animación: franjas de cine y el diálogo como subtítulo (el HUD
+  // está oculto hasta que acaba).
+  function drawClassicChapterFilm(opening) {
+    const time=classicChapterView.routeElapsed,bar=H*.075*Math.min(1,time/.6);
+    ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,W,bar);ctx.fillRect(0,H-bar,W,bar);
+    const cue=opening.dialogue;
+    if(cue&&time<cue.at+cue.duration) {
+      const alpha=Math.min(1,(time-cue.at)/.25,(cue.at+cue.duration-time)/.25);
+      ctx.globalAlpha=Math.max(0,alpha);ctx.textAlign="center";ctx.textBaseline="alphabetic";
+      ctx.font="800 15px 'Trebuchet MS', sans-serif";ctx.fillStyle="#9fe9ff";
+      ctx.fillText(cue.speaker,W/2,H*.70);
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2fbff";
+      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=8;
+      const words=cue.text.split(" "),lines=[""];
+      for(const word of words) {
+        const next=lines[lines.length-1]?`${lines[lines.length-1]} ${word}`:word;
+        if(ctx.measureText(next).width>W*.84&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
+      }
+      lines.forEach((line,index)=>ctx.fillText(line,W/2,H*.70+34+index*30));
+    }
+    ctx.restore();
+  }
+
   function drawClassicChapterOpening() {
     const opening=classicChapterView?.opening;
+    if(state==="playing"&&opening?.film)drawClassicChapterFilm(opening);
     if(state!=="playing"||!opening?.active||opening.backgroundAlpha<=0||
       !spriteReady(SPRITES.chapterIntro))return;
     // Four authored shots precede the same live station, reactor and wave.
@@ -5315,9 +5347,12 @@
 
   function drawPlayer(t) {
     if (state === "destroying" && !playerVisible) return;
+    // El inicio de Chronos es una animación: la nave no se ve hasta que acaba.
+    if (typeof classicChapterControlsLocked === "function" && classicChapterControlsLocked()) return;
+    const entry = typeof classicShipEntry === "number" && classicShipEntry > 0 ? classicShipEntry / .9 : 0;
 
     ctx.save();
-    ctx.translate(player.x, player.y);
+    ctx.translate(player.x, player.y + (entry ? entry * entry * H * .35 : 0));
 
     const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
     const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8*shipScale;

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {CHRONOS_CHAPTER_VERSION, CHRONOS_CHAPTER_STORY_KEY,
-  CHRONOS_CHAPTER_OPENING_SECONDS, CHRONOS_CHAPTER_AFTERMATH_SECONDS,
+  CHRONOS_CHAPTER_OPENING_SECONDS, CHRONOS_CHAPTER_AFTERMATH_SECONDS, CHRONOS_CHAPTER_CINEMATIC_SECONDS,
   CHRONOS_CHAPTER_ACTORS, CHRONOS_CHAPTER_OPENING, CHRONOS_CHAPTER_DIALOGUES,
   createChronosChapterStory, normalizeChronosChapterCheckpoint} from '../src/game/narrative/chronos-chapter.js';
 import {CHRONOS_VOYAGE_STAGES, CHRONOS_VOYAGE_MIN_DURATION} from '../src/game/progression/chronos-flight.js';
@@ -69,6 +69,27 @@ test('pilot control releases at the one real rupture and illustration yields to 
   assert.ok(Math.abs(step(story, 10.2).opening.backgroundAlpha - .5) < 1e-9);
   assert.equal(step(story, 11.4).opening.backgroundAlpha, 0);
   assert.equal(step(story, 15).opening.active, true, 'Dialogue may accompany playable recovery');
+});
+
+test('in the game the opening is a film: no control until Cronos Prime has left, and it can be skipped', () => {
+  assert.equal(CHRONOS_CHAPTER_CINEMATIC_SECONDS, 14);
+  const story = createChronosChapterStory({presentation: 'in-world'});
+  for (const time of [0, 6, 9, 13.99]) {
+    const view = step(story, time);
+    assert.equal(view.opening.film, true, `film at ${time}`);
+    assert.equal(view.opening.controlsLocked, true);
+    assert.equal(view.opening.canSkip, true);
+    assert.equal(view.opening.backgroundAlpha, 0, 'no painted plate over the live scene');
+  }
+  assert.equal(step(createChronosChapterStory({presentation: 'in-world'}), 6.3).opening.dialogue.id,
+    'chapter1:false-clearance', 'subtitles follow the shots');
+  const after = step(story, 14);
+  assert.equal(after.opening.film, false); assert.equal(after.opening.controlsLocked, false);
+  const skipped = createChronosChapterStory({presentation: 'in-world'});
+  step(skipped, 2); assert.equal(skipped.skipIntro(), true);
+  assert.equal(skipped.snapshot().opening.controlsLocked, false);
+  const seen = createChronosChapterStory({presentation: 'in-world', introEnabled: false});
+  assert.equal(step(seen, 1).opening.film, false, 'without the intro there is no film');
 });
 
 test('pause stops both opening and aftermath without consuming future cues', () => {
@@ -253,12 +274,12 @@ test('narrative policy has no engine, storage, rewards or second time source', a
 
 // The historical cinematic remains reproducible; the live entry uses the same
 // route/story events over the actual station without a slideshow or input lock.
-test('in-world presentation keeps the sabotage story and checkpoints without cinematic input locks',()=>{
+test('in-world presentation keeps the sabotage story and checkpoints and only locks input during the film',()=>{
   const story=createChronosChapterStory({presentation:'in-world'}),events=[];
   for(const elapsed of [0,3,6.3,9,13.2,19.2,26]){
-    const view=step(story,elapsed,cue=>events.push(cue));
-    assert.equal(view.opening.active,false);assert.equal(view.opening.controlsLocked,false);
-    assert.equal(view.opening.backgroundAlpha,0);assert.equal(view.opening.canSkip,false);
+    const view=step(story,elapsed,cue=>events.push(cue)),film=elapsed<CHRONOS_CHAPTER_CINEMATIC_SECONDS;
+    assert.equal(view.opening.active,film);assert.equal(view.opening.controlsLocked,film);
+    assert.equal(view.opening.backgroundAlpha,0);assert.equal(view.opening.canSkip,film);
   }
   assert.deepEqual(events.map(cue=>cue.id),CHRONOS_CHAPTER_OPENING.map(cue=>cue.id));
   const saved=story.checkpoint();assert.ok(normalizeChronosChapterCheckpoint(saved));

@@ -6,6 +6,9 @@
 export const CHRONOS_CHAPTER_VERSION = 'chronos-chapter-v1';
 export const CHRONOS_CHAPTER_STORY_KEY = 'neonCatcher.chronosChapterStory.v1';
 export const CHRONOS_CHAPTER_OPENING_SECONDS = 26;
+// En el juego el inicio es una animación: sin HUD, sin nave y sin control
+// hasta que Cronos Prime se marcha (12,6 s) y pasa un instante.
+export const CHRONOS_CHAPTER_CINEMATIC_SECONDS = 14;
 export const CHRONOS_CHAPTER_AFTERMATH_SECONDS = 8;
 export const CHRONOS_CHAPTER_ROUTE_SECONDS = 360;
 const ROUTE_ID = 'chronos-to-gaia';
@@ -34,13 +37,13 @@ function dialogue(id, speakerId, text, duration, extra = {}) {
 
 /** Six shots share the existing rupture at 9 s and its 9–16.2 s wave. */
 export const CHRONOS_CHAPTER_OPENING = freeze([
-  dialogue('routine', 'lira', 'Piloto, desliza el dedo para maniobrar. Chronos te recibe.', 3,
+  dialogue('routine', 'lira', 'Chronos, turno de guardia. La ruta del CRONIUM está estable.', 3,
     {at: 0, shotIndex: 0, phase: 'opening', visualCue: 'chronos-routine', audioCue: 'chronos-room-tone'}),
-  dialogue('convoy-clearance', 'lira', 'Convoy C-17: acceso autorizado. Traigan el suministro.', 3.3,
+  dialogue('convoy-clearance', 'lira', 'Convoy C-17: firma aceptada. Abro el escudo del reactor.', 3.3,
     {at: 3, shotIndex: 1, phase: 'opening', visualCue: 'convoy-clearance', audioCue: 'radio-valid'}),
-  dialogue('false-clearance', 'lira', 'Esa firma… ¡No están frenando!', 2.7,
+  dialogue('false-clearance', 'lira', 'Esa firma era falsa… ¡Algo enorme se posa sobre la torre!', 2.7,
     {at: 6.3, shotIndex: 2, phase: 'opening', visualCue: 'sabotage-lock', audioCue: 'access-anomaly'}),
-  dialogue('evacuate', 'lira', '¡Han perforado el reactor! Todas las naves: evacuación.', 4.2,
+  dialogue('evacuate', 'lira', '¡Ha perforado el reactor! Todas las naves: evacuación.', 4.2,
     {at: 9, shotIndex: 3, phase: 'opening', visualCue: 'reactor-breach', audioCue: 'reactor-trip'}),
   dialogue('log-transfer', 'lira', 'Te envío el registro. Las claves del convoy fueron alteradas.', 6,
     {at: 13.2, shotIndex: 4, phase: 'opening', visualCue: 'log-transfer', audioCue: 'memory-transfer'}),
@@ -165,12 +168,13 @@ export function createChronosChapterStory({checkpoint = null, routeElapsed = che
   function snapshot() {
     const active = openingEnabled && elapsed < CHRONOS_CHAPTER_OPENING_SECONDS;
     const shot = [...CHRONOS_CHAPTER_OPENING].reverse().find(cue => elapsed >= cue.at) || CHRONOS_CHAPTER_OPENING[0];
+    const film = active && presentation === 'in-world' && elapsed < CHRONOS_CHAPTER_CINEMATIC_SECONDS;
     const aftermathActive = signals.has('atlas-disabled') && aftermathElapsed < CHRONOS_CHAPTER_AFTERMATH_SECONDS;
     const line = aftermathActive ? [...CHRONOS_CHAPTER_AFTERMATH].reverse().find(cue => aftermathElapsed >= cue.at) : null;
     return freeze({version: CHRONOS_CHAPTER_VERSION, routeId: ROUTE_ID, routeElapsed: elapsed,
-      introSeen, opening: freeze({active: active && presentation === 'cinematic',
-        controlsLocked: active && presentation === 'cinematic' && elapsed < 9,
-        canSkip: active && presentation === 'cinematic', shotIndex: shot.shotIndex, visualCue: shot.visualCue,
+      introSeen, opening: freeze({active: (active && presentation === 'cinematic') || film,
+        controlsLocked: (active && presentation === 'cinematic' && elapsed < 9) || film,
+        canSkip: (active && presentation === 'cinematic') || film, film, shotIndex: shot.shotIndex, visualCue: shot.visualCue,
         progress: clamp(elapsed / CHRONOS_CHAPTER_OPENING_SECONDS, 0, 1),
         shotProgress: clamp((elapsed - shot.at) / shot.duration, 0, 1),
         // The new opening illustration reveals the existing station and its

@@ -356,9 +356,12 @@
 
   function drawPlayer(t) {
     if (state === "destroying" && !playerVisible) return;
+    // El inicio de Chronos es una animación: la nave no se ve hasta que acaba.
+    if (typeof classicChapterControlsLocked === "function" && classicChapterControlsLocked()) return;
+    const entry = typeof classicShipEntry === "number" && classicShipEntry > 0 ? classicShipEntry / .9 : 0;
 
     ctx.save();
-    ctx.translate(player.x, player.y);
+    ctx.translate(player.x, player.y + (entry ? entry * entry * H * .35 : 0));
 
     const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
     const bob = state === "destroying" ? 0 : Math.sin(t * 0.004) * 1.8*shipScale;

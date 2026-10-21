@@ -1,5 +1,29 @@
+  // Inicio como animación: franjas de cine y el diálogo como subtítulo (el HUD
+  // está oculto hasta que acaba).
+  function drawClassicChapterFilm(opening) {
+    const time=classicChapterView.routeElapsed,bar=H*.075*Math.min(1,time/.6);
+    ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,W,bar);ctx.fillRect(0,H-bar,W,bar);
+    const cue=opening.dialogue;
+    if(cue&&time<cue.at+cue.duration) {
+      const alpha=Math.min(1,(time-cue.at)/.25,(cue.at+cue.duration-time)/.25);
+      ctx.globalAlpha=Math.max(0,alpha);ctx.textAlign="center";ctx.textBaseline="alphabetic";
+      ctx.font="800 15px 'Trebuchet MS', sans-serif";ctx.fillStyle="#9fe9ff";
+      ctx.fillText(cue.speaker,W/2,H*.70);
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2fbff";
+      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=8;
+      const words=cue.text.split(" "),lines=[""];
+      for(const word of words) {
+        const next=lines[lines.length-1]?`${lines[lines.length-1]} ${word}`:word;
+        if(ctx.measureText(next).width>W*.84&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
+      }
+      lines.forEach((line,index)=>ctx.fillText(line,W/2,H*.70+34+index*30));
+    }
+    ctx.restore();
+  }
+
   function drawClassicChapterOpening() {
     const opening=classicChapterView?.opening;
+    if(state==="playing"&&opening?.film)drawClassicChapterFilm(opening);
     if(state!=="playing"||!opening?.active||opening.backgroundAlpha<=0||
       !spriteReady(SPRITES.chapterIntro))return;
     // Four authored shots precede the same live station, reactor and wave.

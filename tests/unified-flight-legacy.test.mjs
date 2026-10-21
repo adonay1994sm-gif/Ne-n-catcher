@@ -275,22 +275,25 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     voyage: () => JSON.parse(window.localStorage.getItem(VOYAGE_KEY))};
 }
 
-test('the in-world Chronos opening immediately permits pilot control and fire while pause freezes story and route',t=>{
+test('the in-world Chronos opening plays as a film without HUD or ship, then hands control over while pause freezes story and route',t=>{
   const h=harness(t);h.api.prepare(0,{skipOpening:false});
-  assert.equal(h.snapshot().chapter.opening.controlsLocked,false);
-  assert.equal(h.snapshot().chapter.opening.active,false,'Fullscreen illustration is absent from the live opening');
-  assert.equal(h.api.fireManualShot(),true,'The initial playable Chronos scene already permits a manual trigger');
-  const before=h.snapshot().player;
-  h.pointer('pointerdown',91,200,500);h.pointer('pointermove',91,240,460);
-  assert.equal(h.snapshot().input.active,true);assert.ok(h.snapshot().player.target>before.target);
-  h.pointer('pointerup',91,240,460);
-  h.advance(8.95);assert.equal(h.snapshot().chapter.opening.controlsLocked,false);
+  assert.equal(h.snapshot().chapter.opening.controlsLocked,true,'The opening is an animation: no pilot control yet');
+  assert.equal(h.snapshot().chapter.opening.backgroundAlpha,0,'No painted plate over the live scene');
+  assert.equal(h.api.fireManualShot(),false,'No shots during the film');
+  h.advance(.1);
+  assert.equal(h.node('canvas').ownerDocument.body.classList.contains('chapter-opening'),true,'The HUD hides while the film plays');
+  h.advance(8.85);assert.equal(h.snapshot().chapter.opening.controlsLocked,true);
   h.api.pauseGame();const paused=h.snapshot();h.advance(5);
   assert.deepEqual(h.snapshot().chapter,paused.chapter);assert.deepEqual(h.snapshot().route,paused.route);
   assert.deepEqual(h.snapshot().weapons,paused.weapons);assert.equal(h.api.fireManualShot(),false);
   h.api.resumeGame();h.advance(.1);
-  assert.equal(h.snapshot().chapter.opening.controlsLocked,false);
   assert.equal(h.snapshot().destructionPose.state,'impact','The original one rupture still occurs at nine route seconds');
+  h.advance(5);assert.equal(h.snapshot().chapter.opening.controlsLocked,false,'Control returns once Cronos Prime has left');
+  assert.equal(h.node('canvas').ownerDocument.body.classList.contains('chapter-opening'),false);
+  const before=h.snapshot().player;
+  h.pointer('pointerdown',91,200,500);h.pointer('pointermove',91,240,460);
+  assert.equal(h.snapshot().input.active,true);assert.ok(h.snapshot().player.target>before.target);
+  h.pointer('pointerup',91,240,460);
   h.clearDrawCalls();h.api.render();
   assert.equal(h.drawCalls.some(call=>call.path==='assets/chapter1_intro_atlas_v1.webp'),false,
     'The live opening keeps the original Chronos layers instead of another cinematic plate');
@@ -1278,7 +1281,8 @@ test('actual Chronos runtime introduces a hostile pursuer after rupture without 
   const h=harness(t,{unlocked:1});h.api.startLevel(0);
   for(let n=0;n<Math.ceil(12/.034);n++)h.api.update(.034);
   assert.equal(h.snapshot().targets.some(item=>item.tactics),false);
-  for(let n=0;n<Math.ceil(9/.034);n++)h.api.update(.034);
+  // La persecución empieza al acabar la animación del inicio (14 s), no a los 9 s.
+  for(let n=0;n<Math.ceil(14/.034);n++)h.api.update(.034);
   const q=h.snapshot(),raiders=q.targets.filter(item=>item.tactics===h.window.NeonCampaign.CLASSIC_PURSUIT_VERSION);
   assert.ok(raiders.length>=1&&raiders.length<=1);
   assert.equal(raiders[0].role,'raider');
