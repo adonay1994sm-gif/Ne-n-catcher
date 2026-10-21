@@ -11,7 +11,9 @@ const voyage = process.argv[3] || 'S1-V2', saveKey = `neonCatcher.voyage.${voyag
 const HOOK = `window.__V2__={start:id=>startSideVoyage(id),status:()=>({state,currentLevel,route:classicFlightView?.routeId,stage:classicFlightView?.stageId,
   dest:document.getElementById('flightDestination')?.textContent,atlas:isAtlasMission(),chapter:Boolean(classicChapterStory),side:classicSideVoyage?.ficha.id}),
   finish:()=>{collected=36;for(let i=0;i<30000&&!classicFlight.snapshot().canFinish;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
-    completeLevel();return {state,side:Boolean(classicSideVoyage),overlay:document.getElementById('levelSelect').classList.contains('show')};}};\n`;
+    completeLevel();const atlasStarted=Boolean(atlasBoss);
+    if(atlasBoss){atlasBoss.resolved=true;completeLevel();}
+    return {state,atlasStarted,side:Boolean(classicSideVoyage),overlay:document.getElementById('levelSelect').classList.contains('show')};}};\n`;
 (async () => {
   const server = await startStaticServer(require('node:path').resolve('www'));
   const browser = await chromium.launch({headless: true, args: ['--no-sandbox']});
