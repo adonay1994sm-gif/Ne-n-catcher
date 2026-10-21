@@ -2169,7 +2169,7 @@
   function buildSectorMap() {
     if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
     const firstDone = getUnlocked() >= 2;
-    const map = NeonCampaign.sectorMapState(1, {playable: NeonCampaign.VOYAGES.map(ficha => ficha.id),
+    const map = NeonCampaign.sectorMapState(1, {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
       completed: firstDone ? ["S1-V1"] : []});
     const place = id => map.places.find(item => item.id === id);
     const pct = value => `${(value * 100).toFixed(1)}%`;
