@@ -1325,10 +1325,13 @@
     return hull >= 90 && missed <= Math.ceil(energyBudget * 0.1) ? 3 : hull >= 55 ? 2 : 1;
   }
   /** Mejores estrellas guardadas de un viaje (0 si no se ha completado). */
+  // Un viaje hecho vale al menos 1: los guardados anteriores a las estrellas
+  // por viaje (o con un valor dañado) no salen como «HECHO ☆☆☆».
   function voyageStars(voyageId) {
-    if (voyageId === "S1-V1") return getStars()[1] || 0;
+    if (voyageId === "S1-V1") return getUnlocked() >= 2 ? Math.max(1, getStars()[1] || 0) : 0;
     const ficha = NeonCampaign.PLAYABLE_VOYAGES.find(item => item.id === voyageId);
-    return ficha ? loadSideVoyageRecord(ficha)?.stars || 0 : 0;
+    const record = ficha ? loadSideVoyageRecord(ficha) : null;
+    return record?.completed ? Math.max(1, record.stars) : 0;
   }
   function campaignSectors() {
     if (typeof NeonCampaign.sectorMapState !== "function") return [];
