@@ -505,7 +505,9 @@
     }
 
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
-      const size = item.r * 12;
+      // Atlas v3: la roca ocupa ~105 px de 384 (la v2, ~62); ×7 la deja del
+      // tamaño de su círculo de choque (r·0,94), igual que antes.
+      const size = item.r * 7;
       const frame = Math.floor(elapsed * 8 + (item.phase || 0)) % 4;
       const sourceWidth = SPRITES.comet.naturalWidth / 4;
       const sourceHeight = SPRITES.comet.naturalHeight;

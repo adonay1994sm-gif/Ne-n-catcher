@@ -30,7 +30,7 @@ test('the authored nucleus pivot stays on the same physical collection/collision
   h.sandbox.drawMeteor(h.item);
   const draw=h.calls.find(c=>c.method==='drawImage').args;
   assert.equal(draw[5]+draw[7]*.75,0);assert.equal(draw[6]+draw[8]*.5,0);
-  assert.equal(draw[7],h.item.r*12);assert.equal(JSON.stringify(h.item),before);
+  assert.equal(draw[7],h.item.r*7);assert.equal(JSON.stringify(h.item),before);
   assert.equal(JSON.stringify(h.sandbox.collisionCircles(h.item)),hitbox);
   assert.equal(h.sandbox.collisionCircles(h.item)[0].r,h.item.r*.94);
 });

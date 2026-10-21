@@ -1399,7 +1399,7 @@
       if(typeof resetGameInput==="function")resetGameInput();
       NeonCampaign.endFlightInput(classicFlightInput);
       setState("paused");classicWorkshopOpened=true;
-    } else if(!["menu","complete"].includes(state))return false;
+    } else if(state!=="menu")return false;
     flightDockReturn=from; updateClassicDock(); overlay(ui.flightDock);
     $("flightDockContinue").focus({preventScroll:true});
     ui.flightDock.querySelector(".flight-dock").scrollTop=0;return true;
@@ -1476,7 +1476,7 @@
       button.querySelector('[data-c9-state]').textContent=owned?'INSTALADO':missing.length
         ?`REQUIERE ${missing.map(id=>NeonCampaign.SCRAP_UPGRADES[id]?.label||id).join(' + ')}`:`${definition.price} CHATARRA`;
     }
-    $("flightDockContinue").textContent=["voyage","hud"].includes(flightDockReturn) ? "VOLVER A PILOTAR →" : flightDockReturn==="complete" ? "CONTINUAR VIAJE" : "VOLVER AL VIAJE";
+    $("flightDockContinue").textContent=["voyage","hud"].includes(flightDockReturn) ? "VOLVER A PILOTAR →" : "VOLVER AL VIAJE";
   }
 
   function syncClassicFlightHud() {
@@ -1825,6 +1825,7 @@
   // ve, para que «Repetir» vuelva a lanzar este mismo viaje.
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
+    const firstTime=loadSideVoyageRecord(ficha)?.completed!==true;
     const saved=saveSideVoyage(classicFlight.exportCheckpoint(),true);
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;cancelSupplyFailureTimer();
@@ -1833,8 +1834,9 @@
     atlasBoss=null;ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
     hideWarning();hideStoryTransmission();
     ui.hud.classList.add("hidden");ui.powerHud.classList.add("hidden");ui.fire.classList.add("hidden");ui.banner.classList.remove("show");
-    // Sin registerRun: contar partidas cambia la frecuencia de anuncios y eso
-    // lo decide el propietario (tablero, revisión del PR #32).
+    // Decisión del propietario (tablero, rev32-ads): un viaje del mapa cuenta
+    // como partida para los intersticiales solo la primera vez que se completa.
+    if(firstTime&&saved)registerRun();
     const next=nextCampaignVoyage();
     ui.completeLabel.textContent=`VIAJE COMPLETADO · SECTOR ${ficha.sector}`;
     ui.completeTitle.textContent=`${ficha.id} · ${ficha.title}`;
@@ -5537,7 +5539,9 @@
     }
 
     if (item.special === "comet" && spriteReady(SPRITES.comet)) {
-      const size = item.r * 12;
+      // Atlas v3: la roca ocupa ~105 px de 384 (la v2, ~62); ×7 la deja del
+      // tamaño de su círculo de choque (r·0,94), igual que antes.
+      const size = item.r * 7;
       const frame = Math.floor(elapsed * 8 + (item.phase || 0)) % 4;
       const sourceWidth = SPRITES.comet.naturalWidth / 4;
       const sourceHeight = SPRITES.comet.naturalHeight;
