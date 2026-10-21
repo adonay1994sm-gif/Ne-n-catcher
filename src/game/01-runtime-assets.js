@@ -268,6 +268,7 @@
     hostileOrdnance: loadSprite("assets/hostile_ordnance_atlas_v1.webp", false),
     gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
+    hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),

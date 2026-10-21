@@ -490,6 +490,7 @@
     hostileOrdnance: loadSprite("assets/hostile_ordnance_atlas_v1.webp", false),
     gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
+    hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
@@ -3312,6 +3313,11 @@
     impactEffects.push({ x, y, scale, angle, life: 0.24, duration: 0.24, variant: (Math.random() * SPRITE_GROUPS.impact.length) | 0 });
   }
 
+  function addHullSparks(x, y, angle) {
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x, y, scale: 1, angle, life: 0.5, duration: 0.5, hullSparks: true });
+  }
+
   function addMissileImpact(x,y) {
     if(!settings.effects)return;
     if(impactEffects.length>=EFFECT_LIMITS.impacts)impactEffects.shift();
@@ -3390,8 +3396,10 @@
     comboTimer = 0;
     shake = 16;
     flash = 0.26;
-    burst(x, y, 28, "red");
-    pulseRing(x, y, "#ff496f", 110, 0.48);
+    // Golpe al casco: chispas pintadas (baúl, encargo a05) hacia el lado del
+    // impacto. El aro rosa con puntos antiguo queda solo si la hoja no cargó.
+    if (typeof spriteReady === "function" && spriteReady(SPRITES.hullSparks)) addHullSparks(x, y, impactAngle);
+    else { burst(x, y, 28, "red"); pulseRing(x, y, "#ff496f", 110, 0.48); }
     addImpactEffect(x, y, 1.05, impactAngle);
     combatSound("hull-hit",x);
     vibrate([45, 35, 60]);
@@ -5872,6 +5880,16 @@
         ctx.save();ctx.translate(effect.x,effect.y);ctx.globalAlpha*=row===3?Math.max(0,1-(age-.25)/.4):1;
         ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
         ctx.restore();continue;
+      }
+      if (effect.hullSparks && spriteReady(SPRITES.hullSparks)) {
+        // 8 fotogramas en 0,5 s (rejilla 4×2); el origen de las chispas es el
+        // centro de cada celda y el abanico sale hacia +X, girado al impacto.
+        const atlas = SPRITES.hullSparks, cell = atlas.naturalWidth / 4;
+        const frame = Math.min(7, Math.floor(progress * 8)), size = 176;
+        ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
       }
       if (effect.atlasImpact) {
         ctx.save(); ctx.translate(effect.x, effect.y);

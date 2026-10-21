@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 100,
-  "runtimeBytes": 16372178,
+  "assetCount": 101,
+  "runtimeBytes": 16386474,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1295,6 +1295,22 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "origin": "GPT image generation uploaded to the asset vault (encargo art-ficha); resized to runtime size",
+      "version": 1
+    },
+    {
+      "id": "hull-impact-sparks-v1",
+      "path": "assets/hull_impact_sparks_v1.webp",
+      "master": "art-source/hull-impact/hull_impact_sparks_1024x512.png",
+      "dimensions": "512x256",
+      "format": "webp-alpha",
+      "size": 14296,
+      "sha256": "97e13e1c750080a6f937398c0c1f4556adaac051c16ae7c293fb2e79125f4f12",
+      "use": "Hull hit sparks, 8 frames 4x2 (128 cells), 0.5 s, origin at cell centre, fan towards +X rotated to the impact; replaces the old pink ring when loaded.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault (encargo a05); resized to runtime size",
       "version": 1
     }
   ],
