@@ -12,12 +12,13 @@ const read = file => readFile(join(root, file), 'utf8');
 const [html, game, core, content] = await Promise.all(['index.html', 'game.js', 'core-runtime.js', 'content-runtime.js'].map(read));
 const MARKER = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
 
-const drawnTexts = [];
+const drawnTexts = []; // textos e imágenes («image:…») que pinta el lienzo
 function context() {
   const gradient = {addColorStop() {}};
   return new Proxy({}, {get(target, key) {
     if (key in target) return target[key];
     if (key === 'fillText') return text => drawnTexts.push(String(text));
+    if (key === 'drawImage') return image => drawnTexts.push(`image:${image?.src || ''}`);
     if (key === 'createLinearGradient' || key === 'createRadialGradient') return () => gradient;
     if (key === 'measureText') return value => ({width: String(value).length * 14});
     return () => {};
@@ -287,4 +288,13 @@ test('the HUD names the current voyage instead of «NIVEL 1», without repeating
   assert.doesNotMatch(text('flightDestination'), /S2-V3/, 'the voyage id lives in the HUD cell only');
   assert.match(text('flightDestination'), /1\/\d+/);
   assert.doesNotMatch(w.document.getElementById('hud').textContent, /NIVEL/);
+});
+
+test('in the last S1-V1 stage Atlas only shows far away over Gaia, without a «GUARDIAN ATLAS» tag', () => {
+  const {T} = harness();
+  T.requestStage(10); T.startLevel(0); T.adv(.5);
+  assert.equal(T.toGaiaBeacon(), true, 'the far Atlas beacon is on screen');
+  drawnTexts.length = 0; T.draw();
+  assert.ok(drawnTexts.some(text => /^image:.*guardian_atlas/.test(text)), 'Atlas is still drawn far away as a warning');
+  assert.equal(drawnTexts.some(text => /GUARDIAN ATLAS/.test(text)), false);
 });

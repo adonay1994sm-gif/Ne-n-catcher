@@ -4666,18 +4666,14 @@
 
     drawChronosRouteCrossing(transition);
 
+    // Atlas ya no se combate en S1-V1: solo se ve de lejos sobre Gaia, como
+    // aviso, sin la etiqueta «GUARDIAN ATLAS» de jefe.
     if (view.beacon.visible && !atlasBoss && spriteReady(SPRITES.guardianAtlas)) {
       const size = Math.max(42, W * view.beacon.scale*1.5);
       ctx.save(); ctx.translate(W * view.beacon.x, H * view.beacon.y);
       const atlas=SPRITES.guardianAtlas;
       ctx.drawImage(atlas,0,0,atlas.naturalWidth/4,atlas.naturalHeight/2,-size/2,-size/2,size,size);
       ctx.restore();
-      if (view.beacon.active) {
-        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 17px sans-serif";
-        ctx.fillStyle = "#bcefff";
-        ctx.fillText("GUARDIAN ATLAS", W * view.beacon.x, H * view.beacon.y + size * .65);
-        ctx.restore();
-      }
     }
 
     // Con el inicio nuevo el atacante es Cronos Prime, no la nave antigua.
