@@ -109,7 +109,6 @@
   let classicWorkshopOpened = false;
   let classicChapterStory = null;
   let classicChapterView = null;
-  let classicChapterOutroStartedAt = null;
   let classicShipEntry = 0; // segundos que quedan de la entrada de la nave tras el inicio
   let classicFilmLocked = false;
   let classicPatrolTimer = 0;
