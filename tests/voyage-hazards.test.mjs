@@ -51,7 +51,8 @@ test('the first stage leaves a breather after the rupture and the opening stages
   assert.ok(VOYAGE_HAZARD_PROFILES[1].cap <= 2, 'never more than two ambient hazards in 1.1');
   for (let stage = 1; stage <= 10; stage++) {
     const {emitted} = simulate(stage, 40 + VOYAGE_HAZARD_PROFILES[stage].start);
-    const expected = stage <= 2 ? .5 : 1;
+    // 1.1–1.2 a la mitad; 1.3 al 75 % (el pico más duro llegaba demasiado pronto).
+    const expected = stage <= 2 ? .5 : stage === 3 ? .75 : 1;
     assert.ok(emitted.every(item => item.damageScale === expected), `stage ${stage}`);
     assert.equal(VOYAGE_HAZARD_PROFILES[stage].start > 0, stage === 1, `only 1.1 waits (stage ${stage})`);
   }
