@@ -822,6 +822,16 @@
         ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
         ctx.restore();continue;
       }
+      if (effect.hullSparks && spriteReady(SPRITES.hullSparks)) {
+        // 8 fotogramas en 0,5 s (rejilla 4×2); el origen de las chispas es el
+        // centro de cada celda y el abanico sale hacia +X, girado al impacto.
+        const atlas = SPRITES.hullSparks, cell = atlas.naturalWidth / 4;
+        const frame = Math.min(7, Math.floor(progress * 8)), size = 176;
+        ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
+      }
       if (effect.atlasImpact) {
         ctx.save(); ctx.translate(effect.x, effect.y);
         if(!drawArcadePulse("impact",effect.duration-effect.life,60,1-progress*.4))drawAtlasVfx(2,58,52,1-progress);

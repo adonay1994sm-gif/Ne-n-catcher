@@ -429,6 +429,11 @@
     impactEffects.push({ x, y, scale, angle, life: 0.24, duration: 0.24, variant: (Math.random() * SPRITE_GROUPS.impact.length) | 0 });
   }
 
+  function addHullSparks(x, y, angle) {
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x, y, scale: 1, angle, life: 0.5, duration: 0.5, hullSparks: true });
+  }
+
   function addMissileImpact(x,y) {
     if(!settings.effects)return;
     if(impactEffects.length>=EFFECT_LIMITS.impacts)impactEffects.shift();
@@ -507,8 +512,10 @@
     comboTimer = 0;
     shake = 16;
     flash = 0.26;
-    burst(x, y, 28, "red");
-    pulseRing(x, y, "#ff496f", 110, 0.48);
+    // Golpe al casco: chispas pintadas (baúl, encargo a05) hacia el lado del
+    // impacto. El aro rosa con puntos antiguo queda solo si la hoja no cargó.
+    if (typeof spriteReady === "function" && spriteReady(SPRITES.hullSparks)) addHullSparks(x, y, impactAngle);
+    else { burst(x, y, 28, "red"); pulseRing(x, y, "#ff496f", 110, 0.48); }
     addImpactEffect(x, y, 1.05, impactAngle);
     combatSound("hull-hit",x);
     vibrate([45, 35, 60]);

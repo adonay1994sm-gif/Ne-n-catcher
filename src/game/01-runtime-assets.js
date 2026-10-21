@@ -245,6 +245,7 @@
     chronosIntroFragments: loadSprite("assets/chronos_intro_fragments_atlas_v1.webp", false),
     // Cronos Prime animado (40 fotogramas del vídeo) y la estación estallando.
     cronosPrimeVideo: loadSprite("assets/cronos_prime_video_atlas_v1.webp", false),
+    cronosPrimeTrail: loadSprite("assets/cronos_prime_trail_v1.webp", false),
     chronosStationBurst: loadSprite("assets/chronos_station_burst_atlas_v1.webp", false),
     cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
@@ -268,6 +269,7 @@
     hostileOrdnance: loadSprite("assets/hostile_ordnance_atlas_v1.webp", false),
     gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
+    hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),

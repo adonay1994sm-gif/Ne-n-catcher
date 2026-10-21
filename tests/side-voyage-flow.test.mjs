@@ -221,3 +221,21 @@ test('voyages finished before per-voyage stars count at least one star instead o
   T.buildLevelGrid();
   assert.match(w.document.querySelector('.sector-route[data-voyage="S1-V2"] small').textContent, /★☆☆/);
 });
+
+test('a voyage that is not done adds no stars, whatever its record says', () => {
+  const {w, T, route} = harness();
+  w.localStorage.setItem('neonCatcher.voyage.S1-V2.v1', JSON.stringify({...JSON.parse((() => {
+    T.startSideVoyage('S1-V2'); T.finish(); T.goHome(); return w.localStorage.getItem('neonCatcher.voyage.S1-V2.v1');
+  })()), completed: false, stars: 3}));
+  T.goHome();
+  assert.equal(w.document.getElementById('totalStars').textContent, '1/30', 'only S1-V1 counts');
+  T.buildLevelGrid();
+  assert.notEqual(route('S1-V2'), 'done');
+});
+
+test('S1-V1 adds no stars until it is done, even with old stars saved', () => {
+  const {w, T} = harness({unlocked: '1'});
+  w.localStorage.setItem('neon-stars-v2', JSON.stringify({1: 3}));
+  T.goHome();
+  assert.equal(w.document.getElementById('totalStars').textContent, '0/30');
+});
