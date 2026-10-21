@@ -120,3 +120,31 @@ manual, cámara lenta, salvas).
   corrupto.
 - Se añaden pruebas nuevas para B y C.
 - No se salta, desactiva ni borra ninguna prueba para ponerla en verde.
+
+## Resultado (21/10/2026)
+
+- **Fallo encontrado y corregido:** al vencer a Atlas en un viaje del mapa,
+  `completeSideVoyage()` retira a Atlas dentro del propio evento y
+  `updateAtlasEncounter()` leía `atlasBoss.state` justo después: S1-V5 se
+  rompía con un error en el fotograma de la victoria.
+- `classicChapterOutroStartedAt` (reloj del epílogo en S1-V1) quedó sin uso y
+  se quitó.
+- Pruebas reescritas (antes usaban S1-V1 para llegar a Atlas):
+  `tests/guardian-atlas-legacy.test.mjs` (pausa, cuota final, victoria,
+  muerte y continuar, cargador, daño ×1/×2/×3, armadura, fuego manual, disparo
+  desviado, salir del combate, cámara lenta), `tests/unified-flight-legacy`
+  (salva dirigida, HUD de combate, diez tramos y enlace con S1-V2) y
+  `tests/completion-journal-legacy` (escritura interrumpida del journal).
+- Pruebas nuevas: B (Gemelo una sola vez, epílogo de Iria, registro corrupto
+  con y sin copia, escritura de equipo interrumpida, vida según dificultad) y
+  C (journal antiguo con Gemelo, S1-V1 ya ganado con Atlas, guardado a mitad
+  del combate antiguo).
+
+## Pendiente
+
+- `scripts/chapter-one-browser-smoke.cjs` (prueba manual en Chromium, fuera de
+  `npm test`) todavía espera combatir a Atlas al final de S1-V1. Hay que
+  rehacerla para S1-V1 sin Atlas y otra para S1-V5. Necesita Playwright (sin
+  instalar, requiere permiso del propietario).
+- Revisar con capturas reales la pantalla de completado de S1-V1 y de S1-V5
+  (texto largo de Iria + Gemelo + siguiente viaje).
