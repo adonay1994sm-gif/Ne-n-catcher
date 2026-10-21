@@ -1246,7 +1246,72 @@
     ui.encounterProgress.classList.toggle("active", false);
   }
 
+  // Mapa de sector (docs/design/MAPA_SECTOR.md): rutas del sector 1 y bases
+  // con conversación. Sin guardado propio: S1-V1 está hecho si Gaia se abrió.
+  function buildSectorMap() {
+    if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
+    const firstDone = getUnlocked() >= 2;
+    const map = NeonCampaign.sectorMapState(1, {playable: NeonCampaign.VOYAGES.map(ficha => ficha.id),
+      completed: firstDone ? ["S1-V1"] : []});
+    const place = id => map.places.find(item => item.id === id);
+    const pct = value => `${(value * 100).toFixed(1)}%`;
+    ui.sectorMap.replaceChildren();
+    ui.sectorMap.setAttribute("aria-label", map.title);
+    const lines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    lines.setAttribute("viewBox", "0 0 100 100"); lines.setAttribute("preserveAspectRatio", "none");
+    lines.setAttribute("aria-hidden", "true"); lines.classList.add("sector-map-lines");
+    for (const route of map.routes) {
+      const from = place(route.from), to = place(route.to);
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      path.setAttribute("x1", from.x * 100); path.setAttribute("y1", from.y * 100);
+      path.setAttribute("x2", to.x * 100); path.setAttribute("y2", to.y * 100);
+      path.dataset.status = route.status; lines.append(path);
+    }
+    ui.sectorMap.append(lines);
+    for (const item of map.places) {
+      const node = document.createElement(item.kind === "base" ? "button" : "div");
+      node.className = "sector-place"; node.dataset.kind = item.kind; node.dataset.place = item.id;
+      node.style.left = pct(item.x); node.style.top = pct(item.y);
+      node.innerHTML = `<i aria-hidden="true"></i><b>${item.label}</b>${item.note ? `<small>${item.note}</small>` : ""}`;
+      if (item.kind === "base") { node.type = "button"; node.onclick = () => openBaseTalk(item.id === "gaia" ? "gaia" : "c9", firstDone); }
+      ui.sectorMap.append(node);
+    }
+    for (const route of map.routes) {
+      const from = place(route.from), to = place(route.to);
+      const node = document.createElement("button");
+      node.type = "button"; node.className = "sector-route"; node.dataset.status = route.status;
+      node.dataset.voyage = route.voyage;
+      node.style.left = pct((from.x + to.x) / 2); node.style.top = pct((from.y + to.y) / 2);
+      node.innerHTML = `<small>${route.voyage}${route.status === "done" ? " · HECHO" : route.status === "locked" ? " · EN PREPARACIÓN" : ""}</small><b>${route.title}</b>`;
+      node.disabled = route.status === "locked";
+      if (route.status !== "locked") node.onclick = () => prepareLevel(0, "levels");
+      ui.sectorMap.append(node);
+    }
+  }
+
+  let baseTalkState = null;
+  function openBaseTalk(baseId, atlasConvinced) {
+    const talk = NeonCampaign.baseConversation(baseId, {atlasConvinced});
+    if (!talk || !ui.baseTalk) return;
+    baseTalkState = {talk, index: 0};
+    $("baseTalkFace").dataset.actor = talk.actor.id;
+    $("baseTalkName").textContent = `${talk.actor.name.toUpperCase()} · ${talk.actor.role}`;
+    showBaseTalkLine();
+    ui.baseTalk.hidden = false;
+    $("baseTalkNext").focus();
+  }
+  function showBaseTalkLine() {
+    const {talk, index} = baseTalkState;
+    $("baseTalkLine").textContent = talk.lines[index].text;
+    $("baseTalkNext").hidden = index >= talk.lines.length - 1;
+  }
+  function closeBaseTalk() {
+    baseTalkState = null;
+    if (ui.baseTalk) ui.baseTalk.hidden = true;
+  }
+
   function buildLevelGrid() {
+    buildSectorMap(); closeBaseTalk();
     const unlocked = getUnlocked();
     const starsMap = getStars();
     const bests = getLevelBest();

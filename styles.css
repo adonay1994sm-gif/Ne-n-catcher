@@ -912,3 +912,31 @@ body.flight-mode .fire-control small { font-size: 12px; }
   #menu .menu-legal { justify-content: flex-start; }
 }
 #menu .hero-cta::after { transform: rotate(45deg); }
+/* Mapa de sector (docs/design/MAPA_SECTOR.md) dentro de RUTA. */
+.level-panel{max-height:100%;overflow:auto}
+.sector-map{position:relative;height:470px;margin:12px 0 10px;border:1px solid #1f4a63;border-radius:14px;background:radial-gradient(circle at 30% 8%,rgba(92,231,238,.22),transparent 34%),radial-gradient(circle at 66% 92%,rgba(64,214,170,.24),transparent 36%),linear-gradient(180deg,#06101f,#040a15);overflow:hidden;text-align:left}
+.sector-map-lines{position:absolute;inset:0;width:100%;height:100%}
+.sector-map-lines line{stroke:#47606f;stroke-width:.7;stroke-dasharray:2 2;vector-effect:non-scaling-stroke}
+.sector-map-lines line[data-status="done"]{stroke:#5ce7ee;stroke-dasharray:none}
+.sector-map-lines line[data-status="open"]{stroke:#9df5f2;stroke-width:2;animation:routePulse 1.6s ease-in-out infinite}
+@keyframes routePulse{50%{stroke-opacity:.45}}
+.sector-place{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:0;border:0;background:none;color:#cfe9f5;font-size:10px;letter-spacing:.04em;text-align:center;min-width:44px;min-height:44px;justify-content:center}
+.sector-place i{display:block;width:14px;height:14px;border-radius:50%;background:#7fa3b8;box-shadow:0 0 10px rgba(127,163,184,.6)}
+.sector-place[data-kind="ruin"] i{width:26px;height:26px;background:radial-gradient(circle,#c6fbff 0 18%,#2bb6d3 30%,#0d2f4a 70%);box-shadow:0 0 18px rgba(92,231,238,.7)}
+.sector-place[data-kind="base"] i{width:18px;height:18px;border-radius:3px;transform:rotate(45deg);background:#ffcf8a;box-shadow:0 0 14px rgba(255,207,138,.7)}
+.sector-place[data-place="gaia"] i{width:40px;height:40px;border-radius:50%;transform:none;background:radial-gradient(circle at 35% 30%,#d8fff4,#3fd3a6 40%,#0f4a52 80%);box-shadow:0 0 22px rgba(64,214,170,.75)}
+.sector-place b{font-size:11px;color:#eefcff}.sector-place small{font-size:9px;color:#8fb3c4}
+button.sector-place{cursor:pointer}button.sector-place:focus-visible{outline:2px solid #9df5f2;outline-offset:3px;border-radius:8px}
+.sector-route{position:absolute;transform:translate(-50%,-50%);max-width:42%;min-height:44px;padding:5px 9px;border:1px solid #2c5870;border-radius:9px;background:rgba(6,18,32,.92);color:#e8faff;font-size:10px;line-height:1.2;text-align:left}
+.sector-route small{display:block;font-size:8px;letter-spacing:.06em;color:#8fb3c4}
+.sector-route[data-status="open"]{border-color:#9df5f2;box-shadow:0 0 14px rgba(92,231,238,.45)}
+.sector-route[data-status="open"] small{color:#9df5f2}
+.sector-route[data-status="done"]{border-color:#3f8f94}
+.sector-route:disabled{opacity:.55}
+.base-talk{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px;padding:11px;border:1px solid #b58b55;border-radius:12px;background:rgba(18,14,10,.92);text-align:left}
+.base-talk[hidden]{display:none}
+.base-talk .chapter-face{flex:0 0 52px;width:52px;height:52px;background-size:156px 52px}
+.base-talk .chapter-face[data-actor="mira"]{background-position:-52px 0}.base-talk .chapter-face[data-actor="iria"]{background-position:-104px 0}
+.base-talk-text{flex:1 1 60%;min-width:0}.base-talk-text small{color:#ffcf8a;font-size:9px;letter-spacing:.06em}.base-talk-text p{margin:4px 0 0;color:#fff4e4;font-size:13px;line-height:1.35}
+.base-talk-actions{display:flex;gap:8px;width:100%;justify-content:flex-end}.base-talk-actions button{min-height:44px;padding:8px 14px}
+.level-grid-title{display:block;margin-top:4px;color:#8fb3c4;letter-spacing:.08em;font-size:10px}

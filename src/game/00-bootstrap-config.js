@@ -65,6 +65,8 @@
     complete: $("complete"),
     over: $("over"),
     levelGrid: $("levelGrid"),
+    sectorMap: $("sectorMap"),
+    baseTalk: $("baseTalk"),
     result: $("result"),
     final: $("finalScore"),
     supplyStatus: $("supplyStatus"),
