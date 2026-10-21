@@ -2420,8 +2420,184 @@ var NeonCampaign = (() => {
     }
   });
 
+  // src/game/progression/voyages/s1-v3-evacuee-escort.js
+  var immutable4 = (object2) => Object.freeze(object2);
+  var ROSTERS3 = immutable4({
+    hunters: immutable4(["raider", "raider", "scout"]),
+    alpha: immutable4(["interceptor", "raider", "interceptor", "scout"])
+  });
+  var encounter3 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable4({
+    patrol: patrol && immutable4({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt
+  });
+  var S1_V3_EVACUEE_ESCORT = immutable4({
+    id: "S1-V3",
+    sector: 1,
+    number: 3,
+    title: "Escolta a los evacuados",
+    chapter: 3,
+    version: "s1-v3-voyage-v1",
+    saveKey: "neonCatcher.voyage.S1-V3.v1",
+    routeId: "gaia-evacuee-escort",
+    eventPrefix: "s1-v3",
+    baseGoal: 36,
+    origin: "Anillo de sat\xE9lites",
+    destination: "\xD3rbita alta de Gaia",
+    arrivalDestinationId: "gaia-high-orbit",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid S1-V3 voyage checkpoint",
+    stages: immutable4([
+      ["Naves sin permiso", 30, 5, "Localiza a los evacuados de Chronos", "Anillo de sat\xE9lites", "Columna civil", "civilian-contact", 0.1, 0.52, 0.34],
+      ["Columna civil", 32, 11, "Mantente junto a la columna y recupera su CRONIUM", "Columna civil", "Cazadores del C-17", "escort-start", 0.12, 0.56, 0.46],
+      ["Cazadores del C-17", 34, 17, "Derriba a los perseguidores antes de que alcancen la columna", "Cazadores del C-17", "Paso estrecho", "hunter-wave", 0.14, 0.6, 0.6],
+      ["Paso estrecho", 30, 22, "Abre paso entre restos para las naves lentas", "Paso estrecho", "Alfa del C-17", "narrow-pass", 0.16, 0.62, 0.52],
+      ["Alfa del C-17", 34, 29, "Resiste al interceptor Alfa que lidera la caza", "Alfa del C-17", "\xD3rbita alta", "alpha-hunt", 0.18, 0.66, 0.7],
+      ["\xD3rbita alta", 34, 36, "Lleva a los evacuados hasta la \xF3rbita alta de Gaia", "\xD3rbita alta", "\xD3rbita alta de Gaia", "high-orbit-arrival", 0.12, 0.58, 0.58]
+    ].map((stage) => immutable4(stage))),
+    events: immutable4([]),
+    service: null,
+    encounters: immutable4([
+      encounter3(3, [2, ROSTERS3.hunters, 8]),
+      encounter3(4, [2, ROSTERS3.hunters, 7]),
+      encounter3(8, [3, ROSTERS3.hunters, 6], { repairAt: 16 }),
+      encounter3(7, [2, ROSTERS3.alpha, 8], { comets: true }),
+      encounter3(9, [3, ROSTERS3.alpha, 6], { repairAt: 18 }),
+      encounter3(10, [3, ROSTERS3.alpha, 6])
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "escort" : stageIndex < 5 ? "hunt" : "gaia-approach";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const approach2 = smooth(p, 0, 1);
+      return {
+        station: immutable4({ x: 0.5, y: 1.4, scale: 0.01, rotation: 0, visible: false, alpha: 0, state: "ruptured" }),
+        planet: immutable4({
+          x: 0.62 - 0.1 * approach2,
+          y: 0.12 + 0.04 * approach2,
+          scale: 0.58 + 0.3 * approach2,
+          rotation: 0.05 * p,
+          visible: true,
+          alpha: 1
+        }),
+        beacon: immutable4({ x: 0.5, y: 1.2, scale: 0, visible: false, alpha: 0, active: false }),
+        relay: immutable4({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable4({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable4({
+          travel: p,
+          offsetX: -0.08 * p,
+          offsetY: 1.8 * p,
+          speed: 0.5 + 0.25 * smooth(p, 0.1, 0.5),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: 0.24
+        }),
+        debris: immutable4({
+          visible: !arrived,
+          travel: p,
+          directionX: -0.2,
+          directionY: 0.98,
+          depth: 0.35,
+          density: stageIndex === 3 ? 0.7 : 0.34
+        })
+      };
+    }
+  });
+
+  // src/game/progression/voyages/s1-v4-false-signal.js
+  var immutable5 = (object2) => Object.freeze(object2);
+  var ROSTERS4 = immutable5({
+    decoys: immutable5(["scout", "scout", "raider"]),
+    escort: immutable5(["interceptor", "raider", "scout", "raider"])
+  });
+  var encounter4 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable5({
+    patrol: patrol && immutable5({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt
+  });
+  var S1_V4_FALSE_SIGNAL = immutable5({
+    id: "S1-V4",
+    sector: 1,
+    number: 4,
+    title: "Sigue la se\xF1al falsa",
+    chapter: 4,
+    version: "s1-v4-voyage-v1",
+    saveKey: "neonCatcher.voyage.S1-V4.v1",
+    routeId: "gaia-false-signal",
+    eventPrefix: "s1-v4",
+    baseGoal: 36,
+    origin: "\xD3rbita alta de Gaia",
+    destination: "Lado nocturno de Gaia",
+    arrivalDestinationId: "gaia-night-side",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid S1-V4 voyage checkpoint",
+    stages: immutable5([
+      ["Tu propia firma", 30, 4, "N-7 capta tu firma emitida desde otra nave", "\xD3rbita alta de Gaia", "Terminador", "false-signature", 0.1, 0.46, 0.36],
+      ["El terminador", 32, 9, "Cruza la l\xEDnea entre el d\xEDa y la noche de Gaia", "Terminador", "Lado nocturno", "terminator", 0.08, 0.34, 0.42],
+      ["Se\xF1uelos", 32, 15, "Distingue los se\xF1uelos de la nave que emite tu firma", "Lado nocturno", "Rastro de la escolta", "decoys", 0.06, 0.24, 0.54],
+      ["Solo luces y disparos", 34, 21, "Avanza a oscuras gui\xE1ndote por los disparos", "Rastro de la escolta", "Ciudades dormidas", "darkness", 0.04, 0.16, 0.62],
+      ["Ciudades dormidas", 30, 26, "Sobrevuela las luces de Gaia sin perder el rastro", "Ciudades dormidas", "Escolta del C-17", "sleeping-cities", 0.06, 0.22, 0.5],
+      ["Escolta del C-17", 34, 31, "Alcanza a la escolta: huye da\xF1ada hacia el acceso", "Escolta del C-17", "Acceso nocturno", "escort-chase", 0.08, 0.28, 0.72],
+      ["Acceso nocturno", 32, 36, "Llega al acceso nocturno; Atlas vigila al otro lado", "Acceso nocturno", "Lado nocturno de Gaia", "night-arrival", 0.1, 0.32, 0.6]
+    ].map((stage) => immutable5(stage))),
+    events: immutable5([]),
+    service: null,
+    encounters: immutable5([
+      encounter4(3, [2, ROSTERS4.decoys, 8]),
+      encounter4(4, [2, ROSTERS4.decoys, 8]),
+      encounter4(7, [3, ROSTERS4.decoys, 7], { repairAt: 16 }),
+      encounter4(5, [2, ROSTERS4.escort, 8], { comets: true }),
+      encounter4(8, [3, ROSTERS4.escort, 7]),
+      encounter4(9, [3, ROSTERS4.escort, 6], { repairAt: 18 }),
+      encounter4(10, [3, ROSTERS4.escort, 6])
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "gaia-approach" : "night-side";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const night = smooth(p, 0.1, 0.45);
+      return {
+        station: immutable5({ x: 0.5, y: 1.4, scale: 0.01, rotation: 0, visible: false, alpha: 0, state: "ruptured" }),
+        planet: immutable5({
+          x: 0.6 - 0.3 * night,
+          y: 0.14 + 0.02 * night,
+          scale: 0.82 - 0.12 * night,
+          rotation: 0.02 + 0.05 * p,
+          visible: true,
+          alpha: 1 - 0.55 * night
+        }),
+        beacon: immutable5({ x: 0.5, y: 1.2, scale: 0, visible: false, alpha: 0, active: false }),
+        relay: immutable5({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable5({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable5({
+          travel: p,
+          offsetX: -0.06 * p,
+          offsetY: 1.5 * p,
+          speed: 0.48 + 0.2 * smooth(p, 0.2, 0.6),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: 0.12
+        }),
+        debris: immutable5({
+          visible: !arrived && stageIndex >= 2,
+          travel: p,
+          directionX: -0.14,
+          directionY: 0.99,
+          depth: 0.3,
+          density: 0.2
+        })
+      };
+    }
+  });
+
   // src/game/progression/voyages/index.js
-  var VOYAGES = Object.freeze([S1_V1_CHRONOS_GAIA, S1_V2_GAIA_OUTER_NET]);
+  var VOYAGES = Object.freeze([S1_V1_CHRONOS_GAIA, S1_V2_GAIA_OUTER_NET, S1_V3_EVACUEE_ESCORT, S1_V4_FALSE_SIGNAL]);
   var PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter((ficha) => ficha.playable !== false));
   var byRoute = new Map(VOYAGES.map((ficha) => [ficha.routeId, ficha]));
   var getVoyageFicha = (routeId) => byRoute.get(routeId) || null;
@@ -4765,21 +4941,21 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/chronos-flight.js
-  var immutable4 = (object2) => Object.freeze(object2);
-  var CHRONOS_FLIGHT_EVENTS = immutable4([
-    immutable4({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
-    immutable4({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
-    immutable4({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
-    immutable4({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
-    immutable4({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
-    immutable4({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
+  var immutable6 = (object2) => Object.freeze(object2);
+  var CHRONOS_FLIGHT_EVENTS = immutable6([
+    immutable6({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
+    immutable6({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
+    immutable6({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
+    immutable6({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
+    immutable6({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
+    immutable6({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
   ]);
-  var PHASES = immutable4([
-    immutable4({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
-    immutable4({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
-    immutable4({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
-    immutable4({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
-    immutable4({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
+  var PHASES = immutable6([
+    immutable6({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
+    immutable6({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
+    immutable6({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
+    immutable6({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
+    immutable6({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
   ]);
   var CHRONOS_VOYAGE_ROUTE = createVoyageRoute(S1_V1_CHRONOS_GAIA);
   var CHRONOS_VOYAGE_VERSION = S1_V1_CHRONOS_GAIA.version;
