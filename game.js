@@ -4721,7 +4721,8 @@
       ctx.globalAlpha = alpha;
       ctx.drawImage(image, frame % 4 * cell, Math.floor(frame / 4) * cell, cell, cell, x, y, size, size);
     };
-    ctx.save(); draw(pose.frame, 1); if (pose.blend > 0) draw(pose.next, pose.blend); ctx.restore();
+    const dim = pose.key === "volcanico" ? .62 : 1;
+    ctx.save(); draw(pose.frame, dim); if (pose.blend > 0) draw(pose.next, pose.blend * dim); ctx.restore();
   }
 
   // Planeta propio de una ficha (p. ej. Vulkar en el sector 2): atlas de 7
@@ -4735,8 +4736,10 @@
     if (!spriteReady(image)) return true;
     const position = elapsed / .9, frame = Math.floor(position) % 7, blend = position % 1;
     const cell = image.naturalWidth / 4, size = W * node.scale;
+    // El planeta rojo de Vulkar va atenuado: disparos y lava se leen encima.
+    const dim = key === "volcanico" ? .62 : 1;
     ctx.save(); ctx.translate(node.x * W, node.y * H); ctx.rotate(node.rotation || 0);
-    for (const [index, alpha] of [[frame, node.alpha ?? 1], [(frame + 1) % 7, (node.alpha ?? 1) * blend]]) {
+    for (const [index, alpha] of [[frame, (node.alpha ?? 1) * dim], [(frame + 1) % 7, (node.alpha ?? 1) * dim * blend]]) {
       if (alpha <= 0) continue;
       ctx.globalAlpha = alpha;
       ctx.drawImage(image, index % 4 * cell, Math.floor(index / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
@@ -5521,8 +5524,10 @@
       const sourceX = frame * sourceWidth;
       const direction = item.flightComet ? Math.atan2(item.vy,item.vx) : Math.PI / 2;
       ctx.rotate(direction);
-      ctx.shadowBlur = 9;
-      ctx.shadowColor = "#8cdeff";
+      // Amenaza = cálido (DESIGN §9.1): el halo naranja la separa del CRONIUM cian.
+      ctx.fillStyle = "rgba(255,140,70,.3)"; ctx.beginPath(); ctx.arc(0, 0, item.r * 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = "#ff8a4f";
       // Authored +X comet: keep the nucleus at the physical item centre. The
       // long decorative tail has no collision and trails opposite velocity.
       ctx.drawImage(
