@@ -434,6 +434,15 @@
     impactEffects.push({ x, y, scale: 1, angle, life: 0.5, duration: 0.5, hullSparks: true });
   }
 
+  // Explosión de Atlas vencido (baúl, encargo a04): 8 fotogramas en 0,8 s
+  // centrados en su núcleo, con una sacudida corta. Solo presentación.
+  function addAtlasExplosion(boss) {
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x: boss.x, y: boss.y, scale: 1, angle: 0, life: 0.8, duration: 0.8,
+      atlasExplosion: true, size: (boss.visualSize || 350) * 1.5 });
+    shake = Math.max(shake, 14);
+  }
+
   function addMissileImpact(x,y) {
     if(!settings.effects)return;
     if(impactEffects.length>=EFFECT_LIMITS.impacts)impactEffects.shift();
@@ -628,7 +637,9 @@
       if (explosions[index].life <= 0) explosions.splice(index, 1);
     }
     for (let index = impactEffects.length - 1; index >= 0; index--) {
-      impactEffects[index].life -= dt;
+      // La explosión de Atlas va al mismo reloj que Atlas (mitad con Estabilizador),
+      // para que el completado siga llegando justo después de ella.
+      impactEffects[index].life -= impactEffects[index].atlasExplosion && powers.slow > 0 ? dt * .5 : dt;
       if (impactEffects[index].life <= 0) impactEffects.splice(index, 1);
     }
   }
