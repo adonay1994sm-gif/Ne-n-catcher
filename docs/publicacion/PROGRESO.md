@@ -79,6 +79,7 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - [x] Mapa del sector 1 en RUTA con bases y conversaciones (Mira, Iria).
 - [x] S1-V2 «Cruza la red exterior de Gaia» jugable desde el mapa tras S1-V1.
 - [x] S1-V3 «Escolta a los evacuados» y S1-V4 «Sigue la señal falsa» jugables.
+- [x] S1-V5 «Convence a Atlas» jugable con Atlas al final (de momento Atlas sigue también al final de S1-V1).
 
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y
