@@ -19,14 +19,15 @@ const tasks = [];
 for (const name of (await readdir(folder)).filter(file => file.endsWith('.json')).sort()) {
   const doc = JSON.parse(await readFile(join(folder, name), 'utf8'));
   const data = doc.data || doc;
-  if (data.prompt && data.estado !== 'hecho') tasks.push({...data, id: String(doc.id || name.replace(/\.json$/, ''))});
+  // Fuera: lo hecho y lo que ya tiene el arte entregado (falta solo el código).
+  if (data.prompt && data.estado !== 'hecho' && data.arteRecibido !== true) tasks.push({...data, id: String(doc.id || name.replace(/\.json$/, ''))});
 }
-tasks.sort((a, b) => (a.prioridad ?? 2) - (b.prioridad ?? 2) || a.id.localeCompare(b.id));
+tasks.sort((a, b) => (Number(a.prioridad) || 2) - (Number(b.prioridad) || 2) || a.id.localeCompare(b.id));
 
-const oneLine = text => String(text).replace(/\s*\n\s*/g, ' ');
+const oneLine = text => String(text).replace(/\s*[\r\n]+\s*/g, ' ');
 const encargos = tasks.map(task => ({
-  id: task.id, titulo: oneLine(task.titulo || task.id), prioridad: task.prioridad ?? 2,
-  archivo: `encargo-${task.id}-v1.png`, prompt: task.prompt, nota: oneLine(task.nota || '')
+  id: task.id, titulo: oneLine(task.titulo || task.id), prioridad: Number(task.prioridad) || 2,
+  archivo: `encargo-${task.id}-v1.png`, prompt: String(task.prompt), nota: oneLine(task.nota || '')
 }));
 const updated = new Date().toISOString().slice(0, 10);
 
