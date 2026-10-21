@@ -80,7 +80,7 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - [x] S1-V2 «Cruza la red exterior de Gaia» jugable desde el mapa tras S1-V1.
 - [x] S1-V3 «Escolta a los evacuados» y S1-V4 «Sigue la señal falsa» jugables.
 - [x] S1-V5 «Convence a Atlas» jugable con Atlas al final (de momento Atlas sigue también al final de S1-V1).
-- [x] Sector 2 en el mapa; S2-V1 y S2-V2 jugables con Vulkar animado.
+- [x] Sector 2 en el mapa con sus 5 viajes jugables (S2-V5 sin el jefe Titán, falta su arte).
 
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y
