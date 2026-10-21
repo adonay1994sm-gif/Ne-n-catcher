@@ -254,6 +254,9 @@ test('S1-V5 gates Atlas behind both recovered CRONIUM and the real route arrival
   const age=q.boss.age;
   h.api.completeLevel();h.api.completeLevel();q=h.snapshot();
   assert.equal(q.state,'playing');assert.equal(q.boss.age,age);
+  // Calling completion twice mid-fight saves no progress and grants no weapon.
+  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')||'null')?.completed===true,false);
+  assert.deepEqual(q.equipment.unlocked,['pulse']);
   assert.equal(h.pending.size,1,'The existing legacy RAF remains the only owner');
 });
 
