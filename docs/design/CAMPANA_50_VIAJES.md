@@ -126,6 +126,8 @@ tramos aproximados.
     preparar el emisor recuperado en S1-V1.
   - **Transición:** mientras S1-V2 no exista, S1-V1 se publica como hoy,
     con Atlas. Atlas solo se mueve a S1-V5 cuando V2–V5 estén hechos.
+  - **Hecho (21/10/2026):** Atlas ya solo se combate en S1-V5 y allí se
+    gana el Gemelo. Detalle en `docs/design/ATLAS_SOLO_S1V5.md`.
 
 ---
 
@@ -391,7 +393,7 @@ Sin cifras: precios, daño y cadencia se deciden con el propietario.
 | 1 | **Pulso** | Existe | Desde el inicio |
 | 2 | **Abanico** | Existe (C9) | Compra en C9 tras preparar el emisor recuperado en S1-V1 |
 | 3 | **Aguja** | Existe (C9) | Igual que Abanico |
-| 4 | **Gemelo** | Existe | Premio de Atlas: S1-V1 hoy; S1-V5 con la opción B |
+| 4 | **Gemelo** | Existe | Premio de Atlas en S1-V5 (opción B, hecha) |
 | 5 | **Lanza** | Existe (calibración C9) | Requiere el Gemelo: desde S2-V1 |
 | 6 | **Fragua** | Propuesta | Premio del Titán de Vulkar (S2-V5): plasma que deja un rastro ardiente |
 | 7 | **Cadena** | Propuesta | Compra en C9 desde S3-V3: rayo que salta entre 3 objetivos |

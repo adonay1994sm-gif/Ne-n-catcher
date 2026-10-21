@@ -33,7 +33,7 @@ const updated = new Date().toISOString().slice(0, 10);
 
 await writeFile(new URL('encargos-gpt.json', OUT), JSON.stringify({
   proyecto: 'NEON CRONIUM', actualizado: updated, baul: BAUL,
-  instrucciones: 'Genera cada encargo por orden de prioridad (1 primero), súbelo al baúl con el nombre de "archivo" en la carpeta encargos/ y añádelo a catalog.json con el campo "encargo" igual a su id. Si un encargo pide varias imágenes, numéralas: encargo-<id>-v1-1.png, -2.png… No cambies medidas, rejilla ni el fondo que pide cada prompt.',
+  instrucciones: 'Genera cada encargo por orden de prioridad (1 primero), súbelo al baúl con el nombre de "archivo" en la carpeta encargos/ y añádelo a catalog.json con el campo "encargo" igual a su id. Si un encargo pide varias imágenes, numéralas: encargo-<id>-v1-1.png, -2.png… No cambies medidas, rejilla ni el fondo que pide cada prompt. Revisa esta lista cada 10 minutos y no repitas un encargo que ya esté en catalog.json del baúl.',
   encargos
 }, null, 2) + '\n');
 
@@ -45,7 +45,8 @@ const md = [`# Encargos de arte para GPT · NEON CRONIUM`, '',
   `2. Sube cada resultado al baúl (${BAUL}) en la carpeta \`encargos/\` con el nombre indicado en «Archivo».`,
   '3. Añádelo a `catalog.json` con el campo `"encargo"` igual al id del encargo.',
   '4. Si pide varias imágenes, numéralas: `encargo-<id>-v1-1.png`, `-2.png`…',
-  '5. Respeta medidas, rejilla y fondo (transparente salvo que el prompt pida opaco): el juego recorta las celdas por tamaño exacto.', ''];
+  '5. Respeta medidas, rejilla y fondo (transparente salvo que el prompt pida opaco): el juego recorta las celdas por tamaño exacto.',
+  '6. Revisa esta lista cada 10 minutos. Antes de empezar un encargo, mira `catalog.json` del baúl: si ya hay un archivo con su id en `"encargo"`, no lo repitas.', ''];
 for (const item of encargos) {
   md.push(`## ${item.titulo}`, '', `- **Id:** \`${item.id}\` · **Prioridad:** ${item.prioridad} · **Archivo:** \`${item.archivo}\``);
   if (item.nota) md.push(`- **Para qué:** ${item.nota}`);

@@ -154,16 +154,17 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
       prepare(index=0,{skipOpening=true}={}){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];
         if(skipOpening){classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;syncClassicChapterPresentation();}},
       startBossFixture(){
-        startLevel(0);warpTimer=0;classicChapterStory?.skipIntro();
+        // Atlas only exists at the end of S1-V5: start that map voyage at its
+        // last stage and let its real route reach the arrival.
+        classicSideVoyagePending=NeonCampaign.getVoyageFicha(NeonCampaign.VOYAGES.find(item=>item.id==='S1-V5').routeId);
+        startLevel(0);warpTimer=0;
         collected=level().goal;
-        classicFlight=NeonCampaign.createChronosVoyage({goal:level().goal,
-          checkpoint:NeonCampaign.createChronosVoyageCheckpoint(10,{goal:level().goal,collected})});
+        const route=classicSideVoyage.route;
+        classicFlight=route.create({goal:level().goal,checkpoint:route.createCheckpoint(route.stageCount,{goal:level().goal,collected})});
         for(let frame=0;frame<60*40&&!classicFlight.snapshot().canFinish;frame++)classicFlight.advance(1/60,collected,classicFlightEvent);
         classicFlightView=classicFlight.snapshot();
-        classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:true},classicChapterEvent);
-        classicChapterView=classicChapterStory.snapshot();items=[];gates=[];beginAtlasEncounter();
+        items=[];gates=[];beginAtlasEncounter();
       },
-      hitBossForFixture(){const result=NeonCampaign.hitGuardianAtlas(atlasBoss,1);for(const event of result.events)consumeAtlasEvent(event);return result.accepted;},
       damageForFixture(amount){damageShip(amount,player.x,player.y);},
       patrolFrame(dt=1/60){
         // Isolate actual patrol scheduling from unrelated random meteors and
@@ -239,17 +240,6 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     assert.equal(snapshot().route.stageNumber, number);
     return snapshot();
   }
-  function resolveBossFixture() {
-    assert.ok(snapshot().boss,'The route must actually start its boss before model damage is injected');
-    let accepted=0;
-    for(let frame=0;frame<60*60&&!snapshot().boss.resolved;frame++) {
-      if(snapshot().boss.vulnerability&&api.hitBossForFixture())accepted++;
-      advance(1/60,true);
-    }
-    assert.ok(snapshot().boss.resolved,'The real boss model must resolve within its bounded encounter budget');
-    assert.ok(accepted>0,'A fixture cannot resolve Atlas without accepted damage');
-    return snapshot();
-  }
   function pointer(type, pointerId, clientX, clientY) {
     canvas.dispatchEvent(new window.PointerEvent(type, {pointerId, clientX, clientY,
       pointerType: 'touch', buttons: /up|cancel/.test(type) ? 0 : 1,
@@ -260,7 +250,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     Object.defineProperties(event, {touches: {value: all}, changedTouches: {value: changed}});
     canvas.dispatchEvent(event);
   }
-  return {window, api, snapshot, advance, advanceStage, reachStage, recoverStageQuota,resolveBossFixture, pointer, touches, pending, drawCalls,
+  return {window, api, snapshot, advance, advanceStage, reachStage, recoverStageQuota, pointer, touches, pending, drawCalls,
     setRect: (id, rect) => layoutRects.set(id, rect),
     rectReads: id => rectReadCounts.get(id) || 0,
     clearDrawCalls: () => { drawCalls.length = 0; },
@@ -463,7 +453,7 @@ test('the Safari touch fallback tracks the first finger and ignores a secondary 
   h.touches('touchcancel', [], [moved]); assert.equal(h.snapshot().input.active, false);
 });
 
-test('the first mission crosses ten stages with optional onboard C9 and requires CRONIUM, Atlas and its actual aftermath before Gaia unlocks', t => {
+test('the first mission crosses ten stages with optional onboard C9 and requires CRONIUM and the real arrival, without Atlas, before Gaia unlocks', t => {
   const h = harness(t, {unlocked: 1}); h.api.prepare();
   for (let fragment = 0; fragment < 36; fragment++) h.api.collectEnergy();
   let q = h.snapshot();
@@ -503,14 +493,12 @@ test('the first mission crosses ten stages with optional onboard C9 and requires
     }
   }
   q = h.snapshot();
-  assert.equal(q.state,'playing');assert.ok(q.boss,'The completed route starts its own guardian');
-  assert.equal(q.unlocked,1);assert.deepEqual(JSON.parse(h.stored('neon-stars-v2')),{});
-  h.resolveBossFixture();assert.equal(h.snapshot().state,'playing');
-  assert.equal(h.snapshot().chapter.aftermathReady,false);
-  h.api.completeLevel();assert.equal(h.snapshot().state,'playing','Resolving Atlas cannot skip its eight-second consequence');
-  h.advance(7.8);assert.equal(h.snapshot().state,'playing');assert.equal(h.snapshot().unlocked,1);
-  h.advance(.3);q=h.snapshot();
+  // Atlas only warns from afar: the real arrival itself completes S1-V1.
+  assert.equal(q.boss,null,'S1-V1 no longer starts Atlas; it is fought in S1-V5');
   assert.equal(q.state, 'complete'); assert.equal(q.route.canFinish, true);
+  assert.equal(q.chapter.aftermathReady,false,'No Atlas epilogue plays in S1-V1');
+  assert.equal(h.node('completeTitle').textContent,'Has escapado de Chronos');
+  assert.deepEqual(q.equipment.unlocked,['pulse'],'Gemelo is authorized in S1-V5');
   assert.equal(q.route.routeProgress, 1); assert.ok(JSON.parse(h.stored('neon-stars-v2'))['1'] >= 1);
   assert.equal(q.unlocked, 2); assert.equal(h.voyage().completed, true);
   assert.equal(q.events.filter(event => event.type === 'stage-start').length, 10);
@@ -851,9 +839,9 @@ test('malformed lance unlocks are preserved as backups instead of granting uncal
   }
 });
 
-test('the first chapter Atlas samples the movable ship and locks a ballistic salvo without an advertised safe lane', t => {
+test('the S1-V5 Atlas samples the movable ship and locks a ballistic salvo without an advertised safe lane', t => {
   const h = harness(t);h.api.startBossFixture();
-  assert.ok(h.snapshot().boss,'A route/model fixture must start the first chapter guardian');
+  assert.ok(h.snapshot().boss,'A route/model fixture must start the S1-V5 guardian');
   assert.equal(h.node('atlasAutoFire'), null); assert.equal(h.snapshot().boss.phase, 1);
   h.pointer('pointerdown', 31, 250, 650); h.pointer('pointermove', 31, 290, 590);
   h.advance(.6); h.pointer('pointerup', 31, 290, 590);
@@ -1007,7 +995,7 @@ test('the compact HUD and weapon share menu, completion, death and Atlas visibil
   assert.equal(h.snapshot().state, 'complete'); hidden();
   h.api.goHome(); assert.equal(h.snapshot().state, 'menu'); hidden();
   h.api.startBossFixture();
-  assert.ok(h.snapshot().boss, 'The first chapter boundary must enter Atlas');
+  assert.ok(h.snapshot().boss, 'The S1-V5 boundary must enter Atlas');
   assert.equal(h.node('flightHud').classList.contains('hidden'), false,
     'Atlas must retain the same weapon selector and damage explanation');
   assert.equal(h.node('flightRoute').classList.contains('hidden'), true,
@@ -1324,8 +1312,8 @@ test('Gaia schedules CH-01 then a genuine CH-02 through the actual patrol update
 test('Chronos arrival continues the campaign with S1-V2 through the actual next control without a duplicate briefing',t=>{
   const h=harness(t,{unlocked:1});h.api.prepare();
   for(let n=1;n<=10;n++)h.advanceStage({service:true});
-  assert.equal(h.snapshot().state,'playing');assert.ok(h.snapshot().boss);
-  h.resolveBossFixture();h.advance(8.1);
+  // The real arrival completes S1-V1 at once: no Atlas and no epilogue wait.
+  assert.equal(h.snapshot().boss,null);
   assert.equal(h.snapshot().state,'complete');assert.equal(h.snapshot().unlocked,2);
   // Los viajes enlazan: el siguiente es S1-V2 (no el nivel clásico 2).
   assert.match(h.node('nextLevel').textContent,/SIGUIENTE VIAJE: S1-V2/);

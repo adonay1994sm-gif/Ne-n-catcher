@@ -21,10 +21,10 @@ function initialSave() {
 
 /** Controlled integration: actual built handlers and models, mocked Canvas,
  * suppressed incidental threats, seeded already-reached last checkpoint.
- * Atlas takes real model damage only during its two exposure windows; the
- * actual update loop resolves shutdown and the orbital aftermath. The fixed
- * score isolates persistence from combat scoring. This is a fault/recovery
- * contract, not natural gameplay, visuals, rewards, balance or device QA. */
+ * S1-V1 ends at the real route arrival (Atlas now lives in S1-V5), so the
+ * actual update loop alone completes the voyage. The fixed score isolates
+ * persistence from scoring. This is a fault/recovery contract, not natural
+ * gameplay, visuals, rewards, balance or device QA. */
 function harness(t, {saved = initialSave(), failTarget = null, denyRead = null,
   failReceipt = false} = {}) {
   const dom = new JSDOM(html, {url: 'https://neon.test/', runScripts: 'outside-only', pretendToBeVisual: true});
@@ -69,26 +69,16 @@ function harness(t, {saved = initialSave(), failTarget = null, denyRead = null,
     window.__COMPLETION_TEST__={
       finishChronos(){
         startLevel(0);warpTimer=0;
-        let frames=0,hits=0,damage=0;const phases=new Set();
+        let frames=0,sawAtlas=false;
         for(;frames<3600&&state==='playing';frames++){
           items=[];gates=[];spawnTimer=999;classicScoutTimer=999;
           classicPatrolTimer=Infinity;classicVoyageSpawnTimer=Infinity;classicVoyageHazardTimer=Infinity;
-          if(atlasBoss?.vulnerability){
-            phases.add(atlasBoss.phase);
-            const result=NeonCampaign.hitGuardianAtlas(atlasBoss,atlasBoss.maxHp/2);
-            if(!result.accepted)throw new Error('Exposed Atlas rejected fixture damage');
-            hits++;damage+=result.damage;
-            for(const event of result.events)consumeAtlasEvent(event);
-            // The journal tests deliberately own their score. In particular,
-            // normalize the real shutdown bonus before completion persists it.
-            score=777;
-          }
+          // The journal tests deliberately own their score.
+          score=777;
           update(1/30);
+          sawAtlas=sawAtlas||Boolean(atlasBoss);
         }
-        return {frames,hits,damage,phases:[...phases],score,
-          bossResolved:!!atlasBoss?.resolved,
-          routeElapsed:classicFlightView?.elapsed,
-          aftermathReady:!!classicChapterView?.aftermathReady};
+        return {frames,sawAtlas,score,routeElapsed:classicFlightView?.elapsed};
       },
       attemptCheckpoint(){return saveClassicVoyageCheckpoint(NeonCampaign.createChronosVoyageCheckpoint(1),false);},
       snapshot(){return {state,currentLevel,blocked:completionPersistenceBlocked,
@@ -100,9 +90,7 @@ function harness(t, {saved = initialSave(), failTarget = null, denyRead = null,
       const result = plain(window.__COMPLETION_TEST__.finishChronos());
       assert.equal(window.__COMPLETION_TEST__.snapshot().state, 'complete', JSON.stringify(result));
       assert.equal(result.routeElapsed, 360);
-      assert.deepEqual(result.phases, [1, 2]);
-      assert.equal(result.hits, 2); assert.equal(result.damage, 96);
-      assert.equal(result.bossResolved, true); assert.equal(result.aftermathReady, true);
+      assert.equal(result.sawAtlas, false, 'S1-V1 ends at the route arrival, without Atlas');
       assert.equal(result.score, 777);
       return result;
     },
@@ -122,6 +110,8 @@ for (const target of [K.stars, K.levelBest, K.best, K.voyage, K.unlocked, 'recei
     assert.equal(first.snapshot().blocked, true);
     const interrupted = first.dump();
     assert.equal(JSON.parse(interrupted.get(K.journal)).phase, 'pending');
+    assert.equal(JSON.parse(interrupted.get(K.journal)).equipment, undefined, 'The S1-V1 journal carries no equipment reward');
+    assert.equal(interrupted.has('neonCatcher.flightEquipment.v1'), false);
     const restarted = harness(t, {saved: interrupted}), saved = restarted.dump();
     // Sin niveles clásicos, el juego arranca siempre en el nivel 0 (la campaña).
     assert.equal(restarted.snapshot().blocked, false); assert.equal(restarted.snapshot().currentLevel, 0);

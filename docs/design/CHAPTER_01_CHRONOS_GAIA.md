@@ -4,6 +4,12 @@ Fecha: 18/10/2026. Estado: **IN_REVIEW**. Guion, controlador, arte, audio y comb
 
 ## Dirección vigente y decisiones de trabajo
 
+> **Actualización 21/10/2026:** Atlas ya no se combate en S1-V1; el capítulo
+> termina en la baliza y el combate, el epílogo de Iria y el Gemelo pasan a
+> S1-V5 (`docs/design/ATLAS_SOLO_S1V5.md`). Los beats `atlas-*` y el epílogo
+> de este controlador ya no se disparan; se conservan para leer guardados
+> antiguos.
+
 La nueva dirección enlaza la vida cotidiana de Chronos, una autorización falsificada, el sabotaje, la evacuación y una prueba que el jugador debe llevar a Gaia. El combate nace de que los asaltantes quieren recuperar ese registro; la defensa de Gaia, engañada por la misma firma, tampoco nos deja pasar. Atlas es un guardián que aplica un protocolo incorrecto. La comandante Iria tiene otra responsabilidad: verificar el registro, revocar el bloqueo y abrir la siguiente pista hacia Vulkar.
 
 El arco general y la apertura de 26 segundos han sido aprobados para este incremento. Son decisiones de trabajo reversibles los nombres secundarios, la matrícula C-17, el texto exacto, los tiempos de cada transmisión y la duración del epílogo. La historia mantiene el misterio de quién ordenó el ataque; que un convoy partiera de Vulkar no convierte a todo ese mundo en enemigo.
