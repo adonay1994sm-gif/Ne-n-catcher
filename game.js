@@ -331,7 +331,6 @@
   let classicWorkshopOpened = false;
   let classicChapterStory = null;
   let classicChapterView = null;
-  let classicChapterOutroStartedAt = null;
   let classicShipEntry = 0; // segundos que quedan de la entrada de la nave tras el inicio
   let classicFilmLocked = false;
   let classicPatrolTimer = 0;
@@ -1601,8 +1600,7 @@
     }
     classicShipEntry=Math.max(0,classicShipEntry-dt);
     if(classicChapterStory&&classicFlightView) {
-      classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
-        aftermathElapsed:classicChapterOutroStartedAt===null?0:elapsed-classicChapterOutroStartedAt},classicChapterEvent);
+      classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing"},classicChapterEvent);
       classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
       advanceClassicTutorial();
     }
@@ -1794,8 +1792,10 @@
     return false;
   }
 
+  // Atlas solo se combate en S1-V5 (decisión del propietario, 21/10/2026).
+  // S1-V1 termina en la baliza: Atlas avisa de lejos, sin combate.
   function isAtlasMission() {
-    return currentLevel === 0 && (!classicSideVoyage || classicSideVoyage.ficha.boss === "atlas");
+    return currentLevel === 0 && classicSideVoyage?.ficha.boss === "atlas";
   }
 
   // Viajes secundarios (fichas distintas de S1-V1, p. ej. S1-V2): guardado en
@@ -1924,7 +1924,6 @@
     if(bossHealth!==1)atlasBoss.hp=atlasBoss.maxHp=Math.round(atlasBoss.maxHp*bossHealth);
     NeonCampaign.setClassicUnlimitedFire(classicWeapons,true);
     document.body.classList.add("atlas-combat");ui.atlasEncounter.classList.remove("hidden");
-    signalClassicChapter("atlas-entry");
     positionAtlasArena();
     atlasFireTimer = 0; atlasReentryGrace = 0; atlasLastStatus = "";
     items = []; gates = []; shots = []; tractorTarget = null;
@@ -1974,15 +1973,12 @@
       showStoryTransmission("COMANDANTE IRIA · GAIA","¡Ruptura Crono! Atlas va a barrer la pantalla: busca el hueco.",1.6);
     }
     if (event.type === "volley" && event.fulminant) { shake=Math.max(shake,6);cameraKickY=Math.max(cameraKickY,4); }
-    if (event.type === "phase") { signalClassicChapter("atlas-phase-two"); cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
+    if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
       spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
     }
-    if (event.type === "disabled") {
-      signalClassicChapter("atlas-disabled");classicChapterOutroStartedAt=elapsed;
-      if(!classicChapterStory)completeLevel();
-    }
+    if (event.type === "disabled") completeLevel();
   }
 
   function updateAtlasEncounter(dt) {
@@ -2484,11 +2480,9 @@
       if (storyTimer === 0) hideStoryTransmission();
     }
     if(classicChapterStory&&classicFlightView) {
-      classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing",
-        aftermathElapsed:classicChapterOutroStartedAt===null?0:elapsed-classicChapterOutroStartedAt},classicChapterEvent);
+      classicChapterStory.advance({elapsed:classicFlightView.elapsed,playing:state==="playing"},classicChapterEvent);
       classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
       advanceClassicTutorial();
-      if(atlasBoss?.resolved&&classicChapterView.aftermathReady)completeLevel();
     }
     if (classicFlight || currentLevel !== 0 || state !== "playing" || warpTimer > 0) return;
     const next = LEVEL_ONE_STORY[storyStep];
@@ -2537,7 +2531,7 @@
       : currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     classicChapterStory=classicFlight&&!classicSideVoyage?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
-    classicChapterView=classicChapterStory?.snapshot()||null;classicChapterOutroStartedAt=null;
+    classicChapterView=classicChapterStory?.snapshot()||null;
     classicTutorial=classicFlight&&!classicSideVoyage?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
     classicTutorialAnchor=null;classicTutorialSignature='';
     classicWeapons=NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H});
@@ -2672,7 +2666,7 @@
   function goHome() {
     if (typeof resetGameInput === "function") resetGameInput();
     classicSideVoyage=null;
-    classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;classicChapterOutroStartedAt=null;
+    classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;
     syncClassicChapterPresentation();
     if(classicWeapons)classicWeapons.projectiles.length=0;
     NeonCampaign.endFlightInput(classicFlightInput);
@@ -2721,7 +2715,6 @@
   function completeLevel() {
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
-    if(classicChapterStory&&atlasBoss?.resolved&&!classicChapterView?.aftermathReady)return;
     if (isAtlasMission() && collected >= level().goal) {
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
@@ -2744,39 +2737,21 @@
     const earned = runStars();
     const completedVoyage=classicFlightView?.canFinish
       ? classicVoyageCheckpointRecord(classicFlight.exportCheckpoint(),true) : null;
-    // A corrupt equipment record is recoverable only after its exact bytes
-    // have a durable backup. Establish a valid, reward-free baseline before the
-    // journal validates its before/after snapshot; never overwrite without it.
-    let equipmentReady=classicEquipmentWritable;
-    if(isAtlasMission()&&atlasBoss?.resolved&&equipmentReady) {
-      const raw=storage.getRaw(CLASSIC_EQUIPMENT_KEY);
-      let valid=raw===null;
-      try {valid=raw===null||NeonCampaign.normalizeClassicEquipment(JSON.parse(raw))!==null;} catch {}
-      if(!valid) {
-        const backups=storage.getJSON(CLASSIC_EQUIPMENT_KEY+":invalid-backups",[]);
-        equipmentReady=Array.isArray(backups)&&backups.includes(raw)&&persistClassicEquipment(classicEquipment);
-      }
-    }
-    // The bounded intent is written before any progress key or boss reward.
-    // A reload replays only durable targets without replaying combat events.
-    const completion = (!classicVoyageWritable || (isAtlasMission() && !equipmentReady)) ? {ok:false,status:"blocked"}
+    // The bounded intent is written before any progress key. S1-V1 no longer
+    // carries a boss reward: Atlas and its Gemelo authorization live in S1-V5.
+    // (Old pending journals with equipment are still replayed on boot.)
+    const completion = !classicVoyageWritable ? {ok:false,status:"blocked"}
       : completionJournal.complete({completionId:`${KEYS.unlocked}:${currentLevel+1}:${runToken}:${Date.now()}`,
-        level:currentLevel+1,stars:earned,score:Math.max(0,Math.floor(score)),checkpoint:completedVoyage,
-        equipment:isAtlasMission()&&atlasBoss?.resolved ? NeonCampaign.awardClassicBossWeapon(classicEquipment,"guardian-atlas").equipment : null});
+        level:currentLevel+1,stars:earned,score:Math.max(0,Math.floor(score)),checkpoint:completedVoyage});
     const progressSaved=completion.ok,newlyUnlocked=Boolean(completion.newlyUnlocked);
     completionPersistenceBlocked=!completion.ok;
     if(completedVoyage&&completion.ok)classicVoyageRecord=completedVoyage;
-    if(isAtlasMission()&&atlasBoss?.resolved&&completion.ok) {
-      const earnedEquipment=NeonCampaign.normalizeClassicEquipment(storage.getJSON(CLASSIC_EQUIPMENT_KEY,null));
-      if(earnedEquipment)classicEquipment=earnedEquipment;
-    }
     registerRun();
     ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : "NIVEL SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
       ? "Has estabilizado el Colapso Neon"
       : `${level().name} completado`;
-    if (isAtlasMission() && atlasBoss?.resolved) ui.completeTitle.textContent = "Atlas ha abierto el paso";
     ui.starsAwarded.innerHTML = [1, 2, 3]
       .map((value) => `<span class="${value <= earned ? "" : "off"}">★</span>`)
       .join("");
@@ -2794,12 +2769,11 @@
     if(currentLevel===0) {
       if(ui.completeVisual)ui.completeVisual.dataset.scene="rift";
       ui.completeLabel.textContent="VIAJE COMPLETADO · S1-V1";
-      ui.completeTitle.textContent="El registro ha llegado a Gaia";
-      ui.unlockMessage.textContent="IRIA · MANDO ORBITAL: El convoy utilizó tu identificación. El registro demuestra el sabotaje. Tienes autorización de recuperación; la siguiente señal procede de Vulkar.";
+      ui.completeTitle.textContent="Has escapado de Chronos";
+      ui.unlockMessage.textContent="N-7 · NAVEGACIÓN: Baliza exterior de Gaia alcanzada con el registro. Gaia aún cree que atacamos Chronos: tendremos que llevar la prueba hasta Atlas.";
       const nextVoyage=nextCampaignVoyage();
       ui.nextLevel.textContent=nextVoyage&&nextVoyage.voyage!=="S1-V1"?`SIGUIENTE VIAJE: ${nextVoyage.voyage} →`:"VER EL MAPA →";
     }
-    if(isAtlasMission()&&atlasBoss?.resolved&&progressSaved)ui.unlockMessage.textContent+=" Segundo cañón autorizado: Gemelo ×2 disponible en el taller.";
     overlay(ui.complete);
     tone(760, 0.12, "triangle", 0.08);
     setTimeout(() => tone(980, 0.18, "sine", 0.07), 120);
