@@ -24,7 +24,7 @@ Reglas de cada tarea:
 - [x] **N2 · Capturas por nivel.** Nuevo `scripts/capture-levels.cjs`
       (`node scripts/capture-levels.cjs --levels 4,6 --wait 3`); el antiguo
       `visual-rebirth-capture.cjs` depende de menús retirados.
-- [ ] **N3 · Especificación del mapa de sector.** `docs/design/MAPA_SECTOR.md`:
+- [x] **N3 · Especificación del mapa de sector.** `docs/design/MAPA_SECTOR.md`:
       planetas, rutas, bases, misiones y diálogo con personajes; qué existe y
       qué falta. Con los planetas del catálogo.
 - [ ] **N4 · Mapa de sector jugable (sector 1).** Pantalla entre viajes con
