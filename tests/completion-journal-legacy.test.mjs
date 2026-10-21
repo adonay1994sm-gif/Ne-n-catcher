@@ -123,7 +123,8 @@ for (const target of [K.stars, K.levelBest, K.best, K.voyage, K.unlocked, 'recei
     const interrupted = first.dump();
     assert.equal(JSON.parse(interrupted.get(K.journal)).phase, 'pending');
     const restarted = harness(t, {saved: interrupted}), saved = restarted.dump();
-    assert.equal(restarted.snapshot().blocked, false); assert.equal(restarted.snapshot().currentLevel, 1);
+    // Sin niveles clásicos, el juego arranca siempre en el nivel 0 (la campaña).
+    assert.equal(restarted.snapshot().blocked, false); assert.equal(restarted.snapshot().currentLevel, 0);
     assert.equal(restarted.snapshot().voyage.completed, true);
     assert.equal(saved.get(K.unlocked), '2'); assert.equal(saved.get(K.best), '777');
     assert.equal(JSON.parse(saved.get(K.levelBest))['1'], 777);
