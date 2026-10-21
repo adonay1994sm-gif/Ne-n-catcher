@@ -205,8 +205,19 @@ test('map voyages earn 0-3 stars like S1-V1, keep the best and the menu counts t
   assert.equal(lit(), 2, 'a damaged hull earns fewer stars this run');
   assert.equal(saved('S1-V2').stars, 3, 'but the best result is kept');
   T.goHome();
-  assert.equal(w.document.getElementById('totalStars').textContent, '3/30');
+  assert.equal(w.document.getElementById('totalStars').textContent, '4/30', 'S1-V2 (3) + S1-V1 done (at least 1)');
   T.buildLevelGrid();
   assert.match(w.document.querySelector('.sector-route[data-voyage="S1-V2"] small').textContent, /★★★/);
   assert.equal(route('S1-V2'), 'done');
+});
+
+test('voyages finished before per-voyage stars count at least one star instead of ☆☆☆', () => {
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  const key = 'neonCatcher.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
+  delete record.stars; w.localStorage.setItem(key, JSON.stringify(record));
+  T.goHome();
+  assert.equal(w.document.getElementById('totalStars').textContent, '2/30', 'S1-V1 and S1-V2 done: one star each');
+  T.buildLevelGrid();
+  assert.match(w.document.querySelector('.sector-route[data-voyage="S1-V2"] small').textContent, /★☆☆/);
 });
