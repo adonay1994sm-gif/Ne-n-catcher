@@ -119,6 +119,7 @@
     sensitivity: $("sensitivity"),
     vibration: $("vibration"),
     effectsQuality: $("effectsQuality"),
+    difficulty: $("difficulty"),
     reduceEffects: $("reduceEffects"),
     autoFire: $("autoFire"),
     musicValue: $("musicValue"),
@@ -219,7 +220,7 @@
     settings: "neon-settings-v5"
   };
   const LEGACY_KEYS = { best: "neon-best-v1" };
-  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true };
+  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true, difficulty: "normal" };
   const storage = NeonCore.createStorageService(window.NeonDev?.storage);
 
   function migrateLegacyStorage() {
@@ -572,6 +573,7 @@
       reduceEffects: typeof source.reduceEffects === "boolean" ? source.reduceEffects
         : Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches),
       effectsQuality: savedQuality,
+      difficulty: ["facil", "normal", "hardcore"].includes(source.difficulty) ? source.difficulty : DEFAULT_SETTINGS.difficulty,
       flightTutorial: source.flightTutorial&&typeof source.flightTutorial==='object' ? source.flightTutorial : null,
       effects: savedQuality !== "low"
     };
@@ -916,6 +918,7 @@
     ui.sensitivity.value = settings.sensitivity;
     ui.vibration.checked = settings.vibration;
     ui.effectsQuality.value = settings.effectsQuality;
+    if (ui.difficulty) ui.difficulty.value = settings.difficulty;
     ui.reduceEffects.checked = settings.reduceEffects;
     ui.autoFire.checked = settings.autoFire;
     ui.musicValue.textContent = `${settings.music}%`;
@@ -1634,7 +1637,7 @@
     const view=classicFlightView,n=view.stageNumber;
     if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
-    const rules=NeonCampaign.getVoyageStageRules(view.routeId,n);
+    const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;
     classicVoyageSpawnTimer-=dt;
     // Recoverable signals form a short trail rather than an endless rain.
@@ -1813,7 +1816,8 @@
   function startSideVoyage(voyageId) {
     const ficha=NeonCampaign.getVoyageFicha(NeonCampaign.VOYAGES.find(item=>item.id===voyageId)?.routeId);
     if(!ficha)return false;
-    classicSideVoyagePending=ficha;startLevel(0);return true;
+    // Un tramo elegido en la ficha de S1-V1 no se arrastra a otro viaje.
+    classicVoyageRequestedStage=null;classicSideVoyagePending=ficha;startLevel(0);return true;
   }
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
@@ -1864,6 +1868,9 @@
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
+    // Vida de Atlas según el modo de dificultad (Normal = la de siempre).
+    const bossHealth=NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.bossHealth??1;
+    if(bossHealth!==1)atlasBoss.hp=atlasBoss.maxHp=Math.round(atlasBoss.maxHp*bossHealth);
     NeonCampaign.setClassicUnlimitedFire(classicWeapons,true);
     document.body.classList.add("atlas-combat");ui.atlasEncounter.classList.remove("hidden");
     signalClassicChapter("atlas-entry");
@@ -2107,6 +2114,12 @@
     ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
     ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     if(target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
+    // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
+    const nextVoyage=target!==0?nextCampaignVoyage():null;
+    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){
+      ui.playLabel.textContent="CONTINUAR VIAJE";
+      ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
+    }
     ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
       `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
     ).join("");
@@ -2220,14 +2233,29 @@
   // Mapa de sector (docs/design/MAPA_SECTOR.md): rutas del sector 1 y bases
   // con conversación. Sin guardado propio: S1-V1 está hecho si Gaia se abrió.
   let sectorMapShown = 1;
-  function buildSectorMap() {
-    if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
+  // Progreso de la campaña de viajes: qué viajes están hechos y estado de
+  // cada sector. Lo usan el mapa, «Jugar» y la pantalla de completado.
+  function campaignSectors() {
+    if (typeof NeonCampaign.sectorMapState !== "function") return [];
     const firstDone = getUnlocked() >= 2;
     const sideDone = NeonCampaign.PLAYABLE_VOYAGES.filter(ficha => ficha.id !== "S1-V1" && loadSideVoyageRecord(ficha)?.completed)
       .map(ficha => ficha.id);
     const progress = {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
       completed: [...(firstDone ? ["S1-V1"] : []), ...sideDone]};
-    const sectors = Object.keys(NeonCampaign.SECTOR_MAPS).map(Number).map(id => NeonCampaign.sectorMapState(id, progress));
+    return Object.keys(NeonCampaign.SECTOR_MAPS).map(Number).map(id => NeonCampaign.sectorMapState(id, progress));
+  }
+  /** Siguiente viaje de la campaña (la primera ruta abierta), o null. */
+  function nextCampaignVoyage() {
+    for (const sector of campaignSectors()) {
+      const route = sector.routes.find(item => item.status === "open");
+      if (route) return route;
+    }
+    return null;
+  }
+  function buildSectorMap() {
+    if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
+    const sectors = campaignSectors();
+    const sideDone = sectors.flatMap(sector => sector.routes).filter(route => route.status === "done").map(route => route.voyage);
     if (!sectors.find(item => item.id === sectorMapShown)?.open) sectorMapShown = 1;
     const map = sectors.find(item => item.id === sectorMapShown);
     const place = id => map.places.find(item => item.id === id);
@@ -2354,6 +2382,7 @@
   }
 
   function closeBriefing() {
+    classicVoyageRequestedStage=null;
     if (briefingReturn === "levels") overlay(ui.levelSelect);
     else if (briefingReturn === "complete") overlay(ui.complete);
     else overlay(ui.menu);
@@ -2451,7 +2480,8 @@
     if(classicSideVoyage){
       const record=loadSideVoyageRecord(classicSideVoyage.ficha);
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
-      if(classicVoyageRequestedStage)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(classicVoyageRequestedStage,{goal:LEVELS[0].goal});
+      const requested=classicVoyageRequestedStage;
+      if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
       else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
@@ -2598,6 +2628,7 @@
 
   function goHome() {
     if (typeof resetGameInput === "function") resetGameInput();
+    classicSideVoyage=null;
     classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;classicChapterOutroStartedAt=null;
     syncClassicChapterPresentation();
     if(classicWeapons)classicWeapons.projectiles.length=0;
@@ -2724,6 +2755,8 @@
       ui.completeTitle.textContent="El registro ha llegado a Gaia";
       ui.unlockMessage.textContent="IRIA · MANDO ORBITAL: El convoy utilizó tu identificación. El registro demuestra el sabotaje. Tienes autorización de recuperación; la siguiente señal procede de Vulkar.";
       ui.nextLevel.textContent="CONTINUAR POR EL PERÍMETRO DE GAIA →";
+      const nextVoyage=nextCampaignVoyage();
+      if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.nextLevel.textContent=`SIGUIENTE VIAJE: ${nextVoyage.voyage} →`;
     }
     if(isAtlasMission()&&atlasBoss?.resolved&&progressSaved)ui.unlockMessage.textContent+=" Segundo cañón autorizado: Gemelo ×2 disponible en el taller.";
     overlay(ui.complete);
@@ -3309,6 +3342,10 @@
 
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
+    // Daño recibido según el modo de dificultad (Normal = 1).
+    const difficultyDamage = typeof NeonCampaign !== "undefined" && typeof settings !== "undefined"
+      ? NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.damage ?? 1 : 1;
+    amount *= difficultyDamage;
     const impactAngle = Math.atan2(y - player.y, x - player.x);
     const damageResult = NeonCampaign.resolveHullReinforcement({hull,amount,
       reserve:classicHullReserve,capacity:classicHullReserveCapacity,
@@ -4042,6 +4079,9 @@
   }
 
   function drawSectorEnvironment(t, lv) {
+    // Con un planeta pintado en el cielo no se dibujan las figuras vectoriales
+    // antiguas (líneas, anillos, rayas): mezclaban dos estilos (DESIGN §9.4).
+    if (currentLevel === 2 || sectorPlanet()) return;
     ctx.save();
     ctx.globalCompositeOperation = "screen";
 
@@ -4425,7 +4465,8 @@
       // Rótulo del villano: entra de golpe, con aberración cromática violeta.
       const punch = 1 + .35 * pose.prime.nameCardPunch;
       ctx.save(); ctx.globalAlpha = card; ctx.textAlign = "center";
-      ctx.translate(W / 2, H * .7); ctx.scale(punch, punch);
+      // Por encima de la franja de subtítulos (H*.70) para no pisarla.
+      ctx.translate(W / 2, H * .52); ctx.scale(punch, punch);
       ctx.font = "900 76px 'Trebuchet MS', sans-serif";
       ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
       ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
@@ -6178,6 +6219,9 @@
 
   $("play").onclick = () => {
     if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    // Tras S1-V1, la campaña sigue por el siguiente viaje abierto del mapa.
+    const nextVoyage=nextCampaignVoyage();
+    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
     const starsMap = getStars();
     const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
@@ -6213,6 +6257,8 @@
   $("replayLevel").onclick = () => startLevel(currentLevel);
   ui.nextLevel.onclick = () => {
     if(currentLevel===0&&state==="complete"&&getUnlocked()>=2) {
+      const nextVoyage=nextCampaignVoyage();
+      if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
       startLevel(1);
       showStoryTransmission("IRIA · MANDO GAIA","Tu autorización es válida. Sigue la señal por el corredor orbital; el registro apunta hacia Vulkar.",5.5);
       return;
@@ -6247,6 +6293,9 @@
   ui.vibration.onchange = (event) => {
     settings.vibration = event.target.checked;
     if (settings.vibration) vibrate(20);
+  };
+  if (ui.difficulty) ui.difficulty.onchange = (event) => {
+    settings.difficulty = ["facil", "normal", "hardcore"].includes(event.target.value) ? event.target.value : "normal";
   };
   ui.effectsQuality.onchange = (event) => {
     settings.effectsQuality = ["low", "normal", "high"].includes(event.target.value) ? event.target.value : "normal";

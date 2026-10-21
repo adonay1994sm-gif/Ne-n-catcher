@@ -1321,15 +1321,16 @@ test('Gaia schedules CH-01 then a genuine CH-02 through the actual patrol update
   }
 });
 
-test('Chronos arrival enters Gaia through the actual next control without a duplicate briefing',t=>{
+test('Chronos arrival continues the campaign with S1-V2 through the actual next control without a duplicate briefing',t=>{
   const h=harness(t,{unlocked:1});h.api.prepare();
   for(let n=1;n<=10;n++)h.advanceStage({service:true});
   assert.equal(h.snapshot().state,'playing');assert.ok(h.snapshot().boss);
   h.resolveBossFixture();h.advance(8.1);
   assert.equal(h.snapshot().state,'complete');assert.equal(h.snapshot().unlocked,2);
-  assert.match(h.node('nextLevel').textContent,/PERÍMETRO DE GAIA/);
+  // Los viajes enlazan: el siguiente es S1-V2 (no el nivel clásico 2).
+  assert.match(h.node('nextLevel').textContent,/SIGUIENTE VIAJE: S1-V2/);
   h.node('nextLevel').click();
-  const q=h.snapshot();assert.equal(q.state,'playing');assert.equal(q.currentLevel,1);
+  const q=h.snapshot();assert.equal(q.state,'playing');assert.equal(q.currentLevel,0);assert.equal(q.route.routeId,'gaia-outer-net');
   assert.equal(h.node('briefing').classList.contains('show'),false);
   assert.equal(h.voyage().completed,true);assert.equal(h.pending.size,1);
 });

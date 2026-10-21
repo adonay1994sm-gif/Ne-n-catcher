@@ -7,7 +7,8 @@ export {createCompletionJournal} from './completion-journal.js';
 export {SCRAP_ECONOMY_KEY, SCRAP_UPGRADES,
   createScrapLedger, rewardForEnemy, formatDenominations, classicWorkshopState} from './scrap-economy.js';
 export {createVoyageHazardField, advanceVoyageHazardField} from './voyage-hazards.js';
-export {VOYAGES, PLAYABLE_VOYAGES, getVoyageFicha, getVoyageStageRules} from './voyages/index.js';
+export {VOYAGES, PLAYABLE_VOYAGES, getVoyageFicha, getVoyageStageRules, getVoyageStageRulesFor} from './voyages/index.js';
+export {DIFFICULTY_MODES, normalizeDifficulty} from './difficulty.js';
 export {createVoyageRoute} from './voyage-engine.js';
 export {SECTOR_MAPS, sectorMapState} from './sector-map.js';
 export {baseConversation} from '../narrative/base-dialogues.js';
