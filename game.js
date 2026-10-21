@@ -1859,7 +1859,7 @@
     ui.hud.classList.add("hidden");ui.powerHud.classList.add("hidden");ui.fire.classList.add("hidden");ui.banner.classList.remove("show");
     // Decisión del propietario (tablero, rev32-ads): un viaje del mapa cuenta
     // como partida para los intersticiales solo la primera vez que se completa.
-    if(firstTime&&saved)registerRun();
+    if(firstTime&&saved&&!continued)registerRun();
     const next=nextCampaignVoyage();
     ui.completeLabel.textContent=`VIAJE COMPLETADO · SECTOR ${ficha.sector}`;
     ui.completeTitle.textContent=`${ficha.id} · ${ficha.title}`;
@@ -2740,6 +2740,11 @@
     ui.banner.classList.remove("show");
 
     const earned = runStars();
+    // Anuncios (decisiones del tablero rev37-ads-s1v1 y rev37-ads-doble): S1-V1
+    // cuenta como partida solo la primera vez, y no si se continuó con anuncio.
+    // (Rejugar S1-V1 reescribe su registro como no completado: la señal
+    // duradera es el desbloqueo, la misma que usan el mapa y las estrellas.)
+    const firstTime=getUnlocked()<2;
     const completedVoyage=classicFlightView?.canFinish
       ? classicVoyageCheckpointRecord(classicFlight.exportCheckpoint(),true) : null;
     // The bounded intent is written before any progress key. S1-V1 no longer
@@ -2751,7 +2756,7 @@
     const progressSaved=completion.ok,newlyUnlocked=Boolean(completion.newlyUnlocked);
     completionPersistenceBlocked=!completion.ok;
     if(completedVoyage&&completion.ok)classicVoyageRecord=completedVoyage;
-    registerRun();
+    if(firstTime&&progressSaved&&!continued)registerRun();
     ui.completeLabel.textContent = currentLevel === LEVELS.length - 1 ? "CAMPAÑA ACTUAL COMPLETADA" : "NIVEL SUPERADO";
     if(ui.completeVisual)ui.completeVisual.dataset.scene=level().scene;
     ui.completeTitle.textContent = currentLevel === LEVELS.length - 1
@@ -2817,7 +2822,8 @@
     // En el viaje se reintenta desde la entrada del tramo guardado, no el sector entero.
     $("retry").textContent = classicFlightView?.stageId ? `REINTENTAR TRAMO ${classicFlightView.stageId}` : "REINTENTAR SECTOR";
     overlay(ui.over);
-    registerRun();
+    // Tras continuar con un anuncio con recompensa, otra muerte no cuenta de nuevo.
+    if(!continued)registerRun();
     tone(110, 0.30, "sawtooth", 0.06);
     updateMenu();
     if (!scoreSaved) toast("No se pudo guardar el récord en este dispositivo");
