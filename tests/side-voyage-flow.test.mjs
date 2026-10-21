@@ -41,7 +41,8 @@ function harness({unlocked = '2', query = ''} = {}) {
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
     toGaiaBeacon:()=>{collected=36;for(let i=0;i<30000&&!classicFlightView?.beacon.active;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);return classicFlightView.beacon.active;},
-    draw:()=>render(performance.now()),
+    draw:()=>render(performance.now()),hull:()=>hull,stars:()=>runStars(),miss:n=>{energySpawned+=n;},
+    toStage:n=>{for(let i=0;i<30000&&classicFlightView.stageNumber<n;i++){const add=Math.max(0,classicFlightView.stageGoal-collected);collected+=add;energySpawned+=add;classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);}return classicFlightView.stageNumber;},
     finish:()=>{collected=36;for(let i=0;i<30000&&!classicFlight.snapshot().canFinish;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
       completeLevel();if(atlasBoss){atlasBoss.resolved=true;completeLevel();}}};\n`;
   assert.equal(game.split(MARKER).length, 2);
@@ -297,4 +298,50 @@ test('in the last S1-V1 stage Atlas only shows far away over Gaia, without a «G
   drawnTexts.length = 0; T.draw();
   assert.ok(drawnTexts.some(text => /^image:.*guardian_atlas/.test(text)), 'Atlas is still drawn far away as a warning');
   assert.equal(drawnTexts.some(text => /GUARDIAN ATLAS/.test(text)), false);
+});
+
+test('continuing a map voyage from the menu keeps the hull and the lost CRONIUM of the checkpoint', () => {
+  const {T, saved} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5);
+  for (let i = 0; i < 20 && T.hit(10) >= 70; i++);
+  const damaged = T.hull();
+  assert.ok(damaged < 70 && damaged >= 50, 'the hull is damaged above the resume floor');
+  T.miss(8);
+  assert.equal(T.toStage(2), 2, 'the voyage reaches its second checkpoint');
+  assert.equal(saved('S1-V2').entry.hull, damaged, 'the checkpoint stores the entry hull');
+  assert.equal(saved('S1-V2').entry.missed, 8, 'and the CRONIUM lost so far');
+  T.goHome(); T.startSideVoyage('S1-V2');
+  assert.equal(T.hull(), damaged, 'continuing keeps the damaged hull');
+  assert.notEqual(T.stars(), 3, 'stars measure the whole voyage, not only the last stretch');
+});
+
+test('continuing a map voyage keeps the lost CRONIUM even with a full hull', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5);
+  T.miss(8); T.toStage(2);
+  T.goHome(); T.startSideVoyage('S1-V2');
+  assert.equal(T.hull(), 100);
+  assert.notEqual(T.stars(), 3, 'eight lost fragments are more than the 10 % allowed for 3 stars');
+});
+
+test('retrying a map voyage after dying uses the entry hull of the stage with the S1-V1 floor', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5);
+  for (let i = 0; i < 40 && T.hit(10) > 30; i++);
+  assert.ok(T.hull() <= 30);
+  T.toStage(2);
+  T.finishGame('hull');
+  T.startLevel(0);
+  assert.equal(T.st().side, 'S1-V2');
+  assert.equal(T.hull(), 50, 'below the floor the retry starts with 50');
+});
+
+test('old map voyage records without the entry fields still resume', () => {
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(2); T.goHome();
+  const key = 'neonCatcher.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
+  delete record.entry; w.localStorage.setItem(key, JSON.stringify(record));
+  T.startSideVoyage('S1-V2');
+  assert.deepEqual([T.st().state, T.st().side, T.hull()], ['playing', 'S1-V2', 100]);
+  assert.equal(T.stars(), 3);
 });
