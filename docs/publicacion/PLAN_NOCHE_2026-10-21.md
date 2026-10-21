@@ -49,3 +49,8 @@ Reglas de cada tarea:
       desbloqueo de Gaia. Para S1-V5 hay que llevar esa misma garantía al cierre
       del viaje secundario. Es un cambio de guardados: **espera la revisión del
       propietario** antes de fusionarlo.
+- [x] **N10 · Sector 2 (Vulkar), primeros viajes.** Pestañas de sector en el
+      mapa (el 2 se abre al completar S1-V5), planeta volcánico por ficha,
+      S2-V1 y S2-V2 jugables.
+- [ ] **N11 · S2-V3, S2-V4 y S2-V5** (S2-V5 necesita al Titán de Vulkar: sin
+      arte todavía; de momento sin jefe).
