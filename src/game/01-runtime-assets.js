@@ -116,6 +116,8 @@
   let classicCometSequence = 0;
   let classicCometWarning = -1;
   let classicVoyageRecord = null;
+  // Viaje secundario (otra ficha que no es S1-V1): {ficha, route} mientras se juega.
+  let classicSideVoyage = null, classicSideVoyagePending = null;
   let classicVoyageWritable = true;
   let completionJournal = null;
   let completionPersistenceBlocked = false;

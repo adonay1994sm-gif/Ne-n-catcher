@@ -17,11 +17,11 @@ test('sector 1 follows the campaign: five routes from Chronos to Gaia and two ba
 test('only the next playable voyage opens; finished ones stay done; the rest wait', () => {
   const playable = PLAYABLE_VOYAGES.map(ficha => ficha.id);
   assert.deepEqual(sectorMapState(1, {playable}).routes.map(route => route.status),
-    ['open', 'locked', 'locked', 'locked', 'locked']);
+    ['open', 'locked', 'locked', 'locked', 'locked'], 'S1-V2 waits for S1-V1');
   assert.deepEqual(sectorMapState(1, {playable, completed: ['S1-V1']}).routes.map(route => route.status),
-    ['done', 'locked', 'locked', 'locked', 'locked'], 'S1-V2 has no card yet');
-  assert.deepEqual(sectorMapState(1, {playable: [...playable, 'S1-V2'], completed: ['S1-V1']}).routes
-    .map(route => route.status), ['done', 'open', 'locked', 'locked', 'locked']);
+    ['done', 'open', 'locked', 'locked', 'locked']);
+  assert.deepEqual(sectorMapState(1, {playable: ['S1-V1'], completed: ['S1-V1']}).routes
+    .map(route => route.status), ['done', 'locked', 'locked', 'locked', 'locked'], 'no card, no route');
   assert.equal(sectorMapState(99), null);
 });
 

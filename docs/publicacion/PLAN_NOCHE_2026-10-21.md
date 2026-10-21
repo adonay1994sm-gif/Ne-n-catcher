@@ -36,6 +36,6 @@ Reglas de cada tarea:
 - [~] **N6 · Fase B · fichas S1-V2…S1-V5.** Ficha S1-V2 hecha y probada con el motor (aún no jugable); mapa de acoplamientos en `docs/design/FASE_B_ACOPLAMIENTOS.md`. Rutas nuevas con el motor por
       fichas (paisaje y encuentros propios); Atlas pasa a S1-V5 (opción B)
       solo cuando V2–V5 sean jugables.
-- [ ] **N7 · Lanzar S1-V2 desde el mapa.** Seguir los pasos 1–6 de
+- [x] **N7 · Lanzar S1-V2 desde el mapa.** Hecho como «viaje secundario» (`scripts/side-voyage-smoke.cjs`). Seguir los pasos 1–6 de
       `FASE_B_ACOPLAMIENTOS.md`; S1-V1 debe seguir idéntico (pruebas actuales).
 - [ ] **N8 · Fichas S1-V3, S1-V4 y S1-V5** (V5 con Atlas, opción B).
