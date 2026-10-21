@@ -1454,7 +1454,7 @@
     buildChronosStageGrid();
     // El inicio de Chronos empieza a cargar al abrir la ficha, no al despegar.
     if(pendingLevel===0)[SPRITES.chronosIntroStation,SPRITES.chronosIntroFragments,SPRITES.cronosPrimeVideo,
-      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx].forEach(ensureSprite);
+      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeTrail].forEach(ensureSprite);
     overlay(ui.briefing);
   }
 
