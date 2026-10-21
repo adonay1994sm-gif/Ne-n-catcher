@@ -3,6 +3,7 @@
  * (10 sectores × 5 viajes); hoy contiene el viaje original.
  */
 import {S1_V1_CHRONOS_GAIA} from './s1-v1-chronos-gaia.js';
+import {applyDifficulty, calibrate, stagePressure, voyageNumber} from '../difficulty.js';
 import {S1_V2_GAIA_OUTER_NET} from './s1-v2-gaia-outer-net.js';
 import {S1_V3_EVACUEE_ESCORT} from './s1-v3-evacuee-escort.js';
 import {S1_V4_FALSE_SIGNAL} from './s1-v4-false-signal.js';
@@ -20,6 +21,18 @@ export const PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter(ficha => ficha.play
 const byRoute = new Map(VOYAGES.map(ficha => [ficha.routeId, ficha]));
 
 export const getVoyageFicha = routeId => byRoute.get(routeId) || null;
+
+// Curva de dificultad: cada ficha se calibra contra S1-V1 (ver difficulty.js).
+const rulesOf = ficha => ficha.encounters;
+const REFERENCE = rulesOf(S1_V1_CHRONOS_GAIA).reduce((sum, rules) => sum + stagePressure(rules), 0) /
+  S1_V1_CHRONOS_GAIA.encounters.length;
+const FACTORS = new Map(VOYAGES.map(ficha => [ficha.routeId,
+  ficha === S1_V1_CHRONOS_GAIA ? 1 : calibrate(rulesOf(ficha), {voyage: voyageNumber(ficha), reference: REFERENCE})]));
+
+/** Reglas del tramo con la curva de la campaña y el modo de dificultad aplicados. */
+export function getVoyageStageRulesFor(routeId, stageNumber, mode = 'normal') {
+  return applyDifficulty(getVoyageStageRules(routeId, stageNumber), {factor: FACTORS.get(routeId) ?? 1, mode});
+}
 
 /** Reglas del tramo actual de un viaje (null si no hay ficha o tramo). */
 export function getVoyageStageRules(routeId, stageNumber) {
