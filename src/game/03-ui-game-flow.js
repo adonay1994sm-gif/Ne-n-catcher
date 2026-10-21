@@ -153,7 +153,7 @@
   function resetClassicCometShower() {
     classicCometShower=null;
     const view=classicFlightView;
-    if(!view||!["1.5","1.9"].includes(view.stageId))return;
+    if(!view||!NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)return;
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
       shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
@@ -374,6 +374,7 @@
 
   function saveClassicVoyageCheckpoint(checkpoint,completed=false) {
     if(!checkpoint)return false;
+    if(classicSideVoyage)return saveSideVoyage(checkpoint,completed);
     if(completionPersistenceBlocked&&!recoverCampaignCompletion())return false;
     const record=classicVoyageCheckpointRecord(checkpoint,completed);
     // New route data has its own key. Old classic/N-7 saves are never inferred,
@@ -568,7 +569,8 @@
     }
     ui.flightObjective.dataset.active=String(Boolean(flightTransmission||guide));
     ui.flightObjective.classList.toggle('tutorial-active',Boolean(!flightTransmission&&guide));
-    ui.flightDestination.textContent=currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
+    ui.flightDestination.textContent=classicSideVoyage ? `${classicSideVoyage.ficha.id} · ${view?.stageNumber||1}/${view?.distance?.stages||1}`
+      : currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
     ui.flightDistance.setAttribute("aria-valuetext",view ? `Etapa ${view.stageNumber||1} de 10. ${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
@@ -852,7 +854,37 @@
   }
 
   function isAtlasMission() {
-    return currentLevel === 0;
+    return currentLevel === 0 && !classicSideVoyage;
+  }
+
+  // Viajes secundarios (fichas distintas de S1-V1, p. ej. S1-V2): guardado en
+  // su propia clave, sin historia del capítulo, tutorial, inicio ni Atlas.
+  function loadSideVoyageRecord(ficha) {
+    const route=NeonCampaign.createVoyageRoute(ficha),raw=storage.getJSON(ficha.saveKey,null);
+    const checkpoint=raw?.version===1&&raw.voyage===ficha.id?route.normalizeCheckpoint(raw.checkpoint,{goal:ficha.baseGoal}):null;
+    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true}:null;
+  }
+  function saveSideVoyage(checkpoint,completed=false) {
+    if(!classicSideVoyage||!checkpoint)return false;
+    const {ficha}=classicSideVoyage,record={version:1,voyage:ficha.id,checkpoint,completed};
+    const saved=storage.setJSON(ficha.saveKey,record);
+    if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
+    return saved;
+  }
+  function startSideVoyage(voyageId) {
+    const ficha=NeonCampaign.getVoyageFicha(NeonCampaign.VOYAGES.find(item=>item.id===voyageId)?.routeId);
+    if(!ficha)return false;
+    classicSideVoyagePending=ficha;startLevel(0);return true;
+  }
+  function completeSideVoyage() {
+    const {ficha}=classicSideVoyage;
+    saveSideVoyage(classicFlight.exportCheckpoint(),true);
+    if (typeof resetGameInput === "function") resetGameInput();
+    runToken += 1;cancelSupplyFailureTimer();
+    classicFlight=null;classicFlightView=null;classicSideVoyage=null;
+    setClassicFlightHudVisible(false);setState("menu");
+    buildLevelGrid();overlay(ui.levelSelect);
+    toast(`${ficha.id} · ${ficha.title}: viaje completado.`);
   }
 
   function setupAtlasEncounter() {
@@ -1251,8 +1283,10 @@
   function buildSectorMap() {
     if (!ui.sectorMap || typeof NeonCampaign.sectorMapState !== "function") return;
     const firstDone = getUnlocked() >= 2;
+    const sideDone = NeonCampaign.PLAYABLE_VOYAGES.filter(ficha => ficha.id !== "S1-V1" && loadSideVoyageRecord(ficha)?.completed)
+      .map(ficha => ficha.id);
     const map = NeonCampaign.sectorMapState(1, {playable: NeonCampaign.PLAYABLE_VOYAGES.map(ficha => ficha.id),
-      completed: firstDone ? ["S1-V1"] : []});
+      completed: [...(firstDone ? ["S1-V1"] : []), ...sideDone]});
     const place = id => map.places.find(item => item.id === id);
     const pct = value => `${(value * 100).toFixed(1)}%`;
     ui.sectorMap.replaceChildren();
@@ -1284,7 +1318,7 @@
       node.style.left = pct((from.x + to.x) / 2); node.style.top = pct((from.y + to.y) / 2);
       node.innerHTML = `<small>${route.voyage}${route.status === "done" ? " · HECHO" : route.status === "locked" ? " · EN PREPARACIÓN" : ""}</small><b>${route.title}</b>`;
       node.disabled = route.status === "locked";
-      if (route.status !== "locked") node.onclick = () => prepareLevel(0, "levels");
+      if (route.status !== "locked") node.onclick = () => route.voyage === "S1-V1" ? prepareLevel(0, "levels") : startSideVoyage(route.voyage);
       ui.sectorMap.append(node);
     }
   }
@@ -1450,18 +1484,26 @@
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     let voyageEntry=null,voyageCheckpoint=null;
-    if(currentLevel===0){
+    // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
+    const sideFicha=classicSideVoyagePending||(["paused","over"].includes(state)?classicSideVoyage?.ficha:null);
+    classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
+    classicSideVoyagePending=null;
+    if(classicSideVoyage){
+      const record=loadSideVoyageRecord(classicSideVoyage.ficha);
+      if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
+    } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
       if(resume){voyageCheckpoint=classicVoyageRecord.checkpoint;voyageEntry=classicVoyageRecord.entry;}
       else if(requested){voyageCheckpoint=NeonCampaign.createChronosVoyageCheckpoint(requested,{goal:LEVELS[0].goal});}
     }
     classicVoyageRequestedStage=null;
-    classicFlight=currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
+    classicFlight=classicSideVoyage ? classicSideVoyage.route.create({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint})
+      : currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
-    classicChapterStory=classicFlight?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
+    classicChapterStory=classicFlight&&!classicSideVoyage?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;classicChapterOutroStartedAt=null;
-    classicTutorial=classicFlight?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
+    classicTutorial=classicFlight&&!classicSideVoyage?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
     classicTutorialAnchor=null;classicTutorialSignature='';
     classicWeapons=NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H});
     beginClassicSalvageRun(Boolean(voyageEntry));
@@ -1643,6 +1685,7 @@
   function completeLevel() {
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
+    if(classicSideVoyage){completeSideVoyage();return;}
     if(classicChapterStory&&atlasBoss?.resolved&&!classicChapterView?.aftermathReady)return;
     if (isAtlasMission() && collected >= level().goal) {
       if (!atlasBoss) { beginAtlasEncounter(); return; }

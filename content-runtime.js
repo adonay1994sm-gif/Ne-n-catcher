@@ -65,6 +65,7 @@ var NeonCampaign = (() => {
     createRelativeFlightInput: () => createRelativeFlightInput,
     createScrapLedger: () => createScrapLedger,
     createVoyageHazardField: () => createVoyageHazardField,
+    createVoyageRoute: () => createVoyageRoute,
     createVoyageScore: () => createVoyageScore,
     endFlightInput: () => endFlightInput,
     formatDenominations: () => formatDenominations,
@@ -2335,14 +2336,12 @@ var NeonCampaign = (() => {
     sector: 1,
     number: 2,
     title: "Cruza la red exterior de Gaia",
-    // Aún no se puede lanzar desde el juego: el mapa la muestra «en preparación».
-    playable: false,
     chapter: 2,
     version: "s1-v2-voyage-v1",
     saveKey: "neonCatcher.voyage.S1-V2.v1",
     routeId: "gaia-outer-net",
     eventPrefix: "s1-v2",
-    baseGoal: 30,
+    baseGoal: 36,
     origin: "Baliza exterior de Gaia",
     destination: "Anillo de sat\xE9lites",
     arrivalDestinationId: "gaia-satellite-ring",
@@ -2351,12 +2350,12 @@ var NeonCampaign = (() => {
     invalidCheckpointMessage: "Invalid S1-V2 voyage checkpoint",
     stages: immutable3([
       ["Baliza en silencio", 30, 4, "Deja atr\xE1s la baliza; la red a\xFAn no te ha visto", "Baliza exterior de Gaia", "Red exterior", "net-edge", 0.1, 0.5, 0.3],
-      ["Primer barrido", 32, 9, "Esquiva los barridos de identificaci\xF3n", "Red exterior", "Malla de sensores", "identity-sweep", 0.12, 0.56, 0.4],
-      ["Malla de sensores", 32, 14, "Cruza la malla sin atraer a los sat\xE9lites", "Malla de sensores", "Hueco de N-7", "sensor-mesh", 0.14, 0.6, 0.48],
-      ["El hueco de N-7", 30, 18, "Sigue el hueco que encuentra N-7 entre dos sat\xE9lites", "Hueco de N-7", "Cuarentena", "net-gap", 0.08, 0.44, 0.36],
-      ["Cuarentena", 34, 23, "Resiste el escudo de cuarentena de la red", "Cuarentena", "Sombra de Gaia", "quarantine", 0.16, 0.62, 0.62],
-      ["Sombra de Gaia", 32, 27, "Avanza bajo la sombra del planeta", "Sombra de Gaia", "Anillo de sat\xE9lites", "gaia-shadow", 0.12, 0.52, 0.54],
-      ["Anillo de sat\xE9lites", 34, 30, "Alcanza el anillo; Iria sigue sin responder", "Anillo de sat\xE9lites", "Anillo de sat\xE9lites", "ring-arrival", 0.18, 0.64, 0.7]
+      ["Primer barrido", 32, 10, "Esquiva los barridos de identificaci\xF3n", "Red exterior", "Malla de sensores", "identity-sweep", 0.12, 0.56, 0.4],
+      ["Malla de sensores", 32, 16, "Cruza la malla sin atraer a los sat\xE9lites", "Malla de sensores", "Hueco de N-7", "sensor-mesh", 0.14, 0.6, 0.48],
+      ["El hueco de N-7", 30, 21, "Sigue el hueco que encuentra N-7 entre dos sat\xE9lites", "Hueco de N-7", "Cuarentena", "net-gap", 0.08, 0.44, 0.36],
+      ["Cuarentena", 34, 27, "Resiste el escudo de cuarentena de la red", "Cuarentena", "Sombra de Gaia", "quarantine", 0.16, 0.62, 0.62],
+      ["Sombra de Gaia", 32, 32, "Avanza bajo la sombra del planeta", "Sombra de Gaia", "Anillo de sat\xE9lites", "gaia-shadow", 0.12, 0.52, 0.54],
+      ["Anillo de sat\xE9lites", 34, 36, "Alcanza el anillo; Iria sigue sin responder", "Anillo de sat\xE9lites", "Anillo de sat\xE9lites", "ring-arrival", 0.18, 0.64, 0.7]
     ].map((stage) => immutable3(stage))),
     events: immutable3([
       { id: "s1-v2-gaia-beacon", type: "gaia-beacon", at: 3, destinationId: "gaia-satellite-ring" }
@@ -2388,13 +2387,13 @@ var NeonCampaign = (() => {
           visible: true,
           alpha: 1
         }),
-        // La baliza exterior se queda atrás al principio.
+        // Atlas espera al final del sector (S1-V5): aquí no se dibuja su baliza.
         beacon: immutable3({
           x: 0.46 - 0.3 * leave,
           y: 0.3 + 0.8 * leave,
           scale: 0.22 * (1 - 0.7 * leave),
-          visible: leave < 1,
-          alpha: 1,
+          visible: false,
+          alpha: 0,
           active: false
         }),
         relay: immutable3({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
@@ -2694,7 +2693,8 @@ var NeonCampaign = (() => {
     shipSideClearance = COMET_SHOWER_RULES.shipSideClearance
   } = {}) {
     for (const [label, value] of Object.entries({ width, height, seed, elapsed, shipWidth, shipSideClearance })) finite3(value, label);
-    if (width < 250 || height < 300 || elapsed < 0 || shipWidth <= 0 || shipSideClearance < shipWidth / 2 || !["1.5", "1.9"].includes(stageId)) {
+    if (width < 250 || height < 300 || elapsed < 0 || shipWidth <= 0 || shipSideClearance < shipWidth / 2 || // Qué tramos tienen lluvia lo decide la ficha del viaje (getVoyageStageRules).
+    typeof stageId !== "string" || !/^\d+\.\d+$/.test(stageId)) {
       throw new RangeError("Invalid comet shower route or viewport");
     }
     const normalizedSeed = Math.trunc(seed) >>> 0;

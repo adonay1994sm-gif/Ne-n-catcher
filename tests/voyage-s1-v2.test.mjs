@@ -6,7 +6,7 @@ import {getVoyageStageRules, PLAYABLE_VOYAGES} from '../src/game/progression/voy
 
 const route = createVoyageRoute(FICHA);
 
-function fly(goal = FICHA.baseGoal) {
+function fly(goal = 36) {
   const voyage = route.create({goal}), events = [];
   let collected = 0, view = voyage.snapshot();
   for (let step = 0; step < 20000 && !view.canFinish; step++) {
@@ -41,14 +41,14 @@ test('the engine flies S1-V2 to its arrival, firing every stage once and the Gai
 });
 
 test('checkpoints restore S1-V2 mid-route and reject other routes', () => {
-  const checkpoint = route.createCheckpoint(4, {goal: 30});
+  const checkpoint = route.createCheckpoint(4, {goal: 36});
   assert.deepEqual(route.normalizeCheckpoint(checkpoint), checkpoint);
-  assert.equal(route.create({goal: 30, checkpoint}).snapshot().stageNumber, 4);
+  assert.equal(route.create({goal: 36, checkpoint}).snapshot().stageNumber, 4);
   assert.equal(route.normalizeCheckpoint({...checkpoint, routeId: 'chronos-to-gaia'}), null);
 });
 
-test('every S1-V2 stage has its own encounter rules and the card is not playable yet', () => {
+test('every S1-V2 stage has its own encounter rules and the card is playable', () => {
   for (let stage = 1; stage <= 7; stage++) assert.ok(getVoyageStageRules('gaia-outer-net', stage), `tramo ${stage}`);
   assert.equal(getVoyageStageRules('gaia-outer-net', 8), null);
-  assert.equal(PLAYABLE_VOYAGES.some(ficha => ficha.id === 'S1-V2'), false);
+  assert.equal(PLAYABLE_VOYAGES.some(ficha => ficha.id === 'S1-V2'), true);
 });

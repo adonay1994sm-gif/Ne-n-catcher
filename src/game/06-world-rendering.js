@@ -222,7 +222,7 @@
   // pose pura de NeonCampaign.getChronosIntroPose; sin piezas cargadas se
   // sigue usando el inicio anterior.
   function chronosIntroPose(view) {
-    if (typeof NeonCampaign.getChronosIntroPose !== "function") return null;
+    if (typeof NeonCampaign.getChronosIntroPose !== "function" || view.routeId !== "chronos-to-gaia") return null;
     // Tras la secuencia, la estación rota sigue girando y alejándose con la
     // ruta (sin volver al dibujo antiguo mientras siga a la vista).
     const pose = NeonCampaign.getChronosIntroPose(view.elapsed,
