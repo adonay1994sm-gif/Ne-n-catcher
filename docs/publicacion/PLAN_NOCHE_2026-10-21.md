@@ -54,3 +54,5 @@ Reglas de cada tarea:
       S2-V1 y S2-V2 jugables.
 - [x] **N11 · S2-V3, S2-V4 y S2-V5** (S2-V5 necesita al Titán de Vulkar: sin
       arte todavía; de momento sin jefe).
+- [x] **N12 · Encargos de arte** en `docs/art/ENCARGOS_2026-10-21.md`
+      (retratos grandes, Titán de Vulkar, CH-03, iconos del mapa, C-17).
