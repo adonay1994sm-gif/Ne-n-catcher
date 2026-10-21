@@ -28,6 +28,7 @@ var NeonCampaign = (() => {
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
+    SECTOR_MAPS: () => SECTOR_MAPS,
     SHIP_FLEET: () => SHIP_FLEET,
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     VOYAGES: () => VOYAGES,
@@ -40,6 +41,7 @@ var NeonCampaign = (() => {
     advanceShowerComet: () => advanceShowerComet,
     advanceVoyageHazardField: () => advanceVoyageHazardField,
     awardClassicBossWeapon: () => awardClassicBossWeapon,
+    baseConversation: () => baseConversation,
     beginFlightInput: () => beginFlightInput,
     calculateFlightBounds: () => calculateFlightBounds,
     canTriggerClassicMissile: () => canTriggerClassicMissile,
@@ -82,6 +84,7 @@ var NeonCampaign = (() => {
     releaseCometShowerItem: () => releaseCometShowerItem,
     resolveHullReinforcement: () => resolveHullReinforcement,
     rewardForEnemy: () => rewardForEnemy,
+    sectorMapState: () => sectorMapState,
     sectorPlanetPose: () => sectorPlanetPose,
     selectClassicWeapon: () => selectClassicWeapon,
     setClassicRechargeInterval: () => setClassicRechargeInterval,
@@ -854,7 +857,7 @@ var NeonCampaign = (() => {
       const shot = [...CHRONOS_CHAPTER_OPENING].reverse().find((cue2) => elapsed >= cue2.at) || CHRONOS_CHAPTER_OPENING[0];
       const film = active && presentation === "in-world" && elapsed < CHRONOS_CHAPTER_CINEMATIC_SECONDS;
       const aftermathActive = signals.has("atlas-disabled") && aftermathElapsed < CHRONOS_CHAPTER_AFTERMATH_SECONDS;
-      const line = aftermathActive ? [...CHRONOS_CHAPTER_AFTERMATH].reverse().find((cue2) => aftermathElapsed >= cue2.at) : null;
+      const line2 = aftermathActive ? [...CHRONOS_CHAPTER_AFTERMATH].reverse().find((cue2) => aftermathElapsed >= cue2.at) : null;
       return freeze({
         version: CHRONOS_CHAPTER_VERSION,
         routeId: ROUTE_ID,
@@ -874,7 +877,7 @@ var NeonCampaign = (() => {
           backgroundAlpha: active && presentation === "cinematic" ? 1 - clamp2((elapsed - 9) / 2.4, 0, 1) : 0,
           dialogue: active ? shot : null
         }),
-        aftermath: freeze({ active: aftermathActive, elapsed: aftermathElapsed, dialogue: line }),
+        aftermath: freeze({ active: aftermathActive, elapsed: aftermathElapsed, dialogue: line2 }),
         aftermathReady: signals.has("atlas-disabled") && aftermathElapsed >= CHRONOS_CHAPTER_AFTERMATH_SECONDS,
         carriesRecord: elapsed >= 13.2,
         eventIds: freeze([...fired]),
@@ -2319,6 +2322,81 @@ var NeonCampaign = (() => {
   var getVoyageFicha = (routeId) => byRoute.get(routeId) || null;
   function getVoyageStageRules(routeId, stageNumber) {
     return getVoyageFicha(routeId)?.encounters[stageNumber - 1] || null;
+  }
+
+  // src/game/progression/sector-map.js
+  var freeze2 = Object.freeze;
+  var SECTOR_MAPS = freeze2({
+    1: freeze2({
+      id: 1,
+      title: "SECTOR 1 \xB7 HUIDA DE CHRONOS",
+      places: freeze2([
+        freeze2({ id: "chronos", label: "Chronos", note: "Estaci\xF3n en ruinas", kind: "ruin", x: 0.16, y: 0.07 }),
+        freeze2({ id: "baliza", label: "Baliza exterior", kind: "waypoint", x: 0.8, y: 0.24 }),
+        freeze2({ id: "anillo", label: "Anillo de sat\xE9lites", kind: "waypoint", x: 0.2, y: 0.41 }),
+        freeze2({ id: "orbita", label: "\xD3rbita alta", kind: "waypoint", x: 0.8, y: 0.57 }),
+        freeze2({ id: "nocturno", label: "Lado nocturno", kind: "waypoint", x: 0.22, y: 0.72 }),
+        freeze2({ id: "gaia", label: "Gaia Nova", note: "Base \xB7 Iria", kind: "base", actor: "iria", x: 0.76, y: 0.86 }),
+        freeze2({ id: "c9", label: "Taller C9", note: "Base m\xF3vil \xB7 Mira", kind: "base", actor: "mira", x: 0.88, y: 0.4 })
+      ]),
+      routes: freeze2([
+        freeze2({ voyage: "S1-V1", title: "Escapa de Chronos", from: "chronos", to: "baliza" }),
+        freeze2({ voyage: "S1-V2", title: "Cruza la red exterior de Gaia", from: "baliza", to: "anillo" }),
+        freeze2({ voyage: "S1-V3", title: "Escolta a los evacuados", from: "anillo", to: "orbita" }),
+        freeze2({ voyage: "S1-V4", title: "Sigue la se\xF1al falsa", from: "orbita", to: "nocturno" }),
+        freeze2({ voyage: "S1-V5", title: "Convence a Atlas", from: "nocturno", to: "gaia" })
+      ])
+    })
+  });
+  function sectorMapState(sectorId, { playable = [], completed = [] } = {}) {
+    const map = SECTOR_MAPS[sectorId];
+    if (!map) return null;
+    const canPlay = new Set(playable), done = new Set(completed);
+    let previousDone = true;
+    const routes = map.routes.map((route) => {
+      const status = done.has(route.voyage) ? "done" : previousDone && canPlay.has(route.voyage) ? "open" : "locked";
+      previousDone = status === "done";
+      return freeze2({ ...route, status });
+    });
+    return freeze2({ ...map, routes: freeze2(routes) });
+  }
+
+  // src/game/narrative/base-dialogues.js
+  var freeze3 = Object.freeze;
+  var line = (text) => freeze3({ text });
+  var BASE_ACTORS = freeze3({
+    mira: freeze3({ id: "mira", name: "Mira", role: "Mec\xE1nica del taller C9" }),
+    iria: freeze3({ id: "iria", name: "Comandante Iria", role: "Mando de Gaia Nova" })
+  });
+  var SCRIPTS = freeze3({
+    c9: freeze3({ actor: "mira", before: freeze3([
+      line("Llegas con el casco humeante y un registro que quema. T\xEDpico."),
+      line("Tr\xE1eme chatarra de los restos y te dejo la nave como nueva."),
+      line("Ese emisor gemelo de Chronos\u2026 si lo rescatas, puedo montarlo."),
+      line("Y no me mires as\xED: el taller cobra, la guerra no paga facturas.")
+    ]), after: freeze3([
+      line("As\xED que Atlas te dej\xF3 pasar. Te debo una cena, piloto."),
+      line("Si vas a Vulkar, vas a necesitar m\xE1s que un casco remendado."),
+      line("Trae piezas. Yo pongo las manos.")
+    ]) }),
+    gaia: freeze3({ actor: "iria", before: freeze3([
+      line("\u2026aqu\xED Gaia Nova. Su firma coincide con el convoy atacante."),
+      line("Detenga los motores. Atlas tiene orden de bloquear el corredor."),
+      line("Si trae pruebas, tendr\xE1 que llegar hasta Atlas con ellas.")
+    ]), after: freeze3([
+      line("El registro es aut\xE9ntico. Le pido disculpas, piloto."),
+      line("El convoy C-17 sali\xF3 de Vulkar. Alguien pag\xF3 esas firmas."),
+      line("Gaia le abre su corredor. Encuentre a quien lo pag\xF3.")
+    ]) })
+  });
+  function baseConversation(baseId, { atlasConvinced = false } = {}) {
+    const script = SCRIPTS[baseId];
+    if (!script) return null;
+    return freeze3({
+      baseId,
+      actor: BASE_ACTORS[script.actor],
+      lines: atlasConvinced ? script.after : script.before
+    });
   }
 
   // src/game/progression/comet-shower.js

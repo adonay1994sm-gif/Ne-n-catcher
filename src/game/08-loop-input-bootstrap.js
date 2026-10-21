@@ -338,7 +338,9 @@
     prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
   };
   $("levels").onclick = () => { buildLevelGrid(); overlay(ui.levelSelect); };
-  $("levelBack").onclick = () => overlay(ui.menu);
+  $("levelBack").onclick = () => { closeBaseTalk(); overlay(ui.menu); };
+  $("baseTalkClose").onclick = closeBaseTalk;
+  $("baseTalkNext").onclick = () => { if (!baseTalkState) return; baseTalkState.index++; showBaseTalkLine(); };
   $("launch").onclick = () => startLevel(pendingLevel);
   $("briefingBack").onclick = closeBriefing;
   $("how").onclick = () => overlay(ui.instructions);

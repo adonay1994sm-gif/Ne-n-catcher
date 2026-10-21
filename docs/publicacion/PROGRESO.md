@@ -76,6 +76,7 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 
 - [x] Planetas animados del propietario en los sectores 4–9.
 - [x] `scripts/capture-levels.cjs` para capturar cualquier nivel.
+- [x] Mapa del sector 1 en RUTA con bases y conversaciones (Mira, Iria).
 
 ## Incidencias
 - Fase 1a: la primera versión calculaba el recuadro al cargar el módulo y

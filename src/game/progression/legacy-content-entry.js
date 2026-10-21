@@ -8,6 +8,8 @@ export {SCRAP_ECONOMY_KEY, SCRAP_UPGRADES,
   createScrapLedger, rewardForEnemy, formatDenominations, classicWorkshopState} from './scrap-economy.js';
 export {createVoyageHazardField, advanceVoyageHazardField} from './voyage-hazards.js';
 export {VOYAGES, getVoyageFicha, getVoyageStageRules} from './voyages/index.js';
+export {SECTOR_MAPS, sectorMapState} from './sector-map.js';
+export {baseConversation} from '../narrative/base-dialogues.js';
 export {createCometShower, advanceCometShower, advanceShowerComet,
   releaseCometShowerItem, cometShowerSnapshot} from './comet-shower.js';
 export {normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,syncClassicWorkshopWeapons} from './classic-arsenal.js';

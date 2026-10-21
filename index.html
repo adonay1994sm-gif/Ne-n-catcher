@@ -126,6 +126,13 @@
       <div class="panel level-panel">
         <small>CAMPAÑA</small>
         <h2 id="routeTitle">Tu ruta estelar</h2>
+        <div id="sectorMap" class="sector-map" role="group" aria-label="Mapa del sector"></div>
+        <div id="baseTalk" class="base-talk" role="dialog" aria-labelledby="baseTalkName" hidden>
+          <span id="baseTalkFace" class="chapter-face" aria-hidden="true"></span>
+          <div class="base-talk-text"><small id="baseTalkName"></small><p id="baseTalkLine" aria-live="polite"></p></div>
+          <div class="base-talk-actions"><button id="baseTalkNext" class="secondary" type="button">SIGUIENTE</button><button id="baseTalkClose" class="secondary" type="button">CERRAR</button></div>
+        </div>
+        <small class="level-grid-title">NIVELES CLÁSICOS</small>
         <div id="levelGrid" class="level-grid"></div>
         <button id="levelBack" class="secondary" type="button">VOLVER</button>
       </div>
