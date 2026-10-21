@@ -194,3 +194,19 @@ test('the S1-V1 briefing opened from the map names a Chronos → Gaia stage', ()
   w.document.querySelector('.sector-route[data-voyage="S1-V1"]').click();
   assert.match(w.document.getElementById('briefingSector').textContent, /^TRAMO 1\.\d+ · CHRONOS → GAIA$/);
 });
+
+test('map voyages earn 0-3 stars like S1-V1, keep the best and the menu counts them out of 30', () => {
+  const {w, T, saved, route} = harness();
+  const lit = () => w.document.querySelectorAll('#starsAwarded span:not(.off)').length;
+  T.startSideVoyage('S1-V2'); T.finish();
+  assert.equal(saved('S1-V2').stars, 3, 'full hull and every CRONIUM: 3 stars');
+  assert.equal(lit(), 3);
+  T.startSideVoyage('S1-V2'); T.adv(.5); for (let i = 0; i < 20 && T.hit(10) >= 70; i++); T.finish();
+  assert.equal(lit(), 2, 'a damaged hull earns fewer stars this run');
+  assert.equal(saved('S1-V2').stars, 3, 'but the best result is kept');
+  T.goHome();
+  assert.equal(w.document.getElementById('totalStars').textContent, '3/30');
+  T.buildLevelGrid();
+  assert.match(w.document.querySelector('.sector-route[data-voyage="S1-V2"] small').textContent, /★★★/);
+  assert.equal(route('S1-V2'), 'done');
+});
