@@ -167,3 +167,13 @@ test('with every voyage done, Play opens the map and Next never starts a classic
   assert.equal(T.st().state, 'menu');
   assert.equal(w.document.getElementById('levelSelect').classList.contains('show'), true, 'it opens the map instead');
 });
+
+test('a map voyage counts as one run for interstitials only the first time it is completed', () => {
+  const {w, T} = harness();
+  const games = () => Number(w.localStorage.getItem('neon-games-v2') || 0);
+  const before = games();
+  T.startSideVoyage('S1-V2'); T.finish();
+  assert.equal(games(), before + 1);
+  T.startSideVoyage('S1-V2'); T.finish();
+  assert.equal(games(), before + 1);
+});

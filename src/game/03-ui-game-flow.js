@@ -884,6 +884,7 @@
   // ve, para que «Repetir» vuelva a lanzar este mismo viaje.
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
+    const firstTime=loadSideVoyageRecord(ficha)?.completed!==true;
     const saved=saveSideVoyage(classicFlight.exportCheckpoint(),true);
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;cancelSupplyFailureTimer();
@@ -892,8 +893,9 @@
     atlasBoss=null;ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
     hideWarning();hideStoryTransmission();
     ui.hud.classList.add("hidden");ui.powerHud.classList.add("hidden");ui.fire.classList.add("hidden");ui.banner.classList.remove("show");
-    // Sin registerRun: contar partidas cambia la frecuencia de anuncios y eso
-    // lo decide el propietario (tablero, revisión del PR #32).
+    // Decisión del propietario (tablero, rev32-ads): un viaje del mapa cuenta
+    // como partida para los intersticiales solo la primera vez que se completa.
+    if(firstTime&&saved)registerRun();
     const next=nextCampaignVoyage();
     ui.completeLabel.textContent=`VIAJE COMPLETADO · SECTOR ${ficha.sector}`;
     ui.completeTitle.textContent=`${ficha.id} · ${ficha.title}`;
