@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {SECTOR_MAPS, sectorMapState} from '../src/game/progression/sector-map.js';
 import {baseConversation, BASE_ACTORS} from '../src/game/narrative/base-dialogues.js';
-import {VOYAGES} from '../src/game/progression/voyages/index.js';
+import {PLAYABLE_VOYAGES} from '../src/game/progression/voyages/index.js';
 
 test('sector 1 follows the campaign: five routes from Chronos to Gaia and two bases', () => {
   const map = SECTOR_MAPS[1];
@@ -15,7 +15,7 @@ test('sector 1 follows the campaign: five routes from Chronos to Gaia and two ba
 });
 
 test('only the next playable voyage opens; finished ones stay done; the rest wait', () => {
-  const playable = VOYAGES.map(ficha => ficha.id);
+  const playable = PLAYABLE_VOYAGES.map(ficha => ficha.id);
   assert.deepEqual(sectorMapState(1, {playable}).routes.map(route => route.status),
     ['open', 'locked', 'locked', 'locked', 'locked']);
   assert.deepEqual(sectorMapState(1, {playable, completed: ['S1-V1']}).routes.map(route => route.status),

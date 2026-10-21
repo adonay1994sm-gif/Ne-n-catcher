@@ -26,6 +26,7 @@ var NeonCampaign = (() => {
     CLASSIC_PURSUIT_VERSION: () => CLASSIC_PURSUIT_VERSION,
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
+    PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
     SECTOR_MAPS: () => SECTOR_MAPS,
@@ -2316,8 +2317,113 @@ var NeonCampaign = (() => {
     }
   });
 
+  // src/game/progression/voyages/s1-v2-gaia-outer-net.js
+  var immutable3 = (object2) => Object.freeze(object2);
+  var ROSTERS2 = immutable3({
+    watch: immutable3(["scout"]),
+    net: immutable3(["scout", "raider", "scout"]),
+    quarantine: immutable3(["interceptor", "scout", "raider", "scout"])
+  });
+  var encounter2 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable3({
+    patrol: patrol && immutable3({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt
+  });
+  var S1_V2_GAIA_OUTER_NET = immutable3({
+    id: "S1-V2",
+    sector: 1,
+    number: 2,
+    title: "Cruza la red exterior de Gaia",
+    // Aún no se puede lanzar desde el juego: el mapa la muestra «en preparación».
+    playable: false,
+    chapter: 2,
+    version: "s1-v2-voyage-v1",
+    saveKey: "neonCatcher.voyage.S1-V2.v1",
+    routeId: "gaia-outer-net",
+    eventPrefix: "s1-v2",
+    baseGoal: 30,
+    origin: "Baliza exterior de Gaia",
+    destination: "Anillo de sat\xE9lites",
+    arrivalDestinationId: "gaia-satellite-ring",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid S1-V2 voyage checkpoint",
+    stages: immutable3([
+      ["Baliza en silencio", 30, 4, "Deja atr\xE1s la baliza; la red a\xFAn no te ha visto", "Baliza exterior de Gaia", "Red exterior", "net-edge", 0.1, 0.5, 0.3],
+      ["Primer barrido", 32, 9, "Esquiva los barridos de identificaci\xF3n", "Red exterior", "Malla de sensores", "identity-sweep", 0.12, 0.56, 0.4],
+      ["Malla de sensores", 32, 14, "Cruza la malla sin atraer a los sat\xE9lites", "Malla de sensores", "Hueco de N-7", "sensor-mesh", 0.14, 0.6, 0.48],
+      ["El hueco de N-7", 30, 18, "Sigue el hueco que encuentra N-7 entre dos sat\xE9lites", "Hueco de N-7", "Cuarentena", "net-gap", 0.08, 0.44, 0.36],
+      ["Cuarentena", 34, 23, "Resiste el escudo de cuarentena de la red", "Cuarentena", "Sombra de Gaia", "quarantine", 0.16, 0.62, 0.62],
+      ["Sombra de Gaia", 32, 27, "Avanza bajo la sombra del planeta", "Sombra de Gaia", "Anillo de sat\xE9lites", "gaia-shadow", 0.12, 0.52, 0.54],
+      ["Anillo de sat\xE9lites", 34, 30, "Alcanza el anillo; Iria sigue sin responder", "Anillo de sat\xE9lites", "Anillo de sat\xE9lites", "ring-arrival", 0.18, 0.64, 0.7]
+    ].map((stage) => immutable3(stage))),
+    events: immutable3([
+      { id: "s1-v2-gaia-beacon", type: "gaia-beacon", at: 3, destinationId: "gaia-satellite-ring" }
+    ].map((event2) => immutable3(event2))),
+    service: null,
+    encounters: immutable3([
+      encounter2(3, [1, ROSTERS2.watch, 9]),
+      encounter2(4, [2, ROSTERS2.watch, 8]),
+      encounter2(7, [2, ROSTERS2.net, 8], { repairAt: 16 }),
+      encounter2(5, null, { comets: true }),
+      encounter2(8, [3, ROSTERS2.quarantine, 7]),
+      encounter2(9, [2, ROSTERS2.net, 7], { repairAt: 16 }),
+      encounter2(10, [3, ROSTERS2.quarantine, 6])
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 3 ? "gaia-net" : stageIndex < 5 ? "quarantine" : "gaia-approach";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const approach2 = smooth(p, 0, 1), leave = smooth(p, 0, 0.18);
+      return {
+        // La estación de Chronos ya no está: este viaje empieza lejos de ella.
+        station: immutable3({ x: 0.5, y: 1.4, scale: 0.01, rotation: 0, visible: false, alpha: 0, state: "ruptured" }),
+        // Gaia ya ocupa el cielo y sigue creciendo hasta el anillo.
+        planet: immutable3({
+          x: 0.7 - 0.12 * approach2,
+          y: 0.09 + 0.05 * approach2,
+          scale: 0.3 + 0.42 * approach2,
+          rotation: 0.04 * p,
+          visible: true,
+          alpha: 1
+        }),
+        // La baliza exterior se queda atrás al principio.
+        beacon: immutable3({
+          x: 0.46 - 0.3 * leave,
+          y: 0.3 + 0.8 * leave,
+          scale: 0.22 * (1 - 0.7 * leave),
+          visible: leave < 1,
+          alpha: 1,
+          active: false
+        }),
+        relay: immutable3({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable3({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable3({
+          travel: p,
+          offsetX: -0.1 * p,
+          offsetY: 1.6 * p,
+          speed: 0.45 + 0.25 * smooth(p, 0.1, 0.4),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: 0.18
+        }),
+        debris: immutable3({
+          visible: !arrived && stageIndex >= 1,
+          travel: p,
+          directionX: -0.18,
+          directionY: 0.98,
+          depth: 0.3,
+          density: stageIndex === 3 ? 0.12 : 0.3
+        })
+      };
+    }
+  });
+
   // src/game/progression/voyages/index.js
-  var VOYAGES = Object.freeze([S1_V1_CHRONOS_GAIA]);
+  var VOYAGES = Object.freeze([S1_V1_CHRONOS_GAIA, S1_V2_GAIA_OUTER_NET]);
+  var PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter((ficha) => ficha.playable !== false));
   var byRoute = new Map(VOYAGES.map((ficha) => [ficha.routeId, ficha]));
   var getVoyageFicha = (routeId) => byRoute.get(routeId) || null;
   function getVoyageStageRules(routeId, stageNumber) {
@@ -4659,21 +4765,21 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/chronos-flight.js
-  var immutable3 = (object2) => Object.freeze(object2);
-  var CHRONOS_FLIGHT_EVENTS = immutable3([
-    immutable3({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
-    immutable3({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
-    immutable3({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
-    immutable3({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
-    immutable3({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
-    immutable3({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
+  var immutable4 = (object2) => Object.freeze(object2);
+  var CHRONOS_FLIGHT_EVENTS = immutable4([
+    immutable4({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
+    immutable4({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
+    immutable4({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
+    immutable4({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
+    immutable4({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
+    immutable4({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
   ]);
-  var PHASES = immutable3([
-    immutable3({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
-    immutable3({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
-    immutable3({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
-    immutable3({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
-    immutable3({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
+  var PHASES = immutable4([
+    immutable4({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
+    immutable4({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
+    immutable4({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
+    immutable4({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
+    immutable4({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
   ]);
   var CHRONOS_VOYAGE_ROUTE = createVoyageRoute(S1_V1_CHRONOS_GAIA);
   var CHRONOS_VOYAGE_VERSION = S1_V1_CHRONOS_GAIA.version;
