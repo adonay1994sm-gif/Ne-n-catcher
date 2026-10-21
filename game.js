@@ -1512,7 +1512,7 @@
     }
     ui.flightObjective.dataset.active=String(Boolean(flightTransmission||guide));
     ui.flightObjective.classList.toggle('tutorial-active',Boolean(!flightTransmission&&guide));
-    ui.flightDestination.textContent=classicSideVoyage ? `${classicSideVoyage.ficha.id} · ${view?.stageNumber||1}/${view?.distance?.stages||1}`
+    ui.flightDestination.textContent=classicSideVoyage ? `TRAMO ${view?.stageNumber||1}/${view?.distance?.stages||1}`
       : currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
@@ -2190,8 +2190,11 @@
     let reserve=$("hullReserve");
     if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
     reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
-    ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = "NIVEL";
+    // Los 10 viajes corren en currentLevel 0: la casilla muestra el viaje
+    // (ficha del mapa o la de S1-V1), no un «NIVEL 1» que nunca cambia.
+    ui.hudLevel.textContent = classicSideVoyage ? classicSideVoyage.ficha.id
+      : NeonCampaign.PLAYABLE_VOYAGES.find(ficha => ficha.id === "S1-V1").id;
+    ui.hudLevel.previousElementSibling.textContent = "VIAJE";
     ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66

@@ -12,10 +12,12 @@ const read = file => readFile(join(root, file), 'utf8');
 const [html, game, core, content] = await Promise.all(['index.html', 'game.js', 'core-runtime.js', 'content-runtime.js'].map(read));
 const MARKER = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
 
+const drawnTexts = [];
 function context() {
   const gradient = {addColorStop() {}};
   return new Proxy({}, {get(target, key) {
     if (key in target) return target[key];
+    if (key === 'fillText') return text => drawnTexts.push(String(text));
     if (key === 'createLinearGradient' || key === 'createRadialGradient') return () => gradient;
     if (key === 'measureText') return value => ({width: String(value).length * 14});
     return () => {};
@@ -37,6 +39,8 @@ function harness({unlocked = '2', query = ''} = {}) {
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
+    toGaiaBeacon:()=>{collected=36;for(let i=0;i<30000&&!classicFlightView?.beacon.active;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);return classicFlightView.beacon.active;},
+    draw:()=>render(performance.now()),
     finish:()=>{collected=36;for(let i=0;i<30000&&!classicFlight.snapshot().canFinish;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
       completeLevel();if(atlasBoss){atlasBoss.resolved=true;completeLevel();}}};\n`;
   assert.equal(game.split(MARKER).length, 2);
@@ -270,4 +274,17 @@ test('an attempt continued with a rewarded ad counts once: the death, not the la
   assert.equal(games(), 1, 'finishing after the rewarded continue does not count again');
   T.startSideVoyage('S1-V3'); T.adv(.5); T.finishGame('hull'); T.resumeReward(); T.adv(.5); T.finishGame('hull');
   assert.equal(games(), 2, 'a second death after the continue does not count again');
+});
+
+test('the HUD names the current voyage instead of «NIVEL 1», without repeating it in the route line', () => {
+  const {w, T} = harness();
+  const text = id => w.document.getElementById(id).textContent;
+  T.startLevel(0); T.adv(.5);
+  assert.equal(T.st().side, null);
+  assert.deepEqual([text('hudLevel'), w.document.getElementById('hudLevel').previousElementSibling.textContent], ['S1-V1', 'VIAJE']);
+  T.startSideVoyage('S2-V3'); T.adv(.5);
+  assert.deepEqual([text('hudLevel'), w.document.getElementById('hudLevel').previousElementSibling.textContent], ['S2-V3', 'VIAJE']);
+  assert.doesNotMatch(text('flightDestination'), /S2-V3/, 'the voyage id lives in the HUD cell only');
+  assert.match(text('flightDestination'), /1\/\d+/);
+  assert.doesNotMatch(w.document.getElementById('hud').textContent, /NIVEL/);
 });
