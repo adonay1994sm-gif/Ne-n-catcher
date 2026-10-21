@@ -1814,6 +1814,16 @@ var NeonCampaign = (() => {
     9: profile([1.6, 2.5], 3, 0.2, { meteor: 0.5, debris: 0.35, satellite: 0.15 }, [210, 320]),
     10: profile([1, 1.7], 5, 0.35, { meteor: 0.45, debris: 0.4, satellite: 0.15 }, [220, 330])
   });
+  var VULKAR_HAZARD_SHARE = Object.freeze({ lavaCore: 0.2, plasmaMine: 0.15 });
+  var vulkarProfile = (base) => {
+    const total = Object.values(base.mix).reduce((sum, weight) => sum + weight, 0);
+    const keep = 1 - VULKAR_HAZARD_SHARE.lavaCore - VULKAR_HAZARD_SHARE.plasmaMine;
+    const mix3 = Object.fromEntries(Object.entries(base.mix).map(([type, weight]) => [type, weight / total * keep]));
+    return Object.freeze({ ...base, mix: Object.freeze({ ...mix3, ...VULKAR_HAZARD_SHARE }) });
+  };
+  var VULKAR_HAZARD_PROFILES = Object.freeze(Object.fromEntries(
+    Object.entries(VOYAGE_HAZARD_PROFILES).map(([stage, base]) => [stage, vulkarProfile(base)])
+  ));
   var finite2 = (value, label) => {
     if (!Number.isFinite(value)) throw new RangeError(`${label} must be finite`);
     return value;
@@ -1827,7 +1837,7 @@ var NeonCampaign = (() => {
       return ((value ^ value >>> 14) >>> 0) / 4294967296;
     };
   };
-  var RADIUS_ESTIMATE = Object.freeze({ meteor: 42, debris: 35, satellite: 46 });
+  var RADIUS_ESTIMATE = Object.freeze({ meteor: 42, debris: 35, satellite: 46, lavaCore: 44, plasmaMine: 36 });
   function createVoyageHazardField({
     stageNumber,
     seed = 0,
@@ -2778,7 +2788,7 @@ var NeonCampaign = (() => {
   });
   var encounter6 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable7({
     patrol: patrol && immutable7({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -2868,7 +2878,7 @@ var NeonCampaign = (() => {
   });
   var encounter7 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable8({
     patrol: patrol && immutable8({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -2958,7 +2968,7 @@ var NeonCampaign = (() => {
   });
   var encounter8 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable9({
     patrol: patrol && immutable9({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -3048,7 +3058,7 @@ var NeonCampaign = (() => {
   });
   var encounter9 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable10({
     patrol: patrol && immutable10({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -3138,7 +3148,7 @@ var NeonCampaign = (() => {
   });
   var encounter10 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable11({
     patrol: patrol && immutable11({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });

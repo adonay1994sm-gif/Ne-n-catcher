@@ -492,6 +492,8 @@
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
     hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
     atlasExplosion: loadSprite("assets/atlas_explosion_v1.webp", false),
+    // Peligros del sector 2 (baúl, encargo enc-nucleo): núcleo de lava y mina de plasma.
+    lavaCoreMine: loadSprite("assets/lava_core_mine_atlas_v1.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
@@ -1669,11 +1671,15 @@
     if(classicVoyageHazardTimer<900) {
       if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
         stageNumber:n,profile:rules.hazards,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+      if(rules.hazards.mix.lavaCore||rules.hazards.mix.plasmaMine)ensureSprite(SPRITES.lavaCoreMine);
       const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
         !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
-        const threat=createThreat(hazard.type,level());
-        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        // Núcleo de lava y mina de plasma (sector 2); sin su hoja, un meteorito.
+        const vulkar=hazard.type==="lavaCore"||hazard.type==="plasmaMine";
+        const threat=vulkar&&spriteReady(SPRITES.lavaCoreMine)?createVulkarHazard(hazard.type,level()):
+          createThreat(vulkar?"meteor":hazard.type,level());
+        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed*(threat.speedScale||1);threat.amp=0;
         threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.hazardDamageScale=hazard.damageScale??1;
         items.push(threat);
       });
@@ -3053,6 +3059,20 @@
     });
   }
 
+  // Peligros de Vulkar (sector 2, encargo enc-nucleo). Para el resto del juego
+  // son meteoritos (choque, disparos, daño); solo cambian aspecto y aguante.
+  // Núcleo de lava: avanza despacio y aguanta 4 impactos. Mina de plasma:
+  // cae como un meteorito, se rompe de 1 impacto y estalla al romperse; el
+  // estallido es solo visual (sin daño en área), así no necesita aviso previo.
+  // Radios del dibujo: el círculo de choque (r·1,04) cubre la roca o el cuerpo
+  // de la mina; las puntas de la mina quedan fuera, a favor del jugador.
+  function createVulkarHazard(kind, lv) {
+    const threat = createThreat("meteor", lv), core = kind === "lavaCore", hp = core ? 4 : 1;
+    return Object.assign(threat, { vulkarHazard: kind, spriteKey: kind, special: "", damage: 34,
+      r: core ? 40 : 30, hp, maxHp: hp, rs: core ? (Math.random() - 0.5) * 0.8 : 0,
+      speedScale: core ? 0.65 : 1, shape: null, craters: null });
+  }
+
   function addItem() {
     const lv = level();
     const roll = Math.random();
@@ -3346,6 +3366,14 @@
     impactEffects.push({ x, y, scale: 1, angle, life: 0.5, duration: 0.5, hullSparks: true });
   }
 
+  // Estallido de la mina de plasma (último fotograma de su hoja): crece y se
+  // apaga en 0,45 s. Solo presentación.
+  function addPlasmaBlast(x, y) {
+    if (!spriteReady(SPRITES.lavaCoreMine)) return;
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x, y, scale: 1, angle: Math.random() * Math.PI * 2, life: 0.45, duration: 0.45, plasmaBlast: true });
+  }
+
   // Explosión de Atlas vencido (baúl, encargo a04): 8 fotogramas en 0,8 s
   // centrados en su núcleo, con una sacudida corta. Solo presentación.
   function addAtlasExplosion(boss) {
@@ -3496,6 +3524,7 @@
       // Guardian weapons have authored tier damage (13/15/22). Only patrol
       // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
       const enemyPhaser=item.classicScoutProjectile&&!item.guardianProjectile;
+      if(item.vulkarHazard==="plasmaMine")addPlasmaBlast(item.x,item.y);
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
         largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge",
         largeAsteroidScale:item.hazardDamageScale||1});
@@ -3564,6 +3593,7 @@
   }
 
   function animateScoutHit(target, destroyed) {
+    if(destroyed&&target.vulkarHazard==="plasmaMine")addPlasmaBlast(target.x,target.y);
     if(destroyed) {
       spawnClassicScrap(target);
       releaseClassicShowerComet(target);
@@ -5634,6 +5664,19 @@
     }
 
     ctx.rotate(item.rot);
+    if (item.vulkarHazard && spriteReady(SPRITES.lavaCoreMine)) {
+      // Hoja 4×2 (encargo enc-nucleo). Fila 1: latido del núcleo (0-1-2-3-2-1);
+      // la roca ocupa ~2/3 de la celda, así ×2,98 la deja del tamaño de r.
+      // Fila 2: parpadeo de la mina (0-1-2-1); su cuerpo mide ~r con ×4.
+      const atlas = SPRITES.lavaCoreMine, cell = atlas.naturalWidth / 4;
+      const core = item.vulkarHazard === "lavaCore", tick = Math.floor(elapsed * (core ? 6 : 5) + (item.phase || 0));
+      const frame = core ? [0, 1, 2, 3, 2, 1][tick % 6] : [0, 1, 2, 1][tick % 4];
+      const size = item.r * (core ? 2.98 : 4);
+      ctx.shadowBlur = 14; ctx.shadowColor = "#ff6a3d";
+      ctx.drawImage(atlas, frame * cell, (core ? 0 : 1) * cell, cell, cell, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      return;
+    }
     const sprite = SPRITES[item.spriteKey] || SPRITES.meteorMedium;
     const sizeFactor = item.spriteKey === "meteorLarge" ? 2.95 : item.spriteKey && item.spriteKey.includes("Small") ? 2.45 : 2.70;
     const size = item.r * sizeFactor;
@@ -5925,6 +5968,14 @@
         ctx.save();ctx.translate(effect.x,effect.y);ctx.globalAlpha*=row===3?Math.max(0,1-(age-.25)/.4):1;
         ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
         ctx.restore();continue;
+      }
+      if (effect.plasmaBlast && spriteReady(SPRITES.lavaCoreMine)) {
+        // Estallido de la mina: último fotograma de la fila 2, crece y se apaga.
+        const atlas = SPRITES.lavaCoreMine, cell = atlas.naturalWidth / 4, size = 110 + 70 * progress;
+        ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
+        ctx.globalAlpha *= 1 - progress * progress;
+        ctx.drawImage(atlas, 3 * cell, cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
       }
       if (effect.hullSparks && spriteReady(SPRITES.hullSparks)) {
         // 8 fotogramas en 0,5 s (rejilla 4×2); el origen de las chispas es el

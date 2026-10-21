@@ -6,7 +6,7 @@
  * la refinería y nubes de ceniza que ocultan el camino.
  */
 import {smooth} from '../voyage-engine.js';
-import {VOYAGE_HAZARD_PROFILES} from '../voyage-hazards.js';
+import {VULKAR_HAZARD_PROFILES} from '../voyage-hazards.js';
 
 const immutable = object => Object.freeze(object);
 const ROSTERS = immutable({
@@ -14,7 +14,7 @@ const ROSTERS = immutable({
 });
 const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => immutable({
   patrol: patrol && immutable({cap: patrol[0], roster: patrol[1], gap: patrol[2]}),
-  hazards: VOYAGE_HAZARD_PROFILES[profile], comets, repairAt
+  hazards: VULKAR_HAZARD_PROFILES[profile], comets, repairAt
 });
 
 export const S2_V4_YARA_CALL = immutable({

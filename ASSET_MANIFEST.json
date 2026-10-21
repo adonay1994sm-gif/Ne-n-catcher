@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 103,
-  "runtimeBytes": 16661914,
+  "assetCount": 104,
+  "runtimeBytes": 16699256,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1343,6 +1343,22 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "origin": "GPT image generation uploaded to the asset vault (encargo a04); resized to runtime size",
+      "version": 1
+    },
+    {
+      "id": "lava-core-mine-atlas-v1",
+      "path": "assets/lava_core_mine_atlas_v1.webp",
+      "master": "art-source/lava-core-mine/lava_core_mine_1024x512.png",
+      "dimensions": "512x256",
+      "format": "webp-alpha",
+      "size": 37342,
+      "sha256": "a1acd4a8bd50aa01b9328a7af343b8efae85dc9b24304fdbba1a91eda362941b",
+      "use": "Sector 2 (Vulkar) voyage hazards, 4x2 grid of 128 cells: row 1 lava core heartbeat (4 frames), row 2 plasma mine blink (3 frames) and its explosion (1 frame). Without it the sector 1 hazards are used.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault (encargo enc-nucleo); resized to runtime size",
       "version": 1
     }
   ],
