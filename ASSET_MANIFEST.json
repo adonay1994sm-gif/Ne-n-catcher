@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 96,
-  "runtimeBytes": 16013472,
+  "assetCount": 98,
+  "runtimeBytes": 16163854,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1232,6 +1232,38 @@
       "dimensions": "1536x768",
       "size": 271654,
       "sha256": "dc6fdaa1f035b9706b91b161f24de25d1e0a655a14b49e6bd70190dd46030135"
+    },
+    {
+      "id": "sector-map-icons-v1",
+      "path": "assets/sector_map_icons_v1.webp",
+      "master": "art-source/sector-map-icons/sector_map_icons_1.0.0.png",
+      "dimensions": "512x256",
+      "format": "webp-alpha",
+      "size": 50554,
+      "sha256": "214068f644f5b4cf06e63f3b9572ca7af84c69fd3776b5b43494e7c0107caa0e",
+      "use": "Sector map place icons, 4x2 cells of 128 (ruin, beacon, satellite ring, mobile workshop / planetary base, waypoint, energy lock, route done). CSS background on .sector-place i.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault; resized to runtime size",
+      "version": 1
+    },
+    {
+      "id": "character-portraits-v1",
+      "path": "assets/character_portraits_v1.webp",
+      "master": "art-source/character-portraits/NEON_CRONIUM_Retratos_2048x512.png",
+      "dimensions": "1024x256",
+      "format": "webp-alpha",
+      "size": 99828,
+      "sha256": "7f1f5c65261847790297a443765fbbca5b19ccc52fd451c0e0289ef7415722f2",
+      "use": "Large busts for base conversations, 4x1 cells of 256: Mira, Iria, Lira Venn, N-7. CSS background on .base-talk .chapter-face.",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "GPT image generation uploaded to the asset vault; resized to runtime size",
+      "version": 1
     }
   ],
   "project": "NEON CRONIUM"

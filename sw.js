@@ -11,6 +11,8 @@ const CORE = [
   "assets/forja_modules_atlas_v1.webp",
   "assets/player_ship_identity_v1.webp",
   "assets/comet_flight_atlas_v3.webp",
+  "assets/sector_map_icons_v1.webp",
+  "assets/character_portraits_v1.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",
