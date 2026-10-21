@@ -732,7 +732,8 @@
       ctx.globalAlpha = alpha;
       ctx.drawImage(image, frame % 4 * cell, Math.floor(frame / 4) * cell, cell, cell, x, y, size, size);
     };
-    ctx.save(); draw(pose.frame, 1); if (pose.blend > 0) draw(pose.next, pose.blend); ctx.restore();
+    const dim = pose.key === "volcanico" ? .62 : 1;
+    ctx.save(); draw(pose.frame, dim); if (pose.blend > 0) draw(pose.next, pose.blend * dim); ctx.restore();
   }
 
   // Planeta propio de una ficha (p. ej. Vulkar en el sector 2): atlas de 7
@@ -746,8 +747,10 @@
     if (!spriteReady(image)) return true;
     const position = elapsed / .9, frame = Math.floor(position) % 7, blend = position % 1;
     const cell = image.naturalWidth / 4, size = W * node.scale;
+    // El planeta rojo de Vulkar va atenuado: disparos y lava se leen encima.
+    const dim = key === "volcanico" ? .62 : 1;
     ctx.save(); ctx.translate(node.x * W, node.y * H); ctx.rotate(node.rotation || 0);
-    for (const [index, alpha] of [[frame, node.alpha ?? 1], [(frame + 1) % 7, (node.alpha ?? 1) * blend]]) {
+    for (const [index, alpha] of [[frame, (node.alpha ?? 1) * dim], [(frame + 1) % 7, (node.alpha ?? 1) * dim * blend]]) {
       if (alpha <= 0) continue;
       ctx.globalAlpha = alpha;
       ctx.drawImage(image, index % 4 * cell, Math.floor(index / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);

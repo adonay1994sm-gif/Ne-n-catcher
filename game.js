@@ -81,7 +81,6 @@
     paused: $("paused"),
     complete: $("complete"),
     over: $("over"),
-    levelGrid: $("levelGrid"),
     sectorMap: $("sectorMap"),
     baseTalk: $("baseTalk"),
     result: $("result"),
@@ -2099,29 +2098,29 @@
   }
 
   function updateMenu() {
-    const unlocked = getUnlocked();
-    const starsMap = getStars();
-    const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
-    const percent = Math.round((completed / LEVELS.length) * 100);
-    const finished = completed === LEVELS.length;
-    const target = classicVoyageRecord&&!classicVoyageRecord.completed ? 0 : finished ? LEVELS.length - 1 : Math.max(0, unlocked - 1);
+    const target = 0;
 
     ui.best.textContent = bestScore();
-    ui.unlockedText.textContent = `${unlocked}/${LEVELS.length}`;
+    // El progreso del menú cuenta los viajes de la campaña, no los niveles.
+    const routes = campaignSectors().flatMap(sector => sector.routes);
+    const voyagesDone = routes.filter(route => route.status === "done").length;
+    const voyagePercent = routes.length ? Math.round(voyagesDone / routes.length * 100) : 0;
+    ui.unlockedText.textContent = `${voyagesDone}/${routes.length}`;
     ui.totalStars.textContent = `${totalStars()}/${LEVELS.length * 3}`;
-    ui.campaignPercent.textContent = `${percent}%`;
-    ui.campaignFill.style.width = `${percent}%`;
-    ui.playLabel.textContent = finished ? "REPETIR CAMPAÑA" : "CONTINUAR VIAJE";
+    ui.campaignPercent.textContent = `${voyagePercent}%`;
+    ui.campaignFill.style.width = `${voyagePercent}%`;
+    ui.playLabel.textContent = "CONTINUAR VIAJE";
     ui.playSector.textContent = `NIVEL ${target + 1} · ${LEVELS[target].name.toUpperCase()}`;
     if(target===0)ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
-    const nextVoyage=target!==0?nextCampaignVoyage():null;
-    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){
-      ui.playLabel.textContent="CONTINUAR VIAJE";
-      ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
+    const nextVoyage=classicVoyageRecord&&!classicVoyageRecord.completed?null:nextCampaignVoyage();
+    if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
+    if(!nextVoyage&&getUnlocked()>=2&&!(classicVoyageRecord&&!classicVoyageRecord.completed)){
+      ui.playLabel.textContent="VER EL MAPA";ui.playSector.textContent="TODOS LOS VIAJES DISPONIBLES HECHOS";
     }
-    ui.campaignNodes.innerHTML = LEVELS.map((_, index) =>
-      `<span class="${index < completed ? "done " : ""}${index === target ? "current" : ""}"></span>`
+    const current = routes.findIndex(route => route.status === "open");
+    ui.campaignNodes.innerHTML = routes.map((route, index) =>
+      `<span class="${route.status === "done" ? "done " : ""}${index === current ? "current" : ""}"></span>`
     ).join("");
     buildLevelGrid();
   }
@@ -2332,32 +2331,10 @@
     if (opener) ui.sectorMap?.querySelector(`[data-place="${opener}"]`)?.focus();
   }
 
+  // RUTA muestra solo el mapa de la campaña de viajes: los niveles clásicos
+  // ya no forman parte del juego (orden del propietario, 21/10/2026).
   function buildLevelGrid() {
     buildSectorMap(); closeBaseTalk();
-    const unlocked = getUnlocked();
-    const starsMap = getStars();
-    const bests = getLevelBest();
-    ui.levelGrid.innerHTML = "";
-
-    LEVELS.forEach((lv, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `level-card cockpit-destination${index === currentLevel ? " current" : ""}`;
-      button.style.setProperty("--level-accent", lv.accent);
-      button.dataset.scene = lv.scene;
-      button.disabled = index + 1 > unlocked;
-      const earned = +(starsMap[index + 1] || 0);
-      const starText = "★".repeat(earned) + "☆".repeat(3 - earned);
-      button.innerHTML = `
-        <small>NIVEL ${index + 1}</small>
-        <strong>${lv.name}</strong>
-        <span>${lv.world} · ${lv.goal} CRONIUM</span>
-        <div class="level-stars">${button.disabled ? "" : starText}</div>
-        ${button.disabled ? '<div class="lock">🔒</div>' : ""}
-      `;
-      if (!button.disabled) button.onclick = () => prepareLevel(index, "levels");
-      ui.levelGrid.appendChild(button);
-    });
   }
 
   function prepareLevel(index, returnTo = "menu") {
@@ -4744,7 +4721,8 @@
       ctx.globalAlpha = alpha;
       ctx.drawImage(image, frame % 4 * cell, Math.floor(frame / 4) * cell, cell, cell, x, y, size, size);
     };
-    ctx.save(); draw(pose.frame, 1); if (pose.blend > 0) draw(pose.next, pose.blend); ctx.restore();
+    const dim = pose.key === "volcanico" ? .62 : 1;
+    ctx.save(); draw(pose.frame, dim); if (pose.blend > 0) draw(pose.next, pose.blend * dim); ctx.restore();
   }
 
   // Planeta propio de una ficha (p. ej. Vulkar en el sector 2): atlas de 7
@@ -4758,8 +4736,10 @@
     if (!spriteReady(image)) return true;
     const position = elapsed / .9, frame = Math.floor(position) % 7, blend = position % 1;
     const cell = image.naturalWidth / 4, size = W * node.scale;
+    // El planeta rojo de Vulkar va atenuado: disparos y lava se leen encima.
+    const dim = key === "volcanico" ? .62 : 1;
     ctx.save(); ctx.translate(node.x * W, node.y * H); ctx.rotate(node.rotation || 0);
-    for (const [index, alpha] of [[frame, node.alpha ?? 1], [(frame + 1) % 7, (node.alpha ?? 1) * blend]]) {
+    for (const [index, alpha] of [[frame, (node.alpha ?? 1) * dim], [(frame + 1) % 7, (node.alpha ?? 1) * dim * blend]]) {
       if (alpha <= 0) continue;
       ctx.globalAlpha = alpha;
       ctx.drawImage(image, index % 4 * cell, Math.floor(index / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
@@ -5544,8 +5524,10 @@
       const sourceX = frame * sourceWidth;
       const direction = item.flightComet ? Math.atan2(item.vy,item.vx) : Math.PI / 2;
       ctx.rotate(direction);
-      ctx.shadowBlur = 9;
-      ctx.shadowColor = "#8cdeff";
+      // Amenaza = cálido (DESIGN §9.1): el halo naranja la separa del CRONIUM cian.
+      ctx.fillStyle = "rgba(255,140,70,.3)"; ctx.beginPath(); ctx.arc(0, 0, item.r * 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = "#ff8a4f";
       // Authored +X comet: keep the nucleus at the physical item centre. The
       // long decorative tail has no collision and trails opposite velocity.
       ctx.drawImage(
@@ -6219,12 +6201,12 @@
 
   $("play").onclick = () => {
     if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
-    // Tras S1-V1, la campaña sigue por el siguiente viaje abierto del mapa.
+    // La campaña sigue por el siguiente viaje abierto del mapa; si no queda
+    // ninguno, se abre el mapa (ya no hay niveles clásicos).
     const nextVoyage=nextCampaignVoyage();
-    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
-    const starsMap = getStars();
-    const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
-    prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
+    if(!nextVoyage){buildLevelGrid();overlay(ui.levelSelect);return;}
+    if(nextVoyage.voyage==="S1-V1"){prepareLevel(0,"menu");return;}
+    startSideVoyage(nextVoyage.voyage);
   };
   $("levels").onclick = () => { buildLevelGrid(); overlay(ui.levelSelect); };
   $("levelBack").onclick = () => { closeBaseTalk(); overlay(ui.menu); };
@@ -6418,11 +6400,6 @@
       })));
       row.append(name, stages); panel.append(row);
     }
-    const classic = document.createElement("div"); classic.className = "dev-row";
-    const classicName = document.createElement("b"); classicName.textContent = "Niveles clásicos";
-    const levels = document.createElement("div"); levels.className = "dev-stages";
-    LEVELS.forEach((lv, index) => levels.append(button(String(index + 1), () => play(() => startLevel(index)))));
-    classic.append(classicName, levels); panel.append(classic);
     canvas.parentElement.append(badge, panel);
     const open = button("DEV", () => { overlay(); panel.classList.add("show"); panel.querySelector("button")?.focus(); }, "secondary dev-open");
     open.id = "devOpen";

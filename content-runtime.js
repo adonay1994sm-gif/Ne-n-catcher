@@ -1803,7 +1803,9 @@ var NeonCampaign = (() => {
     // (prueba del propietario, 20/10).
     1: profile([1.7, 2.7], 2, 0.15, { meteor: 0.45, debris: 0.55 }, [170, 260], { start: 8, damageScale: 0.5 }),
     2: profile([1.1, 1.9], 4, 0.3, { meteor: 0.3, debris: 0.55, satellite: 0.15 }, [160, 250], { damageScale: 0.5 }),
-    3: profile([0.9, 1.6], 5, 0.35, { meteor: 0.35, debris: 0.5, satellite: 0.15 }, [170, 270]),
+    // 1.3: daño al 75 % (crítico de juego, 21/10: era el pico más duro del
+    // juego y llegaba en el primer viaje).
+    3: profile([0.9, 1.6], 5, 0.35, { meteor: 0.35, debris: 0.5, satellite: 0.15 }, [170, 270], { damageScale: 0.75 }),
     4: profile([1.3, 2.1], 4, 0.25, { meteor: 0.5, debris: 0.4, satellite: 0.1 }, [190, 290]),
     5: profile([2.3, 3.4], 2, 0.1, { meteor: 0.8, debris: 0.2 }, [210, 320]),
     6: profile([2.8, 4], 2, 0.05, { meteor: 0.6, debris: 0.4 }, [170, 250]),

@@ -27,7 +27,9 @@ export const VOYAGE_HAZARD_PROFILES = Object.freeze({
   // (prueba del propietario, 20/10).
   1: profile([1.7, 2.7], 2, .15, {meteor: .45, debris: .55}, [170, 260], {start: 8, damageScale: .5}),
   2: profile([1.1, 1.9], 4, .30, {meteor: .30, debris: .55, satellite: .15}, [160, 250], {damageScale: .5}),
-  3: profile([.9, 1.6], 5, .35, {meteor: .35, debris: .50, satellite: .15}, [170, 270]),
+  // 1.3: daño al 75 % (crítico de juego, 21/10: era el pico más duro del
+  // juego y llegaba en el primer viaje).
+  3: profile([.9, 1.6], 5, .35, {meteor: .35, debris: .50, satellite: .15}, [170, 270], {damageScale: .75}),
   4: profile([1.3, 2.1], 4, .25, {meteor: .50, debris: .40, satellite: .10}, [190, 290]),
   5: profile([2.3, 3.4], 2, .10, {meteor: .80, debris: .20}, [210, 320]),
   6: profile([2.8, 4.0], 2, .05, {meteor: .60, debris: .40}, [170, 250]),
