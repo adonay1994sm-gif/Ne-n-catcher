@@ -2,6 +2,23 @@
   "use strict";
 
   const $ = (id) => document.getElementById(id);
+  // Modo desarrollo (?dev=1 en la dirección): todo desbloqueado, panel para
+  // jugar cualquier viaje o tramo y guardado aparte (prefijo neon-dev-v1:),
+  // así el progreso real no se toca. Sin el parámetro el juego no cambia.
+  const DEV = (() => {
+    let enabled = false;
+    try { enabled = new URLSearchParams(window.location.search).get("dev") === "1"; } catch {}
+    if (!enabled) return null;
+    const base = window.localStorage, prefix = "neon-dev-v1:";
+    const store = Object.freeze({
+      getItem: key => base.getItem(prefix + key),
+      setItem: (key, value) => base.setItem(prefix + key, value),
+      removeItem: key => base.removeItem(prefix + key)
+    });
+    try { if (store.getItem("neon-unlocked-v2") === null) store.setItem("neon-unlocked-v2", "10"); } catch {}
+    window.NeonDev = Object.freeze({storage: store, prefix, base});
+    return {invulnerable: false};
+  })();
   const canvas = $("canvas");
   const ctx = canvas.getContext("2d", { alpha: false });
   let W = 720;
@@ -203,7 +220,7 @@
   };
   const LEGACY_KEYS = { best: "neon-best-v1" };
   const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true };
-  const storage = NeonCore.createStorageService();
+  const storage = NeonCore.createStorageService(window.NeonDev?.storage);
 
   function migrateLegacyStorage() {
     // A denied read is not an absent score: do not overwrite an unreadable
@@ -2433,7 +2450,9 @@
     classicSideVoyagePending=null;
     if(classicSideVoyage){
       const record=loadSideVoyageRecord(classicSideVoyage.ficha);
-      if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
+      // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
+      if(classicVoyageRequestedStage)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(classicVoyageRequestedStage,{goal:LEVELS[0].goal});
+      else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
@@ -3307,6 +3326,7 @@
     }
 
     hull = damageResult.hull;
+    if (typeof DEV !== "undefined" && DEV?.invulnerable) hull = 100;
     impactReactionTimer = 0.32;
     impactReactionSide = x >= player.x ? 1 : -1;
     if (!damageSmokeLocked && hull < 67) {
@@ -6310,6 +6330,57 @@
       window.AnalyticsManager?.track("abandon", { level: currentLevel + 1, state });
     }
   }, { once: true });
+  // Panel del modo desarrollo (?dev=1): cualquier viaje y tramo, niveles
+  // clásicos, casco invencible y borrado del progreso de prueba.
+  function setupDevPanel() {
+    const badge = document.createElement("div");
+    badge.id = "devBadge"; badge.className = "dev-badge"; badge.textContent = "MODO DESARROLLO";
+    const panel = document.createElement("section");
+    panel.id = "devPanel"; panel.className = "dev-panel"; panel.setAttribute("aria-label", "Panel de desarrollo");
+    const title = document.createElement("h2"); title.textContent = "Desarrollo · elige qué jugar";
+    const note = document.createElement("p");
+    note.textContent = "Progreso aparte (no toca tu partida). Todo desbloqueado.";
+    const close = () => { panel.classList.remove("show"); overlay(ui.menu); };
+    const play = start => { panel.classList.remove("show"); classicSideVoyagePending = null; start(); };
+    const button = (label, onclick, className = "dev-chip") => {
+      const node = document.createElement("button"); node.type = "button"; node.className = className;
+      node.textContent = label; node.onclick = onclick; return node;
+    };
+    panel.append(title, note);
+    const options = document.createElement("div"); options.className = "dev-options";
+    const god = document.createElement("label");
+    god.innerHTML = '<input type="checkbox" id="devInvulnerable"> Casco invencible';
+    god.querySelector("input").onchange = event => { DEV.invulnerable = event.target.checked; };
+    options.append(god, button("Borrar progreso de prueba", () => {
+      const prefix = window.NeonDev.prefix;
+      for (const key of Object.keys(window.localStorage)) if (key.startsWith(prefix)) window.localStorage.removeItem(key);
+      window.location.reload();
+    }), button("Volver", close));
+    panel.append(options);
+    for (const ficha of NeonCampaign.VOYAGES) {
+      const row = document.createElement("div"); row.className = "dev-row";
+      const name = document.createElement("b"); name.textContent = `${ficha.id} · ${ficha.title}${ficha.boss ? " · jefe" : ""}`;
+      const stages = document.createElement("div"); stages.className = "dev-stages";
+      const count = NeonCampaign.createVoyageRoute(ficha).stageCount;
+      for (let stage = 1; stage <= count; stage++) stages.append(button(String(stage), () => play(() => {
+        classicVoyageRequestedStage = stage;
+        if (ficha.id !== "S1-V1") classicSideVoyagePending = ficha;
+        startLevel(0);
+      })));
+      row.append(name, stages); panel.append(row);
+    }
+    const classic = document.createElement("div"); classic.className = "dev-row";
+    const classicName = document.createElement("b"); classicName.textContent = "Niveles clásicos";
+    const levels = document.createElement("div"); levels.className = "dev-stages";
+    LEVELS.forEach((lv, index) => levels.append(button(String(index + 1), () => play(() => startLevel(index)))));
+    classic.append(classicName, levels); panel.append(classic);
+    canvas.parentElement.append(badge, panel);
+    const open = button("DEV", () => { overlay(); panel.classList.add("show"); panel.querySelector("button")?.focus(); }, "secondary dev-open");
+    open.id = "devOpen";
+    document.querySelector(".menu-actions")?.append(open);
+  }
+  if (DEV) setupDevPanel();
+
   console.info(`[NEON CRONIUM] build ${BUILD_VERSION}`);
   setupShipHangar();
   setupAtlasEncounter();

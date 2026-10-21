@@ -485,6 +485,57 @@
       window.AnalyticsManager?.track("abandon", { level: currentLevel + 1, state });
     }
   }, { once: true });
+  // Panel del modo desarrollo (?dev=1): cualquier viaje y tramo, niveles
+  // clásicos, casco invencible y borrado del progreso de prueba.
+  function setupDevPanel() {
+    const badge = document.createElement("div");
+    badge.id = "devBadge"; badge.className = "dev-badge"; badge.textContent = "MODO DESARROLLO";
+    const panel = document.createElement("section");
+    panel.id = "devPanel"; panel.className = "dev-panel"; panel.setAttribute("aria-label", "Panel de desarrollo");
+    const title = document.createElement("h2"); title.textContent = "Desarrollo · elige qué jugar";
+    const note = document.createElement("p");
+    note.textContent = "Progreso aparte (no toca tu partida). Todo desbloqueado.";
+    const close = () => { panel.classList.remove("show"); overlay(ui.menu); };
+    const play = start => { panel.classList.remove("show"); classicSideVoyagePending = null; start(); };
+    const button = (label, onclick, className = "dev-chip") => {
+      const node = document.createElement("button"); node.type = "button"; node.className = className;
+      node.textContent = label; node.onclick = onclick; return node;
+    };
+    panel.append(title, note);
+    const options = document.createElement("div"); options.className = "dev-options";
+    const god = document.createElement("label");
+    god.innerHTML = '<input type="checkbox" id="devInvulnerable"> Casco invencible';
+    god.querySelector("input").onchange = event => { DEV.invulnerable = event.target.checked; };
+    options.append(god, button("Borrar progreso de prueba", () => {
+      const prefix = window.NeonDev.prefix;
+      for (const key of Object.keys(window.localStorage)) if (key.startsWith(prefix)) window.localStorage.removeItem(key);
+      window.location.reload();
+    }), button("Volver", close));
+    panel.append(options);
+    for (const ficha of NeonCampaign.VOYAGES) {
+      const row = document.createElement("div"); row.className = "dev-row";
+      const name = document.createElement("b"); name.textContent = `${ficha.id} · ${ficha.title}${ficha.boss ? " · jefe" : ""}`;
+      const stages = document.createElement("div"); stages.className = "dev-stages";
+      const count = NeonCampaign.createVoyageRoute(ficha).stageCount;
+      for (let stage = 1; stage <= count; stage++) stages.append(button(String(stage), () => play(() => {
+        classicVoyageRequestedStage = stage;
+        if (ficha.id !== "S1-V1") classicSideVoyagePending = ficha;
+        startLevel(0);
+      })));
+      row.append(name, stages); panel.append(row);
+    }
+    const classic = document.createElement("div"); classic.className = "dev-row";
+    const classicName = document.createElement("b"); classicName.textContent = "Niveles clásicos";
+    const levels = document.createElement("div"); levels.className = "dev-stages";
+    LEVELS.forEach((lv, index) => levels.append(button(String(index + 1), () => play(() => startLevel(index)))));
+    classic.append(classicName, levels); panel.append(classic);
+    canvas.parentElement.append(badge, panel);
+    const open = button("DEV", () => { overlay(); panel.classList.add("show"); panel.querySelector("button")?.focus(); }, "secondary dev-open");
+    open.id = "devOpen";
+    document.querySelector(".menu-actions")?.append(open);
+  }
+  if (DEV) setupDevPanel();
+
   console.info(`[NEON CRONIUM] build ${BUILD_VERSION}`);
   setupShipHangar();
   setupAtlasEncounter();

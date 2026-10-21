@@ -2,6 +2,23 @@
   "use strict";
 
   const $ = (id) => document.getElementById(id);
+  // Modo desarrollo (?dev=1 en la dirección): todo desbloqueado, panel para
+  // jugar cualquier viaje o tramo y guardado aparte (prefijo neon-dev-v1:),
+  // así el progreso real no se toca. Sin el parámetro el juego no cambia.
+  const DEV = (() => {
+    let enabled = false;
+    try { enabled = new URLSearchParams(window.location.search).get("dev") === "1"; } catch {}
+    if (!enabled) return null;
+    const base = window.localStorage, prefix = "neon-dev-v1:";
+    const store = Object.freeze({
+      getItem: key => base.getItem(prefix + key),
+      setItem: (key, value) => base.setItem(prefix + key, value),
+      removeItem: key => base.removeItem(prefix + key)
+    });
+    try { if (store.getItem("neon-unlocked-v2") === null) store.setItem("neon-unlocked-v2", "10"); } catch {}
+    window.NeonDev = Object.freeze({storage: store, prefix, base});
+    return {invulnerable: false};
+  })();
   const canvas = $("canvas");
   const ctx = canvas.getContext("2d", { alpha: false });
   let W = 720;

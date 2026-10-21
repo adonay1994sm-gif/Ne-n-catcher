@@ -17,8 +17,8 @@ function replaceOnce(source, before, after) {
 }
 
 export function previewGame(source) {
-  return replaceOnce(source, 'const storage = NeonCore.createStorageService();',
-    'const storage = NeonCore.createStorageService(window.NeonPreview.storage);')
+  return replaceOnce(source, 'const storage = NeonCore.createStorageService(window.NeonDev?.storage);',
+    'const storage = NeonCore.createStorageService(window.NeonDev?.storage || window.NeonPreview.storage);')
     .replaceAll('▶ VER ANUNCIO Y REPARAR', 'REPARAR NAVE');
 }
 

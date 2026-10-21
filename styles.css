@@ -944,3 +944,12 @@ button.sector-place{cursor:pointer}button.sector-place:focus-visible{outline:2px
 .sector-tab{min-height:32px;padding:4px 9px;border:1px solid #2c5870;border-radius:8px;background:rgba(6,18,32,.92);color:#cfe9f5;font-size:9px;letter-spacing:.06em}
 .sector-tab[aria-selected="true"]{border-color:#9df5f2;color:#9df5f2}.sector-tab:disabled{opacity:.5}
 .sector-place[data-place="vulkar"] i{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd29a,#e2531f 42%,#3a0d08 82%);box-shadow:0 0 22px rgba(255,110,40,.7)}
+/* Modo desarrollo (?dev=1). */
+.dev-badge{position:absolute;z-index:20;right:max(2px,env(safe-area-inset-right));top:38%;writing-mode:vertical-rl;padding:8px 2px;border-radius:6px;background:#b8325a;color:#fff;font-size:9px;letter-spacing:.08em;pointer-events:none}
+.dev-panel{position:absolute;z-index:19;inset:0;display:none;overflow:auto;padding:max(28px,env(safe-area-inset-top)) 14px 24px;background:rgba(4,9,20,.97);color:#e8faff;text-align:left}
+.dev-panel.show{display:block}.dev-panel h2{margin:0 0 4px;font-size:18px}.dev-panel p{margin:0 0 10px;color:#8fb3c4;font-size:12px}
+.dev-options{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;font-size:13px}
+.dev-row{padding:8px 0;border-top:1px solid #1f4a63}.dev-row b{display:block;margin-bottom:6px;font-size:12px}
+.dev-stages{display:flex;flex-wrap:wrap;gap:6px}
+.dev-chip{min-width:44px;min-height:40px;padding:4px 10px;border:1px solid #2c5870;border-radius:8px;background:#0a1a2c;color:#e8faff;font-size:13px}
+.dev-open{border-color:#b8325a}

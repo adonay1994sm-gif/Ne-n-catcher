@@ -22,8 +22,8 @@ function context() {
   }, set(target, key, value) { target[key] = value; return true; }});
 }
 
-function harness({unlocked = '2'} = {}) {
-  const dom = new JSDOM(html, {url: 'https://neon.test/', runScripts: 'outside-only', pretendToBeVisual: true});
+function harness({unlocked = '2', query = ''} = {}) {
+  const dom = new JSDOM(html, {url: `https://neon.test/${query}`, runScripts: 'outside-only', pretendToBeVisual: true});
   const w = dom.window;
   w.HTMLCanvasElement.prototype.getContext = () => context();
   w.HTMLCanvasElement.prototype.getBoundingClientRect = () => ({x: 0, y: 0, left: 0, top: 0, right: 390, bottom: 844, width: 390, height: 844});
@@ -33,7 +33,7 @@ function harness({unlocked = '2'} = {}) {
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
   w.eval(core); w.eval(content);
-  const hook = `window.T={startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,
+  const hook = `window.T={startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
@@ -85,4 +85,31 @@ test('Iria only believes the record once S1-V5 is done', () => {
   T.buildLevelGrid();
   w.document.querySelector('.sector-place[data-place="gaia"]').click();
   assert.match(w.document.getElementById('baseTalkLine').textContent, /firma coincide/);
+});
+
+test('without ?dev=1 there is no development panel and saves use the real keys', () => {
+  const {w} = harness();
+  assert.equal(w.document.getElementById('devOpen'), null);
+  assert.equal(w.document.getElementById('devBadge'), null);
+  assert.equal(w.NeonDev, undefined);
+});
+
+test('?dev=1 opens every voyage and stage with a separate save and an optional invulnerable hull', () => {
+  const {w, T} = harness({unlocked: '1', query: '?dev=1'});
+  assert.equal(w.localStorage.getItem('neon-unlocked-v2'), '1', 'real progress untouched');
+  assert.equal(w.localStorage.getItem('neon-dev-v1:neon-unlocked-v2'), '10', 'everything unlocked in dev');
+  w.document.getElementById('devOpen').click();
+  const panel = w.document.getElementById('devPanel');
+  assert.equal(panel.classList.contains('show'), true);
+  assert.equal(panel.querySelectorAll('.dev-row').length, 11, '10 voyages and the classic levels');
+  const row = [...panel.querySelectorAll('.dev-row')].find(node => node.textContent.includes('S2-V3'));
+  [...row.querySelectorAll('button')].find(node => node.textContent === '4').click();
+  assert.deepEqual([T.st().side, T.st().route], ['S2-V3', 'slag-belt']);
+  T.adv(.5);
+  assert.equal(w.localStorage.getItem('neonCatcher.voyage.S2-V3.v1'), null);
+  assert.ok(w.localStorage.getItem('neon-dev-v1:neonCatcher.voyage.S2-V3.v1'));
+  assert.ok(T.hit(40) < 100, 'damage counts while the option is off');
+  const god = w.document.getElementById('devInvulnerable'); god.checked = true; god.dispatchEvent(new w.Event('change'));
+  assert.equal(T.hit(40), 100, 'the invulnerable hull ignores damage');
+  assert.equal(T.st().state, 'playing');
 });

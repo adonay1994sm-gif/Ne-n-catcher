@@ -1513,7 +1513,9 @@
     classicSideVoyagePending=null;
     if(classicSideVoyage){
       const record=loadSideVoyageRecord(classicSideVoyage.ficha);
-      if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
+      // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
+      if(classicVoyageRequestedStage)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(classicVoyageRequestedStage,{goal:LEVELS[0].goal});
+      else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
