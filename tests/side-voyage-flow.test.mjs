@@ -101,7 +101,7 @@ test('?dev=1 opens every voyage and stage with a separate save and an optional i
   w.document.getElementById('devOpen').click();
   const panel = w.document.getElementById('devPanel');
   assert.equal(panel.classList.contains('show'), true);
-  assert.equal(panel.querySelectorAll('.dev-row').length, 11, '10 voyages and the classic levels');
+  assert.equal(panel.querySelectorAll('.dev-row').length, 10, 'the 10 voyages; no classic levels any more');
   const row = [...panel.querySelectorAll('.dev-row')].find(node => node.textContent.includes('S2-V3'));
   [...row.querySelectorAll('button')].find(node => node.textContent === '4').click();
   assert.deepEqual([T.st().side, T.st().route], ['S2-V3', 'slag-belt']);
@@ -131,4 +131,15 @@ test('after S1-V1, Play continues the voyage campaign with the next open route',
   T.finish();
   T.goHome();
   assert.match(w.document.getElementById('playSector').textContent, /S1-V3/);
+});
+
+test('classic levels are gone from the game: RUTA only shows the voyage map and the menu counts voyages', () => {
+  const {w, T} = harness({unlocked: '10'});
+  assert.equal(w.document.getElementById('levelGrid'), null);
+  assert.equal(w.document.querySelector('.level-card'), null);
+  T.buildLevelGrid();
+  assert.ok(w.document.querySelector('.sector-route'));
+  assert.match(w.document.getElementById('unlockedText').textContent, /^1\/10$/, 'only S1-V1 counts as done');
+  w.document.getElementById('play').click();
+  assert.equal(T.st().side, 'S1-V2', 'Play never opens a classic level');
 });

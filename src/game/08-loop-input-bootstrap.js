@@ -333,12 +333,12 @@
 
   $("play").onclick = () => {
     if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
-    // Tras S1-V1, la campaña sigue por el siguiente viaje abierto del mapa.
+    // La campaña sigue por el siguiente viaje abierto del mapa; si no queda
+    // ninguno, se abre el mapa (ya no hay niveles clásicos).
     const nextVoyage=nextCampaignVoyage();
-    if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
-    const starsMap = getStars();
-    const completed = LEVELS.reduce((total, _, index) => total + (+(starsMap[index + 1] || 0) > 0 ? 1 : 0), 0);
-    prepareLevel(completed === LEVELS.length ? LEVELS.length - 1 : getUnlocked() - 1, "menu");
+    if(!nextVoyage){buildLevelGrid();overlay(ui.levelSelect);return;}
+    if(nextVoyage.voyage==="S1-V1"){prepareLevel(0,"menu");return;}
+    startSideVoyage(nextVoyage.voyage);
   };
   $("levels").onclick = () => { buildLevelGrid(); overlay(ui.levelSelect); };
   $("levelBack").onclick = () => { closeBaseTalk(); overlay(ui.menu); };
@@ -532,11 +532,6 @@
       })));
       row.append(name, stages); panel.append(row);
     }
-    const classic = document.createElement("div"); classic.className = "dev-row";
-    const classicName = document.createElement("b"); classicName.textContent = "Niveles clásicos";
-    const levels = document.createElement("div"); levels.className = "dev-stages";
-    LEVELS.forEach((lv, index) => levels.append(button(String(index + 1), () => play(() => startLevel(index)))));
-    classic.append(classicName, levels); panel.append(classic);
     canvas.parentElement.append(badge, panel);
     const open = button("DEV", () => { overlay(); panel.classList.add("show"); panel.querySelector("button")?.focus(); }, "secondary dev-open");
     open.id = "devOpen";
