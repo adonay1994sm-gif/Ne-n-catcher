@@ -1637,7 +1637,9 @@
 
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
-    if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
+    // Los 9 s de espera son el inicio propio de S1-V1 (estación y tutorial).
+    // Los viajes del mapa no tienen ese inicio: su primer CRONIUM llega en ~1 s.
+    if(view.elapsed<(classicSideVoyage?0:9) || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
     const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;
@@ -1807,13 +1809,22 @@
     const route=NeonCampaign.createVoyageRoute(ficha),raw=storage.getJSON(ficha.saveKey,null);
     const checkpoint=raw?.version===1&&raw.voyage===ficha.id?route.normalizeCheckpoint(raw.checkpoint,{goal:ficha.baseGoal}):null;
     const stars=Math.trunc(Math.min(3,Math.max(0,Number(raw?.stars)||0)));
-    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,stars}:null;
+    // Entrada del tramo (como S1-V1, más el CRONIUM perdido). Los registros
+    // antiguos no la tienen y un valor dañado se ignora: se empieza como antes.
+    const e=raw?.entry,entry=checkpoint&&Number.isFinite(e?.hull)&&e.hull>0&&e.hull<=100&&
+      Number.isInteger(e.score)&&e.score>=0&&Number.isFinite(e.maxCombo)&&e.maxCombo>=1&&e.maxCombo<=12&&
+      e.collected===checkpoint.collected&&(e.reserve===undefined||(Number.isFinite(e.reserve)&&e.reserve>=0&&e.reserve<=65))&&
+      (e.missed===undefined||(Number.isInteger(e.missed)&&e.missed>=0))?e:null;
+    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,stars,entry}:null;
   }
   function saveSideVoyage(checkpoint,completed=false,stars=0) {
     if(!classicSideVoyage||!checkpoint)return false;
-    // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas.
+    // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas. La
+    // entrada guarda casco y CRONIUM perdido; lo que aún cae no cuenta.
     const {ficha}=classicSideVoyage,previous=loadSideVoyageRecord(ficha),record={version:1,voyage:ficha.id,checkpoint,
-      completed:completed||previous?.completed===true,stars:Math.max(stars,previous?.stars||0)};
+      completed:completed||previous?.completed===true,stars:Math.max(stars,previous?.stars||0),
+      entry:{hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,
+        collected:checkpoint.collected,missed:Math.max(0,energySpawned-collected-items.filter(item=>item.type==="energy").length)}};
     const saved=storage.setJSON(ficha.saveKey,record);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
     return saved;
@@ -2531,7 +2542,7 @@
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
       const requested=classicVoyageRequestedStage;
       if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
-      else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
+      else if(record&&!record.completed){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
@@ -2630,7 +2641,8 @@
     applyClassicSalvageShield();
 
     energySpawned = 0;
-    if(classicFlight)energySpawned=collected;
+    // Los fragmentos perdidos antes del punto de control siguen contando.
+    if(classicFlight)energySpawned=collected+(voyageEntry?.missed||0);
     energyBudget = level().goal + Math.ceil(level().goal * 0.25);
     powerSpawned = 0;
     powerBudget = 2 + Math.floor(currentLevel / 3);
