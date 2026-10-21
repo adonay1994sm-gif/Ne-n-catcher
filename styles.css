@@ -953,3 +953,6 @@ button.sector-place{cursor:pointer}button.sector-place:focus-visible{outline:2px
 .dev-stages{display:flex;flex-wrap:wrap;gap:6px}
 .dev-chip{min-width:44px;min-height:40px;padding:4px 10px;border:1px solid #2c5870;border-radius:8px;background:#0a1a2c;color:#e8faff;font-size:13px}
 .dev-open{border-color:#b8325a}
+/* Sin los fondos fijos, el recuadro de ilustración quedaba vacío: solo se
+   muestra cuando su escena tiene arte (hoy, Vulkar). Pendiente en el tablero. */
+.briefing-visual:not([data-scene="belt"]){display:none}
