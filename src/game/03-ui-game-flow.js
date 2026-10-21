@@ -82,7 +82,7 @@
   function beginClassicSalvageRun(resuming=false) {
     classicSalvageRunId=null;classicSalvageEnemySequence=0;
     if(!loadClassicSalvage())return false;
-    const scope=`classic:${currentLevel+1}`;
+    const scope=classicSideVoyage?`voyage:${classicSideVoyage.ficha.id}`:`classic:${currentLevel+1}`;
     const canResume=resuming&&classicSalvageState.activeRun?.scope===scope;
     const result=classicSalvageLedger.beginRun({scope,fresh:Boolean(classicSalvageState.activeRun&&!canResume)});
     if(!result.ok)return false;
@@ -573,7 +573,7 @@
       : currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
-    ui.flightDistance.setAttribute("aria-valuetext",view ? `Etapa ${view.stageNumber||1} de 10. ${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
+    ui.flightDistance.setAttribute("aria-valuetext",view ? `Etapa ${view.stageNumber||1} de ${view.distance?.stages||10}. ${Math.round(view.routeProgress*100)}% del recorrido` : `${collected} de ${level().goal} fragmentos`);
     const weapon=NeonCampaign.CLASSIC_WEAPON_RULES.types[classicEquipment.selected];
     ui.flightWeaponName.textContent=weapon.label.toUpperCase();
     ui.flightWeaponDamage.textContent=`DAÑO ×${weapon.damageMultiplier}`;
@@ -866,7 +866,9 @@
   }
   function saveSideVoyage(checkpoint,completed=false) {
     if(!classicSideVoyage||!checkpoint)return false;
-    const {ficha}=classicSideVoyage,record={version:1,voyage:ficha.id,checkpoint,completed};
+    // Rejugar un viaje hecho no borra su marca: el mapa no se vuelve a cerrar.
+    const {ficha}=classicSideVoyage,record={version:1,voyage:ficha.id,checkpoint,
+      completed:completed||loadSideVoyageRecord(ficha)?.completed===true};
     const saved=storage.setJSON(ficha.saveKey,record);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
     return saved;
@@ -878,16 +880,13 @@
   }
   function completeSideVoyage() {
     const {ficha}=classicSideVoyage;
-    saveSideVoyage(classicFlight.exportCheckpoint(),true);
-    if (typeof resetGameInput === "function") resetGameInput();
-    runToken += 1;cancelSupplyFailureTimer();
-    classicFlight=null;classicFlightView=null;classicSideVoyage=null;
-    // S1-V5 termina con Atlas: se recoge su combate antes de volver al mapa.
-    atlasBoss=null;document.body.classList.remove("atlas-combat");ui.atlasEncounter?.classList.add("hidden");
+    const saved=saveSideVoyage(classicFlight.exportCheckpoint(),true);
+    classicSideVoyage=null;
     if(classicWeapons)NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);
-    setClassicFlightHudVisible(false);setState("menu");
+    // Misma limpieza que volver al menú (HUD, disparo, Atlas, avisos) y luego el mapa.
+    goHome();
     sectorMapShown=ficha.sector;buildLevelGrid();overlay(ui.levelSelect);
-    toast(`${ficha.id} · ${ficha.title}: viaje completado.`);
+    if(saved)toast(`${ficha.id} · ${ficha.title}: viaje completado.`);
   }
 
   function setupAtlasEncounter() {
@@ -1305,7 +1304,8 @@
       tab.type = "button"; tab.className = "sector-tab"; tab.setAttribute("role", "tab");
       tab.dataset.sector = String(sector.id); tab.textContent = sector.open ? `SECTOR ${sector.id}` : `SECTOR ${sector.id} 🔒`;
       tab.disabled = !sector.open; tab.setAttribute("aria-selected", String(sector.id === map.id));
-      tab.onclick = () => { sectorMapShown = sector.id; closeBaseTalk(); buildSectorMap(); };
+      tab.onclick = () => { sectorMapShown = sector.id; closeBaseTalk(); buildSectorMap();
+        ui.sectorMap.querySelector(`[data-sector="${sector.id}"]`)?.focus(); };
       tabs.append(tab);
     }
     ui.sectorMap.append(tabs);
@@ -1325,7 +1325,7 @@
       node.className = "sector-place"; node.dataset.kind = item.kind; node.dataset.place = item.id;
       node.style.left = pct(item.x); node.style.top = pct(item.y);
       node.innerHTML = `<i aria-hidden="true"></i><b>${item.label}</b>${item.note ? `<small>${item.note}</small>` : ""}`;
-      if (item.kind === "base") { node.type = "button"; node.onclick = () => openBaseTalk(item.id === "gaia" ? "gaia" : "c9", firstDone); }
+      if (item.kind === "base") { node.type = "button"; node.onclick = () => openBaseTalk(item.id === "gaia" ? "gaia" : "c9", sideDone.includes("S1-V5"), node); }
       ui.sectorMap.append(node);
     }
     for (const route of map.routes) {
@@ -1342,10 +1342,10 @@
   }
 
   let baseTalkState = null;
-  function openBaseTalk(baseId, atlasConvinced) {
+  function openBaseTalk(baseId, atlasConvinced, opener = null) {
     const talk = NeonCampaign.baseConversation(baseId, {atlasConvinced});
     if (!talk || !ui.baseTalk) return;
-    baseTalkState = {talk, index: 0};
+    baseTalkState = {talk, index: 0, opener: opener?.dataset.place || null};
     $("baseTalkFace").dataset.actor = talk.actor.id;
     $("baseTalkName").textContent = `${talk.actor.name.toUpperCase()} · ${talk.actor.role}`;
     showBaseTalkLine();
@@ -1355,11 +1355,16 @@
   function showBaseTalkLine() {
     const {talk, index} = baseTalkState;
     $("baseTalkLine").textContent = talk.lines[index].text;
-    $("baseTalkNext").hidden = index >= talk.lines.length - 1;
+    const last = index >= talk.lines.length - 1;
+    if (last && document.activeElement === $("baseTalkNext")) $("baseTalkClose").focus();
+    $("baseTalkNext").hidden = last;
   }
   function closeBaseTalk() {
+    const opener = baseTalkState?.opener;
     baseTalkState = null;
     if (ui.baseTalk) ui.baseTalk.hidden = true;
+    // El foco vuelve a la base que abrió la conversación.
+    if (opener) ui.sectorMap?.querySelector(`[data-place="${opener}"]`)?.focus();
   }
 
   function buildLevelGrid() {
@@ -1503,7 +1508,7 @@
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     let voyageEntry=null,voyageCheckpoint=null;
     // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
-    const sideFicha=classicSideVoyagePending||(["paused","over"].includes(state)?classicSideVoyage?.ficha:null);
+    const sideFicha=classicSideVoyagePending||(["paused","gameover"].includes(state)?classicSideVoyage?.ficha:null);
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){
@@ -1524,7 +1529,7 @@
     classicTutorial=classicFlight&&!classicSideVoyage?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
     classicTutorialAnchor=null;classicTutorialSignature='';
     classicWeapons=NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H});
-    beginClassicSalvageRun(Boolean(voyageEntry));
+    beginClassicSalvageRun(Boolean(voyageEntry||(classicSideVoyage&&voyageCheckpoint)));
     resetClassicCometShower();
     // A restored entry has already emitted its checkpoint event. Initialize
     // the same encounter grace here instead of waiting for that event to replay.
