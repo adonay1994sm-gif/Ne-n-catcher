@@ -56,3 +56,10 @@ Reglas de cada tarea:
       arte todavía; de momento sin jefe).
 - [x] **N12 · Encargos de arte** en `docs/art/ENCARGOS_2026-10-21.md`
       (retratos grandes, Titán de Vulkar, CH-03, iconos del mapa, C-17).
+- [x] **N13 · Auditoría de la noche (auditor-codigo).** Veredicto «NO APTO»
+      con 3 fallos reproducidos; arreglados con prueba JSDOM
+      (`tests/side-voyage-flow.test.mjs`): reintentar tras morir lanzaba S1-V1,
+      rejugar borraba «hecho», HUD visible en el mapa, chatarra con ámbito
+      propio, foco de la conversación, «Etapa n de N» e Iria convencida solo
+      tras S1-V5. Pendiente menor: si se juega un viaje secundario a mitad de
+      S1-V1, la run de chatarra de S1-V1 empieza de nuevo al volver.
