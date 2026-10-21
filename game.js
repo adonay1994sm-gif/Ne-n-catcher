@@ -1821,6 +1821,22 @@
     // Un tramo elegido en la ficha de S1-V1 no se arrastra a otro viaje.
     classicVoyageRequestedStage=null;classicSideVoyagePending=ficha;startLevel(0);return true;
   }
+  // S1-V5: vencer a Atlas autoriza el segundo cañón (Gemelo). Un registro de
+  // equipo corrupto solo se sustituye si sus bytes exactos ya tienen copia de
+  // seguridad; si no, no se escribe nada. Repetir la victoria no duplica nada.
+  function awardAtlasWeapon() {
+    if(!classicEquipmentWritable)return null;
+    const raw=storage.getRaw(CLASSIC_EQUIPMENT_KEY);
+    let valid=raw===null;
+    try {valid=raw===null||NeonCampaign.normalizeClassicEquipment(JSON.parse(raw))!==null;} catch {}
+    if(!valid) {
+      const backups=storage.getJSON(CLASSIC_EQUIPMENT_KEY+":invalid-backups",[]);
+      if(!Array.isArray(backups)||!backups.includes(raw))return null;
+    }
+    const award=NeonCampaign.awardClassicBossWeapon(classicEquipment,"guardian-atlas");
+    return persistClassicEquipment(award.equipment)?award:null;
+  }
+
   // Pantalla de completado de un viaje del mapa: misma pantalla que S1-V1,
   // con su puntuación y «Siguiente viaje». La ficha se conserva mientras se
   // ve, para que «Repetir» vuelva a lanzar este mismo viaje.
@@ -1828,7 +1844,10 @@
     const {ficha}=classicSideVoyage;
     const firstTime=loadSideVoyageRecord(ficha)?.completed!==true;
     const earned=runStars();
-    const saved=saveSideVoyage(classicFlight.exportCheckpoint(),true,earned);
+    // Sin el arma guardada, el viaje del jefe no se marca como completado.
+    const atlasVictory=ficha.boss==="atlas"&&Boolean(atlasBoss?.resolved);
+    const award=atlasVictory?awardAtlasWeapon():null;
+    const saved=(!atlasVictory||award)&&saveSideVoyage(classicFlight.exportCheckpoint(),true,earned);
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;cancelSupplyFailureTimer();
     setState("complete");setClassicFlightHudVisible(false);
@@ -1849,6 +1868,12 @@
     ui.maxCombo.textContent=`x${maxCombo}`;
     ui.unlockMessage.textContent=!saved?"No se pudo guardar el viaje en este dispositivo."
       :next?`Siguiente: ${next.voyage} · ${next.title}.`:"Has completado todos los viajes disponibles.";
+    if(atlasVictory) {
+      ui.completeTitle.textContent="Atlas ha abierto el paso";
+      ui.unlockMessage.textContent=!award
+        ?"No se pudo guardar el segundo cañón en este dispositivo. El viaje no se ha marcado como completado: repítelo para intentarlo de nuevo."
+        :`IRIA · GAIA: Usaron tu señal para atacar Chronos. El convoy vino de Vulkar. Tienes paso libre.${award.granted?" Segundo cañón autorizado: Gemelo ×2 disponible en el taller.":""} ${ui.unlockMessage.textContent}`;
+    }
     ui.nextLevel.classList.remove("hidden");
     ui.nextLevel.textContent=next?`SIGUIENTE VIAJE: ${next.voyage} →`:"VER EL MAPA →";
     overlay(ui.complete);

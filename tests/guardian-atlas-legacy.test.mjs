@@ -599,3 +599,102 @@ test('winning Atlas in S1-V5 completes the map voyage without an exception in th
   for(let frame=0;frame<30;frame++)h.api.update(1/60);
   assert.equal(h.snapshot().state,'complete');assert.equal(h.pending.size,1);
 });
+
+// B · S1-V5: Atlas se combate en el viaje del mapa y su victoria autoriza el Gemelo.
+const S1V5_KEY='neonCatcher.voyage.S1-V5.v1',EQUIPMENT_KEY='neonCatcher.flightEquipment.v1';
+const completeText=h=>({title:h.window.document.getElementById('completeTitle').textContent,
+  message:h.window.document.getElementById('unlockMessage').textContent});
+const s1v5Done=h=>JSON.parse(h.window.localStorage.getItem(S1V5_KEY)||'null')?.completed===true;
+function winAtlasVoyage(h) {
+  h.api.prepareAtlasVoyage();assert.equal(h.snapshot().side,'S1-V5');
+  const before=h.snapshot().equipment.unlocked;
+  h.collectGoal();
+  h.until(q=>q.boss?.disabled,60*240,true);
+  assert.deepEqual(h.snapshot().equipment.unlocked,before,'The reward waits for the authored terminal event');
+  return h.until(q=>q.state==='complete');
+}
+
+test('S1-V5 Atlas victory grants Gemelo once, shows Iria\'s epilogue and replaying it duplicates nothing', t => {
+  const h=harness(t);
+  const finished=winAtlasVoyage(h);
+  assert.ok(finished.equipment.unlocked.includes('twin'),'Atlas in S1-V5 grants the actual Gemelo reward');
+  assert.equal(finished.equipment.unlocked.includes('lance'),false,'Atlas does not grant every future weapon');
+  assert.equal(finished.equipment.selected,'pulse','Winning never switches the equipped weapon');
+  const saved=JSON.parse(h.window.localStorage.getItem(EQUIPMENT_KEY));
+  assert.deepEqual(saved.unlocked,['pulse','twin']);assert.deepEqual(saved.bossRewards,['guardian-atlas']);
+  assert.equal(s1v5Done(h),true);
+  const first=completeText(h);
+  assert.equal(first.title,'Atlas ha abierto el paso');
+  assert.match(first.message,/Usaron tu señal para atacar Chronos/);
+  assert.match(first.message,/El convoy vino de Vulkar\. Tienes paso libre\./);
+  assert.match(first.message,/Gemelo ×2/,'The first victory announces the second cannon');
+  assert.match(first.message,/ Siguiente: S1-V1 · /,'The usual next-voyage hint follows the epilogue (S1-V1 is still pending in this fixture)');
+  assert.equal(h.window.localStorage.getItem('neon-unlocked-v2'),'1','S1-V5 never touches the S1-V1 progress');
+  const equipmentSave=h.window.localStorage.getItem(EQUIPMENT_KEY);
+  winAtlasVoyage(h);
+  // A replay may rewrite the same record (key order can change); its content must not.
+  assert.deepEqual(JSON.parse(h.window.localStorage.getItem(EQUIPMENT_KEY)),JSON.parse(equipmentSave),'Replaying S1-V5 cannot duplicate the reward');
+  const again=completeText(h);
+  assert.equal(again.title,'Atlas ha abierto el paso');
+  assert.doesNotMatch(again.message,/Gemelo/,'Only the first victory announces the cannon');
+  assert.match(again.message,/Tienes paso libre/);
+  assert.equal(h.window.localStorage.getItem('neon-n7-unlocked-v1'),'37');
+  assert.equal(h.pending.size,1);
+});
+
+test('a corrupt equipment record with a durable backup receives the S1-V5 Atlas reward without losing its original data', t => {
+  const corrupt='{interrupted equipment record';
+  const h=harness(t,'',{saved:corrupt});
+  const backupKey=EQUIPMENT_KEY+':invalid-backups';
+  assert.equal(h.window.localStorage.getItem(EQUIPMENT_KEY),corrupt,'Boot must preserve the damaged record until its recovery is needed');
+  assert.deepEqual(JSON.parse(h.window.localStorage.getItem(backupKey)),[corrupt]);
+  h.api.prepareAtlasVoyage();h.collectGoal();
+  h.until(q=>q.boss?.disabled,60*240,true);
+  assert.equal(h.window.localStorage.getItem(EQUIPMENT_KEY),corrupt,'The terminal animation must not replace equipment early');
+  const victory=h.until(q=>q.state==='complete');
+  assert.ok(victory.equipment.unlocked.includes('twin'));
+  const saved=JSON.parse(h.window.localStorage.getItem(EQUIPMENT_KEY));
+  assert.equal(saved.version,1);assert.deepEqual(saved.unlocked,['pulse','twin']);
+  assert.deepEqual(JSON.parse(h.window.localStorage.getItem(backupKey)),[corrupt],'Recovery retains the exact original damaged record, once');
+  assert.equal(s1v5Done(h),true);
+  assert.equal(h.pending.size,1);
+});
+
+test('without a durable backup of a corrupt equipment record S1-V5 writes nothing, warns and stays pending', t => {
+  const corrupt='{interrupted equipment record';
+  // The backup write itself is refused, so the damaged bytes have no copy.
+  const h=harness(t,'',{saved:corrupt,failBackupWrite:true});
+  assert.equal(h.window.localStorage.getItem(EQUIPMENT_KEY+':invalid-backups'),null);
+  winAtlasVoyage(h);
+  assert.equal(h.window.localStorage.getItem(EQUIPMENT_KEY),corrupt,'Without a backup the damaged record is never overwritten');
+  assert.equal(s1v5Done(h),false,'S1-V5 is not marked done without its saved weapon');
+  assert.equal(completeText(h).title,'Atlas ha abierto el paso');
+  assert.match(completeText(h).message,/No se pudo guardar el segundo cañón/);
+  assert.equal(h.pending.size,1);
+});
+
+test('an interrupted S1-V5 equipment write keeps the voyage pending and a later victory grants Gemelo exactly once', t => {
+  const h=harness(t,'',{failEquipmentWrite:true});
+  winAtlasVoyage(h);
+  assert.equal(h.window.localStorage.getItem(EQUIPMENT_KEY),null);
+  assert.deepEqual(h.snapshot().equipment.unlocked,['pulse']);
+  assert.equal(s1v5Done(h),false);
+  assert.match(completeText(h).message,/No se pudo guardar el segundo cañón/);
+  h.setEquipmentWriteBlocked(false);
+  winAtlasVoyage(h);
+  assert.deepEqual(JSON.parse(h.window.localStorage.getItem(EQUIPMENT_KEY)).unlocked,['pulse','twin']);
+  assert.equal(s1v5Done(h),true);
+  assert.match(completeText(h).message,/Gemelo ×2/);
+  const restored=harness(t,'',{storageEntries:Object.entries(h.window.localStorage)});
+  assert.deepEqual(restored.snapshot().equipment.unlocked,['pulse','twin'],'The reward survives a reload');
+  assert.equal(restored.pending.size,1);
+});
+
+test('S1-V5 Atlas health still scales with the difficulty mode', t => {
+  const expected={facil:Math.round(96*.67),normal:96,hardcore:Math.round(96*1.3)};
+  for(const [difficulty,maxHp] of Object.entries(expected)) {
+    const h=harness(t,'',{savedSettings:JSON.stringify({difficulty})});
+    h.api.prepareAtlasVoyage();const boss=h.collectGoal().boss;
+    assert.equal(boss.maxHp,maxHp,`${difficulty} scales Atlas`);assert.equal(boss.hp,maxHp);
+  }
+});
