@@ -3326,7 +3326,7 @@
     }
 
     hull = damageResult.hull;
-    if (DEV?.invulnerable) hull = 100;
+    if (typeof DEV !== "undefined" && DEV?.invulnerable) hull = 100;
     impactReactionTimer = 0.32;
     impactReactionSide = x >= player.x ? 1 : -1;
     if (!damageSmokeLocked && hull < 67) {
