@@ -1512,7 +1512,7 @@
     }
     ui.flightObjective.dataset.active=String(Boolean(flightTransmission||guide));
     ui.flightObjective.classList.toggle('tutorial-active',Boolean(!flightTransmission&&guide));
-    ui.flightDestination.textContent=classicSideVoyage ? `${classicSideVoyage.ficha.id} · ${view?.stageNumber||1}/${view?.distance?.stages||1}`
+    ui.flightDestination.textContent=classicSideVoyage ? `TRAMO ${view?.stageNumber||1}/${view?.distance?.stages||1}`
       : currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
@@ -2190,8 +2190,11 @@
     let reserve=$("hullReserve");
     if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
     reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
-    ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = "NIVEL";
+    // Los 10 viajes corren en currentLevel 0: la casilla muestra el viaje
+    // (ficha del mapa o la de S1-V1), no un «NIVEL 1» que nunca cambia.
+    ui.hudLevel.textContent = classicSideVoyage ? classicSideVoyage.ficha.id
+      : NeonCampaign.PLAYABLE_VOYAGES.find(ficha => ficha.id === "S1-V1").id;
+    ui.hudLevel.previousElementSibling.textContent = "VIAJE";
     ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
@@ -4663,18 +4666,14 @@
 
     drawChronosRouteCrossing(transition);
 
+    // Atlas ya no se combate en S1-V1: solo se ve de lejos sobre Gaia, como
+    // aviso, sin la etiqueta «GUARDIAN ATLAS» de jefe.
     if (view.beacon.visible && !atlasBoss && spriteReady(SPRITES.guardianAtlas)) {
       const size = Math.max(42, W * view.beacon.scale*1.5);
       ctx.save(); ctx.translate(W * view.beacon.x, H * view.beacon.y);
       const atlas=SPRITES.guardianAtlas;
       ctx.drawImage(atlas,0,0,atlas.naturalWidth/4,atlas.naturalHeight/2,-size/2,-size/2,size,size);
       ctx.restore();
-      if (view.beacon.active) {
-        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 17px sans-serif";
-        ctx.fillStyle = "#bcefff";
-        ctx.fillText("GUARDIAN ATLAS", W * view.beacon.x, H * view.beacon.y + size * .65);
-        ctx.restore();
-      }
     }
 
     // Con el inicio nuevo el atacante es Cronos Prime, no la nave antigua.
