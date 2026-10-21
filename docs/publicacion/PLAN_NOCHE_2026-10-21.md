@@ -38,4 +38,8 @@ Reglas de cada tarea:
       solo cuando V2–V5 sean jugables.
 - [x] **N7 · Lanzar S1-V2 desde el mapa.** Hecho como «viaje secundario» (`scripts/side-voyage-smoke.cjs`). Seguir los pasos 1–6 de
       `FASE_B_ACOPLAMIENTOS.md`; S1-V1 debe seguir idéntico (pruebas actuales).
-- [~] **N8 · Fichas S1-V3, S1-V4 y S1-V5** (V5 con Atlas, opción B). V3 y V4 jugables; falta V5 con Atlas.
+- [x] **N8 · Fichas S1-V3, S1-V4 y S1-V5.** Las tres jugables; S1-V5 termina con Atlas.
+- [ ] **N9 · Opción B completa: quitar a Atlas del final de S1-V1.** S1-V1
+      acabaría en la baliza (Atlas visto de lejos); el premio del Gemelo y la
+      conversación de Iria pasan a S1-V5. Unas 65 referencias en 14 pruebas dan
+      por hecho a Atlas en S1-V1: hacerlo en un PR propio, con cuidado.

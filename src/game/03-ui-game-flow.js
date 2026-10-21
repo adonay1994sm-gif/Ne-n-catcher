@@ -854,7 +854,7 @@
   }
 
   function isAtlasMission() {
-    return currentLevel === 0 && !classicSideVoyage;
+    return currentLevel === 0 && (!classicSideVoyage || classicSideVoyage.ficha.boss === "atlas");
   }
 
   // Viajes secundarios (fichas distintas de S1-V1, p. ej. S1-V2): guardado en
@@ -882,6 +882,9 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;cancelSupplyFailureTimer();
     classicFlight=null;classicFlightView=null;classicSideVoyage=null;
+    // S1-V5 termina con Atlas: se recoge su combate antes de volver al mapa.
+    atlasBoss=null;document.body.classList.remove("atlas-combat");ui.atlasEncounter?.classList.add("hidden");
+    if(classicWeapons)NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);
     setClassicFlightHudVisible(false);setState("menu");
     buildLevelGrid();overlay(ui.levelSelect);
     toast(`${ficha.id} · ${ficha.title}: viaje completado.`);
@@ -1685,12 +1688,12 @@
   function completeLevel() {
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
-    if(classicSideVoyage){completeSideVoyage();return;}
     if(classicChapterStory&&atlasBoss?.resolved&&!classicChapterView?.aftermathReady)return;
     if (isAtlasMission() && collected >= level().goal) {
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }
+    if(classicSideVoyage){completeSideVoyage();return;}
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     cancelSupplyFailureTimer();

@@ -2596,8 +2596,110 @@ var NeonCampaign = (() => {
     }
   });
 
+  // src/game/progression/voyages/s1-v5-convince-atlas.js
+  var immutable6 = (object2) => Object.freeze(object2);
+  var ROSTERS5 = immutable6({
+    pickets: immutable6(["scout", "interceptor", "scout"]),
+    defence: immutable6(["interceptor", "scout", "interceptor", "raider"])
+  });
+  var encounter5 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable6({
+    patrol: patrol && immutable6({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt
+  });
+  var S1_V5_CONVINCE_ATLAS = immutable6({
+    id: "S1-V5",
+    sector: 1,
+    number: 5,
+    title: "Convence a Atlas",
+    boss: "atlas",
+    chapter: 5,
+    version: "s1-v5-voyage-v1",
+    saveKey: "neonCatcher.voyage.S1-V5.v1",
+    routeId: "gaia-atlas-gate",
+    eventPrefix: "s1-v5",
+    baseGoal: 36,
+    origin: "Lado nocturno de Gaia",
+    destination: "Acceso orbital de Gaia Nova",
+    arrivalDestinationId: "gaia-atlas-approach",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid S1-V5 voyage checkpoint",
+    stages: immutable6([
+      ["Amanecer en Gaia", 30, 4, "Sal del lado nocturno hacia la luz del acceso", "Lado nocturno de Gaia", "Cintur\xF3n de meteoritos", "gaia-dawn", 0.1, 0.5, 0.36],
+      ["Lluvia en el acceso", 34, 9, "Cruza la lluvia de meteoritos del acceso", "Cintur\xF3n de meteoritos", "Piquetes de Gaia", "meteor-rain", 0.14, 0.58, 0.58],
+      ["Piquetes de Gaia", 32, 14, "Atraviesa los piquetes sin responder al fuego de Gaia", "Piquetes de Gaia", "Haz de enlace", "pickets", 0.12, 0.56, 0.52],
+      ["Haz de enlace", 32, 19, "Dos sat\xE9lites enlazados por un haz cierran el paso", "Haz de enlace", "Defensa orbital", "linked-beam", 0.14, 0.6, 0.62],
+      ["Defensa orbital", 34, 24, "Resiste la defensa orbital mientras Atlas se activa", "Defensa orbital", "Baliza de Atlas", "orbital-defence", 0.16, 0.62, 0.66],
+      ["Baliza de Atlas", 30, 28, "Atlas exige que detengas los motores", "Baliza de Atlas", "Corredor bloqueado", "atlas-identification", 0.14, 0.56, 0.6],
+      ["Corredor bloqueado", 32, 32, "Ac\xE9rcate al escudo de Atlas con el registro", "Corredor bloqueado", "Acceso orbital", "blocked-corridor", 0.16, 0.6, 0.7],
+      ["Acceso orbital", 32, 36, "Llega ante Atlas: tendr\xE1 que verificar el registro", "Acceso orbital", "Acceso orbital de Gaia Nova", "atlas-gate", 0.18, 0.62, 0.78]
+    ].map((stage) => immutable6(stage))),
+    events: immutable6([
+      { id: "s1-v5-gaia-beacon", type: "gaia-beacon", at: 160, destinationId: "gaia-atlas-approach" }
+    ].map((event2) => immutable6(event2))),
+    service: null,
+    encounters: immutable6([
+      encounter5(3, [2, ROSTERS5.pickets, 8]),
+      encounter5(9, [2, ROSTERS5.pickets, 8], { comets: true }),
+      encounter5(7, [3, ROSTERS5.pickets, 7], { repairAt: 16 }),
+      encounter5(8, [3, ROSTERS5.defence, 7]),
+      encounter5(9, [3, ROSTERS5.defence, 6], { repairAt: 18 }),
+      encounter5(5, [2, ROSTERS5.defence, 8]),
+      encounter5(10, [3, ROSTERS5.defence, 6]),
+      encounter5(10, [3, ROSTERS5.defence, 6], { repairAt: 14 })
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "gaia-approach" : "atlas-approach";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const dawn = smooth(p, 0, 0.25), gate = smooth(p, 0.55, 1);
+      return {
+        station: immutable6({ x: 0.5, y: 1.4, scale: 0.01, rotation: 0, visible: false, alpha: 0, state: "ruptured" }),
+        planet: immutable6({
+          x: 0.34 + 0.2 * dawn,
+          y: 0.16 - 0.04 * gate,
+          scale: 0.72 + 0.2 * gate,
+          rotation: 0.07 + 0.04 * p,
+          visible: true,
+          alpha: 0.45 + 0.55 * dawn
+        }),
+        // Atlas se ve venir: su plataforma crece al frente en la segunda mitad.
+        beacon: immutable6({
+          x: 0.54,
+          y: 0.14 + 0.1 * gate,
+          scale: 0.03 + 0.2 * gate,
+          visible: p >= 0.55,
+          alpha: 1,
+          active: stageIndex >= 5
+        }),
+        relay: immutable6({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable6({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable6({
+          travel: p,
+          offsetX: -0.1 * p,
+          offsetY: 1.9 * p,
+          speed: 0.5 + 0.3 * smooth(p, 0.1, 0.5),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: 0.22
+        }),
+        debris: immutable6({
+          visible: !arrived && stageIndex <= 2,
+          travel: p,
+          directionX: -0.22,
+          directionY: 0.97,
+          depth: 0.35,
+          density: stageIndex === 1 ? 0.7 : 0.3
+        })
+      };
+    }
+  });
+
   // src/game/progression/voyages/index.js
-  var VOYAGES = Object.freeze([S1_V1_CHRONOS_GAIA, S1_V2_GAIA_OUTER_NET, S1_V3_EVACUEE_ESCORT, S1_V4_FALSE_SIGNAL]);
+  var VOYAGES = Object.freeze([S1_V1_CHRONOS_GAIA, S1_V2_GAIA_OUTER_NET, S1_V3_EVACUEE_ESCORT, S1_V4_FALSE_SIGNAL, S1_V5_CONVINCE_ATLAS]);
   var PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter((ficha) => ficha.playable !== false));
   var byRoute = new Map(VOYAGES.map((ficha) => [ficha.routeId, ficha]));
   var getVoyageFicha = (routeId) => byRoute.get(routeId) || null;
@@ -4941,21 +5043,21 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/chronos-flight.js
-  var immutable6 = (object2) => Object.freeze(object2);
-  var CHRONOS_FLIGHT_EVENTS = immutable6([
-    immutable6({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
-    immutable6({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
-    immutable6({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
-    immutable6({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
-    immutable6({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
-    immutable6({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
+  var immutable7 = (object2) => Object.freeze(object2);
+  var CHRONOS_FLIGHT_EVENTS = immutable7([
+    immutable7({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
+    immutable7({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
+    immutable7({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
+    immutable7({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
+    immutable7({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
+    immutable7({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
   ]);
-  var PHASES = immutable6([
-    immutable6({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
-    immutable6({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
-    immutable6({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
-    immutable6({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
-    immutable6({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
+  var PHASES = immutable7([
+    immutable7({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
+    immutable7({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
+    immutable7({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
+    immutable7({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
+    immutable7({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
   ]);
   var CHRONOS_VOYAGE_ROUTE = createVoyageRoute(S1_V1_CHRONOS_GAIA);
   var CHRONOS_VOYAGE_VERSION = S1_V1_CHRONOS_GAIA.version;
