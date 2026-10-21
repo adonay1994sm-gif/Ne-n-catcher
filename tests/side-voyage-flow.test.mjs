@@ -177,3 +177,20 @@ test('a map voyage counts as one run for interstitials only the first time it is
   T.startSideVoyage('S1-V2'); T.finish();
   assert.equal(games(), before + 1);
 });
+
+test('Next after the last voyage of sector 2 opens the map on the SECTOR 2 tab', () => {
+  const {w, T} = harness({unlocked: '10'});
+  for (const id of ['S1-V2', 'S1-V3', 'S1-V4', 'S1-V5', 'S2-V1', 'S2-V2', 'S2-V3', 'S2-V4']) {
+    T.startSideVoyage(id); T.finish(); T.goHome();
+  }
+  T.startSideVoyage('S2-V5'); T.finish();
+  w.document.getElementById('nextLevel').click();
+  assert.equal(w.document.querySelector('.sector-tab[aria-selected="true"]')?.dataset.sector, '2');
+});
+
+test('the S1-V1 briefing opened from the map names a Chronos → Gaia stage', () => {
+  const {w, T} = harness();
+  T.buildLevelGrid();
+  w.document.querySelector('.sector-route[data-voyage="S1-V1"]').click();
+  assert.match(w.document.getElementById('briefingSector').textContent, /^TRAMO 1\.\d+ · CHRONOS → GAIA$/);
+});
