@@ -2878,6 +2878,278 @@ var NeonCampaign = (() => {
     }
   });
 
+  // src/game/progression/voyages/s2-v3-slag-belt.js
+  var immutable9 = (object2) => Object.freeze(object2);
+  var ROSTERS8 = immutable9({
+    scavengers: immutable9(["raider", "scout", "raider"]),
+    lava: immutable9(["interceptor", "raider", "raider", "scout"])
+  });
+  var encounter8 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable9({
+    patrol: patrol && immutable9({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt
+  });
+  var S2_V3_SLAG_BELT = immutable9({
+    id: "S2-V3",
+    sector: 2,
+    number: 3,
+    title: "Cruza el cintur\xF3n de escoria",
+    planet: "volcanico",
+    chapter: 8,
+    version: "s2-v3-voyage-v1",
+    saveKey: "neonCatcher.voyage.S2-V3.v1",
+    routeId: "slag-belt",
+    eventPrefix: "s2-v3",
+    baseGoal: 36,
+    origin: "Ruta de carga abandonada",
+    destination: "Cintur\xF3n de escoria",
+    arrivalDestinationId: "vulkar-slag-belt",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid S2-V3 voyage checkpoint",
+    stages: immutable9([
+      ["Primeras brasas", 30, 4, "Entra en el cintur\xF3n siguiendo el CRONIUM fundido", "Ruta de carga abandonada", "Escoria fina", "first-embers", 0.12, 0.5, 0.4],
+      ["Escoria fina", 32, 9, "Recupera el CRONIUM entre la escoria fina", "Escoria fina", "Lluvia de escoria", "fine-slag", 0.14, 0.54, 0.48],
+      ["Lluvia de escoria", 34, 15, "Cruza la lluvia de escoria incandescente", "Lluvia de escoria", "Chatarreros", "slag-rain", 0.18, 0.58, 0.62],
+      ["Chatarreros", 32, 20, "Los chatarreros del sindicato reclaman el bot\xEDn", "Chatarreros", "N\xFAcleo de lava", "scavengers", 0.14, 0.56, 0.58],
+      ["N\xFAcleo de lava", 34, 26, "Un n\xFAcleo de lava se parte al calentarse", "N\xFAcleo de lava", "Vetas de CRONIUM", "lava-core", 0.18, 0.6, 0.7],
+      ["Vetas de CRONIUM", 32, 31, "Rescata las vetas antes de que se fundan", "Vetas de CRONIUM", "Salida del cintur\xF3n", "cronium-veins", 0.16, 0.58, 0.6],
+      ["Salida del cintur\xF3n", 32, 36, "Sal del cintur\xF3n hacia la \xF3rbita de Vulkar", "Salida del cintur\xF3n", "Cintur\xF3n de escoria", "belt-exit", 0.14, 0.54, 0.56]
+    ].map((stage) => immutable9(stage))),
+    events: immutable9([]),
+    service: null,
+    encounters: immutable9([
+      encounter8(5, [2, ROSTERS8.scavengers, 8]),
+      encounter8(7, [2, ROSTERS8.scavengers, 8]),
+      encounter8(9, [2, ROSTERS8.scavengers, 7], { comets: true }),
+      encounter8(8, [3, ROSTERS8.scavengers, 7], { repairAt: 16 }),
+      encounter8(9, [3, ROSTERS8.lava, 6]),
+      encounter8(8, [3, ROSTERS8.lava, 6], { repairAt: 16 }),
+      encounter8(10, [3, ROSTERS8.lava, 6])
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "slag-belt" : "vulkar-approach";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const approach2 = smooth(p, 0, 1);
+      return {
+        station: immutable9({ x: 0.5, y: 1.4, scale: 0.01, rotation: 0, visible: false, alpha: 0, state: "ruptured" }),
+        planet: immutable9({
+          x: 0.66 - 0.12 * approach2,
+          y: 0.1 + 0.04 * approach2,
+          scale: 0.3 + 0.24 * approach2,
+          rotation: 0.03 * p,
+          visible: true,
+          alpha: 1
+        }),
+        beacon: immutable9({ x: 0.5, y: 1.2, scale: 0, visible: false, alpha: 0, active: false }),
+        relay: immutable9({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable9({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable9({
+          travel: p,
+          offsetX: -0.08 * p,
+          offsetY: 1.8 * p,
+          speed: 0.5 + 0.25 * smooth(p, 0.1, 0.5),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: 0.26
+        }),
+        debris: immutable9({
+          visible: !arrived,
+          travel: p,
+          directionX: -0.2,
+          directionY: 0.98,
+          depth: 0.35,
+          density: stageIndex === 2 ? 0.8 : 0.5
+        })
+      };
+    }
+  });
+
+  // src/game/progression/voyages/s2-v4-yara-call.js
+  var immutable10 = (object2) => Object.freeze(object2);
+  var ROSTERS9 = immutable10({
+    mines: immutable10(["scout", "raider", "scout"]),
+    forge: immutable10(["interceptor", "scout", "interceptor", "raider"])
+  });
+  var encounter9 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable10({
+    patrol: patrol && immutable10({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt
+  });
+  var S2_V4_YARA_CALL = immutable10({
+    id: "S2-V4",
+    sector: 2,
+    number: 4,
+    title: "Responde a la llamada de Yara",
+    planet: "volcanico",
+    chapter: 9,
+    version: "s2-v4-voyage-v1",
+    saveKey: "neonCatcher.voyage.S2-V4.v1",
+    routeId: "yara-call",
+    eventPrefix: "s2-v4",
+    baseGoal: 36,
+    origin: "Cintur\xF3n de escoria",
+    destination: "\xD3rbita alta de Vulkar",
+    arrivalDestinationId: "vulkar-high-orbit",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid S2-V4 voyage checkpoint",
+    stages: immutable10([
+      ["Llamada de Yara", 30, 4, "Yara Kest pide ayuda desde la refiner\xEDa", "Cintur\xF3n de escoria", "Nubes de ceniza", "yara-call", 0.14, 0.48, 0.36],
+      ["Nubes de ceniza", 32, 10, "Avanza entre la ceniza sin perder la se\xF1al", "Nubes de ceniza", "Campo de minas", "ash-clouds", 0.2, 0.36, 0.46],
+      ["Campo de minas", 32, 15, "Abre paso entre las minas de la refiner\xEDa", "Campo de minas", "Cargueros atrapados", "minefield", 0.16, 0.44, 0.58],
+      ["Cargueros atrapados", 34, 21, "Protege a los cargueros de obreros", "Cargueros atrapados", "Bater\xEDa de forja", "trapped-freighters", 0.16, 0.5, 0.62],
+      ["Bater\xEDa de forja", 34, 27, "Silencia la bater\xEDa de forja de tres torretas", "Bater\xEDa de forja", "Rampa de salida", "forge-battery", 0.18, 0.54, 0.72],
+      ["Rampa de salida", 30, 32, "Escolta a los cargueros fuera de la ceniza", "Rampa de salida", "\xD3rbita alta", "exit-ramp", 0.14, 0.5, 0.58],
+      ["\xD3rbita alta", 32, 36, "Llega a la \xF3rbita alta: Yara te debe una", "\xD3rbita alta", "\xD3rbita alta de Vulkar", "high-orbit", 0.12, 0.54, 0.54]
+    ].map((stage) => immutable10(stage))),
+    events: immutable10([]),
+    service: null,
+    encounters: immutable10([
+      encounter9(4, [2, ROSTERS9.mines, 8]),
+      encounter9(5, [2, ROSTERS9.mines, 8]),
+      encounter9(8, [3, ROSTERS9.mines, 7], { repairAt: 16 }),
+      encounter9(7, [3, ROSTERS9.forge, 7]),
+      encounter9(9, [3, ROSTERS9.forge, 6], { repairAt: 18 }),
+      encounter9(9, [2, ROSTERS9.forge, 7], { comets: true }),
+      encounter9(10, [3, ROSTERS9.forge, 6])
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "ash-clouds" : "vulkar-orbit";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const approach2 = smooth(p, 0, 1);
+      return {
+        station: immutable10({ x: 0.5, y: 1.4, scale: 0.01, rotation: 0, visible: false, alpha: 0, state: "ruptured" }),
+        planet: immutable10({
+          x: 0.6 - 0.12 * approach2,
+          y: 0.1 + 0.04 * approach2,
+          scale: 0.48 + 0.24 * approach2,
+          rotation: 0.03 * p,
+          visible: true,
+          alpha: 1
+        }),
+        beacon: immutable10({ x: 0.5, y: 1.2, scale: 0, visible: false, alpha: 0, active: false }),
+        relay: immutable10({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable10({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable10({
+          travel: p,
+          offsetX: -0.08 * p,
+          offsetY: 1.8 * p,
+          speed: 0.5 + 0.25 * smooth(p, 0.1, 0.5),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: 0.26
+        }),
+        debris: immutable10({
+          visible: !arrived,
+          travel: p,
+          directionX: -0.2,
+          directionY: 0.98,
+          depth: 0.35,
+          density: stageIndex === 2 ? 0.6 : 0.3
+        })
+      };
+    }
+  });
+
+  // src/game/progression/voyages/s2-v5-vulkar-titan.js
+  var immutable11 = (object2) => Object.freeze(object2);
+  var ROSTERS10 = immutable11({
+    drones: immutable11(["interceptor", "interceptor", "scout"]),
+    titanGuard: immutable11(["interceptor", "raider", "interceptor", "raider"])
+  });
+  var encounter10 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable11({
+    patrol: patrol && immutable11({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt
+  });
+  var S2_V5_VULKAR_TITAN = immutable11({
+    id: "S2-V5",
+    sector: 2,
+    number: 5,
+    title: "Det\xE9n al Tit\xE1n de Vulkar",
+    planet: "volcanico",
+    chapter: 10,
+    version: "s2-v5-voyage-v1",
+    saveKey: "neonCatcher.voyage.S2-V5.v1",
+    routeId: "vulkar-titan",
+    eventPrefix: "s2-v5",
+    baseGoal: 36,
+    origin: "\xD3rbita alta de Vulkar",
+    destination: "Descenso a las forjas",
+    arrivalDestinationId: "vulkar-forges",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid S2-V5 voyage checkpoint",
+    stages: immutable11([
+      ["Rastro de descarga", 30, 4, "Sigue el rastro de la descarga del C-17", "\xD3rbita alta de Vulkar", "Columnas de plasma", "unload-trail", 0.14, 0.52, 0.44],
+      ["Columnas de plasma", 34, 9, "Atento a los avisos: el planeta escupe plasma", "Columnas de plasma", "Drones de escoria", "plasma-columns", 0.18, 0.56, 0.58],
+      ["Drones de escoria", 32, 14, "Una pareja de drones de escoria te corta el paso", "Drones de escoria", "Puerta de las forjas", "slag-drones", 0.16, 0.58, 0.66],
+      ["Puerta de las forjas", 32, 19, "Cruza la puerta de las forjas abierta por el C-17", "Puerta de las forjas", "Sombra del Tit\xE1n", "forge-gate", 0.16, 0.56, 0.62],
+      ["Sombra del Tit\xE1n", 34, 24, "Algo enorme se mueve bajo la lava", "Sombra del Tit\xE1n", "Guardia del Tit\xE1n", "titan-shadow", 0.2, 0.6, 0.7],
+      ["Guardia del Tit\xE1n", 32, 28, "Rompe la guardia que protege el descenso", "Guardia del Tit\xE1n", "Calor extremo", "titan-guard", 0.18, 0.6, 0.74],
+      ["Calor extremo", 30, 32, "Aguanta el calor del descenso", "Calor extremo", "Descenso", "extreme-heat", 0.2, 0.62, 0.68],
+      ["Descenso a las forjas", 34, 36, "Alcanza el descenso: el Tit\xE1n te espera", "Descenso", "Descenso a las forjas", "forge-descent", 0.22, 0.64, 0.78]
+    ].map((stage) => immutable11(stage))),
+    events: immutable11([]),
+    service: null,
+    encounters: immutable11([
+      encounter10(7, [2, ROSTERS10.drones, 8]),
+      encounter10(9, [2, ROSTERS10.drones, 7], { comets: true }),
+      encounter10(8, [3, ROSTERS10.drones, 7], { repairAt: 16 }),
+      encounter10(7, [3, ROSTERS10.titanGuard, 7]),
+      encounter10(9, [3, ROSTERS10.titanGuard, 6], { repairAt: 18 }),
+      encounter10(10, [3, ROSTERS10.titanGuard, 6]),
+      encounter10(9, [3, ROSTERS10.titanGuard, 6], { comets: true }),
+      encounter10(10, [3, ROSTERS10.titanGuard, 6], { repairAt: 14 })
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "plasma" : "forge-descent";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const approach2 = smooth(p, 0, 1);
+      return {
+        station: immutable11({ x: 0.5, y: 1.4, scale: 0.01, rotation: 0, visible: false, alpha: 0, state: "ruptured" }),
+        planet: immutable11({
+          x: 0.56 - 0.1 * approach2,
+          y: 0.1 + 0.04 * approach2,
+          scale: 0.66 + 0.3 * approach2,
+          rotation: 0.03 * p,
+          visible: true,
+          alpha: 1
+        }),
+        beacon: immutable11({ x: 0.5, y: 1.2, scale: 0, visible: false, alpha: 0, active: false }),
+        relay: immutable11({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable11({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable11({
+          travel: p,
+          offsetX: -0.08 * p,
+          offsetY: 1.8 * p,
+          speed: 0.5 + 0.25 * smooth(p, 0.1, 0.5),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: 0.26
+        }),
+        debris: immutable11({
+          visible: !arrived,
+          travel: p,
+          directionX: -0.2,
+          directionY: 0.98,
+          depth: 0.35,
+          density: stageIndex >= 4 ? 0.4 : 0.3
+        })
+      };
+    }
+  });
+
   // src/game/progression/voyages/index.js
   var VOYAGES = Object.freeze([
     S1_V1_CHRONOS_GAIA,
@@ -2886,7 +3158,10 @@ var NeonCampaign = (() => {
     S1_V4_FALSE_SIGNAL,
     S1_V5_CONVINCE_ATLAS,
     S2_V1_GAIA_DEPARTURE,
-    S2_V2_FOLLOW_C17
+    S2_V2_FOLLOW_C17,
+    S2_V3_SLAG_BELT,
+    S2_V4_YARA_CALL,
+    S2_V5_VULKAR_TITAN
   ]);
   var PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter((ficha) => ficha.playable !== false));
   var byRoute = new Map(VOYAGES.map((ficha) => [ficha.routeId, ficha]));
@@ -5252,21 +5527,21 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/chronos-flight.js
-  var immutable9 = (object2) => Object.freeze(object2);
-  var CHRONOS_FLIGHT_EVENTS = immutable9([
-    immutable9({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
-    immutable9({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
-    immutable9({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
-    immutable9({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
-    immutable9({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
-    immutable9({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
+  var immutable12 = (object2) => Object.freeze(object2);
+  var CHRONOS_FLIGHT_EVENTS = immutable12([
+    immutable12({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
+    immutable12({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
+    immutable12({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
+    immutable12({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
+    immutable12({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
+    immutable12({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
   ]);
-  var PHASES = immutable9([
-    immutable9({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
-    immutable9({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
-    immutable9({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
-    immutable9({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
-    immutable9({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
+  var PHASES = immutable12([
+    immutable12({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
+    immutable12({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
+    immutable12({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
+    immutable12({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
+    immutable12({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
   ]);
   var CHRONOS_VOYAGE_ROUTE = createVoyageRoute(S1_V1_CHRONOS_GAIA);
   var CHRONOS_VOYAGE_VERSION = S1_V1_CHRONOS_GAIA.version;

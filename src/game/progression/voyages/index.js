@@ -9,9 +9,12 @@ import {S1_V4_FALSE_SIGNAL} from './s1-v4-false-signal.js';
 import {S1_V5_CONVINCE_ATLAS} from './s1-v5-convince-atlas.js';
 import {S2_V1_GAIA_DEPARTURE} from './s2-v1-gaia-departure.js';
 import {S2_V2_FOLLOW_C17} from './s2-v2-follow-c17.js';
+import {S2_V3_SLAG_BELT} from './s2-v3-slag-belt.js';
+import {S2_V4_YARA_CALL} from './s2-v4-yara-call.js';
+import {S2_V5_VULKAR_TITAN} from './s2-v5-vulkar-titan.js';
 
 export const VOYAGES = Object.freeze([S1_V1_CHRONOS_GAIA, S1_V2_GAIA_OUTER_NET, S1_V3_EVACUEE_ESCORT, S1_V4_FALSE_SIGNAL, S1_V5_CONVINCE_ATLAS,
-  S2_V1_GAIA_DEPARTURE, S2_V2_FOLLOW_C17]);
+  S2_V1_GAIA_DEPARTURE, S2_V2_FOLLOW_C17, S2_V3_SLAG_BELT, S2_V4_YARA_CALL, S2_V5_VULKAR_TITAN]);
 /** Viajes que el juego ya sabe lanzar (los demás se ven «en preparación»). */
 export const PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter(ficha => ficha.playable !== false));
 const byRoute = new Map(VOYAGES.map(ficha => [ficha.routeId, ficha]));
