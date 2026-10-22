@@ -103,7 +103,7 @@ typography:
     fontSize: 12px
     lineHeight: 16px
   hud-label:
-    fontSize: 9px
+    fontSize: 10px
     fontWeight: 650
     lineHeight: 1
     letterSpacing: 0.06em
@@ -311,10 +311,11 @@ núcleos cian + avisos rojos; Vulkar basalto `#171820`, magma `#FF6A1A`, brasa
   desplazados 4 px) y subtítulo `800 22px`; glifos de mejoras `900 18/27px Inter`.
 - **Escala usada** (ver YAML): título de menú `clamp(27px,7.3vw,34px)`;
   título de panel 30 px; briefing `clamp(24px,6.5vw,30px)`; texto 13 px/1.55;
-  comunicaciones 12 px/16 px; botones 12 px peso 750; etiqueta HUD 9 px;
+  comunicaciones 12 px/16 px; botones 12 px peso 750; etiqueta HUD 10 px;
   valor HUD 15 px con cifras tabulares.
-- **Mínimos:** objetivo ≥ 9 px CSS (las etiquetas HUD ya están en el
-  límite); hoy quedan chips de 7–8 px en pantallas estrechas y estilos antiguos. Números que cambian, siempre `tabular-nums`.
+- **Mínimos:** ningún texto del DOM por debajo de 10 px CSS, también a
+  320 px (decisión del propietario 22/10/2026; antes 9 px). Números que
+  cambian, siempre `tabular-nums`.
 - Las etiquetas en mayúsculas con espaciado (`.06em`–`.15em`) son lenguaje
   de instrumento: solo en HUD, rótulos de panel y chips. El texto de
   historia y ayuda va en frase normal.
