@@ -755,6 +755,8 @@ test('the CRONIUM wait notice disappears as soon as CRONIUM changes, and the HUD
   }
   assert.match(T.ev('flightTransmission.text'), /Faltan 4/);
   assert.equal(label(), 'TRAMO');
+  T.ev('hud()');
+  assert.equal(label(), 'TRAMO', 'a HUD refresh (pause, C9) keeps the stage label');
   T.ev('collected=1'); T.adv(1 / 60);
   assert.equal(T.ev('flightTransmission'), null, 'the stale count is removed');
   T.ev('collected=4;energySpawned=4'); for (let i = 0; i < 60; i++) T.adv(1 / 60);

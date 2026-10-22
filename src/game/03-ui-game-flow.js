@@ -1358,7 +1358,8 @@
     ui.hudLevel.textContent = classicSideVoyage ? classicSideVoyage.ficha.id
       : NeonCampaign.PLAYABLE_VOYAGES.find(ficha => ficha.id === "S1-V1").id;
     ui.hudLevel.previousElementSibling.textContent = "VIAJE";
-    ui.goal.previousElementSibling.textContent="CRONIUM";
+    // En espera de CRONIUM la cifra es la cuota del tramo, también en pausa (A2).
+    ui.goal.previousElementSibling.textContent=classicFlightView?.waitingFor==="cronium"?"TRAMO":"CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
       ? "linear-gradient(90deg,#63ffc4,#64e9ff)"
