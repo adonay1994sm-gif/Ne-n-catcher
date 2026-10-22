@@ -434,12 +434,13 @@ test('without the quota a map voyage stage is not shortened', () => {
   assert.equal(T.ev('classicFlightView.stageNumber'), 1);
 });
 
-test('resuming from pause gives a short grace and the pause offers «REINICIAR VIAJE»', () => {
+test('resuming from pause gives a short grace and the pause offers «REINICIAR TRAMO»', () => {
   // Propietario (22/10, auditoría J06).
   const {w, T} = harness();
   T.startSideVoyage('S1-V2'); T.adv(1);
   T.ev('pauseGame()');
-  assert.equal(w.document.getElementById('restart').textContent.trim(), 'REINICIAR VIAJE');
+  // Revisión M1: el botón vuelve al punto de control del tramo, no al inicio del viaje.
+  assert.equal(w.document.getElementById('restart').textContent.trim(), 'REINICIAR TRAMO');
   T.ev('pauseStartedAt-=600;resumeGame()');
   assert.equal(T.hitNow(20), 100, 'a hit right after resuming does no damage');
   T.adv(1);
