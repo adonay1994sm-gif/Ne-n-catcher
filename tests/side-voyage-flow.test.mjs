@@ -35,6 +35,11 @@ function harness({unlocked = '2', query = ''} = {}) {
   w.Image = class { constructor() { this.complete = false; this.naturalWidth = 0; this.naturalHeight = 0; }
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
+  // Azar con semilla fija: las pruebas que cuentan patrullas o peligros no
+  // pueden depender de la suerte (revisión 3, prueba intermitente).
+  let seed = 0x9e3779b9;
+  w.eval('Math').random = () => { seed = (seed + 0x6D2B79F5) >>> 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = (t + Math.imul(t ^ t >>> 7, 61 | t)) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   w.eval(core); w.eval(content);
   const hook = `window.T={ev:s=>eval(s),resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;hullGrace=0;damageShip(n);return hull;},hitNow:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
@@ -717,4 +722,8 @@ test('the piloting lesson hides its percentage until there is some progress', ()
     if (/pulgar izquierdo/.test(text)) { seen = true; zero ||= /· 0 %/.test(text); }
   }
   assert.ok(seen); assert.equal(zero, false);
+});
+
+test('the harness randomness is seeded, so counts of patrols and hazards are repeatable', () => {
+  assert.equal(harness().T.ev('Math.random()'), harness().T.ev('Math.random()'));
 });
