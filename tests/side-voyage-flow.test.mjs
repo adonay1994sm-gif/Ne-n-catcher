@@ -567,3 +567,12 @@ test('when a stage clock ends without its CRONIUM quota, N-7 says what is missin
   assert.equal(T.ev('classicFlightView.waitingFor'), 'cronium');
   assert.match(said, /Faltan \d+ CRONIUM/);
 });
+
+test('retrying a stage forgets the lesson window and the CRONIUM notice of the previous attempt', () => {
+  // Auditoría del bloque (B03): elapsed vuelve a 0 y la ventana de 4 s quedaba en negativo.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev("classicGuideSeen={id:'x',at:500};classicCroniumWaitNotice=classicFlightView.stageId");
+  T.finishGame('hull'); T.startLevel(0);
+  assert.deepEqual([T.ev('classicGuideSeen'), T.ev('classicCroniumWaitNotice')], [null, null]);
+});

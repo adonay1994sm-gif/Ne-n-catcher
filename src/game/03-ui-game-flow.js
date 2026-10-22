@@ -1641,6 +1641,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     hullGrace = 0;
+    classicGuideSeen = null;classicCroniumWaitNotice = null;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
