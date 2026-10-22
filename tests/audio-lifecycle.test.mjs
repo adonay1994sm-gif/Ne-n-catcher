@@ -80,3 +80,16 @@ test('every sound reaches the speakers only through the master limiter', () => {
   assert.deepEqual(toDestination, ['limiter']);
   assert.ok(edges.some(([from, to]) => from === 'gain' && to === 'gain'), 'music and tones go through the master gain');
 });
+
+test('a tone starts silent and rises in 5 ms instead of jumping to full gain (no click)', () => {
+  const {context} = graphHarness();
+  const ac = context.ensureAudio();
+  const gains = [];
+  const original = ac.createGain.bind(ac);
+  ac.createGain = () => { const node = original(); gains.push(node); return node; };
+  context.tone(440, .1);
+  const ramps = gains.at(-1).gain.ramps;
+  assert.equal(gains.at(-1).gain.value, 0.0001);
+  assert.equal(ramps[0][0], 'lin');
+  assert.ok(Math.abs(ramps[0][2] - .005) < 1e-9);
+});

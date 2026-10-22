@@ -915,8 +915,11 @@
     oscillator.type = type;
     oscillator.frequency.value = frequency;
     const length = Math.max(.015, Math.min(2, Number(duration) || .06));
-    gain.gain.value = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
-    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + length);
+    // Entra desde casi silencio en 5 ms para que no haga clic (paso 4).
+    const peak = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
+    gain.gain.value = 0.0001;
+    gain.gain.linearRampToValueAtTime(peak, ac.currentTime + .005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + Math.max(.01, length));
     oscillator.connect(gain).connect(masterBus || ac.destination);
     const voice = {oscillator, end: ac.currentTime + length, release() {
       if (!activeToneVoices.delete(voice)) return;
