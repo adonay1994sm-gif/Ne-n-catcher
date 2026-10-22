@@ -617,3 +617,14 @@ test('opening a finished voyage again from the map starts it at stage 1 even aft
   T.startSideVoyage('S1-V2');
   assert.equal(T.ev('classicFlightView.stageNumber'), 1);
 });
+
+test('the comet corridor only clears its marked area, not the whole column above it', () => {
+  // Revisión tras el PR #44 (P01): los peligros desaparecían a media pantalla.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  for (let i = 0; i < 30 * 60 && !T.ev('cometShowerActive()'); i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  assert.ok(T.ev('cometShowerActive()'));
+  T.ev(`(()=>{const c=classicCometCorridor.corridor,m=createThreat('meteor',level());m.x=m.baseX=c.center;m.y=c.top-200;m.s=0;m.amp=0;m.markP01=true;items.push(m);})()`);
+  T.adv(1 / 60);
+  assert.equal(T.ev('items.some(item=>item.markP01)'), true, 'a hazard above the marked area is kept');
+});
