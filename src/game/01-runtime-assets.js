@@ -102,6 +102,7 @@
   let classicCometCorridor = null;
   let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
   let pauseStartedAt = 0;
+  let lastResumeGraceAt = -Infinity; // tiempo de juego de la última gracia por reanudar (R1)
   let classicGuideSeen = null; // lección de un paso: cuándo se mostró por primera vez (G1)
   let reserveHitExplained = false; // N-7 explica una vez el golpe absorbido (G2)
   let classicCroniumWaitNotice = null; // tramo cuyo aviso de CRONIUM pendiente ya salió (G5)

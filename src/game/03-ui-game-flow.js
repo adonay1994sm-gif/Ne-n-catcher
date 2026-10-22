@@ -488,8 +488,7 @@
     if(flightDockReturn==="hud"&&state==="paused") {
       if(typeof resetGameInput==="function")resetGameInput();
       setState("playing");overlay();last=performance.now();resumeAudio();
-      // Misma gracia que al reanudar desde la pausa (auditoría B04).
-      if(performance.now()-pauseStartedAt>=500)hullGrace=Math.max(hullGrace,0.8);
+      grantResumeGrace(); // misma gracia que al salir de la pausa (B04)
       syncClassicFlightHud();ui.classicC9?.focus({preventScroll:true});return;
     }
     if(flightDockReturn==="voyage"){resumeClassicVoyageService();return;}
@@ -1657,7 +1656,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     hullGrace = 0;
-    classicGuideSeen = null;classicCroniumWaitNotice = null;
+    classicGuideSeen = null;classicCroniumWaitNotice = null;lastResumeGraceAt = -Infinity;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
@@ -1817,10 +1816,17 @@
     setState("playing");
     overlay();
     last = performance.now();
-    // Gracia de 0,8 s solo tras una pausa real: pausar y reanudar sin parar
-    // no encadena invulnerabilidad (revisión L2).
-    if (performance.now() - pauseStartedAt >= 500) hullGrace = Math.max(hullGrace, 0.8);
+    grantResumeGrace();
     resumeAudio();
+  }
+
+  // Gracia de 0,8 s al volver a jugar tras una pausa real (≥ 0,5 s) y como
+  // mucho una vez cada 3 s de juego: pausar sin parar no encadena
+  // invulnerabilidad (revisiones L2 y R1).
+  function grantResumeGrace() {
+    if (performance.now() - pauseStartedAt < 500 || elapsed - lastResumeGraceAt < 3) return;
+    lastResumeGraceAt = elapsed;
+    hullGrace = Math.max(hullGrace, 0.8);
   }
 
   function goHome() {

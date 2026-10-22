@@ -640,3 +640,18 @@ test('«Repetir» after finishing a voyage starts at stage 1 even if the final s
   T.startLevel(0);
   assert.equal(T.ev('classicFlightView.stageNumber'), 1);
 });
+
+test('alternating real pauses with short play does not chain the resume grace', () => {
+  // Revisión 3 (R1): pausas de 0,5 s cada 0,6 s de juego evitaban todo el daño.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  let damaged = 0;
+  for (let i = 0; i < 10; i++) {
+    T.ev('pauseGame();pauseStartedAt-=600;resumeGame()');
+    T.adv(.3);
+    const before = T.hull(); T.hitNow(5);
+    if (T.hull() < before) damaged++;
+    T.ev('hull=100'); T.adv(.3);
+  }
+  assert.ok(damaged >= 6, `only ${damaged} of 10 hits did damage`);
+});
