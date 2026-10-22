@@ -36,7 +36,7 @@ function harness({unlocked = '2', query = ''} = {}) {
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
   w.eval(core); w.eval(content);
-  const hook = `window.T={resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
+  const hook = `window.T={ev:s=>eval(s),resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
@@ -353,4 +353,19 @@ test('every map voyage shows CRONIUM within its first 3 seconds', () => {
     assert.equal(T.st().side, id);
     assert.ok(T.croniumOnScreen() > 0, `${id}: CRONIUM on screen at 3 s`);
   }
+});
+
+test('retrying a replayed finished voyage resumes the stage it promises, and a new replay starts at 1', () => {
+  // Auditoría 22/10, L01: rejugar un viaje hecho y morir en el tramo 3 llevaba al tramo 1.
+  const {w, T, saved} = harness();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3);
+  T.finishGame('hull');
+  assert.match(w.document.getElementById('retry').textContent, /2\.3/);
+  w.document.getElementById('retry').click();
+  assert.deepEqual([T.st().state, T.ev('classicFlightView.stageNumber'), T.ev('collected')], ['playing', 3, 10]);
+  assert.equal(saved('S1-V2').completed, true, 'the voyage stays done on the map');
+  T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1, 'after finishing again, a replay starts from the beginning');
 });

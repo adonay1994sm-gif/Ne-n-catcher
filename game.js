@@ -1821,14 +1821,16 @@
       Number.isInteger(e.score)&&e.score>=0&&Number.isFinite(e.maxCombo)&&e.maxCombo>=1&&e.maxCombo<=12&&
       e.collected===checkpoint.collected&&(e.reserve===undefined||(Number.isFinite(e.reserve)&&e.reserve>=0&&e.reserve<=65))&&
       (e.missed===undefined||(Number.isInteger(e.missed)&&e.missed>=0))?e:null;
-    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,stars,entry}:null;
+    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,inProgress:raw.inProgress===true,stars,entry}:null;
   }
   function saveSideVoyage(checkpoint,completed=false,stars=0) {
     if(!classicSideVoyage||!checkpoint)return false;
     // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas. La
     // entrada guarda casco y CRONIUM perdido; lo que aún cae no cuenta.
+    // inProgress distingue una partida a medias de un viaje solo completado
+    // (auditoría L01): así reintentar una rejugada vuelve a su tramo.
     const {ficha}=classicSideVoyage,previous=loadSideVoyageRecord(ficha),record={version:1,voyage:ficha.id,checkpoint,
-      completed:completed||previous?.completed===true,stars:Math.max(stars,previous?.stars||0),
+      completed:completed||previous?.completed===true,inProgress:!completed,stars:Math.max(stars,previous?.stars||0),
       entry:{hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,
         collected:checkpoint.collected,missed:Math.max(0,energySpawned-collected-items.filter(item=>item.type==="energy").length)}};
     const saved=storage.setJSON(ficha.saveKey,record);
@@ -2548,7 +2550,7 @@
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
       const requested=classicVoyageRequestedStage;
       if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
-      else if(record&&!record.completed){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
+      else if(record&&(!record.completed||record.inProgress)){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
