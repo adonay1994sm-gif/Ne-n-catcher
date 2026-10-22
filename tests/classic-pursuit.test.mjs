@@ -365,12 +365,13 @@ test('v5 opponents mix single, double and spread volleys with irregular waits in
 test('an enemy you do not destroy stays and attacks more often the longer it survives', () => {
   // Propietario (21/10): «si no lo eliminas, que siga atacando y con más
   // intensidad», para que con muchas patrullas haya que decidir a quién derribar.
+  // Propietario (22/10, auditoría J01): tope de intensidad 2.
   for (const role of ['raider', 'scout', 'interceptor']) for (let seed = 0; seed < 4; seed++) {
     const item = enemyAt({role, seed}), player = {x: 220 + seed * 60, y: 1080}, shots = [];
     for (let frame = 0; frame < 2500; frame++) step(item, player, shots);
     const enemy = item.classicScout;
     assert.notEqual(enemy.state, 'retreat', `${role}/${seed} never leaves while it can attack`);
-    assert.equal(enemy.intensity, 3, `${role}/${seed} reaches the top intensity`);
+    assert.equal(enemy.intensity, 2, `${role}/${seed} reaches the top intensity (capped at 2)`);
     const starts = [...new Map(shots.map(shot => [shot.attackSerial, shot.at])).values()];
     const gap = list => (list.at(-1) - list[0]) / (list.length - 1);
     const early = starts.filter(at => at < enemy.combatStartedAt + 9), late = starts.filter(at => at > 36);

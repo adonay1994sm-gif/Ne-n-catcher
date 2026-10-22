@@ -4701,7 +4701,7 @@ var NeonCampaign = (() => {
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-      enemy.intensity = Math.min(3, Math.floor(heldFor / profile2.holdSeconds));
+      enemy.intensity = Math.min(2, Math.floor(heldFor / profile2.holdSeconds));
       if (enemy.fired === 0 && heldFor >= profile2.holdSeconds || enemy.combatStartedAt === null && enemy.age >= profile2.holdSeconds + 8) {
         retreat("time-limit");
       } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {

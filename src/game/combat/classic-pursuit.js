@@ -185,7 +185,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     // y cada holdSeconds sube un nivel de intensidad (hasta 3: recarga ×0,46),
     // para que con muchas patrullas haya que decidir a quién derribar primero.
     // Solo se retira si nunca puede atacar (p. ej. nave pegada al marcador).
-    enemy.intensity = Math.min(3, Math.floor(heldFor / profile.holdSeconds));
+    enemy.intensity = Math.min(2, Math.floor(heldFor / profile.holdSeconds));
     if ((enemy.fired === 0 && heldFor >= profile.holdSeconds) ||
         (enemy.combatStartedAt === null && enemy.age >= profile.holdSeconds + 8)) {
       retreat('time-limit');
