@@ -36,7 +36,7 @@ function harness({unlocked = '2', query = ''} = {}) {
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
   w.eval(core); w.eval(content);
-  const hook = `window.T={ev:s=>eval(s),resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
+  const hook = `window.T={ev:s=>eval(s),resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;hullGrace=0;damageShip(n);return hull;},hitNow:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
@@ -432,4 +432,26 @@ test('without the quota a map voyage stage is not shortened', () => {
   T.startSideVoyage('S1-V2'); T.adv(.1);
   for (let i = 0; i < 26 * 60; i++) { T.ev('hull=100;collected=0'); T.adv(1 / 60); }
   assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
+
+test('resuming from pause gives a short grace and the pause offers «REINICIAR VIAJE»', () => {
+  // Propietario (22/10, auditoría J06).
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('pauseGame()');
+  assert.equal(w.document.getElementById('restart').textContent.trim(), 'REINICIAR VIAJE');
+  T.ev('resumeGame()');
+  assert.equal(T.hitNow(20), 100, 'a hit right after resuming does no damage');
+  T.adv(1);
+  assert.ok(T.hitNow(20) < 100, 'after the grace the hull takes damage again');
+});
+
+test('two hits in the same instant cost the hull only once', () => {
+  // Propietario (22/10, auditoría J07): 0,3 s de invulnerabilidad tras un golpe.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  const first = T.hitNow(15);
+  assert.equal(T.hitNow(15), first, 'the second simultaneous hit is ignored');
+  T.adv(.4);
+  assert.ok(T.hitNow(15) < first, 'a later hit counts');
 });

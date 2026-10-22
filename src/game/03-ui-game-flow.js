@@ -1612,6 +1612,7 @@
   function startLevel(index = currentLevel) {
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
+    hullGrace = 0;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
@@ -1767,6 +1768,7 @@
     setState("playing");
     overlay();
     last = performance.now();
+    hullGrace = Math.max(hullGrace, 0.8);
     resumeAudio();
   }
 
@@ -1941,6 +1943,7 @@
     // La pantalla de derrota se abre después de la animación final, por lo que
     // hay que cancelar cualquier resto de ese estado antes de volver a jugar.
     hull = Math.max(hull, 35);
+    hullGrace = 0; // la continuación no da invulnerabilidad temporizada
     continued = true;
     setState("playing");
     if (atlasBoss) {

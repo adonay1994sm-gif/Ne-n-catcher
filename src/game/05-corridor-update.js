@@ -183,6 +183,7 @@
 
   function update(dt) {
     const lv = level();
+    if (state === "playing" && typeof hullGrace !== "undefined") hullGrace = Math.max(0, hullGrace - dt);
     const starBoost = state === "playing" ? lv.speed * (warpTimer > 0 ? 5.5 : 1) : 1;
     visualSpeed += (starBoost - visualSpeed) * Math.min(1, dt * 4.5);
     for (const star of stars) {

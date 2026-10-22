@@ -100,6 +100,7 @@
   let classicSalvageWarningShown = false;
   let classicCometShower = null;
   let classicCometCorridor = null;
+  let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;

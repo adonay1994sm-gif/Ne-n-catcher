@@ -322,6 +322,7 @@
   let classicSalvageWarningShown = false;
   let classicCometShower = null;
   let classicCometCorridor = null;
+  let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -2558,6 +2559,7 @@
   function startLevel(index = currentLevel) {
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
+    hullGrace = 0;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
@@ -2713,6 +2715,7 @@
     setState("playing");
     overlay();
     last = performance.now();
+    hullGrace = Math.max(hullGrace, 0.8);
     resumeAudio();
   }
 
@@ -2887,6 +2890,7 @@
     // La pantalla de derrota se abre después de la animación final, por lo que
     // hay que cancelar cualquier resto de ese estado antes de volver a jugar.
     hull = Math.max(hull, 35);
+    hullGrace = 0; // la continuación no da invulnerabilidad temporizada
     continued = true;
     setState("playing");
     if (atlasBoss) {
@@ -3452,6 +3456,8 @@
 
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
+    // Auditoría J06/J07: sin daño durante la gracia (tras un golpe o al reanudar).
+    if (typeof hullGrace !== "undefined" && hullGrace > 0) return;
     // Daño recibido según el modo de dificultad (Normal = 1).
     const difficultyDamage = typeof NeonCampaign !== "undefined" && typeof settings !== "undefined"
       ? NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.damage ?? 1 : 1;
@@ -3473,6 +3479,7 @@
     }
 
     hull = damageResult.hull;
+    if (typeof hullGrace !== "undefined") hullGrace = 0.3;
     if (typeof DEV !== "undefined" && DEV?.invulnerable) hull = 100;
     impactReactionTimer = 0.32;
     impactReactionSide = x >= player.x ? 1 : -1;
@@ -3875,6 +3882,7 @@
 
   function update(dt) {
     const lv = level();
+    if (state === "playing" && typeof hullGrace !== "undefined") hullGrace = Math.max(0, hullGrace - dt);
     const starBoost = state === "playing" ? lv.speed * (warpTimer > 0 ? 5.5 : 1) : 1;
     visualSpeed += (starBoost - visualSpeed) * Math.min(1, dt * 4.5);
     for (const star of stars) {

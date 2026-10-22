@@ -511,6 +511,8 @@
 
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
+    // Auditoría J06/J07: sin daño durante la gracia (tras un golpe o al reanudar).
+    if (typeof hullGrace !== "undefined" && hullGrace > 0) return;
     // Daño recibido según el modo de dificultad (Normal = 1).
     const difficultyDamage = typeof NeonCampaign !== "undefined" && typeof settings !== "undefined"
       ? NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.damage ?? 1 : 1;
@@ -532,6 +534,7 @@
     }
 
     hull = damageResult.hull;
+    if (typeof hullGrace !== "undefined") hullGrace = 0.3;
     if (typeof DEV !== "undefined" && DEV?.invulnerable) hull = 100;
     impactReactionTimer = 0.32;
     impactReactionSide = x >= player.x ? 1 : -1;
