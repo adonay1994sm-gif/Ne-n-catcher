@@ -482,7 +482,7 @@ body.flight-mode #classicC9:active:not(:disabled){background:#20465a}
 body.flight-mode #classicC9:disabled{opacity:.42;cursor:default}
 body.flight-mode #classicC9:focus-visible{outline:2px solid #c4f7ff;outline-offset:3px}
 body.flight-mode #flightDock{padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:rgba(2,8,19,.96)}
-body.flight-mode #flightDock .flight-dock{display:block;width:min(100%,460px);max-height:100%;padding:18px 16px 0;border:1px solid #506b7b;border-radius:20px;background:#0a1523;text-align:left;scrollbar-width:thin;scrollbar-color:#466472 #0a1523;scroll-padding-bottom:80px}
+body.flight-mode #flightDock .flight-dock{display:block;width:min(100%,460px);max-height:100%;padding:18px 16px 0;text-align:left;scrollbar-width:thin;scrollbar-color:#466472 #0a1523;scroll-padding-bottom:80px}
 body.flight-mode #flightDock .c9-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 body.flight-mode #flightDock .c9-header .chapter-face{flex-basis:40px;width:40px;height:40px;background-size:120px 40px;background-position:-40px 0;border-radius:10px}
 body.flight-mode #flightDock .c9-header small{display:block;color:#8dbaca;font-size:9px;letter-spacing:.12em}
@@ -517,7 +517,7 @@ body.flight-mode .flight-salvage{left:calc(max(12px,env(safe-area-inset-left)) +
 body.flight-mode.atlas-combat #flightObjective{top:calc(max(6px,env(safe-area-inset-top)) + 85px);height:26px;min-height:0;padding:2px 5px;border-left-width:1px;background:rgba(3,10,20,.72);font-size:10px;line-height:12px}
 body.flight-mode.atlas-combat #flightObjective .chapter-face{display:none}
 body.flight-mode.atlas-combat #flightObjective>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-@media(max-width:350px){body.flight-mode #flightDock .flight-dock{padding:14px 12px 0;border-radius:16px}body.flight-mode #flightDock .c9-header{gap:8px;margin-bottom:9px}body.flight-mode #flightDock .c9-header h2{font-size:20px}body.flight-mode #flightDock .c9-preview{grid-template-columns:88px minmax(0,1fr);gap:9px}body.flight-mode #flightDock .c9-preview #flightDockCanvas{width:88px}body.flight-mode #flightDockStatus{font-size:10px;line-height:1.4}body.flight-mode #flightDock .c9-upgrades{gap:7px}body.flight-mode #flightDock .c9-upgrades button{min-height:125px;padding:7px 8px 9px}body.flight-mode #flightDock .c9-upgrade-art{flex-basis:54px;width:54px;height:54px}body.flight-mode #flightDock .c9-upgrade-copy small{font-size:9px}body.flight-mode #flightDock .c9-actions{margin:0 -12px;padding:9px 12px 12px}body.flight-mode #flightDock .flight-loadout-choices small{font-size:8px}}
+@media(max-width:350px){body.flight-mode #flightDock .flight-dock{padding:14px 12px 0}body.flight-mode #flightDock .c9-header{gap:8px;margin-bottom:9px}body.flight-mode #flightDock .c9-header h2{font-size:20px}body.flight-mode #flightDock .c9-preview{grid-template-columns:88px minmax(0,1fr);gap:9px}body.flight-mode #flightDock .c9-preview #flightDockCanvas{width:88px}body.flight-mode #flightDockStatus{font-size:10px;line-height:1.4}body.flight-mode #flightDock .c9-upgrades{gap:7px}body.flight-mode #flightDock .c9-upgrades button{min-height:125px;padding:7px 8px 9px}body.flight-mode #flightDock .c9-upgrade-art{flex-basis:54px;width:54px;height:54px}body.flight-mode #flightDock .c9-upgrade-copy small{font-size:9px}body.flight-mode #flightDock .c9-actions{margin:0 -12px;padding:9px 12px 12px}body.flight-mode #flightDock .flight-loadout-choices small{font-size:8px}}
 @media(orientation:landscape) and (max-height:500px){body.flight-mode #flightDock .flight-dock{width:min(100%,680px);padding:12px 16px 0}body.flight-mode #flightDock .c9-header{margin-bottom:6px}body.flight-mode #flightDock .c9-preview{grid-template-columns:84px minmax(0,1fr)}body.flight-mode #flightDock .c9-preview #flightDockCanvas{width:84px}body.flight-mode #flightDock .c9-upgrades{grid-template-columns:repeat(4,minmax(0,1fr))}body.flight-mode #flightDock .c9-upgrades button{min-height:120px}body.flight-mode #flightDock .c9-upgrade-art{flex-basis:48px;width:48px;height:48px}body.flight-mode #flightDock .c9-actions{padding-top:8px;padding-bottom:10px}body.flight-mode #classicC9{left:max(14px,env(safe-area-inset-left))}}
 @media(prefers-reduced-motion:reduce){body.flight-mode #classicC9{transition:none}}
 
@@ -592,9 +592,9 @@ body.flight-mode .overlay:not(#menu) {
   background: linear-gradient(160deg, #07131fdf, #020810f5);
 }
 body.flight-mode .panel, body.flight-mode .overlay > .panel {
-  border: 1px solid #6c8791; border-radius: 12px 12px 4px 12px;
-  background: linear-gradient(145deg, #152b38, #091923 65%);
-  box-shadow: inset 0 1px #e6f7ff22, 0 22px 60px #0009;
+  border: 1px solid var(--ui-line); border-radius: 0; clip-path: var(--c-14);
+  background: linear-gradient(180deg, var(--ui-surface), var(--ui-ink) 65%);
+  box-shadow: inset 0 1px 0 rgba(242, 240, 230, .10);
   padding: 24px 20px; backdrop-filter: none; text-align: left;
 }
 body.flight-mode .panel > small { color: var(--ui-cyan); font-size: 10px; letter-spacing: .15em; line-height: 1.5; }
@@ -716,7 +716,6 @@ body.flight-mode .toggle-row input:focus-visible + i { outline: 3px solid var(--
 body.flight-mode .quality-row select { min-height: 44px; min-width: 98px; border: 1px solid #7396a3; border-radius: 5px; background: #0a1e2c; color: #dbefef; font-size: 12px; }
 body.flight-mode .rules p, body.flight-mode .ability-list p { padding: 10px 0; margin: 0; border-bottom: 1px solid #88a9b326; }
 body.flight-mode .rules p b, body.flight-mode .ability-list p b { color: var(--ui-paper); }
-body.flight-mode .ship-hangar > .ship-hangar-panel { background: linear-gradient(145deg, #172e3b, #091923); border-color: #6e8b96; border-radius: 12px; }
 body.flight-mode .ship-hangar-header h2 { font-size: 30px; }
 body.flight-mode .ship-hangar-preview { border-color: #5b7b88; border-radius: 6px; background: #071722; }
 body.flight-mode .ship-preset-list button { min-height: 58px; border-radius: 5px; background: #132e3c; }
@@ -755,7 +754,7 @@ body.flight-mode .final b { margin-top: 6px; font-size: 55px; color: var(--ui-pa
 
 /* Forja: a workshop, with readable physical modules and connected progression. */
 body.flight-mode #flightDock { padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
-body.flight-mode #flightDock .flight-dock { display: block; width: min(100%, 560px); padding: 20px 18px 0; border-radius: 12px; background: linear-gradient(135deg, #172e3c, #091923 55%); border-color: #74919a; text-align: left; scroll-padding-top: 70px; scroll-padding-bottom: 100px; }
+body.flight-mode #flightDock .flight-dock { display: block; width: min(100%, 560px); padding: 20px 18px 0; text-align: left; scroll-padding-top: 70px; scroll-padding-bottom: 100px; }
 body.flight-mode #flightDock .c9-header { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; padding: 0 0 16px; border-bottom: 1px solid #a5c6d53b; }
 body.flight-mode #flightDock .c9-header .chapter-face { flex-basis: 44px; width: 44px; height: 44px; border-color: #a6bcc4; border-radius: 5px; background-size: 132px 44px; background-position: -44px 0; }
 body.flight-mode #flightDock .c9-header small { color: #a9c8d1; font-size: 10px; line-height: 1.4; letter-spacing: .06em; }
@@ -1023,3 +1022,31 @@ body.flight-mode :is(.primary, .secondary, .reward, .icon):disabled::before { ba
 @media (prefers-reduced-motion: reduce) {
   body.flight-mode :is(.primary, .secondary, .reward, .icon) { transition: none; }
 }
+/* HUD de vuelo con el sistema A: barra e-1, disparo e-2 y misil de combate
+   ámbar, con el mismo pulsado y bloqueado que los botones. */
+body.flight-mode .hud, body.flight-mode .fire-control, body.flight-mode .classic-missile {
+  isolation: isolate; border: 0; border-radius: 0; box-shadow: none;
+}
+body.flight-mode .hud { background: var(--ui-line); clip-path: var(--c-10); }
+body.flight-mode .hud > div, body.flight-mode .hud > div:not(:last-child) { border-right-color: var(--ui-raised); }
+body.flight-mode .fire-control { background: linear-gradient(180deg, var(--ui-cyan), var(--ui-line)); clip-path: var(--c-14); }
+body.flight-mode .fire-control.empty { background: var(--ui-amber); opacity: 1; }
+body.flight-mode .classic-missile { background: var(--ui-amber); clip-path: var(--c-10); }
+body.flight-mode :is(.hud, .fire-control, .classic-missile)::before {
+  content: ""; position: absolute; inset: 1px; z-index: -1;
+  background: var(--e-face); box-shadow: var(--e-light); clip-path: var(--c-9);
+}
+body.flight-mode .hud::before { background: linear-gradient(180deg, rgba(25, 51, 65, .92), rgba(7, 19, 31, .92)); }
+body.flight-mode .fire-control::before { background: var(--e-face-2); box-shadow: var(--e-light-2); clip-path: var(--c-13); }
+body.flight-mode .classic-missile::before { box-shadow: inset 0 1px 0 rgba(237, 198, 138, .30), inset 0 -3px 0 rgba(0, 0, 0, .4); }
+body.flight-mode :is(.fire-control, .classic-missile):active:not(:disabled) {
+  transform: translateY(2px); filter: none; box-shadow: none;
+}
+body.flight-mode .fire-control:active:not(:disabled) { background: var(--ui-cyan); }
+body.flight-mode .classic-missile:active:not(:disabled) { background: var(--ui-amber); }
+body.flight-mode :is(.fire-control, .classic-missile):active:not(:disabled)::before { background: var(--ui-ink); box-shadow: var(--e-pressed); }
+body.flight-mode :is(.fire-control, .classic-missile):disabled { background: var(--ui-raised); opacity: 1; }
+body.flight-mode :is(.fire-control, .classic-missile):disabled::before { background: var(--ui-deep); box-shadow: none; }
+/* Contenedores que reciben el foco por programa (tabindex=-1) no muestran el
+   anillo del navegador: no se llega a ellos con el teclado (auditoría V15). */
+body.flight-mode [tabindex="-1"]:focus { outline: none; }
