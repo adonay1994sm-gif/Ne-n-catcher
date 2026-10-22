@@ -323,6 +323,7 @@
   let classicCometShower = null;
   let classicCometCorridor = null;
   let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
+  let pauseStartedAt = 0;
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -2705,6 +2706,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
+    pauseStartedAt = performance.now();
     hideWarning();
     overlay(ui.paused);
   }
@@ -2715,7 +2717,9 @@
     setState("playing");
     overlay();
     last = performance.now();
-    hullGrace = Math.max(hullGrace, 0.8);
+    // Gracia de 0,8 s solo tras una pausa real: pausar y reanudar sin parar
+    // no encadena invulnerabilidad (revisión L2).
+    if (performance.now() - pauseStartedAt >= 500) hullGrace = Math.max(hullGrace, 0.8);
     resumeAudio();
   }
 

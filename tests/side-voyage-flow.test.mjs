@@ -440,7 +440,7 @@ test('resuming from pause gives a short grace and the pause offers «REINICIAR V
   T.startSideVoyage('S1-V2'); T.adv(1);
   T.ev('pauseGame()');
   assert.equal(w.document.getElementById('restart').textContent.trim(), 'REINICIAR VIAJE');
-  T.ev('resumeGame()');
+  T.ev('pauseStartedAt-=600;resumeGame()');
   assert.equal(T.hitNow(20), 100, 'a hit right after resuming does no damage');
   T.adv(1);
   assert.ok(T.hitNow(20) < 100, 'after the grace the hull takes damage again');
@@ -463,4 +463,12 @@ test('simultaneous hits absorbed by a full hull reserve also cost only once', ()
   T.ev('classicHullReserve=30;hullGrace=0');
   for (let i = 0; i < 3; i++) T.ev('damageShip(15)');
   assert.deepEqual([T.ev('classicHullReserve'), T.hull()], [15, 100]);
+});
+
+test('pausing and resuming quickly does not chain the resume grace into invulnerability', () => {
+  // Revisión 22/10 (L2): la gracia de 0,8 s solo tras una pausa real (≥ 0,5 s).
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('pauseGame();resumeGame()');
+  assert.ok(T.hitNow(20) < 100, 'an instant pause/resume gives no grace');
 });
