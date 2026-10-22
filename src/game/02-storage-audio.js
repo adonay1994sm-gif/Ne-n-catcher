@@ -236,12 +236,18 @@
       // Bus maestro con limitador: música, efectos y tonos pasan por aquí y
       // no saturan cuando coinciden (revisión de audio 22/10, paso 1).
       masterBus = audioCtx.createGain();
-      const limiter = audioCtx.createDynamicsCompressor?.();
-      if (limiter) {
+      // El compresor añade ~+3,3 dB de compensación automática: el bus baja lo
+      // mismo para que la mezcla suene como antes (revisión de audio A1).
+      masterBus.gain.value = 0.68;
+      // Si el limitador falla, el bus va directo a la salida: nunca mudo (A6).
+      try {
+        const limiter = audioCtx.createDynamicsCompressor();
         limiter.threshold.value = -6; limiter.knee.value = 0; limiter.ratio.value = 12;
         limiter.attack.value = .003; limiter.release.value = .12;
         masterBus.connect(limiter).connect(audioCtx.destination);
-      } else masterBus.connect(audioCtx.destination);
+      } catch {
+        masterBus.connect(audioCtx.destination);
+      }
       musicGain = audioCtx.createGain();
       musicGain.gain.value = 0;
       musicGain.connect(masterBus);
@@ -351,6 +357,7 @@
     // Entra desde casi silencio en 5 ms para que no haga clic (paso 4).
     const peak = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
     gain.gain.value = 0.0001;
+    gain.gain.setValueAtTime(0.0001, ac.currentTime); // punto de partida de la rampa en WebKit (A4)
     gain.gain.linearRampToValueAtTime(peak, ac.currentTime + .005);
     gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + Math.max(.01, length));
     oscillator.connect(gain).connect(masterBus || ac.destination);
