@@ -495,3 +495,17 @@ test('while a comet shower lasts no new hazard falls inside the marked corridor'
     assert.equal(inside, 0, `${voyage}: ${inside} of ${spawned} new hazards fell inside the corridor`);
   }
 });
+
+test('a stage with a comet shower is not shortened, so every announced burst still falls', () => {
+  // Revisión 22/10 (M2): el reloj al triple cortaba la lluvia tras su aviso.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  const goal = T.ev('classicFlightView.stageGoal'), full = T.ev('classicFlightView.stageDuration');
+  T.ev(`collected=${goal};energySpawned=${goal}`);
+  let at = null;
+  for (let i = 0; i < 45 * 60 && at === null; i++) {
+    T.ev('hull=100'); T.adv(1 / 60);
+    if (T.ev('classicFlightView.stageNumber') === 3) at = i / 60;
+  }
+  assert.ok(at !== null && at >= full - 1, `stage 2 ended at ${at} s of ${full} s`);
+});

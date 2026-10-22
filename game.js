@@ -1614,8 +1614,10 @@
     // Auditoría J05: en un viaje del mapa, con la cuota del tramo cumplida y
     // 20 s jugados, el reloj del tramo corre al triple para no dejar tiempo
     // muerto. Los eventos siguen en orden. S1-V1 no: su capítulo va narrado.
+    // Un tramo con lluvia de cometas tampoco, para no cortar sus tandas (M2).
     const view=classicFlightView;
-    if(classicSideVoyage&&view&&!view.canFinish&&view.stageElapsed>=20&&collected>=view.stageGoal)
+    if(classicSideVoyage&&view&&!view.canFinish&&view.stageElapsed>=20&&collected>=view.stageGoal&&
+      !NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)
       for(let i=0;i<2;i++)classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
     // Cronos Prime: suena al frenar sobre la estación, al empezar a alimentarse y al disparar.
     const timeline=NeonCampaign.CHRONOS_INTRO_TIMELINE;
