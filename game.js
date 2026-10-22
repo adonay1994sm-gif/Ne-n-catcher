@@ -1669,7 +1669,7 @@
       // Revisión G5: si el reloj del tramo acaba sin la cuota, el viaje espera;
       // N-7 dice cuánto CRONIUM falta (una vez por tramo).
       const wait=classicFlightView;
-      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId) {
+      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId&&!flightTransmission) {
         classicCroniumWaitNotice=wait.stageId;
         showStoryTransmission("N-7",`Faltan ${Math.max(1,wait.stageGoal-collected)} CRONIUM para seguir al siguiente tramo.`,4);
       }
@@ -3556,7 +3556,9 @@
       if (!settings.reduceEffects) shake = Math.max(shake, 6);
       addImpactEffect(x, y, 0.85, impactAngle);
       combatSound("hull-hit",x);
-      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained) {
+      // Sin pisar una línea que ya esté en pantalla; si el canal está ocupado, se dice más tarde (R7).
+      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained &&
+          (typeof flightTransmission === "undefined" || !flightTransmission)) {
         reserveHitExplained = true;
         showStoryTransmission("N-7", "Tu refuerzo de casco absorbió el impacto.", 3);
       }

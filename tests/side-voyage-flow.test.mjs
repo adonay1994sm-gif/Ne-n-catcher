@@ -667,3 +667,14 @@ test('a hazard cleared from the comet corridor breaks with its explosion instead
   assert.equal(T.ev('items.some(item=>item.markR2)'), false);
   assert.ok(T.ev('explosions.length') > before, 'an explosion marks where it broke');
 });
+
+test('the new N-7 notices never replace a story line already on screen, and wait for their turn', () => {
+  // Revisión 3 (R7): G2 y G5 sustituían una línea de MIRA o del capítulo.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev("showStoryTransmission('MIRA · C9','Línea de historia.',4)");
+  T.ev('classicHullReserve=30;hullGrace=0;damageShip(10)');
+  assert.equal(T.ev('flightTransmission.text'), 'Línea de historia.');
+  T.ev('flightTransmission=null;hullGrace=0;damageShip(10)');
+  assert.match(T.ev('flightTransmission?.text||""'), /refuerzo/i, 'the explanation comes once the channel is free');
+});

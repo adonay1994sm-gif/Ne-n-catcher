@@ -704,7 +704,7 @@
       // Revisión G5: si el reloj del tramo acaba sin la cuota, el viaje espera;
       // N-7 dice cuánto CRONIUM falta (una vez por tramo).
       const wait=classicFlightView;
-      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId) {
+      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId&&!flightTransmission) {
         classicCroniumWaitNotice=wait.stageId;
         showStoryTransmission("N-7",`Faltan ${Math.max(1,wait.stageGoal-collected)} CRONIUM para seguir al siguiente tramo.`,4);
       }
