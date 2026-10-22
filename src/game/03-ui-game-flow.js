@@ -225,6 +225,9 @@
       for(let i=0;i<2000&&classicFlight&&classicFlightView.elapsed<gone;i++)
         classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
       classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
+      // Fuera la línea de LIRA de antes de la ruptura (revisión R8).
+      flightTransmission=null;
+      showStoryTransmission("N-7","Los atacantes nos siguen. Saca el CRONIUM de este campo de restos.",4);
     };
     // Missile pointer/touch ownership is installed with the other flight
     // controls in 08-loop-input-bootstrap, including accessible click fallback.

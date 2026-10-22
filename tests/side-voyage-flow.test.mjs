@@ -696,3 +696,12 @@ test('while a stage waits for CRONIUM the HUD shows the stage quota and N-7 repe
   T.ev('collected=3;classicCroniumWaitAt=-99;flightTransmission=null'); T.adv(1 / 60);
   assert.match(T.ev('flightTransmission?.text||""'), /^Falta 1 CRONIUM/);
 });
+
+test('skipping the intro also clears the pre-rupture LIRA line and opens with N-7', () => {
+  // Revisión 3 (R8): seguía «Chronos, turno de guardia» en el HUD tras omitir.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0); T.adv(3);
+  w.document.getElementById('chapterSkip').click();
+  assert.doesNotMatch(T.ev('flightTransmission?.text||""'), /turno de guardia|firma aceptada/);
+  assert.equal(T.ev('flightTransmission?.speaker'), 'N-7');
+});
