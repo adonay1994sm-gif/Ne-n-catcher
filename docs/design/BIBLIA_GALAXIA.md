@@ -21,10 +21,13 @@
   primeros es una sombra que observa; al final es el enemigo principal.
 - **Colores en el juego** (`DESIGN.md` §9):
   - el enemigo siempre brilla **cálido**: ámbar, naranja o rojo;
-  - el color propio de cada facción va en el **casco**, nunca en el brillo
-    que hace daño;
+  - el color propio de cada facción va en el **casco y su luz de reposo**
+    (hielo azul en Cryon, violeta en Aether, como en sus dosieres), pero
+    **lo que hace daño pasa a cálido**: al cargar el ataque el núcleo vira a
+    ámbar y los proyectiles son rojos o naranjas **(decisión de Claude para
+    unir los dosieres con la regla de legibilidad)**;
   - el cian es del jugador y del CRONIUM;
-  - el violeta es de Cronos Prime.
+  - el violeta es de lo temporal: Cronos Prime, Aether y Kairos.
 
 ## 2. Mapa de la ruta
 
@@ -118,11 +121,15 @@ armas → combate → pieza.
   1. Torretas.
   2. Andanada de misiles que se separan.
   3. **Despliegue:** se abre, cambia de forma y dispara el cañón central.
-- **Jefe · Titan Vulkar:** coloso de basalto y magma.
-  - **3 ataques habituales:** puño de magma, lluvia de escoria y barrido de
-    calor.
-  - **Especial:** erupción de pantalla completa con huecos.
-  - **Furia:** el fondo de lava sube y estrecha la zona de juego.
+- **Jefe · Titan Vulkar:** coloso perforador del dosier de Vulkar, con una
+  taladradora planetaria en el pecho y respiraderos de magma.
+  - **3 ataques habituales:** golpe de área (*area slam*), chorros de los
+    respiraderos de magma y lluvia de escoria.
+  - **Especial:** el taladro gira, se carga y dispara una perforación en
+    línea que cruza la pantalla.
+  - **Furia:** **se transforma en su forma de vehículo** (la taladradora
+    sobre orugas del dosier) y embiste de lado a lado mientras el fondo de
+    lava sube.
 - **Pieza:** *Bobina de plasma* (cadencia y recarga).
 
 ### 3.3 Sindicato de Fundidores (sector 3)
@@ -142,7 +149,7 @@ armas → combate → pieza.
 | Enemigo | Perfil | Movimiento | Básica | Única |
 |---|---|---|---|---|
 | **Fundidor** (nuevo) | Artillero | Lento, en fila | Disparo de escoria | **Mortero que estalla a mitad del recorrido y suelta un aro de calor que se expande** (idea del propietario) |
-| **Ariete** (nuevo) | Cazador | Embiste en línea recta | Choque | Deja un rastro de metal fundido que quema |
+| **Serpiente de magma** (dosier Vulkar, antes descartada como jefe) | Cazador | Rápida, ondulante, por segmentos | Mordisco en carrera | Deja un rastro de metal fundido que quema |
 | **Grúa** (nuevo) | Escolta | Va con los fundidores | — | Recoge la escoria y repara a un aliado |
 | Núcleo de lava (dosier Vulkar) | Minador | Cae despacio | Explota | Se parte en tres al morir |
 
@@ -166,8 +173,9 @@ armas → combate → pieza.
 - **Recurso:** frío y cristal.
 - **Tecnología:** cristal que amplifica la luz y fábricas que se reparan
   solas.
-- **Naves:** facetas de cristal azul hielo con núcleo ámbar al atacar (hay
-  sprites en el baúl).
+- **Naves:** criaturas y máquinas de cristal azul hielo, como en el dosier de
+  Cryon (hay sprites en el baúl). Brillan en azul en reposo y viran a ámbar
+  al atacar.
 - **Por qué te atacan:** cumplen la cuarentena; para ellos todo lo que
   llega viene contaminado.
 - **Combate:** ralentizan y encierran.
@@ -178,6 +186,9 @@ armas → combate → pieza.
 | Cristal de escarcha (baúl) | Artillero | Gira quieto | Rayo | Refleja tus disparos |
 | Mina criogénica (baúl) | Minador | Flota | Explota | Congela la zona un instante |
 | **Tejedor** (nuevo) | Escolta | Entre dos aliados | — | Une a dos aliados con un muro de hielo |
+
+En el dosier, el Leviatán Cryon figura como *mini-boss*. Aquí es el jefe del
+sector 5, donde protege a los supervivientes de Lethe.
 
 - **Subjefe · Dron de hielo acorazado:**
   1. Esquirlas.
@@ -228,8 +239,9 @@ armas → combate → pieza.
   contrabando; uno de ellos es Kael Orr.
 - **Recurso:** rutas secretas.
 - **Tecnología:** saltos cortos de fase.
-- **Naves:** rápidas, remendadas y de colores mezclados; dejan estelas
-  ámbar al saltar.
+- **Naves:** rápidas y remendadas, con casco oscuro y luz violeta de fase,
+  como las anomalías del dosier de Aether. Al saltar dejan una estela que
+  vira a ámbar.
 - **Por qué te atacan:** la Cartógrafa paga por tu cabeza. Ione Vale
   aparece aquí.
 - **Combate:** aparecen donde no los esperas.
@@ -259,8 +271,9 @@ armas → combate → pieza.
   copias de quienes pasaron por aquí.
 - **Recurso:** tiempo.
 - **Tecnología:** repetición, porque todo lo que hacen ya lo hicieron.
-- **Naves:** siluetas translúcidas de naves conocidas (de Gaia, Vorn, etc.)
-  con bordes ámbar temblorosos.
+- **Naves:** figuras espectrales que tiemblan y se duplican, como el Time
+  Echo y el Chrono Phantom del dosier de Aether: violeta inestable con
+  restos de formas conocidas (alas de Gaia, toberas de Vorn).
 - **Por qué te atacan:** no te atacan a ti; repiten batallas pasadas. Lira
   aparece en un eco: el sabotaje estaba previsto.
 - **Combate:** patrones que se repiten con retraso.
@@ -277,7 +290,8 @@ armas → combate → pieza.
   1. Tu disparo.
   2. Tu misil.
   3. **Tu sobrecarga.**
-- **Jefe · Guardián Chronos:**
+- **Jefe · Guardián Chronos** (el Chronos Warden del dosier de Aether, con su
+  anillo y sus esbirros):
   - **3 ataques habituales:** manecillas, péndulo y anillos de tiempo.
   - **Especial:** congela el tiempo y mueve los disparos sin que te muevas;
     hay que estar en el hueco antes.
@@ -354,8 +368,7 @@ armas → combate → pieza.
   reactor, ya despierta.
 - **Recurso:** CRONIUM puro.
 - **Tecnología:** predicción: atacan donde vas a estar.
-- **Naves:** geométricas y violetas (el violeta está reservado a Cronos
-  Prime).
+- **Naves:** geométricas y violetas, como Cronos Prime.
 - **Por qué te atacan:** Cronos Prime cree que el futuro ya está decidido.
 - **Combate:** ataques que anticipan tu movimiento.
 
@@ -376,7 +389,18 @@ armas → combate → pieza.
   - Final: «Una estrella no es un destino».
 - **Pieza:** ninguna; el final.
 
-## 4. La Flota Cartógrafa (transversal)
+## 4. Criaturas raras (dosier de criaturas raras)
+
+No son enemigos: son encuentros poco frecuentes en las **rutas de frontera**
+que dan motivos para volver (spec 6.3).
+- **Ballena cósmica:** aparece en una ruta segura de vez en cuando, te
+  protege unos segundos con su campo y te muestra un alijo de chatarra.
+- **Medusa del vacío:** aparece cerca de Kairos y ralentiza el tiempo a su
+  alrededor (también los disparos enemigos).
+- **Gusano del espacio-tiempo:** aparece en la frontera de Aether y abre un
+  corredor hacia una ruta oculta (R2B, si se activa más adelante).
+
+## 5. La Flota Cartógrafa (transversal)
 
 - Naves **negras** con líneas finas de mapa en **ámbar**. Siempre llevan el
   mismo símbolo: un compás roto.
@@ -386,7 +410,7 @@ armas → combate → pieza.
 - **Sector 10:** toda la flota.
 - **Enemigo base, Sombra:** un Oportunista que dispara y se va.
 
-## 5. Lo que se reutiliza
+## 6. Lo que se reutiliza
 
 - **Dosieres:** `art-source/references/*_enemy_dossier_v1.jpeg` (Gaia,
   Vulkar, Cryon, Aether, Titan Omega, Cronos Prime y criaturas raras).
