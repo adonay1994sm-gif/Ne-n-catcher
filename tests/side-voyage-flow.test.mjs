@@ -586,3 +586,21 @@ test('closing the C9 workshop opened in flight gives the same resume grace as th
   assert.equal(T.st().state, 'playing');
   assert.equal(T.hitNow(20), 100, 'a hit right after closing C9 does no damage');
 });
+
+test('while a comet shower lasts nothing but comets is ever inside the marked corridor', () => {
+  // Auditoría del bloque (B01): los peligros y disparos que ya caían seguían dentro.
+  for (const voyage of ['S1-V5', 'S2-V5']) {
+    const {T} = harness();
+    T.startSideVoyage(voyage); T.adv(.2); T.toStage(2);
+    let frames = 0, dirty = 0;
+    for (let i = 0; i < 30 * 60; i++) {
+      T.ev('hull=100'); T.adv(1 / 60);
+      if (!T.ev('cometShowerActive()')) continue;
+      frames++;
+      dirty += T.ev(`(()=>{const c=classicCometCorridor.corridor;return items.some(item=>(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout))&&
+        item.x+item.r>c.left&&item.x-item.r<c.right&&item.y+item.r>c.top&&item.y-item.r<H)?1:0})()`);
+    }
+    assert.ok(frames > 0, `${voyage}: a shower happens`);
+    assert.equal(dirty, 0, `${voyage}: ${dirty} of ${frames} shower frames had a threat inside the corridor`);
+  }
+});

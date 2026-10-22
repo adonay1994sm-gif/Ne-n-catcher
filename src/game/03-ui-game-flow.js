@@ -793,6 +793,18 @@
           classicCometCorridor={corridor:event.corridor,until:view.stageElapsed+2.5};}
         if(event.type==="spawn")items.push(event.item);
       });
+      // Auditoría B01: el pasillo marcado se vacía de todo lo que no sea cometa.
+      // Al avisar desaparecen los peligros y disparos que ya caían por esa
+      // columna, y luego cualquier disparo que entre de lado.
+      if(cometShowerActive()) {
+        const c=classicCometCorridor.corridor;
+        for(let i=items.length-1;i>=0;i--) {
+          const item=items[i];
+          if(!(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout)))continue;
+          if(item.x+item.r<=c.left||item.x-item.r>=c.right||item.y<-100)continue;
+          burst(item.x,item.y,6,"gold");items.splice(i,1);
+        }
+      }
     }
     if(rules.repairAt!==null && view.stageElapsed>=rules.repairAt && classicCometWarning!==n) {
       classicCometWarning=n;const x=W*.45;
