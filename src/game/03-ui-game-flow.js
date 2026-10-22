@@ -803,7 +803,10 @@
           // objetos se mueven después en este fotograma); lo que baja se borra
           // al entrar en ella, con el cian del propio pasillo (revisión P01).
           if(item.x+item.r<=c.left||item.x-item.r>=c.right||item.y+item.r<=c.top-40)continue;
-          burst(item.x,item.y,6,"cyan");items.splice(i,1);
+          // Lo que se ve no se esfuma: un peligro se rompe con su explosión
+          // normal y un disparo con unas chispas (revisión R2).
+          if(item.classicScoutProjectile)burst(item.x,item.y,6,"cyan");else addExplosion(item.x,item.y,.7,.5);
+          items.splice(i,1);
         }
       }
     }

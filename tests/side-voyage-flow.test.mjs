@@ -655,3 +655,15 @@ test('alternating real pauses with short play does not chain the resume grace', 
   }
   assert.ok(damaged >= 6, `only ${damaged} of 10 hits did damage`);
 });
+
+test('a hazard cleared from the comet corridor breaks with its explosion instead of vanishing', () => {
+  // Revisión 3 (R2): antes desaparecía con unas chispas sueltas.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  for (let i = 0; i < 30 * 60 && !T.ev('cometShowerActive()'); i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  const before = T.ev('explosions.length');
+  T.ev(`(()=>{const c=classicCometCorridor.corridor,m=createThreat('meteor',level());m.x=m.baseX=c.center;m.y=c.top+60;m.s=0;m.amp=0;m.markR2=true;items.push(m);})()`);
+  T.adv(1 / 60);
+  assert.equal(T.ev('items.some(item=>item.markR2)'), false);
+  assert.ok(T.ev('explosions.length') > before, 'an explosion marks where it broke');
+});
