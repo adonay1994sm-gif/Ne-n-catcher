@@ -786,3 +786,14 @@ test('«Repetir» after a first-time finish with a failed save also starts at st
   T.startLevel(0);
   assert.equal(T.ev('classicFlightView.stageNumber'), 1);
 });
+
+test('«SIGUIENTE VIAJE» resumes the next voyage at its saved stage', () => {
+  // Revisión del PR #45 (A1): el filtro de «Repetir» bloqueaba también otro viaje a medias.
+  const {T, w} = harness();
+  T.startSideVoyage('S1-V3'); T.adv(.5); T.toStage(3); T.adv(.5); T.goHome();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.finish();
+  assert.equal(T.st().state, 'complete');
+  w.document.getElementById('nextLevel').click();
+  assert.equal(T.ev('classicSideVoyage.ficha.id'), 'S1-V3');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 3);
+});

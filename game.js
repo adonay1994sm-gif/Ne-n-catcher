@@ -2666,6 +2666,8 @@
     // Reintentar o reiniciar (no abrir desde el mapa) reanuda una rejugada a medias (B02).
     // «Repetir» tras completar empieza siempre en el 1 (revisión P02).
     const sideRetry=!classicSideVoyagePending&&state!=="complete";
+    // Solo «Repetir» el mismo viaje; «Siguiente viaje» sí reanuda el suyo (A1).
+    const sideReplay=!classicSideVoyagePending&&state==="complete";
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){
@@ -2674,7 +2676,7 @@
       const requested=classicVoyageRequestedStage;
       if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
       // «Repetir» tras completar nunca reanuda un punto viejo, ni en la primera pasada (A5).
-      else if(record&&state!=="complete"&&(!record.completed||(record.inProgress&&sideRetry))){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
+      else if(record&&!sideReplay&&(!record.completed||(record.inProgress&&sideRetry))){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
