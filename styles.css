@@ -1054,3 +1054,5 @@ body.flight-mode [tabindex="-1"]:focus { outline: none; }
    Los textos de 7-8 px que quedaban vivos pasan al mínimo de su función. */
 body.flight-mode .fire-control #fireWeapon, body.flight-mode #storySpeaker { font-size: 10px; }
 body.flight-mode .stat-card span, body.flight-mode .sector-route small, body.flight-mode .hazard-warning small { font-size: 9px; }
+/* Derrota: la etiqueta habla de peligro, en rojo del sistema (revisión V8). */
+body.flight-mode #over .panel > small { color: var(--ui-red); }
