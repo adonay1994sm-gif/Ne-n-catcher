@@ -411,3 +411,25 @@ test('during a comet shower the safe corridor is marked and patrols hold fire, t
   T.ev('items=items.filter(item=>!item.showerComet);classicCometCorridor.until=-1');
   assert.equal(T.ev('cometShowerActive()'), false, 'the ceasefire ends with the shower');
 });
+
+test('once the stage quota is met, a map voyage stage ends soon after 20 s instead of idling to its full length', () => {
+  // Propietario (22/10, auditoría J05): sin tiempo muerto tras cumplir la cuota.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  const goal = T.ev('classicFlightView.stageGoal'), full = T.ev('classicFlightView.stageDuration');
+  assert.ok(full >= 30);
+  T.ev(`collected=${goal};energySpawned=${goal}`);
+  let at = null;
+  for (let i = 0; i < 40 * 60 && at === null; i++) {
+    T.ev('hull=100'); T.adv(1 / 60);
+    if (T.ev('classicFlightView.stageNumber') === 2) at = i / 60;
+  }
+  assert.ok(at !== null && at >= 20 && at <= 25, `stage 1 ended at ${at} s (full length ${full} s)`);
+});
+
+test('without the quota a map voyage stage is not shortened', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  for (let i = 0; i < 26 * 60; i++) { T.ev('hull=100;collected=0'); T.adv(1 / 60); }
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
