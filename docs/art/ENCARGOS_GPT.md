@@ -1,6 +1,6 @@
 # Encargos de arte para GPT · NEON CRONIUM
 
-Actualizado: 2026-10-21. Lista pública que Claude mantiene al día desde el tablero del proyecto.
+Actualizado: 2026-10-22. Lista pública que Claude mantiene al día desde el tablero del proyecto.
 Versión para máquinas: https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/continuity-assets-audit-20261013/docs/art/encargos-gpt.json
 
 ## Cómo trabajar
@@ -11,6 +11,15 @@ Versión para máquinas: https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n
 4. Si pide varias imágenes, numéralas: `encargo-<id>-v1-1.png`, `-2.png`…
 5. Respeta medidas, rejilla y fondo (transparente salvo que el prompt pida opaco): el juego recorta las celdas por tamaño exacto.
 6. Revisa esta lista cada 10 minutos. Antes de empezar un encargo, mira `catalog.json` del baúl: si ya hay un archivo con su id en `"encargo"`, no lo repitas.
+
+## Efectos con fuerza: explosión cálida, daño visible, aviso de Atlas (V03, V12)
+
+- **Id:** `aud-v03-efectos` · **Prioridad:** 2 · **Archivo:** `encargo-aud-v03-efectos-v1.png`
+- **Para qué:** Explosiones = chispas diminutas; daño al 35 % casi invisible; la carga de Atlas usa el mismo destello que el daño propio.
+
+```text
+Atlas de explosión cálida de 8 fotogramas para NEON CRONIUM, celdas de 320 px en tira horizontal, fondo transparente: bola de fuego ámbar-naranja (#ffb25c→#ff754f) con núcleo blanco, onda expansiva fina y restos metálicos oscuros que salen despedidos; se apaga en humo gris azulado. Vista cenital, estilo pintado limpio coherente con la nave CH-01, sin texto ni marcos.
+```
 
 ## Crisol (diseño A) por piezas, jefe del sector 3
 

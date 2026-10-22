@@ -1,9 +1,17 @@
 {
   "proyecto": "NEON CRONIUM",
-  "actualizado": "2026-10-21",
+  "actualizado": "2026-10-22",
   "baul": "https://neon-cronium-video-referencia.chictide18.chatgpt.site",
   "instrucciones": "Genera cada encargo por orden de prioridad (1 primero), súbelo al baúl con el nombre de \"archivo\" en la carpeta encargos/ y añádelo a catalog.json con el campo \"encargo\" igual a su id. Si un encargo pide varias imágenes, numéralas: encargo-<id>-v1-1.png, -2.png… No cambies medidas, rejilla ni el fondo que pide cada prompt. Revisa esta lista cada 10 minutos y no repitas un encargo que ya esté en catalog.json del baúl.",
   "encargos": [
+    {
+      "id": "aud-v03-efectos",
+      "titulo": "Efectos con fuerza: explosión cálida, daño visible, aviso de Atlas (V03, V12)",
+      "prioridad": 2,
+      "archivo": "encargo-aud-v03-efectos-v1.png",
+      "prompt": "Atlas de explosión cálida de 8 fotogramas para NEON CRONIUM, celdas de 320 px en tira horizontal, fondo transparente: bola de fuego ámbar-naranja (#ffb25c→#ff754f) con núcleo blanco, onda expansiva fina y restos metálicos oscuros que salen despedidos; se apaga en humo gris azulado. Vista cenital, estilo pintado limpio coherente con la nave CH-01, sin texto ni marcos.",
+      "nota": "Explosiones = chispas diminutas; daño al 35 % casi invisible; la carga de Atlas usa el mismo destello que el daño propio."
+    },
     {
       "id": "enc-crisol-piezas",
       "titulo": "Crisol (diseño A) por piezas, jefe del sector 3",
