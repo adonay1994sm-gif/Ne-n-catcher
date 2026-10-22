@@ -2613,6 +2613,8 @@
     let voyageEntry=null,voyageCheckpoint=null;
     // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
     const sideFicha=classicSideVoyagePending||(["paused","gameover","complete"].includes(state)?classicSideVoyage?.ficha:null);
+    // Reintentar o reiniciar (no abrir desde el mapa) reanuda una rejugada a medias (B02).
+    const sideRetry=!classicSideVoyagePending;
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){
@@ -2620,7 +2622,7 @@
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
       const requested=classicVoyageRequestedStage;
       if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
-      else if(record&&(!record.completed||record.inProgress)){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
+      else if(record&&(!record.completed||(record.inProgress&&sideRetry))){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);

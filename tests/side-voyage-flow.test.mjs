@@ -608,3 +608,12 @@ test('while a comet shower lasts nothing but comets is ever inside the marked co
     assert.equal(dirty, 0, `${voyage}: ${dirty} of ${frames} shower frames had a threat inside the corridor`);
   }
 });
+
+test('opening a finished voyage again from the map starts it at stage 1 even after a half-played replay', () => {
+  // Auditoría del bloque (B02): la reanudación de una rejugada es solo para reintentar.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3); T.goHome();
+  T.startSideVoyage('S1-V2');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
