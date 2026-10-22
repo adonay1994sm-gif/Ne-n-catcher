@@ -13,7 +13,7 @@ const folder = process.argv[2];
 if (!folder) throw new Error('Uso: node scripts/export-encargos-gpt.mjs <carpeta-con-las-tareas>');
 const BAUL = 'https://neon-cronium-video-referencia.chictide18.chatgpt.site';
 const OUT = new URL('../docs/art/', import.meta.url);
-const RAW = 'https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/continuity-assets-audit-20261013/docs/art';
+const RAW = 'https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/docs/art';
 
 const tasks = [];
 for (const name of (await readdir(folder)).filter(file => file.endsWith('.json')).sort()) {
@@ -33,13 +33,14 @@ const updated = new Date().toISOString().slice(0, 10);
 
 await writeFile(new URL('encargos-gpt.json', OUT), JSON.stringify({
   proyecto: 'NEON CRONIUM', actualizado: updated, baul: BAUL,
-  instrucciones: 'Genera cada encargo por orden de prioridad (1 primero), súbelo al baúl con el nombre de "archivo" en la carpeta encargos/ y añádelo a catalog.json con el campo "encargo" igual a su id. Si un encargo pide varias imágenes, numéralas: encargo-<id>-v1-1.png, -2.png… No cambies medidas, rejilla ni el fondo que pide cada prompt. Revisa esta lista cada 10 minutos y no repitas un encargo que ya esté en catalog.json del baúl.',
+  instrucciones: 'Antes de nada lee GUIA_GPT.md (misma carpeta): explica el juego, los modelos de referencia y las reglas. Genera cada encargo por orden de prioridad (1 primero), súbelo al baúl con el nombre de "archivo" en la carpeta encargos/ y añádelo a catalog.json con el campo "encargo" igual a su id. Si un encargo pide varias imágenes, numéralas: encargo-<id>-v1-1.png, -2.png… No cambies medidas, rejilla ni el fondo que pide cada prompt. Revisa esta lista cada 10 minutos y no repitas un encargo que ya esté en catalog.json del baúl.',
   encargos
 }, null, 2) + '\n');
 
 const md = [`# Encargos de arte para GPT · NEON CRONIUM`, '',
   `Actualizado: ${updated}. Lista pública que Claude mantiene al día desde el tablero del proyecto.`,
   `Versión para máquinas: ${RAW}/encargos-gpt.json`, '',
+  `**Antes de nada lee la guía:** ${RAW}/GUIA_GPT.md (qué es el juego, modelos de referencia y reglas).`, '',
   '## Cómo trabajar', '',
   '1. Haz los encargos por orden: prioridad 1 primero.',
   `2. Sube cada resultado al baúl (${BAUL}) en la carpeta \`encargos/\` con el nombre indicado en «Archivo».`,
