@@ -680,7 +680,10 @@ body.flight-mode #flightWeapon { left: var(--ui-safe-left); bottom: calc(var(--u
 body.flight-mode #flightWeapon small { font-size: 9px; line-height: 1.2; letter-spacing: .03em; color: #b0c8d0; }
 body.flight-mode #flightWeapon b { font-size: 12px; line-height: 1.1; color: var(--ui-paper); }
 body.flight-mode #flightWeapon svg { width: 16px; color: var(--ui-cyan); }
-body.flight-mode #classicC9 { left: var(--ui-safe-left); bottom: var(--ui-safe-bottom); width: 60px; min-height: 48px; padding: 6px; border: 1px solid #72949f; border-radius: 5px; background: #102936ed; box-shadow: inset 2px 0 #c6d3cf; }
+/* Revisión G4: C9 pausa el viaje; abajo a la izquierda quedaba bajo el pulgar
+   que pilota. Va arriba a la derecha, bajo la franja de mensajes. */
+body.flight-mode #classicC9 { left: auto; right: var(--ui-safe-right); bottom: auto; top: calc(var(--ui-safe-top) + 136px); width: 60px; min-height: 48px; padding: 6px; isolation: isolate; border: 0; border-radius: 0; background: var(--ui-line); box-shadow: none; clip-path: var(--c-10); }
+body.flight-mode #classicC9::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--e-face); box-shadow: var(--e-light); clip-path: var(--c-9); }
 body.flight-mode #classicC9 b { font-size: 15px; line-height: 1; color: var(--ui-paper); }
 body.flight-mode #classicC9 span { font-size: 9px; line-height: 1.4; letter-spacing: .09em; color: #c4d8dd; }
 body.flight-mode .flight-salvage { left: var(--ui-safe-left); bottom: calc(var(--ui-safe-bottom) + 114px); max-width: 130px; color: var(--ui-amber); font-size: 11px; line-height: 15px; letter-spacing: .01em; }
