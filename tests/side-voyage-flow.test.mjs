@@ -510,3 +510,16 @@ test('a stage with a comet shower is not shortened, so every announced burst sti
   }
   assert.ok(at !== null && at >= full - 1, `stage 2 ended at ${at} s of ${full} s`);
 });
+
+test('skipping the Chronos intro moves the world past the rupture instead of playing it under the HUD', () => {
+  // Revisión 22/10 (B1): omitir solo quitaba subtítulos; Cronos Prime seguía llegando.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0); T.adv(1);
+  const skip = w.document.getElementById('chapterSkip');
+  assert.equal(skip.classList.contains('hidden'), false, 'the skip button is offered');
+  skip.click();
+  const gone = T.ev('NeonCampaign.CHRONOS_INTRO_TIMELINE.gone');
+  assert.ok(T.ev('classicFlightView.elapsed') >= gone, 'the route clock is past Cronos Prime leaving');
+  assert.equal(T.st().state, 'playing');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});

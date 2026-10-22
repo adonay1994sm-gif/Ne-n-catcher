@@ -1164,7 +1164,16 @@
     canvas.parentElement.append(chapterControls);
     ui.classicC9=$("classicC9");ui.classicC9.onclick=()=>openClassicDock("hud");
     ui.chapterSkip=$("chapterSkip");ui.classicMissile=$("classicMissile");ui.classicMissileCount=$("classicMissileCount");
-    ui.chapterSkip.onclick=()=>{classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot();syncClassicChapterPresentation();};
+    ui.chapterSkip.onclick=()=>{
+      if(!classicChapterStory?.skipIntro())return;
+      // Omitir lleva el mundo al estado posterior a la ruptura (revisión B1):
+      // la cinemática se dibuja con el reloj de la ruta, así que se adelanta
+      // hasta que Cronos Prime se ha ido, en vez de seguir bajo el HUD.
+      const gone=NeonCampaign.CHRONOS_INTRO_TIMELINE?.gone||0;
+      for(let i=0;i<2000&&classicFlight&&classicFlightView.elapsed<gone;i++)
+        classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
+      classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
+    };
     // Missile pointer/touch ownership is installed with the other flight
     // controls in 08-loop-input-bootstrap, including accessible click fallback.
     for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightPilotHint","flightPilotStick","flightPilotKnob","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin","c9Balance","c9BuyShield","c9BuyMissiles","c9BuyCoolant","c9PurchaseStatus"]) ui[id] = $(id);
