@@ -553,3 +553,17 @@ test('a hit absorbed by the hull reserve reads differently from collecting CRONI
   T.ev('flightTransmission=null;hullGrace=0'); T.ev('damageShip(10)');
   assert.equal(T.ev('flightTransmission'), null, 'the explanation is said only once');
 });
+
+test('when a stage clock ends without its CRONIUM quota, N-7 says what is missing', () => {
+  // Revisión 22/10 (G5): el tramo esperaba sin explicar por qué no avanzaba.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  let said = '';
+  for (let i = 0; i < 40 * 60; i++) {
+    T.ev('hull=100;collected=0;items=items.filter(item=>item.type!=="energy")'); T.adv(1 / 60);
+    const text = T.ev('flightTransmission?.text||""');
+    if (/CRONIUM/.test(text) && /Faltan/.test(text)) said = text;
+  }
+  assert.equal(T.ev('classicFlightView.waitingFor'), 'cronium');
+  assert.match(said, /Faltan \d+ CRONIUM/);
+});

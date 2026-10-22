@@ -326,6 +326,7 @@
   let pauseStartedAt = 0;
   let classicGuideSeen = null; // lección de un paso: cuándo se mostró por primera vez (G1)
   let reserveHitExplained = false; // N-7 explica una vez el golpe absorbido (G2)
+  let classicCroniumWaitNotice = null; // tramo cuyo aviso de CRONIUM pendiente ya salió (G5)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -1650,6 +1651,13 @@
       advanceClassicTutorial();
     }
     if(classicFlightView?.stageNumber) {
+      // Revisión G5: si el reloj del tramo acaba sin la cuota, el viaje espera;
+      // N-7 dice cuánto CRONIUM falta (una vez por tramo).
+      const wait=classicFlightView;
+      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId) {
+        classicCroniumWaitNotice=wait.stageId;
+        showStoryTransmission("N-7",`Faltan ${Math.max(1,wait.stageGoal-collected)} CRONIUM para seguir al siguiente tramo.`,4);
+      }
       if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
     }
