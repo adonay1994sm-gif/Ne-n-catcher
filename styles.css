@@ -1050,3 +1050,7 @@ body.flight-mode :is(.fire-control, .classic-missile):disabled::before { backgro
 /* Contenedores que reciben el foco por programa (tabindex=-1) no muestran el
    anillo del navegador: no se llega a ellos con el teclado (auditoría V15). */
 body.flight-mode [tabindex="-1"]:focus { outline: none; }
+/* Escala de texto: nada por debajo de 9 px (DESIGN.md, auditoría V10/V05/V06).
+   Los textos de 7-8 px que quedaban vivos pasan al mínimo de su función. */
+body.flight-mode .fire-control #fireWeapon, body.flight-mode #storySpeaker { font-size: 10px; }
+body.flight-mode .stat-card span, body.flight-mode .sector-route small, body.flight-mode .hazard-warning small { font-size: 9px; }
