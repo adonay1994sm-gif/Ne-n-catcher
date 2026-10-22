@@ -713,7 +713,7 @@ body.flight-mode .toggle-row i::after { top: 3px; left: 3px; width: 20px; height
 body.flight-mode .toggle-row input:checked + i { background: #214e56; border-color: var(--ui-cyan); }
 body.flight-mode .toggle-row input:checked + i::after { transform: translateX(20px); background: var(--ui-cyan); }
 body.flight-mode .toggle-row input:focus-visible + i { outline: 3px solid var(--ui-paper); outline-offset: 4px; }
-body.flight-mode .quality-row select { min-height: 44px; min-width: 98px; border: 1px solid #7396a3; border-radius: 5px; background: #0a1e2c; color: #dbefef; font-size: 12px; }
+body.flight-mode .quality-row select { min-height: 44px; min-width: 132px; padding-inline: 10px; border: 1px solid var(--ui-line); border-radius: 0; background: var(--ui-ink); color: var(--ui-paper); font-size: 12px; letter-spacing: 0; text-transform: none; }
 body.flight-mode .rules p, body.flight-mode .ability-list p { padding: 10px 0; margin: 0; border-bottom: 1px solid #88a9b326; }
 body.flight-mode .rules p b, body.flight-mode .ability-list p b { color: var(--ui-paper); }
 body.flight-mode .ship-hangar-header h2 { font-size: 30px; }
