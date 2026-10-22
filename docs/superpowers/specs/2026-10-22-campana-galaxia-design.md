@@ -282,27 +282,60 @@ empezando por el holograma de la pausa.
 
 ## 7. Orden de entrega
 
-1. **Biblia del mundo:**
-   - los 10 sistemas y las 10 facciones, cada una con su cadena (6.8);
-   - el conflicto local de cada sistema;
-   - el papel de la Cartógrafa;
-   - la lista de enemigos, subjefes y jefes por sector.
-   - El propietario la aprueba antes de seguir.
-2. **Sector 1 completo como modelo:**
-   - vuelo continuo de 10 tramos;
-   - enemigos con perfiles e IA;
-   - intensidad (6.10);
-   - subjefe y jefe con su estructura;
-   - morir, revivir y baliza;
-   - transiciones y diálogos;
-   - migración de guardados.
-3. **Holograma de la pausa** con taller, árbol (ampliado) y arsenal
-   (niveles y evoluciones).
-4. **Frontera con rutas** y mapa de la galaxia.
-5. **Sectores 2 a 10** con la plantilla del sector 1.
+Cada paso es una tarea del tablero (`camp-<fase>-<paso>`). Se hace en orden;
+una fase no empieza hasta que la anterior está aprobada. Cada fase se juega
+en la copia de prueba y pasa `/competencia` antes de la siguiente.
 
-Cada fase se juega en la copia de prueba y pasa `/competencia` antes de la
-siguiente.
+### F0 · Cerrar el diseño
+0.1. Responder: duración del sector y dónde va lo ya hecho **(te toca decidir)**
+0.2. Responder: cuándo se repara el casco **(te toca decidir)**
+0.3. Aprobar el documento de diseño de la campaña **(te toca decidir)**
+
+### F1 · Biblia del mundo (documento, sin código)
+1.1. 10 sistemas: los 5 actuales + 5 nuevos y su orden en el mapa
+1.2. 10 facciones con su cadena: planeta → cuerpo → recurso → tecnología → naves → armas → combate → piezas
+1.3. Conflicto local de cada sistema y papel de la Cartógrafa
+1.4. Enemigos por facción: movimiento, habilidad básica, habilidad única y perfil de IA
+1.5. Subjefe y jefe de cada sector: 3 habilidades / 3 ataques + especial + furia
+1.6. Prompts de arte para GPT por facción y lista pública regenerada
+1.7. Aprobación de la biblia por el propietario **(te toca decidir)**
+
+### F2 · Base técnica (el jugador aún no ve cambios)
+2.1. Simulador sin pantalla (bot) para medir dificultad
+2.2. Módulo de IA: perfiles y turnos de ataque
+2.3. Estructura de sector continuo de 10 tramos (datos)
+2.4. Guardado nuevo y migración con pruebas, sin perder progreso
+
+### F3 · Sector 1 jugable completo (el modelo)
+3.1. Vuelo continuo de 10 tramos con transiciones sin cortes
+3.2. Enemigos de la facción del sector 1 con su IA
+3.3. Intensidad: hordas, meteoritos dirigidos, ataques por detrás, abanicos abiertos
+3.4. Subjefe del tramo 5 (CH-03)
+3.5. Atlas rehecho: 3 ataques + especial + furia al 30 % que cambia el escenario
+3.6. Morir: sector entero, revivir con anuncio al 25 % (una vez por intento) y baliza
+3.7. Paradas de C9 para reparar
+3.8. Diálogos: panel grande en calma, radio corta en combate
+3.9. Ajuste con el bot, copia de prueba, /competencia y prueba del propietario
+
+### F4 · La nave
+4.1. Pausa-holograma con pestañas Taller · Árbol · Arsenal · Mapa · Ajustes
+4.2. Taller de reparación y piezas de facción
+4.3. Árbol ampliado: líneas (munición 20→100, recarga 2→1,2 s) + nodos clave
+4.4. Arsenal: 4 niveles por arma, sobrecarga N4 y evoluciones (3–4 armas)
+4.5. Reajuste de dificultad con el bot
+
+### F5 · Viajar por la galaxia
+5.1. Mapa de la galaxia
+5.2. Frontera con 2 rutas: segura y caliente
+5.3. Rejugar sectores completados
+
+### F6 · Sectores 2 a 10
+6.1. Sector 2 con la plantilla del sector 1 (C-17 subjefe, Titan Vulkar jefe)
+6.2. Sectores 3 a 10, uno por uno con el mismo ciclo
+
+### F7 · Acabado
+7.1. Relieve del sistema A en todas las pantallas
+7.2. Concepto de las 10 naves del hangar: paleta, habilidad propia y última
 
 ## 8. Lo que queda para quien lo construya
 
