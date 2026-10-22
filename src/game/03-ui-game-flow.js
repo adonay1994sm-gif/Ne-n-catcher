@@ -710,11 +710,20 @@
       // falta, y lo repite cada 10 s de juego mientras siga esperando.
       const wait=classicFlightView;
       if(ui.goal.textContent!==croniumGoalLabel())ui.goal.textContent=croniumGoalLabel();
+      const goalTag=ui.goal.previousElementSibling,tag=wait.waitingFor==="cronium"?"TRAMO":"CRONIUM";
+      if(goalTag&&goalTag.textContent!==tag)goalTag.textContent=tag;
+      // El aviso con la cuenta se retira en cuanto cambia el CRONIUM o acaba la
+      // espera, para no contradecir al HUD (revisión C3).
+      if(classicCroniumWaitShown!==null&&flightTransmission?.text===classicCroniumWaitShown.text&&
+        (collected!==classicCroniumWaitShown.collected||wait.waitingFor!=="cronium")) {
+        flightTransmission=null;classicCroniumWaitShown=null;syncClassicFlightHud();
+      }
       if(state==="playing"&&wait.waitingFor==="cronium"&&!flightTransmission&&
         (classicCroniumWaitNotice!==wait.stageId||elapsed-classicCroniumWaitAt>=10)) {
         classicCroniumWaitNotice=wait.stageId;classicCroniumWaitAt=elapsed;
         const missing=Math.max(1,wait.stageGoal-collected);
-        showStoryTransmission("N-7",`${missing===1?"Falta 1":`Faltan ${missing}`} CRONIUM para seguir al siguiente tramo.`,4);
+        const text=`${missing===1?"Falta 1":`Faltan ${missing}`} CRONIUM para seguir al siguiente tramo.`;
+        showStoryTransmission("N-7",text,4);classicCroniumWaitShown={text,collected};
       }
       if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
@@ -1672,7 +1681,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     hullGrace = 0;
-    classicGuideSeen = null;classicCroniumWaitNotice = null;classicCroniumWaitAt = -Infinity;lastResumeGraceAt = -Infinity;
+    classicGuideSeen = null;classicCroniumWaitNotice = null;classicCroniumWaitAt = -Infinity;classicCroniumWaitShown = null;lastResumeGraceAt = -Infinity;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);

@@ -744,3 +744,19 @@ test('after skipping the intro, «Los atacantes nos siguen» is said only once',
   for (let i = 0; i < 40 * 60; i++) { T.ev('hull=100'); T.adv(1 / 60); }
   assert.equal(T.ev('window.__said'), 1);
 });
+
+test('the CRONIUM wait notice disappears as soon as CRONIUM changes, and the HUD labels the stage quota', () => {
+  // Revisión 5 (C3): «Faltan 4» seguía en pantalla con el HUD ya en 1/4 o 4/36.
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  const label = () => w.document.querySelector('.metric-cronium small').textContent;
+  for (let i = 0; i < 40 * 60 && !/CRONIUM para seguir/.test(T.ev('flightTransmission?.text||""')); i++) {
+    T.ev('hull=100;collected=0;items=items.filter(item=>item.type!=="energy")'); T.adv(1 / 60);
+  }
+  assert.match(T.ev('flightTransmission.text'), /Faltan 4/);
+  assert.equal(label(), 'TRAMO');
+  T.ev('collected=1'); T.adv(1 / 60);
+  assert.equal(T.ev('flightTransmission'), null, 'the stale count is removed');
+  T.ev('collected=4;energySpawned=4'); for (let i = 0; i < 60; i++) T.adv(1 / 60);
+  assert.equal(label(), 'CRONIUM');
+});
