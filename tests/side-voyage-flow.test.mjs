@@ -382,3 +382,13 @@ test('after replaying S1-V1 halfway, «JUGAR» follows the campaign instead of r
   assert.equal(w.document.getElementById('briefing').classList.contains('show'), false, 'no S1-V1 briefing');
   assert.equal(T.st().side, 'S1-V3');
 });
+
+test('retrying S1-V1 keeps the CRONIUM lost before the checkpoint, like the map voyages', () => {
+  // Auditoría 22/10, L03: S1-V1 lo ponía a 0 y las 3 estrellas salían más fáciles.
+  const {T} = harness();
+  T.requestStage(null); T.startLevel(0); T.adv(.2); T.miss(10); T.toStage(2);
+  assert.equal(T.ev('energySpawned-collected'), 10);
+  T.finishGame('hull'); T.startLevel(0);
+  assert.equal(T.ev('classicFlightView.stageNumber'), 2);
+  assert.equal(T.ev('energySpawned-collected'), 10);
+});

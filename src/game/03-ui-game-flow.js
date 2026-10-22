@@ -341,6 +341,7 @@
         !Number.isFinite(value.entry?.maxCombo) || value.entry.maxCombo<1 || value.entry.maxCombo>12 ||
         value.entry?.collected!==checkpoint.collected)throw new Error("Invalid voyage save");
       if(value.entry.reserve!==undefined&&(!Number.isFinite(value.entry.reserve)||value.entry.reserve<0||value.entry.reserve>65))throw new Error("Invalid hull reserve");
+      if(value.entry.missed!==undefined&&(!Number.isInteger(value.entry.missed)||value.entry.missed<0))throw new Error("Invalid missed count");
       return {...value,checkpoint,chapter:value.chapter?NeonCampaign.normalizeChronosChapterCheckpoint(value.chapter):null};
     } catch {return null;}
   }
@@ -368,7 +369,9 @@
     if(!checkpoint)return null;
     const previous=classicVoyageRecord;
     const entry=completed && previous ? previous.entry : {
-      hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected};
+      hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected,
+      // CRONIUM perdido, como en los viajes del mapa (auditoría L03).
+      missed:Math.max(0,energySpawned-collected-items.filter(item=>item.type==="energy").length)};
     return {version:2,checkpoint,entry,chapter:classicChapterStory?.checkpoint()||null,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
   }
 
