@@ -11,6 +11,7 @@
     drawWarp();
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
+    drawCometCorridor(t);
     for (const item of items) {
       if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);

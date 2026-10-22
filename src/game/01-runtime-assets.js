@@ -99,6 +99,7 @@
   let classicSalvageEnemySequence = 0;
   let classicSalvageWarningShown = false;
   let classicCometShower = null;
+  let classicCometCorridor = null;
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;

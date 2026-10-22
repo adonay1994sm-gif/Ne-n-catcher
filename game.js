@@ -321,6 +321,7 @@
   let classicSalvageEnemySequence = 0;
   let classicSalvageWarningShown = false;
   let classicCometShower = null;
+  let classicCometCorridor = null;
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -1096,12 +1097,20 @@
   }
 
   function resetClassicCometShower() {
-    classicCometShower=null;
+    classicCometShower=null;classicCometCorridor=null;
     const view=classicFlightView;
     if(!view||!NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)return;
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
       shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
+  }
+
+  // Lluvia en curso: desde el aviso hasta que sale el último cometa. Mientras
+  // dura, el pasillo seguro se dibuja y las patrullas no disparan (J04).
+  function cometShowerActive() {
+    if(!classicCometCorridor)return false;
+    if((classicFlightView?.stageElapsed??Infinity)<classicCometCorridor.until||items.some(item=>item.showerComet))return true;
+    classicCometCorridor=null;return false;
   }
 
   function recoverCampaignCompletion() {
@@ -1690,7 +1699,8 @@
     if(rules.comets) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
       NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
-        if(event.type==="warning")showStoryTransmission("N-7",event.text,2);
+        if(event.type==="warning"){showStoryTransmission("N-7",event.text,2);
+          classicCometCorridor={corridor:event.corridor,until:view.stageElapsed+2.5};}
         if(event.type==="spawn")items.push(event.item);
       });
     }
@@ -4047,6 +4057,7 @@
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
       if (item.classicScout) {
+        item.classicScout.holdFire=cometShowerActive();
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
         advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
       }
@@ -5063,6 +5074,26 @@
     ctx.restore();
   }
 
+  // Pasillo seguro de la lluvia de cometas (auditoría J04): franja cian muy
+  // tenue y dos guías discontinuas desde la mitad de la pantalla. Sin brillo,
+  // para que no compita con las amenazas; con efectos reducidos, quieta.
+  function drawCometCorridor(t) {
+    if (state !== "playing" && state !== "paused" || !cometShowerActive()) return;
+    const c = classicCometCorridor.corridor;
+    ctx.save();
+    ctx.fillStyle = "rgba(161,238,232,.05)";
+    ctx.fillRect(c.left, c.top, c.width, H - c.top);
+    ctx.strokeStyle = "rgba(161,238,232,.38)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([18, 14]);
+    ctx.lineDashOffset = settings.reduceEffects ? 0 : -(t / 40) % 32;
+    ctx.beginPath();
+    ctx.moveTo(c.left, c.top); ctx.lineTo(c.left, H);
+    ctx.moveTo(c.right, c.top); ctx.lineTo(c.right, H);
+    ctx.stroke();
+    ctx.restore();
+  }
+
   function drawTractorCable() {
     if (powers.tractor <= 0 || !tractorTarget) return;
     const startX = player.x;
@@ -6056,6 +6087,7 @@
     drawWarp();
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
+    drawCometCorridor(t);
     for (const item of items) {
       if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);

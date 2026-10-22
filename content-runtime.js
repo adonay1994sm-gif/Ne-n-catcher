@@ -4664,7 +4664,7 @@ var NeonCampaign = (() => {
       minimumHoldY,
       maximumHoldY
     );
-    const canAttack = () => hp > 0 && enemy.state !== "retreat" && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230;
+    const canAttack = () => hp > 0 && enemy.state !== "retreat" && !enemy.holdFire && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230;
     const clearCharge = () => {
       enemy.telegraph = 0;
       enemy.attackScheduled = false;

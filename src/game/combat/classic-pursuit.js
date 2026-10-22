@@ -137,7 +137,9 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     (['charge', 'fire'].includes(enemy.state) ? .35 : 1);
   enemy.holdY = clamp(enemy.height * profile.depth + depthArc + Math.sin(enemy.phase) * 12,
     minimumHoldY, maximumHoldY);
-  const canAttack = () => hp > 0 && enemy.state !== 'retreat' &&
+  // holdFire: alto el fuego que pone el juego durante una lluvia de cometas
+  // (propietario 22/10, auditoría J04). Cancela la carga y no dispara.
+  const canAttack = () => hp > 0 && enemy.state !== 'retreat' && !enemy.holdFire &&
     item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230;
   const clearCharge = () => {
     enemy.telegraph = 0;
@@ -182,7 +184,8 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   } else if (enemy.state !== 'retreat' && enemy.state !== 'destroyed') {
     const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
     // Propietario (21/10): el enemigo que no eliminas no se va; sigue atacando
-    // y cada holdSeconds sube un nivel de intensidad (hasta 3: recarga ×0,46),
+    // y cada holdSeconds sube un nivel de intensidad (hasta 2 desde el 22/10,
+    // auditoría J01: recarga ×0,64),
     // para que con muchas patrullas haya que decidir a quién derribar primero.
     // Solo se retira si nunca puede atacar (p. ej. nave pegada al marcador).
     enemy.intensity = Math.min(2, Math.floor(heldFor / profile.holdSeconds));

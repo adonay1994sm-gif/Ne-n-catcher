@@ -151,12 +151,20 @@
   }
 
   function resetClassicCometShower() {
-    classicCometShower=null;
+    classicCometShower=null;classicCometCorridor=null;
     const view=classicFlightView;
     if(!view||!NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)return;
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
       shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
+  }
+
+  // Lluvia en curso: desde el aviso hasta que sale el último cometa. Mientras
+  // dura, el pasillo seguro se dibuja y las patrullas no disparan (J04).
+  function cometShowerActive() {
+    if(!classicCometCorridor)return false;
+    if((classicFlightView?.stageElapsed??Infinity)<classicCometCorridor.until||items.some(item=>item.showerComet))return true;
+    classicCometCorridor=null;return false;
   }
 
   function recoverCampaignCompletion() {
@@ -745,7 +753,8 @@
     if(rules.comets) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
       NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
-        if(event.type==="warning")showStoryTransmission("N-7",event.text,2);
+        if(event.type==="warning"){showStoryTransmission("N-7",event.text,2);
+          classicCometCorridor={corridor:event.corridor,until:view.stageElapsed+2.5};}
         if(event.type==="spawn")items.push(event.item);
       });
     }

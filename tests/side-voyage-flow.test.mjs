@@ -392,3 +392,22 @@ test('retrying S1-V1 keeps the CRONIUM lost before the checkpoint, like the map 
   assert.equal(T.ev('classicFlightView.stageNumber'), 2);
   assert.equal(T.ev('energySpawned-collected'), 10);
 });
+
+test('during a comet shower the safe corridor is marked and patrols hold fire, then fight again', () => {
+  // Propietario (22/10, auditoría J04): pasillo marcado + alto el fuego.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  let seen = false, held = true, patrols = 0;
+  for (let i = 0; i < 30 * 60; i++) {
+    T.ev('hull=100'); T.adv(1 / 60);
+    if (T.ev('cometShowerActive()')) {
+      seen = true;
+      for (const enemy of T.ev('items.filter(item=>item.classicScout)')) { patrols++; held &&= enemy.classicScout.holdFire === true; }
+    }
+  }
+  assert.ok(seen, 'a shower happens in S1-V5 stage 2');
+  assert.ok(patrols > 0, 'some patrol was on screen during the shower');
+  assert.ok(held, 'every patrol holds fire while the shower lasts');
+  T.ev('items=items.filter(item=>!item.showerComet);classicCometCorridor.until=-1');
+  assert.equal(T.ev('cometShowerActive()'), false, 'the ceasefire ends with the shower');
+});

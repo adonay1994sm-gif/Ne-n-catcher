@@ -950,6 +950,26 @@
     ctx.restore();
   }
 
+  // Pasillo seguro de la lluvia de cometas (auditoría J04): franja cian muy
+  // tenue y dos guías discontinuas desde la mitad de la pantalla. Sin brillo,
+  // para que no compita con las amenazas; con efectos reducidos, quieta.
+  function drawCometCorridor(t) {
+    if (state !== "playing" && state !== "paused" || !cometShowerActive()) return;
+    const c = classicCometCorridor.corridor;
+    ctx.save();
+    ctx.fillStyle = "rgba(161,238,232,.05)";
+    ctx.fillRect(c.left, c.top, c.width, H - c.top);
+    ctx.strokeStyle = "rgba(161,238,232,.38)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([18, 14]);
+    ctx.lineDashOffset = settings.reduceEffects ? 0 : -(t / 40) % 32;
+    ctx.beginPath();
+    ctx.moveTo(c.left, c.top); ctx.lineTo(c.left, H);
+    ctx.moveTo(c.right, c.top); ctx.lineTo(c.right, H);
+    ctx.stroke();
+    ctx.restore();
+  }
+
   function drawTractorCable() {
     if (powers.tractor <= 0 || !tractorTarget) return;
     const startX = player.x;

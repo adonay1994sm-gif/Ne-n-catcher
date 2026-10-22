@@ -379,3 +379,20 @@ test('an enemy you do not destroy stays and attacks more often the longer it sur
     assert.ok(gap(late) < gap(early), `${role}/${seed} attacks more often late (${gap(late).toFixed(2)} s) than early (${gap(early).toFixed(2)} s)`);
   }
 });
+
+test('a patrol holds fire while holdFire is set (comet shower ceasefire) and resumes after', () => {
+  // Propietario (22/10, auditoría J04): alto el fuego durante la lluvia de cometas.
+  for (const role of ['raider', 'scout', 'interceptor']) {
+    const item = enemyAt({role}), player = {x: 360, y: 1080}, shots = [];
+    for (let frame = 0; frame < 600; frame++) step(item, player, shots);
+    assert.ok(shots.length > 0, `${role} fires before the shower`);
+    item.classicScout.holdFire = true;
+    const before = shots.length;
+    for (let frame = 0; frame < 900; frame++) step(item, player, shots);
+    assert.equal(shots.length, before, `${role} fires nothing during the ceasefire`);
+    assert.notEqual(item.classicScout.state, 'charge');
+    item.classicScout.holdFire = false;
+    for (let frame = 0; frame < 900; frame++) step(item, player, shots);
+    assert.ok(shots.length > before, `${role} attacks again afterwards`);
+  }
+});
