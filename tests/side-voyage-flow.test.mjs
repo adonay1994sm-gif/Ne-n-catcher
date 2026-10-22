@@ -472,3 +472,26 @@ test('pausing and resuming quickly does not chain the resume grace into invulner
   T.ev('pauseGame();resumeGame()');
   assert.ok(T.hitNow(20) < 100, 'an instant pause/resume gives no grace');
 });
+
+test('while a comet shower lasts no new hazard falls inside the marked corridor', () => {
+  // Revisión 22/10 (L1): el pasillo marcado tiene que ser seguro de verdad.
+  for (const voyage of ['S1-V5', 'S2-V5']) {
+    const {T} = harness();
+    T.startSideVoyage(voyage); T.adv(.2); T.toStage(2);
+    let seen = new Set(), inside = 0, spawned = 0;
+    for (let i = 0; i < 30 * 60; i++) {
+      T.ev('hull=100'); T.adv(1 / 60);
+      const active = T.ev('cometShowerActive()');
+      const fresh = T.ev(`items.filter(item=>isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout&&!item.classicScoutProjectile).map(item=>({ref:item,x:item.x,r:item.r}))`);
+      for (const {ref, x, r} of fresh) {
+        if (seen.has(ref)) continue; seen.add(ref);
+        if (!active) continue;
+        spawned++;
+        const c = T.ev('classicCometCorridor.corridor');
+        if (x + r > c.left && x - r < c.right) inside++;
+      }
+    }
+    assert.ok(spawned > 0, `${voyage}: hazards keep falling during the shower`);
+    assert.equal(inside, 0, `${voyage}: ${inside} of ${spawned} new hazards fell inside the corridor`);
+  }
+});

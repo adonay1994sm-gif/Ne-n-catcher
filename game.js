@@ -1701,6 +1701,9 @@
           createThreat(vulkar?"meteor":hazard.type,level());
         threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed*(threat.speedScale||1);threat.amp=0;
         threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.hazardDamageScale=hazard.damageScale??1;
+        // Durante la lluvia el pasillo marcado es seguro de verdad: nada nuevo
+        // cae dentro (revisión L1). Los peligros caen recto (amp=0).
+        if(cometShowerActive()){const c=classicCometCorridor.corridor;if(threat.x+threat.r>c.left&&threat.x-threat.r<c.right)return;}
         items.push(threat);
       });
     }
