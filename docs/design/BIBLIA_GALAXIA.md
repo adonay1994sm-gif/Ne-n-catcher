@@ -76,6 +76,7 @@ armas → combate → pieza.
 | **CH-04 Rastreador** (nuevo) | Emboscador | Entra por abajo y te sigue la espalda | Disparo hacia arriba | Marca tu posición y avisa a los demás (su próximo disparo apunta mejor) |
 | **CH-05 Sembrador** (nuevo) | Minador | Cruza por abajo de lado a lado | Suelta minas de proximidad | Bomba que estalla en cruz al tocar el borde de la pantalla |
 | **CH-06 Égida** (nuevo) | Escolta | Se pega a un aliado | — | Escudo hexagonal que cubre al aliado hasta que lo rompes |
+| CH-02 Alfa (baúl, por piezas) | Élite (Cazador) | Solo en los tramos 6–9 | Cuatro cañones | Andanada en cruz; aguanta mucho |
 
 **Subjefe · CH-03, satélite de defensa** (anillo con cañones):
 1. **Barrido láser:** rayo que gira lento; el hueco está detrás del rayo.
@@ -115,6 +116,7 @@ armas → combate → pieza.
 | **Escolta Vorn** (nuevo) | Escolta | Rodea los cargueros | Disparo lento | Campo de calor que desvía tus disparos |
 | **Carguero armado** (nuevo) | Artillero | Lento, cruza la pantalla | Torretas laterales | Suelta contenedores que se rompen en metralla |
 | **Lancha de seguridad** (nuevo) | Oportunista | Espera fuera de pantalla | Ráfaga | Entra cuando recargas |
+| Batería de torretas de forja (baúl, por piezas) | Artillero fijo | Plataforma que cruza despacio | Ráfagas alternas | Las torretas se cubren entre sí |
 
 - **Subjefe · C-17:** el carguero que se despliega como nave negra; es de la
   Flota Cartógrafa.
@@ -152,6 +154,8 @@ armas → combate → pieza.
 | **Serpiente de magma** (dosier Vulkar, antes descartada como jefe) | Cazador | Rápida, ondulante, por segmentos | Mordisco en carrera | Deja un rastro de metal fundido que quema |
 | **Grúa** (nuevo) | Escolta | Va con los fundidores | — | Recoge la escoria y repara a un aliado |
 | Núcleo de lava (dosier Vulkar) | Minador | Cae despacio | Explota | Se parte en tres al morir |
+| Dron de escoria (baúl) | Cazador | En grupos de tres | Disparo de escoria | Estalla en metralla al morir |
+| Barcaza de escoria (baúl) | Artillero | Lenta, cruza la pantalla | — | Suelta trozos de escoria caliente al recibir daño |
 
 - **Subjefe · Corazón de lava:**
   1. Pulsos de lava.
@@ -409,6 +413,8 @@ que dan motivos para volver (spec 6.3).
 - **Sectores 7–9:** escuadras propias.
 - **Sector 10:** toda la flota.
 - **Enemigo base, Sombra:** un Oportunista que dispara y se va.
+  Su arte ya existe: el caza negro de núcleo naranja del baúl
+  (`rv2-v6-enemigos`).
 
 ## 6. Lo que se reutiliza
 
