@@ -576,3 +576,13 @@ test('retrying a stage forgets the lesson window and the CRONIUM notice of the p
   T.finishGame('hull'); T.startLevel(0);
   assert.deepEqual([T.ev('classicGuideSeen'), T.ev('classicCroniumWaitNotice')], [null, null]);
 });
+
+test('closing the C9 workshop opened in flight gives the same resume grace as the pause', () => {
+  // Auditoría del bloque (B04): C9 pausa el viaje pero al cerrarlo no había gracia.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  assert.equal(T.ev("openClassicDock('hud')"), true);
+  T.ev('pauseStartedAt-=600;closeClassicDock()');
+  assert.equal(T.st().state, 'playing');
+  assert.equal(T.hitNow(20), 100, 'a hit right after closing C9 does no damage');
+});

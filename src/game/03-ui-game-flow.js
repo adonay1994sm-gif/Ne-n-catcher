@@ -477,7 +477,7 @@
       if(state!=="playing"||atlasBoss||classicChapterControlsLocked())return false;
       if(typeof resetGameInput==="function")resetGameInput();
       NeonCampaign.endFlightInput(classicFlightInput);
-      setState("paused");classicWorkshopOpened=true;
+      setState("paused");pauseStartedAt=performance.now();classicWorkshopOpened=true;
     } else if(state!=="menu")return false;
     flightDockReturn=from; updateClassicDock(); overlay(ui.flightDock);
     $("flightDockContinue").focus({preventScroll:true});
@@ -488,6 +488,8 @@
     if(flightDockReturn==="hud"&&state==="paused") {
       if(typeof resetGameInput==="function")resetGameInput();
       setState("playing");overlay();last=performance.now();resumeAudio();
+      // Misma gracia que al reanudar desde la pausa (auditoría B04).
+      if(performance.now()-pauseStartedAt>=500)hullGrace=Math.max(hullGrace,0.8);
       syncClassicFlightHud();ui.classicC9?.focus({preventScroll:true});return;
     }
     if(flightDockReturn==="voyage"){resumeClassicVoyageService();return;}
