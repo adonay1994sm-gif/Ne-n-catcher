@@ -705,3 +705,16 @@ test('skipping the intro also clears the pre-rupture LIRA line and opens with N-
   assert.doesNotMatch(T.ev('flightTransmission?.text||""'), /turno de guardia|firma aceptada/);
   assert.equal(T.ev('flightTransmission?.speaker'), 'N-7');
 });
+
+test('the piloting lesson hides its percentage until there is some progress', () => {
+  // Revisión 3 (M10): «Desliza el pulgar izquierdo… · 0 %».
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0);
+  let seen = false, zero = false;
+  for (let i = 0; i < 40 * 60; i++) {
+    T.ev('hull=100;flightTransmission=null'); T.adv(1 / 60);
+    const text = w.document.getElementById('flightObjective')?.textContent || '';
+    if (/pulgar izquierdo/.test(text)) { seen = true; zero ||= /· 0 %/.test(text); }
+  }
+  assert.ok(seen); assert.equal(zero, false);
+});
