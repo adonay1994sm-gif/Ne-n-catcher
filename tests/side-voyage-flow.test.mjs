@@ -455,3 +455,12 @@ test('two hits in the same instant cost the hull only once', () => {
   T.adv(.4);
   assert.ok(T.hitNow(15) < first, 'a later hit counts');
 });
+
+test('simultaneous hits absorbed by a full hull reserve also cost only once', () => {
+  // Revisión 22/10 (L3): la gracia de 0,3 s faltaba cuando la reserva absorbía el golpe.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('classicHullReserve=30;hullGrace=0');
+  for (let i = 0; i < 3; i++) T.ev('damageShip(15)');
+  assert.deepEqual([T.ev('classicHullReserve'), T.hull()], [15, 100]);
+});

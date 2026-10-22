@@ -3468,6 +3468,7 @@
       kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true,
       largeAsteroidScale:context.largeAsteroidScale||1});
     classicHullReserve=damageResult.reserve;
+    if (typeof hullGrace !== "undefined") hullGrace = 0.3;
     if (damageResult.absorbed) {
       classicShieldImpact=.18;
       burst(x, y, 18, "cyan");
@@ -3479,7 +3480,6 @@
     }
 
     hull = damageResult.hull;
-    if (typeof hullGrace !== "undefined") hullGrace = 0.3;
     if (typeof DEV !== "undefined" && DEV?.invulnerable) hull = 100;
     impactReactionTimer = 0.32;
     impactReactionSide = x >= player.x ? 1 : -1;
