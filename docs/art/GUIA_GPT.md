@@ -44,6 +44,7 @@ que igualar.
 | Dosier de Cryon | Facciones de hielo | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/cryon_enemy_dossier_v1.jpeg |
 | Dosier de Aether | Facciones temporales | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/aether_enemy_dossier_v1.jpeg |
 | Dosier de Titan Omega | Facciones industriales | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/titan_omega_enemy_dossier_v1.jpeg |
+| Dosier de criaturas raras | Ballena, medusa y gusano de las rutas de frontera | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/rare_creatures_dossier_v1.jpeg |
 | Dosier de Cronos Prime | El jefe final y el violeta | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/cronos_prime_dossier_v1.jpeg |
 | Retratos | Estilo de los personajes | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/character-portraits/NEON_CRONIUM_Retratos_2048x512.png |
 | Núcleo de lava | Proyectil o mina cálida ya en el juego | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/lava-core-mine/lava_core_mine_1024x512.png |
@@ -66,9 +67,12 @@ referencia.
   enemigos, núcleos al atacar, minas y explosiones.
 - **El cian es del jugador**: su nave, sus disparos y el CRONIUM. Nunca pongas
   cian en algo enemigo que hace daño.
-- **El violeta es de Cronos Prime.** No lo uses en otras facciones.
-- El color propio de cada facción va en el **casco**: blanco en Gaia,
-  basalto en Vorn, azul hielo en Cryon, etc.
+- **El violeta es de lo temporal:** Cronos Prime, Aether y Kairos. No lo uses
+  en otras facciones.
+- El color propio de cada facción va en el **casco y su luz de reposo**:
+  blanco en Gaia, basalto en Vorn, azul hielo en Cryon, violeta en Aether…
+  **Lo que hace daño vira a cálido:** el núcleo pasa a ámbar al cargar y los
+  proyectiles son rojos o naranjas.
 
 ## 6. Reglas técnicas (sprites)
 
