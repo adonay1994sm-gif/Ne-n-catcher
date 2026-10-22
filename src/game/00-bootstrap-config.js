@@ -219,4 +219,4 @@
     settings: "neon-settings-v5"
   };
   const LEGACY_KEYS = { best: "neon-best-v1" };
-  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true, difficulty: "normal" };
+  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 135, vibration: true, autoFire: false, effectsQuality: "normal", effects: true, difficulty: "normal" };

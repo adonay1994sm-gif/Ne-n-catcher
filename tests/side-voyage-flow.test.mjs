@@ -727,3 +727,10 @@ test('the piloting lesson hides its percentage until there is some progress', ()
 test('the harness randomness is seeded, so counts of patrols and hazards are repeatable', () => {
   assert.equal(harness().T.ev('Math.random()'), harness().T.ev('Math.random()'));
 });
+
+test('a new player starts with piloting sensitivity 135', () => {
+  // Propietario (22/10, revisión G6): menos recorrido de pulgar por defecto.
+  const {w, T} = harness();
+  assert.equal(T.ev('settings.sensitivity'), 135);
+  assert.equal(w.document.getElementById('sensitivity').value, '135');
+});
