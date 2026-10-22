@@ -7,15 +7,20 @@
     if(cue&&time<cue.at+cue.duration) {
       const alpha=Math.min(1,(time-cue.at)/.25,(cue.at+cue.duration-time)/.25);
       ctx.globalAlpha=Math.max(0,alpha);ctx.textAlign="center";ctx.textBaseline="alphabetic";
-      ctx.font="800 15px 'Trebuchet MS', sans-serif";ctx.fillStyle="#9fe9ff";
-      ctx.fillText(cue.speaker,W/2,H*.70);
-      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2fbff";
-      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=8;
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";
       const words=cue.text.split(" "),lines=[""];
       for(const word of words) {
         const next=lines[lines.length-1]?`${lines[lines.length-1]} ${word}`:word;
-        if(ctx.measureText(next).width>W*.84&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
+        if(ctx.measureText(next).width>W*.80&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
       }
+      // Placa oscura detrás del subtítulo: sin ella el texto se perdía sobre
+      // el cristal cian de la estación (revisión B2, DESIGN §9.5 y §12.7).
+      const top=H*.70-30,bottom=H*.70+34+(lines.length-1)*30+14;
+      ctx.fillStyle="#061521e8";ctx.fillRect(W*.05,top,W*.90,bottom-top);
+      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=6;
+      ctx.font="800 20px 'Trebuchet MS', sans-serif";ctx.fillStyle="#a1eee8";
+      ctx.fillText(cue.speaker,W/2,H*.70);
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2f0e6";
       lines.forEach((line,index)=>ctx.fillText(line,W/2,H*.70+34+index*30));
     }
     ctx.restore();
@@ -464,6 +469,9 @@
       ctx.save(); ctx.globalAlpha = card; ctx.textAlign = "center";
       // Por encima de la franja de subtítulos (H*.70) para no pisarla.
       ctx.translate(W / 2, H * .52); ctx.scale(punch, punch);
+      // Banda oscura detrás: sin ella el rótulo se perdía sobre los anillos
+      // iluminados de la estación (revisión B2, DESIGN §9.5).
+      ctx.fillStyle = "rgba(6,21,33,.82)"; ctx.fillRect(-W * .6, -70, W * 1.2, 126);
       ctx.font = "900 76px 'Trebuchet MS', sans-serif";
       ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
       ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
