@@ -183,6 +183,7 @@
 
   function update(dt) {
     const lv = level();
+    if (state === "playing" && typeof hullGrace !== "undefined") hullGrace = Math.max(0, hullGrace - dt);
     const starBoost = state === "playing" ? lv.speed * (warpTimer > 0 ? 5.5 : 1) : 1;
     visualSpeed += (starBoost - visualSpeed) * Math.min(1, dt * 4.5);
     for (const star of stars) {
@@ -371,6 +372,7 @@
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
       if (item.classicScout) {
+        item.classicScout.holdFire=cometShowerActive();
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
         advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
       }

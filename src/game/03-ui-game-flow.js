@@ -151,12 +151,20 @@
   }
 
   function resetClassicCometShower() {
-    classicCometShower=null;
+    classicCometShower=null;classicCometCorridor=null;
     const view=classicFlightView;
     if(!view||!NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)return;
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
       shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
+  }
+
+  // Lluvia en curso: desde el aviso hasta que sale el último cometa. Mientras
+  // dura, el pasillo seguro se dibuja y las patrullas no disparan (J04).
+  function cometShowerActive() {
+    if(!classicCometCorridor)return false;
+    if((classicFlightView?.stageElapsed??Infinity)<classicCometCorridor.until||items.some(item=>item.showerComet))return true;
+    classicCometCorridor=null;return false;
   }
 
   function recoverCampaignCompletion() {
@@ -208,7 +216,16 @@
     canvas.parentElement.append(chapterControls);
     ui.classicC9=$("classicC9");ui.classicC9.onclick=()=>openClassicDock("hud");
     ui.chapterSkip=$("chapterSkip");ui.classicMissile=$("classicMissile");ui.classicMissileCount=$("classicMissileCount");
-    ui.chapterSkip.onclick=()=>{classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot();syncClassicChapterPresentation();};
+    ui.chapterSkip.onclick=()=>{
+      if(!classicChapterStory?.skipIntro())return;
+      // Omitir lleva el mundo al estado posterior a la ruptura (revisión B1):
+      // la cinemática se dibuja con el reloj de la ruta, así que se adelanta
+      // hasta que Cronos Prime se ha ido, en vez de seguir bajo el HUD.
+      const gone=NeonCampaign.CHRONOS_INTRO_TIMELINE?.gone||0;
+      for(let i=0;i<2000&&classicFlight&&classicFlightView.elapsed<gone;i++)
+        classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
+      classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
+    };
     // Missile pointer/touch ownership is installed with the other flight
     // controls in 08-loop-input-bootstrap, including accessible click fallback.
     for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightPilotHint","flightPilotStick","flightPilotKnob","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin","c9Balance","c9BuyShield","c9BuyMissiles","c9BuyCoolant","c9PurchaseStatus"]) ui[id] = $(id);
@@ -341,6 +358,7 @@
         !Number.isFinite(value.entry?.maxCombo) || value.entry.maxCombo<1 || value.entry.maxCombo>12 ||
         value.entry?.collected!==checkpoint.collected)throw new Error("Invalid voyage save");
       if(value.entry.reserve!==undefined&&(!Number.isFinite(value.entry.reserve)||value.entry.reserve<0||value.entry.reserve>65))throw new Error("Invalid hull reserve");
+      if(value.entry.missed!==undefined&&(!Number.isInteger(value.entry.missed)||value.entry.missed<0))throw new Error("Invalid missed count");
       return {...value,checkpoint,chapter:value.chapter?NeonCampaign.normalizeChronosChapterCheckpoint(value.chapter):null};
     } catch {return null;}
   }
@@ -368,7 +386,9 @@
     if(!checkpoint)return null;
     const previous=classicVoyageRecord;
     const entry=completed && previous ? previous.entry : {
-      hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected};
+      hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected,
+      // CRONIUM perdido, como en los viajes del mapa (auditoría L03).
+      missed:Math.max(0,energySpawned-collected-items.filter(item=>item.type==="energy").length)};
     return {version:2,checkpoint,entry,chapter:classicChapterStory?.checkpoint()||null,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
   }
 
@@ -457,7 +477,7 @@
       if(state!=="playing"||atlasBoss||classicChapterControlsLocked())return false;
       if(typeof resetGameInput==="function")resetGameInput();
       NeonCampaign.endFlightInput(classicFlightInput);
-      setState("paused");classicWorkshopOpened=true;
+      setState("paused");pauseStartedAt=performance.now();classicWorkshopOpened=true;
     } else if(state!=="menu")return false;
     flightDockReturn=from; updateClassicDock(); overlay(ui.flightDock);
     $("flightDockContinue").focus({preventScroll:true});
@@ -468,6 +488,8 @@
     if(flightDockReturn==="hud"&&state==="paused") {
       if(typeof resetGameInput==="function")resetGameInput();
       setState("playing");overlay();last=performance.now();resumeAudio();
+      // Misma gracia que al reanudar desde la pausa (auditoría B04).
+      if(performance.now()-pauseStartedAt>=500)hullGrace=Math.max(hullGrace,0.8);
       syncClassicFlightHud();ui.classicC9?.focus({preventScroll:true});return;
     }
     if(flightDockReturn==="voyage"){resumeClassicVoyageService();return;}
@@ -553,8 +575,15 @@
     // The primary HUD already shows the quota. This reserved, transparent slot
     // is used only for brief contextual comms; it never repeats the counters.
     const tutorialView=typeof classicTutorial!=="undefined"?classicTutorial?.snapshot():null;
-    const guide=!atlasBoss&&state==='playing'?tutorialView?.active:null;
-    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? `${guide.text} · ${Math.round(guide.progress*100)} %` : "";
+    let guide=!atlasBoss&&state==='playing'?tutorialView?.active:null;
+    // Revisión G1: una lección de un paso (target 1) se ve sus segundos, se
+    // oculta y vuelve una sola vez a los 30 s de juego; sin «· 0 %».
+    if(guide&&guide.target===1&&!flightTransmission) {
+      if(classicGuideSeen?.id!==guide.id)classicGuideSeen={id:guide.id,at:elapsed};
+      const since=elapsed-classicGuideSeen.at,seconds=guide.seconds||4;
+      if(!(since<seconds||(since>=30&&since<30+seconds)))guide=null;
+    }
+    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? (guide.target>1?`${guide.text} · ${Math.round(guide.progress*100)} %`:guide.text) : "";
     const signature=[currentLevel,stage,objective,collected,Math.floor((view?.routeProgress||0)*1000),classicEquipment.selected,classicWeapons?.charges,Math.floor((classicWeapons?.recharge||0)*5)].join(":");
     if(signature===flightHudSignature)return;
     flightHudSignature=signature;
@@ -569,7 +598,7 @@
     }
     ui.flightObjective.dataset.active=String(Boolean(flightTransmission||guide));
     ui.flightObjective.classList.toggle('tutorial-active',Boolean(!flightTransmission&&guide));
-    ui.flightDestination.textContent=classicSideVoyage ? `${classicSideVoyage.ficha.id} · ${view?.stageNumber||1}/${view?.distance?.stages||1}`
+    ui.flightDestination.textContent=classicSideVoyage ? `TRAMO ${view?.stageNumber||1}/${view?.distance?.stages||1}`
       : currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
@@ -652,6 +681,14 @@
   function advanceClassicFlight(dt) {
     const introBefore=classicFlightView?.elapsed;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
+    // Auditoría J05: en un viaje del mapa, con la cuota del tramo cumplida y
+    // 20 s jugados, el reloj del tramo corre al triple para no dejar tiempo
+    // muerto. Los eventos siguen en orden. S1-V1 no: su capítulo va narrado.
+    // Un tramo con lluvia de cometas tampoco, para no cortar sus tandas (M2).
+    const view=classicFlightView;
+    if(classicSideVoyage&&view&&!view.canFinish&&view.stageElapsed>=20&&collected>=view.stageGoal&&
+      !NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)
+      for(let i=0;i<2;i++)classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
     // Cronos Prime: suena al frenar sobre la estación, al empezar a alimentarse y al disparar.
     const timeline=NeonCampaign.CHRONOS_INTRO_TIMELINE;
     if(timeline&&Number.isFinite(introBefore)&&classicFlightView) {
@@ -665,6 +702,13 @@
       advanceClassicTutorial();
     }
     if(classicFlightView?.stageNumber) {
+      // Revisión G5: si el reloj del tramo acaba sin la cuota, el viaje espera;
+      // N-7 dice cuánto CRONIUM falta (una vez por tramo).
+      const wait=classicFlightView;
+      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId) {
+        classicCroniumWaitNotice=wait.stageId;
+        showStoryTransmission("N-7",`Faltan ${Math.max(1,wait.stageGoal-collected)} CRONIUM para seguir al siguiente tramo.`,4);
+      }
       if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
     }
@@ -694,7 +738,9 @@
 
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
-    if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
+    // Los 9 s de espera son el inicio propio de S1-V1 (estación y tutorial).
+    // Los viajes del mapa no tienen ese inicio: su primer CRONIUM llega en ~1 s.
+    if(view.elapsed<(classicSideVoyage?0:9) || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
     const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;
@@ -724,21 +770,41 @@
     if(classicVoyageHazardTimer<900) {
       if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
         stageNumber:n,profile:rules.hazards,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+      if(rules.hazards.mix.lavaCore||rules.hazards.mix.plasmaMine)ensureSprite(SPRITES.lavaCoreMine);
       const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
         !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
-        const threat=createThreat(hazard.type,level());
-        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        // Núcleo de lava y mina de plasma (sector 2); sin su hoja, un meteorito.
+        const vulkar=hazard.type==="lavaCore"||hazard.type==="plasmaMine";
+        const threat=vulkar&&spriteReady(SPRITES.lavaCoreMine)?createVulkarHazard(hazard.type,level()):
+          createThreat(vulkar?"meteor":hazard.type,level());
+        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed*(threat.speedScale||1);threat.amp=0;
         threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.hazardDamageScale=hazard.damageScale??1;
+        // Durante la lluvia el pasillo marcado es seguro de verdad: nada nuevo
+        // cae dentro (revisión L1). Los peligros caen recto (amp=0).
+        if(cometShowerActive()){const c=classicCometCorridor.corridor;if(threat.x+threat.r>c.left&&threat.x-threat.r<c.right)return;}
         items.push(threat);
       });
     }
     if(rules.comets) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
       NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
-        if(event.type==="warning")showStoryTransmission("N-7",event.text,2);
+        if(event.type==="warning"){showStoryTransmission("N-7",event.text,2);
+          classicCometCorridor={corridor:event.corridor,until:view.stageElapsed+2.5};}
         if(event.type==="spawn")items.push(event.item);
       });
+      // Auditoría B01: el pasillo marcado se vacía de todo lo que no sea cometa.
+      // Al avisar desaparecen los peligros y disparos que ya caían por esa
+      // columna, y luego cualquier disparo que entre de lado.
+      if(cometShowerActive()) {
+        const c=classicCometCorridor.corridor;
+        for(let i=items.length-1;i>=0;i--) {
+          const item=items[i];
+          if(!(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout)))continue;
+          if(item.x+item.r<=c.left||item.x-item.r>=c.right||item.y<-100)continue;
+          burst(item.x,item.y,6,"gold");items.splice(i,1);
+        }
+      }
     }
     if(rules.repairAt!==null && view.stageElapsed>=rules.repairAt && classicCometWarning!==n) {
       classicCometWarning=n;const x=W*.45;
@@ -864,13 +930,24 @@
     const route=NeonCampaign.createVoyageRoute(ficha),raw=storage.getJSON(ficha.saveKey,null);
     const checkpoint=raw?.version===1&&raw.voyage===ficha.id?route.normalizeCheckpoint(raw.checkpoint,{goal:ficha.baseGoal}):null;
     const stars=Math.trunc(Math.min(3,Math.max(0,Number(raw?.stars)||0)));
-    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,stars}:null;
+    // Entrada del tramo (como S1-V1, más el CRONIUM perdido). Los registros
+    // antiguos no la tienen y un valor dañado se ignora: se empieza como antes.
+    const e=raw?.entry,entry=checkpoint&&Number.isFinite(e?.hull)&&e.hull>0&&e.hull<=100&&
+      Number.isInteger(e.score)&&e.score>=0&&Number.isFinite(e.maxCombo)&&e.maxCombo>=1&&e.maxCombo<=12&&
+      e.collected===checkpoint.collected&&(e.reserve===undefined||(Number.isFinite(e.reserve)&&e.reserve>=0&&e.reserve<=65))&&
+      (e.missed===undefined||(Number.isInteger(e.missed)&&e.missed>=0))?e:null;
+    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,inProgress:raw.inProgress===true,stars,entry}:null;
   }
   function saveSideVoyage(checkpoint,completed=false,stars=0) {
     if(!classicSideVoyage||!checkpoint)return false;
-    // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas.
+    // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas. La
+    // entrada guarda casco y CRONIUM perdido; lo que aún cae no cuenta.
+    // inProgress distingue una partida a medias de un viaje solo completado
+    // (auditoría L01): así reintentar una rejugada vuelve a su tramo.
     const {ficha}=classicSideVoyage,previous=loadSideVoyageRecord(ficha),record={version:1,voyage:ficha.id,checkpoint,
-      completed:completed||previous?.completed===true,stars:Math.max(stars,previous?.stars||0)};
+      completed:completed||previous?.completed===true,inProgress:!completed,stars:Math.max(stars,previous?.stars||0),
+      entry:{hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,
+        collected:checkpoint.collected,missed:Math.max(0,energySpawned-collected-items.filter(item=>item.type==="energy").length)}};
     const saved=storage.setJSON(ficha.saveKey,record);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
     return saved;
@@ -989,7 +1066,7 @@
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
     setClassicFlightHudVisible(true);
-    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
+    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); ensureSprite(SPRITES.atlasExplosion);
     hideWarning(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
     ui.atlasEncounter.classList.remove("hidden");
@@ -1036,6 +1113,9 @@
     if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
+      // Explosión del baúl durante el apagado (1,55 s): el completado llega
+      // como siempre, ~0,75 s después de que se apague. Sin imagen, como antes.
+      if(spriteReady(SPRITES.atlasExplosion))addAtlasExplosion(atlasBoss);
       spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
     }
     if (event.type === "disabled") completeLevel();
@@ -1222,9 +1302,11 @@
     ui.playLabel.textContent = "CONTINUAR VIAJE";
     ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
-    const nextVoyage=classicVoyageRecord&&!classicVoyageRecord.completed?null:nextCampaignVoyage();
+    // Una rejugada de S1-V1 a medias no frena la campaña (auditoría L02).
+    const s1v1Pending=classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2;
+    const nextVoyage=s1v1Pending?null:nextCampaignVoyage();
     if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
-    if(!nextVoyage&&getUnlocked()>=2&&!(classicVoyageRecord&&!classicVoyageRecord.completed)){
+    if(!nextVoyage&&getUnlocked()>=2){
       ui.playLabel.textContent="VER EL MAPA";ui.playSector.textContent="TODOS LOS VIAJES DISPONIBLES HECHOS";
     }
     const current = routes.findIndex(route => route.status === "open");
@@ -1244,8 +1326,11 @@
     let reserve=$("hullReserve");
     if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
     reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
-    ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = "NIVEL";
+    // Los 10 viajes corren en currentLevel 0: la casilla muestra el viaje
+    // (ficha del mapa o la de S1-V1), no un «NIVEL 1» que nunca cambia.
+    ui.hudLevel.textContent = classicSideVoyage ? classicSideVoyage.ficha.id
+      : NeonCampaign.PLAYABLE_VOYAGES.find(ficha => ficha.id === "S1-V1").id;
+    ui.hudLevel.previousElementSibling.textContent = "VIAJE";
     ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
@@ -1569,12 +1654,16 @@
   function startLevel(index = currentLevel) {
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
+    hullGrace = 0;
+    classicGuideSeen = null;classicCroniumWaitNotice = null;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     let voyageEntry=null,voyageCheckpoint=null;
     // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
     const sideFicha=classicSideVoyagePending||(["paused","gameover","complete"].includes(state)?classicSideVoyage?.ficha:null);
+    // Reintentar o reiniciar (no abrir desde el mapa) reanuda una rejugada a medias (B02).
+    const sideRetry=!classicSideVoyagePending;
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){
@@ -1582,7 +1671,7 @@
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
       const requested=classicVoyageRequestedStage;
       if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
-      else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
+      else if(record&&(!record.completed||(record.inProgress&&sideRetry))){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
@@ -1681,7 +1770,8 @@
     applyClassicSalvageShield();
 
     energySpawned = 0;
-    if(classicFlight)energySpawned=collected;
+    // Los fragmentos perdidos antes del punto de control siguen contando.
+    if(classicFlight)energySpawned=collected+(voyageEntry?.missed||0);
     energyBudget = level().goal + Math.ceil(level().goal * 0.25);
     powerSpawned = 0;
     powerBudget = 2 + Math.floor(currentLevel / 3);
@@ -1713,6 +1803,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
+    pauseStartedAt = performance.now();
     hideWarning();
     overlay(ui.paused);
   }
@@ -1723,6 +1814,9 @@
     setState("playing");
     overlay();
     last = performance.now();
+    // Gracia de 0,8 s solo tras una pausa real: pausar y reanudar sin parar
+    // no encadena invulnerabilidad (revisión L2).
+    if (performance.now() - pauseStartedAt >= 500) hullGrace = Math.max(hullGrace, 0.8);
     resumeAudio();
   }
 
@@ -1897,6 +1991,7 @@
     // La pantalla de derrota se abre después de la animación final, por lo que
     // hay que cancelar cualquier resto de ese estado antes de volver a jugar.
     hull = Math.max(hull, 35);
+    hullGrace = 0; // la continuación no da invulnerabilidad temporizada
     continued = true;
     setState("playing");
     if (atlasBoss) {

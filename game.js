@@ -321,6 +321,12 @@
   let classicSalvageEnemySequence = 0;
   let classicSalvageWarningShown = false;
   let classicCometShower = null;
+  let classicCometCorridor = null;
+  let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
+  let pauseStartedAt = 0;
+  let classicGuideSeen = null; // lección de un paso: cuándo se mostró por primera vez (G1)
+  let reserveHitExplained = false; // N-7 explica una vez el golpe absorbido (G2)
+  let classicCroniumWaitNotice = null; // tramo cuyo aviso de CRONIUM pendiente ya salió (G5)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -491,6 +497,9 @@
     gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
     hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
+    atlasExplosion: loadSprite("assets/atlas_explosion_v1.webp", false),
+    // Peligros del sector 2 (baúl, encargo enc-nucleo): núcleo de lava y mina de plasma.
+    lavaCoreMine: loadSprite("assets/lava_core_mine_atlas_v1.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
@@ -1093,12 +1102,20 @@
   }
 
   function resetClassicCometShower() {
-    classicCometShower=null;
+    classicCometShower=null;classicCometCorridor=null;
     const view=classicFlightView;
     if(!view||!NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)return;
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
       shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
+  }
+
+  // Lluvia en curso: desde el aviso hasta que sale el último cometa. Mientras
+  // dura, el pasillo seguro se dibuja y las patrullas no disparan (J04).
+  function cometShowerActive() {
+    if(!classicCometCorridor)return false;
+    if((classicFlightView?.stageElapsed??Infinity)<classicCometCorridor.until||items.some(item=>item.showerComet))return true;
+    classicCometCorridor=null;return false;
   }
 
   function recoverCampaignCompletion() {
@@ -1150,7 +1167,16 @@
     canvas.parentElement.append(chapterControls);
     ui.classicC9=$("classicC9");ui.classicC9.onclick=()=>openClassicDock("hud");
     ui.chapterSkip=$("chapterSkip");ui.classicMissile=$("classicMissile");ui.classicMissileCount=$("classicMissileCount");
-    ui.chapterSkip.onclick=()=>{classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot();syncClassicChapterPresentation();};
+    ui.chapterSkip.onclick=()=>{
+      if(!classicChapterStory?.skipIntro())return;
+      // Omitir lleva el mundo al estado posterior a la ruptura (revisión B1):
+      // la cinemática se dibuja con el reloj de la ruta, así que se adelanta
+      // hasta que Cronos Prime se ha ido, en vez de seguir bajo el HUD.
+      const gone=NeonCampaign.CHRONOS_INTRO_TIMELINE?.gone||0;
+      for(let i=0;i<2000&&classicFlight&&classicFlightView.elapsed<gone;i++)
+        classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
+      classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
+    };
     // Missile pointer/touch ownership is installed with the other flight
     // controls in 08-loop-input-bootstrap, including accessible click fallback.
     for (const id of ["flightHud","flightRoute","flightDestination","flightStage","flightWeapon","flightWeaponName","flightWeaponDamage","flightDistance","flightObjective","flightPilotHint","flightPilotStick","flightPilotKnob","flightDock","flightDockCanvas","flightDockStatus","flightInstallTwin","c9Balance","c9BuyShield","c9BuyMissiles","c9BuyCoolant","c9PurchaseStatus"]) ui[id] = $(id);
@@ -1283,6 +1309,7 @@
         !Number.isFinite(value.entry?.maxCombo) || value.entry.maxCombo<1 || value.entry.maxCombo>12 ||
         value.entry?.collected!==checkpoint.collected)throw new Error("Invalid voyage save");
       if(value.entry.reserve!==undefined&&(!Number.isFinite(value.entry.reserve)||value.entry.reserve<0||value.entry.reserve>65))throw new Error("Invalid hull reserve");
+      if(value.entry.missed!==undefined&&(!Number.isInteger(value.entry.missed)||value.entry.missed<0))throw new Error("Invalid missed count");
       return {...value,checkpoint,chapter:value.chapter?NeonCampaign.normalizeChronosChapterCheckpoint(value.chapter):null};
     } catch {return null;}
   }
@@ -1310,7 +1337,9 @@
     if(!checkpoint)return null;
     const previous=classicVoyageRecord;
     const entry=completed && previous ? previous.entry : {
-      hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected};
+      hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,collected:checkpoint.collected,
+      // CRONIUM perdido, como en los viajes del mapa (auditoría L03).
+      missed:Math.max(0,energySpawned-collected-items.filter(item=>item.type==="energy").length)};
     return {version:2,checkpoint,entry,chapter:classicChapterStory?.checkpoint()||null,unlockedStage:Math.max(previous?.unlockedStage||1,checkpoint.stageNumber),completed};
   }
 
@@ -1399,7 +1428,7 @@
       if(state!=="playing"||atlasBoss||classicChapterControlsLocked())return false;
       if(typeof resetGameInput==="function")resetGameInput();
       NeonCampaign.endFlightInput(classicFlightInput);
-      setState("paused");classicWorkshopOpened=true;
+      setState("paused");pauseStartedAt=performance.now();classicWorkshopOpened=true;
     } else if(state!=="menu")return false;
     flightDockReturn=from; updateClassicDock(); overlay(ui.flightDock);
     $("flightDockContinue").focus({preventScroll:true});
@@ -1410,6 +1439,8 @@
     if(flightDockReturn==="hud"&&state==="paused") {
       if(typeof resetGameInput==="function")resetGameInput();
       setState("playing");overlay();last=performance.now();resumeAudio();
+      // Misma gracia que al reanudar desde la pausa (auditoría B04).
+      if(performance.now()-pauseStartedAt>=500)hullGrace=Math.max(hullGrace,0.8);
       syncClassicFlightHud();ui.classicC9?.focus({preventScroll:true});return;
     }
     if(flightDockReturn==="voyage"){resumeClassicVoyageService();return;}
@@ -1495,8 +1526,15 @@
     // The primary HUD already shows the quota. This reserved, transparent slot
     // is used only for brief contextual comms; it never repeats the counters.
     const tutorialView=typeof classicTutorial!=="undefined"?classicTutorial?.snapshot():null;
-    const guide=!atlasBoss&&state==='playing'?tutorialView?.active:null;
-    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? `${guide.text} · ${Math.round(guide.progress*100)} %` : "";
+    let guide=!atlasBoss&&state==='playing'?tutorialView?.active:null;
+    // Revisión G1: una lección de un paso (target 1) se ve sus segundos, se
+    // oculta y vuelve una sola vez a los 30 s de juego; sin «· 0 %».
+    if(guide&&guide.target===1&&!flightTransmission) {
+      if(classicGuideSeen?.id!==guide.id)classicGuideSeen={id:guide.id,at:elapsed};
+      const since=elapsed-classicGuideSeen.at,seconds=guide.seconds||4;
+      if(!(since<seconds||(since>=30&&since<30+seconds)))guide=null;
+    }
+    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? (guide.target>1?`${guide.text} · ${Math.round(guide.progress*100)} %`:guide.text) : "";
     const signature=[currentLevel,stage,objective,collected,Math.floor((view?.routeProgress||0)*1000),classicEquipment.selected,classicWeapons?.charges,Math.floor((classicWeapons?.recharge||0)*5)].join(":");
     if(signature===flightHudSignature)return;
     flightHudSignature=signature;
@@ -1511,7 +1549,7 @@
     }
     ui.flightObjective.dataset.active=String(Boolean(flightTransmission||guide));
     ui.flightObjective.classList.toggle('tutorial-active',Boolean(!flightTransmission&&guide));
-    ui.flightDestination.textContent=classicSideVoyage ? `${classicSideVoyage.ficha.id} · ${view?.stageNumber||1}/${view?.distance?.stages||1}`
+    ui.flightDestination.textContent=classicSideVoyage ? `TRAMO ${view?.stageNumber||1}/${view?.distance?.stages||1}`
       : currentLevel===0 ? `CHRONOS → GAIA · ${view?.stageNumber||1}/10` : `${level().world} · RASTRO ${currentLevel+1}/10`;
     ui.flightDistance.value=view ? view.routeProgress : collected/level().goal;
     ui.flightDistance.setAttribute("aria-label",view ? "Recorrido hasta el destino" : "CRONIUM recuperado");
@@ -1594,6 +1632,14 @@
   function advanceClassicFlight(dt) {
     const introBefore=classicFlightView?.elapsed;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
+    // Auditoría J05: en un viaje del mapa, con la cuota del tramo cumplida y
+    // 20 s jugados, el reloj del tramo corre al triple para no dejar tiempo
+    // muerto. Los eventos siguen en orden. S1-V1 no: su capítulo va narrado.
+    // Un tramo con lluvia de cometas tampoco, para no cortar sus tandas (M2).
+    const view=classicFlightView;
+    if(classicSideVoyage&&view&&!view.canFinish&&view.stageElapsed>=20&&collected>=view.stageGoal&&
+      !NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)
+      for(let i=0;i<2;i++)classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
     // Cronos Prime: suena al frenar sobre la estación, al empezar a alimentarse y al disparar.
     const timeline=NeonCampaign.CHRONOS_INTRO_TIMELINE;
     if(timeline&&Number.isFinite(introBefore)&&classicFlightView) {
@@ -1607,6 +1653,13 @@
       advanceClassicTutorial();
     }
     if(classicFlightView?.stageNumber) {
+      // Revisión G5: si el reloj del tramo acaba sin la cuota, el viaje espera;
+      // N-7 dice cuánto CRONIUM falta (una vez por tramo).
+      const wait=classicFlightView;
+      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId) {
+        classicCroniumWaitNotice=wait.stageId;
+        showStoryTransmission("N-7",`Faltan ${Math.max(1,wait.stageGoal-collected)} CRONIUM para seguir al siguiente tramo.`,4);
+      }
       if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
     }
@@ -1636,7 +1689,9 @@
 
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
-    if(view.elapsed<9 || view.canFinish || classicChapterControlsLocked())return;
+    // Los 9 s de espera son el inicio propio de S1-V1 (estación y tutorial).
+    // Los viajes del mapa no tienen ese inicio: su primer CRONIUM llega en ~1 s.
+    if(view.elapsed<(classicSideVoyage?0:9) || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
     const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;
@@ -1666,21 +1721,41 @@
     if(classicVoyageHazardTimer<900) {
       if(classicVoyageHazards?.stageNumber!==n)classicVoyageHazards=NeonCampaign.createVoyageHazardField({
         stageNumber:n,profile:rules.hazards,seed:Math.floor(Math.random()*4294967296),width:W,height:H,shipWidth:player.w});
+      if(rules.hazards.mix.lavaCore||rules.hazards.mix.plasmaMine)ensureSprite(SPRITES.lavaCoreMine);
       const ambient=items.filter(item=>isThreat(item)&&!item.flightPatrol&&!item.classicScout&&
         !item.classicScoutProjectile&&!item.showerComet&&!item.guardianProjectile);
       NeonCampaign.advanceVoyageHazardField(classicVoyageHazards,dt,ambient,hazard=>{
-        const threat=createThreat(hazard.type,level());
-        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed;threat.amp=0;
+        // Núcleo de lava y mina de plasma (sector 2); sin su hoja, un meteorito.
+        const vulkar=hazard.type==="lavaCore"||hazard.type==="plasmaMine";
+        const threat=vulkar&&spriteReady(SPRITES.lavaCoreMine)?createVulkarHazard(hazard.type,level()):
+          createThreat(vulkar?"meteor":hazard.type,level());
+        threat.x=threat.baseX=hazard.x;threat.y=-95-hazard.delayY;threat.s=hazard.speed*(threat.speedScale||1);threat.amp=0;
         threat.damage=Math.round(threat.damage*(hazard.damageScale??1));threat.hazardDamageScale=hazard.damageScale??1;
+        // Durante la lluvia el pasillo marcado es seguro de verdad: nada nuevo
+        // cae dentro (revisión L1). Los peligros caen recto (amp=0).
+        if(cometShowerActive()){const c=classicCometCorridor.corridor;if(threat.x+threat.r>c.left&&threat.x-threat.r<c.right)return;}
         items.push(threat);
       });
     }
     if(rules.comets) {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
       NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
-        if(event.type==="warning")showStoryTransmission("N-7",event.text,2);
+        if(event.type==="warning"){showStoryTransmission("N-7",event.text,2);
+          classicCometCorridor={corridor:event.corridor,until:view.stageElapsed+2.5};}
         if(event.type==="spawn")items.push(event.item);
       });
+      // Auditoría B01: el pasillo marcado se vacía de todo lo que no sea cometa.
+      // Al avisar desaparecen los peligros y disparos que ya caían por esa
+      // columna, y luego cualquier disparo que entre de lado.
+      if(cometShowerActive()) {
+        const c=classicCometCorridor.corridor;
+        for(let i=items.length-1;i>=0;i--) {
+          const item=items[i];
+          if(!(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout)))continue;
+          if(item.x+item.r<=c.left||item.x-item.r>=c.right||item.y<-100)continue;
+          burst(item.x,item.y,6,"gold");items.splice(i,1);
+        }
+      }
     }
     if(rules.repairAt!==null && view.stageElapsed>=rules.repairAt && classicCometWarning!==n) {
       classicCometWarning=n;const x=W*.45;
@@ -1806,13 +1881,24 @@
     const route=NeonCampaign.createVoyageRoute(ficha),raw=storage.getJSON(ficha.saveKey,null);
     const checkpoint=raw?.version===1&&raw.voyage===ficha.id?route.normalizeCheckpoint(raw.checkpoint,{goal:ficha.baseGoal}):null;
     const stars=Math.trunc(Math.min(3,Math.max(0,Number(raw?.stars)||0)));
-    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,stars}:null;
+    // Entrada del tramo (como S1-V1, más el CRONIUM perdido). Los registros
+    // antiguos no la tienen y un valor dañado se ignora: se empieza como antes.
+    const e=raw?.entry,entry=checkpoint&&Number.isFinite(e?.hull)&&e.hull>0&&e.hull<=100&&
+      Number.isInteger(e.score)&&e.score>=0&&Number.isFinite(e.maxCombo)&&e.maxCombo>=1&&e.maxCombo<=12&&
+      e.collected===checkpoint.collected&&(e.reserve===undefined||(Number.isFinite(e.reserve)&&e.reserve>=0&&e.reserve<=65))&&
+      (e.missed===undefined||(Number.isInteger(e.missed)&&e.missed>=0))?e:null;
+    return checkpoint?{version:1,voyage:ficha.id,checkpoint,completed:raw.completed===true,inProgress:raw.inProgress===true,stars,entry}:null;
   }
   function saveSideVoyage(checkpoint,completed=false,stars=0) {
     if(!classicSideVoyage||!checkpoint)return false;
-    // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas.
+    // Rejugar un viaje hecho no borra su marca ni sus mejores estrellas. La
+    // entrada guarda casco y CRONIUM perdido; lo que aún cae no cuenta.
+    // inProgress distingue una partida a medias de un viaje solo completado
+    // (auditoría L01): así reintentar una rejugada vuelve a su tramo.
     const {ficha}=classicSideVoyage,previous=loadSideVoyageRecord(ficha),record={version:1,voyage:ficha.id,checkpoint,
-      completed:completed||previous?.completed===true,stars:Math.max(stars,previous?.stars||0)};
+      completed:completed||previous?.completed===true,inProgress:!completed,stars:Math.max(stars,previous?.stars||0),
+      entry:{hull:Math.max(1,Math.min(100,hull)),reserve:classicHullReserve,score:Math.max(0,Math.floor(score)),maxCombo,
+        collected:checkpoint.collected,missed:Math.max(0,energySpawned-collected-items.filter(item=>item.type==="energy").length)}};
     const saved=storage.setJSON(ficha.saveKey,record);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
     return saved;
@@ -1931,7 +2017,7 @@
     items = []; gates = []; shots = []; tractorTarget = null;
     if(classicWeapons)classicWeapons.projectiles.length=0;
     setClassicFlightHudVisible(true);
-    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx);
+    ensureSprite(SPRITES.guardianAtlas); ensureSprite(SPRITES.atlasVfx); ensureSprite(SPRITES.atlasExplosion);
     hideWarning(); ui.banner.classList.remove("show");
     document.body.classList.add("atlas-combat");
     ui.atlasEncounter.classList.remove("hidden");
@@ -1978,6 +2064,9 @@
     if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
+      // Explosión del baúl durante el apagado (1,55 s): el completado llega
+      // como siempre, ~0,75 s después de que se apague. Sin imagen, como antes.
+      if(spriteReady(SPRITES.atlasExplosion))addAtlasExplosion(atlasBoss);
       spawnClassicScrap({x:atlasBoss.x,y:atlasBoss.y,bossSalvage:true,salvageDropId:"guardian-atlas"});
     }
     if (event.type === "disabled") completeLevel();
@@ -2164,9 +2253,11 @@
     ui.playLabel.textContent = "CONTINUAR VIAJE";
     ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
-    const nextVoyage=classicVoyageRecord&&!classicVoyageRecord.completed?null:nextCampaignVoyage();
+    // Una rejugada de S1-V1 a medias no frena la campaña (auditoría L02).
+    const s1v1Pending=classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2;
+    const nextVoyage=s1v1Pending?null:nextCampaignVoyage();
     if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
-    if(!nextVoyage&&getUnlocked()>=2&&!(classicVoyageRecord&&!classicVoyageRecord.completed)){
+    if(!nextVoyage&&getUnlocked()>=2){
       ui.playLabel.textContent="VER EL MAPA";ui.playSector.textContent="TODOS LOS VIAJES DISPONIBLES HECHOS";
     }
     const current = routes.findIndex(route => route.status === "open");
@@ -2186,8 +2277,11 @@
     let reserve=$("hullReserve");
     if(!reserve){reserve=document.createElement("span");reserve.id="hullReserve";ui.hull.after(reserve);}
     reserve.textContent=classicHullReserve>0?`+${Math.ceil(classicHullReserve)}`:"";
-    ui.hudLevel.textContent = currentLevel + 1;
-    ui.hudLevel.previousElementSibling.textContent = "NIVEL";
+    // Los 10 viajes corren en currentLevel 0: la casilla muestra el viaje
+    // (ficha del mapa o la de S1-V1), no un «NIVEL 1» que nunca cambia.
+    ui.hudLevel.textContent = classicSideVoyage ? classicSideVoyage.ficha.id
+      : NeonCampaign.PLAYABLE_VOYAGES.find(ficha => ficha.id === "S1-V1").id;
+    ui.hudLevel.previousElementSibling.textContent = "VIAJE";
     ui.goal.previousElementSibling.textContent="CRONIUM";
     ui.hullBar.style.width = `${clamp(hull, 0, 100)}%`;
     ui.hullBar.style.background = hull > 66
@@ -2511,12 +2605,16 @@
   function startLevel(index = currentLevel) {
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
+    hullGrace = 0;
+    classicGuideSeen = null;classicCroniumWaitNotice = null;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
     let voyageEntry=null,voyageCheckpoint=null;
     // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
     const sideFicha=classicSideVoyagePending||(["paused","gameover","complete"].includes(state)?classicSideVoyage?.ficha:null);
+    // Reintentar o reiniciar (no abrir desde el mapa) reanuda una rejugada a medias (B02).
+    const sideRetry=!classicSideVoyagePending;
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){
@@ -2524,7 +2622,7 @@
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
       const requested=classicVoyageRequestedStage;
       if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
-      else if(record&&!record.completed)voyageCheckpoint=record.checkpoint;
+      else if(record&&(!record.completed||(record.inProgress&&sideRetry))){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
@@ -2623,7 +2721,8 @@
     applyClassicSalvageShield();
 
     energySpawned = 0;
-    if(classicFlight)energySpawned=collected;
+    // Los fragmentos perdidos antes del punto de control siguen contando.
+    if(classicFlight)energySpawned=collected+(voyageEntry?.missed||0);
     energyBudget = level().goal + Math.ceil(level().goal * 0.25);
     powerSpawned = 0;
     powerBudget = 2 + Math.floor(currentLevel / 3);
@@ -2655,6 +2754,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     NeonCampaign.endFlightInput(classicFlightInput);
     setState("paused");
+    pauseStartedAt = performance.now();
     hideWarning();
     overlay(ui.paused);
   }
@@ -2665,6 +2765,9 @@
     setState("playing");
     overlay();
     last = performance.now();
+    // Gracia de 0,8 s solo tras una pausa real: pausar y reanudar sin parar
+    // no encadena invulnerabilidad (revisión L2).
+    if (performance.now() - pauseStartedAt >= 500) hullGrace = Math.max(hullGrace, 0.8);
     resumeAudio();
   }
 
@@ -2839,6 +2942,7 @@
     // La pantalla de derrota se abre después de la animación final, por lo que
     // hay que cancelar cualquier resto de ese estado antes de volver a jugar.
     hull = Math.max(hull, 35);
+    hullGrace = 0; // la continuación no da invulnerabilidad temporizada
     continued = true;
     setState("playing");
     if (atlasBoss) {
@@ -3032,6 +3136,20 @@
       variant: type === "debris" ? (Math.random() < 0.5 ? "panel" : "strut") : "",
       classicScout: type === "scout" ? NeonCampaign.createClassicScout({x, phase: Math.random() * Math.PI * 2, width: W}) : null
     });
+  }
+
+  // Peligros de Vulkar (sector 2, encargo enc-nucleo). Para el resto del juego
+  // son meteoritos (choque, disparos, daño); solo cambian aspecto y aguante.
+  // Núcleo de lava: avanza despacio y aguanta 4 impactos. Mina de plasma:
+  // cae como un meteorito, se rompe de 1 impacto y estalla al romperse; el
+  // estallido es solo visual (sin daño en área), así no necesita aviso previo.
+  // Radios del dibujo: el círculo de choque (r·1,04) cubre la roca o el cuerpo
+  // de la mina; las puntas de la mina quedan fuera, a favor del jugador.
+  function createVulkarHazard(kind, lv) {
+    const threat = createThreat("meteor", lv), core = kind === "lavaCore", hp = core ? 4 : 1;
+    return Object.assign(threat, { vulkarHazard: kind, spriteKey: kind, special: "", damage: 34,
+      r: core ? 40 : 30, hp, maxHp: hp, rs: core ? (Math.random() - 0.5) * 0.8 : 0,
+      speedScale: core ? 0.65 : 1, shape: null, craters: null });
   }
 
   function addItem() {
@@ -3327,6 +3445,23 @@
     impactEffects.push({ x, y, scale: 1, angle, life: 0.5, duration: 0.5, hullSparks: true });
   }
 
+  // Estallido de la mina de plasma (último fotograma de su hoja): crece y se
+  // apaga en 0,45 s. Solo presentación.
+  function addPlasmaBlast(x, y) {
+    if (!spriteReady(SPRITES.lavaCoreMine)) return;
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x, y, scale: 1, angle: Math.random() * Math.PI * 2, life: 0.45, duration: 0.45, plasmaBlast: true });
+  }
+
+  // Explosión de Atlas vencido (baúl, encargo a04): 8 fotogramas en 0,8 s
+  // centrados en su núcleo, con una sacudida corta. Solo presentación.
+  function addAtlasExplosion(boss) {
+    if (impactEffects.length >= EFFECT_LIMITS.impacts) impactEffects.shift();
+    impactEffects.push({ x: boss.x, y: boss.y, scale: 1, angle: 0, life: 0.8, duration: 0.8,
+      atlasExplosion: true, size: (boss.visualSize || 350) * 1.5 });
+    shake = Math.max(shake, 14);
+  }
+
   function addMissileImpact(x,y) {
     if(!settings.effects)return;
     if(impactEffects.length>=EFFECT_LIMITS.impacts)impactEffects.shift();
@@ -3373,6 +3508,8 @@
 
   function damageShip(amount, x = player.x, y = player.y, context = {}) {
     if (state === "destroying" || state === "gameover") return;
+    // Auditoría J06/J07: sin daño durante la gracia (tras un golpe o al reanudar).
+    if (typeof hullGrace !== "undefined" && hullGrace > 0) return;
     // Daño recibido según el modo de dificultad (Normal = 1).
     const difficultyDamage = typeof NeonCampaign !== "undefined" && typeof settings !== "undefined"
       ? NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.damage ?? 1 : 1;
@@ -3383,12 +3520,20 @@
       kind:context.kind||"collision",largeAsteroid:context.largeAsteroid===true,
       largeAsteroidScale:context.largeAsteroidScale||1});
     classicHullReserve=damageResult.reserve;
+    if (typeof hullGrace !== "undefined") hullGrace = 0.3;
     if (damageResult.absorbed) {
       classicShieldImpact=.18;
-      burst(x, y, 18, "cyan");
-      pulseRing(x, y, "#62fff1", 90, 0.42);
+      // Revisión G2: el golpe absorbido no se parece a recoger CRONIUM (cian):
+      // chispas y aro ámbar, sacudida corta y, la primera vez, N-7 lo explica.
+      burst(x, y, 18, "gold");
+      pulseRing(x, y, "#edc68a", 90, 0.42);
+      if (!settings.reduceEffects) shake = Math.max(shake, 6);
       addImpactEffect(x, y, 0.85, impactAngle);
       combatSound("hull-hit",x);
+      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained) {
+        reserveHitExplained = true;
+        showStoryTransmission("N-7", "Tu refuerzo de casco absorbió el impacto.", 3);
+      }
       hud();
       return;
     }
@@ -3468,6 +3613,7 @@
       // Guardian weapons have authored tier damage (13/15/22). Only patrol
       // Phasers use the normal/heavy10/15 table; never flatten a boss superattack.
       const enemyPhaser=item.classicScoutProjectile&&!item.guardianProjectile;
+      if(item.vulkarHazard==="plasmaMine")addPlasmaBlast(item.x,item.y);
       damageShip(item.damage,item.x,item.y,{kind:enemyPhaser?(item.damage>=15?"heavyPhaser":"phaser"):"collision",
         largeAsteroid:item.type==="meteor"&&item.special!=="comet"&&item.spriteKey==="meteorLarge",
         largeAsteroidScale:item.hazardDamageScale||1});
@@ -3521,7 +3667,9 @@
       if (explosions[index].life <= 0) explosions.splice(index, 1);
     }
     for (let index = impactEffects.length - 1; index >= 0; index--) {
-      impactEffects[index].life -= dt;
+      // La explosión de Atlas va al mismo reloj que Atlas (mitad con Estabilizador),
+      // para que el completado siga llegando justo después de ella.
+      impactEffects[index].life -= impactEffects[index].atlasExplosion && powers.slow > 0 ? dt * .5 : dt;
       if (impactEffects[index].life <= 0) impactEffects.splice(index, 1);
     }
   }
@@ -3534,6 +3682,7 @@
   }
 
   function animateScoutHit(target, destroyed) {
+    if(destroyed&&target.vulkarHazard==="plasmaMine")addPlasmaBlast(target.x,target.y);
     if(destroyed) {
       spawnClassicScrap(target);
       releaseClassicShowerComet(target);
@@ -3792,6 +3941,7 @@
 
   function update(dt) {
     const lv = level();
+    if (state === "playing" && typeof hullGrace !== "undefined") hullGrace = Math.max(0, hullGrace - dt);
     const starBoost = state === "playing" ? lv.speed * (warpTimer > 0 ? 5.5 : 1) : 1;
     visualSpeed += (starBoost - visualSpeed) * Math.min(1, dt * 4.5);
     for (const star of stars) {
@@ -3980,6 +4130,7 @@
       if(item.type==="flightModule")item.y=Math.min(item.y,(classicFlightAnchorY||player.y)-65);
 
       if (item.classicScout) {
+        item.classicScout.holdFire=cometShowerActive();
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
         advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
       }
@@ -4053,15 +4204,20 @@
     if(cue&&time<cue.at+cue.duration) {
       const alpha=Math.min(1,(time-cue.at)/.25,(cue.at+cue.duration-time)/.25);
       ctx.globalAlpha=Math.max(0,alpha);ctx.textAlign="center";ctx.textBaseline="alphabetic";
-      ctx.font="800 15px 'Trebuchet MS', sans-serif";ctx.fillStyle="#9fe9ff";
-      ctx.fillText(cue.speaker,W/2,H*.70);
-      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2fbff";
-      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=8;
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";
       const words=cue.text.split(" "),lines=[""];
       for(const word of words) {
         const next=lines[lines.length-1]?`${lines[lines.length-1]} ${word}`:word;
-        if(ctx.measureText(next).width>W*.84&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
+        if(ctx.measureText(next).width>W*.80&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
       }
+      // Placa oscura detrás del subtítulo: sin ella el texto se perdía sobre
+      // el cristal cian de la estación (revisión B2, DESIGN §9.5 y §12.7).
+      const top=H*.70-30,bottom=H*.70+34+(lines.length-1)*30+14;
+      ctx.fillStyle="#061521e8";ctx.fillRect(W*.05,top,W*.90,bottom-top);
+      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=6;
+      ctx.font="800 20px 'Trebuchet MS', sans-serif";ctx.fillStyle="#a1eee8";
+      ctx.fillText(cue.speaker,W/2,H*.70);
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2f0e6";
       lines.forEach((line,index)=>ctx.fillText(line,W/2,H*.70+34+index*30));
     }
     ctx.restore();
@@ -4510,6 +4666,9 @@
       ctx.save(); ctx.globalAlpha = card; ctx.textAlign = "center";
       // Por encima de la franja de subtítulos (H*.70) para no pisarla.
       ctx.translate(W / 2, H * .52); ctx.scale(punch, punch);
+      // Banda oscura detrás: sin ella el rótulo se perdía sobre los anillos
+      // iluminados de la estación (revisión B2, DESIGN §9.5).
+      ctx.fillStyle = "rgba(6,21,33,.82)"; ctx.fillRect(-W * .6, -70, W * 1.2, 126);
       ctx.font = "900 76px 'Trebuchet MS', sans-serif";
       ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
       ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
@@ -4648,18 +4807,14 @@
 
     drawChronosRouteCrossing(transition);
 
+    // Atlas ya no se combate en S1-V1: solo se ve de lejos sobre Gaia, como
+    // aviso, sin la etiqueta «GUARDIAN ATLAS» de jefe.
     if (view.beacon.visible && !atlasBoss && spriteReady(SPRITES.guardianAtlas)) {
       const size = Math.max(42, W * view.beacon.scale*1.5);
       ctx.save(); ctx.translate(W * view.beacon.x, H * view.beacon.y);
       const atlas=SPRITES.guardianAtlas;
       ctx.drawImage(atlas,0,0,atlas.naturalWidth/4,atlas.naturalHeight/2,-size/2,-size/2,size,size);
       ctx.restore();
-      if (view.beacon.active) {
-        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 17px sans-serif";
-        ctx.fillStyle = "#bcefff";
-        ctx.fillText("GUARDIAN ATLAS", W * view.beacon.x, H * view.beacon.y + size * .65);
-        ctx.restore();
-      }
     }
 
     // Con el inicio nuevo el atacante es Cronos Prime, no la nave antigua.
@@ -4996,6 +5151,26 @@
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.arc(centerX, centerY, 24 + progress * 74, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Pasillo seguro de la lluvia de cometas (auditoría J04): franja cian muy
+  // tenue y dos guías discontinuas desde la mitad de la pantalla. Sin brillo,
+  // para que no compita con las amenazas; con efectos reducidos, quieta.
+  function drawCometCorridor(t) {
+    if (state !== "playing" && state !== "paused" || !cometShowerActive()) return;
+    const c = classicCometCorridor.corridor;
+    ctx.save();
+    ctx.fillStyle = "rgba(161,238,232,.05)";
+    ctx.fillRect(c.left, c.top, c.width, H - c.top);
+    ctx.strokeStyle = "rgba(161,238,232,.38)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([18, 14]);
+    ctx.lineDashOffset = settings.reduceEffects ? 0 : -(t / 40) % 32;
+    ctx.beginPath();
+    ctx.moveTo(c.left, c.top); ctx.lineTo(c.left, H);
+    ctx.moveTo(c.right, c.top); ctx.lineTo(c.right, H);
     ctx.stroke();
     ctx.restore();
   }
@@ -5439,6 +5614,10 @@
     const entry = typeof classicShipEntry === "number" && classicShipEntry > 0 ? classicShipEntry / .9 : 0;
 
     ctx.save();
+    // Gracia sin daño (al reanudar y tras un golpe): la nave parpadea para que
+    // se note; con efectos reducidos queda fija y algo transparente.
+    if (state === "playing" && typeof hullGrace === "number" && hullGrace > 0)
+      ctx.globalAlpha = settings.reduceEffects ? .6 : Math.sin(t * .05) > 0 ? .4 : 1;
     ctx.translate(player.x, player.y + (entry ? entry * entry * H * .35 : 0));
 
     const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
@@ -5608,6 +5787,19 @@
     }
 
     ctx.rotate(item.rot);
+    if (item.vulkarHazard && spriteReady(SPRITES.lavaCoreMine)) {
+      // Hoja 4×2 (encargo enc-nucleo). Fila 1: latido del núcleo (0-1-2-3-2-1);
+      // la roca ocupa ~2/3 de la celda, así ×2,98 la deja del tamaño de r.
+      // Fila 2: parpadeo de la mina (0-1-2-1); su cuerpo mide ~r con ×4.
+      const atlas = SPRITES.lavaCoreMine, cell = atlas.naturalWidth / 4;
+      const core = item.vulkarHazard === "lavaCore", tick = Math.floor(elapsed * (core ? 6 : 5) + (item.phase || 0));
+      const frame = core ? [0, 1, 2, 3, 2, 1][tick % 6] : [0, 1, 2, 1][tick % 4];
+      const size = item.r * (core ? 2.98 : 4);
+      ctx.shadowBlur = 14; ctx.shadowColor = "#ff6a3d";
+      ctx.drawImage(atlas, frame * cell, (core ? 0 : 1) * cell, cell, cell, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      return;
+    }
     const sprite = SPRITES[item.spriteKey] || SPRITES.meteorMedium;
     const sizeFactor = item.spriteKey === "meteorLarge" ? 2.95 : item.spriteKey && item.spriteKey.includes("Small") ? 2.45 : 2.70;
     const size = item.r * sizeFactor;
@@ -5900,6 +6092,14 @@
         ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
         ctx.restore();continue;
       }
+      if (effect.plasmaBlast && spriteReady(SPRITES.lavaCoreMine)) {
+        // Estallido de la mina: último fotograma de la fila 2, crece y se apaga.
+        const atlas = SPRITES.lavaCoreMine, cell = atlas.naturalWidth / 4, size = 110 + 70 * progress;
+        ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
+        ctx.globalAlpha *= 1 - progress * progress;
+        ctx.drawImage(atlas, 3 * cell, cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
+      }
       if (effect.hullSparks && spriteReady(SPRITES.hullSparks)) {
         // 8 fotogramas en 0,5 s (rejilla 4×2); el origen de las chispas es el
         // centro de cada celda y el abanico sale hacia +X, girado al impacto.
@@ -5908,6 +6108,21 @@
         ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
         ctx.globalCompositeOperation = "lighter";
         ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
+      }
+      if (effect.atlasExplosion && spriteReady(SPRITES.atlasExplosion)) {
+        // Rejilla 4×2: destello, bola de fuego, anillo cian con escombros y
+        // humo que se apaga, a 10 fps. Destello blanco breve solo sin
+        // «Reducir efectos».
+        const atlas = SPRITES.atlasExplosion, cell = atlas.naturalWidth / 4;
+        const frame = Math.min(7, Math.floor(progress * 8)), age = effect.duration - effect.life;
+        if (!settings.reduceEffects && age < .18) {
+          ctx.save(); ctx.fillStyle = `rgba(255,236,210,${(.38 * (1 - age / .18)).toFixed(3)})`;
+          ctx.fillRect(0, 0, W, H); ctx.restore();
+        }
+        ctx.save(); ctx.translate(effect.x, effect.y);
+        ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell,
+          -effect.size / 2, -effect.size / 2, effect.size, effect.size);
         ctx.restore(); continue;
       }
       if (effect.atlasImpact) {
@@ -5957,6 +6172,7 @@
     drawWarp();
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
+    drawCometCorridor(t);
     for (const item of items) {
       if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
@@ -6278,7 +6494,7 @@
   });
 
   $("play").onclick = () => {
-    if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    if(classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2){prepareLevel(0,"menu");return;}
     // La campaña sigue por el siguiente viaje abierto del mapa; si no queda
     // ninguno, se abre el mapa (ya no hay niveles clásicos).
     const nextVoyage=nextCampaignVoyage();

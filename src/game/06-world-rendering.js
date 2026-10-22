@@ -7,15 +7,20 @@
     if(cue&&time<cue.at+cue.duration) {
       const alpha=Math.min(1,(time-cue.at)/.25,(cue.at+cue.duration-time)/.25);
       ctx.globalAlpha=Math.max(0,alpha);ctx.textAlign="center";ctx.textBaseline="alphabetic";
-      ctx.font="800 15px 'Trebuchet MS', sans-serif";ctx.fillStyle="#9fe9ff";
-      ctx.fillText(cue.speaker,W/2,H*.70);
-      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2fbff";
-      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=8;
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";
       const words=cue.text.split(" "),lines=[""];
       for(const word of words) {
         const next=lines[lines.length-1]?`${lines[lines.length-1]} ${word}`:word;
-        if(ctx.measureText(next).width>W*.84&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
+        if(ctx.measureText(next).width>W*.80&&lines[lines.length-1])lines.push(word);else lines[lines.length-1]=next;
       }
+      // Placa oscura detrás del subtítulo: sin ella el texto se perdía sobre
+      // el cristal cian de la estación (revisión B2, DESIGN §9.5 y §12.7).
+      const top=H*.70-30,bottom=H*.70+34+(lines.length-1)*30+14;
+      ctx.fillStyle="#061521e8";ctx.fillRect(W*.05,top,W*.90,bottom-top);
+      ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=6;
+      ctx.font="800 20px 'Trebuchet MS', sans-serif";ctx.fillStyle="#a1eee8";
+      ctx.fillText(cue.speaker,W/2,H*.70);
+      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2f0e6";
       lines.forEach((line,index)=>ctx.fillText(line,W/2,H*.70+34+index*30));
     }
     ctx.restore();
@@ -464,6 +469,9 @@
       ctx.save(); ctx.globalAlpha = card; ctx.textAlign = "center";
       // Por encima de la franja de subtítulos (H*.70) para no pisarla.
       ctx.translate(W / 2, H * .52); ctx.scale(punch, punch);
+      // Banda oscura detrás: sin ella el rótulo se perdía sobre los anillos
+      // iluminados de la estación (revisión B2, DESIGN §9.5).
+      ctx.fillStyle = "rgba(6,21,33,.82)"; ctx.fillRect(-W * .6, -70, W * 1.2, 126);
       ctx.font = "900 76px 'Trebuchet MS', sans-serif";
       ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
       ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
@@ -602,18 +610,14 @@
 
     drawChronosRouteCrossing(transition);
 
+    // Atlas ya no se combate en S1-V1: solo se ve de lejos sobre Gaia, como
+    // aviso, sin la etiqueta «GUARDIAN ATLAS» de jefe.
     if (view.beacon.visible && !atlasBoss && spriteReady(SPRITES.guardianAtlas)) {
       const size = Math.max(42, W * view.beacon.scale*1.5);
       ctx.save(); ctx.translate(W * view.beacon.x, H * view.beacon.y);
       const atlas=SPRITES.guardianAtlas;
       ctx.drawImage(atlas,0,0,atlas.naturalWidth/4,atlas.naturalHeight/2,-size/2,-size/2,size,size);
       ctx.restore();
-      if (view.beacon.active) {
-        ctx.save(); ctx.textAlign = "center"; ctx.font = "bold 17px sans-serif";
-        ctx.fillStyle = "#bcefff";
-        ctx.fillText("GUARDIAN ATLAS", W * view.beacon.x, H * view.beacon.y + size * .65);
-        ctx.restore();
-      }
     }
 
     // Con el inicio nuevo el atacante es Cronos Prime, no la nave antigua.
@@ -950,6 +954,26 @@
     ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.arc(centerX, centerY, 24 + progress * 74, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Pasillo seguro de la lluvia de cometas (auditoría J04): franja cian muy
+  // tenue y dos guías discontinuas desde la mitad de la pantalla. Sin brillo,
+  // para que no compita con las amenazas; con efectos reducidos, quieta.
+  function drawCometCorridor(t) {
+    if (state !== "playing" && state !== "paused" || !cometShowerActive()) return;
+    const c = classicCometCorridor.corridor;
+    ctx.save();
+    ctx.fillStyle = "rgba(161,238,232,.05)";
+    ctx.fillRect(c.left, c.top, c.width, H - c.top);
+    ctx.strokeStyle = "rgba(161,238,232,.38)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([18, 14]);
+    ctx.lineDashOffset = settings.reduceEffects ? 0 : -(t / 40) % 32;
+    ctx.beginPath();
+    ctx.moveTo(c.left, c.top); ctx.lineTo(c.left, H);
+    ctx.moveTo(c.right, c.top); ctx.lineTo(c.right, H);
     ctx.stroke();
     ctx.restore();
   }

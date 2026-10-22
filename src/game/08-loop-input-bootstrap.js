@@ -11,6 +11,7 @@
     drawWarp();
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
+    drawCometCorridor(t);
     for (const item of items) {
       if (item.guardianProjectile) drawAtlasProjectile(item);
       else if (item.type === "salvage") drawSalvagePickup(item);
@@ -332,7 +333,7 @@
   });
 
   $("play").onclick = () => {
-    if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    if(classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2){prepareLevel(0,"menu");return;}
     // La campaña sigue por el siguiente viaje abierto del mapa; si no queda
     // ninguno, se abre el mapa (ya no hay niveles clásicos).
     const nextVoyage=nextCampaignVoyage();

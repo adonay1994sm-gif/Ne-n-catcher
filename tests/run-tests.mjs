@@ -599,12 +599,14 @@ await test("continuación única limpia residuos y reaparece al 35 %", async () 
   assert.equal(api.resumeReward(), false);
 });
 
-await test("la reserva de reaparición absorbe daño real sin conceder invulnerabilidad temporizada", async () => {
+await test("la reserva de reaparición absorbe daño real; solo la gracia de 0,3 s tras cada golpe", async () => {
   const before = api.snapshot().hull;
   const player = api.snapshot().player;
   assert.equal(api.snapshot().hullReserve,15);
   api.damageShip(10, player.x, player.y);
   assert.equal(api.snapshot().hull,before);assert.equal(api.snapshot().hullReserve,5);
+  // Propietario (22/10, J07): 0,3 s sin daño tras cada golpe; el siguiente llega después.
+  api.update(0.31);
   api.damageShip(10, player.x, player.y);
   assert.equal(api.snapshot().hull,before-5);assert.equal(api.snapshot().hullReserve,0);
   assert.equal(api.snapshot().powers.shield,0);

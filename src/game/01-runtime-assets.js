@@ -99,6 +99,12 @@
   let classicSalvageEnemySequence = 0;
   let classicSalvageWarningShown = false;
   let classicCometShower = null;
+  let classicCometCorridor = null;
+  let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
+  let pauseStartedAt = 0;
+  let classicGuideSeen = null; // lección de un paso: cuándo se mostró por primera vez (G1)
+  let reserveHitExplained = false; // N-7 explica una vez el golpe absorbido (G2)
+  let classicCroniumWaitNotice = null; // tramo cuyo aviso de CRONIUM pendiente ya salió (G5)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -269,6 +275,9 @@
     gaiaPulse: loadSprite("assets/gaia_pulse_atlas_v3.webp", false),
     comet: loadSprite("assets/comet_flight_atlas_v3.webp"),
     hullSparks: loadSprite("assets/hull_impact_sparks_v1.webp"),
+    atlasExplosion: loadSprite("assets/atlas_explosion_v1.webp", false),
+    // Peligros del sector 2 (baúl, encargo enc-nucleo): núcleo de lava y mina de plasma.
+    lavaCoreMine: loadSprite("assets/lava_core_mine_atlas_v1.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),

@@ -6,17 +6,17 @@ const approach = (value, target, amount) => value + clamp(target - value, -amoun
 // Acelerón ocasional al reposicionarse, nunca por encima de este límite.
 const MAX_LATERAL_SPEED = 176;
 const profiles = Object.freeze({
-  raider: Object.freeze({warning: .32, recovery: 1.25, maxAttacks: 8, holdSeconds: 20,
+  raider: Object.freeze({warning: .32, recovery: 1.25, maxAttacks: 8, holdSeconds: 9,
     depth: .30, lateralSpeed: 140, acceleration: 265, sampleInterval: .24,
     orbitRate: .96, lateralSweep: .68, depthSweep: 25,
     projectileSpeed: 360, leadSeconds: .32, damage: 14,
     volleys: Object.freeze({single: .45, double: .35, spread: .20}), flipChance: .7, dashChance: .15}),
-  scout: Object.freeze({warning: .38, recovery: 1.6, maxAttacks: 7, holdSeconds: 22,
+  scout: Object.freeze({warning: .38, recovery: 1.6, maxAttacks: 7, holdSeconds: 10,
     depth: .29, lateralSpeed: 104, acceleration: 190, sampleInterval: .32,
     orbitRate: .76, lateralSweep: .72, depthSweep: 32,
     projectileSpeed: 335, leadSeconds: .22, damage: 12,
     volleys: Object.freeze({single: .50, double: .15, spread: .35}), flipChance: .6, dashChance: .1}),
-  interceptor: Object.freeze({warning: .30, recovery: 1.15, maxAttacks: 10, holdSeconds: 24,
+  interceptor: Object.freeze({warning: .30, recovery: 1.15, maxAttacks: 10, holdSeconds: 11,
     depth: .27, lateralSpeed: 176, acceleration: 315, sampleInterval: .2,
     orbitRate: 1.23, lateralSweep: .9, depthSweep: 40,
     projectileSpeed: 390, leadSeconds: .38, damage: 15,
@@ -94,7 +94,7 @@ export function createClassicPursuer({x, width = 720, height = 1280,
     baseX: clamp(x, combatMargin, width - combatMargin),
     targetX: clamp(x, combatMargin + entryInset, width - combatMargin - entryInset), vx: 0,
     combatMinX: combatMargin, combatMaxX: width - combatMargin,
-    holdY: null, combatStartedAt: null, retreatReason: null, repositionCount: 0,
+    holdY: null, combatStartedAt: null, retreatReason: null, repositionCount: 0, intensity: 0,
     observation: null, nextObservationAt: 0, observedTarget: null, leadOffset: 0,
     baseSpeed, nextTargetAt: 0, nextFire: 1.25,
     fired: 0, telegraph: 0, lockedTarget: null, attackScheduled: false,
@@ -137,9 +137,10 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     (['charge', 'fire'].includes(enemy.state) ? .35 : 1);
   enemy.holdY = clamp(enemy.height * profile.depth + depthArc + Math.sin(enemy.phase) * 12,
     minimumHoldY, maximumHoldY);
-  const canAttack = () => hp > 0 && enemy.state !== 'retreat' &&
-    item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 &&
-    enemy.fired < profile.maxAttacks;
+  // holdFire: alto el fuego que pone el juego durante una lluvia de cometas
+  // (propietario 22/10, auditoría J04). Cancela la carga y no dispara.
+  const canAttack = () => hp > 0 && enemy.state !== 'retreat' && !enemy.holdFire &&
+    item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230;
   const clearCharge = () => {
     enemy.telegraph = 0;
     enemy.attackScheduled = false;
@@ -163,7 +164,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     enemy.repositionCount++;
     enemy.targetX = laneTarget();
     enemy.nextTargetAt = enemy.age + profile.sampleInterval;
-    enemy.nextFire = enemy.age + profile.recovery * (.65 + nextRandom(enemy) * .7);
+    enemy.nextFire = enemy.age + profile.recovery * (1 - .18 * enemy.intensity) * (.65 + nextRandom(enemy) * .7);
     enter('reposition');
   };
   const retreat = reason => {
@@ -182,7 +183,14 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     if (enemy.state !== 'destroyed') enter('destroyed');
   } else if (enemy.state !== 'retreat' && enemy.state !== 'destroyed') {
     const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-    if (heldFor >= profile.holdSeconds || enemy.age >= profile.holdSeconds + 8) {
+    // Propietario (21/10): el enemigo que no eliminas no se va; sigue atacando
+    // y cada holdSeconds sube un nivel de intensidad (hasta 2 desde el 22/10,
+    // auditoría J01: recarga ×0,64),
+    // para que con muchas patrullas haya que decidir a quién derribar primero.
+    // Solo se retira si nunca puede atacar (p. ej. nave pegada al marcador).
+    enemy.intensity = Math.min(2, Math.floor(heldFor / profile.holdSeconds));
+    if ((enemy.fired === 0 && heldFor >= profile.holdSeconds) ||
+        (enemy.combatStartedAt === null && enemy.age >= profile.holdSeconds + 8)) {
       retreat('time-limit');
     } else if (lostHealth && !['entry', 'brake'].includes(enemy.state)) {
       // Same HP sample reaches the animator below: hurt cancels its fire event.
@@ -201,8 +209,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     enter('track');
   }
   if (enemy.state === 'fire' && enemy.stateAge >= .34) {
-    if (enemy.fired >= profile.maxAttacks) retreat('attack-budget');
-    else reposition();
+    reposition();
   }
   if (enemy.state === 'reposition' && enemy.age >= enemy.nextFire) enter('track');
 

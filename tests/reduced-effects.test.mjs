@@ -36,7 +36,7 @@ function rendered(reduceEffects) {
   const sandbox = {ctx, settings: {reduceEffects}, cameraKickX: 12, cameraKickY: 8,
     shake: 20, flash: .8, W: 720, H: 1280, powers: {slow: 0}, gates: [], items: []};
   for (const name of ['syncShipPresentation', 'drawShipHangar', 'drawClassicDock', 'background', 'drawWarp',
-    'drawTractorCable', 'drawGuardianAtlas', 'drawPlayer', 'drawShots', 'drawClassicProjectiles',
+    'drawTractorCable', 'drawCometCorridor', 'drawGuardianAtlas', 'drawPlayer', 'drawShots', 'drawClassicProjectiles',
     'drawExplosions', 'drawImpactEffects', 'drawRings', 'drawParts', 'drawCombo', 'drawClassicChapterOpening']) {
     sandbox[name] = () => calls.push({name});
   }

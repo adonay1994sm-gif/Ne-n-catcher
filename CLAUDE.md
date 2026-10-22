@@ -85,6 +85,13 @@ Si algo falla por el cambio, se deshace ese commit y se anota.
 - **Tras cada actualización de la rama** (PR fusionado), pasar una revisión
   de `auditor-codigo` sobre ese cambio y llevar sus hallazgos al tablero.
 
+## Última auditoría (22/10/2026)
+
+Visual 5,5/10 · lógica 7/10 · juego 5/10. Hallazgos V01–V18, L01–L05 y
+J01–J07 en `docs/auditorias/AUDITORIA_2026-10-22.md`; léela antes de tocar
+HUD, efectos, fondos, guardados de viajes o enemigos. J01/J02 (escalada y
+munición) esperan decisión del propietario.
+
 ## Cuatro reglas antes de programar
 
 Adaptadas de [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)

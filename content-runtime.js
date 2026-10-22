@@ -1814,6 +1814,16 @@ var NeonCampaign = (() => {
     9: profile([1.6, 2.5], 3, 0.2, { meteor: 0.5, debris: 0.35, satellite: 0.15 }, [210, 320]),
     10: profile([1, 1.7], 5, 0.35, { meteor: 0.45, debris: 0.4, satellite: 0.15 }, [220, 330])
   });
+  var VULKAR_HAZARD_SHARE = Object.freeze({ lavaCore: 0.2, plasmaMine: 0.15 });
+  var vulkarProfile = (base) => {
+    const total = Object.values(base.mix).reduce((sum, weight) => sum + weight, 0);
+    const keep = 1 - VULKAR_HAZARD_SHARE.lavaCore - VULKAR_HAZARD_SHARE.plasmaMine;
+    const mix3 = Object.fromEntries(Object.entries(base.mix).map(([type, weight]) => [type, weight / total * keep]));
+    return Object.freeze({ ...base, mix: Object.freeze({ ...mix3, ...VULKAR_HAZARD_SHARE }) });
+  };
+  var VULKAR_HAZARD_PROFILES = Object.freeze(Object.fromEntries(
+    Object.entries(VOYAGE_HAZARD_PROFILES).map(([stage, base]) => [stage, vulkarProfile(base)])
+  ));
   var finite2 = (value, label) => {
     if (!Number.isFinite(value)) throw new RangeError(`${label} must be finite`);
     return value;
@@ -1827,7 +1837,7 @@ var NeonCampaign = (() => {
       return ((value ^ value >>> 14) >>> 0) / 4294967296;
     };
   };
-  var RADIUS_ESTIMATE = Object.freeze({ meteor: 42, debris: 35, satellite: 46 });
+  var RADIUS_ESTIMATE = Object.freeze({ meteor: 42, debris: 35, satellite: 46, lavaCore: 44, plasmaMine: 36 });
   function createVoyageHazardField({
     stageNumber,
     seed = 0,
@@ -2778,7 +2788,7 @@ var NeonCampaign = (() => {
   });
   var encounter6 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable7({
     patrol: patrol && immutable7({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -2868,7 +2878,7 @@ var NeonCampaign = (() => {
   });
   var encounter7 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable8({
     patrol: patrol && immutable8({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -2958,7 +2968,7 @@ var NeonCampaign = (() => {
   });
   var encounter8 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable9({
     patrol: patrol && immutable9({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -3048,7 +3058,7 @@ var NeonCampaign = (() => {
   });
   var encounter9 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable10({
     patrol: patrol && immutable10({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -3138,7 +3148,7 @@ var NeonCampaign = (() => {
   });
   var encounter10 = (profile2, patrol, { comets = false, repairAt = null } = {}) => immutable11({
     patrol: patrol && immutable11({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    hazards: VULKAR_HAZARD_PROFILES[profile2],
     comets,
     repairAt
   });
@@ -4470,7 +4480,7 @@ var NeonCampaign = (() => {
       warning: 0.32,
       recovery: 1.25,
       maxAttacks: 8,
-      holdSeconds: 20,
+      holdSeconds: 9,
       depth: 0.3,
       lateralSpeed: 140,
       acceleration: 265,
@@ -4489,7 +4499,7 @@ var NeonCampaign = (() => {
       warning: 0.38,
       recovery: 1.6,
       maxAttacks: 7,
-      holdSeconds: 22,
+      holdSeconds: 10,
       depth: 0.29,
       lateralSpeed: 104,
       acceleration: 190,
@@ -4508,7 +4518,7 @@ var NeonCampaign = (() => {
       warning: 0.3,
       recovery: 1.15,
       maxAttacks: 10,
-      holdSeconds: 24,
+      holdSeconds: 11,
       depth: 0.27,
       lateralSpeed: 176,
       acceleration: 315,
@@ -4601,6 +4611,7 @@ var NeonCampaign = (() => {
       combatStartedAt: null,
       retreatReason: null,
       repositionCount: 0,
+      intensity: 0,
       observation: null,
       nextObservationAt: 0,
       observedTarget: null,
@@ -4653,7 +4664,7 @@ var NeonCampaign = (() => {
       minimumHoldY,
       maximumHoldY
     );
-    const canAttack = () => hp > 0 && enemy.state !== "retreat" && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230 && enemy.fired < profile2.maxAttacks;
+    const canAttack = () => hp > 0 && enemy.state !== "retreat" && !enemy.holdFire && item.y >= enemy.minAttackY && item.y + 38 <= player.y - 230;
     const clearCharge = () => {
       enemy.telegraph = 0;
       enemy.attackScheduled = false;
@@ -4674,7 +4685,7 @@ var NeonCampaign = (() => {
       enemy.repositionCount++;
       enemy.targetX = laneTarget();
       enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
-      enemy.nextFire = enemy.age + profile2.recovery * (0.65 + nextRandom(enemy) * 0.7);
+      enemy.nextFire = enemy.age + profile2.recovery * (1 - 0.18 * enemy.intensity) * (0.65 + nextRandom(enemy) * 0.7);
       enter("reposition");
     };
     const retreat = (reason) => {
@@ -4690,7 +4701,8 @@ var NeonCampaign = (() => {
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-      if (heldFor >= profile2.holdSeconds || enemy.age >= profile2.holdSeconds + 8) {
+      enemy.intensity = Math.min(2, Math.floor(heldFor / profile2.holdSeconds));
+      if (enemy.fired === 0 && heldFor >= profile2.holdSeconds || enemy.combatStartedAt === null && enemy.age >= profile2.holdSeconds + 8) {
         retreat("time-limit");
       } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {
         reposition();
@@ -4706,8 +4718,7 @@ var NeonCampaign = (() => {
       enter("track");
     }
     if (enemy.state === "fire" && enemy.stateAge >= 0.34) {
-      if (enemy.fired >= profile2.maxAttacks) retreat("attack-budget");
-      else reposition();
+      reposition();
     }
     if (enemy.state === "reposition" && enemy.age >= enemy.nextFire) enter("track");
     if (enemy.state === "reposition" && enemy.age >= enemy.nextTargetAt) {

@@ -361,6 +361,10 @@
     const entry = typeof classicShipEntry === "number" && classicShipEntry > 0 ? classicShipEntry / .9 : 0;
 
     ctx.save();
+    // Gracia sin daño (al reanudar y tras un golpe): la nave parpadea para que
+    // se note; con efectos reducidos queda fija y algo transparente.
+    if (state === "playing" && typeof hullGrace === "number" && hullGrace > 0)
+      ctx.globalAlpha = settings.reduceEffects ? .6 : Math.sin(t * .05) > 0 ? .4 : 1;
     ctx.translate(player.x, player.y + (entry ? entry * entry * H * .35 : 0));
 
     const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
@@ -530,6 +534,19 @@
     }
 
     ctx.rotate(item.rot);
+    if (item.vulkarHazard && spriteReady(SPRITES.lavaCoreMine)) {
+      // Hoja 4×2 (encargo enc-nucleo). Fila 1: latido del núcleo (0-1-2-3-2-1);
+      // la roca ocupa ~2/3 de la celda, así ×2,98 la deja del tamaño de r.
+      // Fila 2: parpadeo de la mina (0-1-2-1); su cuerpo mide ~r con ×4.
+      const atlas = SPRITES.lavaCoreMine, cell = atlas.naturalWidth / 4;
+      const core = item.vulkarHazard === "lavaCore", tick = Math.floor(elapsed * (core ? 6 : 5) + (item.phase || 0));
+      const frame = core ? [0, 1, 2, 3, 2, 1][tick % 6] : [0, 1, 2, 1][tick % 4];
+      const size = item.r * (core ? 2.98 : 4);
+      ctx.shadowBlur = 14; ctx.shadowColor = "#ff6a3d";
+      ctx.drawImage(atlas, frame * cell, (core ? 0 : 1) * cell, cell, cell, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      return;
+    }
     const sprite = SPRITES[item.spriteKey] || SPRITES.meteorMedium;
     const sizeFactor = item.spriteKey === "meteorLarge" ? 2.95 : item.spriteKey && item.spriteKey.includes("Small") ? 2.45 : 2.70;
     const size = item.r * sizeFactor;
@@ -822,6 +839,14 @@
         ctx.drawImage(atlas,frame*cell,row*cell,cell,cell,-size/2,-size/2,size,size);
         ctx.restore();continue;
       }
+      if (effect.plasmaBlast && spriteReady(SPRITES.lavaCoreMine)) {
+        // Estallido de la mina: último fotograma de la fila 2, crece y se apaga.
+        const atlas = SPRITES.lavaCoreMine, cell = atlas.naturalWidth / 4, size = 110 + 70 * progress;
+        ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
+        ctx.globalAlpha *= 1 - progress * progress;
+        ctx.drawImage(atlas, 3 * cell, cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
+      }
       if (effect.hullSparks && spriteReady(SPRITES.hullSparks)) {
         // 8 fotogramas en 0,5 s (rejilla 4×2); el origen de las chispas es el
         // centro de cada celda y el abanico sale hacia +X, girado al impacto.
@@ -830,6 +855,21 @@
         ctx.save(); ctx.translate(effect.x, effect.y); ctx.rotate(effect.angle);
         ctx.globalCompositeOperation = "lighter";
         ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell, -size / 2, -size / 2, size, size);
+        ctx.restore(); continue;
+      }
+      if (effect.atlasExplosion && spriteReady(SPRITES.atlasExplosion)) {
+        // Rejilla 4×2: destello, bola de fuego, anillo cian con escombros y
+        // humo que se apaga, a 10 fps. Destello blanco breve solo sin
+        // «Reducir efectos».
+        const atlas = SPRITES.atlasExplosion, cell = atlas.naturalWidth / 4;
+        const frame = Math.min(7, Math.floor(progress * 8)), age = effect.duration - effect.life;
+        if (!settings.reduceEffects && age < .18) {
+          ctx.save(); ctx.fillStyle = `rgba(255,236,210,${(.38 * (1 - age / .18)).toFixed(3)})`;
+          ctx.fillRect(0, 0, W, H); ctx.restore();
+        }
+        ctx.save(); ctx.translate(effect.x, effect.y);
+        ctx.drawImage(atlas, (frame % 4) * cell, Math.floor(frame / 4) * cell, cell, cell,
+          -effect.size / 2, -effect.size / 2, effect.size, effect.size);
         ctx.restore(); continue;
       }
       if (effect.atlasImpact) {

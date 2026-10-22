@@ -12,10 +12,13 @@ const read = file => readFile(join(root, file), 'utf8');
 const [html, game, core, content] = await Promise.all(['index.html', 'game.js', 'core-runtime.js', 'content-runtime.js'].map(read));
 const MARKER = '  legacyFrameId = requestAnimationFrame(frame);\n})();';
 
+const drawnTexts = []; // textos e imágenes («image:…») que pinta el lienzo
 function context() {
   const gradient = {addColorStop() {}};
   return new Proxy({}, {get(target, key) {
     if (key in target) return target[key];
+    if (key === 'fillText') return text => drawnTexts.push(String(text));
+    if (key === 'drawImage') return image => drawnTexts.push(`image:${image?.src || ''}`);
     if (key === 'createLinearGradient' || key === 'createRadialGradient') return () => gradient;
     if (key === 'measureText') return value => ({width: String(value).length * 14});
     return () => {};
@@ -33,10 +36,13 @@ function harness({unlocked = '2', query = ''} = {}) {
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
   w.eval(core); w.eval(content);
-  const hook = `window.T={resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;damageShip(n);return hull;},
+  const hook = `window.T={ev:s=>eval(s),resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;hullGrace=0;damageShip(n);return hull;},hitNow:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
       hud:!ui.hud.classList.contains('hidden'),fire:!ui.fire.classList.contains('hidden'),scope:classicSalvageState?.activeRun?.scope||null}),
     adv:s=>{for(let r=s;r>1e-9;r-=1/60)update(1/60);},
+    toGaiaBeacon:()=>{collected=36;for(let i=0;i<30000&&!classicFlightView?.beacon.active;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);return classicFlightView.beacon.active;},
+    draw:()=>render(performance.now()),hull:()=>hull,stars:()=>runStars(),croniumOnScreen:()=>items.filter(item=>item.type==='energy'&&item.y>0&&item.y<H).length,miss:n=>{energySpawned+=n;},
+    toStage:n=>{for(let i=0;i<30000&&classicFlightView.stageNumber<n;i++){const add=Math.max(0,classicFlightView.stageGoal-collected);collected+=add;energySpawned+=add;classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);}return classicFlightView.stageNumber;},
     finish:()=>{collected=36;for(let i=0;i<30000&&!classicFlight.snapshot().canFinish;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
       completeLevel();if(atlasBoss){atlasBoss.resolved=true;completeLevel();}}};\n`;
   assert.equal(game.split(MARKER).length, 2);
@@ -270,4 +276,344 @@ test('an attempt continued with a rewarded ad counts once: the death, not the la
   assert.equal(games(), 1, 'finishing after the rewarded continue does not count again');
   T.startSideVoyage('S1-V3'); T.adv(.5); T.finishGame('hull'); T.resumeReward(); T.adv(.5); T.finishGame('hull');
   assert.equal(games(), 2, 'a second death after the continue does not count again');
+});
+
+test('the HUD names the current voyage instead of «NIVEL 1», without repeating it in the route line', () => {
+  const {w, T} = harness();
+  const text = id => w.document.getElementById(id).textContent;
+  T.startLevel(0); T.adv(.5);
+  assert.equal(T.st().side, null);
+  assert.deepEqual([text('hudLevel'), w.document.getElementById('hudLevel').previousElementSibling.textContent], ['S1-V1', 'VIAJE']);
+  T.startSideVoyage('S2-V3'); T.adv(.5);
+  assert.deepEqual([text('hudLevel'), w.document.getElementById('hudLevel').previousElementSibling.textContent], ['S2-V3', 'VIAJE']);
+  assert.doesNotMatch(text('flightDestination'), /S2-V3/, 'the voyage id lives in the HUD cell only');
+  assert.match(text('flightDestination'), /1\/\d+/);
+  assert.doesNotMatch(w.document.getElementById('hud').textContent, /NIVEL/);
+});
+
+test('in the last S1-V1 stage Atlas only shows far away over Gaia, without a «GUARDIAN ATLAS» tag', () => {
+  const {T} = harness();
+  T.requestStage(10); T.startLevel(0); T.adv(.5);
+  assert.equal(T.toGaiaBeacon(), true, 'the far Atlas beacon is on screen');
+  drawnTexts.length = 0; T.draw();
+  assert.ok(drawnTexts.some(text => /^image:.*guardian_atlas/.test(text)), 'Atlas is still drawn far away as a warning');
+  assert.equal(drawnTexts.some(text => /GUARDIAN ATLAS/.test(text)), false);
+});
+
+test('continuing a map voyage from the menu keeps the hull and the lost CRONIUM of the checkpoint', () => {
+  const {T, saved} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5);
+  for (let i = 0; i < 20 && T.hit(10) >= 70; i++);
+  const damaged = T.hull();
+  assert.ok(damaged < 70 && damaged >= 50, 'the hull is damaged above the resume floor');
+  T.miss(8);
+  assert.equal(T.toStage(2), 2, 'the voyage reaches its second checkpoint');
+  assert.equal(saved('S1-V2').entry.hull, damaged, 'the checkpoint stores the entry hull');
+  assert.equal(saved('S1-V2').entry.missed, 8, 'and the CRONIUM lost so far');
+  T.goHome(); T.startSideVoyage('S1-V2');
+  assert.equal(T.hull(), damaged, 'continuing keeps the damaged hull');
+  assert.notEqual(T.stars(), 3, 'stars measure the whole voyage, not only the last stretch');
+});
+
+test('continuing a map voyage keeps the lost CRONIUM even with a full hull', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5);
+  T.miss(8); T.toStage(2);
+  T.goHome(); T.startSideVoyage('S1-V2');
+  assert.equal(T.hull(), 100);
+  assert.notEqual(T.stars(), 3, 'eight lost fragments are more than the 10 % allowed for 3 stars');
+});
+
+test('retrying a map voyage after dying uses the entry hull of the stage with the S1-V1 floor', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5);
+  for (let i = 0; i < 40 && T.hit(10) > 30; i++);
+  assert.ok(T.hull() <= 30);
+  T.toStage(2);
+  T.finishGame('hull');
+  T.startLevel(0);
+  assert.equal(T.st().side, 'S1-V2');
+  assert.equal(T.hull(), 50, 'below the floor the retry starts with 50');
+});
+
+test('old map voyage records without the entry fields still resume', () => {
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(2); T.goHome();
+  const key = 'neonCatcher.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
+  delete record.entry; w.localStorage.setItem(key, JSON.stringify(record));
+  T.startSideVoyage('S1-V2');
+  assert.deepEqual([T.st().state, T.st().side, T.hull()], ['playing', 'S1-V2', 100]);
+  assert.equal(T.stars(), 3);
+});
+
+test('every map voyage shows CRONIUM within its first 3 seconds', () => {
+  for (const id of ['S1-V2', 'S1-V3', 'S1-V4', 'S1-V5', 'S2-V1', 'S2-V2', 'S2-V3', 'S2-V4', 'S2-V5']) {
+    const {T} = harness({unlocked: '10'});
+    T.startSideVoyage(id); T.adv(3);
+    assert.equal(T.st().side, id);
+    assert.ok(T.croniumOnScreen() > 0, `${id}: CRONIUM on screen at 3 s`);
+  }
+});
+
+test('retrying a replayed finished voyage resumes the stage it promises, and a new replay starts at 1', () => {
+  // Auditoría 22/10, L01: rejugar un viaje hecho y morir en el tramo 3 llevaba al tramo 1.
+  const {w, T, saved} = harness();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3);
+  T.finishGame('hull');
+  assert.match(w.document.getElementById('retry').textContent, /2\.3/);
+  w.document.getElementById('retry').click();
+  assert.deepEqual([T.st().state, T.ev('classicFlightView.stageNumber'), T.ev('collected')], ['playing', 3, 10]);
+  assert.equal(saved('S1-V2').completed, true, 'the voyage stays done on the map');
+  T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1, 'after finishing again, a replay starts from the beginning');
+});
+
+test('after replaying S1-V1 halfway, «JUGAR» follows the campaign instead of reopening S1-V1', () => {
+  // Auditoría 22/10, L02: rejugar S1-V1 dejaba «JUGAR» atascado en su ficha.
+  const {w, T} = harness({unlocked: '1'});
+  T.startLevel(0); T.adv(.1); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startLevel(0); T.adv(.2); T.toStage(2); T.goHome();
+  assert.equal(T.ev('nextCampaignVoyage()?.voyage'), 'S1-V3');
+  assert.match(w.document.getElementById('playSector').textContent, /S1-V3/);
+  w.document.getElementById('play').click();
+  assert.equal(w.document.getElementById('briefing').classList.contains('show'), false, 'no S1-V1 briefing');
+  assert.equal(T.st().side, 'S1-V3');
+});
+
+test('retrying S1-V1 keeps the CRONIUM lost before the checkpoint, like the map voyages', () => {
+  // Auditoría 22/10, L03: S1-V1 lo ponía a 0 y las 3 estrellas salían más fáciles.
+  const {T} = harness();
+  T.requestStage(null); T.startLevel(0); T.adv(.2); T.miss(10); T.toStage(2);
+  assert.equal(T.ev('energySpawned-collected'), 10);
+  T.finishGame('hull'); T.startLevel(0);
+  assert.equal(T.ev('classicFlightView.stageNumber'), 2);
+  assert.equal(T.ev('energySpawned-collected'), 10);
+});
+
+test('during a comet shower the safe corridor is marked and patrols hold fire, then fight again', () => {
+  // Propietario (22/10, auditoría J04): pasillo marcado + alto el fuego.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  let seen = false, held = true, patrols = 0, fired = 0, known = new Set();
+  for (let i = 0; i < 30 * 60; i++) {
+    T.ev('hull=100'); T.adv(1 / 60);
+    const shots = T.ev('items.filter(item=>item.classicScoutProjectile)');
+    const fresh = shots.filter(shot => !known.has(shot)); shots.forEach(shot => known.add(shot));
+    if (T.ev('cometShowerActive()')) {
+      seen = true; fired += fresh.length;
+      for (const enemy of T.ev('items.filter(item=>item.classicScout)')) { patrols++; held &&= enemy.classicScout.holdFire === true; }
+    }
+  }
+  // Auditoría del bloque (B05): contar disparos de verdad, no solo el indicador.
+  assert.equal(fired, 0, 'no enemy shot is fired while the shower lasts');
+  assert.ok(seen, 'a shower happens in S1-V5 stage 2');
+  assert.ok(patrols > 0, 'some patrol was on screen during the shower');
+  assert.ok(held, 'every patrol holds fire while the shower lasts');
+  T.ev('items=items.filter(item=>!item.showerComet);classicCometCorridor.until=-1');
+  assert.equal(T.ev('cometShowerActive()'), false, 'the ceasefire ends with the shower');
+});
+
+test('once the stage quota is met, a map voyage stage ends soon after 20 s instead of idling to its full length', () => {
+  // Propietario (22/10, auditoría J05): sin tiempo muerto tras cumplir la cuota.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  const goal = T.ev('classicFlightView.stageGoal'), full = T.ev('classicFlightView.stageDuration');
+  assert.ok(full >= 30);
+  T.ev(`collected=${goal};energySpawned=${goal}`);
+  let at = null;
+  for (let i = 0; i < 40 * 60 && at === null; i++) {
+    T.ev('hull=100'); T.adv(1 / 60);
+    if (T.ev('classicFlightView.stageNumber') === 2) at = i / 60;
+  }
+  assert.ok(at !== null && at >= 20 && at <= 25, `stage 1 ended at ${at} s (full length ${full} s)`);
+});
+
+test('without the quota a map voyage stage is not shortened', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  for (let i = 0; i < 26 * 60; i++) { T.ev('hull=100;collected=0'); T.adv(1 / 60); }
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
+
+test('resuming from pause gives a short grace and the pause offers «REINICIAR TRAMO»', () => {
+  // Propietario (22/10, auditoría J06).
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('pauseGame()');
+  // Revisión M1: el botón vuelve al punto de control del tramo, no al inicio del viaje.
+  assert.equal(w.document.getElementById('restart').textContent.trim(), 'REINICIAR TRAMO');
+  T.ev('pauseStartedAt-=600;resumeGame()');
+  assert.equal(T.hitNow(20), 100, 'a hit right after resuming does no damage');
+  T.adv(1);
+  assert.ok(T.hitNow(20) < 100, 'after the grace the hull takes damage again');
+});
+
+test('two hits in the same instant cost the hull only once', () => {
+  // Propietario (22/10, auditoría J07): 0,3 s de invulnerabilidad tras un golpe.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  const first = T.hitNow(15);
+  assert.equal(T.hitNow(15), first, 'the second simultaneous hit is ignored');
+  T.adv(.4);
+  assert.ok(T.hitNow(15) < first, 'a later hit counts');
+});
+
+test('simultaneous hits absorbed by a full hull reserve also cost only once', () => {
+  // Revisión 22/10 (L3): la gracia de 0,3 s faltaba cuando la reserva absorbía el golpe.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('classicHullReserve=30;hullGrace=0');
+  for (let i = 0; i < 3; i++) T.ev('damageShip(15)');
+  assert.deepEqual([T.ev('classicHullReserve'), T.hull()], [15, 100]);
+});
+
+test('pausing and resuming quickly does not chain the resume grace into invulnerability', () => {
+  // Revisión 22/10 (L2): la gracia de 0,8 s solo tras una pausa real (≥ 0,5 s).
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('pauseGame();resumeGame()');
+  assert.ok(T.hitNow(20) < 100, 'an instant pause/resume gives no grace');
+});
+
+test('while a comet shower lasts no new hazard falls inside the marked corridor', () => {
+  // Revisión 22/10 (L1): el pasillo marcado tiene que ser seguro de verdad.
+  for (const voyage of ['S1-V5', 'S2-V5']) {
+    const {T} = harness();
+    T.startSideVoyage(voyage); T.adv(.2); T.toStage(2);
+    let seen = new Set(), inside = 0, spawned = 0;
+    for (let i = 0; i < 30 * 60; i++) {
+      T.ev('hull=100'); T.adv(1 / 60);
+      const active = T.ev('cometShowerActive()');
+      const fresh = T.ev(`items.filter(item=>isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout&&!item.classicScoutProjectile).map(item=>({ref:item,x:item.x,r:item.r}))`);
+      for (const {ref, x, r} of fresh) {
+        if (seen.has(ref)) continue; seen.add(ref);
+        if (!active) continue;
+        spawned++;
+        const c = T.ev('classicCometCorridor.corridor');
+        if (x + r > c.left && x - r < c.right) inside++;
+      }
+    }
+    assert.ok(spawned > 0, `${voyage}: hazards keep falling during the shower`);
+    assert.equal(inside, 0, `${voyage}: ${inside} of ${spawned} new hazards fell inside the corridor`);
+  }
+});
+
+test('a stage with a comet shower is not shortened, so every announced burst still falls', () => {
+  // Revisión 22/10 (M2): el reloj al triple cortaba la lluvia tras su aviso.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  const goal = T.ev('classicFlightView.stageGoal'), full = T.ev('classicFlightView.stageDuration');
+  T.ev(`collected=${goal};energySpawned=${goal}`);
+  let at = null;
+  for (let i = 0; i < 45 * 60 && at === null; i++) {
+    T.ev('hull=100'); T.adv(1 / 60);
+    if (T.ev('classicFlightView.stageNumber') === 3) at = i / 60;
+  }
+  assert.ok(at !== null && at >= full - 1, `stage 2 ended at ${at} s of ${full} s`);
+});
+
+test('skipping the Chronos intro moves the world past the rupture instead of playing it under the HUD', () => {
+  // Revisión 22/10 (B1): omitir solo quitaba subtítulos; Cronos Prime seguía llegando.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0); T.adv(1);
+  const skip = w.document.getElementById('chapterSkip');
+  assert.equal(skip.classList.contains('hidden'), false, 'the skip button is offered');
+  skip.click();
+  const gone = T.ev('NeonCampaign.CHRONOS_INTRO_TIMELINE.gone');
+  assert.ok(T.ev('classicFlightView.elapsed') >= gone, 'the route clock is past Cronos Prime leaving');
+  assert.equal(T.st().state, 'playing');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
+
+test('a one-step flight lesson shows for its seconds, returns once, and never shows «· 0 %»', () => {
+  // Revisión 22/10 (G1): «Pieza recuperada… · 0 %» se quedaba fijo unos 3 minutos.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0);
+  T.ev("classicTutorial.observe({type:'pilot',distance:100})");
+  let shown = 0, percent = false;
+  for (let i = 0; i < 120 * 60; i++) {
+    T.ev('hull=100;flightTransmission=null'); T.adv(1 / 60);
+    const text = w.document.getElementById('flightObjective')?.textContent || '';
+    if (/DISPARAR/.test(text)) { shown += 1 / 60; percent ||= /%/.test(text); }
+  }
+  assert.ok(shown > 0, 'the fire lesson is shown');
+  assert.ok(shown <= 9, `the fire lesson is visible ${shown.toFixed(1)} s, at most twice its 4 s`);
+  assert.equal(percent, false, 'no meaningless percentage on a one-step lesson');
+});
+
+test('a hit absorbed by the hull reserve reads differently from collecting CRONIUM, and N-7 explains it once', () => {
+  // Revisión 22/10 (G2): antes eran las mismas chispas y aro cian que al recoger.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('classicHullReserve=30;hullGrace=0;parts.length=0;flightTransmission=null');
+  T.ev('damageShip(10)');
+  const kinds = new Set(T.ev('parts.map(p=>p.kind)'));
+  assert.equal(kinds.has('cyan'), false, 'no cyan sparks on an absorbed hit');
+  assert.ok(kinds.has('gold'));
+  assert.match(T.ev('flightTransmission?.text||""'), /refuerzo/i);
+  T.ev('flightTransmission=null;hullGrace=0'); T.ev('damageShip(10)');
+  assert.equal(T.ev('flightTransmission'), null, 'the explanation is said only once');
+});
+
+test('when a stage clock ends without its CRONIUM quota, N-7 says what is missing', () => {
+  // Revisión 22/10 (G5): el tramo esperaba sin explicar por qué no avanzaba.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  let said = '';
+  for (let i = 0; i < 40 * 60; i++) {
+    T.ev('hull=100;collected=0;items=items.filter(item=>item.type!=="energy")'); T.adv(1 / 60);
+    const text = T.ev('flightTransmission?.text||""');
+    if (/CRONIUM/.test(text) && /Faltan/.test(text)) said = text;
+  }
+  assert.equal(T.ev('classicFlightView.waitingFor'), 'cronium');
+  assert.match(said, /Faltan \d+ CRONIUM/);
+});
+
+test('retrying a stage forgets the lesson window and the CRONIUM notice of the previous attempt', () => {
+  // Auditoría del bloque (B03): elapsed vuelve a 0 y la ventana de 4 s quedaba en negativo.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev("classicGuideSeen={id:'x',at:500};classicCroniumWaitNotice=classicFlightView.stageId");
+  T.finishGame('hull'); T.startLevel(0);
+  assert.deepEqual([T.ev('classicGuideSeen'), T.ev('classicCroniumWaitNotice')], [null, null]);
+});
+
+test('closing the C9 workshop opened in flight gives the same resume grace as the pause', () => {
+  // Auditoría del bloque (B04): C9 pausa el viaje pero al cerrarlo no había gracia.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  assert.equal(T.ev("openClassicDock('hud')"), true);
+  T.ev('pauseStartedAt-=600;closeClassicDock()');
+  assert.equal(T.st().state, 'playing');
+  assert.equal(T.hitNow(20), 100, 'a hit right after closing C9 does no damage');
+});
+
+test('while a comet shower lasts nothing but comets is ever inside the marked corridor', () => {
+  // Auditoría del bloque (B01): los peligros y disparos que ya caían seguían dentro.
+  for (const voyage of ['S1-V5', 'S2-V5']) {
+    const {T} = harness();
+    T.startSideVoyage(voyage); T.adv(.2); T.toStage(2);
+    let frames = 0, dirty = 0;
+    for (let i = 0; i < 30 * 60; i++) {
+      T.ev('hull=100'); T.adv(1 / 60);
+      if (!T.ev('cometShowerActive()')) continue;
+      frames++;
+      dirty += T.ev(`(()=>{const c=classicCometCorridor.corridor;return items.some(item=>(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout))&&
+        item.x+item.r>c.left&&item.x-item.r<c.right&&item.y+item.r>c.top&&item.y-item.r<H)?1:0})()`);
+    }
+    assert.ok(frames > 0, `${voyage}: a shower happens`);
+    assert.equal(dirty, 0, `${voyage}: ${dirty} of ${frames} shower frames had a threat inside the corridor`);
+  }
+});
+
+test('opening a finished voyage again from the map starts it at stage 1 even after a half-played replay', () => {
+  // Auditoría del bloque (B02): la reanudación de una rejugada es solo para reintentar.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3); T.goHome();
+  T.startSideVoyage('S1-V2');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
 });
