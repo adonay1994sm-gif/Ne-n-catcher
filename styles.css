@@ -1012,11 +1012,13 @@ body.flight-mode :is(.primary, .secondary, .icon):active:not(:disabled) { backgr
 body.flight-mode :is(.primary, .secondary, .reward, .icon):active:not(:disabled)::before {
   background: var(--ui-ink); box-shadow: var(--e-pressed);
 }
-/* Foco: anillo marfil por fuera (outline no lo recorta clip-path en un hijo,
-   así que se dibuja con filter sobre la propia caja). */
-body.flight-mode :is(.primary, .secondary, .reward, .icon):focus-visible {
-  outline: none; filter: drop-shadow(0 0 0 var(--ui-paper)) drop-shadow(0 0 2px var(--ui-paper));
+/* Foco de teclado: clip-path recorta outline y sombras, así que el anillo se
+   dibuja por dentro: el borde pasa a marfil y la cara se separa 3 px
+   (revisión R3, WCAG 2.4.7). */
+body.flight-mode :is(.primary, .secondary, .reward, .icon, .fire-control, .classic-missile, #classicC9):focus-visible {
+  outline: none; background: var(--ui-paper);
 }
+body.flight-mode :is(.primary, .secondary, .reward, .icon, .fire-control, .classic-missile, #classicC9):focus-visible::before { inset: 3px; }
 /* Bloqueado: sin borde claro, cara hundida y texto apagado. */
 body.flight-mode :is(.primary, .secondary, .reward, .icon):disabled {
   background: var(--ui-raised); color: var(--ui-line); transform: none;
