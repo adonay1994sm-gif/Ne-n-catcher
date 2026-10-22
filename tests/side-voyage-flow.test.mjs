@@ -775,3 +775,14 @@ test('the corridor never breaks a rock above its line, nor one whose centre is o
   const exploded = T.ev('explosions.slice(' + before + ')');
   for (const e of exploded) assert.ok(e.y >= T.ev('classicCometCorridor.corridor.top') - 1, `explosion at y=${e.y} above the line`);
 });
+
+test('«Repetir» after a first-time finish with a failed save also starts at stage 1', () => {
+  // Revisión 4 (A5): sideRetry solo cubría los viajes ya completados.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3); T.adv(.5);
+  T.ev('Object.getPrototypeOf(localStorage).setItem=()=>{throw new Error("lleno")}');
+  T.finish();
+  assert.equal(T.st().state, 'complete');
+  T.startLevel(0);
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
