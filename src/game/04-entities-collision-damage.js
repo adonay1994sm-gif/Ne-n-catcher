@@ -526,10 +526,17 @@
     if (typeof hullGrace !== "undefined") hullGrace = 0.3;
     if (damageResult.absorbed) {
       classicShieldImpact=.18;
-      burst(x, y, 18, "cyan");
-      pulseRing(x, y, "#62fff1", 90, 0.42);
+      // Revisión G2: el golpe absorbido no se parece a recoger CRONIUM (cian):
+      // chispas y aro ámbar, sacudida corta y, la primera vez, N-7 lo explica.
+      burst(x, y, 18, "gold");
+      pulseRing(x, y, "#edc68a", 90, 0.42);
+      if (!settings.reduceEffects) shake = Math.max(shake, 6);
       addImpactEffect(x, y, 0.85, impactAngle);
       combatSound("hull-hit",x);
+      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained) {
+        reserveHitExplained = true;
+        showStoryTransmission("N-7", "Tu refuerzo de casco absorbió el impacto.", 3);
+      }
       hud();
       return;
     }

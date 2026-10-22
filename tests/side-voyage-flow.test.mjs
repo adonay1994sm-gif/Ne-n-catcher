@@ -539,3 +539,17 @@ test('a one-step flight lesson shows for its seconds, returns once, and never sh
   assert.ok(shown <= 9, `the fire lesson is visible ${shown.toFixed(1)} s, at most twice its 4 s`);
   assert.equal(percent, false, 'no meaningless percentage on a one-step lesson');
 });
+
+test('a hit absorbed by the hull reserve reads differently from collecting CRONIUM, and N-7 explains it once', () => {
+  // Revisión 22/10 (G2): antes eran las mismas chispas y aro cian que al recoger.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('classicHullReserve=30;hullGrace=0;parts.length=0;flightTransmission=null');
+  T.ev('damageShip(10)');
+  const kinds = new Set(T.ev('parts.map(p=>p.kind)'));
+  assert.equal(kinds.has('cyan'), false, 'no cyan sparks on an absorbed hit');
+  assert.ok(kinds.has('gold'));
+  assert.match(T.ev('flightTransmission?.text||""'), /refuerzo/i);
+  T.ev('flightTransmission=null;hullGrace=0'); T.ev('damageShip(10)');
+  assert.equal(T.ev('flightTransmission'), null, 'the explanation is said only once');
+});
