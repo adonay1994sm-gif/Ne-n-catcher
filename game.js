@@ -324,6 +324,7 @@
   let classicCometCorridor = null;
   let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
   let pauseStartedAt = 0;
+  let classicGuideSeen = null; // lección de un paso: cuándo se mostró por primera vez (G1)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -1521,8 +1522,15 @@
     // The primary HUD already shows the quota. This reserved, transparent slot
     // is used only for brief contextual comms; it never repeats the counters.
     const tutorialView=typeof classicTutorial!=="undefined"?classicTutorial?.snapshot():null;
-    const guide=!atlasBoss&&state==='playing'?tutorialView?.active:null;
-    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? `${guide.text} · ${Math.round(guide.progress*100)} %` : "";
+    let guide=!atlasBoss&&state==='playing'?tutorialView?.active:null;
+    // Revisión G1: una lección de un paso (target 1) se ve sus segundos, se
+    // oculta y vuelve una sola vez a los 30 s de juego; sin «· 0 %».
+    if(guide&&guide.target===1&&!flightTransmission) {
+      if(classicGuideSeen?.id!==guide.id)classicGuideSeen={id:guide.id,at:elapsed};
+      const since=elapsed-classicGuideSeen.at,seconds=guide.seconds||4;
+      if(!(since<seconds||(since>=30&&since<30+seconds)))guide=null;
+    }
+    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? (guide.target>1?`${guide.text} · ${Math.round(guide.progress*100)} %`:guide.text) : "";
     const signature=[currentLevel,stage,objective,collected,Math.floor((view?.routeProgress||0)*1000),classicEquipment.selected,classicWeapons?.charges,Math.floor((classicWeapons?.recharge||0)*5)].join(":");
     if(signature===flightHudSignature)return;
     flightHudSignature=signature;

@@ -523,3 +523,19 @@ test('skipping the Chronos intro moves the world past the rupture instead of pla
   assert.equal(T.st().state, 'playing');
   assert.equal(T.ev('classicFlightView.stageNumber'), 1);
 });
+
+test('a one-step flight lesson shows for its seconds, returns once, and never shows «· 0 %»', () => {
+  // Revisión 22/10 (G1): «Pieza recuperada… · 0 %» se quedaba fijo unos 3 minutos.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0);
+  T.ev("classicTutorial.observe({type:'pilot',distance:100})");
+  let shown = 0, percent = false;
+  for (let i = 0; i < 120 * 60; i++) {
+    T.ev('hull=100;flightTransmission=null'); T.adv(1 / 60);
+    const text = w.document.getElementById('flightObjective')?.textContent || '';
+    if (/DISPARAR/.test(text)) { shown += 1 / 60; percent ||= /%/.test(text); }
+  }
+  assert.ok(shown > 0, 'the fire lesson is shown');
+  assert.ok(shown <= 9, `the fire lesson is visible ${shown.toFixed(1)} s, at most twice its 4 s`);
+  assert.equal(percent, false, 'no meaningless percentage on a one-step lesson');
+});
