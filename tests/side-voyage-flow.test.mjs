@@ -734,3 +734,13 @@ test('a new player starts with piloting sensitivity 135', () => {
   assert.equal(T.ev('settings.sensitivity'), 135);
   assert.equal(w.document.getElementById('sensitivity').value, '135');
 });
+
+test('after skipping the intro, «Los atacantes nos siguen» is said only once', () => {
+  // Revisión 5 (C1): sonaba al omitir y otra vez con el primer perseguidor.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0); T.adv(3);
+  T.ev('window.__said=0;const original=showStoryTransmission;showStoryTransmission=(...args)=>{if(/Los atacantes nos siguen/.test(args[1]))window.__said++;return original(...args);}');
+  w.document.getElementById('chapterSkip').click();
+  for (let i = 0; i < 40 * 60; i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  assert.equal(T.ev('window.__said'), 1);
+});
