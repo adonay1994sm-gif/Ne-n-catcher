@@ -1,6 +1,6 @@
 # NEON CRONIUM · Campaña por la galaxia — diseño
 
-> 22/10/2026. Diseño hecho con el propietario en dos rondas de opciones,
+> 22/10/2026. **Aprobado por el propietario** (D1A, D2A y «listo»). Diseño hecho con el propietario en dos rondas de opciones,
 > en la página «Decisiones de campaña NEON CRONIUM» (artifact
 > `8RoC21JKJMRxawzqbRAyp8`, colección `elecciones`). Lo marcado
 > **(decisión de Claude)** no lo eligió el propietario y puede cambiarse.
@@ -76,6 +76,11 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
   continuo**.
   - **Subjefe** en el tramo 5.
   - **Jefe** del sector en el tramo 10.
+- **Duración (D1A):** tramos de 45–60 s, unos 10 minutos por sector.
+  - Sector 1: el contenido de S1-V1 a S1-V5 en 10 tramos; subjefe CH-03 y
+    jefe Atlas.
+  - Sector 2: los viajes de Gaia a Vulkar; subjefe C-17 y jefe Titan Vulkar.
+  - Facciones, enemigos y jefes de los 10 sectores: `docs/design/BIBLIA_GALAXIA.md`.
 - Ritmo de un sector:
   - tramos 1–4 presentan las amenazas de la facción;
   - tramo 5: subjefe, que adelanta la mecánica del sector;
@@ -143,8 +148,8 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
 - Al reanudar sigues **exactamente donde estabas**.
 - Lo que cambias en el árbol o el arsenal **entra al empezar el siguiente
   tramo**. Así no se puede mejorar a mitad de un jefe.
-- **Reparar el casco solo se hace en el taller**, entre tramos o en las
-  paradas de C9.
+- **Reparar el casco (D2A):** solo en las paradas de C9 tras el subjefe y
+  tras el jefe. Entre medias, solo con los objetos de reparación en vuelo.
 - El menú principal queda para empezar o continuar la partida
   **(decisión de Claude)**.
 
