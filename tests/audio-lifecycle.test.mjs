@@ -47,3 +47,36 @@ test('missing audio support and rejected autoplay do not break game resumption',
   await h.resumeAudio();
   assert.equal(h.audioCtx.state, 'suspended');
 });
+
+// Revisión de audio 22/10 (pasos 1 y 4): bus maestro con limitador y tonos sin clic.
+function graphHarness() {
+  const edges = [];
+  const param = () => ({value: 0, ramps: [], setValueAtTime(v, t) { this.ramps.push(['set', v, t]); },
+    linearRampToValueAtTime(v, t) { this.ramps.push(['lin', v, t]); },
+    exponentialRampToValueAtTime(v, t) { this.ramps.push(['exp', v, t]); }, setTargetAtTime() {}});
+  class FakeContext {
+    constructor() { this.state = 'running'; this.currentTime = 0; this.destination = {kind: 'destination'}; }
+    node(kind, extra = {}) {
+      return Object.assign({kind, connect(target) { edges.push([kind, target.kind]); return target; }, disconnect() {}}, extra);
+    }
+    createGain() { return this.node('gain', {gain: param()}); }
+    createOscillator() { return this.node('oscillator', {frequency: param(), start() {}, stop() {}}); }
+    createDynamicsCompressor() {
+      return this.node('limiter', {threshold: param(), knee: param(), ratio: param(), attack: param(), release: param()});
+    }
+    resume() { return Promise.resolve(); }
+  }
+  const context = vm.createContext({settings: {music: 50, fx: 70}, musicGain: null, audioCtx: null,
+    addEventListener() {}, window: {AudioContext: FakeContext}});
+  vm.runInContext(source, context);
+  return {context, edges};
+}
+
+test('every sound reaches the speakers only through the master limiter', () => {
+  const {context, edges} = graphHarness();
+  context.ensureAudio();
+  context.tone(440, .1);
+  const toDestination = edges.filter(([, target]) => target === 'destination').map(([from]) => from);
+  assert.deepEqual(toDestination, ['limiter']);
+  assert.ok(edges.some(([from, to]) => from === 'gain' && to === 'gain'), 'music and tones go through the master gain');
+});

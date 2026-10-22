@@ -223,6 +223,7 @@
   // updateScore; no score timer, RAF or permanently running drone is created.
   let voyageScore = null;
   let chapterScore = null;
+  let masterBus = null;
   let combatSfx = null;
   let voyageScoreContext = "transit";
   let scoreSuspended = false;
@@ -232,9 +233,18 @@
     if (audioCtx) return audioCtx;
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      // Bus maestro con limitador: música, efectos y tonos pasan por aquí y
+      // no saturan cuando coinciden (revisión de audio 22/10, paso 1).
+      masterBus = audioCtx.createGain();
+      const limiter = audioCtx.createDynamicsCompressor?.();
+      if (limiter) {
+        limiter.threshold.value = -6; limiter.knee.value = 0; limiter.ratio.value = 12;
+        limiter.attack.value = .003; limiter.release.value = .12;
+        masterBus.connect(limiter).connect(audioCtx.destination);
+      } else masterBus.connect(audioCtx.destination);
       musicGain = audioCtx.createGain();
       musicGain.gain.value = 0;
-      musicGain.connect(audioCtx.destination);
+      musicGain.connect(masterBus);
     } catch {
       return null;
     }
@@ -253,7 +263,7 @@
       try {chapterScore=NeonCampaign.createChapterScore({context:ac,output:musicGain});} catch {chapterScore=null;}
     }
     if(!combatSfx&&typeof NeonCampaign.createCombatSfx==="function") {
-      combatSfx=NeonCampaign.createCombatSfx({context:ac,output:ac.destination});
+      combatSfx=NeonCampaign.createCombatSfx({context:ac,output:masterBus||ac.destination});
       combatSfx?.load();
     }
     else if(combatSfx?.snapshot().failed)combatSfx.load();
@@ -340,7 +350,7 @@
     const length = Math.max(.015, Math.min(2, Number(duration) || .06));
     gain.gain.value = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
     gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + length);
-    oscillator.connect(gain).connect(ac.destination);
+    oscillator.connect(gain).connect(masterBus || ac.destination);
     const voice = {oscillator, end: ac.currentTime + length, release() {
       if (!activeToneVoices.delete(voice)) return;
       oscillator.disconnect(); gain.disconnect();
