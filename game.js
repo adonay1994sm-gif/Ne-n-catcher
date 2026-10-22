@@ -2629,7 +2629,8 @@
     // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
     const sideFicha=classicSideVoyagePending||(["paused","gameover","complete"].includes(state)?classicSideVoyage?.ficha:null);
     // Reintentar o reiniciar (no abrir desde el mapa) reanuda una rejugada a medias (B02).
-    const sideRetry=!classicSideVoyagePending;
+    // «Repetir» tras completar empieza siempre en el 1 (revisión P02).
+    const sideRetry=!classicSideVoyagePending&&state!=="complete";
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){

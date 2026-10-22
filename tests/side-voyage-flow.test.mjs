@@ -628,3 +628,15 @@ test('the comet corridor only clears its marked area, not the whole column above
   T.adv(1 / 60);
   assert.equal(T.ev('items.some(item=>item.markP01)'), true, 'a hazard above the marked area is kept');
 });
+
+test('«Repetir» after finishing a voyage starts at stage 1 even if the final save failed', () => {
+  // Revisión tras el PR #44 (P02): un guardado fallido dejaba inProgress de la rejugada.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3); T.adv(.5);
+  T.ev('Object.getPrototypeOf(localStorage).setItem=()=>{throw new Error("lleno")}');
+  T.finish();
+  assert.equal(T.st().state, 'complete');
+  T.startLevel(0);
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
