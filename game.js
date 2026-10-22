@@ -1655,6 +1655,27 @@
     if(event.type==="gaia-beacon") showStoryTransmission("IRIA · GAIA","Tu identificación coincide con el convoy atacante. Atlas exige que detengas los motores.",5);
   }
 
+  // Auditoría B01: el pasillo marcado se vacía de todo lo que no sea cometa:
+  // peligros y disparos que entran en él, de frente o de lado. Corre después
+  // de mover los objetos, así que no necesita margen (A3).
+  function clearCometCorridor() {
+    if(!cometShowerActive())return;
+    const c=classicCometCorridor.corridor;
+    for(let i=items.length-1;i>=0;i--) {
+      const item=items[i];
+      if(!(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout)))continue;
+      // Solo lo que tiene el centro dentro del pasillo (A2/C2) y ya toca su
+      // zona marcada (P01). La rotura se dibuja sobre la línea y dentro de la
+      // propia roca, nunca por encima (A3).
+      if(item.x<=c.left||item.x>=c.right||item.y+item.r<=c.top)continue;
+      // Lo que se ve no se esfuma: un peligro se rompe con su explosión
+      // normal y un disparo con chispas cálidas, nunca cian (R2, C5).
+      const breakY=Math.max(item.y,c.top);
+      if(item.classicScoutProjectile)burst(item.x,breakY,6,"red");else addExplosion(item.x,breakY,.7,.5);
+      items.splice(i,1);
+    }
+  }
+
   function advanceClassicFlight(dt) {
     const introBefore=classicFlightView?.elapsed;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
@@ -1783,24 +1804,6 @@
           classicCometCorridor={corridor:event.corridor,until:view.stageElapsed+2.5};}
         if(event.type==="spawn")items.push(event.item);
       });
-      // Auditoría B01: el pasillo marcado se vacía de todo lo que no sea cometa:
-      // peligros y disparos que entran en él, de frente o de lado.
-      if(cometShowerActive()) {
-        const c=classicCometCorridor.corridor;
-        for(let i=items.length-1;i>=0;i--) {
-          const item=items[i];
-          if(!(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout)))continue;
-          // Solo lo que tiene el centro dentro del pasillo (A2/C2) y ya llega a
-          // su zona marcada; el margen de 40 px cubre lo que aún se mueve en este
-          // fotograma (P01). La rotura se dibuja sobre la línea, nunca por encima.
-          if(item.x<=c.left||item.x>=c.right||item.y+item.r<=c.top-40)continue;
-          // Lo que se ve no se esfuma: un peligro se rompe con su explosión
-          // normal y un disparo con chispas cálidas, nunca cian (R2, C5).
-          const breakY=Math.max(item.y,c.top);
-          if(item.classicScoutProjectile)burst(item.x,breakY,6,"red");else addExplosion(item.x,breakY,.7,.5);
-          items.splice(i,1);
-        }
-      }
     }
     if(rules.repairAt!==null && view.stageElapsed>=rules.repairAt && classicCometWarning!==n) {
       classicCometWarning=n;const x=W*.45;
@@ -4247,6 +4250,7 @@
       }
     }
 
+    if(classicFlightView)clearCometCorridor();
     if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {

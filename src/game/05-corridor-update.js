@@ -425,6 +425,7 @@
       }
     }
 
+    if(classicFlightView)clearCometCorridor();
     if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
     checkSupplyFailure();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {

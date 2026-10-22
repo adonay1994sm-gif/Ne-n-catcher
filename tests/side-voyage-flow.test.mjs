@@ -799,3 +799,16 @@ test('«SIGUIENTE VIAJE» resumes the next voyage at its saved stage', () => {
   assert.equal(T.ev('classicSideVoyage.ficha.id'), 'S1-V3');
   assert.equal(T.ev('classicFlightView.stageNumber'), 3);
 });
+
+test('the corridor never draws a rock\'s explosion below the rock itself', () => {
+  // Revisión del PR #45 (A3): con el margen de 40 px una roca grande estallaba hasta 78 px más abajo.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  for (let i = 0; i < 30 * 60 && !T.ev('cometShowerActive()'); i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  T.ev(`(()=>{const c=classicCometCorridor.corridor;
+    const a=createThreat('meteor',level());a.x=a.baseX=c.center;a.r=38;a.y=c.top-68;a.s=0;a.amp=0;a.markBig=true;items.push(a);})()`);
+  const rockBottom = T.ev('items.find(item=>item.markBig).y+38');
+  const before = T.ev('explosions.length');
+  T.adv(1 / 60);
+  for (const e of T.ev('explosions.slice(' + before + ')')) assert.ok(e.y <= rockBottom + 1, `explosion at y=${e.y}, rock bottom ${rockBottom}`);
+});
