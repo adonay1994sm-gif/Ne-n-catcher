@@ -369,3 +369,16 @@ test('retrying a replayed finished voyage resumes the stage it promises, and a n
   T.startSideVoyage('S1-V2');
   assert.equal(T.ev('classicFlightView.stageNumber'), 1, 'after finishing again, a replay starts from the beginning');
 });
+
+test('after replaying S1-V1 halfway, «JUGAR» follows the campaign instead of reopening S1-V1', () => {
+  // Auditoría 22/10, L02: rejugar S1-V1 dejaba «JUGAR» atascado en su ficha.
+  const {w, T} = harness({unlocked: '1'});
+  T.startLevel(0); T.adv(.1); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startLevel(0); T.adv(.2); T.toStage(2); T.goHome();
+  assert.equal(T.ev('nextCampaignVoyage()?.voyage'), 'S1-V3');
+  assert.match(w.document.getElementById('playSector').textContent, /S1-V3/);
+  w.document.getElementById('play').click();
+  assert.equal(w.document.getElementById('briefing').classList.contains('show'), false, 'no S1-V1 briefing');
+  assert.equal(T.st().side, 'S1-V3');
+});

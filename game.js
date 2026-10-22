@@ -2187,9 +2187,11 @@
     ui.playLabel.textContent = "CONTINUAR VIAJE";
     ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
     // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
-    const nextVoyage=classicVoyageRecord&&!classicVoyageRecord.completed?null:nextCampaignVoyage();
+    // Una rejugada de S1-V1 a medias no frena la campaña (auditoría L02).
+    const s1v1Pending=classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2;
+    const nextVoyage=s1v1Pending?null:nextCampaignVoyage();
     if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
-    if(!nextVoyage&&getUnlocked()>=2&&!(classicVoyageRecord&&!classicVoyageRecord.completed)){
+    if(!nextVoyage&&getUnlocked()>=2){
       ui.playLabel.textContent="VER EL MAPA";ui.playSector.textContent="TODOS LOS VIAJES DISPONIBLES HECHOS";
     }
     const current = routes.findIndex(route => route.status === "open");
@@ -6372,7 +6374,7 @@
   });
 
   $("play").onclick = () => {
-    if(classicVoyageRecord&&!classicVoyageRecord.completed){prepareLevel(0,"menu");return;}
+    if(classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2){prepareLevel(0,"menu");return;}
     // La campaña sigue por el siguiente viaje abierto del mapa; si no queda
     // ninguno, se abre el mapa (ya no hay niveles clásicos).
     const nextVoyage=nextCampaignVoyage();
