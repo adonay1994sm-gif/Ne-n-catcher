@@ -533,7 +533,9 @@
       if (!settings.reduceEffects) shake = Math.max(shake, 6);
       addImpactEffect(x, y, 0.85, impactAngle);
       combatSound("hull-hit",x);
-      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained) {
+      // Sin pisar una línea que ya esté en pantalla; si el canal está ocupado, se dice más tarde (R7).
+      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained &&
+          (typeof flightTransmission === "undefined" || !flightTransmission)) {
         reserveHitExplained = true;
         showStoryTransmission("N-7", "Tu refuerzo de casco absorbió el impacto.", 3);
       }

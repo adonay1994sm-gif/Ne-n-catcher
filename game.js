@@ -219,7 +219,7 @@
     settings: "neon-settings-v5"
   };
   const LEGACY_KEYS = { best: "neon-best-v1" };
-  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 100, vibration: true, autoFire: false, effectsQuality: "normal", effects: true, difficulty: "normal" };
+  const DEFAULT_SETTINGS = { music: 35, fx: 70, sensitivity: 135, vibration: true, autoFire: false, effectsQuality: "normal", effects: true, difficulty: "normal" };
   const storage = NeonCore.createStorageService(window.NeonDev?.storage);
 
   function migrateLegacyStorage() {
@@ -324,9 +324,12 @@
   let classicCometCorridor = null;
   let hullGrace = 0; // s sin daño al casco: tras un golpe (J07) y al reanudar (J06)
   let pauseStartedAt = 0;
+  let lastResumeGraceAt = -Infinity; // tiempo de juego de la última gracia por reanudar (R1)
   let classicGuideSeen = null; // lección de un paso: cuándo se mostró por primera vez (G1)
   let reserveHitExplained = false; // N-7 explica una vez el golpe absorbido (G2)
   let classicCroniumWaitNotice = null; // tramo cuyo aviso de CRONIUM pendiente ya salió (G5)
+  let classicCroniumWaitAt = -Infinity; // cuándo salió por última vez (R6: se repite cada 10 s)
+  let classicCroniumWaitShown = null; // aviso en pantalla y el CRONIUM con que se dijo (C3)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;
@@ -790,6 +793,7 @@
   // updateScore; no score timer, RAF or permanently running drone is created.
   let voyageScore = null;
   let chapterScore = null;
+  let masterBus = null;
   let combatSfx = null;
   let voyageScoreContext = "transit";
   let scoreSuspended = false;
@@ -799,9 +803,24 @@
     if (audioCtx) return audioCtx;
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      // Bus maestro con limitador: música, efectos y tonos pasan por aquí y
+      // no saturan cuando coinciden (revisión de audio 22/10, paso 1).
+      masterBus = audioCtx.createGain();
+      // El compresor añade ~+3,3 dB de compensación automática: el bus baja lo
+      // mismo para que la mezcla suene como antes (revisión de audio A1).
+      masterBus.gain.value = 0.68;
+      // Si el limitador falla, el bus va directo a la salida: nunca mudo (A6).
+      try {
+        const limiter = audioCtx.createDynamicsCompressor();
+        limiter.threshold.value = -6; limiter.knee.value = 0; limiter.ratio.value = 12;
+        limiter.attack.value = .003; limiter.release.value = .12;
+        masterBus.connect(limiter).connect(audioCtx.destination);
+      } catch {
+        masterBus.connect(audioCtx.destination);
+      }
       musicGain = audioCtx.createGain();
       musicGain.gain.value = 0;
-      musicGain.connect(audioCtx.destination);
+      musicGain.connect(masterBus);
     } catch {
       return null;
     }
@@ -820,7 +839,7 @@
       try {chapterScore=NeonCampaign.createChapterScore({context:ac,output:musicGain});} catch {chapterScore=null;}
     }
     if(!combatSfx&&typeof NeonCampaign.createCombatSfx==="function") {
-      combatSfx=NeonCampaign.createCombatSfx({context:ac,output:ac.destination});
+      combatSfx=NeonCampaign.createCombatSfx({context:ac,output:masterBus||ac.destination});
       combatSfx?.load();
     }
     else if(combatSfx?.snapshot().failed)combatSfx.load();
@@ -905,9 +924,13 @@
     oscillator.type = type;
     oscillator.frequency.value = frequency;
     const length = Math.max(.015, Math.min(2, Number(duration) || .06));
-    gain.gain.value = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
-    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + length);
-    oscillator.connect(gain).connect(ac.destination);
+    // Entra desde casi silencio en 5 ms para que no haga clic (paso 4).
+    const peak = Math.max(.0001, Math.min(.2, base) * (settings.fx / 100));
+    gain.gain.value = 0.0001;
+    gain.gain.setValueAtTime(0.0001, ac.currentTime); // punto de partida de la rampa en WebKit (A4)
+    gain.gain.linearRampToValueAtTime(peak, ac.currentTime + .005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + Math.max(.01, length));
+    oscillator.connect(gain).connect(masterBus || ac.destination);
     const voice = {oscillator, end: ac.currentTime + length, release() {
       if (!activeToneVoices.delete(voice)) return;
       oscillator.disconnect(); gain.disconnect();
@@ -1176,6 +1199,10 @@
       for(let i=0;i<2000&&classicFlight&&classicFlightView.elapsed<gone;i++)
         classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);
       classicChapterView=classicChapterStory.snapshot();syncClassicChapterPresentation();
+      // Fuera la línea de LIRA de antes de la ruptura (revisión R8).
+      flightTransmission=null;
+      showStoryTransmission("N-7","Los atacantes nos siguen. Saca el CRONIUM de este campo de restos.",4);
+      classicPursuitAnnounced.add("raider"); // ya dicho: el primer perseguidor no lo repite (C1)
     };
     // Missile pointer/touch ownership is installed with the other flight
     // controls in 08-loop-input-bootstrap, including accessible click fallback.
@@ -1439,8 +1466,7 @@
     if(flightDockReturn==="hud"&&state==="paused") {
       if(typeof resetGameInput==="function")resetGameInput();
       setState("playing");overlay();last=performance.now();resumeAudio();
-      // Misma gracia que al reanudar desde la pausa (auditoría B04).
-      if(performance.now()-pauseStartedAt>=500)hullGrace=Math.max(hullGrace,0.8);
+      grantResumeGrace(); // misma gracia que al salir de la pausa (B04)
       syncClassicFlightHud();ui.classicC9?.focus({preventScroll:true});return;
     }
     if(flightDockReturn==="voyage"){resumeClassicVoyageService();return;}
@@ -1534,7 +1560,7 @@
       const since=elapsed-classicGuideSeen.at,seconds=guide.seconds||4;
       if(!(since<seconds||(since>=30&&since<30+seconds)))guide=null;
     }
-    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? (guide.target>1?`${guide.text} · ${Math.round(guide.progress*100)} %`:guide.text) : "";
+    const objective=flightTransmission ? `${flightTransmission.speaker}: ${flightTransmission.text}` : guide ? (guide.target>1&&guide.progress>0?`${guide.text} · ${Math.round(guide.progress*100)} %`:guide.text) : "";
     const signature=[currentLevel,stage,objective,collected,Math.floor((view?.routeProgress||0)*1000),classicEquipment.selected,classicWeapons?.charges,Math.floor((classicWeapons?.recharge||0)*5)].join(":");
     if(signature===flightHudSignature)return;
     flightHudSignature=signature;
@@ -1653,12 +1679,25 @@
       advanceClassicTutorial();
     }
     if(classicFlightView?.stageNumber) {
-      // Revisión G5: si el reloj del tramo acaba sin la cuota, el viaje espera;
-      // N-7 dice cuánto CRONIUM falta (una vez por tramo).
+      // Revisiones G5 y R6: si el reloj del tramo acaba sin la cuota, el viaje
+      // espera; el HUD cuenta la cuota del tramo y N-7 dice cuánto CRONIUM
+      // falta, y lo repite cada 10 s de juego mientras siga esperando.
       const wait=classicFlightView;
-      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId) {
-        classicCroniumWaitNotice=wait.stageId;
-        showStoryTransmission("N-7",`Faltan ${Math.max(1,wait.stageGoal-collected)} CRONIUM para seguir al siguiente tramo.`,4);
+      if(ui.goal.textContent!==croniumGoalLabel())ui.goal.textContent=croniumGoalLabel();
+      const goalTag=ui.goal.previousElementSibling,tag=wait.waitingFor==="cronium"?"TRAMO":"CRONIUM";
+      if(goalTag&&goalTag.textContent!==tag)goalTag.textContent=tag;
+      // El aviso con la cuenta se retira en cuanto cambia el CRONIUM o acaba la
+      // espera, para no contradecir al HUD (revisión C3).
+      if(classicCroniumWaitShown!==null&&flightTransmission?.text===classicCroniumWaitShown.text&&
+        (collected!==classicCroniumWaitShown.collected||wait.waitingFor!=="cronium")) {
+        flightTransmission=null;classicCroniumWaitShown=null;syncClassicFlightHud();
+      }
+      if(state==="playing"&&wait.waitingFor==="cronium"&&!flightTransmission&&
+        (classicCroniumWaitNotice!==wait.stageId||elapsed-classicCroniumWaitAt>=10)) {
+        classicCroniumWaitNotice=wait.stageId;classicCroniumWaitAt=elapsed;
+        const missing=Math.max(1,wait.stageGoal-collected);
+        const text=`${missing===1?"Falta 1":`Faltan ${missing}`} CRONIUM para seguir al siguiente tramo.`;
+        showStoryTransmission("N-7",text,4);classicCroniumWaitShown={text,collected};
       }
       if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
@@ -1744,16 +1783,22 @@
           classicCometCorridor={corridor:event.corridor,until:view.stageElapsed+2.5};}
         if(event.type==="spawn")items.push(event.item);
       });
-      // Auditoría B01: el pasillo marcado se vacía de todo lo que no sea cometa.
-      // Al avisar desaparecen los peligros y disparos que ya caían por esa
-      // columna, y luego cualquier disparo que entre de lado.
+      // Auditoría B01: el pasillo marcado se vacía de todo lo que no sea cometa:
+      // peligros y disparos que entran en él, de frente o de lado.
       if(cometShowerActive()) {
         const c=classicCometCorridor.corridor;
         for(let i=items.length-1;i>=0;i--) {
           const item=items[i];
           if(!(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout)))continue;
-          if(item.x+item.r<=c.left||item.x-item.r>=c.right||item.y<-100)continue;
-          burst(item.x,item.y,6,"gold");items.splice(i,1);
+          // Solo lo que tiene el centro dentro del pasillo (A2/C2) y ya llega a
+          // su zona marcada; el margen de 40 px cubre lo que aún se mueve en este
+          // fotograma (P01). La rotura se dibuja sobre la línea, nunca por encima.
+          if(item.x<=c.left||item.x>=c.right||item.y+item.r<=c.top-40)continue;
+          // Lo que se ve no se esfuma: un peligro se rompe con su explosión
+          // normal y un disparo con chispas cálidas, nunca cian (R2, C5).
+          const breakY=Math.max(item.y,c.top);
+          if(item.classicScoutProjectile)burst(item.x,breakY,6,"red");else addExplosion(item.x,breakY,.7,.5);
+          items.splice(i,1);
         }
       }
     }
@@ -2267,11 +2312,16 @@
     buildLevelGrid();
   }
 
+  // Mientras el tramo espera CRONIUM, el contador muestra su cuota (R6).
+  function croniumGoalLabel() {
+    return classicFlightView?.waitingFor==="cronium"?`${collected}/${classicFlightView.stageGoal}`:`${collected}/${level().goal}`;
+  }
+
   function hud() {
     hudScoreTarget = score;
     if (state !== "playing") displayedScore = score;
     ui.score.textContent = Math.round(displayedScore);
-    ui.goal.textContent = `${collected}/${level().goal}`;
+    ui.goal.textContent = croniumGoalLabel();
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
     ui.hull.title=`Casco ${Math.ceil(hull)} de 100. Refuerzo ${Math.ceil(classicHullReserve)} de ${classicHullReserveCapacity}, sin temporizador.`;
     let reserve=$("hullReserve");
@@ -2606,7 +2656,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     hullGrace = 0;
-    classicGuideSeen = null;classicCroniumWaitNotice = null;
+    classicGuideSeen = null;classicCroniumWaitNotice = null;classicCroniumWaitAt = -Infinity;classicCroniumWaitShown = null;lastResumeGraceAt = -Infinity;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);
@@ -2614,7 +2664,8 @@
     // Reintentar o reiniciar (desde pausa o derrota) conserva el viaje secundario.
     const sideFicha=classicSideVoyagePending||(["paused","gameover","complete"].includes(state)?classicSideVoyage?.ficha:null);
     // Reintentar o reiniciar (no abrir desde el mapa) reanuda una rejugada a medias (B02).
-    const sideRetry=!classicSideVoyagePending;
+    // «Repetir» tras completar empieza siempre en el 1 (revisión P02).
+    const sideRetry=!classicSideVoyagePending&&state!=="complete";
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
     if(classicSideVoyage){
@@ -2622,7 +2673,8 @@
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
       const requested=classicVoyageRequestedStage;
       if(requested>=1&&requested<=classicSideVoyage.route.stageCount)voyageCheckpoint=classicSideVoyage.route.createCheckpoint(requested,{goal:LEVELS[0].goal});
-      else if(record&&(!record.completed||(record.inProgress&&sideRetry))){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
+      // «Repetir» tras completar nunca reanuda un punto viejo, ni en la primera pasada (A5).
+      else if(record&&state!=="complete"&&(!record.completed||(record.inProgress&&sideRetry))){voyageCheckpoint=record.checkpoint;voyageEntry=record.entry;}
     } else if(currentLevel===0){
       const requested=classicVoyageRequestedStage;
       const resume=classicVoyageRecord&&!classicVoyageRecord.completed&&(!requested||requested===classicVoyageRecord.checkpoint.stageNumber);
@@ -2765,10 +2817,17 @@
     setState("playing");
     overlay();
     last = performance.now();
-    // Gracia de 0,8 s solo tras una pausa real: pausar y reanudar sin parar
-    // no encadena invulnerabilidad (revisión L2).
-    if (performance.now() - pauseStartedAt >= 500) hullGrace = Math.max(hullGrace, 0.8);
+    grantResumeGrace();
     resumeAudio();
+  }
+
+  // Gracia de 0,8 s al volver a jugar tras una pausa real (≥ 0,5 s) y como
+  // mucho una vez cada 3 s de juego: pausar sin parar no encadena
+  // invulnerabilidad (revisiones L2 y R1).
+  function grantResumeGrace() {
+    if (performance.now() - pauseStartedAt < 500 || elapsed - lastResumeGraceAt < 3) return;
+    lastResumeGraceAt = elapsed;
+    hullGrace = Math.max(hullGrace, 0.8);
   }
 
   function goHome() {
@@ -3530,7 +3589,9 @@
       if (!settings.reduceEffects) shake = Math.max(shake, 6);
       addImpactEffect(x, y, 0.85, impactAngle);
       combatSound("hull-hit",x);
-      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained) {
+      // Sin pisar una línea que ya esté en pantalla; si el canal está ocupado, se dice más tarde (R7).
+      if (typeof showStoryTransmission === "function" && typeof reserveHitExplained !== "undefined" && !reserveHitExplained &&
+          (typeof flightTransmission === "undefined" || !flightTransmission)) {
         reserveHitExplained = true;
         showStoryTransmission("N-7", "Tu refuerzo de casco absorbió el impacto.", 3);
       }

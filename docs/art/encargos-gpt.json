@@ -69,6 +69,14 @@
       "nota": "Se confunden con el CRONIUM y con la nave propia (DESIGN §9.1). Probar primero un recoloreado en código como hostileOrdnanceSource; si no basta, arte nuevo."
     },
     {
+      "id": "rv6-r5-chispas",
+      "titulo": "Colores del daño: real en cálido y absorbido en ámbar con chispas (R5)",
+      "prioridad": 2,
+      "archivo": "encargo-rv6-r5-chispas-v1.png",
+      "prompt": "Hoja de 6 fotogramas en una fila, celdas de 256×256 px, fondo transparente real con alfa, sin texto ni bordes. Ráfaga de chispas metálicas de impacto en el casco de una nave, vista cenital, ámbar #edc68a con núcleo blanco cálido, estelas finas y alargadas (no círculos). Impacto en el centro exacto de cada celda, misma escala y luz. Estilo arcade sci-fi pintado, como chronos_shockwave_atlas_v1. Comprobar sobre negro, blanco y damero; bordes limpios sin halo. impacto_absorbido_v1.webp.",
+      "nota": "Al dañarse el casco salen chispas azul-blanco (DESIGN §9.1 pide cálido). Recolorear addHullSparks a #ff9b36 con núcleo #ff5b3d; el golpe absorbido con chispas ámbar en vez de discos y aro de 3 px."
+    },
+    {
       "id": "enc-leviatan",
       "titulo": "Leviatán Cryon, jefe del sector 5, por piezas",
       "prioridad": 3,

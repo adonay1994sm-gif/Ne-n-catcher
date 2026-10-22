@@ -689,7 +689,13 @@ body.flight-mode #classicC9 span { font-size: 9px; line-height: 1.4; letter-spac
 body.flight-mode .flight-salvage { left: var(--ui-safe-left); bottom: calc(var(--ui-safe-bottom) + 114px); max-width: 130px; color: var(--ui-amber); font-size: 11px; line-height: 15px; letter-spacing: .01em; }
 body.flight-mode .flight-pilot-hint { left: var(--ui-safe-left); bottom: var(--ui-safe-bottom); min-height: 44px; max-width: 112px; gap: 6px; font-size: 9px; letter-spacing: .02em; color: #bdd9de; }
 body.flight-mode #powerHud { bottom: calc(var(--ui-safe-bottom) + 139px); gap: 5px; }
-body.flight-mode .chapter-skip { bottom: calc(var(--ui-safe-bottom) + 76px); min-height: 44px; font-size: 11px; border-radius: 5px; border-color: #8aadb7; }
+/* «Omitir introducción» con el patrón e-1 del sistema A (revisión M9). */
+body.flight-mode .chapter-skip { bottom: calc(var(--ui-safe-bottom) + 76px); min-height: 48px; font-size: 11px; isolation: isolate; border: 0; border-radius: 0; background: var(--ui-line); color: var(--ui-paper); clip-path: var(--c-10); }
+body.flight-mode .chapter-skip::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--e-face); box-shadow: var(--e-light); clip-path: var(--c-9); }
+body.flight-mode .chapter-skip:active:not(:disabled) { background: var(--ui-cyan); transform: translateY(2px); }
+body.flight-mode .chapter-skip:active:not(:disabled)::before { background: var(--ui-ink); box-shadow: var(--e-pressed); }
+body.flight-mode .chapter-skip:focus-visible { outline: none; background: var(--ui-paper); }
+body.flight-mode .chapter-skip:focus-visible::before { inset: 3px; }
 body.flight-mode.atlas-combat .atlas-encounter { top: calc(var(--ui-safe-top) + 51px); left: var(--ui-safe-left); right: var(--ui-safe-right); height: 31px; padding: 3px 6px; border: 0; border-left: 2px solid var(--ui-amber); border-radius: 0; background: #1a2631e6; }
 body.flight-mode.atlas-combat .atlas-identity { gap: 3px 5px; }
 body.flight-mode.atlas-combat .atlas-identity b { color: #f4e9d0; font-size: 10px; letter-spacing: .08em; }
@@ -1012,11 +1018,13 @@ body.flight-mode :is(.primary, .secondary, .icon):active:not(:disabled) { backgr
 body.flight-mode :is(.primary, .secondary, .reward, .icon):active:not(:disabled)::before {
   background: var(--ui-ink); box-shadow: var(--e-pressed);
 }
-/* Foco: anillo marfil por fuera (outline no lo recorta clip-path en un hijo,
-   así que se dibuja con filter sobre la propia caja). */
-body.flight-mode :is(.primary, .secondary, .reward, .icon):focus-visible {
-  outline: none; filter: drop-shadow(0 0 0 var(--ui-paper)) drop-shadow(0 0 2px var(--ui-paper));
+/* Foco de teclado: clip-path recorta outline y sombras, así que el anillo se
+   dibuja por dentro: el borde pasa a marfil y la cara se separa 3 px
+   (revisión R3, WCAG 2.4.7). */
+body.flight-mode :is(.primary, .secondary, .reward, .icon, .fire-control, .classic-missile, #classicC9):focus-visible {
+  outline: none; background: var(--ui-paper);
 }
+body.flight-mode :is(.primary, .secondary, .reward, .icon, .fire-control, .classic-missile, #classicC9):focus-visible::before { inset: 3px; }
 /* Bloqueado: sin borde claro, cara hundida y texto apagado. */
 body.flight-mode :is(.primary, .secondary, .reward, .icon):disabled {
   background: var(--ui-raised); color: var(--ui-line); transform: none;
@@ -1059,3 +1067,9 @@ body.flight-mode .fire-control #fireWeapon, body.flight-mode #storySpeaker { fon
 body.flight-mode .stat-card span, body.flight-mode .sector-route small, body.flight-mode .hazard-warning small { font-size: 9px; }
 /* Derrota: la etiqueta habla de peligro, en rojo del sistema (revisión V8). */
 body.flight-mode #over .panel > small { color: var(--ui-red); }
+/* Tamaño mínimo de texto 10 px (decisión del propietario 22/10, revisión V10;
+   DESIGN.md decía 9 px). Etiquetas pequeñas del HUD, menú, mapa y mandos. */
+body.flight-mode :is(.hud small, #bannerSector, .hazard-warning small, .menu-topline small, .stat-card span,
+  .campaign-progress-head span, .campaign-progress-head b, .sector-tab, .sector-place small, .sector-route small,
+  .summary-grid span, #complete .summary-grid > div > span, #flightDestination, #flightWeaponDamage, .flight-pilot-hint, #classicC9 span,
+  #classicMissile span, .ship-hangar-header small, #atlasPhase, .menu-chapter, #menu .menu-actions .secondary) { font-size: 10px; }

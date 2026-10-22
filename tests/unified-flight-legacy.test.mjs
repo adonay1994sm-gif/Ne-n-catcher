@@ -149,6 +149,7 @@ function harness(t, {campaign = '', saved, backups, pointerEvents = true, failBa
     window.__UNIFIED_FLIGHT_TEST__={
       update,render,background,startLevel,prepareLevel,pauseGame,resumeGame,goHome,completeLevel,fireManualShot,
       finishGame,resumeReward,
+      setSensitivity(value){settings.sensitivity=value;},
       refreshClassicFlightBounds,showStoryTransmission,hideStoryTransmission,syncClassicFlightHud,
       skipIntro(){classicChapterStory?.skipIntro();classicChapterView=classicChapterStory?.snapshot()||null;syncClassicChapterPresentation();},
       prepare(index=0,{skipOpening=true}={}){startLevel(index);warpTimer=0;spawnTimer=999;classicScoutTimer=999;classicPatrolTimer=999;items=[];gates=[];
@@ -410,7 +411,7 @@ test('a classic projectile travels before impact and applies damage and destruct
 });
 
 test('the actual PointerEvent handlers anchor without jumping and move both axes without a second finger stealing control', t => {
-  const h = harness(t); h.api.prepare(); const initial = h.snapshot();
+  const h = harness(t); h.api.prepare(); h.api.setSensitivity(100); const initial = h.snapshot(); // movimiento 1:1, sin depender del valor por defecto
   h.pointer('pointerdown', 11, 290, 550);
   assert.equal(h.snapshot().player.target, initial.player.target);
   assert.equal(h.snapshot().player.targetY, initial.player.targetY);
@@ -437,7 +438,7 @@ test('the actual PointerEvent handlers anchor without jumping and move both axes
 });
 
 test('the Safari touch fallback tracks the first finger and ignores a secondary finger ending', t => {
-  const h = harness(t, {pointerEvents: false}); h.api.prepare(); const initial = h.snapshot();
+  const h = harness(t, {pointerEvents: false}); h.api.prepare(); h.api.setSensitivity(100); const initial = h.snapshot(); // movimiento 1:1, sin depender del valor por defecto
   const first = {identifier: 21, clientX: 250, clientY: 620};
   const second = {identifier: 22, clientX: 80, clientY: 300};
   h.touches('touchstart', [first], [first]);

@@ -22,7 +22,7 @@ function harness({ready = true, fx = 70, music = 50} = {}) {
     oscillators: [], sources: [], gains: [], voyage: [], writes: [], timeline: [], scrap: []};
   const records = new Map(); let blocked = false, bank;
   const parameter = () => ({value: 0, values: [], setValueAtTime(v,t) {this.value = v; this.values.push([v,t]);},
-    setTargetAtTime(v,t,d) {this.value = v; this.values.push([v,t,d]);}, exponentialRampToValueAtTime() {}});
+    setTargetAtTime(v,t,d) {this.value = v; this.values.push([v,t,d]);}, exponentialRampToValueAtTime() {}, linearRampToValueAtTime() {}});
   const node = extra => ({connections: [], disconnected: 0,
     connect(target) {this.connections.push(target); return target;}, disconnect() {this.disconnected++;}, ...extra});
   class SharedAudioContext {
@@ -118,7 +118,9 @@ test('classic starts one shared context and one bank connected to that context, 
   for (let visit = 0; visit < 10; visit++) h.sandbox.startMusic();
   assert.equal(h.calls.contexts.length, 1); assert.equal(h.calls.sfxFactories.length, 1);
   assert.equal(h.calls.sfxFactories[0].context, h.sandbox.audioCtx);
-  assert.equal(h.calls.sfxFactories[0].output, h.sandbox.audioCtx.destination);
+  // Revisión de audio 22/10: los efectos salen por el bus maestro (con limitador), no directo.
+  assert.ok(h.calls.gains.includes(h.calls.sfxFactories[0].output));
+  assert.notEqual(h.calls.sfxFactories[0].output, h.sandbox.audioCtx.destination);
   assert.equal(h.calls.fetches, 1); assert.equal(h.calls.decode, 1);
   assert.equal(h.bank().snapshot().paused, true);
   assert.equal(h.calls.sources.length, 0); assert.equal(h.calls.oscillators.length, 0);

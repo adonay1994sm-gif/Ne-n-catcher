@@ -35,6 +35,11 @@ function harness({unlocked = '2', query = ''} = {}) {
   w.Image = class { constructor() { this.complete = false; this.naturalWidth = 0; this.naturalHeight = 0; }
     set src(v) { this._src = v; this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 768; } get src() { return this._src || ''; } };
   w.localStorage.setItem('neon-unlocked-v2', unlocked);
+  // Azar con semilla fija: las pruebas que cuentan patrullas o peligros no
+  // pueden depender de la suerte (revisión 3, prueba intermitente).
+  let seed = 0x9e3779b9;
+  w.eval('Math').random = () => { seed = (seed + 0x6D2B79F5) >>> 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = (t + Math.imul(t ^ t >>> 7, 61 | t)) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   w.eval(core); w.eval(content);
   const hook = `window.T={ev:s=>eval(s),resumeReward,effects:()=>impactEffects,setEffects:on=>{settings.effects=on;},forceComplete:()=>{state='complete';},level:()=>currentLevel,requestStage:n=>{classicVoyageRequestedStage=n;},startSideVoyage,startLevel,finishGame,goHome,buildLevelGrid,hit:n=>{classicHullReserve=0;hullGrace=0;damageShip(n);return hull;},hitNow:n=>{classicHullReserve=0;damageShip(n);return hull;},
     st:()=>({state,side:classicSideVoyage?.ficha.id||null,route:classicFlightView?.routeId||null,
@@ -602,7 +607,7 @@ test('while a comet shower lasts nothing but comets is ever inside the marked co
       if (!T.ev('cometShowerActive()')) continue;
       frames++;
       dirty += T.ev(`(()=>{const c=classicCometCorridor.corridor;return items.some(item=>(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout))&&
-        item.x+item.r>c.left&&item.x-item.r<c.right&&item.y+item.r>c.top&&item.y-item.r<H)?1:0})()`);
+        item.x>c.left&&item.x<c.right&&item.y+item.r>c.top&&item.y-item.r<H)?1:0})()`); // centro dentro (A2/C2)
     }
     assert.ok(frames > 0, `${voyage}: a shower happens`);
     assert.equal(dirty, 0, `${voyage}: ${dirty} of ${frames} shower frames had a threat inside the corridor`);
@@ -615,5 +620,169 @@ test('opening a finished voyage again from the map starts it at stage 1 even aft
   T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
   T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3); T.goHome();
   T.startSideVoyage('S1-V2');
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
+
+test('the comet corridor only clears its marked area, not the whole column above it', () => {
+  // Revisión tras el PR #44 (P01): los peligros desaparecían a media pantalla.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  for (let i = 0; i < 30 * 60 && !T.ev('cometShowerActive()'); i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  assert.ok(T.ev('cometShowerActive()'));
+  T.ev(`(()=>{const c=classicCometCorridor.corridor,m=createThreat('meteor',level());m.x=m.baseX=c.center;m.y=c.top-200;m.s=0;m.amp=0;m.markP01=true;items.push(m);})()`);
+  T.adv(1 / 60);
+  assert.equal(T.ev('items.some(item=>item.markP01)'), true, 'a hazard above the marked area is kept');
+});
+
+test('«Repetir» after finishing a voyage starts at stage 1 even if the final save failed', () => {
+  // Revisión tras el PR #44 (P02): un guardado fallido dejaba inProgress de la rejugada.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3); T.adv(.5);
+  T.ev('Object.getPrototypeOf(localStorage).setItem=()=>{throw new Error("lleno")}');
+  T.finish();
+  assert.equal(T.st().state, 'complete');
+  T.startLevel(0);
+  assert.equal(T.ev('classicFlightView.stageNumber'), 1);
+});
+
+test('alternating real pauses with short play does not chain the resume grace', () => {
+  // Revisión 3 (R1): pausas de 0,5 s cada 0,6 s de juego evitaban todo el daño.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  let damaged = 0;
+  for (let i = 0; i < 10; i++) {
+    T.ev('pauseGame();pauseStartedAt-=600;resumeGame()');
+    T.adv(.3);
+    const before = T.hull(); T.hitNow(5);
+    if (T.hull() < before) damaged++;
+    T.ev('hull=100'); T.adv(.3);
+  }
+  assert.ok(damaged >= 6, `only ${damaged} of 10 hits did damage`);
+});
+
+test('a hazard cleared from the comet corridor breaks with its explosion instead of vanishing', () => {
+  // Revisión 3 (R2): antes desaparecía con unas chispas sueltas.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  for (let i = 0; i < 30 * 60 && !T.ev('cometShowerActive()'); i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  const before = T.ev('explosions.length');
+  T.ev(`(()=>{const c=classicCometCorridor.corridor,m=createThreat('meteor',level());m.x=m.baseX=c.center;m.y=c.top+60;m.s=0;m.amp=0;m.markR2=true;items.push(m);})()`);
+  T.adv(1 / 60);
+  assert.equal(T.ev('items.some(item=>item.markR2)'), false);
+  assert.ok(T.ev('explosions.length') > before, 'an explosion marks where it broke');
+});
+
+test('the new N-7 notices never replace a story line already on screen, and wait for their turn', () => {
+  // Revisión 3 (R7): G2 y G5 sustituían una línea de MIRA o del capítulo.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev("showStoryTransmission('MIRA · C9','Línea de historia.',4)");
+  T.ev('classicHullReserve=30;hullGrace=0;damageShip(10)');
+  assert.equal(T.ev('flightTransmission.text'), 'Línea de historia.');
+  T.ev('flightTransmission=null;hullGrace=0;damageShip(10)');
+  assert.match(T.ev('flightTransmission?.text||""'), /refuerzo/i, 'the explanation comes once the channel is free');
+});
+
+test('while a stage waits for CRONIUM the HUD shows the stage quota and N-7 repeats the notice every 10 s', () => {
+  // Revisión 3 (R6): «Faltan 4» frente a «0/36», un solo aviso y «Faltan 1».
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  let notices = 0, last = '';
+  for (let i = 0; i < 60 * 60; i++) {
+    T.ev('hull=100;collected=0;items=items.filter(item=>item.type!=="energy")'); T.adv(1 / 60);
+    const text = T.ev('flightTransmission?.text||""');
+    if (/CRONIUM/.test(text) && text !== last) notices++;
+    last = text; if (/CRONIUM/.test(text)) T.ev('flightTransmission.remaining=Math.min(flightTransmission.remaining,.5)');
+  }
+  assert.equal(T.ev('classicFlightView.waitingFor'), 'cronium');
+  assert.match(w.document.getElementById('goal').textContent, /^0\/4$/, 'the HUD counter shows the stage quota');
+  assert.ok(notices >= 2, `the notice repeats while waiting (${notices})`);
+  T.ev('collected=3;classicCroniumWaitAt=-99;flightTransmission=null'); T.adv(1 / 60);
+  assert.match(T.ev('flightTransmission?.text||""'), /^Falta 1 CRONIUM/);
+});
+
+test('skipping the intro also clears the pre-rupture LIRA line and opens with N-7', () => {
+  // Revisión 3 (R8): seguía «Chronos, turno de guardia» en el HUD tras omitir.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0); T.adv(3);
+  w.document.getElementById('chapterSkip').click();
+  assert.doesNotMatch(T.ev('flightTransmission?.text||""'), /turno de guardia|firma aceptada/);
+  assert.equal(T.ev('flightTransmission?.speaker'), 'N-7');
+});
+
+test('the piloting lesson hides its percentage until there is some progress', () => {
+  // Revisión 3 (M10): «Desliza el pulgar izquierdo… · 0 %».
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0);
+  let seen = false, zero = false;
+  for (let i = 0; i < 40 * 60; i++) {
+    T.ev('hull=100;flightTransmission=null'); T.adv(1 / 60);
+    const text = w.document.getElementById('flightObjective')?.textContent || '';
+    if (/pulgar izquierdo/.test(text)) { seen = true; zero ||= /· 0 %/.test(text); }
+  }
+  assert.ok(seen); assert.equal(zero, false);
+});
+
+test('the harness randomness is seeded, so counts of patrols and hazards are repeatable', () => {
+  assert.equal(harness().T.ev('Math.random()'), harness().T.ev('Math.random()'));
+});
+
+test('a new player starts with piloting sensitivity 135', () => {
+  // Propietario (22/10, revisión G6): menos recorrido de pulgar por defecto.
+  const {w, T} = harness();
+  assert.equal(T.ev('settings.sensitivity'), 135);
+  assert.equal(w.document.getElementById('sensitivity').value, '135');
+});
+
+test('after skipping the intro, «Los atacantes nos siguen» is said only once', () => {
+  // Revisión 5 (C1): sonaba al omitir y otra vez con el primer perseguidor.
+  const {w, T} = harness({unlocked: '1'});
+  T.requestStage(null); T.startLevel(0); T.adv(3);
+  T.ev('window.__said=0;const original=showStoryTransmission;showStoryTransmission=(...args)=>{if(/Los atacantes nos siguen/.test(args[1]))window.__said++;return original(...args);}');
+  w.document.getElementById('chapterSkip').click();
+  for (let i = 0; i < 40 * 60; i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  assert.equal(T.ev('window.__said'), 1);
+});
+
+test('the CRONIUM wait notice disappears as soon as CRONIUM changes, and the HUD labels the stage quota', () => {
+  // Revisión 5 (C3): «Faltan 4» seguía en pantalla con el HUD ya en 1/4 o 4/36.
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  const label = () => w.document.querySelector('.metric-cronium small').textContent;
+  for (let i = 0; i < 40 * 60 && !/CRONIUM para seguir/.test(T.ev('flightTransmission?.text||""')); i++) {
+    T.ev('hull=100;collected=0;items=items.filter(item=>item.type!=="energy")'); T.adv(1 / 60);
+  }
+  assert.match(T.ev('flightTransmission.text'), /Faltan 4/);
+  assert.equal(label(), 'TRAMO');
+  T.ev('collected=1'); T.adv(1 / 60);
+  assert.equal(T.ev('flightTransmission'), null, 'the stale count is removed');
+  T.ev('collected=4;energySpawned=4'); for (let i = 0; i < 60; i++) T.adv(1 / 60);
+  assert.equal(label(), 'CRONIUM');
+});
+
+test('the corridor never breaks a rock above its line, nor one whose centre is outside it', () => {
+  // Revisiones 4 y 5 (A2/C2): explosiones 60-77 px por encima y rocas rozando el borde.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  for (let i = 0; i < 30 * 60 && !T.ev('cometShowerActive()'); i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  T.ev(`(()=>{const c=classicCometCorridor.corridor;
+    const a=createThreat('meteor',level());a.x=a.baseX=c.left-10;a.r=38;a.y=c.top+80;a.s=0;a.amp=0;a.markOut=true;items.push(a);
+    const b=createThreat('meteor',level());b.x=b.baseX=c.center;b.y=c.top-30;b.s=0;b.amp=0;b.markAbove=true;items.push(b);})()`);
+  const before = T.ev('explosions.length');
+  T.adv(1 / 60);
+  assert.equal(T.ev('items.some(item=>item.markOut)'), true, 'centre outside the corridor: kept');
+  const exploded = T.ev('explosions.slice(' + before + ')');
+  for (const e of exploded) assert.ok(e.y >= T.ev('classicCometCorridor.corridor.top') - 1, `explosion at y=${e.y} above the line`);
+});
+
+test('«Repetir» after a first-time finish with a failed save also starts at stage 1', () => {
+  // Revisión 4 (A5): sideRetry solo cubría los viajes ya completados.
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(3); T.adv(.5);
+  T.ev('Object.getPrototypeOf(localStorage).setItem=()=>{throw new Error("lleno")}');
+  T.finish();
+  assert.equal(T.st().state, 'complete');
+  T.startLevel(0);
   assert.equal(T.ev('classicFlightView.stageNumber'), 1);
 });
