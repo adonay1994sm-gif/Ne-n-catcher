@@ -607,7 +607,7 @@ test('while a comet shower lasts nothing but comets is ever inside the marked co
       if (!T.ev('cometShowerActive()')) continue;
       frames++;
       dirty += T.ev(`(()=>{const c=classicCometCorridor.corridor;return items.some(item=>(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout))&&
-        item.x+item.r>c.left&&item.x-item.r<c.right&&item.y+item.r>c.top&&item.y-item.r<H)?1:0})()`);
+        item.x>c.left&&item.x<c.right&&item.y+item.r>c.top&&item.y-item.r<H)?1:0})()`); // centro dentro (A2/C2)
     }
     assert.ok(frames > 0, `${voyage}: a shower happens`);
     assert.equal(dirty, 0, `${voyage}: ${dirty} of ${frames} shower frames had a threat inside the corridor`);
@@ -759,4 +759,19 @@ test('the CRONIUM wait notice disappears as soon as CRONIUM changes, and the HUD
   assert.equal(T.ev('flightTransmission'), null, 'the stale count is removed');
   T.ev('collected=4;energySpawned=4'); for (let i = 0; i < 60; i++) T.adv(1 / 60);
   assert.equal(label(), 'CRONIUM');
+});
+
+test('the corridor never breaks a rock above its line, nor one whose centre is outside it', () => {
+  // Revisiones 4 y 5 (A2/C2): explosiones 60-77 px por encima y rocas rozando el borde.
+  const {T} = harness();
+  T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
+  for (let i = 0; i < 30 * 60 && !T.ev('cometShowerActive()'); i++) { T.ev('hull=100'); T.adv(1 / 60); }
+  T.ev(`(()=>{const c=classicCometCorridor.corridor;
+    const a=createThreat('meteor',level());a.x=a.baseX=c.left-10;a.r=38;a.y=c.top+80;a.s=0;a.amp=0;a.markOut=true;items.push(a);
+    const b=createThreat('meteor',level());b.x=b.baseX=c.center;b.y=c.top-30;b.s=0;b.amp=0;b.markAbove=true;items.push(b);})()`);
+  const before = T.ev('explosions.length');
+  T.adv(1 / 60);
+  assert.equal(T.ev('items.some(item=>item.markOut)'), true, 'centre outside the corridor: kept');
+  const exploded = T.ev('explosions.slice(' + before + ')');
+  for (const e of exploded) assert.ok(e.y >= T.ev('classicCometCorridor.corridor.top') - 1, `explosion at y=${e.y} above the line`);
 });

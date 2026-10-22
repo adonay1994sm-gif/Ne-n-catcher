@@ -1783,13 +1783,14 @@
         for(let i=items.length-1;i>=0;i--) {
           const item=items[i];
           if(!(item.classicScoutProjectile||(isThreat(item)&&!item.showerComet&&!item.flightPatrol&&!item.classicScout)))continue;
-          // Solo la zona marcada (desde c.top, con 40 px de margen porque los
-          // objetos se mueven después en este fotograma); lo que baja se borra
-          // al entrar en ella, con el cian del propio pasillo (revisión P01).
-          if(item.x+item.r<=c.left||item.x-item.r>=c.right||item.y+item.r<=c.top-40)continue;
+          // Solo lo que tiene el centro dentro del pasillo (A2/C2) y ya llega a
+          // su zona marcada; el margen de 40 px cubre lo que aún se mueve en este
+          // fotograma (P01). La rotura se dibuja sobre la línea, nunca por encima.
+          if(item.x<=c.left||item.x>=c.right||item.y+item.r<=c.top-40)continue;
           // Lo que se ve no se esfuma: un peligro se rompe con su explosión
-          // normal y un disparo con unas chispas (revisión R2).
-          if(item.classicScoutProjectile)burst(item.x,item.y,6,"cyan");else addExplosion(item.x,item.y,.7,.5);
+          // normal y un disparo con chispas cálidas, nunca cian (R2, C5).
+          const breakY=Math.max(item.y,c.top);
+          if(item.classicScoutProjectile)burst(item.x,breakY,6,"red");else addExplosion(item.x,breakY,.7,.5);
           items.splice(i,1);
         }
       }
