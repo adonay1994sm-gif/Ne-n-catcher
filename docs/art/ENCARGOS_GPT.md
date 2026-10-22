@@ -84,6 +84,15 @@ Estilo NEON CRONIUM: pintura digital de ciencia ficción, iluminación azul frí
 Estilo NEON CRONIUM, misma nave interceptora hostil de la referencia, vista cenital, morro hacia abajo. Hoja 4×1, celdas de 384×384 px, alfa real, sin texto ni bordes. Núcleo y propulsores en #ff754f / #ffb25c, ningún píxel cian ni azul. Ancla en el mismo píxel de cada celda; los fotogramas son el parpadeo del núcleo. WebP sin pérdida: enemigo_interceptor_calido_v1.webp.
 ```
 
+## Colores del daño: real en cálido y absorbido en ámbar con chispas (R5)
+
+- **Id:** `rv6-r5-chispas` · **Prioridad:** 2 · **Archivo:** `encargo-rv6-r5-chispas-v1.png`
+- **Para qué:** Al dañarse el casco salen chispas azul-blanco (DESIGN §9.1 pide cálido). Recolorear addHullSparks a #ff9b36 con núcleo #ff5b3d; el golpe absorbido con chispas ámbar en vez de discos y aro de 3 px.
+
+```text
+Hoja de 6 fotogramas en una fila, celdas de 256×256 px, fondo transparente real con alfa, sin texto ni bordes. Ráfaga de chispas metálicas de impacto en el casco de una nave, vista cenital, ámbar #edc68a con núcleo blanco cálido, estelas finas y alargadas (no círculos). Impacto en el centro exacto de cada celda, misma escala y luz. Estilo arcade sci-fi pintado, como chronos_shockwave_atlas_v1. Comprobar sobre negro, blanco y damero; bordes limpios sin halo. impacto_absorbido_v1.webp.
+```
+
 ## Leviatán Cryon, jefe del sector 5, por piezas
 
 - **Id:** `enc-leviatan` · **Prioridad:** 3 · **Archivo:** `encargo-enc-leviatan-v1.png`
