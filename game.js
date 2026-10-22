@@ -5573,6 +5573,10 @@
     const entry = typeof classicShipEntry === "number" && classicShipEntry > 0 ? classicShipEntry / .9 : 0;
 
     ctx.save();
+    // Gracia sin daño (al reanudar y tras un golpe): la nave parpadea para que
+    // se note; con efectos reducidos queda fija y algo transparente.
+    if (state === "playing" && typeof hullGrace === "number" && hullGrace > 0)
+      ctx.globalAlpha = settings.reduceEffects ? .6 : Math.sin(t * .05) > 0 ? .4 : 1;
     ctx.translate(player.x, player.y + (entry ? entry * entry * H * .35 : 0));
 
     const shipScale=SHIP_VISUAL.classicScale??1,assemblySize=SHIP_VISUAL.assemblySize??208;
