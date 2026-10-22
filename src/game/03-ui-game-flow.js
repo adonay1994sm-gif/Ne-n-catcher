@@ -701,12 +701,16 @@
       advanceClassicTutorial();
     }
     if(classicFlightView?.stageNumber) {
-      // Revisión G5: si el reloj del tramo acaba sin la cuota, el viaje espera;
-      // N-7 dice cuánto CRONIUM falta (una vez por tramo).
+      // Revisiones G5 y R6: si el reloj del tramo acaba sin la cuota, el viaje
+      // espera; el HUD cuenta la cuota del tramo y N-7 dice cuánto CRONIUM
+      // falta, y lo repite cada 10 s de juego mientras siga esperando.
       const wait=classicFlightView;
-      if(state==="playing"&&wait.waitingFor==="cronium"&&classicCroniumWaitNotice!==wait.stageId&&!flightTransmission) {
-        classicCroniumWaitNotice=wait.stageId;
-        showStoryTransmission("N-7",`Faltan ${Math.max(1,wait.stageGoal-collected)} CRONIUM para seguir al siguiente tramo.`,4);
+      if(ui.goal.textContent!==croniumGoalLabel())ui.goal.textContent=croniumGoalLabel();
+      if(state==="playing"&&wait.waitingFor==="cronium"&&!flightTransmission&&
+        (classicCroniumWaitNotice!==wait.stageId||elapsed-classicCroniumWaitAt>=10)) {
+        classicCroniumWaitNotice=wait.stageId;classicCroniumWaitAt=elapsed;
+        const missing=Math.max(1,wait.stageGoal-collected);
+        showStoryTransmission("N-7",`${missing===1?"Falta 1":`Faltan ${missing}`} CRONIUM para seguir al siguiente tramo.`,4);
       }
       if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
@@ -1320,11 +1324,16 @@
     buildLevelGrid();
   }
 
+  // Mientras el tramo espera CRONIUM, el contador muestra su cuota (R6).
+  function croniumGoalLabel() {
+    return classicFlightView?.waitingFor==="cronium"?`${collected}/${classicFlightView.stageGoal}`:`${collected}/${level().goal}`;
+  }
+
   function hud() {
     hudScoreTarget = score;
     if (state !== "playing") displayedScore = score;
     ui.score.textContent = Math.round(displayedScore);
-    ui.goal.textContent = `${collected}/${level().goal}`;
+    ui.goal.textContent = croniumGoalLabel();
     ui.hull.textContent = `${Math.max(0, Math.ceil(hull))}%`;
     ui.hull.title=`Casco ${Math.ceil(hull)} de 100. Refuerzo ${Math.ceil(classicHullReserve)} de ${classicHullReserveCapacity}, sin temporizador.`;
     let reserve=$("hullReserve");
@@ -1659,7 +1668,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     hullGrace = 0;
-    classicGuideSeen = null;classicCroniumWaitNotice = null;lastResumeGraceAt = -Infinity;
+    classicGuideSeen = null;classicCroniumWaitNotice = null;classicCroniumWaitAt = -Infinity;lastResumeGraceAt = -Infinity;
     cancelSupplyFailureTimer();
     startMusic();
     currentLevel = clamp(index, 0, getUnlocked() - 1);

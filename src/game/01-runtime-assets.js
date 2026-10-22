@@ -106,6 +106,7 @@
   let classicGuideSeen = null; // lección de un paso: cuándo se mostró por primera vez (G1)
   let reserveHitExplained = false; // N-7 explica una vez el golpe absorbido (G2)
   let classicCroniumWaitNotice = null; // tramo cuyo aviso de CRONIUM pendiente ya salió (G5)
+  let classicCroniumWaitAt = -Infinity; // cuándo salió por última vez (R6: se repite cada 10 s)
   let classicShieldAge = 0;
   let classicShieldImpact = 0;
   let classicHullReserve = 30;

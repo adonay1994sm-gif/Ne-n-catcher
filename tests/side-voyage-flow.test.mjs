@@ -678,3 +678,21 @@ test('the new N-7 notices never replace a story line already on screen, and wait
   T.ev('flightTransmission=null;hullGrace=0;damageShip(10)');
   assert.match(T.ev('flightTransmission?.text||""'), /refuerzo/i, 'the explanation comes once the channel is free');
 });
+
+test('while a stage waits for CRONIUM the HUD shows the stage quota and N-7 repeats the notice every 10 s', () => {
+  // Revisión 3 (R6): «Faltan 4» frente a «0/36», un solo aviso y «Faltan 1».
+  const {w, T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(.1);
+  let notices = 0, last = '';
+  for (let i = 0; i < 60 * 60; i++) {
+    T.ev('hull=100;collected=0;items=items.filter(item=>item.type!=="energy")'); T.adv(1 / 60);
+    const text = T.ev('flightTransmission?.text||""');
+    if (/CRONIUM/.test(text) && text !== last) notices++;
+    last = text; if (/CRONIUM/.test(text)) T.ev('flightTransmission.remaining=Math.min(flightTransmission.remaining,.5)');
+  }
+  assert.equal(T.ev('classicFlightView.waitingFor'), 'cronium');
+  assert.match(w.document.getElementById('goal').textContent, /^0\/4$/, 'the HUD counter shows the stage quota');
+  assert.ok(notices >= 2, `the notice repeats while waiting (${notices})`);
+  T.ev('collected=3;classicCroniumWaitAt=-99;flightTransmission=null'); T.adv(1 / 60);
+  assert.match(T.ev('flightTransmission?.text||""'), /^Falta 1 CRONIUM/);
+});
