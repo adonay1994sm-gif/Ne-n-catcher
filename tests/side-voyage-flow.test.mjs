@@ -397,14 +397,18 @@ test('during a comet shower the safe corridor is marked and patrols hold fire, t
   // Propietario (22/10, auditoría J04): pasillo marcado + alto el fuego.
   const {T} = harness();
   T.startSideVoyage('S1-V5'); T.adv(.2); T.toStage(2);
-  let seen = false, held = true, patrols = 0;
+  let seen = false, held = true, patrols = 0, fired = 0, known = new Set();
   for (let i = 0; i < 30 * 60; i++) {
     T.ev('hull=100'); T.adv(1 / 60);
+    const shots = T.ev('items.filter(item=>item.classicScoutProjectile)');
+    const fresh = shots.filter(shot => !known.has(shot)); shots.forEach(shot => known.add(shot));
     if (T.ev('cometShowerActive()')) {
-      seen = true;
+      seen = true; fired += fresh.length;
       for (const enemy of T.ev('items.filter(item=>item.classicScout)')) { patrols++; held &&= enemy.classicScout.holdFire === true; }
     }
   }
+  // Auditoría del bloque (B05): contar disparos de verdad, no solo el indicador.
+  assert.equal(fired, 0, 'no enemy shot is fired while the shower lasts');
   assert.ok(seen, 'a shower happens in S1-V5 stage 2');
   assert.ok(patrols > 0, 'some patrol was on screen during the shower');
   assert.ok(held, 'every patrol holds fire while the shower lasts');
