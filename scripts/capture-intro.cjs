@@ -5,7 +5,8 @@
 // Uso:
 //   node scripts/capture-intro.cjs [--times 1,5,9] [--video] [--root www] [--output DIR]
 //
-// Los tiempos son segundos de reloj desde la pulsación de #launch.
+// Los tiempos son segundos de reloj desde que empieza la partida (JUGAR abre
+// el sector 1 directamente; #launch solo si aparece el briefing antiguo).
 // Por defecto guarda fuera del repositorio (carpeta temporal del sistema).
 const {chromium} = require('playwright');
 const fs = require('node:fs');
@@ -47,7 +48,7 @@ const viewport = {width: 390, height: 844};
     page.on('response', response => { if (response.status() >= 400) report.failedRequests.push(response.status() + ' ' + new URL(response.url()).pathname); });
     await page.goto(server.url, {waitUntil: 'load'});
     await page.locator('#play').click();
-    await page.locator('#launch').click();
+    if (await page.locator('#briefing.show').count()) await page.locator('#launch').click();
     const start = Date.now();
     for (const seconds of times) {
       const wait = start + seconds * 1000 - Date.now();

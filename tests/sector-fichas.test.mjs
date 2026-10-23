@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createVoyageRoute} from '../src/game/progression/voyage-engine.js';
 import {S1_GAIA} from '../src/game/progression/sectors/s1-gaia.js';
 import {SECTORS, getSectorFicha} from '../src/game/progression/sectors/index.js';
+import {S1_V1_CHRONOS_GAIA} from '../src/game/progression/voyages/s1-v1-chronos-gaia.js';
 
 test('the sector 1 route has ten stages of 45 to 60 seconds', () => {
   const route = createVoyageRoute(S1_GAIA);
@@ -38,4 +39,31 @@ test('sectors are found by id', () => {
   assert.equal(getSectorFicha('S1'), S1_GAIA);
   assert.equal(getSectorFicha('S9'), null);
   assert.ok(SECTORS.includes(S1_GAIA));
+});
+
+// Plan F3a, tarea 1: el sector empieza con el inicio de Chronos y acaba con Atlas.
+const introEvents = ficha => ficha.events.filter(event => event.type !== 'gaia-beacon')
+  .map(({id, ...rest}) => rest).sort((a, b) => a.at - b.at);
+
+test('the sector opens with the Chronos intro', () => {
+  assert.equal(S1_GAIA.intro, true);
+  assert.equal(S1_GAIA.recoveryAt, 9);
+  assert.equal(S1_GAIA.cinematicDuration, 90);
+  assert.deepEqual(introEvents(S1_GAIA), introEvents(S1_V1_CHRONOS_GAIA));
+});
+
+test('the sector ends with Atlas', () => {
+  assert.equal(S1_GAIA.boss, 'atlas');
+});
+
+test('every sector event id is unique and uses the sector prefix', () => {
+  const ids = S1_GAIA.events.map(event => event.id);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const id of ids) assert.ok(id.startsWith('sector-1-'), id);
+});
+
+test('the game finds the stage rules of a sector by its route', async () => {
+  const {getVoyageStageRulesFor, getVoyageStageRules} = await import('../src/game/progression/voyages/index.js');
+  assert.equal(getVoyageStageRules('sector-1-gaia', 1), S1_GAIA.encounters[0]);
+  assert.ok(getVoyageStageRulesFor('sector-1-gaia', 2, 'normal')?.patrol, 'stage 2 has a patrol');
 });

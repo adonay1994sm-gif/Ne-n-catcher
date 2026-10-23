@@ -569,6 +569,7 @@
       // Estado intermedio: detiene la partida, centra visualmente la nave y deja
       // terminar la destrucción antes de abrir la pantalla de derrota.
       setState("destroying");
+      recordSectorDeath();
       destructionTimer = 1.18;
       destructionStage = 0;
       playerVisible = true;

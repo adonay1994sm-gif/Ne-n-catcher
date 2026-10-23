@@ -25,11 +25,13 @@ const encounter = (profile, patrol, {comets = false, repairAt = null, boss = nul
 });
 
 export const S1_GAIA = immutable({
-  id: 'S1', sector: 1, number: 1, title: 'Escapa de Chronos',
+  id: 'S1', sector: 1, number: 1, title: 'Escapa de Chronos', boss: 'atlas',
+  // El tramo 1 abre con el inicio de Chronos y el tutorial (propietario, 23/10/2026).
+  intro: true,
   chapter: 1, version: 's1-sector-v1', saveKey: 'neonCronium.sector.S1.v1',
   routeId: 'sector-1-gaia', eventPrefix: 'sector-1', baseGoal: 60,
   origin: 'Centro Chronos', destination: 'Acceso orbital de Gaia Nova',
-  arrivalDestinationId: 'gaia-atlas-approach', cinematicDuration: 0, recoveryAt: 0,
+  arrivalDestinationId: 'gaia-atlas-approach', cinematicDuration: 90, recoveryAt: 9,
   invalidCheckpointMessage: 'Invalid sector 1 checkpoint',
   stages: immutable([
     ['Emergencia en Chronos',48,5,'Recupera los primeros fragmentos del reactor','Chronos · reactor','Campo de restos','reactor-strike',.18,.70,.40],
@@ -44,6 +46,10 @@ export const S1_GAIA = immutable({
     ['Atlas',60,54,'Vence a Atlas para que verifique el registro','Acceso orbital','Acceso orbital de Gaia Nova','boss',.18,.62,.90]
   ].map(stage => immutable(stage))),
   events: immutable([
+    {id:'sector-1-intruder',type:'attack',at:2.25,attackerId:'cronium-raider',targetId:'chronos-reactor'},
+    {id:'sector-1-breach',type:'rupture',at:9,resourceId:'cronium',cause:'hostile-reactor-strike'},
+    {id:'sector-1-perimeter-exit',type:'departure',at:108,originId:'chronos-scientific-centre'},
+    {id:'sector-1-recovered-module',type:'twin-module-marker',at:90,moduleId:'twin-emitter',resourceId:'cronium'},
     {id:'sector-1-gaia-beacon',type:'gaia-beacon',at:470,destinationId:'gaia-atlas-approach'}
   ].map(event => immutable(event))),
   service: immutable({stage: 6, approach: 1.2, visibleApproach: 2.4, departure: 2.4,

@@ -1,7 +1,7 @@
 export {createFlightTutorial} from '../narrative/flight-tutorial.js';
 export {createVoyageScore} from '../audio/voyage-score.js';
 export {createChapterScore} from '../audio/chapter-score.js';
-export {createChronosChapterStory, normalizeChronosChapterCheckpoint} from '../narrative/chronos-chapter.js';
+export {createChronosChapterStory, normalizeChronosChapterCheckpoint, CHRONOS_CHAPTER_ROUTE_SECONDS} from '../narrative/chronos-chapter.js';
 export {resolveHullReinforcement} from '../combat/hull-reinforcement.js';
 export {createCompletionJournal} from './completion-journal.js';
 export {SCRAP_ECONOMY_KEY, SCRAP_UPGRADES,
