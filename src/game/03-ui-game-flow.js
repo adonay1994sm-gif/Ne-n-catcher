@@ -987,6 +987,8 @@
   }
   // Sector continuo (plan F3a): su progreso vive solo en el guardado de
   // sectores. Un guardado ilegible o inválido cuenta como partida nueva.
+  // Revivir con anuncio en el sector: lo prepara finishGame y lo gasta resumeReward.
+  let sectorRevive=null;
   function isSectorRun() {
     const ficha=classicSideVoyage?.ficha;
     return Boolean(ficha)&&NeonCampaign.getSectorFicha(ficha.id)===ficha;
@@ -2052,6 +2054,16 @@
     ui.reward.classList.toggle("hidden", continued || supplyFailed);
     // En el viaje se reintenta desde la entrada del tramo guardado, no el sector entero.
     $("retry").textContent = classicFlightView?.stageId ? `REINTENTAR TRAMO ${classicFlightView.stageId}` : "REINTENTAR SECTOR";
+    // Sector: el guardado pasa ya al reinicio (tramo 1, o 6 con baliza), así
+    // cerrar la app aquí no salta la regla. El anuncio, si queda en este
+    // intento, vuelve a escribir el punto donde estabas.
+    if(isSectorRun()) {
+      const save=loadSectorSave();
+      sectorRevive=NeonCampaign.useRevive(save);
+      saveSector(NeonCampaign.dieInSector(save));
+      if(!sectorRevive)ui.reward.classList.add("hidden");
+      $("retry").textContent=`REINTENTAR SECTOR · TRAMO ${NeonCampaign.continuePoint(loadSectorSave())?.stageNumber||1}`;
+    }
     overlay(ui.over);
     // Tras continuar con un anuncio con recompensa, otra muerte no cuenta de nuevo.
     if(!continued)registerRun();
@@ -2063,13 +2075,15 @@
   }
 
   function resumeReward() {
-    if (continued || state !== "gameover" || supplyFailed) return false;
+    if (continued || state !== "gameover" || supplyFailed || (isSectorRun() && !sectorRevive)) return false;
     runToken += 1;
     cancelSupplyFailureTimer();
     // Restaura por completo el estado visual y lógico tras la destrucción.
     // La pantalla de derrota se abre después de la animación final, por lo que
     // hay que cancelar cualquier resto de ese estado antes de volver a jugar.
-    hull = Math.max(hull, 35);
+    // En el sector se vuelve con el 25 % (diseño 6.2), una vez por intento.
+    if (isSectorRun()) { hull = sectorRevive.hull; saveSector(sectorRevive.save); sectorRevive = null; }
+    else hull = Math.max(hull, 35);
     hullGrace = 0; // la continuación no da invulnerabilidad temporizada
     continued = true;
     setState("playing");

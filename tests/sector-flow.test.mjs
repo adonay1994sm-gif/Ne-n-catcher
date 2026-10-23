@@ -177,3 +177,54 @@ test('new Gaia enemies spawn as current stand-ins until they exist (F3b)', () =>
     assert.ok(T.ev('items.filter(item=>item.classicScout).length') > 0, `stage ${stageNumber} has a patrol`);
   }
 });
+
+// Tarea 4: revivir al 25 % una vez por intento; al volver a caer, tramo 1.
+const rewardShown = w => !w.document.getElementById('reward').classList.contains('hidden');
+
+test('dying in the sector saves a restart at stage 1', () => {
+  const {w, T} = harness();
+  startAt(T, 3);
+  T.finishGame('hull');
+  assert.deepEqual(sectorSave(w).run, {sector: 1, stageNumber: 1, stageHull: 100, reviveUsed: false});
+  assert.equal(w.document.getElementById('retry').textContent, 'REINTENTAR SECTOR · TRAMO 1');
+  assert.equal(rewardShown(w), true);
+});
+
+test('the rewarded revive returns at 25 % to the same stage, once', () => {
+  const {w, T} = harness();
+  startAt(T, 3);
+  T.finishGame('hull');
+  assert.equal(T.resumeReward(), true);
+  assert.deepEqual([T.st().state, T.stage(), T.hull()], ['playing', 3, 25]);
+  assert.deepEqual(sectorSave(w).run, {sector: 1, stageNumber: 3, stageHull: 100, reviveUsed: true});
+  T.finishGame('hull');
+  assert.equal(rewardShown(w), false);
+  assert.equal(sectorSave(w).run.stageNumber, 1);
+});
+
+test('a revive used before closing the app is still spent', () => {
+  const {w, T} = harness();
+  putRun(w, {sector: 1, stageNumber: 3, stageHull: 80, reviveUsed: true});
+  click(w, 'play');
+  T.finishGame('hull');
+  assert.equal(rewardShown(w), false);
+});
+
+test('restarting the sector makes the revive available again', () => {
+  const {w, T} = harness();
+  startAt(T, 3);
+  T.finishGame('hull'); T.resumeReward(); T.finishGame('hull');
+  T.startLevel(0);
+  assert.equal(T.stage(), 1);
+  T.finishGame('hull');
+  assert.equal(rewardShown(w), true);
+});
+
+test('old side voyages keep their 35 % revive', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.adv(1);
+  T.ev('hull=0');
+  T.finishGame('hull');
+  T.resumeReward();
+  assert.equal(T.hull(), 35);
+});
