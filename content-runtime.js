@@ -26,11 +26,14 @@ var NeonCampaign = (() => {
     CLASSIC_PURSUIT_VERSION: () => CLASSIC_PURSUIT_VERSION,
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
     DIFFICULTY_MODES: () => DIFFICULTY_MODES,
+    ENEMY_AI_PROFILES: () => ENEMY_AI_PROFILES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
+    SECTORS: () => SECTORS2,
     SECTOR_MAPS: () => SECTOR_MAPS,
+    SECTOR_SAVE_KEY: () => SECTOR_SAVE_KEY,
     SHIP_FLEET: () => SHIP_FLEET,
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     VOYAGES: () => VOYAGES,
@@ -42,14 +45,19 @@ var NeonCampaign = (() => {
     advanceShipBank: () => advanceShipBank,
     advanceShowerComet: () => advanceShowerComet,
     advanceVoyageHazardField: () => advanceVoyageHazardField,
+    attackHolders: () => attackHolders,
     awardClassicBossWeapon: () => awardClassicBossWeapon,
     baseConversation: () => baseConversation,
     beginFlightInput: () => beginFlightInput,
+    buyBeacon: () => buyBeacon,
     calculateFlightBounds: () => calculateFlightBounds,
     canTriggerClassicMissile: () => canTriggerClassicMissile,
     classicWeaponSnapshot: () => classicWeaponSnapshot,
     classicWorkshopState: () => classicWorkshopState,
     cometShowerSnapshot: () => cometShowerSnapshot,
+    completeSector: () => completeSector,
+    continuePoint: () => continuePoint,
+    createAttackTokens: () => createAttackTokens,
     createCh02Animator: () => createCh02Animator,
     createChapterScore: () => createChapterScore,
     createChronosChapterStory: () => createChronosChapterStory,
@@ -65,13 +73,19 @@ var NeonCampaign = (() => {
     createGuardianAtlas: () => createGuardianAtlas,
     createRelativeFlightInput: () => createRelativeFlightInput,
     createScrapLedger: () => createScrapLedger,
+    createSectorSave: () => createSectorSave,
     createVoyageHazardField: () => createVoyageHazardField,
     createVoyageRoute: () => createVoyageRoute,
     createVoyageScore: () => createVoyageScore,
+    decideEnemyIntent: () => decideEnemyIntent,
+    dieInSector: () => dieInSector,
     endFlightInput: () => endFlightInput,
+    enterStage: () => enterStage,
+    forgetEnemy: () => forgetEnemy,
     formatDenominations: () => formatDenominations,
     getChronosDestructionPose: () => getChronosDestructionPose,
     getChronosIntroPose: () => getChronosIntroPose,
+    getSectorFicha: () => getSectorFicha,
     getVoyageFicha: () => getVoyageFicha,
     getVoyageStageRules: () => getVoyageStageRules,
     getVoyageStageRulesFor: () => getVoyageStageRulesFor,
@@ -84,9 +98,12 @@ var NeonCampaign = (() => {
     normalizeChronosVoyageCheckpoint: () => normalizeChronosVoyageCheckpoint,
     normalizeClassicEquipment: () => normalizeClassicEquipment,
     normalizeDifficulty: () => normalizeDifficulty,
+    normalizeSectorSave: () => normalizeSectorSave,
     normalizeShipLoadout: () => normalizeShipLoadout,
     prepareClassicTwin: () => prepareClassicTwin,
+    releaseAttack: () => releaseAttack,
     releaseCometShowerItem: () => releaseCometShowerItem,
+    requestAttack: () => requestAttack,
     resolveHullReinforcement: () => resolveHullReinforcement,
     rewardForEnemy: () => rewardForEnemy,
     sectorMapState: () => sectorMapState,
@@ -98,10 +115,12 @@ var NeonCampaign = (() => {
     shipAssemblyPose: () => shipAssemblyPose,
     shipNozzleAnchors: () => shipNozzleAnchors,
     shipPartFrame: () => shipPartFrame,
+    startSectorRun: () => startSectorRun,
     syncClassicWorkshopWeapons: () => syncClassicWorkshopWeapons,
     triggerClassicMissile: () => triggerClassicMissile,
     triggerClassicWeapon: () => triggerClassicWeapon,
-    unlockClassicWeapon: () => unlockClassicWeapon
+    unlockClassicWeapon: () => unlockClassicWeapon,
+    useRevive: () => useRevive
   });
 
   // src/game/narrative/flight-tutorial.js
@@ -6079,13 +6098,13 @@ var NeonCampaign = (() => {
     let gapX = (low + high) / 2, best = -1;
     for (let attempt = 0; attempt < 6; attempt++) {
       const candidate = low + nextRandom2(boss) * Math.max(0, high - low);
-      const distance = Math.abs(candidate - aim.observedX);
-      if (distance >= rule.minPlayerDistance) {
+      const distance2 = Math.abs(candidate - aim.observedX);
+      if (distance2 >= rule.minPlayerDistance) {
         gapX = candidate;
         break;
       }
-      if (distance > best) {
-        best = distance;
+      if (distance2 > best) {
+        best = distance2;
         gapX = candidate;
       }
     }
@@ -6126,9 +6145,9 @@ var NeonCampaign = (() => {
     const rake = Math.min(44, (targetY - originY) * 0.09);
     const sweep = aim.pattern === "staggeredSalvo" ? [-1, 1, 0][boss.volley] * boss.width * 0.065 : aim.pattern === "reactorSweep" ? (boss.volley - 1) * boss.width * 0.09 : aim.pattern === "reactorPincer" ? (boss.volley === 0 ? -1 : 1) * boss.width * 0.055 : aim.pattern === "flankSalvo" ? (boss.volley === 0 ? -0.025 : 0.04) * boss.width : aim.pattern === "duelBurst" ? (boss.volley === 0 ? -0.018 : 0.018) * boss.width : 0;
     const targetX = clamp10(aim.targetX + sweep * aim.sweepDirection + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
-    const distance = targetY - originY;
-    const direction = Math.atan2(distance, targetX - originX);
-    const spread2 = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : patternRules(boss) ? 0.12 : 0.24), distance) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
+    const distance2 = targetY - originY;
+    const direction = Math.atan2(distance2, targetX - originX);
+    const spread2 = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : patternRules(boss) ? 0.12 : 0.24), distance2) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
     const count = patternRules(boss)?.projectiles;
     const offsets = count ? Array.from({ length: count }, (_, index) => (index / (count - 1) * 2 - 1) * spread2) : heavy || tier === "medium" && boss.phase === 2 ? [-spread2, -spread2 / 2, 0, spread2 / 2, spread2] : [-spread2, 0, spread2];
     const speed = heavy ? boss.phase === 1 ? 300 : 325 : phaseRules(boss).projectileSpeed;
@@ -7389,6 +7408,296 @@ var NeonCampaign = (() => {
     state.lastX = null;
     state.lastY = null;
     return true;
+  }
+
+  // src/game/progression/sectors/s1-gaia.js
+  var immutable13 = (object2) => Object.freeze(object2);
+  var ROSTERS11 = immutable13({
+    escape: immutable13(["raider", "scout"]),
+    flank: immutable13(["raider", "tracker", "scout"]),
+    mines: immutable13(["sower", "raider", "interceptor"]),
+    shield: immutable13(["aegis", "interceptor", "tracker", "scout"]),
+    elite: immutable13(["alpha", "aegis", "interceptor", "sower"]),
+    gate: immutable13(["interceptor", "tracker", "aegis", "raider"])
+  });
+  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null } = {}) => immutable13({
+    patrol: patrol && immutable13({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt,
+    boss: boss && immutable13(boss)
+  });
+  var S1_GAIA = immutable13({
+    id: "S1",
+    sector: 1,
+    number: 1,
+    title: "Escapa de Chronos",
+    chapter: 1,
+    version: "s1-sector-v1",
+    saveKey: "neonCronium.sector.S1.v1",
+    routeId: "sector-1-gaia",
+    eventPrefix: "sector-1",
+    baseGoal: 60,
+    origin: "Centro Chronos",
+    destination: "Acceso orbital de Gaia Nova",
+    arrivalDestinationId: "gaia-atlas-approach",
+    cinematicDuration: 0,
+    recoveryAt: 0,
+    invalidCheckpointMessage: "Invalid sector 1 checkpoint",
+    stages: immutable13([
+      ["Emergencia en Chronos", 48, 5, "Recupera los primeros fragmentos del reactor", "Chronos \xB7 reactor", "Campo de restos", "reactor-strike", 0.18, 0.7, 0.4],
+      ["Campo de restos", 50, 11, "Cruza los restos; algo te sigue por detr\xE1s", "Campo de restos", "Salida orbital", "wreckage-crossing", 0.15, 0.8, 0.52],
+      ["La red exterior", 52, 17, "La red de Gaia siembra minas en tu ruta", "Salida orbital", "Red exterior de Gaia", "net-edge", 0.12, 0.6, 0.58],
+      ["Cuarentena", 52, 23, "Rompe los escudos de la \xC9gida y sigue adelante", "Red exterior de Gaia", "Anillo de sat\xE9lites", "quarantine", 0.16, 0.62, 0.64],
+      ["El sat\xE9lite CH-03", 56, 27, "Derriba el sat\xE9lite de defensa que cierra el anillo", "Anillo de sat\xE9lites", "Corredor de enlace", "sub-boss", 0.18, 0.66, 0.7],
+      ["Enlace C9", 48, 32, "Repara en C9 y prueba tu nave en el corredor", "Corredor de enlace", "Lado nocturno", "service-stop", 0.06, 0.34, 0.3],
+      ["El Alfa", 54, 38, "El Alfa del C-17 lidera la caza en la oscuridad", "Lado nocturno", "Escolta del C-17", "alpha-hunt", 0.08, 0.28, 0.72],
+      ["Lluvia en el acceso", 52, 44, "Cruza la lluvia de meteoritos sin dejar de combatir", "Escolta del C-17", "Piquetes de Gaia", "meteor-rain", 0.14, 0.58, 0.76],
+      ["Defensa orbital", 54, 50, "Resiste la defensa orbital mientras Atlas se activa", "Piquetes de Gaia", "Acceso orbital", "orbital-defence", 0.16, 0.62, 0.82],
+      ["Atlas", 60, 54, "Vence a Atlas para que verifique el registro", "Acceso orbital", "Acceso orbital de Gaia Nova", "boss", 0.18, 0.62, 0.9]
+    ].map((stage) => immutable13(stage))),
+    events: immutable13([
+      { id: "sector-1-gaia-beacon", type: "gaia-beacon", at: 470, destinationId: "gaia-atlas-approach" }
+    ].map((event2) => immutable13(event2))),
+    service: immutable13({
+      stage: 6,
+      approach: 1.2,
+      visibleApproach: 2.4,
+      departure: 2.4,
+      renamedStage: "Corredor de Gaia",
+      renamedObjective: "Prueba tu nave en el corredor; C9 sigue disponible en la pausa"
+    }),
+    encounters: immutable13([
+      encounter11(1, [2, ROSTERS11.escape, 8]),
+      encounter11(2, [3, ROSTERS11.flank, 7]),
+      encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30 }),
+      encounter11(7, [4, ROSTERS11.shield, 6], { comets: true }),
+      encounter11(4, [2, ROSTERS11.flank, 9], { boss: { id: "ch03", role: "subjefe" } }),
+      encounter11(5, [2, ROSTERS11.escape, 8]),
+      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32 }),
+      encounter11(9, [4, ROSTERS11.elite, 6], { comets: true }),
+      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30 }),
+      encounter11(10, [2, ROSTERS11.gate, 8], { boss: { id: "guardian-atlas", role: "jefe" } })
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "recovery" : stageIndex < 5 ? "gaia-net" : stageIndex < 8 ? "deep-space" : "atlas-approach";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const departure = smooth(p, 0, 0.25), gate = smooth(p, 0.75, 1);
+      return {
+        station: immutable13({
+          x: 0.48 - 0.72 * departure,
+          y: 0.43 + 0.94 * departure,
+          scale: 1.12 * Math.pow(0.032, departure),
+          rotation: -0.1 * departure,
+          visible: p < 0.25,
+          alpha: 1,
+          state: "ruptured"
+        }),
+        planet: immutable13({
+          x: 0.79 - 0.4 * smooth(p, 0.2, 1),
+          y: 0.08 + 0.08 * gate,
+          scale: 0.02 + 0.9 * smooth(p, 0.2, 1) ** 2,
+          rotation: 0.06 * p,
+          visible: true,
+          alpha: 0.5 + 0.5 * smooth(p, 0.1, 0.4)
+        }),
+        beacon: immutable13({ x: 0.54, y: 0.14 + 0.1 * gate, scale: 0.03 + 0.2 * gate, visible: p >= 0.75, alpha: 1, active: stageIndex >= 9 }),
+        relay: immutable13({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable13({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable13({
+          travel: p,
+          offsetX: -0.12 * p,
+          offsetY: 2.2 * p,
+          speed: 0.45 + 0.45 * smooth(p, 0.05, 0.3),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: stageIndex === 5 ? 0.1 : 0.26
+        }),
+        debris: immutable13({
+          visible: !arrived && stageIndex <= 1,
+          travel: p,
+          directionX: -0.26,
+          directionY: 0.96,
+          depth: 0.35,
+          density: stageIndex === 1 ? 0.7 : 0.4
+        })
+      };
+    }
+  });
+
+  // src/game/progression/sectors/index.js
+  var SECTORS2 = Object.freeze([S1_GAIA]);
+  var byId = new Map(SECTORS2.map((ficha) => [ficha.id, ficha]));
+  var getSectorFicha = (id) => byId.get(id) || null;
+
+  // src/game/combat/attack-tokens.js
+  function createAttackTokens({ max }) {
+    if (!Number.isInteger(max) || max < 1) throw new RangeError("max must be a positive integer");
+    return { max, holders: /* @__PURE__ */ new Map() };
+  }
+  function requestAttack(tokens, enemy, now) {
+    const { holders } = tokens;
+    if (holders.has(enemy.id)) return true;
+    if (holders.size < tokens.max) {
+      holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
+      return true;
+    }
+    let youngest = null;
+    for (const [id, holder] of holders) {
+      if (holder.grantedAt === now && (!youngest || holder.bornAt > youngest[1].bornAt)) youngest = [id, holder];
+    }
+    if (!youngest || enemy.bornAt >= youngest[1].bornAt) return false;
+    holders.delete(youngest[0]);
+    holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
+    return true;
+  }
+  function releaseAttack(tokens, enemyId) {
+    tokens.holders.delete(enemyId);
+  }
+  function forgetEnemy(tokens, enemyId) {
+    tokens.holders.delete(enemyId);
+  }
+  var attackHolders = (tokens) => [...tokens.holders.keys()];
+
+  // src/game/combat/enemy-ai.js
+  var ENEMY_AI_PROFILES = Object.freeze({
+    hunter: Object.freeze({ attackRange: 700, chaseOffset: 170 }),
+    artillery: Object.freeze({ preferred: 420, minRange: 250 }),
+    escort: Object.freeze({ sideOffset: 55, depthOffset: 40 }),
+    opportunist: Object.freeze({ hullThreshold: 35, hover: 320 }),
+    ambusher: Object.freeze({ belowOffset: 140, entryLine: 1100 }),
+    miner: Object.freeze({ laneShare: 0.78, edge: 60 })
+  });
+  var clamp16 = (value, low, high) => Math.max(low, Math.min(high, value));
+  var distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  function movement(enemy, ctx, rules) {
+    const { player, bounds } = ctx, d = distance(enemy, player);
+    switch (enemy.profile) {
+      case "hunter":
+        return { x: player.x, y: player.y - rules.chaseOffset };
+      case "artillery": {
+        if (d >= rules.preferred || d === 0) return { x: enemy.x, y: enemy.y };
+        const k = rules.preferred / d;
+        return { x: player.x + (enemy.x - player.x) * k, y: player.y + (enemy.y - player.y) * k };
+      }
+      case "escort": {
+        const allies = ctx.allies.filter((ally) => ally.id !== enemy.id);
+        if (!allies.length) return { x: enemy.x, y: enemy.y };
+        const weakest = allies.reduce((a, b) => b.hp / b.maxHp < a.hp / a.maxHp ? b : a);
+        return { x: weakest.x + (enemy.x <= weakest.x ? -rules.sideOffset : rules.sideOffset), y: weakest.y + rules.depthOffset };
+      }
+      case "opportunist":
+        return { x: enemy.x <= bounds.w / 2 ? bounds.w * 0.2 : bounds.w * 0.8, y: Math.max(120, player.y - rules.hover) };
+      case "ambusher":
+        return enemy.y > rules.entryLine ? { x: player.x, y: player.y + rules.belowOffset } : { x: enemy.x, y: bounds.h - 100 };
+      case "miner":
+        return { x: enemy.x < bounds.w / 2 ? bounds.w - rules.edge : rules.edge, y: bounds.h * rules.laneShare };
+      default:
+        throw new RangeError(`Unknown enemy profile: ${enemy.profile}`);
+    }
+  }
+  function wantsToAttack(enemy, ctx, rules) {
+    const { player } = ctx, d = distance(enemy, player);
+    switch (enemy.profile) {
+      case "hunter":
+        return d <= rules.attackRange;
+      case "artillery":
+        return d >= rules.minRange;
+      case "opportunist":
+        return player.reloading || player.hull < rules.hullThreshold;
+      case "ambusher":
+        return enemy.y > player.y;
+      case "miner":
+        return true;
+      default:
+        return false;
+    }
+  }
+  function decideEnemyIntent(enemy, ctx) {
+    const rules = ENEMY_AI_PROFILES[enemy.profile];
+    if (!rules) throw new RangeError(`Unknown enemy profile: ${enemy.profile}`);
+    const { w, h } = ctx.bounds, move = movement(enemy, ctx, rules);
+    const intent = { targetX: clamp16(move.x, 40, w - 40), targetY: clamp16(move.y, 40, h - 40), attack: false, ability: null };
+    const ready = enemy.cooldowns.unique <= ctx.now ? "unique" : enemy.cooldowns.basic <= ctx.now ? "basic" : null;
+    if (!ready) return intent;
+    if (enemy.profile === "escort") return { ...intent, ability: enemy.cooldowns.unique <= ctx.now ? "unique" : null };
+    if (!wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) return intent;
+    return { ...intent, attack: true, ability: ready };
+  }
+
+  // src/game/progression/sector-save.js
+  var SECTOR_SAVE_KEY = "neonCronium.sectors.v1";
+  var SECTOR_COUNT = 10;
+  var STAGE_COUNT = 10;
+  var BEACON_STAGE = 6;
+  var REVIVE_HULL = 25;
+  var isInt = (value, low, high) => Number.isInteger(value) && value >= low && value <= high;
+  var copy2 = (save) => JSON.parse(JSON.stringify(save));
+  var sectorRecord = (save, sector) => save.sectors[sector] || { completed: false, stars: 0, beacon: false };
+  var createSectorSave = () => ({ version: 1, unlocked: 1, sectors: {}, run: null });
+  function normalizeSectorSave(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw) || raw.version !== 1 || !isInt(raw.unlocked, 1, SECTOR_COUNT)) return null;
+    if (!raw.sectors || typeof raw.sectors !== "object" || Array.isArray(raw.sectors)) return null;
+    const sectors = {};
+    for (const [key, record] of Object.entries(raw.sectors)) {
+      const sector = Number(key);
+      if (!isInt(sector, 1, SECTOR_COUNT) || !record || typeof record.completed !== "boolean" || !isInt(record.stars, 0, 3) || typeof record.beacon !== "boolean") return null;
+      sectors[sector] = { completed: record.completed, stars: record.stars, beacon: record.beacon };
+    }
+    let run = null;
+    if (raw.run !== null) {
+      const r = raw.run;
+      if (!r || typeof r !== "object" || !isInt(r.sector, 1, raw.unlocked) || !isInt(r.stageNumber, 1, STAGE_COUNT) || !Number.isFinite(r.stageHull) || r.stageHull <= 0 || r.stageHull > 100 || typeof r.reviveUsed !== "boolean") return null;
+      run = { sector: r.sector, stageNumber: r.stageNumber, stageHull: r.stageHull, reviveUsed: r.reviveUsed };
+    }
+    return { version: 1, unlocked: raw.unlocked, sectors, run };
+  }
+  function startSectorRun(save, sector) {
+    if (!isInt(sector, 1, save.unlocked)) throw new RangeError("sector is locked");
+    const next = copy2(save);
+    next.run = { sector, stageNumber: 1, stageHull: 100, reviveUsed: false };
+    return next;
+  }
+  function enterStage(save, stageNumber, hull) {
+    if (!save.run) throw new Error("no sector run in progress");
+    const next = copy2(save);
+    next.run.stageNumber = stageNumber;
+    next.run.stageHull = Math.min(100, Math.max(1, hull));
+    return next;
+  }
+  function buyBeacon(save, sector) {
+    const next = copy2(save);
+    next.sectors[sector] = { ...sectorRecord(save, sector), beacon: true };
+    return next;
+  }
+  function useRevive(save) {
+    if (!save.run || save.run.reviveUsed) return null;
+    const next = copy2(save);
+    next.run.reviveUsed = true;
+    return { save: next, hull: REVIVE_HULL };
+  }
+  function dieInSector(save) {
+    if (!save.run) return copy2(save);
+    const next = copy2(save);
+    next.run = {
+      sector: save.run.sector,
+      stageNumber: sectorRecord(save, save.run.sector).beacon ? BEACON_STAGE : 1,
+      stageHull: 100,
+      reviveUsed: false
+    };
+    return next;
+  }
+  function continuePoint(save) {
+    return save.run ? { sector: save.run.sector, stageNumber: save.run.stageNumber, hull: save.run.stageHull } : null;
+  }
+  function completeSector(save, sector, stars) {
+    const next = copy2(save), previous = sectorRecord(save, sector);
+    next.sectors[sector] = { completed: true, stars: Math.max(previous.stars, Math.trunc(Math.min(3, Math.max(0, stars)))), beacon: false };
+    next.unlocked = Math.min(SECTOR_COUNT, Math.max(save.unlocked, sector + 1));
+    next.run = null;
+    return next;
   }
   return __toCommonJS(legacy_content_entry_exports);
 })();
