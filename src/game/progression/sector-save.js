@@ -44,6 +44,7 @@ export function startSectorRun(save, sector) {
 
 export function enterStage(save, stageNumber, hull) {
   if (!save.run) throw new Error('no sector run in progress');
+  if (!isInt(stageNumber, 1, STAGE_COUNT) || !Number.isFinite(hull)) throw new RangeError('invalid stage or hull');
   const next = copy(save);
   next.run.stageNumber = stageNumber;
   next.run.stageHull = Math.min(100, Math.max(1, hull));
@@ -51,6 +52,7 @@ export function enterStage(save, stageNumber, hull) {
 }
 
 export function buyBeacon(save, sector) {
+  if (!isInt(sector, 1, SECTOR_COUNT)) throw new RangeError('invalid sector');
   const next = copy(save);
   next.sectors[sector] = {...sectorRecord(save, sector), beacon: true};
   return next;
@@ -76,6 +78,7 @@ export function continuePoint(save) {
 }
 
 export function completeSector(save, sector, stars) {
+  if (!isInt(sector, 1, SECTOR_COUNT) || !Number.isFinite(stars)) throw new RangeError('invalid sector or stars');
   const next = copy(save), previous = sectorRecord(save, sector);
   next.sectors[sector] = {completed: true, stars: Math.max(previous.stars, Math.trunc(Math.min(3, Math.max(0, stars)))), beacon: false};
   next.unlocked = Math.min(SECTOR_COUNT, Math.max(save.unlocked, sector + 1));

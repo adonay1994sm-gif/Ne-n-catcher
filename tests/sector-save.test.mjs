@@ -60,3 +60,20 @@ test('corrupt saves read as no save', () => {
     assert.equal(normalizeSectorSave(bad), null, JSON.stringify(bad));
   }
 });
+
+test('bad values are refused instead of writing a save that would be lost', () => {
+  const save = running();
+  assert.throws(() => enterStage(save, 11, 50), RangeError);
+  assert.throws(() => enterStage(save, 3, Number.NaN), RangeError);
+  assert.throws(() => buyBeacon(save, 11), RangeError);
+  assert.throws(() => completeSector(save, 1, Number.NaN), RangeError);
+  assert.throws(() => completeSector(save, 0, 2), RangeError);
+});
+
+test('every valid write survives JSON and normalize', () => {
+  let save = buyBeacon(enterStage(running(), 6, 47.5), 1);
+  for (const step of [s => s, s => useRevive(s).save, dieInSector, s => completeSector(s, 1, 2)]) {
+    save = step(save);
+    assert.deepEqual(normalizeSectorSave(JSON.parse(JSON.stringify(save))), save);
+  }
+});
