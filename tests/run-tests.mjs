@@ -429,7 +429,8 @@ await test("guardados corruptos se normalizan sin romper el menú ni el control"
   assert.deepEqual({ ...api.loadSettings() }, {
     music: 100, fx: 0, sensitivity: 135, autoFire: false, vibration: true, reduceEffects: false, effectsQuality: "normal", difficulty: "normal", flightTutorial: null, effects: true
   });
-  gameWindow.localStorage.setItem("neonCronium.atlasAutoFire.v1", "true");
+  // Clave heredada a propósito: comprueba que un dato antiguo no activa el ajuste.
+  gameWindow.localStorage.setItem("neonCatcher.atlasAutoFire.v1", "true");
   assert.equal(api.loadSettings().autoFire, false, "El antiguo AUTO predeterminado no autoriza el nuevo ajuste");
   gameWindow.localStorage.setItem(api.keys.settings, JSON.stringify({autoFire: true}));
   assert.equal(api.loadSettings().autoFire, true, "Sólo un opt-in explícito activa el ajuste");
