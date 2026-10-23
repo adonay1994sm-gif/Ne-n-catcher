@@ -850,7 +850,8 @@ test('the S1-V5 Atlas samples the movable ship and locks a ballistic salvo witho
   const warning = h.snapshot();
   assert.equal(warning.boss.state, 'charge');
   assert.equal(warning.boss.telegraph.kind,'mechanicalDeployment');
-  assert.equal(warning.boss.telegraph.pattern,'focusedSalvo');
+  // Atlas v9 (spec §6.11): el primer ataque son los cañones gemelos.
+  assert.equal(warning.boss.telegraph.pattern,'twinCannons');
   assert.equal(warning.boss.telegraph.safeGap,null);
   assert.ok(Math.abs(warning.boss.telegraph.targetX-warning.player.x)<2,'The first salvo samples actual X');
   assert.ok(Math.abs(warning.boss.telegraph.targetY-warning.player.y)<2,'The salvo samples actual Y');
@@ -865,12 +866,10 @@ test('the S1-V5 Atlas samples the movable ship and locks a ballistic salvo witho
   }
   const fired = h.snapshot(); assert.equal(fired.boss.state, 'fire');
   closeTo(fired.boss.telegraph.targetY, locked.targetY);
-  assert.equal(fired.projectiles.length, 3);
-  const middle = fired.projectiles.find(projectile => projectile.id.endsWith(':1'));
-  assert.ok(middle, 'The real emitted three-way focused salvo must contain its central projectile');
-  closeTo(middle.targetY, locked.targetY, 'Projectile metadata preserves the sampled target location');
-  const crossingX = middle.x + middle.vx * (locked.targetY - middle.y) / middle.vy;
-  closeTo(crossingX, locked.targetX, 'The emitted projectile must cross the sampled location');
+  assert.equal(fired.projectiles.length, 2);
+  for (const shot of fired.projectiles) closeTo(shot.targetY, locked.targetY, 'Projectile metadata preserves the sampled target location');
+  const crossings = fired.projectiles.map(shot => shot.x + shot.vx * (locked.targetY - shot.y) / shot.vy);
+  assert.ok(Math.abs((crossings[0] + crossings[1]) / 2 - locked.targetX) < 20, 'The twin pair straddles the sampled location');
   assert.ok(Math.abs(locked.targetY - fired.player.y) > 10, 'The fixture must actually move after the cannon locks');
   assert.ok(locked.targetY > origin); assert.equal(h.pending.size, 1);
 });
