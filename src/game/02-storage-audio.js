@@ -77,7 +77,7 @@
 
   const overlayReturnFocus = new WeakMap();
   function overlay(el) {
-    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.shipHangar, ui.flightDock].filter(Boolean);
+    const panels = [ui.menu, ui.briefing, ui.levelSelect, ui.settingsPanel, ui.instructions, ui.paused, ui.complete, ui.over, ui.beaconOffer, ui.shipHangar, ui.flightDock].filter(Boolean);
     const previous = panels.find(node => node.classList.contains("show"));
     const opener = document.activeElement;
     const restore = previous && overlayReturnFocus.get(previous);
@@ -101,7 +101,7 @@
     const modal = document.querySelector('.overlay.show[role="dialog"]');
     if (!modal || modal === ui.flightDock || modal === ui.shipHangar) return;
     if (event.key === "Escape") {
-      const close = {settingsPanel:"settingsBack",briefing:"briefingBack",levelSelect:"levelBack",instructions:"back",paused:"resume",complete:"completeHome",over:"home"}[modal.id];
+      const close = {settingsPanel:"settingsBack",briefing:"briefingBack",levelSelect:"levelBack",instructions:"back",paused:"resume",complete:"completeHome",over:"home",beaconOffer:"beaconSkip"}[modal.id];
       if (!close) return;
       event.preventDefault();event.stopPropagation();
       $(close)?.click();

@@ -34,6 +34,7 @@ var NeonCampaign = (() => {
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     HORDE_RULES: () => HORDE_RULES,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
+    SCRAP_CONSUMABLES: () => SCRAP_CONSUMABLES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
     SECTORS: () => SECTORS,
@@ -1406,6 +1407,7 @@ var NeonCampaign = (() => {
       tradeoff: "Mantiene el da\xF1o directo de 2: destaca frente a objetivos alineados."
     })
   });
+  var SCRAP_CONSUMABLES = Object.freeze({ "sector-beacon": Object.freeze({ price: 40 }) });
   var integer = (value) => Number.isSafeInteger(value) && value >= 0;
   var object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
   var identifier = (value) => typeof value === "string" && value.length > 0 && value.length <= 160 && !/[\u0000-\u001f\u007f]/.test(value);
@@ -1512,7 +1514,14 @@ var NeonCampaign = (() => {
     let spent = 0;
     for (const receipt of value.purchases) {
       const sku = upgradeName(receipt?.sku);
-      if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) || typeof sku !== "string" || !has(SCRAP_UPGRADES, sku) || purchased.has(sku) || !SCRAP_UPGRADES[sku].receiptPrices.includes(receipt.price)) return null;
+      if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) || typeof sku !== "string") return null;
+      if (has(SCRAP_CONSUMABLES, sku)) {
+        if (receipt.price !== SCRAP_CONSUMABLES[sku].price) return null;
+        transactionIds.add(receipt.id);
+        spent += receipt.price;
+        continue;
+      }
+      if (!has(SCRAP_UPGRADES, sku) || purchased.has(sku) || !SCRAP_UPGRADES[sku].receiptPrices.includes(receipt.price)) return null;
       transactionIds.add(receipt.id);
       purchased.add(sku);
       spent += receipt.price;
@@ -1798,6 +1807,28 @@ var NeonCampaign = (() => {
       next.purchases.push({ id: transactionId, sku, price });
       return commit(next, loaded.raw, { sku, price, duplicate: false });
     }
+    function buyConsumable({ transactionId, sku } = {}) {
+      if (!identifier(transactionId) || typeof sku !== "string" || !has(SCRAP_CONSUMABLES, sku) || transactionId.startsWith("c9:missiles:")) throw new TypeError("A stable transaction ID and consumable SKU are required");
+      const loaded = readState();
+      if (loaded.error) return loaded.error;
+      const prior = current.purchases.find((receipt) => receipt.id === transactionId);
+      if (prior) return prior.sku === sku ? success("duplicate", { duplicate: true, sku, price: 0 }) : blocked("transaction-id-conflict");
+      if (current.purchases.length >= SCRAP_ECONOMY_RULES.maxPurchaseReceipts) return blocked("purchase-receipt-capacity");
+      const price = SCRAP_CONSUMABLES[sku].price;
+      if (current.balance < price) return {
+        ok: false,
+        status: "unavailable",
+        reason: "insufficient-funds",
+        price,
+        missing: price - current.balance,
+        state: copy(current)
+      };
+      const next = copy(current);
+      next.balance -= price;
+      next.spent += price;
+      next.purchases.push({ id: transactionId, sku, price });
+      return commit(next, loaded.raw, { sku, price, duplicate: false });
+    }
     return Object.freeze({
       key,
       backupKey,
@@ -1807,6 +1838,7 @@ var NeonCampaign = (() => {
       claimDrop,
       grant: ({ runId, rewardId, enemyType } = {}) => claimDrop({ runId, dropId: rewardId, enemyType }),
       purchase,
+      buyConsumable,
       spendMissile,
       nextMissileShotId: () => current === null ? null : `missile:${current.missileShotsSpent + 1}`,
       nextMissileRefillId: () => current === null ? null : `c9:missiles:${current.missileRefillSequence + 1}`,

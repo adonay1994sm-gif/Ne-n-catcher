@@ -45,6 +45,9 @@ export const SCRAP_UPGRADES = Object.freeze({
     tradeoff: 'Mantiene el daño directo de 2: destaca frente a objetivos alineados.'})
 });
 
+// Consumibles: se gastan y se pueden volver a comprar; nunca van a upgrades.
+export const SCRAP_CONSUMABLES = Object.freeze({'sector-beacon': Object.freeze({price: 40})});
+
 const integer = value => Number.isSafeInteger(value) && value >= 0;
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const identifier = value => typeof value === 'string' && value.length > 0 && value.length <= 160 &&
@@ -150,8 +153,13 @@ export function normalizeScrapRecord(value) {
   let spent = 0;
   for (const receipt of value.purchases) {
     const sku=upgradeName(receipt?.sku);
-    if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) ||
-        typeof sku !== 'string' || !has(SCRAP_UPGRADES, sku) || purchased.has(sku) ||
+    if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) || typeof sku !== 'string') return null;
+    if (has(SCRAP_CONSUMABLES, sku)) {
+      if (receipt.price !== SCRAP_CONSUMABLES[sku].price) return null;
+      transactionIds.add(receipt.id); spent += receipt.price;
+      continue;
+    }
+    if (!has(SCRAP_UPGRADES, sku) || purchased.has(sku) ||
         !SCRAP_UPGRADES[sku].receiptPrices.includes(receipt.price)) return null;
     transactionIds.add(receipt.id); purchased.add(sku); spent += receipt.price;
   }
@@ -378,9 +386,26 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
     next.purchases.push({id: transactionId, sku, price});
     return commit(next, loaded.raw, {sku, price, duplicate: false});
   }
+  function buyConsumable({transactionId, sku} = {}) {
+    if (!identifier(transactionId) || typeof sku !== 'string' || !has(SCRAP_CONSUMABLES, sku) ||
+      transactionId.startsWith('c9:missiles:')) throw new TypeError('A stable transaction ID and consumable SKU are required');
+    const loaded = readState();
+    if (loaded.error) return loaded.error;
+    const prior = current.purchases.find(receipt => receipt.id === transactionId);
+    if (prior) return prior.sku === sku ? success('duplicate', {duplicate: true, sku, price: 0})
+      : blocked('transaction-id-conflict');
+    if (current.purchases.length >= SCRAP_ECONOMY_RULES.maxPurchaseReceipts) return blocked('purchase-receipt-capacity');
+    const price = SCRAP_CONSUMABLES[sku].price;
+    if (current.balance < price) return {ok: false, status: 'unavailable', reason: 'insufficient-funds', price,
+      missing: price - current.balance, state: copy(current)};
+    const next = copy(current);
+    next.balance -= price; next.spent += price;
+    next.purchases.push({id: transactionId, sku, price});
+    return commit(next, loaded.raw, {sku, price, duplicate: false});
+  }
   return Object.freeze({key, backupKey, migrationBackupKey, load, beginRun, claimDrop,
     grant: ({runId, rewardId, enemyType} = {}) => claimDrop({runId, dropId: rewardId, enemyType}),
-    purchase,spendMissile,
+    purchase,buyConsumable,spendMissile,
     nextMissileShotId:()=>current===null?null:`missile:${current.missileShotsSpent+1}`,
     nextMissileRefillId:()=>current===null?null:`c9:missiles:${current.missileRefillSequence+1}`,
     getState: () => current === null ? null : copy(current),

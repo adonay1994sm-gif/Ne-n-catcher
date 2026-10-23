@@ -534,3 +534,72 @@ test('CH-03 only fights in the sector', () => {
   T.startSideVoyage('S1-V2'); T.toStage(5); T.adv(10);
   assert.equal(T.ev('ch03Boss'), null);
 });
+
+// Baliza de reaparición (plan F3c, tarea 4): 40 chatarra en la parada de C9.
+const giveScrap = (T, scouts) => T.ev(`for(let i=0;i<${scouts};i++)classicSalvageState=classicSalvageLedger.claimDrop({runId:classicSalvageRunId,dropId:'prueba:'+i,enemyType:'scout'}).state`);
+const offerShown = w => w.document.getElementById('beaconOffer').classList.contains('show');
+// ?dev=1 guarda aparte, con el prefijo neon-dev-v1:.
+const devSave = w => JSON.parse(w.localStorage.getItem(`neon-dev-v1:${KEY}`) || 'null');
+const toService = T => { T.ev('DEV.invulnerable=true'); T.adv(4); };
+
+test('after beating CH-03, C9 offers the beacon', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  assert.equal(offerShown(w), true);
+  assert.equal(T.st().state, 'paused');
+  assert.equal(w.document.getElementById('beaconBuy').textContent, 'COMPRAR · 40 CHATARRA');
+  click(w, 'beaconSkip');
+  assert.deepEqual([offerShown(w), T.st().state], [false, 'playing']);
+});
+
+test('buying it saves the beacon and charges 40 scrap', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  click(w, 'beaconBuy');
+  assert.equal(devSave(w).sectors[1].beacon, true);
+  assert.equal(T.ev('classicSalvageState.balance'), 5);
+  assert.deepEqual([offerShown(w), T.st().state], [false, 'playing']);
+});
+
+test('without enough scrap the button explains it and nothing is charged', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 2); toService(T);
+  const buy = w.document.getElementById('beaconBuy');
+  assert.equal(buy.disabled, true);
+  assert.match(buy.textContent, /FALTAN 22/);
+  T.ev('buySectorBeacon()');
+  assert.equal(T.ev('classicSalvageState.balance'), 18);
+  assert.notEqual(devSave(w).sectors[1]?.beacon, true);
+});
+
+test('with the beacon, dying after stage 6 restarts at stage 6; completing the sector clears it', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  click(w, 'beaconBuy');
+  T.ev('DEV.invulnerable=false');
+  T.toStage(8);
+  T.ev('hull=0'); T.finishGame('hull');
+  assert.match(w.document.getElementById('retry').textContent, /TRAMO 6/);
+  assert.match(w.document.getElementById('supplyStatus').textContent, /baliza/i);
+  T.goHome();
+  assert.match(w.document.getElementById('playSector').textContent, /CON BALIZA/);
+  click(w, 'play');
+  assert.equal(T.stage(), 6);
+  T.toStage(10); T.finish();
+  assert.deepEqual([devSave(w).sectors[1].completed, devSave(w).sectors[1].beacon], [true, false]);
+});
+
+test('the panel is not offered twice or when the beacon is already owned', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  click(w, 'beaconSkip');
+  T.ev('offerSectorBeacon()'); T.adv(2);
+  assert.equal(offerShown(w), false);
+  const owned = harness({query: '?dev=1'});
+  owned.w.localStorage.setItem(`neon-dev-v1:${KEY}`, JSON.stringify({version: 1, unlocked: 1, sectors: {1: {completed: false, stars: 0, beacon: true}}, run: null}));
+  startAt(owned.T, 6); giveScrap(owned.T, 5); toService(owned.T);
+  assert.equal(offerShown(owned.w), false);
+  const early = harness({query: '?dev=1'});
+  startAt(early.T, 4); giveScrap(early.T, 5); early.T.ev('DEV.invulnerable=true'); early.T.toStage(6); early.T.adv(4);
+  assert.equal(offerShown(early.w), false, 'sin vencer al CH-03 en este intento no se ofrece');
+});

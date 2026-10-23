@@ -264,6 +264,7 @@
       const selected = classicEquipment.unlocked[(classicEquipment.unlocked.indexOf(classicEquipment.selected)+1)%classicEquipment.unlocked.length];
       if (persistClassicEquipment({...classicEquipment, selected})) { tone(selected === "twin" ? 860 : 650, .12, "triangle", .045); syncClassicFlightHud(); }
     };
+    $("beaconBuy").onclick=()=>buySectorBeacon();$("beaconSkip").onclick=()=>closeSectorBeacon();
     ui.flightInstallTwin.onclick = () => buyClassicC9Upgrade("twin-preparation");
     ui.c9BuyShield.onclick=()=>buyClassicC9Upgrade("hull-reinforcement");
     ui.c9BuyMissiles.onclick=()=>buyClassicC9Upgrade("missile-refill");
@@ -458,6 +459,49 @@
     classicFlight.resolveService(classicFlightEvent);classicFlightView=classicFlight.snapshot();
     signalClassicChapter("c9-departure");
     saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint());hud();
+    offerSectorBeacon();
+  }
+
+  // Baliza de reaparición (plan F3c): se ofrece en la parada de C9 si el CH-03
+  // cayó en este intento y el sector no la tiene. La partida queda en pausa.
+  // El recibo lleva el id de la partida de chatarra: reintentar no cobra dos veces.
+  let sectorBeaconOffered=false;
+  function offerSectorBeacon() {
+    if(!isSectorRun()||!ch03Beaten||sectorBeaconOffered||state!=="playing")return false;
+    if(loadSectorSave().sectors[classicSideVoyage.ficha.sector]?.beacon)return false;
+    sectorBeaconOffered=true;
+    if(typeof resetGameInput==="function")resetGameInput();
+    NeonCampaign.endFlightInput(classicFlightInput);
+    setState("paused");pauseStartedAt=performance.now();
+    const price=NeonCampaign.SCRAP_CONSUMABLES["sector-beacon"].price,balance=classicSalvageState?.balance??0;
+    const buy=$("beaconBuy");
+    buy.disabled=!classicSalvageLedger||balance<price;
+    buy.textContent=balance<price?`FALTAN ${price-balance} CHATARRA`:`COMPRAR · ${price} CHATARRA`;
+    $("beaconStatus").textContent=balance<price?"Recupera restos de las naves enemigas para la próxima vez.":"";
+    overlay(ui.beaconOffer);return true;
+  }
+  function buySectorBeacon() {
+    if(!classicSalvageLedger||!classicSalvageRunId||!isSectorRun())return false;
+    const result=classicSalvageLedger.buyConsumable({transactionId:`beacon:${classicSalvageRunId}`,sku:"sector-beacon"});
+    if(result.state)classicSalvageState=result.state;
+    if(!result.ok) {
+      $("beaconStatus").textContent=result.reason==="insufficient-funds"
+        ? `Faltan ${result.missing} de chatarra.` : "No se ha confirmado el pago. Puedes reintentarlo.";
+      return false;
+    }
+    const sector=classicSideVoyage.ficha.sector;
+    if(!saveSector(NeonCampaign.buyBeacon(loadSectorSave(),sector))) {
+      $("beaconStatus").textContent="Pago guardado. Pulsa otra vez para activar la baliza sin volver a cobrar.";
+      return false;
+    }
+    tone(720,.10,"triangle",.035);updateAmmoHud();
+    closeSectorBeacon();return true;
+  }
+  function closeSectorBeacon() {
+    if(state!=="paused"||!ui.beaconOffer.classList.contains("show"))return;
+    if(typeof resetGameInput==="function")resetGameInput();
+    setState("playing");overlay();last=performance.now();resumeAudio();
+    grantResumeGrace();syncClassicFlightHud();hud();
   }
 
   function resumeClassicVoyageService() {
@@ -1544,7 +1588,7 @@
     ui.campaignPercent.textContent=`${percent}%`;
     ui.campaignFill.style.width=`${percent}%`;
     ui.playLabel.textContent=run?"CONTINUAR":done?"REPETIR":"JUGAR";
-    ui.playSector.textContent=run?`SECTOR 1 · TRAMO ${run.stageNumber}/10`:done?"SECTOR 1 COMPLETADO":"SECTOR 1 · CHRONOS → GAIA";
+    ui.playSector.textContent=run?`SECTOR 1 · TRAMO ${run.stageNumber}/10${save.sectors[1]?.beacon?" · CON BALIZA":""}`:done?"SECTOR 1 COMPLETADO":"SECTOR 1 · CHRONOS → GAIA";
     ui.campaignNodes.innerHTML=Array.from({length:10},(_,index)=>
       `<span class="${index+1<stage?"done ":""}${index+1===stage?"current":""}"></span>`).join("");
     buildLevelGrid();
@@ -1942,7 +1986,7 @@
     classicFlightView=classicFlight?.snapshot() || null;
     resetSectorAttackTokens();
     // Un intento que empieza pasado el tramo 5 ya dejó atrás al CH-03.
-    ch03Boss=null;ch03Beaten=Boolean(classicFlightView)&&classicFlightView.stageNumber>5;
+    ch03Boss=null;ch03Beaten=Boolean(classicFlightView)&&classicFlightView.stageNumber>5;sectorBeaconOffered=false;
     // La historia del capítulo dura 360 s: en los tramos posteriores del sector no hay.
     classicChapterStory=classicFlight&&fichaHasIntro()&&classicFlightView.elapsed<NeonCampaign.CHRONOS_CHAPTER_ROUTE_SECONDS?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry&&!classicSideVoyage?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;
@@ -2250,7 +2294,9 @@
     if(isSectorRun()) {
       recordSectorDeath();
       if(!sectorRevive)ui.reward.classList.add("hidden");
-      $("retry").textContent=`REINTENTAR SECTOR · TRAMO ${NeonCampaign.continuePoint(loadSectorSave())?.stageNumber||1}`;
+      const after=loadSectorSave();
+      $("retry").textContent=`REINTENTAR SECTOR · TRAMO ${NeonCampaign.continuePoint(after)?.stageNumber||1}`;
+      if(after.sectors[classicSideVoyage.ficha.sector]?.beacon)ui.supplyStatus.textContent="Con baliza: vuelves al tramo 6.";
     }
     overlay(ui.over);
     // Tras continuar con un anuncio con recompensa, otra muerte no cuenta de nuevo.
