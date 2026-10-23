@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ENEMY_AI_PROFILES, decideEnemyIntent} from '../src/game/combat/enemy-ai.js';
-import {createAttackTokens, requestAttack} from '../src/game/combat/attack-tokens.js';
+import {ENEMY_AI_PROFILES, decideEnemyIntent, decideEnemyIntents} from '../src/game/combat/enemy-ai.js';
+import {createAttackTokens, requestAttack, attackHolders} from '../src/game/combat/attack-tokens.js';
 
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const enemy = (profile, extra = {}) => ({id: profile, profile, x: 360, y: 300, hp: 3, maxHp: 3, bornAt: 0,
@@ -73,4 +73,39 @@ test('abilities respect their cooldowns', () => {
 test('the same game time gives the same decision (no wall clock)', () => {
   const e = enemy('hunter'), a = decideEnemyIntent(e, ctx()), b = decideEnemyIntent(e, ctx());
   assert.deepEqual(a, b);
+});
+
+test('in one frame the longest-surviving enemy wins and never more than max attack', () => {
+  const tokens = createAttackTokens({max: 1}), c = ctx({tokens});
+  const young = enemy('hunter', {id: 'young', bornAt: 8}), old = enemy('hunter', {id: 'old', bornAt: 1});
+  const [a, b] = decideEnemyIntents([young, old], c);
+  assert.deepEqual([a.attack, b.attack], [false, true]);
+  assert.deepEqual(attackHolders(tokens), ['old']);
+});
+
+test('after a long pause a crowd of ready enemies still respects max', () => {
+  const tokens = createAttackTokens({max: 2}), c = ctx({tokens, now: 500});
+  const crowd = [1, 2, 3, 4, 5].map(i => enemy('hunter', {id: `h${i}`, bornAt: i}));
+  assert.equal(decideEnemyIntents(crowd, c).filter(intent => intent.attack).length, 2);
+});
+
+test('an enemy that no longer wants to attack gives its token back', () => {
+  const tokens = createAttackTokens({max: 1});
+  const opp = enemy('opportunist', {id: 'opp'});
+  decideEnemyIntent(opp, ctx({tokens, player: {...ctx().player, reloading: true}}));
+  decideEnemyIntent(opp, ctx({tokens, now: 11}));
+  assert.equal(decideEnemyIntent(enemy('hunter', {id: 'hun'}), ctx({tokens, now: 11})).attack, true);
+});
+
+test('miner crosses the screen from side to side', () => {
+  let m = enemy('miner', {x: 100, y: 1000, cooldowns: {basic: 99, unique: 99}});
+  const seen = [];
+  for (let i = 0; i < 60; i++) {
+    const intent = decideEnemyIntent(m, ctx());
+    const step = Math.sign(intent.targetX - m.x) * Math.min(40, Math.abs(intent.targetX - m.x));
+    m = {...m, x: m.x + step, heading: intent.heading};
+    seen.push(m.x);
+  }
+  assert.ok(Math.max(...seen) > 620, `reaches the right edge (max ${Math.max(...seen)})`);
+  assert.ok(seen.slice(30).some(x => x < 200), 'comes back to the left edge');
 });

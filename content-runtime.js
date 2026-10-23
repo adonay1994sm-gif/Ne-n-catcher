@@ -78,6 +78,7 @@ var NeonCampaign = (() => {
     createVoyageRoute: () => createVoyageRoute,
     createVoyageScore: () => createVoyageScore,
     decideEnemyIntent: () => decideEnemyIntent,
+    decideEnemyIntents: () => decideEnemyIntents,
     dieInSector: () => dieInSector,
     endFlightInput: () => endFlightInput,
     enterStage: () => enterStage,
@@ -7450,7 +7451,7 @@ var NeonCampaign = (() => {
       ["La red exterior", 52, 17, "La red de Gaia siembra minas en tu ruta", "Salida orbital", "Red exterior de Gaia", "net-edge", 0.12, 0.6, 0.58],
       ["Cuarentena", 52, 23, "Rompe los escudos de la \xC9gida y sigue adelante", "Red exterior de Gaia", "Anillo de sat\xE9lites", "quarantine", 0.16, 0.62, 0.64],
       ["El sat\xE9lite CH-03", 56, 27, "Derriba el sat\xE9lite de defensa que cierra el anillo", "Anillo de sat\xE9lites", "Corredor de enlace", "sub-boss", 0.18, 0.66, 0.7],
-      ["Enlace C9", 48, 32, "Repara en C9 y prueba tu nave en el corredor", "Corredor de enlace", "Lado nocturno", "service-stop", 0.06, 0.34, 0.3],
+      ["Enlace C9", 48, 27, "Repara en C9 y prueba tu nave en el corredor", "Corredor de enlace", "Lado nocturno", "service-stop", 0.06, 0.34, 0.3],
       ["El Alfa", 54, 38, "El Alfa del C-17 lidera la caza en la oscuridad", "Lado nocturno", "Escolta del C-17", "alpha-hunt", 0.08, 0.28, 0.72],
       ["Lluvia en el acceso", 52, 44, "Cruza la lluvia de meteoritos sin dejar de combatir", "Escolta del C-17", "Piquetes de Gaia", "meteor-rain", 0.14, 0.58, 0.76],
       ["Defensa orbital", 54, 50, "Resiste la defensa orbital mientras Atlas se activa", "Piquetes de Gaia", "Acceso orbital", "orbital-defence", 0.16, 0.62, 0.82],
@@ -7544,14 +7545,7 @@ var NeonCampaign = (() => {
       holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
       return true;
     }
-    let youngest = null;
-    for (const [id, holder] of holders) {
-      if (holder.grantedAt === now && (!youngest || holder.bornAt > youngest[1].bornAt)) youngest = [id, holder];
-    }
-    if (!youngest || enemy.bornAt >= youngest[1].bornAt) return false;
-    holders.delete(youngest[0]);
-    holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
-    return true;
+    return false;
   }
   function releaseAttack(tokens, enemyId) {
     tokens.holders.delete(enemyId);
@@ -7568,7 +7562,7 @@ var NeonCampaign = (() => {
     escort: Object.freeze({ sideOffset: 55, depthOffset: 40 }),
     opportunist: Object.freeze({ hullThreshold: 35, hover: 320 }),
     ambusher: Object.freeze({ belowOffset: 140, entryLine: 1100 }),
-    miner: Object.freeze({ laneShare: 0.78, edge: 60 })
+    miner: Object.freeze({ laneShare: 0.78, edge: 60, arrive: 30 })
   });
   var clamp16 = (value, low, high) => Math.max(low, Math.min(high, value));
   var distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
@@ -7592,8 +7586,12 @@ var NeonCampaign = (() => {
         return { x: enemy.x <= bounds.w / 2 ? bounds.w * 0.2 : bounds.w * 0.8, y: Math.max(120, player.y - rules.hover) };
       case "ambusher":
         return enemy.y > rules.entryLine ? { x: player.x, y: player.y + rules.belowOffset } : { x: enemy.x, y: bounds.h - 100 };
-      case "miner":
-        return { x: enemy.x < bounds.w / 2 ? bounds.w - rules.edge : rules.edge, y: bounds.h * rules.laneShare };
+      case "miner": {
+        let heading = enemy.heading ?? (enemy.x < bounds.w / 2 ? 1 : -1);
+        const goal = heading > 0 ? bounds.w - rules.edge : rules.edge;
+        if (Math.abs(enemy.x - goal) < rules.arrive) heading = -heading;
+        return { x: heading > 0 ? bounds.w - rules.edge : rules.edge, y: bounds.h * rules.laneShare, heading };
+      }
       default:
         throw new RangeError(`Unknown enemy profile: ${enemy.profile}`);
     }
@@ -7619,12 +7617,25 @@ var NeonCampaign = (() => {
     const rules = ENEMY_AI_PROFILES[enemy.profile];
     if (!rules) throw new RangeError(`Unknown enemy profile: ${enemy.profile}`);
     const { w, h } = ctx.bounds, move = movement(enemy, ctx, rules);
-    const intent = { targetX: clamp16(move.x, 40, w - 40), targetY: clamp16(move.y, 40, h - 40), attack: false, ability: null };
+    const intent = {
+      targetX: clamp16(move.x, 40, w - 40),
+      targetY: clamp16(move.y, 40, h - 40),
+      attack: false,
+      ability: null,
+      ...move.heading !== void 0 ? { heading: move.heading } : {}
+    };
     const ready = enemy.cooldowns.unique <= ctx.now ? "unique" : enemy.cooldowns.basic <= ctx.now ? "basic" : null;
-    if (!ready) return intent;
-    if (enemy.profile === "escort") return { ...intent, ability: enemy.cooldowns.unique <= ctx.now ? "unique" : null };
-    if (!wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) return intent;
+    if (enemy.profile === "escort") return { ...intent, ability: ready === "unique" ? "unique" : null };
+    if (!ready || !wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) {
+      releaseAttack(ctx.tokens, enemy.id);
+      return intent;
+    }
     return { ...intent, attack: true, ability: ready };
+  }
+  function decideEnemyIntents(enemies, ctx) {
+    const intents = /* @__PURE__ */ new Map();
+    for (const enemy of [...enemies].sort((a, b) => a.bornAt - b.bornAt)) intents.set(enemy, decideEnemyIntent(enemy, ctx));
+    return enemies.map((enemy) => intents.get(enemy));
   }
 
   // src/game/progression/sector-save.js

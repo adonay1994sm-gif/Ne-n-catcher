@@ -5,7 +5,7 @@
  * ataque (attack-tokens.js). Sin estado oculto ni reloj real: todo sale de
  * `enemy` y del `now` de juego que pasa el llamador.
  */
-import {requestAttack} from './attack-tokens.js';
+import {requestAttack, releaseAttack} from './attack-tokens.js';
 
 export const ENEMY_AI_PROFILES = Object.freeze({
   hunter: Object.freeze({attackRange: 700, chaseOffset: 170}),
@@ -13,7 +13,7 @@ export const ENEMY_AI_PROFILES = Object.freeze({
   escort: Object.freeze({sideOffset: 55, depthOffset: 40}),
   opportunist: Object.freeze({hullThreshold: 35, hover: 320}),
   ambusher: Object.freeze({belowOffset: 140, entryLine: 1100}),
-  miner: Object.freeze({laneShare: .78, edge: 60})
+  miner: Object.freeze({laneShare: .78, edge: 60, arrive: 30})
 });
 
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
@@ -36,7 +36,14 @@ function movement(enemy, ctx, rules) {
     }
     case 'opportunist': return {x: enemy.x <= bounds.w / 2 ? bounds.w * .2 : bounds.w * .8, y: Math.max(120, player.y - rules.hover)};
     case 'ambusher': return enemy.y > rules.entryLine ? {x: player.x, y: player.y + rules.belowOffset} : {x: enemy.x, y: bounds.h - 100};
-    case 'miner': return {x: enemy.x < bounds.w / 2 ? bounds.w - rules.edge : rules.edge, y: bounds.h * rules.laneShare};
+    case 'miner': {
+      // Cruza de borde a borde: sigue su rumbo (`heading`) hasta llegar y
+      // entonces lo invierte; quien lo mueve guarda el rumbo que devuelve.
+      let heading = enemy.heading ?? (enemy.x < bounds.w / 2 ? 1 : -1);
+      const goal = heading > 0 ? bounds.w - rules.edge : rules.edge;
+      if (Math.abs(enemy.x - goal) < rules.arrive) heading = -heading;
+      return {x: heading > 0 ? bounds.w - rules.edge : rules.edge, y: bounds.h * rules.laneShare, heading};
+    }
     default: throw new RangeError(`Unknown enemy profile: ${enemy.profile}`);
   }
 }
@@ -57,11 +64,23 @@ export function decideEnemyIntent(enemy, ctx) {
   const rules = ENEMY_AI_PROFILES[enemy.profile];
   if (!rules) throw new RangeError(`Unknown enemy profile: ${enemy.profile}`);
   const {w, h} = ctx.bounds, move = movement(enemy, ctx, rules);
-  const intent = {targetX: clamp(move.x, 40, w - 40), targetY: clamp(move.y, 40, h - 40), attack: false, ability: null};
+  const intent = {targetX: clamp(move.x, 40, w - 40), targetY: clamp(move.y, 40, h - 40), attack: false, ability: null,
+    ...(move.heading !== undefined ? {heading: move.heading} : {})};
   const ready = enemy.cooldowns.unique <= ctx.now ? 'unique' : enemy.cooldowns.basic <= ctx.now ? 'basic' : null;
-  if (!ready) return intent;
   // La Escolta no dispara: su habilidad única (escudo) no gasta turno.
-  if (enemy.profile === 'escort') return {...intent, ability: enemy.cooldowns.unique <= ctx.now ? 'unique' : null};
-  if (!wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) return intent;
+  if (enemy.profile === 'escort') return {...intent, ability: ready === 'unique' ? 'unique' : null};
+  if (!ready || !wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) {
+    // Quien ya no ataca devuelve su turno para que otro pueda usarlo.
+    releaseAttack(ctx.tokens, enemy.id);
+    return intent;
+  }
   return {...intent, attack: true, ability: ready};
+}
+
+/** Decide un fotograma entero: pide turno por antigüedad (menor `bornAt`
+ * primero) y devuelve las intenciones en el orden recibido. */
+export function decideEnemyIntents(enemies, ctx) {
+  const intents = new Map();
+  for (const enemy of [...enemies].sort((a, b) => a.bornAt - b.bornAt)) intents.set(enemy, decideEnemyIntent(enemy, ctx));
+  return enemies.map(enemy => intents.get(enemy));
 }

@@ -8,17 +8,10 @@ test('never grants more than max tokens', () => {
   assert.equal(attackHolders(tokens).length, 2);
 });
 
-test('the longest-surviving enemy wins a contested token', () => {
+test('a granted token is never taken away by a later request', () => {
   const tokens = createAttackTokens({max: 1});
   requestAttack(tokens, {id: 'a', bornAt: 5}, 10);
-  assert.equal(requestAttack(tokens, {id: 'b', bornAt: 1}, 10), true);
-  assert.deepEqual(attackHolders(tokens), ['b']);
-});
-
-test('an attack already under way is not taken away', () => {
-  const tokens = createAttackTokens({max: 1});
-  requestAttack(tokens, {id: 'a', bornAt: 5}, 10);
-  assert.equal(requestAttack(tokens, {id: 'b', bornAt: 1}, 10.5), false);
+  assert.equal(requestAttack(tokens, {id: 'b', bornAt: 1}, 10), false);
   assert.deepEqual(attackHolders(tokens), ['a']);
 });
 

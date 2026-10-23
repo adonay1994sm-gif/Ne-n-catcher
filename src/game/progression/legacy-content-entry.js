@@ -37,6 +37,6 @@ export {CLASSIC_WEAPON_RULES, createClassicWeapons, triggerClassicWeapon, advanc
 export {calculateFlightBounds, createRelativeFlightInput, beginFlightInput, moveFlightInput, endFlightInput} from '../ship/flight-controls.js';
 export {SECTORS, getSectorFicha} from './sectors/index.js';
 export {createAttackTokens, requestAttack, releaseAttack, forgetEnemy, attackHolders} from '../combat/attack-tokens.js';
-export {ENEMY_AI_PROFILES, decideEnemyIntent} from '../combat/enemy-ai.js';
+export {ENEMY_AI_PROFILES, decideEnemyIntent, decideEnemyIntents} from '../combat/enemy-ai.js';
 export {SECTOR_SAVE_KEY, createSectorSave, normalizeSectorSave, startSectorRun, enterStage, buyBeacon,
   useRevive, dieInSector, continuePoint, completeSector} from './sector-save.js';
