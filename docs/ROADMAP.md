@@ -34,8 +34,7 @@ cada tarea está en el tablero del proyecto; el diseño, en
   pantallas antiguas; quedan `capture-intro.cjs` y `capture-levels.cjs`.
 - **Propietario:**
   - en Netlify, `neon-preview-deploy` debe publicar `main`;
-  - borrar las ramas antiguas en GitHub;
-  - renombrar el repositorio `Ne-n-catcher` (luego se actualizan los enlaces).
+  - borrar las ramas antiguas en GitHub.
 
 ### 1. Sector 1 jugable (fase 3), el corazón de la diversión
 1. Vuelo continuo de 10 tramos, sin cortes entre ellos.

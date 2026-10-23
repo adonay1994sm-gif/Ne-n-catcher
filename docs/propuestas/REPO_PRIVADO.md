@@ -5,7 +5,7 @@
 
 ## Situación (19/10/2026)
 
-`adonay1994sm-gif/Ne-n-catcher` es **público**. Expone: todo el código y el
+`adonay1994sm-gif/neon-cronium` es **público**. Expone: todo el código y el
 arte del juego que se va a vender/monetizar, los másteres de `art-source/`,
 documentos internos (`AGENTS.md`, `docs/CODEX_*`), la URL de la "web privada
 de pruebas" del README y la URL de la preview de Netlify.

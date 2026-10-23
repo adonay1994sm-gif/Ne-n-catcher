@@ -10,11 +10,11 @@ Defectos confirmados: el callback de emisión enemiga no invocaba audio; Atlasv5
 
 ## Revisiones y entrega real
 
-- **SHA funcional limpio, publicado y probado:** [da3f4b839744940fee1032a8b637d5c3266c862f](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/da3f4b839744940fee1032a8b637d5c3266c862f).
+- **SHA funcional limpio, publicado y probado:** [da3f4b839744940fee1032a8b637d5c3266c862f](https://github.com/adonay1994sm-gif/neon-cronium/commit/da3f4b839744940fee1032a8b637d5c3266c862f).
 - **SHA de cierre documental:** el commit que introduce esta revisión del informe; resolver sin ambigüedad con `git log -1 --format=%H -- docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md`. El recibo externo de cierre registra su SHA literal. Este cierre no reconstruye ni reetiqueta el paquete funcional.
 - **Web privada22:** (web privada antigua, retirada) Publicación `succeeded`, 18/10/2026 13:36:31 UTC; HTTP real16/16 con huellas del paquete. [Recibo de publicación](evidence/level-one-followup/site-deployment.json) y [verificación HTTP](evidence/level-one-followup/site-http/results.json).
 - Fuente del sitio separado: `3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932`. Se preservaron146 archivos ajenos; mismo origen y audiencia: un propietario, cero editores y cero visitantes externos. No se modificó `main` del juego; la rama de servicio del repositorio del sitio es independiente.
-- [GitHub Actions funcional39131063614](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614): **completed/success**, incluido empaquetado. [Recibo exacto](evidence/level-one-followup/github-actions-runtime.json).
+- [GitHub Actions funcional39131063614](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39131063614): **completed/success**, incluido empaquetado. [Recibo exacto](evidence/level-one-followup/github-actions-runtime.json).
 
 Se puede jugar desde la destrucción de Chronos sin lámina bloqueante, recibir ayuda breve, combatir durante los diez tramos, comprar en C9 desde el HUD y volver al mismo vuelo, enfrentarse al Atlas móvil, resolver la transmisión de Iria y conservar la llegada a Gaia al recargar. Para revisar desde el principio: **CONTINUAR VIAJE → NIVELES → La Onda de Choque → 1.1**; no borrar el guardado existente. Una partida anterior puede continuar su checkpoint.
 

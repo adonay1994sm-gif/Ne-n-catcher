@@ -52,8 +52,8 @@ No se modifica main, PR3, producción Netlify, firmado, AppStore ni TestFlight. 
 ## Cierre verificable del lote
 
 - SHA inicial: `827c1b5f50d88cbca5f68924d6ffc71f0794074e`.
-- Implementación integrada: [`6d30b68`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/6d30b6884db9cc8bb2d9c636e9f7434c9c416ccb).
-- SHA funcional final: [`6cf67fc`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/6cf67fc445e2cadd214ebbd266ba6d36713a0bdc), corrección del contraste observada en la partida real.
+- Implementación integrada: [`6d30b68`](https://github.com/adonay1994sm-gif/neon-cronium/commit/6d30b6884db9cc8bb2d9c636e9f7434c9c416ccb).
+- SHA funcional final: [`6cf67fc`](https://github.com/adonay1994sm-gif/neon-cronium/commit/6cf67fc445e2cadd214ebbd266ba6d36713a0bdc), corrección del contraste observada en la partida real.
 - SHA del cierre documental: se conserva en el recibo `evidence/voyage-polish/closure.json`, escrito después de publicar este informe. No confundir ese commit documental con el paquete probado.
 - Source del Site: `653e32825726221c3c161800c0ad11ab5bb53d8d`, versión13; publicación nativa `succeeded` a22:01:35UTC.
 - Bloques: P2/presentación y servicios de Chronos–Gaia; soporte transversal de audio, accesibilidad y persistencia. No se han alterado los objetivos, duraciones, dificultad, semillas ni geometría de colisiones.
@@ -83,7 +83,7 @@ No se modifica main, PR3, producción Netlify, firmado, AppStore ni TestFlight. 
 | Regresión N-7 en Chromium sobre final |1sesión,6pasos,exit0; no son100misiones jugadas |[N-7](evidence/voyage-polish/n7-01/results.json) |
 | Web integrada conservando el avance orbital |2/2, home→clásico actual→inicio/pausa; ruta orbital sigue200 |[navegación](evidence/voyage-polish/site-navigation/results.json) |
 
-GitHub Actions, ejecución **completa** y satisfactoria de la implementación: [39072223414](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39072223414). La corrección final también terminó satisfactoriamente: [39072721336](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39072721336), incluido `npm ci` con Node 22.13 y empaquetado. [Metadatos](evidence/voyage-polish/github-final-functional-run.json). Los resultados de futuros commits exclusivamente documentales se distinguen en el recibo de cierre.
+GitHub Actions, ejecución **completa** y satisfactoria de la implementación: [39072223414](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39072223414). La corrección final también terminó satisfactoriamente: [39072721336](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39072721336), incluido `npm ci` con Node 22.13 y empaquetado. [Metadatos](evidence/voyage-polish/github-final-functional-run.json). Los resultados de futuros commits exclusivamente documentales se distinguen en el recibo de cierre.
 
 Las dos armas superan el encuentro bajo piloto automatizado; las diferencias de casco/tiempo no constituyen una comparación de balance con personas ni una muestra controlada.
 
@@ -141,4 +141,4 @@ Próximo incremento: revisar la respuesta del propietario a C9/Gaia/audio y juga
 
 ### Conservación y sincronización
 
-Informe y evidencias publicados en `bcbdebf76ba5470da80a6a87fc8ea9af173f9e3d`; [Actions39074118686](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39074118686) terminó completo/success. [Recibo de cierre](evidence/voyage-polish/closure.json) y [relación completa de rutas de la entrega](evidence/voyage-polish/all-changed-files.json). El siguiente commit sólo conserva este recibo, el resultado remoto y ajustes de legibilidad documental; no cambia el paquete ni el gameplay.
+Informe y evidencias publicados en `bcbdebf76ba5470da80a6a87fc8ea9af173f9e3d`; [Actions39074118686](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39074118686) terminó completo/success. [Recibo de cierre](evidence/voyage-polish/closure.json) y [relación completa de rutas de la entrega](evidence/voyage-polish/all-changed-files.json). El siguiente commit sólo conserva este recibo, el resultado remoto y ajustes de legibilidad documental; no cambia el paquete ni el gameplay.

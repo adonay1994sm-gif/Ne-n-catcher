@@ -86,7 +86,7 @@ Son tres slots de lanzamiento, **no tres fotogramas de animación**. Las exporta
 
 [Build final](evidence/neon-cronium/build-preview-final.txt), [preview23](evidence/neon-cronium/preview-final-tests.txt). Los recuentos son por suite y no se suman como partidas distintas. Tras esta certificación sólo cambió el arnés de QA y documentación; el juego publicado no cambió.
 
-GitHub Actions terminó **completed/success**, con todos sus pasos y empaquetado, en [39069229533 — funcional e096a3b](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39069229533) y [39069397503 — paquete207a94e](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39069397503). [Resultados remotos](evidence/neon-cronium/github-package-run.json). No se declara una compilación nativa de Xcode ni certificación física por estos resultados.
+GitHub Actions terminó **completed/success**, con todos sus pasos y empaquetado, en [39069229533 — funcional e096a3b](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39069229533) y [39069397503 — paquete207a94e](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39069397503). [Resultados remotos](evidence/neon-cronium/github-package-run.json). No se declara una compilación nativa de Xcode ni certificación física por estos resultados.
 
 ## 6. Navegador real, errores encontrados y correcciones
 

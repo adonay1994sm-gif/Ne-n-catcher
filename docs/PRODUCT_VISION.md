@@ -98,7 +98,7 @@ Historial conservado a continuación; las instrucciones incompatibles quedan sus
 
 # NEON CRONIUM — Mandato rector de diseño y producción
 
-Versión de dirección: **1.0 · 17 de octubre de 2026**. Referencia vigente de producto, dictada por el propietario. Repositorio: `adonay1994sm-gif/Ne-n-catcher`. Única rama autorizada de integración: `continuity-assets-audit-20261013`.
+Versión de dirección: **1.0 · 17 de octubre de 2026**. Referencia vigente de producto, dictada por el propietario. Repositorio: `adonay1994sm-gif/neon-cronium`. Única rama autorizada de integración: `continuity-assets-audit-20261013`.
 
 Este documento conserva los requisitos decisivos del mandato rector. Sustituye las directrices creativas anteriores incompatibles, incluida la prioridad de expandir primero las cien rutas cibernéticas o de cerrar diez imágenes independientes como producto. Los informes de Art Pass, Visual Rebirth e Immersive Rebirth se conservan como historial y evidencia; sus tareas verificadas no desaparecen. Esta visión no certifica código, arte ni dispositivos y no autoriza una decisión sobre el Motor V1.
 

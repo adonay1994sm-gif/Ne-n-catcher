@@ -23,7 +23,7 @@ En este proyecto de pruebas la rama principal del proyecto puede ser la rama aut
 
 ## Configuración que debe conservarse en el proyecto nuevo
 
-1. Repositorio `adonay1994sm-gif/Ne-n-catcher`; rama del proyecto de pruebas `continuity-assets-audit-20261013`.
+1. Repositorio `adonay1994sm-gif/neon-cronium`; rama del proyecto de pruebas `continuity-assets-audit-20261013`.
 2. Conservar `[context.continuity-assets-audit-20261013.environment]` con `NEON_PREVIEW_DEPLOY="1"`. No copiarlo a `build.environment` ni a otros contextos. La variable de la interfaz deja de ser necesaria para esta rama y puede permanecer sin efecto o retirarse más adelante desde el panel.
 3. Usar la configuración de `netlify.toml`: Node22.13, puerta de seguridad, `npm run build:preview`, pruebas estáticas/preview y carpeta `preview-dist`. La captura del fallo confirma que Netlify ya selecciona ese comando desde el TOML; no hace falta sustituir la configuración global.
 4. La publicación comprobada corresponde al commit `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`; cualquier reintento posterior debe usar el último commit de esta rama.

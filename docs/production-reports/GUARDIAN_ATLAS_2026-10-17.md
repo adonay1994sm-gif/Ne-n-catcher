@@ -87,7 +87,7 @@ Siguiente incremento de producto: revisar este Atlas en el enlace privado con el
 
 ## GitHub, publicación y continuidad
 
-Commits: [009e529 — conservación WIP](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/009e5299e1d0cad12fadde787060d658ae87bb3b), [11dfa7b — funcional probado](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/11dfa7bf7d3e287dd979c8dfc1dbafd8c1388473), [4584a77 — paquete/publicación](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/4584a77). SHA de cierre documental: el commit que contiene este informe y browser-natural-03; obtener con `git log -1 --format=%H -- docs/production-reports/GUARDIAN_ATLAS_2026-10-17.md`. Ese cierre no cambia la revisión del juego desplegada.
+Commits: [009e529 — conservación WIP](https://github.com/adonay1994sm-gif/neon-cronium/commit/009e5299e1d0cad12fadde787060d658ae87bb3b), [11dfa7b — funcional probado](https://github.com/adonay1994sm-gif/neon-cronium/commit/11dfa7bf7d3e287dd979c8dfc1dbafd8c1388473), [4584a77 — paquete/publicación](https://github.com/adonay1994sm-gif/neon-cronium/commit/4584a77). SHA de cierre documental: el commit que contiene este informe y browser-natural-03; obtener con `git log -1 --format=%H -- docs/production-reports/GUARDIAN_ATLAS_2026-10-17.md`. Ese cierre no cambia la revisión del juego desplegada.
 
 [Prueba privada confirmada]((web privada antigua, retirada)) · [Acta ZIP/despliegue](PAQUETE_ATLAS_2026-10-17.md). Sites succeeded, mismo origen y audiencia owner-private. No es Netlify, producción ni una prueba jugada desde iPhone. Todas las pruebas del lote son locales y sus límites están declarados. No se modificaron main, PR3 ni el motor experimental.
 

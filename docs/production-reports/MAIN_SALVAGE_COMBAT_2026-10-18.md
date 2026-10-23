@@ -111,7 +111,7 @@ La [lista de archivos del incremento](evidence/main-salvage-combat/modified-file
 
 Total de suites: **618 casos**, más23 de preview=**641**. No se suman de nuevo los97 modelos focales,43 de integración focal o9 de render que también forman parte de la suite. La certificación local registra el snapshot de trabajo previo al commit y sus fingerprints; el empaquetado limpio y CI posteriores comprueban el runtime publicado. No se atribuye a ese snapshot un árbol limpio que no tenía.
 
-`npm ci` no se repitió localmente porque las dependencias no cambiaron; **GitHub Actions sí ejecutó `npm ci --no-fund`**, compilación, suites, preview y empaquetado completos. [CI del runtime:39112642373, success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39112642373).
+`npm ci` no se repitió localmente porque las dependencias no cambiaron; **GitHub Actions sí ejecutó `npm ci --no-fund`**, compilación, suites, preview y empaquetado completos. [CI del runtime:39112642373, success](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39112642373).
 
 | Chromium real | Casos finales | Alcance |
 | --- | --- | --- |
@@ -131,7 +131,7 @@ Partida adicional desde cero hacia C9: **3/3, primer intento**, descrita en la a
 
 ## Incidencias y correcciones
 
-1. El build de preview todavía exigía enlaces deN-7 aunque la portada nueva debía quitarlos. Se reprodujo localmente y falló el paso «Build isolated test site» del [CI inicial39112545869](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39112545869). Se cambió el gate para exigir exclusivamente la entrada canónica, sin eliminar la verificación. Commit707be5e.
+1. El build de preview todavía exigía enlaces deN-7 aunque la portada nueva debía quitarlos. Se reprodujo localmente y falló el paso «Build isolated test site» del [CI inicial39112545869](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39112545869). Se cambió el gate para exigir exclusivamente la entrada canónica, sin eliminar la verificación. Commit707be5e.
 2. El test de procedencia falló22/23 al retirar el SHA visible. Se conservó el contrato introduciendo una etiqueta `meta` con SHA; no se volvió a llenar la portada de texto técnico. Commitb2a89f6; cierre23/23 yCIverde.
 3. Contratos antiguos de caché y cargador se actualizaron al cambio real. Un test nuevo de arte leyó el campo de metadata equivocado; se corrigió a `maximumSixteenPixelGutterAlpha` y se repitió. Registros fallidos conservados.
 4. El primer intento de Atlas no llegó a jugar porque el harness buscaba `.card`. Se corrigió a `#classiclink`, preservando la aserción y el paquete. `atlas-manual` conserva el fallo; `atlas-manual-02` la partida válida. Un fixture lento de balas también se corrigió para tener en cuenta la cola física de la nave, sin alterar el juego.
@@ -179,10 +179,10 @@ Primera publicación del lote — Site privado18: fuente `37c1ce5722f34c57c60779
 
 Commits funcionales publicados:
 
-- [2e958f6:integración principal](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/2e958f618fa2fcc7682a3a6ee3ca0deabd08159d).
-- [1be09c4:sincronización iOS y QAoffline](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/1be09c4ee8a017eacc1b9b1e0790e499538092a1).
-- [707be5e:gate canónico](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/707be5e3d5a587281b2616863fd4bd1fee91af59).
-- [b2a89f6:procedencia invisible y runtime certificado](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/b2a89f694215bddba3a5ba2f6d1a68a03c70cccd).
+- [2e958f6:integración principal](https://github.com/adonay1994sm-gif/neon-cronium/commit/2e958f618fa2fcc7682a3a6ee3ca0deabd08159d).
+- [1be09c4:sincronización iOS y QAoffline](https://github.com/adonay1994sm-gif/neon-cronium/commit/1be09c4ee8a017eacc1b9b1e0790e499538092a1).
+- [707be5e:gate canónico](https://github.com/adonay1994sm-gif/neon-cronium/commit/707be5e3d5a587281b2616863fd4bd1fee91af59).
+- [b2a89f6:procedencia invisible y runtime certificado](https://github.com/adonay1994sm-gif/neon-cronium/commit/b2a89f694215bddba3a5ba2f6d1a68a03c70cccd).
 
 No se modificaron main del juego, PR#3, firmado, MotorV1 ni producción Netlify.
 
@@ -206,9 +206,9 @@ Contexto vacío:0chatarra, un nivel desbloqueado, Pulso y sin emisor. El piloto 
 
 La revisión final encontró un defecto verificable: en el campo real720×1558, mantenerse fijo en el centro evitaba todos los cometas en100/100semillas. El browser2/2 anterior demostraba integración, animación y pausa; **no demostraba dificultad**. Se conservaron el modelo anterior, el [análisis reproducible](evidence/main-salvage-combat/comet-balance-analysis/results.json) y los resultados en vez de declarar suficiente ese verde.
 
-Se corrigió en [49e4e59](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/49e4e59e7f5301d2b44e929755b4895f5b830212): `comet-shower-v2` acerca las entradas al corredor en campos≥500px, conserva los perfiles estrechos, las tres ráfagas y el paso248px. Los avisos de lluvia indican la entrada real por izquierda/derecha y desde abajo para dar respuesta antes del adelantamiento; no muestran un lugar seguro ni añaden avisos al proyectil enemigo. El checkpoint del viaje conserva su versión2 y estructura; estos encuentros son efímeros entre entradas de etapa. La reproducción anterior permanece en el commitb2 y el modelo archivado. No se alteraron las compras, los controles, los enemigos o los atlas en esta corrección.
+Se corrigió en [49e4e59](https://github.com/adonay1994sm-gif/neon-cronium/commit/49e4e59e7f5301d2b44e929755b4895f5b830212): `comet-shower-v2` acerca las entradas al corredor en campos≥500px, conserva los perfiles estrechos, las tres ráfagas y el paso248px. Los avisos de lluvia indican la entrada real por izquierda/derecha y desde abajo para dar respuesta antes del adelantamiento; no muestran un lugar seguro ni añaden avisos al proyectil enemigo. El checkpoint del viaje conserva su versión2 y estructura; estos encuentros son efímeros entre entradas de etapa. La reproducción anterior permanece en el commitb2 y el modelo archivado. No se alteraron las compras, los controles, los enemigos o los atlas en esta corrección.
 
-Pruebas finales repetidas sobre **49e4e59 limpio**:11 fases de `certify-local`, todas salida0; contenido**465/465**, demás suites iguales:620 casos, más23/23 de preview=**643**. [Certificación completa con SHA limpio](evidence/main-salvage-combat/certification-02/results.json). [GitHub Actions39114083326:ejecución completa success](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39114083326), incluido npmci y empaquetado. No hay fallos finales de estas comprobaciones.
+Pruebas finales repetidas sobre **49e4e59 limpio**:11 fases de `certify-local`, todas salida0; contenido**465/465**, demás suites iguales:620 casos, más23/23 de preview=**643**. [Certificación completa con SHA limpio](evidence/main-salvage-combat/certification-02/results.json). [GitHub Actions39114083326:ejecución completa success](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39114083326), incluido npmci y empaquetado. No hay fallos finales de estas comprobaciones.
 
 Chromium actual49e4e59: **cometas2/2**,39,2069s naturales desde el checkpoint declarado hastaC9. Diez cometas, máximo4 simultáneos,1.137 dibujos y cuatro celdas animadas. El piloto tuvo que desplazar realmente la nave **x360→264→167**, leyendo posiciones ya visibles, sin leer el corredor interno ni modificar el juego. Casco100%, pausa y checkpoint correctos,0errores JS/consola/recursos y un único RAF. [Evidencia y capturas](evidence/main-salvage-combat/comets-v2/results.json).
 

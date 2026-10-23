@@ -224,9 +224,9 @@ La integración actualiza los campos técnicos a PASSED, manteniendo separados l
 
 Commits funcionales identificados:
 
-- [`d325e51f19df0dd1e77ab9257ddcdeee775299be`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/d325e51f19df0dd1e77ab9257ddcdeee775299be): nave modular única, cometa ilustrado animado, dos dedos y bundles regenerados.
-- [`53a8244db58227eee8cc32463a0593eee69ce3bd`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/53a8244db58227eee8cc32463a0593eee69ce3bd): contrato web de recursos activos y conservación de retirados.
-- [`f543056e4bcbd611674926713a899d42a5879144`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/f543056e4bcbd611674926713a899d42a5879144): QA y evidencias; revisión limpia utilizada para construir el paquete publicado.
+- [`d325e51f19df0dd1e77ab9257ddcdeee775299be`](https://github.com/adonay1994sm-gif/neon-cronium/commit/d325e51f19df0dd1e77ab9257ddcdeee775299be): nave modular única, cometa ilustrado animado, dos dedos y bundles regenerados.
+- [`53a8244db58227eee8cc32463a0593eee69ce3bd`](https://github.com/adonay1994sm-gif/neon-cronium/commit/53a8244db58227eee8cc32463a0593eee69ce3bd): contrato web de recursos activos y conservación de retirados.
+- [`f543056e4bcbd611674926713a899d42a5879144`](https://github.com/adonay1994sm-gif/neon-cronium/commit/f543056e4bcbd611674926713a899d42a5879144): QA y evidencias; revisión limpia utilizada para construir el paquete publicado.
 
 **Cierre de integración y paquete publicado:**
 

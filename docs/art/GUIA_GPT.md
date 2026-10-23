@@ -19,13 +19,13 @@ Todo está en la rama de trabajo **`claude/preparar-publicacion-rtfl9q`**.
 Lee los archivos por su URL «raw»:
 
 1. **La biblia de la galaxia** (facciones, enemigos y jefes):
-   https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/docs/design/BIBLIA_GALAXIA.md
+   https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/design/BIBLIA_GALAXIA.md
 2. **El diseño de la campaña** (cómo se juega):
-   https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/docs/superpowers/specs/2026-10-22-campana-galaxia-design.md
+   https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/superpowers/specs/2026-10-22-campana-galaxia-design.md
 3. **Las reglas visuales** (colores con significado y encargos, §9 y §13):
-   https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/DESIGN.md
+   https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/DESIGN.md
 4. **La lista de encargos**, por orden de prioridad:
-   https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/docs/art/ENCARGOS_GPT.md
+   https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/ENCARGOS_GPT.md
 
 ## 3. Modelos de referencia
 
@@ -34,21 +34,21 @@ que igualar.
 
 | Modelo | Para qué sirve | URL |
 |---|---|---|
-| Dosier de Gaia | Estilo de naves enemigas: blindaje marfil, chasis grafito, luces | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/gaia_enemy_dossier_v1.jpeg |
-| Estados de Atlas | Cómo se pide un jefe: hoja de estados, mismo modelo, misma escala | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/enemies/guardian-atlas/guardian-atlas-states-master.png |
-| Efectos de Atlas | Brillo rojo de ataque y fogonazos | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/enemies/guardian-atlas/atlas-combat-vfx-master.png |
-| CH-01 | Enemigo pequeño ya en el juego | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/enemies/ch01/ch01-master-v2.png |
-| CH-02 | Enemigo pequeño ya en el juego | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/enemies/ch02/ch02-master-v2.png |
-| Nave del jugador | Lo «nuestro»: cian y marfil | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/ship-identity/player_ship_identity_v1.png |
-| Dosier de Vulkar | Facciones de lava | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/vulkar_enemy_dossier_v1.jpeg |
-| Dosier de Cryon | Facciones de hielo | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/cryon_enemy_dossier_v1.jpeg |
-| Dosier de Aether | Facciones temporales | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/aether_enemy_dossier_v1.jpeg |
-| Dosier de Titan Omega | Facciones industriales | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/titan_omega_enemy_dossier_v1.jpeg |
-| Dosier de criaturas raras | Ballena, medusa y gusano de las rutas de frontera | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/rare_creatures_dossier_v1.jpeg |
-| Dosier de Cronos Prime | El jefe final y el violeta | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/references/cronos_prime_dossier_v1.jpeg |
-| Retratos | Estilo de los personajes | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/character-portraits/NEON_CRONIUM_Retratos_2048x512.png |
-| Núcleo de lava | Proyectil o mina cálida ya en el juego | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/lava-core-mine/lava_core_mine_1024x512.png |
-| Cometa ámbar | Hoja de fotogramas bien hecha | https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/art-source/comet-ambar/cometa_ambar_spritesheet_1.0.0.png |
+| Dosier de Gaia | Estilo de naves enemigas: blindaje marfil, chasis grafito, luces | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/references/gaia_enemy_dossier_v1.jpeg |
+| Estados de Atlas | Cómo se pide un jefe: hoja de estados, mismo modelo, misma escala | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/enemies/guardian-atlas/guardian-atlas-states-master.png |
+| Efectos de Atlas | Brillo rojo de ataque y fogonazos | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/enemies/guardian-atlas/atlas-combat-vfx-master.png |
+| CH-01 | Enemigo pequeño ya en el juego | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/enemies/ch01/ch01-master-v2.png |
+| CH-02 | Enemigo pequeño ya en el juego | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/enemies/ch02/ch02-master-v2.png |
+| Nave del jugador | Lo «nuestro»: cian y marfil | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ship-identity/player_ship_identity_v1.png |
+| Dosier de Vulkar | Facciones de lava | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/references/vulkar_enemy_dossier_v1.jpeg |
+| Dosier de Cryon | Facciones de hielo | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/references/cryon_enemy_dossier_v1.jpeg |
+| Dosier de Aether | Facciones temporales | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/references/aether_enemy_dossier_v1.jpeg |
+| Dosier de Titan Omega | Facciones industriales | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/references/titan_omega_enemy_dossier_v1.jpeg |
+| Dosier de criaturas raras | Ballena, medusa y gusano de las rutas de frontera | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/references/rare_creatures_dossier_v1.jpeg |
+| Dosier de Cronos Prime | El jefe final y el violeta | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/references/cronos_prime_dossier_v1.jpeg |
+| Retratos | Estilo de los personajes | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/character-portraits/NEON_CRONIUM_Retratos_2048x512.png |
+| Núcleo de lava | Proyectil o mina cálida ya en el juego | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/lava-core-mine/lava_core_mine_1024x512.png |
+| Cometa ámbar | Hoja de fotogramas bien hecha | https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/comet-ambar/cometa_ambar_spritesheet_1.0.0.png |
 
 En el baúl ya hay sprites de Cryon (Frost Crystal, Ice Drone, Cryo Mine y
 Leviathan), de Cronos Prime y de planetas. No los repitas: úsalos como

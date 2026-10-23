@@ -126,8 +126,8 @@ El diff `2dcad16..f634a46` abarca **140 rutas**, incluidos maestros, recortes y 
 | Recursos gráficos · `node art-source/chapter1-rebirth/validate-browser.cjs` | 7/7, salida 0; decodificación y celdas | [QA de exportación](../../art-source/chapter1-rebirth/chromium-asset-qa.json) |
 | Recursos musicales · `node art-source/audio/chapter1-score/check-audio-browser.cjs` | 4/4, salida 0; AAC y gesto reales | [QA de AAC](../../art-source/audio/chapter1-score/browser-audio-results.json) |
 | Chromium natural `3547147` · comando siguiente | 4/4, salida 0; partida completa y recarga | [Resultado natural](evidence/chapter1-living/natural-3547147/results.json), 15 capturas |
-| GitHub Actions `968ebc8` | completed / success | [Ejecución 39120123173](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39120123173), [recibo](evidence/chapter1-living/ci-968ebc8.json) |
-| GitHub Actions `f634a46` | completed/success | [Ejecución 39120714906](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39120714906) |
+| GitHub Actions `968ebc8` | completed / success | [Ejecución 39120123173](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39120123173), [recibo](evidence/chapter1-living/ci-968ebc8.json) |
+| GitHub Actions `f634a46` | completed/success | [Ejecución 39120714906](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39120714906) |
 | Chromium natural `f634a46` |4/4, salida0; capítulo completo sin inyección de progreso, recarga y recompensa única | [Resultado final](evidence/chapter1-living/natural-f634a46/results.json),15capturas |
 
 Comando natural ejecutado, con snapshot independiente y limpio:
@@ -256,10 +256,10 @@ Inventario actual: **92 recursos runtime**, **11.026.222 B**; catálogo de produ
 
 Commits publicados por push normal en la rama autorizada:
 
-1. [`195716d`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/195716d80ceeb83ced75ed8130e8ebf860923fb1): capítulo vivo, reserva, misiles, recursos y Atlas orbital.
-2. [`3547147`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/35471470cb94a2ba1ec37e230c95646b189a06fe): preservación del daño potente a través del dispatcher y prueba de integración.
-3. [`968ebc8`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/968ebc8b861409f157fb797f249b709669f99d4d): HUD compacto que deja espacio al canal de personajes.
-4. [`f634a46`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/f634a4635c4faacd33d19390706e0a97d1198662): separación táctil en pantallas pequeñas y script reproducible de QA visual.
+1. [`195716d`](https://github.com/adonay1994sm-gif/neon-cronium/commit/195716d80ceeb83ced75ed8130e8ebf860923fb1): capítulo vivo, reserva, misiles, recursos y Atlas orbital.
+2. [`3547147`](https://github.com/adonay1994sm-gif/neon-cronium/commit/35471470cb94a2ba1ec37e230c95646b189a06fe): preservación del daño potente a través del dispatcher y prueba de integración.
+3. [`968ebc8`](https://github.com/adonay1994sm-gif/neon-cronium/commit/968ebc8b861409f157fb797f249b709669f99d4d): HUD compacto que deja espacio al canal de personajes.
+4. [`f634a46`](https://github.com/adonay1994sm-gif/neon-cronium/commit/f634a4635c4faacd33d19390706e0a97d1198662): separación táctil en pantallas pequeñas y script reproducible de QA visual.
 
 GitHub Actions de `968ebc8`: **39120123173, success**. La ejecución final de aplicación `f634a46`, **39120714906**, está **completed/success**. El recibo de cierre documental registrará por separado su propio SHA y ejecución.
 
@@ -302,7 +302,7 @@ Riesgos y decisiones reservadas: legibilidad de la nave reducida en pantallas f�
 
 ## 12. Recibo de cierre y reconciliación final
 
-Informe y184archivos de evidencia incorporados en `d30fb15201ec094818d181d5e1e22998d27b213b`, push normal a la rama autorizada. [GitHubActions39121735314](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39121735314) terminó completed/success; [JSON](evidence/chapter1-living/ci-documentary-d30fb15.json). El paquete jugado/publicado sigue siendo `f634a46`; [ninguna fuente de runtime cambió al documentar](evidence/chapter1-living/runtime-unchanged-at-close.json).
+Informe y184archivos de evidencia incorporados en `d30fb15201ec094818d181d5e1e22998d27b213b`, push normal a la rama autorizada. [GitHubActions39121735314](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39121735314) terminó completed/success; [JSON](evidence/chapter1-living/ci-documentary-d30fb15.json). El paquete jugado/publicado sigue siendo `f634a46`; [ninguna fuente de runtime cambió al documentar](evidence/chapter1-living/runtime-unchanged-at-close.json).
 
 La revisión final corrigió dos referencias obsoletas del registro: `releasePlanExecution` aún llamaba current aSite16/d39y verificaciones anteriores; esos campos se conservan como snapshot histórico y los actuales apuntan aSite20/F. Los tres registros CH-01 de movimiento/ataque/destrucción ya no dicen «sóloN7, Gaia pendiente»: enlazan su evidencia clásica posterior, conservan el error histórico y mantienen aceptación artística/física pendientes.
 
