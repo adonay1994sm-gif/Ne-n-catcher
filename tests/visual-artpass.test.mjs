@@ -57,6 +57,6 @@ test('level one shockwave retains a graphical fallback while the atlas loads', a
 test('visual pass does not change collision model or native bundle identifier', async () => {
   const cfg = await text('capacitor.config.ts');
   const game = await text('src/game/04-entities-collision-damage.js');
-  assert.match(cfg, /com\.adonay\.neoncatcher/);
+  assert.match(cfg, /com\.neoncronium/);
   assert.match(game, /SHIP_COLLISION_OUTLINE|collision/i);
 });

@@ -1,21 +1,23 @@
 # PROPUESTA · Decidir nombre y bundle ID antes de crear la app en App Store Connect
 
-> Estado: **PROPUESTA**. Decisión del propietario. **Debe tomarse antes de
-> crear la ficha en App Store Connect**: el bundle ID no se puede cambiar
-> después de la primera subida.
+> Estado: **DECIDIDO** el 23/10/2026. El propietario eligió un ID con solo
+> el nombre del juego: **`com.neoncronium`** (el `com.` lo exigen las
+> tiendas; Android pide al menos dos partes). Aplicado en
+> `capacitor.config.ts`, `project.pbxproj`, `ios/App/App/capacitor.config.json`
+> y sus pruebas. Falta registrarlo en Apple Developer y Google Play.
 
 ## Situación (19/10/2026)
 
 | Elemento | Valor actual | Dónde |
 |---|---|---|
 | Nombre visible | `NEON CRONIUM` | `Info.plist` (`CFBundleDisplayName`), `capacitor.config.ts` (`appName`), `manifest.webmanifest`, `index.html` |
-| Bundle ID | `com.adonay.neoncatcher` (nombre antiguo del juego) | `capacitor.config.ts`, `project.pbxproj`; fijado en `tests/run-static-tests.mjs` |
-| Claves de guardado | prefijos `neon-…` antiguos | Se conservan por compatibilidad (`AGENTS.md`) |
+| Bundle ID | antes, el nombre antiguo del juego; ahora `com.neoncronium` | `capacitor.config.ts`, `project.pbxproj`; fijado en `tests/run-static-tests.mjs` |
+| Claves de guardado | `neonCronium.*` (cambiadas el 23/10/2026) | Sin jugadores todavía, no hace falta migrar |
 | Disponibilidad del nombre en App Store | **sin comprobar** | — |
 
 ## Opciones
 
-1. **Mantener `com.adonay.neoncatcher`.**
+1. **Mantener el ID antiguo.**
    - Ventajas: cero cambios; nadie lo ve (el usuario solo ve el nombre).
    - Riesgos: identificador incoherente con la marca para siempre.
 2. **Cambiar a algo como `com.[COMPLETAR].neoncronium` antes de la primera

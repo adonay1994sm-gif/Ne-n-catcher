@@ -42,7 +42,7 @@ test('package, install names and generated preview agree while application ident
     assert.equal(preview.id, (nested ? '../' : './') + '?edition=neon-preview-v1');
   }
   assert.match(await text('capacitor.config.ts'), /appName: "NEON CRONIUM"/);
-  assert.match(await text('capacitor.config.ts'), /appId: "com\.adonay\.neoncatcher"/);
+  assert.match(await text('capacitor.config.ts'), /appId: "com\.neoncronium"/);
   assert.match(await text('ios/App/App/Info.plist'), /<key>CFBundleDisplayName<\/key>\s*<string>NEON CRONIUM<\/string>/);
   assert.equal(JSON.parse(await text('ios/App/App/capacitor.config.json')).appName, 'NEON CRONIUM');
 });

@@ -80,7 +80,7 @@ npm ci
 npm run cap:sync
 ```
 
-La compilación y firma del IPA requieren macOS/Xcode o el flujo de Codemagic. El bundle ID permanece en `com.adonay.neoncatcher`.
+La compilación y firma del IPA requieren macOS/Xcode o el flujo de Codemagic. El bundle ID es `com.neoncronium`.
 
 ## Publicidad
 

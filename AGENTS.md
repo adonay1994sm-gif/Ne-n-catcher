@@ -100,7 +100,7 @@ El propietario acepta ejecutar las metas de la [auditoría de publicación](docs
 
 ## Nombre vigente — NEON CRONIUM, 17/10/2026
 
-El propietario cambia el nombre del juego a **NEON CRONIUM**. Aplicarlo en pantallas, metadatos, guías activas y nuevos paquetes. Conservar por compatibilidad las claves de guardado, el bundle ID `com.adonay.neoncatcher`, IDs de campaña y URL del repositorio/sitio existentes; no representan la marca visible. Las evidencias, maestros previos y paquetes históricos conservan su procedencia y sus hashes. No renombrar un paquete antiguo como si fuera una nueva compilación. Leer el cierre de rebranding en docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md. Las diez etapas y las restricciones de motor/ramas siguen vigentes.
+El propietario cambia el nombre del juego a **NEON CRONIUM**. Aplicarlo en pantallas, metadatos, guías activas y nuevos paquetes. Desde el 23/10/2026 las claves de guardado usan `neonCronium.*` y el bundle ID es `com.neoncronium`; la URL del repositorio la renombra el propietario. Las evidencias, maestros previos y paquetes históricos conservan su procedencia y sus hashes. No renombrar un paquete antiguo como si fuera una nueva compilación. Leer el cierre de rebranding en docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md. Las diez etapas y las restricciones de motor/ramas siguen vigentes.
 
 ---
 

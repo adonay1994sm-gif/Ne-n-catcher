@@ -36,7 +36,7 @@ cuando el contenido esté terminado, publicar no se retrase por trámites.
 | 9 | Clasificación por edad | ⛔ | Sin hacer. `privacy.html` dice que no es app infantil. | Cuestionario en App Store Connect (titular). |
 | 10 | Capturas y metadatos | ⛔ | No hay capturas comerciales en el repositorio. | Capturas para los tamaños de iPhone exigidos, descripción, palabras clave, categoría. Requiere build final. |
 | 11 | Soporte | ⛔ | El menú enlaza "Soporte" a `privacy.html#contacto`, que dice que el canal **no está definido**. | URL de soporte y correo de contacto reales. [COMPLETAR] |
-| 12 | Nombre y bundle ID | 🟡 | Nombre visible `NEON CRONIUM` (`Info.plist`, `capacitor.config.ts`). Bundle ID `com.adonay.neoncatcher` (nombre antiguo). | Decidir antes de crear la app en App Store Connect: ver `docs/propuestas/NOMBRE_Y_BUNDLE_ID.md`. Disponibilidad del nombre en la tienda: sin comprobar. |
+| 12 | Nombre y bundle ID | 🟡 | Nombre visible `NEON CRONIUM` (`Info.plist`, `capacitor.config.ts`). Bundle ID `com.neoncronium` (decidido el 23/10/2026). | Registrar el ID en Apple Developer y Google Play. Disponibilidad del nombre en la tienda: sin comprobar. |
 | 13 | Cuenta de Apple Developer | ❓ | Sin comprobar. `project.pbxproj` usa firma automática y **no tiene `DEVELOPMENT_TEAM`**. | Cuenta de pago activa y equipo asignado en Xcode. |
 | 14 | Build con Xcode 26 o posterior | ❓ | No hay Mac en este entorno. El proyecto declara `LastUpgradeCheck = 0920` y `objectVersion = 60`; destino mínimo iOS 15.0; versión 7.2.0 (build 4). | Abrir y compilar con Xcode 26+ (SDK de iOS 26), aceptar la actualización de ajustes de proyecto si la propone y archivar. |
 | 15 | TestFlight | ⛔ | Nunca subido (según readiness 7.2.0). | Archivo firmado, subida y prueba interna. |

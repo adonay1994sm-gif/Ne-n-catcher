@@ -2,7 +2,7 @@
 
 | Requisito | Estado | Evidencia / pendiente |
 |---|---|---|
-| Bundle ID | READY | `com.adonay.neoncatcher` |
+| Bundle ID | READY | `com.neoncronium` |
 | Versión / build | READY | 7.2.0 / 4 en Xcode |
 | Capacitor local | READY | `webDir: www`; juego incluido localmente |
 | Orientación | READY | Solo vertical |

@@ -120,7 +120,7 @@ El cometa procede de generación original con la herramienta disponible `image_g
 | `docs/production-tasks.json`, `docs/PRODUCTION_MASTER_CHECKLIST.md`, `docs/PRODUCTION_PROGRESS.md` | Seguimiento reconciliado del incremento; el JSON sigue siendo fuente principal. |
 | `docs/production-reports/evidence/ship-controls/` | Registros JSON, comandos, capturas reales, harness usado y fallos conservados. |
 
-La versión de caché pasa a `neon-catcher-pre-release-7-2-0-ship-touch-comet-1`. Se retiran del CORE los seis `ship_frame_*.webp` y `comet_animation_sheet_v1.webp`; se añaden los recursos actuales. Los archivos retirados permanecen en el paquete recuperable y sus registros. El resultado no depende de borrar historial.
+La versión de caché pasa a `neon-cronium-pre-release-7-2-0-ship-touch-comet-1`. Se retiran del CORE los seis `ship_frame_*.webp` y `comet_animation_sheet_v1.webp`; se añaden los recursos actuales. Los archivos retirados permanecen en el paquete recuperable y sus registros. El resultado no depende de borrar historial.
 
 ## F. Pruebas de fuentes y empaquetado
 

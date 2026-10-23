@@ -45,7 +45,7 @@ La relación completa está en [changed-files.json](evidence/neon-cronium/change
 
 ## 3. Compatibilidad y archivos históricos
 
-El nombre visible es nuevo, pero se conservan deliberadamente `com.adonay.neoncatcher`, claves `neonCronium.*`, claves clásicas `neon-*`, prefijo de preview `neon-preview-v1:`, IDs de contenido, globals públicos, URL del repositorio y origen del sitio. Son identidades técnicas persistentes, no rótulos para el jugador. Cambiarlos sin necesidad separaría instalaciones o partidas; no se diseñó una migración artificial para un cambio de nombre.
+El nombre visible es nuevo, pero se conservan deliberadamente `com.neoncronium`, claves `neonCronium.*`, claves clásicas `neon-*`, prefijo de preview `neon-preview-v1:`, IDs de contenido, globals públicos, URL del repositorio y origen del sitio. Son identidades técnicas persistentes, no rótulos para el jugador. Cambiarlos sin necesidad separaría instalaciones o partidas; no se diseñó una migración artificial para un cambio de nombre.
 
 Los ZIP, informes, evidencias, derechos/procedencia y maestros históricos conservan sus nombres y hashes originales. Los **archivos activos y nuevos paquetes** usan NEON CRONIUM. Renombrar un ZIP histórico no lo convertiría en la versión actual. Los nombres genéricos (`game.js`, sprites, `App.xcodeproj`) tampoco requieren prefijos nuevos. Se conservan los archivos reservados del motor y `USE_ENGINE_V1 = false`.
 

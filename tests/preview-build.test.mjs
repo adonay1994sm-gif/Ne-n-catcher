@@ -145,7 +145,7 @@ function launcherWorkerHarness(revision) {
   const prefix = `neon-preview-launcher-v1:${scope}::`;
   const deleted = [], matches = [], additions = [], handlers = {};
   const names = [`${prefix}old`, `${prefix}${revision}`, `neon-preview-launcher-v1:${scope}child/::old`,
-    `neon-preview-v1:${scope}juego/::old`, 'neon-catcher-pre-release-7-2-0', 'unrelated-app'];
+    `neon-preview-v1:${scope}juego/::old`, 'neon-cronium-pre-release-7-2-0', 'unrelated-app'];
   const sandbox = {
     URL,
     self: {registration: {scope}, addEventListener: (name, callback) => {handlers[name] = callback;},
@@ -200,7 +200,7 @@ function workerHarness(source, revision) {
   const scope = 'https://preview.test/juego/';
   const prefix = `neon-preview-v1:${scope}::`;
   const deleted = [], matches = [], handlers = {};
-  const names = ['neon-catcher-pre-release-7-2-0', 'unrelated-app', `${prefix}old`, `${prefix}${revision}`, `neon-preview-v1:${scope}child/::old`];
+  const names = ['neon-cronium-pre-release-7-2-0', 'unrelated-app', `${prefix}old`, `${prefix}${revision}`, `neon-preview-v1:${scope}child/::old`];
   const sandbox = {
     URL,
     self: {registration: {scope}, location: {origin: 'https://preview.test'},
