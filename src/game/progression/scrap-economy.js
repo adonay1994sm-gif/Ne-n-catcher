@@ -45,7 +45,9 @@ export const SCRAP_UPGRADES = Object.freeze({
     tradeoff: 'Mantiene el daño directo de 2: destaca frente a objetivos alineados.'})
 });
 
-// Consumibles: se gastan y se pueden volver a comprar; nunca van a upgrades.
+// Consumibles: se gastan y se pueden volver a comprar. No ocupan recibos de
+// mejoras: el registro guarda lo gastado en ellos y el último recibo (como los
+// misiles), y acepta el precio que se pagó aunque luego cambie.
 export const SCRAP_CONSUMABLES = Object.freeze({'sector-beacon': Object.freeze({price: 40})});
 
 const integer = value => Number.isSafeInteger(value) && value >= 0;
@@ -87,7 +89,10 @@ export function classicWorkshopState(record) {
 }
 
 const upgradeName = sku => sku === 'shield-cell' ? 'hull-reinforcement' : sku;
-const historicalReward = (type, amount) => amount === SCRAP_REWARDS[type] || (type === 'atlas' && amount === 180);
+// Recompensas que ya se pagaron con otro valor: al ajustar una cifra, añade
+// aquí la anterior para que los recibos guardados sigan siendo válidos.
+const REWARD_HISTORY = Object.freeze({atlas: Object.freeze([180]), ch03: Object.freeze([120])});
+const historicalReward = (type, amount) => amount === SCRAP_REWARDS[type] || (REWARD_HISTORY[type] || []).includes(amount);
 const operationSequence = (id, prefix) => {
   if(typeof id!=='string'||!id.startsWith(prefix))return null;
   const tail=id.slice(prefix.length);
@@ -116,7 +121,8 @@ export function formatDenominations(balance) {
 export function createScrapRecord() {
   return {version: 1, revision: 2, balance: 0, earned: 0, spent: 0, runSequence: 0,
     activeRun: null, upgrades: [], purchases: [], missileAmmo: 3, missileShotsSpent: 0,
-    missileRoundsPurchased: 0, missileRefillSequence: 0, lastMissileRefill: null};
+    missileRoundsPurchased: 0, missileRefillSequence: 0, lastMissileRefill: null,
+    consumableSpent: 0, lastConsumable: null};
 }
 
 /** Unknown versions and malformed monetary relationships are never migrated by guessing. */
@@ -149,22 +155,26 @@ export function normalizeScrapRecord(value) {
     lastMissileRefill.id!==`c9:missiles:${missileRefillSequence}`||!integer(lastMissileRefill.amount)||
     lastMissileRefill.amount<1||lastMissileRefill.amount>3||
     lastMissileRefill.price!==lastMissileRefill.amount*SCRAP_ECONOMY_RULES.missileUnitPrice)return null;
+  // Guardados anteriores a la baliza no tienen estos campos.
+  const consumableSpent=has(value,'consumableSpent')?value.consumableSpent:0;
+  const lastConsumable=has(value,'lastConsumable')?value.lastConsumable:null;
+  if(!integer(consumableSpent))return null;
+  if(lastConsumable===null) {
+    if(consumableSpent!==0)return null;
+  } else if(!object(lastConsumable)||!identifier(lastConsumable.id)||typeof lastConsumable.sku!=='string'||
+    !has(SCRAP_CONSUMABLES,lastConsumable.sku)||!integer(lastConsumable.price)||lastConsumable.price<1||
+    lastConsumable.price>consumableSpent)return null;
   const transactionIds = new Set(), purchased = new Set();
   let spent = 0;
   for (const receipt of value.purchases) {
     const sku=upgradeName(receipt?.sku);
-    if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) || typeof sku !== 'string') return null;
-    if (has(SCRAP_CONSUMABLES, sku)) {
-      if (receipt.price !== SCRAP_CONSUMABLES[sku].price) return null;
-      transactionIds.add(receipt.id); spent += receipt.price;
-      continue;
-    }
-    if (!has(SCRAP_UPGRADES, sku) || purchased.has(sku) ||
+    if (!object(receipt) || !identifier(receipt.id) || transactionIds.has(receipt.id) || typeof sku !== 'string' ||
+        !has(SCRAP_UPGRADES, sku) || purchased.has(sku) ||
         !SCRAP_UPGRADES[sku].receiptPrices.includes(receipt.price)) return null;
     transactionIds.add(receipt.id); purchased.add(sku); spent += receipt.price;
   }
   if ([...purchased].some(sku => SCRAP_UPGRADES[sku].requires.some(required => !purchased.has(required)))) return null;
-  if (spent+missileRoundsPurchased*SCRAP_ECONOMY_RULES.missileUnitPrice !== value.spent || upgrades.length !== purchased.size ||
+  if (spent+missileRoundsPurchased*SCRAP_ECONOMY_RULES.missileUnitPrice+consumableSpent !== value.spent || upgrades.length !== purchased.size ||
       upgrades.some(sku => !purchased.has(sku))) return null;
   if (value.activeRun !== null) {
     const run = value.activeRun;
@@ -191,7 +201,8 @@ export function normalizeScrapRecord(value) {
       id: receipt.id, sku: upgradeName(receipt.sku), price: receipt.price})),
     missileAmmo,missileShotsSpent,missileRoundsPurchased,missileRefillSequence,
     lastMissileRefill:lastMissileRefill===null?null:{id:lastMissileRefill.id,
-      sequence:lastMissileRefill.sequence,amount:lastMissileRefill.amount,price:lastMissileRefill.price}};
+      sequence:lastMissileRefill.sequence,amount:lastMissileRefill.amount,price:lastMissileRefill.price},
+    consumableSpent,lastConsumable:lastConsumable===null?null:{id:lastConsumable.id,sku:lastConsumable.sku,price:lastConsumable.price}};
 }
 
 /**
@@ -391,16 +402,16 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
       transactionId.startsWith('c9:missiles:')) throw new TypeError('A stable transaction ID and consumable SKU are required');
     const loaded = readState();
     if (loaded.error) return loaded.error;
-    const prior = current.purchases.find(receipt => receipt.id === transactionId);
-    if (prior) return prior.sku === sku ? success('duplicate', {duplicate: true, sku, price: 0})
-      : blocked('transaction-id-conflict');
-    if (current.purchases.length >= SCRAP_ECONOMY_RULES.maxPurchaseReceipts) return blocked('purchase-receipt-capacity');
+    if (current.lastConsumable?.id === transactionId) return current.lastConsumable.sku === sku
+      ? success('duplicate', {duplicate: true, sku, price: 0}) : blocked('transaction-id-conflict');
+    if (current.purchases.some(receipt => receipt.id === transactionId)) return blocked('transaction-id-conflict');
     const price = SCRAP_CONSUMABLES[sku].price;
+    if (!Number.isSafeInteger(current.consumableSpent + price)) return blocked('consumable-capacity');
     if (current.balance < price) return {ok: false, status: 'unavailable', reason: 'insufficient-funds', price,
       missing: price - current.balance, state: copy(current)};
     const next = copy(current);
-    next.balance -= price; next.spent += price;
-    next.purchases.push({id: transactionId, sku, price});
+    next.balance -= price; next.spent += price; next.consumableSpent += price;
+    next.lastConsumable = {id: transactionId, sku, price};
     return commit(next, loaded.raw, {sku, price, duplicate: false});
   }
   return Object.freeze({key, backupKey, migrationBackupKey, load, beginRun, claimDrop,

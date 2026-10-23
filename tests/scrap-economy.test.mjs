@@ -629,7 +629,9 @@ test('a consumable charges once per transaction and is not an upgrade', () => {
   assert.equal(bought.price, 40);
   assert.equal(log.getBalance(), 14);
   assert.deepEqual(bought.state.upgrades, []);
-  assert.deepEqual(bought.state.purchases, [{id: 'beacon:S1_GAIA:1', sku: 'sector-beacon', price: 40}]);
+  assert.deepEqual(bought.state.purchases, [], 'a consumable never takes an upgrade receipt slot');
+  assert.equal(bought.state.consumableSpent, 40);
+  assert.deepEqual(bought.state.lastConsumable, {id: 'beacon:S1_GAIA:1', sku: 'sector-beacon', price: 40});
   const again = log.buyConsumable({transactionId: 'beacon:S1_GAIA:1', sku: 'sector-beacon'});
   assert.equal(again.duplicate, true);
   assert.equal(again.price, 0);
@@ -655,4 +657,29 @@ test('a consumable without funds fails with the missing amount', () => {
   assert.equal(result.missing, 22);
   assert.equal(log.getBalance(), 18);
   assert.equal(device.writes.length, writes);
+});
+
+// Revisión final F3c: las balizas no agotan el cupo de recibos de mejoras.
+test('hundreds of beacons never block workshop upgrades', () => {
+  const device = memory(), log = ledger(device), run = start(log);
+  for (let index = 0; index < 30; index++) log.claimDrop({runId: run.runId, dropId: `atlas:${index}`, enemyType: 'atlas'});
+  for (let index = 1; index <= 200; index++) {
+    assert.equal(log.buyConsumable({transactionId: `beacon:${index}`, sku: 'sector-beacon'}).ok, true, `beacon ${index}`);
+  }
+  assert.equal(log.purchase({transactionId: 'c9:hull-reinforcement', sku: 'hull-reinforcement'}).ok, true);
+  const reloaded = ledger(device).load();
+  assert.equal(reloaded.ok, true);
+  assert.equal(reloaded.state.consumableSpent, 8000);
+  assert.equal(reloaded.state.balance, 18000 - 8000 - 30);
+});
+
+test('a beacon bought at an older price still loads after the price changes', () => {
+  const record = {...createScrapRecord(), balance: 25, earned: 60, spent: 35,
+    consumableSpent: 35, lastConsumable: {id: 'beacon:salvage-run:1', sku: 'sector-beacon', price: 35}};
+  assert.notEqual(normalizeScrapRecord(record), null);
+  assert.equal(normalizeScrapRecord({...record, consumableSpent: 30}), null, 'the last receipt cannot exceed the consumable spending');
+  assert.equal(normalizeScrapRecord({...record, lastConsumable: null}), null, 'spending without a receipt is invalid');
+  assert.equal(normalizeScrapRecord({...record, lastConsumable: {...record.lastConsumable, sku: 'twin-preparation'}}), null);
+  const old = createScrapRecord(); delete old.consumableSpent; delete old.lastConsumable;
+  assert.deepEqual(normalizeScrapRecord(old), createScrapRecord(), 'saves from before the beacon load unchanged');
 });
