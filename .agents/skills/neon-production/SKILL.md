@@ -5,7 +5,7 @@ description: Coordinar producción e integración de NEON CRONIUM con especialis
 
 # Producción especializada de NEON CRONIUM
 
-Leer `AGENTS.md`, `docs/CODEX_STATUS.md`, `docs/CODEX_NEXT_ORDERS.md` y el último informe enlazado. Usar `docs/production-tasks.json` como seguimiento único. Consultar [equipo y contratos](../../../docs/agents/SPECIALIST_TEAM.md) para elegir los departamentos necesarios.
+Leer `AGENTS.md`, `CLAUDE.md` y el diseño vigente (`docs/superpowers/specs/`). Usar `docs/production-tasks.json` como seguimiento único. Consultar [equipo y contratos](../../../docs/agents/SPECIALIST_TEAM.md) para elegir los departamentos necesarios.
 
 ## Ejecutar un incremento completo
 

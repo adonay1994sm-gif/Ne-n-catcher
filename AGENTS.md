@@ -142,7 +142,7 @@ Historial conservado a continuación; las instrucciones incompatibles quedan sus
 
 Leer [docs/PRODUCT_VISION.md](docs/PRODUCT_VISION.md): mandato rector v1.0 del 17/10/2026. Prevalece sobre directrices creativas anteriores incompatibles. Objetivo: aventura arcade espacial canónica, **10 capítulos × 10 etapas**, con recorrido visible, combate, piezas y estaciones. Clásico y N-7 se conservan; N-7 no se convierte por numeración en la campaña nueva. Los informes anteriores son historial/evidencia, no órdenes para repetir tareas terminadas.
 
-Antes de editar: verificar árbol/HEAD/remoto, últimos `CODEX_STATUS`, `CODEX_NEXT_ORDERS`, `PRODUCTION_LATEST_REPORT` y `production-tasks.json`; preservar aportaciones ajenas. Registrar diagnóstico breve y construir un incremento jugable. P1 es salida Chronos → tránsito → frontera con pieza recuperable, parada, mejora visible y partida completa; no producir cien etapas antes de revisar esta experiencia.
+Antes de editar: verificar árbol/HEAD/remoto, el tablero del proyecto y `production-tasks.json` (los antiguos `CODEX_STATUS`, `CODEX_NEXT_ORDERS` y `PRODUCTION_LATEST_REPORT` se retiraron el 23/10/2026); preservar aportaciones ajenas. Registrar diagnóstico breve y construir un incremento jugable. P1 es salida Chronos → tránsito → frontera con pieza recuperable, parada, mejora visible y partida completa; no producir cien etapas antes de revisar esta experiencia.
 
 ## Límites y conservación
 
