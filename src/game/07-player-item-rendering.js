@@ -217,8 +217,9 @@
     }
     // Furia (plan F3c): hoja propia de 4 poses (anillo roto, carga,
     // Fulminante, derrota), centrada en el mismo núcleo. La pose 2 no se usa:
-    // su haz cae recto y el rayo del juego barre media pantalla.
-    if (boss.phase === 2 && spriteReady(SPRITES.atlasFury)) {
+    // su haz cae recto y el rayo del juego barre media pantalla. Con el núcleo
+    // abriéndose, expuesto o cerrándose se usa la animación normal, que lo muestra.
+    if (boss.phase === 2 && spriteReady(SPRITES.atlasFury) && !["opening", "exposed", "closing"].includes(boss.state)) {
       const pose = boss.disabled ? 3 : atlasBeam || boss.state === "charge" ? 1 : 0;
       const sheet = SPRITES.atlasFury, cell = sheet.naturalWidth / 4, size = (boss.visualSize || 350) * 1.25;
       ctx.drawImage(sheet, pose * cell, 0, cell, sheet.naturalHeight, boss.x - size / 2, boss.y - size / 2, size, size);

@@ -669,3 +669,68 @@ test('fury darkens the scene', () => {
   T.goHome();
   assert.equal(T.ev('atlasFuryScene'), false);
 });
+
+// Revisión final F3c (auditor-codigo): un golpe por ataque del CH-03.
+test('CH-03 hurts once per sweep and once per grid step', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(8);
+  T.ev("hullGrace=0;classicHullReserve=0;items=[];const c=Math.floor(player.x/(W/6));Object.assign(ch03Boss,{state:'attack',attack:'grid',stateTime:0,beam:null,grid:{columns:6,step:0,safe:(c+3)%6,active:true,time:0}})");
+  const before = T.hull();
+  T.adv(.45);
+  assert.equal(before - T.hull(), 16, 'one grid step hits once');
+  T.ev("hullGrace=0;items=[];Object.assign(ch03Boss,{state:'attack',attack:'sweep',stateTime:0,grid:null,attacks:ch03Boss.attacks+1,beam:{angle:Math.atan2(player.x-ch03Boss.x,player.y-ch03Boss.y),direction:1,active:true}})");
+  const mid = T.hull();
+  T.adv(.4);
+  assert.equal(mid - T.hull(), 14, 'one sweep hits once');
+});
+
+test('beating CH-03 in stage 5 makes C9 offer the beacon in stage 6', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  ch03Fight(T); giveScrap(T, 5);
+  T.ev('NeonCampaign.hitCh03Satellite(ch03Boss, 999)');
+  T.adv(2);
+  T.toStage(6); T.adv(4);
+  assert.equal(offerShown(w), true);
+});
+
+test('a beam that starts during the hit grace still burns the ship once the grace ends', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  T.ev("DEV.invulnerable=false;player.x=player.target=100;hullGrace=.3;classicHullReserve=0;items=items.filter(item=>!item.guardianProjectile)");
+  const start = T.hull();
+  T.ev("consumeAtlasEvent({type:'beam',side:-1,x0:0,x1:W*.45,seconds:1.2,damage:26})");
+  T.adv(.1);
+  assert.equal(T.hull(), start, 'no damage during the grace');
+  T.ev("items=items.filter(item=>!item.guardianProjectile)");
+  T.adv(.4);
+  assert.equal(T.hull(), start - 26);
+});
+
+test('leaving to the menu during CH-03 removes the satellite', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(9);
+  assert.equal(T.ev('Boolean(ch03Boss)'), true);
+  T.goHome();
+  assert.equal(T.ev('ch03Boss'), null);
+});
+
+test('Escape on the beacon panel continues without opening the pause menu', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  w.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+  assert.equal(offerShown(w), false);
+  assert.equal(T.st().state, 'playing');
+  assert.equal(w.document.getElementById('paused').classList.contains('show'), false);
+});
+
+test('in fury the open core is drawn with the core animation, not the closed fury pose', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T); enrage(T);
+  T.ev("Object.assign(atlasBoss,{state:'exposed',stateTime:0,vulnerability:true,coreExposure:1})");
+  drawnTexts.length = 0; T.draw();
+  assert.ok(!drawnTexts.includes('image:assets/atlas_fury_atlas_v1.webp'));
+  assert.ok(drawnTexts.some(text => text.startsWith('image:') && text.includes('atlas') && !text.includes('fury') && !text.includes('escort')));
+  T.ev("Object.assign(atlasBoss,{state:'closed',stateTime:0,vulnerability:false,coreExposure:0})");
+  drawnTexts.length = 0; T.draw();
+  assert.ok(drawnTexts.includes('image:assets/atlas_fury_atlas_v1.webp'));
+});

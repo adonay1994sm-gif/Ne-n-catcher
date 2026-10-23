@@ -950,8 +950,11 @@
         showStoryTransmission("N-7","CH-03 fuera de combate. El anillo se abre: C9 nos espera.",3.4);
       }
     });
+    // Un golpe por barrido y por paso de rejilla. Durante la gracia no cuenta,
+    // así el ataque aún puede alcanzar la nave cuando acabe.
     const damage=NeonCampaign.ch03HitsShip(ch03Boss,{x:player.x,y:player.y,r:30});
-    if(damage)damageShip(damage,player.x,player.y);
+    const hitKey=damage?`${ch03Boss.attacks}:${ch03Boss.attack}:${ch03Boss.grid?.step??0}`:null;
+    if(damage&&hitKey!==ch03Boss.lastHitKey&&hullGrace<=0){ch03Boss.lastHitKey=hitKey;damageShip(damage,player.x,player.y);}
     if(ch03Boss.resolved){ch03Boss=null;ui.atlasEncounter?.classList.add("hidden");return;}
     const status=ch03Boss.state==="warning"?"CARGANDO · prepárate para esquivar"
       :ch03Boss.state==="defeated"?"SATÉLITE ABATIDO":"Dispara al núcleo y esquiva sus láseres.";
@@ -1412,7 +1415,8 @@
     if(!atlasBeam)return;
     atlasBeam.remaining-=dt;
     if(atlasBeam.remaining<=0){atlasBeam=null;return;}
-    if(!atlasBeam.hit&&player.x+SHIP_COLLISION_HALF_WIDTH>=atlasBeam.x0&&player.x-SHIP_COLLISION_HALF_WIDTH<=atlasBeam.x1) {
+    // Durante la gracia no cuenta: el rayo aún puede alcanzar la nave cuando acabe.
+    if(!atlasBeam.hit&&hullGrace<=0&&player.x+SHIP_COLLISION_HALF_WIDTH>=atlasBeam.x0&&player.x-SHIP_COLLISION_HALF_WIDTH<=atlasBeam.x1) {
       atlasBeam.hit=true;damageShip(atlasBeam.damage,player.x,player.y);
     }
   }
@@ -2179,7 +2183,7 @@
 
   function goHome() {
     if (typeof resetGameInput === "function") resetGameInput();
-    classicSideVoyage=null;
+    classicSideVoyage=null;ch03Boss=null;
     classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;
     syncClassicChapterPresentation();
     if(classicWeapons)classicWeapons.projectiles.length=0;
