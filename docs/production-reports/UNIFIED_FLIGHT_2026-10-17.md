@@ -1,4 +1,4 @@
-# DIAGNÓSTICO — NEON CATCHER
+# DIAGNÓSTICO — NEON CRONIUM
 
 La experiencia estaba dividida entre tres entradas: clásico, Journey y N-7. La demo del viaje fundía pinturas; el clásico retenía movimiento horizontal y tres disparos que se agotaban. El usuario pidió una sola experiencia, salida visible hacia espacio profundo, causa narrativa del desastre, más movilidad y mejoras integradas físicamente.
 
@@ -43,7 +43,7 @@ Decisiones reversibles de esta entrega:
 | C9 | Recuperación e instalación explícitas, gratuitas. No se introduce una tienda/economía nueva en este incremento. |
 | Atlas | Conserva su enlace de pulso ilimitado durante el encuentro. La salva se fija a la posición XY anunciada, sin retarget después de avisar. |
 | Viaje | Primera misión: mínimo 90 s jugados, cuota y llegada conjuntas. No se aplica este reloj a las cien rutas históricas. |
-| Persistencia | Clave nueva neonCatcher.flightEquipment.v1, separada de campañas y hangar; backup idempotente de datos corruptos. Si falla guardar la pieza, no desaparece del campo. |
+| Persistencia | Clave nueva neonCronium.flightEquipment.v1, separada de campañas y hangar; backup idempotente de datos corruptos. Si falla guardar la pieza, no desaparece del campo. |
 
 No se guarda un fotograma exacto a mitad de combate. Se conserva la progresión clásica por misiones y el equipamiento ya persistido. N-7/Journey no se importan por equivalencia numérica.
 
@@ -137,13 +137,13 @@ Prioridad de rendimiento pendiente: perfil de salida en dispositivo y de dibujo/
 - Corrección de arranque/seguimiento:57b468dee4740a7aa84a845ac8b2c84b4a98d0c0.
 - QA y paquete limpio:375d0e9e013f5cfdcda5f039c3264d38e2c3f5dc. Publicados mediante push normal a la rama autorizada, sin force push.
 - No se modificaron main, PR3, producción Netlify ni firmado/publicación iOS. USE_ENGINE_V1=false y el RAF legacy sigue siendo el único propietario.
-- ZIP: [neon-catcher-vuelo-unificado-375d0e9.zip](evidence/unified-flight/package-375d0e9/neon-catcher-vuelo-unificado-375d0e9.zip),6944223B,112 entradas; CRC y contenido byte a byte comprobados.
+- ZIP: [neon-cronium-vuelo-unificado-375d0e9.zip](evidence/unified-flight/package-375d0e9/neon-cronium-vuelo-unificado-375d0e9.zip),6944223B,112 entradas; CRC y contenido byte a byte comprobados.
 - SHA-256 ZIP:86f03c77af404696df9d897e126c8400944f8b7fb937f5abb44e6e663d0debed.
 - Revisión:76f62007bd212e9a373f3b753740a4232a4aa2b376aff95f1df2468e02a8005d.
 - Hash preview juego:6fcee2ee6478d97e9d54661847cf35c6ae28d633291fc91f08dd6e1c9da3f7fd, idéntico al de Chromium natural.
 - Fuente del sitio de distribución:1b9640b0a693c323d7d18fd31ec1ee5e0bbcf53b; repositorio Sites separado. Se cotejaron sus112 archivos con preview-dist antes de subirlo.
 
-**Prueba privada publicada:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Sites confirmó succeeded el17/10/2026 a13:00:12 UTC. Se preservó la audiencia del propietario; puede requerir acceso a ChatGPT. [Respuesta nativa sin credenciales](evidence/unified-flight/package-375d0e9/site-deployment.json). No se afirma haber jugado remotamente desde Safari: la partida natural se ejecutó localmente con el paquete idéntico publicado.
+**Prueba privada publicada:** (web privada antigua, retirada) . Sites confirmó succeeded el17/10/2026 a13:00:12 UTC. Se preservó la audiencia del propietario; puede requerir acceso a ChatGPT. [Respuesta nativa sin credenciales](evidence/unified-flight/package-375d0e9/site-deployment.json). No se afirma haber jugado remotamente desde Safari: la partida natural se ejecutó localmente con el paquete idéntico publicado.
 
 No se ejecutó ni se verificó un nuevo despliegue de Netlify en esta sesión. La antigua deploy-preview3 sigue correspondiendo a la PR3 y no demuestra esta revisión. Alternativa Netlify Drop: extraer el ZIP y cargar la carpeta cuya raíz contiene index.html, build-info.json y juego/, sin añadir un directorio envolvente.
 
@@ -198,12 +198,12 @@ Se corrigió sw.js para obtener el objeto Cache antes de esperar la red y reutil
 
 El paquete vigente es **2cea7af9dcec78d2e71305526bb33cc5f31752c6**, construido limpio después del endurecimiento de caché. Sustituye en el mismo sitio privado al primer paquete 375d0e9; este último se conserva como evidencia histórica de la partida natural.
 
-- [ZIP final](evidence/unified-flight/package-2cea7af/neon-catcher-vuelo-unificado-2cea7af.zip):6944306B,112entradas,CRC y comparación byte a byte aprobados.
+- [ZIP final](evidence/unified-flight/package-2cea7af/neon-cronium-vuelo-unificado-2cea7af.zip):6944306B,112entradas,CRC y comparación byte a byte aprobados.
 - SHA-256 ZIP:752e4245c56ebbc21d7a804794998bbdb318cb565493209126b87da897d37762.
 - Revisión:1504618bcb9fe7d5a908e1f794098bdef8fdefc0078e2ca19862dc3ae8900068.
 - 83 archivos de jugabilidad, arte y presentación comparados con el paquete de la partida natural: idénticos, incluido juegoSHA6fcee2ee6478d97e9d54661847cf35c6ae28d633291fc91f08dd6e1c9da3f7fd. El worker también coincide con la prueba CacheStorage real al sustituir únicamente su revisión de 64 caracteres. [Metadatos](evidence/unified-flight/package-2cea7af/package.json).
 - Preview final23/23, código0. Certificación03: once fases aprobadas, incluido contenido150/150 y regresión33/33. No se repite una partida idéntica por cambiar solo caché/procedencia; los hashes y los casos específicos acotan esa validación.
-- Sitio: **https://neon-catcher-pruebas.chictide18.chatgpt.site**. Publicación nativa **succeeded**, versión 5, audiencia privada del propietario conservada. Fuente de distribución c393a6be60c28ee026f6aef119e20693bbedf822. [Respuesta nativa](evidence/unified-flight/package-2cea7af/site-deployment.json). No se jugó remotamente en Safari ni se desplegó Netlify.
+- Sitio: **(web privada antigua, retirada)**. Publicación nativa **succeeded**, versión 5, audiencia privada del propietario conservada. Fuente de distribución c393a6be60c28ee026f6aef119e20693bbedf822. [Respuesta nativa](evidence/unified-flight/package-2cea7af/site-deployment.json). No se jugó remotamente en Safari ni se desplegó Netlify.
 - Commit de endurecimiento45f890cdc21ab5f5b0ee6e39341e2f365d4ebd5d y cierre QA2cea7af9dcec78d2e71305526bb33cc5f31752c6, ambos publicados.
 
 La prueba de actualización queda técnicamente aprobada en Chromium con su alcance declarado: actualización normal3/3, manipulación controlada de CacheStorage4/4 y modelos6/6. Se retira el bloqueo provisional de diagnóstico, manteniendo fallos, timeouts y scripts exactos. No se afirma que una actualización normal de Chromium reprodujera el intercalado provocado. Si un worker antiguo ya ejecuta código previo, el parche no cambia retroactivamente ese proceso; la nueva revisión consulta únicamente su propia caché.

@@ -24,7 +24,7 @@ desde la documentación.
 | `TEST_REPORT_PRE_RELEASE.md`, `TEST_REPORT_V7.md` | No | — | `docs/historico/` |
 | `V6_6_TECHNICAL_REPORT.md` | No | — | `docs/historico/` |
 | `DELIVERY_MANIFEST.txt` | No | — | `docs/historico/` (V6.5) |
-| `Neon_Catcher_V6_8_0_Netlify_Directo.zip` | No | — | `docs/historico/` (entrega antigua) |
+| `Neon_Cronium_V6_8_0_Netlify_Directo.zip` | No | — | `docs/historico/` (entrega antigua) |
 | `ART_DIRECTION_NEON_CRONIUM.md` | **Sí**: `tests/product-brand.test.mjs` | README | **No se mueve** |
 | `ASSET_PRODUCTION_150.json` | **Sí**: `tests/run-tests.mjs`, `tests/campaign-space-design.test.mjs`, `tests/product-brand.test.mjs`, `scripts/export-review-source.py` | — | **No se mueve** |
 | `ASSET_PRODUCTION_MAP.md` | **Sí**: `tests/run-tests.mjs` | — | **No se mueve** |

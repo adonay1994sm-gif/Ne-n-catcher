@@ -1,4 +1,4 @@
-# REPOSITORY AUDIT — NEON CATCHER 7.2.0
+# REPOSITORY AUDIT — NEON CRONIUM 7.2.0
 
 Fecha de corte: 2026-08-28
 
@@ -17,7 +17,7 @@ Fecha de corte: 2026-08-28
 - Servicios ES separados para estado, almacenamiento, daño, jugador, partículas y analítica bajo `src/core/`.
 - Build web reproducible en `www/` y copia local para Capacitor en `ios/App/App/public/`.
 - PWA con manifest y service worker; Netlify publica exclusivamente `www`.
-- Capacitor 8.5, bundle `com.adonay.neoncatcher`, orientación vertical y AdMob comunitario fijado a versión exacta.
+- Capacitor 8.5, bundle `com.neoncronium`, orientación vertical y AdMob comunitario fijado a versión exacta.
 
 ## Hallazgos y correcciones
 

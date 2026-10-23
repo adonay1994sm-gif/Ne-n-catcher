@@ -6,7 +6,7 @@ Objetivo: descubrir si una persona ajena al desarrollo entiende el inicio, contr
 
 ## Preparación y acceso sin tocar los guardados del propietario
 
-Web privada de pruebas: **https://neon-catcher-pruebas.chictide18.chatgpt.site**. Es el sitio existente, no producción Netlify. La dirección conserva su nombre histórico aunque la marca del juego sea NEON CRONIUM. El acceso puede requerir una cuenta autorizada de ChatGPT. La contratación/reclutamiento, disponibilidad de dispositivos y permisos de acceso **no se han realizado ni concedido**. No compartir la sesión, contraseñas o enlaces de acceso privados del propietario. Si una persona no tiene acceso autorizado, registrar `ACCESS_BLOCKED` y resolver el acceso mediante el propietario o un paquete local de pruebas; no hacer público el sitio para sortearlo.
+Web privada de pruebas: **(web privada antigua, retirada)**. Es el sitio existente, no producción Netlify. La dirección conserva su nombre histórico aunque la marca del juego sea NEON CRONIUM. El acceso puede requerir una cuenta autorizada de ChatGPT. La contratación/reclutamiento, disponibilidad de dispositivos y permisos de acceso **no se han realizado ni concedido**. No compartir la sesión, contraseñas o enlaces de acceso privados del propietario. Si una persona no tiene acceso autorizado, registrar `ACCESS_BLOCKED` y resolver el acceso mediante el propietario o un paquete local de pruebas; no hacer público el sitio para sortearlo.
 
 Antes de cada participante:
 

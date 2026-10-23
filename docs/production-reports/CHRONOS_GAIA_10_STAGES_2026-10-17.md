@@ -28,7 +28,7 @@ Motor: `USE_ENGINE_V1 = false`; ciclo legacy conservado y ningún segundo propie
 
 Assets nuevos: **0**; inventario existente: **82 recursos, 7.956.026 bytes**.
 
-Publicación de pruebas: **versión 10 publicada, estado `succeeded`**, [web privada de pruebas](https://neon-catcher-pruebas.chictide18.chatgpt.site).
+Publicación de pruebas: **versión 10 publicada, estado `succeeded`**, [web privada de pruebas]((web privada antigua, retirada)).
 
 Producción Netlify, main y PR #3: fuera del alcance de esta entrega.
 
@@ -71,7 +71,7 @@ Las imágenes enlazadas son capturas auténticas del ejecutable durante una mism
 
 ## 4. Guardados, interrupciones y compatibilidad
 
-La ruta usa su clave propia `neonCatcher.chronosVoyage.v2`, bajo el prefijo de aislamiento cuando se ejecuta la preview. No interpreta el nivel histórico de N-7 ni de Journey como una etapa equivalente. El clásico, N-7 y la demo Journey permanecen recuperables y diferenciados.
+La ruta usa su clave propia `neonCronium.chronosVoyage.v2`, bajo el prefijo de aislamiento cuando se ejecuta la preview. No interpreta el nivel histórico de N-7 ni de Journey como una etapa equivalente. El clásico, N-7 y la demo Journey permanecen recuperables y diferenciados.
 
 El checkpoint contiene versión, ruta, etapa, cuota acumulada y eventos conocidos; su registro incluye casco, puntuación y combo de entrada. Reabrir recupera la **entrada de etapa**, no la posición exacta de un combate. Un dato nuevo inválido se respalda antes de sustituirlo. El taller conserva su estado de espera y la configuración de equipo se guarda mediante el sistema existente.
 
@@ -158,9 +158,9 @@ No se añadieron imágenes ni peso de texturas. Las 82 exportaciones registradas
 
 Se registran tiempos y frames en el JSON natural. No se ejecutó benchmark físico de FPS/memoria, y no se inventa un tiempo de carga agregado. No se atribuyen horas de producción no medidas.
 
-**Paquete final:** compilación limpia `bdf13bdfc88f0765b21551d36c0cf44a779ce42f`, revisión `ab82ad8fe2d3b2ab79c05ee1fb49ea935e8aad0555feb3655fed7678eca65d97`, `dirty:false`. [ZIP de prueba](evidence/chronos-voyage/final-package/neon-catcher-chronos-gaia-ten-stages.zip): **8.173.585 bytes, 118 entradas**, SHA-256 `483df0ccfde0975504f7b54d9e0b0ca7a7acd23ecc61e44c13beb099278a6d94`. [Procedencia del paquete](evidence/chronos-voyage/final-package/package.json). Para probar sin el sitio privado: descomprimir, servir la carpeta por HTTP y abrir `index.html`; la entrada `juego/` usa recursos relativos. Es un paquete preparado también para Netlify Drop de pruebas; no se ejecutó ningún despliegue Netlify.
+**Paquete final:** compilación limpia `bdf13bdfc88f0765b21551d36c0cf44a779ce42f`, revisión `ab82ad8fe2d3b2ab79c05ee1fb49ea935e8aad0555feb3655fed7678eca65d97`, `dirty:false`. [ZIP de prueba](evidence/chronos-voyage/final-package/neon-cronium-chronos-gaia-ten-stages.zip): **8.173.585 bytes, 118 entradas**, SHA-256 `483df0ccfde0975504f7b54d9e0b0ca7a7acd23ecc61e44c13beb099278a6d94`. [Procedencia del paquete](evidence/chronos-voyage/final-package/package.json). Para probar sin el sitio privado: descomprimir, servir la carpeta por HTTP y abrir `index.html`; la entrada `juego/` usa recursos relativos. Es un paquete preparado también para Netlify Drop de pruebas; no se ejecutó ningún despliegue Netlify.
 
-**Web privada de pruebas, versión 10:** https://neon-catcher-pruebas.chictide18.chatgpt.site. Fuente del sitio `767fab3d42513fa5fa2791c0f95ba1599e2a6b06`, los 118 archivos de `dist` coinciden por hash con el paquete probado. Despliegue nativo `succeeded`; lectura posterior confirma versión 10, propietario y audiencia privada de un usuario, cero visitantes externos. [Metadatos sanitizados](evidence/chronos-voyage/final-package/site-deployment.json). La publicación y la audiencia se comprobaron mediante el conector; no se atribuye una partida remota autenticada a la prueba local de Chromium.
+**Web privada de pruebas, versión 10:** (web privada antigua, retirada) Fuente del sitio `767fab3d42513fa5fa2791c0f95ba1599e2a6b06`, los 118 archivos de `dist` coinciden por hash con el paquete probado. Despliegue nativo `succeeded`; lectura posterior confirma versión 10, propietario y audiencia privada de un usuario, cero visitantes externos. [Metadatos sanitizados](evidence/chronos-voyage/final-package/site-deployment.json). La publicación y la audiencia se comprobaron mediante el conector; no se atribuye una partida remota autenticada a la prueba local de Chromium.
 
 GitHub: [commit funcional 9946e29](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/9946e29e009fe7dc5a89109bada3b8c88a490c8e) y [commit QA bdf13bd](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/bdf13bdfc88f0765b21551d36c0cf44a779ce42f), ambos publicados en la rama autorizada. [Actions funcional 39068005904](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39068005904) y [Actions del paquete final 39068219262](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39068219262): ambos **completed/success**. El segundo terminó sus doce pasos, incluido empaquetado; [evidencia remota](evidence/chronos-voyage/final-package/github-actions.json). El artefacto remoto de ese run consta en el registro y no fue descargado; el ZIP local tiene su propio digest y no se afirma que sea el ZIP remoto. Los commits documentales posteriores no cambian el paquete publicado.
 

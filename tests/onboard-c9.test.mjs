@@ -12,8 +12,8 @@ const [html, core, content, game] = await Promise.all(
   ['index.html', 'core-runtime.js', 'content-runtime.js', 'game.js']
     .map(path => readFile(new URL(path, root), 'utf8'))
 );
-const SALVAGE_KEY = 'neonCatcher.classicSalvage.v1';
-const VOYAGE_KEY = 'neonCatcher.chronosVoyage.v2';
+const SALVAGE_KEY = 'neonCronium.classicSalvage.v1';
+const VOYAGE_KEY = 'neonCronium.chronosVoyage.v2';
 const INTRO_PATH = 'assets/chapter1_intro_atlas_v1.webp';
 const plain = value => JSON.parse(JSON.stringify(value));
 const fundedRecord = balance => {
@@ -76,7 +76,7 @@ function harness(t, {campaign = '', salvage = fundedRecord(100), voyage = null, 
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
   window.localStorage.setItem(SALVAGE_KEY, JSON.stringify(salvage));
-  if(equipment)window.localStorage.setItem('neonCatcher.flightEquipment.v1',JSON.stringify(equipment));
+  if(equipment)window.localStorage.setItem('neonCronium.flightEquipment.v1',JSON.stringify(equipment));
   if (voyage) window.localStorage.setItem(VOYAGE_KEY, JSON.stringify(voyage));
   const setItem = window.Storage.prototype.setItem;
   let blockSalvage = false;
@@ -380,7 +380,7 @@ test('Forja connects paid weapon ranks to real loadouts and preserves them after
   h.node('c9BuyCoolant').click();sku('coolant-feed-ii').click();
   const q=h.snapshot();assert.equal(q.reserveCapacity,65);assert.equal(q.weapons.rechargeSeconds,1);
   const raw=h.stored(SALVAGE_KEY);sku('scatter-focus').click();assert.equal(h.stored(SALVAGE_KEY),raw);
-  const resumed=harness(t,{salvage:JSON.parse(raw),equipment:JSON.parse(h.stored('neonCatcher.flightEquipment.v1'))});
+  const resumed=harness(t,{salvage:JSON.parse(raw),equipment:JSON.parse(h.stored('neonCronium.flightEquipment.v1'))});
   resumed.api.prepare();assert.equal(resumed.snapshot().weapons.selected,'scatter');
   assert.equal(resumed.snapshot().weapons.weaponRanks.scatter,2);
   assert.equal(resumed.snapshot().reserveCapacity,65);assert.equal(resumed.snapshot().weapons.rechargeSeconds,1);

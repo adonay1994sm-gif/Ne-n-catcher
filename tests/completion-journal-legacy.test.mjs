@@ -9,7 +9,7 @@ const [html, core, content, game] = await Promise.all(
   ['index.html', 'core-runtime.js', 'content-runtime.js', 'game.js']
     .map(path => readFile(new URL(path, repository), 'utf8')));
 const K = {stars: 'neon-stars-v2', unlocked: 'neon-unlocked-v2', best: 'neon-best-v2',
-  levelBest: 'neon-level-best-v2', voyage: 'neonCatcher.chronosVoyage.v2',
+  levelBest: 'neon-level-best-v2', voyage: 'neonCronium.chronosVoyage.v2',
   journal: 'neon-unlocked-v2:completion-journal:v1'};
 const plain = value => JSON.parse(JSON.stringify(value));
 function initialSave() {
@@ -111,7 +111,7 @@ for (const target of [K.stars, K.levelBest, K.best, K.voyage, K.unlocked, 'recei
     const interrupted = first.dump();
     assert.equal(JSON.parse(interrupted.get(K.journal)).phase, 'pending');
     assert.equal(JSON.parse(interrupted.get(K.journal)).equipment, undefined, 'The S1-V1 journal carries no equipment reward');
-    assert.equal(interrupted.has('neonCatcher.flightEquipment.v1'), false);
+    assert.equal(interrupted.has('neonCronium.flightEquipment.v1'), false);
     const restarted = harness(t, {saved: interrupted}), saved = restarted.dump();
     // Sin niveles clásicos, el juego arranca siempre en el nivel 0 (la campaña).
     assert.equal(restarted.snapshot().blocked, false); assert.equal(restarted.snapshot().currentLevel, 0);

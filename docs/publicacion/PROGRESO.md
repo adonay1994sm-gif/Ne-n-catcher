@@ -92,7 +92,7 @@ Tras cada commit se ejecuta `npm run build`, `npm test` y `npm run test:static`.
 - Fase 2b: subir la caché obliga a actualizar el nombre esperado en
   `tests/run-static-tests.mjs`, `tests/run-tests.mjs`,
   `tests/run-v7-web-tests.mjs` y `tests/product-brand.test.mjs`.
-- `git push` devuelve 403 (la app de GitHub de Claude no tiene permiso de
+- `git push` devuelve 403 (la app de GitHub conectada no tiene permiso de
   escritura por git en este repositorio). Los commits están en local.
 - `npm run build:preview` y 6 pruebas de `npm run test:preview` fallan desde el
   principio porque la preview solo se genera en la rama autorizada. No se toca.

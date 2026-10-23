@@ -3,7 +3,7 @@
 > 22/10/2026. **Aprobado por el propietario** (D1A, D2A y «listo»). Diseño hecho con el propietario en dos rondas de opciones,
 > en la página «Decisiones de campaña NEON CRONIUM» (artifact
 > `8RoC21JKJMRxawzqbRAyp8`, colección `elecciones`). Lo marcado
-> **(decisión de Claude)** no lo eligió el propietario y puede cambiarse.
+> **(decisión técnica)** no lo eligió el propietario y puede cambiarse.
 > Este documento **sustituye** la estructura «10 sectores × 5 viajes» de
 > `docs/design/CAMPANA_50_VIAJES.md` (20/10/2026). La historia de
 > `docs/design/BIBLIA_HISTORIA.md` sigue siendo la base y se amplía.
@@ -94,16 +94,16 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
     todos los sectores, se aprovecha de esos conflictos y gana fuerza.
   - Hay que ampliar la biblia: los 5 sistemas actuales (Gaia, Vulkar, Cryon,
     Aether y Titan Omega) más 5 nuevos.
-  - **(decisión de Claude)** Chronos y Gaia siguen siendo el sector 1, para
+  - **(decisión técnica)** Chronos y Gaia siguen siendo el sector 1, para
     no perder el inicio ya hecho.
 - **Contenido ya hecho** (S1-V1 a S1-V5, S2-V1 a S2-V5, Atlas, el C-17, Titan
   Vulkar): se recoloca en la nueva estructura, no se pierde.
 - **Repetir:** los sectores completados se pueden volver a jugar desde el
   mapa para conseguir piezas o probar la otra ruta, como en Sky Force
-  **(decisión de Claude)**. Una pieza necesaria para avanzar siempre cae
+  **(decisión técnica)**. Una pieza necesaria para avanzar siempre cae
   segura del jefe de su sector: nunca bloquea.
-- **Estrellas:** se mantienen de 0 a 3, ahora por sector **(decisión de
-  Claude)**.
+- **Estrellas:** se mantienen de 0 a 3, ahora por sector **(decisión
+  técnica)**.
 - **Migración:** no hace falta; no hay jugadores actuales (propietario,
   23/10/2026).
 
@@ -118,7 +118,7 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
   - si mueres después, el siguiente intento empieza en el tramo 6;
   - es una decisión: gastar en seguridad o guardar para mejoras.
 - Las cifras del precio quedan para equilibrar con el bot.
-- **(decisión de Claude)**
+- **(decisión técnica)**
   - El anuncio de revivir se puede usar **una vez por intento** de sector.
   - La baliza se paga una vez y vale para **todos los intentos** hasta
     completar el sector.
@@ -146,7 +146,7 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
 - **Reparar el casco (D2A):** solo en las paradas de C9 tras el subjefe y
   tras el jefe. Entre medias, solo con los objetos de reparación en vuelo.
 - El menú principal queda para empezar o continuar la partida
-  **(decisión de Claude)**.
+  **(decisión técnica)**.
 
 ### 6.5 Taller de reparación (4B)
 
@@ -178,9 +178,9 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
 - **Evoluciones:** un arma a N4 más un nodo concreto del árbol da una versión
   mejorada. Ejemplo: láser N4 + «Disipadores» = enfriamiento a la mitad y
   ráfaga más larga.
-- **(decisión de Claude)** Se empieza con 3–4 armas bien hechas sobre las 5
+- **(decisión técnica)** Se empieza con 3–4 armas bien hechas sobre las 5
   que ya existen: Pulso, Gemelo, Lanza, Abanico y Aguja.
-- **(decisión de Claude)**
+- **(decisión técnica)**
   - Los niveles N1–N4 se **compran en el taller** con chatarra y piezas, y
     son permanentes.
   - Se lleva **un arma principal** a la vez, más los misiles, como hoy.
@@ -219,7 +219,7 @@ Ejemplo de referencia, Vulkar:
 - **Turnos de ataque** (como las fichas de Doom 2016): solo unos pocos atacan
   a la vez y el resto se recoloca, flanquea o protege. La pantalla está llena
   pero es justa.
-- **(decisión de Claude)** Los turnos de ataque sustituyen la escalada actual
+- **(decisión técnica)** Los turnos de ataque sustituyen la escalada actual
   (J01, intensidad máx. 2). Se mantiene la idea del propietario: un enemigo
   que sobrevive mucho tiempo gana prioridad para atacar, siempre dentro del
   tope de turnos.
@@ -341,7 +341,7 @@ en la copia de prueba y pasa `/competencia` antes de la siguiente.
 
 - Cifras de munición, recarga, daño, vida, precios y la baliza: se fijan con
   el bot y se presentan al propietario.
-- **Meta del bot (decisión de Claude):**
+- **Meta del bot (decisión técnica):**
   - un bot de habilidad media con la nave de serie completa el sector 1 en
     un 30–40 % de los intentos;
   - con las mejoras esperadas a esa altura, en un 60–70 %;

@@ -48,20 +48,20 @@ function harness(t, campaign = '', {saved, savedSettings, storageEntries = [], f
   window.localStorage.setItem('neon-stars-v2', '{}');
   // Instrumented fixture starts at the already-reached final route checkpoint.
   // It still advances its remaining 36 seconds and collects the missing quota.
-  window.localStorage.setItem('neonCatcher.chronosVoyage.v2', JSON.stringify({version: 2,
+  window.localStorage.setItem('neonCronium.chronosVoyage.v2', JSON.stringify({version: 2,
     checkpoint: createChronosVoyageCheckpoint(10), unlockedStage: 10, completed: false,
     entry: {hull: 100, score: 0, maxCombo: 1, collected: 32}}));
   window.localStorage.setItem('neon-n7-unlocked-v1', '37');
   window.localStorage.setItem('neon-n7-best-v1', '2037');
   for(const [key,value] of storageEntries)window.localStorage.setItem(key,value);
-  if (saved !== undefined) window.localStorage.setItem('neonCatcher.flightEquipment.v1', saved);
+  if (saved !== undefined) window.localStorage.setItem('neonCronium.flightEquipment.v1', saved);
   if (savedSettings !== undefined) window.localStorage.setItem('neon-settings-v5', savedSettings);
   const storageWrite = window.Storage.prototype.setItem;
   let equipmentWriteBlocked = failEquipmentWrite, salvageWriteBlocked = false;
   window.Storage.prototype.setItem = function(key, value) {
-    if (equipmentWriteBlocked && key === 'neonCatcher.flightEquipment.v1') throw new Error('Fixture: equipment save interrupted');
-    if (salvageWriteBlocked && key === 'neonCatcher.classicSalvage.v1') throw new Error('Fixture: missile save interrupted');
-    if (failBackupWrite && key === 'neonCatcher.flightEquipment.v1:invalid-backups') throw new Error('Fixture: backup refused');
+    if (equipmentWriteBlocked && key === 'neonCronium.flightEquipment.v1') throw new Error('Fixture: equipment save interrupted');
+    if (salvageWriteBlocked && key === 'neonCronium.classicSalvage.v1') throw new Error('Fixture: missile save interrupted');
+    if (failBackupWrite && key === 'neonCronium.flightEquipment.v1:invalid-backups') throw new Error('Fixture: backup refused');
     return storageWrite.call(this, key, value);
   };
   window.eval(core); window.eval(content);
@@ -223,9 +223,9 @@ test('chapter one completes with the recovered CRONIUM and the real route arriva
   assert.equal(q.state,'complete');assert.equal(sawAtlas,false,'Atlas only warns from afar in S1-V1');
   assert.equal(q.flight.canFinish,true);assert.equal(q.flight.elapsed,360);
   assert.equal(q.unlocked,2);assert.ok(h.stars()['1']>=1);
-  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCatcher.chronosVoyage.v2')).completed,true);
+  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCronium.chronosVoyage.v2')).completed,true);
   assert.deepEqual(q.equipment.unlocked,['pulse'],'Gemelo is authorized in S1-V5, not here');
-  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),null);
+  assert.equal(h.window.localStorage.getItem('neonCronium.flightEquipment.v1'),null);
   assert.equal(h.window.document.getElementById('completeTitle').textContent,'Has escapado de Chronos');
   const message=h.window.document.getElementById('unlockMessage').textContent;
   assert.doesNotMatch(message,/Gemelo|paso libre|Vulkar/,'The Iria epilogue and the cannon belong to S1-V5');
@@ -254,13 +254,13 @@ test('S1-V5 gates Atlas behind both recovered CRONIUM and the real route arrival
   h.collectGoal();q=h.snapshot();
   assert.ok(q.boss);assert.equal(q.flight.canFinish,true);
   assert.equal(q.boss.state,'entry');assert.equal(q.boss.hp,96);assert.equal(q.boss.hp,q.boss.maxHp);
-  assert.equal(q.unlocked,1);assert.equal(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')===null||
-    JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')).completed===false,true);
+  assert.equal(q.unlocked,1);assert.equal(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1')===null||
+    JSON.parse(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1')).completed===false,true);
   const age=q.boss.age;
   h.api.completeLevel();h.api.completeLevel();q=h.snapshot();
   assert.equal(q.state,'playing');assert.equal(q.boss.age,age);
   // Calling completion twice mid-fight saves no progress and grants no weapon.
-  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')||'null')?.completed===true,false);
+  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1')||'null')?.completed===true,false);
   assert.deepEqual(q.equipment.unlocked,['pulse']);
   assert.equal(h.pending.size,1,'The existing legacy RAF remains the only owner');
 });
@@ -308,7 +308,7 @@ test('the final quota capture and route arrival keep the actual collision loop s
 
 test('Atlas deactivation completes before a single persisted victory and preserves N-7 saves', t => {
   const h = harness(t); h.api.prepareAtlasVoyage(); h.collectGoal();
-  const voyageDone=()=>JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')||'null')?.completed===true;
+  const voyageDone=()=>JSON.parse(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1')||'null')?.completed===true;
   const terminal = h.until(q => q.boss?.disabled, 60 * 240, true);
   assert.equal(terminal.state, 'playing', 'Shutdown animation must finish before victory');
   assert.equal(terminal.boss.resolved,false);assert.equal(voyageDone(),false);
@@ -317,20 +317,20 @@ test('Atlas deactivation completes before a single persisted victory and preserv
   assert.equal(h.snapshot().state,'playing','A direct call cannot bypass the real shutdown');
   const finished = h.until(q => q.state === 'complete');
   assert.equal(voyageDone(),true);
-  assert.ok(JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')).stars>=1);
+  assert.ok(JSON.parse(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1')).stars>=1);
   assert.ok(finished.equipment.unlocked.includes('twin'), 'Atlas grants the actual Gemelo reward');
   assert.equal(finished.equipment.unlocked.includes('lance'), false, 'Atlas does not grant every future weapon');
   assert.equal(finished.unlocked,1,'S1-V5 does not touch the S1-V1 campaign keys');
-  const equipmentSave = h.window.localStorage.getItem('neonCatcher.flightEquipment.v1');
-  const voyageSave = h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1');
+  const equipmentSave = h.window.localStorage.getItem('neonCronium.flightEquipment.v1');
+  const voyageSave = h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1');
   const score = finished.score;
   const games = h.window.localStorage.getItem('neon-games-v2');
   h.api.completeLevel(); h.api.completeLevel();
   for (let frame = 0; frame < 120; frame++) h.api.update(1 / 60);
   assert.equal(h.snapshot().score, score);
   assert.equal(h.window.localStorage.getItem('neon-games-v2'), games);
-  assert.equal(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1'), voyageSave);
-  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'), equipmentSave,
+  assert.equal(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1'), voyageSave);
+  assert.equal(h.window.localStorage.getItem('neonCronium.flightEquipment.v1'), equipmentSave,
     'Repeated completion cannot duplicate or reselect the weapon reward');
   assert.equal(h.window.localStorage.getItem('neon-n7-unlocked-v1'), '37');
   assert.equal(h.window.localStorage.getItem('neon-n7-best-v1'), '2037');
@@ -339,7 +339,7 @@ test('Atlas deactivation completes before a single persisted victory and preserv
 
 test('death, a rewarded continuation and retry cannot bypass or prematurely save Atlas', t => {
   const h = harness(t); h.api.prepareAtlasVoyage(); h.collectGoal();
-  const voyageDone=()=>JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')||'null')?.completed===true;
+  const voyageDone=()=>JSON.parse(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1')||'null')?.completed===true;
   h.until(q => q.boss.state === 'exposed');
   const before = h.snapshot();
   h.api.damageShip(1000); h.until(q => q.state === 'gameover', 180);
@@ -484,7 +484,7 @@ test('three persistent special missiles deal eighteen damage and a failed debit 
     for(let frame=0;frame<45;frame++)h.api.isolatedFrame(1/60);
   }
   assert.equal(h.api.fireClassicMissile(),false);
-  const record=JSON.parse(h.window.localStorage.getItem('neonCatcher.classicSalvage.v1'));
+  const record=JSON.parse(h.window.localStorage.getItem('neonCronium.classicSalvage.v1'));
   assert.equal(record.missileAmmo,0);assert.equal(record.missileShotsSpent,3);
   const restored=harness(t,'',{storageEntries:Object.entries(h.window.localStorage)});
   restored.api.prepare();
@@ -542,22 +542,22 @@ test('an old pending S1-V1 journal that carries the Atlas reward recovers on boo
   const journalKey='neon-unlocked-v2:completion-journal:v1';
   const pending=JSON.parse(h.window.localStorage.getItem(journalKey));
   assert.equal(pending.phase,'pending');assert.ok(pending.equipment.after.unlocked.includes('twin'));
-  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),null);
+  assert.equal(h.window.localStorage.getItem('neonCronium.flightEquipment.v1'),null);
   const restored=harness(t,'',{storageEntries:Object.entries(h.window.localStorage)});
   assert.equal(restored.snapshot().unlocked,2,'The old S1-V1 completion is kept');
   assert.deepEqual(restored.snapshot().equipment.unlocked,['pulse','twin'],'The old Gemelo reward is kept');
-  assert.equal(JSON.parse(restored.window.localStorage.getItem('neonCatcher.chronosVoyage.v2')).completed,true);
+  assert.equal(JSON.parse(restored.window.localStorage.getItem('neonCronium.chronosVoyage.v2')).completed,true);
   const receipt=JSON.parse(restored.window.localStorage.getItem(journalKey));
   assert.equal(receipt.phase,'committed');assert.equal(receipt.id,pending.id);
   const saved=Object.fromEntries(Object.entries(restored.window.localStorage));
   const again=harness(t,'',{storageEntries:Object.entries(saved)});
   assert.equal(again.snapshot().unlocked,2);
-  assert.equal(again.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),saved['neonCatcher.flightEquipment.v1']);
+  assert.equal(again.window.localStorage.getItem('neonCronium.flightEquipment.v1'),saved['neonCronium.flightEquipment.v1']);
   assert.equal(again.window.localStorage.getItem(journalKey),saved[journalKey]);
   // Winning S1-V5 later cannot add a second copy nor announce it again.
   winAtlasVoyage(again);
-  assert.deepEqual(JSON.parse(again.window.localStorage.getItem('neonCatcher.flightEquipment.v1')).unlocked,['pulse','twin']);
-  assert.deepEqual(JSON.parse(again.window.localStorage.getItem('neonCatcher.flightEquipment.v1')).bossRewards,['guardian-atlas']);
+  assert.deepEqual(JSON.parse(again.window.localStorage.getItem('neonCronium.flightEquipment.v1')).unlocked,['pulse','twin']);
+  assert.deepEqual(JSON.parse(again.window.localStorage.getItem('neonCronium.flightEquipment.v1')).bossRewards,['guardian-atlas']);
   assert.doesNotMatch(again.window.document.getElementById('unlockMessage').textContent,/Gemelo/);
   assert.equal(again.window.localStorage.getItem('neon-n7-unlocked-v1'),'37');
   assert.equal(again.window.localStorage.getItem('neon-n7-best-v1'),'2037');
@@ -567,7 +567,7 @@ test('an old pending S1-V1 journal that carries the Atlas reward recovers on boo
 test('a corrupt equipment record no longer blocks S1-V1, which completes without touching it', t => {
   const corrupt='{interrupted equipment record';
   const h=harness(t,'',{saved:corrupt});
-  const equipmentKey='neonCatcher.flightEquipment.v1',backupKey=equipmentKey+':invalid-backups';
+  const equipmentKey='neonCronium.flightEquipment.v1',backupKey=equipmentKey+':invalid-backups';
   assert.equal(h.window.localStorage.getItem(equipmentKey),corrupt,
     'Boot must preserve the damaged record until its recovery is needed');
   assert.deepEqual(JSON.parse(h.window.localStorage.getItem(backupKey)),[corrupt]);
@@ -664,13 +664,13 @@ test('winning Atlas in S1-V5 completes the map voyage without an exception in th
   h.until(q=>q.boss?.disabled,60*240,true);
   const finished=h.until(q=>q.state==='complete');
   assert.equal(finished.boss,null,'The victory retires Atlas inside its own event');
-  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCatcher.voyage.S1-V5.v1')).completed,true);
+  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCronium.voyage.S1-V5.v1')).completed,true);
   for(let frame=0;frame<30;frame++)h.api.update(1/60);
   assert.equal(h.snapshot().state,'complete');assert.equal(h.pending.size,1);
 });
 
 // B · S1-V5: Atlas se combate en el viaje del mapa y su victoria autoriza el Gemelo.
-const S1V5_KEY='neonCatcher.voyage.S1-V5.v1',EQUIPMENT_KEY='neonCatcher.flightEquipment.v1';
+const S1V5_KEY='neonCronium.voyage.S1-V5.v1',EQUIPMENT_KEY='neonCronium.flightEquipment.v1';
 const completeText=h=>({title:h.window.document.getElementById('completeTitle').textContent,
   message:h.window.document.getElementById('unlockMessage').textContent});
 const s1v5Done=h=>JSON.parse(h.window.localStorage.getItem(S1V5_KEY)||'null')?.completed===true;
@@ -786,8 +786,8 @@ test('a player who beat Atlas in the old S1-V1 keeps the weapon and the complete
   const equipment=JSON.stringify({version:1,recoveredTwin:true,unlocked:['pulse','twin'],selected:'twin',
     bossRewards:['guardian-atlas'],twinPrepared:true});
   const h=harness(t,'',{storageEntries:[['neon-unlocked-v2','2'],['neon-stars-v2','{"1":3}'],
-    ['neonCatcher.chronosVoyage.v2',voyage],['neonCatcher.flightEquipment.v1',equipment]]});
-  assert.equal(h.window.localStorage.getItem('neonCatcher.chronosVoyage.v2:invalid-backups'),null,
+    ['neonCronium.chronosVoyage.v2',voyage],['neonCronium.flightEquipment.v1',equipment]]});
+  assert.equal(h.window.localStorage.getItem('neonCronium.chronosVoyage.v2:invalid-backups'),null,
     'The old chapter record with Atlas signals is still a valid save');
   assert.equal(h.snapshot().unlocked,2);
   assert.deepEqual(h.snapshot().equipment.unlocked,['pulse','twin']);assert.equal(h.snapshot().equipment.selected,'twin');
@@ -798,11 +798,11 @@ test('a player who beat Atlas in the old S1-V1 keeps the weapon and the complete
   for(let frame=0;frame<60*400&&h.snapshot().state==='playing';frame++){h.api.isolatedFrame(1/60);sawAtlas=sawAtlas||Boolean(h.snapshot().boss);}
   assert.equal(h.snapshot().state,'complete');assert.equal(sawAtlas,false);
   assert.equal(h.snapshot().unlocked,2);
-  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCatcher.chronosVoyage.v2')).completed,true);
-  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),equipment,'Replaying S1-V1 never rewrites the weapon');
+  assert.equal(JSON.parse(h.window.localStorage.getItem('neonCronium.chronosVoyage.v2')).completed,true);
+  assert.equal(h.window.localStorage.getItem('neonCronium.flightEquipment.v1'),equipment,'Replaying S1-V1 never rewrites the weapon');
   // Winning S1-V5 confirms the existing authorization without a new notice.
   winAtlasVoyage(h);
-  const after=JSON.parse(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'));
+  const after=JSON.parse(h.window.localStorage.getItem('neonCronium.flightEquipment.v1'));
   assert.deepEqual(after.unlocked,['pulse','twin']);assert.deepEqual(after.bossRewards,['guardian-atlas']);
   assert.equal(after.selected,'twin','The equipped weapon is preserved');
   assert.equal(h.window.document.getElementById('completeTitle').textContent,'Atlas ha abierto el paso');
@@ -814,7 +814,7 @@ test('a save left in the middle of the old S1-V1 Atlas fight resumes at its stag
   // Builds with Atlas in S1-V1 never saved the fight itself: the record on
   // disk is the stage-10 entry (route 324 s, 32 CRONIUM), as in this fixture.
   const h=harness(t);
-  const before=JSON.parse(h.window.localStorage.getItem('neonCatcher.chronosVoyage.v2'));
+  const before=JSON.parse(h.window.localStorage.getItem('neonCronium.chronosVoyage.v2'));
   assert.equal(before.checkpoint.stageNumber,10);assert.equal(before.completed,false);
   h.api.prepare();
   assert.equal(h.snapshot().flight.elapsed,324);assert.equal(h.snapshot().collected,32);
@@ -822,11 +822,11 @@ test('a save left in the middle of the old S1-V1 Atlas fight resumes at its stag
   const finished=h.until(q=>q.state==='complete');
   assert.equal(finished.boss,null);assert.equal(finished.unlocked,2);
   assert.deepEqual(finished.equipment.unlocked,['pulse'],'Gemelo now waits for S1-V5');
-  assert.equal(h.window.localStorage.getItem('neonCatcher.flightEquipment.v1'),null);
+  assert.equal(h.window.localStorage.getItem('neonCronium.flightEquipment.v1'),null);
   const restored=harness(t,'',{storageEntries:Object.entries(h.window.localStorage)});
   assert.equal(restored.snapshot().unlocked,2);assert.deepEqual(restored.snapshot().equipment.unlocked,['pulse']);
   winAtlasVoyage(restored);
-  assert.deepEqual(JSON.parse(restored.window.localStorage.getItem('neonCatcher.flightEquipment.v1')).unlocked,['pulse','twin']);
+  assert.deepEqual(JSON.parse(restored.window.localStorage.getItem('neonCronium.flightEquipment.v1')).unlocked,['pulse','twin']);
   assert.match(restored.window.document.getElementById('unlockMessage').textContent,/Gemelo ×2/);
   assert.equal(restored.pending.size,1);
 });

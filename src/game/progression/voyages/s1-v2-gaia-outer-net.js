@@ -23,7 +23,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S1_V2_GAIA_OUTER_NET = immutable({
   id: 'S1-V2', sector: 1, number: 2, title: 'Cruza la red exterior de Gaia',
-  chapter: 2, version: 's1-v2-voyage-v1', saveKey: 'neonCatcher.voyage.S1-V2.v1',
+  chapter: 2, version: 's1-v2-voyage-v1', saveKey: 'neonCronium.voyage.S1-V2.v1',
   routeId: 'gaia-outer-net', eventPrefix: 's1-v2', baseGoal: 36,
   origin: 'Baliza exterior de Gaia', destination: 'Anillo de satélites',
   arrivalDestinationId: 'gaia-satellite-ring', cinematicDuration: 0, recoveryAt: 0,

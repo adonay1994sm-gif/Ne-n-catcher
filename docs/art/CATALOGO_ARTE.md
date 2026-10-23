@@ -1,7 +1,7 @@
 # Catálogo del arte entregado por el propietario
 
 Lista única de las imágenes que el propietario genera (sobre todo con
-ChatGPT) y entrega a Claude. Claude decide qué se aprovecha, cómo se llama y
+ChatGPT). Aquí se decide qué se aprovecha, cómo se llama y
 para qué se usa. Las cifras de uso son decisiones reversibles.
 
 ## Cómo se guarda
@@ -126,7 +126,7 @@ https://neon-cronium-video-referencia.chictide18.chatgpt.site (catálogo en
 cuerpo ocupando casi toda la celda y celdas de ≥ 768–1024 px (en pantalla se
 dibuja a unos 700 px reales).
 
-## Pendiente de pedir (sugerencias de Claude)
+## Pendiente de pedir (sugerencias)
 
 | Qué | Para qué | Notas para ChatGPT |
 |---|---|---|

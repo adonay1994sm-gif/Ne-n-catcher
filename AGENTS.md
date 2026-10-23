@@ -12,7 +12,7 @@ Continuar la implementación solicitada por el propietario, sin detenerla por un
 
 ## Preview Netlify publicada · 18/10/2026
 
-El proyecto aislado **neon-preview-deploy** publica la rama autorizada en `https://neon-preview-deploy.netlify.app/`. El indicador no secreto `NEON_PREVIEW_DEPLOY=1` está limitado en `netlify.toml` al bloque `context.main.environment` (antes `continuity-assets-audit-20261013`; cambio del propietario, 23/10/2026); no moverlo a `build.environment`. La puerta conserva validación de rama, `NETLIFY=true`, nombre exacto y host HTTPS exacto, por lo que otras ramas, PR, el sitio original y otros destinos siguen rechazados. Publicación funcional verificada en `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`, `dirty=false`, MotorV1false, Actions39140857478success. El smoke remoto canónico abre diez tramos, HUD, disparo y pausa sin errores; `preview-offline-smoke.cjs` conserva una deuda independiente porque todavía busca el selector de dos campañas retirado. Informe y evidencia en `docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md`.
+El proyecto aislado **neon-preview-deploy** publica la rama autorizada en `https://neon-preview-deploy.netlify.app/`. El indicador no secreto `NEON_PREVIEW_DEPLOY=1` está limitado en `netlify.toml` al bloque `context.main.environment` (antes `continuity-assets-audit-20261013`; cambio del propietario, 23/10/2026); no moverlo a `build.environment`. La puerta conserva validación de rama, `NETLIFY=true`, nombre exacto y host HTTPS exacto, por lo que otras ramas, PR, el sitio original y otros destinos siguen rechazados. Publicación funcional verificada en `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`, `dirty=false`, MotorV1false, Actions39140857478success. El smoke remoto canónico abre diez tramos, HUD, disparo y pausa sin errores; los scripts de navegador antiguos se retiraron el 23/10/2026 porque buscaban pantallas que ya no existen. Informe y evidencia en `docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md`.
 
 ---
 
@@ -100,7 +100,7 @@ El propietario acepta ejecutar las metas de la [auditoría de publicación](docs
 
 ## Nombre vigente — NEON CRONIUM, 17/10/2026
 
-El propietario cambia el nombre del juego a **NEON CRONIUM**. Aplicarlo en pantallas, metadatos, guías activas y nuevos paquetes. Conservar por compatibilidad las claves de guardado, el bundle ID `com.adonay.neoncatcher`, IDs de campaña y URL del repositorio/sitio existentes; no representan la marca visible. Las evidencias, maestros previos y paquetes históricos conservan su procedencia y sus hashes. No renombrar un paquete antiguo como si fuera una nueva compilación. Leer el cierre de rebranding en docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md. Las diez etapas y las restricciones de motor/ramas siguen vigentes.
+El propietario cambia el nombre del juego a **NEON CRONIUM**. Aplicarlo en pantallas, metadatos, guías activas y nuevos paquetes. Desde el 23/10/2026 las claves de guardado usan `neonCronium.*` y el bundle ID es `com.neoncronium`; la URL del repositorio la renombra el propietario. Las evidencias, maestros previos y paquetes históricos conservan su procedencia y sus hashes. No renombrar un paquete antiguo como si fuera una nueva compilación. Leer el cierre de rebranding en docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md. Las diez etapas y las restricciones de motor/ramas siguen vigentes.
 
 ---
 

@@ -74,7 +74,7 @@ ImageMagick y Pillow son herramientas del entorno artístico; no se agregaron de
 
 ## Procedencia y derechos
 
-Recurso generado para NEON CATCHER con la herramienta de imágenes disponible, usando como referencia un archivo ya existente del proyecto. No se descargaron imágenes de bancos de terceros ni se contrató un servicio nuevo. Se registran los identificadores de salida de la herramienta y las huellas de los archivos en el JSON.
+Recurso generado para NEON CRONIUM con la herramienta de imágenes disponible, usando como referencia un archivo ya existente del proyecto. No se descargaron imágenes de bancos de terceros ni se contrató un servicio nuevo. Se registran los identificadores de salida de la herramienta y las huellas de los archivos en el JSON.
 
 La procedencia jurídica del dossier heredado no se ha auditado independientemente; esta entrega no equivale a una certificación legal de derechos. No se presentan el dossier o el resultado como obra manual de un artista humano.
 

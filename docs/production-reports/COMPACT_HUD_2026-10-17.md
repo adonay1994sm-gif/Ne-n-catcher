@@ -4,7 +4,7 @@ La captura del propietario mostraba dos bloques superpuestos al escenario: cuatr
 
 Se verificó HEAD local/remoto96f75672a63940e58158806f367b06a74cbac20d con árbol inicial limpio y se leyó el cierre anterior de Chronos. Se retoma la rama autorizada sin sustituir el juego, el arte o las campañas. La petición actual es integrar el HUD para ver y jugar mejor. El ajuste se limita al viaje clásico unificado; los modos históricos conservan su presentación.
 
-# INFORME DE PRODUCCIÓN — NEON CATCHER / HUD COMPACTO
+# INFORME DE PRODUCCIÓN — NEON CRONIUM / HUD COMPACTO
 
 - **Fecha:** 17/10/2026 UTC.
 - **Rama:** continuity-assets-audit-20261013.
@@ -139,7 +139,7 @@ Siguen abiertos el rendimiento de la destrucción de Chronos y los glifos interm
 
 ## H. Paquete, GitHub y publicación
 
-ZIP:[neon-catcher-hud-6891f81.zip](evidence/compact-hud/package-6891f81/neon-catcher-hud-6891f81.zip). **7384168 B,113 entradas**, CRC y comparación byte a byte aprobados. SHA-256 **1320201fbf34a88d00499a6fc407a37abae9cd652eefa84d4152fb831b88d6fd**. [Inventario y113 hashes](evidence/compact-hud/package-6891f81/package.json).
+ZIP:[neon-cronium-hud-6891f81.zip](evidence/compact-hud/package-6891f81/neon-cronium-hud-6891f81.zip). **7384168 B,113 entradas**, CRC y comparación byte a byte aprobados. SHA-256 **1320201fbf34a88d00499a6fc407a37abae9cd652eefa84d4152fb831b88d6fd**. [Inventario y113 hashes](evidence/compact-hud/package-6891f81/package.json).
 
 - Código/paquete limpio:6891f810c1fee09def8704729cf843e9926843c7.
 - Revisión:6613f3f758d508dedaddffebbfbd316cf1b4c4516ad7be09debbc50ca277cd71.
@@ -147,7 +147,7 @@ ZIP:[neon-catcher-hud-6891f81.zip](evidence/compact-hud/package-6891f81/neon-cat
 - SHA-256 CSS:cf38f7a3877593c58f45e3756682a127767a22c52e99bfcbb4b02b3a0e4c5229.
 - `npm run build:preview`:salida0, HEAD6891f81, dirty:false. `npm run test:preview`:23/23,salida0. [Acta](evidence/compact-hud/package-6891f81/preview-tests.json), [salida original](evidence/compact-hud/package-6891f81/preview-tests.txt).
 
-**Sitio privado actualizado:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Sites confirmó succeeded el17/10/2026 a18:44:38UTC y get_site confirmó **versión7**, activo y propietario. Audiencia privada conservada. Fuente de distribución018741a2eb3c89e77a59f4c62f2b675df5d39cc1, subida normal,113archivos idénticos al paquete. [Acta nativa, IDs y procedencia](evidence/compact-hud/package-6891f81/site-deployment.json).
+**Sitio privado actualizado:** (web privada antigua, retirada) . Sites confirmó succeeded el17/10/2026 a18:44:38UTC y get_site confirmó **versión7**, activo y propietario. Audiencia privada conservada. Fuente de distribución018741a2eb3c89e77a59f4c62f2b675df5d39cc1, subida normal,113archivos idénticos al paquete. [Acta nativa, IDs y procedencia](evidence/compact-hud/package-6891f81/site-deployment.json).
 
 Entrar en CONTINUAR VIAJE. Para revisar Vulkar desde el selector:ARCHIVO DE PRUEBAS→desbloqueo clásico QA→CONTINUAR VIAJE→NIVELES→Descenso Ígneo. El desbloqueo es de la preview aislada; no modifica guardados normales. El ZIP también se puede descomprimir y servir por HTTP con index.html en raíz, o usar en un destino Netlify de pruebas inequívoco. **No se desplegó Netlify.** No se jugó remotamente con la cuenta del propietario ni se certificó Safari/iPhone.
 

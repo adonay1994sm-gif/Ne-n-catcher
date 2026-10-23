@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.adonay.neoncatcher",
+  appId: "com.neoncronium",
   appName: "NEON CRONIUM",
   webDir: "www",
   backgroundColor: "#050610",

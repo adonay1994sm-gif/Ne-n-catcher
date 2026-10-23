@@ -2,7 +2,7 @@
   "id": "VFX-FORCE-SHIELD-V1",
   "name": "Campo envolvente de fuerza — escudo de nave",
   "created_date": "2026-10-17",
-  "owner": "Neon Catcher art production",
+  "owner": "Neon Cronium art production",
   "provenance": {
     "method": "OpenAI image_gen; original generation for this project, then ImageMagick crop/packing/resizing and lossless WebP export. No code-drawn artwork.",
     "source_generation_path": "/workspace/generated_images/exec-0a0777fe-518e-469b-87da-58730297cf7f.png",

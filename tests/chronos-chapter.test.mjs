@@ -12,7 +12,7 @@ const step = (story, elapsed, emit = () => {}, extra = {}) => story.advance({ela
 
 test('chapter actors have distinct roles and short contextual Spanish dialogue', () => {
   assert.equal(CHRONOS_CHAPTER_VERSION, 'chronos-chapter-v1');
-  assert.equal(CHRONOS_CHAPTER_STORY_KEY, 'neonCatcher.chronosChapterStory.v1');
+  assert.equal(CHRONOS_CHAPTER_STORY_KEY, 'neonCronium.chronosChapterStory.v1');
   assert.deepEqual(Object.keys(CHRONOS_CHAPTER_ACTORS), ['lira', 'mira', 'atlas', 'iria', 'n7']);
   assert.match(CHRONOS_CHAPTER_ACTORS.lira.role, /evacuación/);
   assert.match(CHRONOS_CHAPTER_ACTORS.mira.role, /cobra/);

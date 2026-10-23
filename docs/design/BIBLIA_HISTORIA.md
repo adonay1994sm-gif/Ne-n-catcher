@@ -1,9 +1,8 @@
 # NEON CRONIUM · Biblia de la historia
 
-> Versión 1 · 20/10/2026. Escrita por Claude a partir del manuscrito
+> Versión 1 · 20/10/2026. Escrita a partir del manuscrito
 > «La memoria de las estrellas», de los dosieres de enemigos del propietario
-> y del canon ya implementado. El propietario delegó la historia en Claude;
-> todo es revisable. Referencia para nombres de viajes y tramos, diálogos,
+> y del canon ya implementado. Todo es revisable. Referencia para nombres de viajes y tramos, diálogos,
 > jefes y misiones. Complementa `DECISIONES_VIAJES_2026-10-20.md`.
 
 ## 1. La idea en una frase

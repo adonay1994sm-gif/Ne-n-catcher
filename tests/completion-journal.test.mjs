@@ -6,7 +6,7 @@ import {createChronosVoyageCheckpoint, normalizeChronosVoyageCheckpoint} from '.
 
 const KEYS = Object.freeze({stars: 'neon-stars-v2', unlocked: 'neon-unlocked-v2',
   best: 'neon-best-v2', levelBest: 'neon-level-best-v2'});
-const CHECKPOINT = 'neonCatcher.chronosVoyage.v2';
+const CHECKPOINT = 'neonCronium.chronosVoyage.v2';
 const checkpoint = completed => ({version: 2,
   checkpoint: createChronosVoyageCheckpoint(10, {collected: 36}),
   entry: {hull: 66, score: 220, maxCombo: 3, collected: 36}, unlockedStage: 10, completed});
@@ -178,7 +178,7 @@ test('invalid requests fail before writes and caller checkpoint objects cannot m
   assert.equal(JSON.parse(waiting.map.get(CHECKPOINT)).completed, true);
 });
 
-const EQUIPMENT = 'neonCatcher.flightEquipment.v1';
+const EQUIPMENT = 'neonCronium.flightEquipment.v1';
 const equipment = (rewarded = false) => ({version: 1, recoveredTwin: rewarded,
   unlocked: rewarded ? ['pulse', 'twin'] : ['pulse'], selected: 'pulse'});
 const validateEquipment = value => Boolean(value?.version === 1 &&

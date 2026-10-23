@@ -1,3 +1,7 @@
+## 23/10/2026 — Fuera el nombre antiguo
+
+Claves de guardado `neonCronium.*` y bundle ID `com.neoncronium`. Sin jugadores todavía, así que no hay migración.
+
 ## 17/10/2026 — NEON CRONIUM
 
 Cambio de marca visible, metadatos web/PWA/iOS, paquete npm, guías activas y nuevos archivos de entrega. Guardados e identificadores de instalación conservados para compatibilidad. Historial anterior intacto; ver informe de rebranding.
@@ -37,14 +41,14 @@ Cambio de marca visible, metadatos web/PWA/iOS, paquete npm, guías activas y nu
 - Silueta y hash de colisión V6.3/V6.4.3.
 - Objetivos, velocidades, frecuencia base, suministro, puntuación y combo x12.
 - Controles, sensibilidad, progreso, estrellas, récords y claves locales.
-- Daño, explosión, continuación, habilidades, anuncios de prueba y bundle ID `com.adonay.neoncatcher`.
+- Daño, explosión, continuación, habilidades, anuncios de prueba y bundle ID `com.neoncronium`.
 
 ## V6.4.4 Base Estable — 3 de agosto de 2026
 
 ### Corregido
 
 - Alineados nombre visible, `package.json`, README, código y caché en V6.4.4.
-- Sustituida la caché heredada V6.4.2 por `neon-catcher-v6-4-4-base-stable`.
+- Sustituida la caché heredada V6.4.2 por `neon-cronium-v6-4-4-base-stable`.
 - Añadido versionado de CSS/JavaScript y estrategia network-first para código.
 - Precargados en la PWA los 56 assets de producción para evitar una mezcla parcial offline.
 - Recuperada la migración idempotente de `neon-best-v1` sin reducir un récord V2 existente.
@@ -57,7 +61,7 @@ Cambio de marca visible, metadatos web/PWA/iOS, paquete npm, guías activas y nu
 
 - Dependencias fijadas y lockfile reproducible.
 - Build web limpio en `www/`.
-- Proyecto Capacitor iOS real con bundle ID `com.adonay.neoncatcher`.
+- Proyecto Capacitor iOS real con bundle ID `com.neoncronium`.
 - AdMob nativo conectado con IDs oficiales de prueba, flujo de consentimiento y recompensa confirmada por evento.
 - Añadidos `ASSET_MANIFEST.json`, pruebas automatizadas y este changelog.
 

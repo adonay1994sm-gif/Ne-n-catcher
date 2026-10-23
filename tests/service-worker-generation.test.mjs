@@ -155,7 +155,7 @@ test('the launcher retained handle remains writable after retirement without res
 
 test('activation removes only its own scope generation and preserves launcher, sibling and foreign caches', async () => {
   const caches = cacheStorageFixture();
-  const otherNames = ['unrelated-app', 'neon-catcher-pre-release-7-2-0',
+  const otherNames = ['unrelated-app', 'neon-cronium-pre-release-7-2-0',
     `neon-preview-v1:https://neon.test/another-game/::${oldRevision}`,
     `neon-preview-launcher-v1:https://neon.test/::${oldRevision}`];
   for (const name of otherNames) await caches.open(name);

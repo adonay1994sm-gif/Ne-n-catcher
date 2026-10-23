@@ -24,4 +24,4 @@ La imagen se generó mediante herramienta gráfica, se inspeccionó el PNG y se 
 
 Producción del recurso verificada. **Integración en el juego y prueba Chromium: pendientes del responsable de integración. Aceptación artística del propietario e iPhone físico: pendientes.** Esta ficha no certifica que el recurso ya aparezca en gameplay.
 
-Procedencia: generación original OpenAI `image_gen` solicitada para NEON CATCHER, sin assets de terceros ni referencias de franquicias. Se conserva el maestro; no se afirma una revisión legal independiente.
+Procedencia: generación original OpenAI `image_gen` solicitada para NEON CRONIUM, sin assets de terceros ni referencias de franquicias. Se conserva el maestro; no se afirma una revisión legal independiente.

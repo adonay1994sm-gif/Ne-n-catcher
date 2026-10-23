@@ -115,7 +115,7 @@ El padre actualiza primero la instantánea de ruta y después notifica las seña
 
 ## Guardado, repetición y conservación
 
-Clave propia: **`neonCatcher.chronosChapterStory.v1`**, bajo el namespace habitual de la edición. No reutiliza ni reinterpreta claves de N-7, Journey, equipo o viaje. `checkpoint()` produce versión, versión de contenido, ID de ruta, tiempo de ruta, tiempo del epílogo, consumo de apertura y listas acotadas de señales/diálogos.
+Clave propia: **`neonCronium.chronosChapterStory.v1`**, bajo el namespace habitual de la edición. No reutiliza ni reinterpreta claves de N-7, Journey, equipo o viaje. `checkpoint()` produce versión, versión de contenido, ID de ruta, tiempo de ruta, tiempo del epílogo, consumo de apertura y listas acotadas de señales/diálogos.
 
 `normalizeChronosChapterCheckpoint(value)` valida sin mutar. Rechaza versiones ajenas, tiempos no finitos, IDs desconocidos, duplicados, señales incoherentes y líneas futuras no justificadas por haber omitido la apertura. La capa de guardado del padre debe conservar el dato inválido antes de reemplazarlo y no publicar una migración inventada.
 

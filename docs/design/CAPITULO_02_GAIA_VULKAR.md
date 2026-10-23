@@ -126,7 +126,7 @@ herramienta (Canva u otra) y yo las integre.
 
 1. **Viaje genérico + esqueleto jugable del capítulo 2.** El modelo del viaje
    del capítulo 1 pasa a aceptar los datos de cualquier capítulo; el capítulo 2
-   tiene sus 10 tramos, guardado propio (`neonCatcher.gaiaVulkarVoyage.v1`),
+   tiene sus 10 tramos, guardado propio (`neonCronium.gaiaVulkarVoyage.v1`),
    peligros por tramo y enemigos existentes. Se puede jugar de principio a fin
    con un jefe provisional. *Los guardados del capítulo 1 no cambian.*
 2. **CH-03 y dron de cuarentena** (comportamiento + dibujo vectorial + pruebas).

@@ -15,6 +15,9 @@ no significa que esté listo para la tienda.
 
 - Explica todo en **español** y con lenguaje sencillo.
 - Mensajes de commit en español, cortos y claros: un cambio por commit.
+- **Sin firma de IA** (propietario, 23/10/2026): ni en archivos ni en commits
+  (sin `Co-Authored-By` ni enlaces de sesión) ni en PRs. No escribir «por
+  Claude», «decisión de Claude» y similares: usar «decisión técnica».
 - No entierres la respuesta: la acción o el resultado en la primera línea,
   pasos numerados y listas cortas (máx. 5). Sin preámbulos ni despedidas.
   Para aplicarlo a toda la sesión: `/i-have-adhd` (skill MIT de

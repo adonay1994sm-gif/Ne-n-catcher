@@ -30,7 +30,7 @@ test('ten authored crossings are stable stages inside Chronos and preserve the r
   assert.equal(stages.reduce((total,stage)=>total+stage.duration,0),CHRONOS_VOYAGE_MIN_DURATION);
   assert.equal(CHRONOS_VOYAGE_MIN_DURATION,360);
   for(let index=1;index<stages.length;index++)assert.equal(stages[index].origin,stages[index-1].destination);
-  assert.notEqual(CHRONOS_VOYAGE_KEY,'neonCatcher.flightEquipment.v1');
+  assert.notEqual(CHRONOS_VOYAGE_KEY,'neonCronium.flightEquipment.v1');
   assert.equal(createChronosVoyage().snapshot().version,CHRONOS_VOYAGE_VERSION);
   assert.throws(()=>{stages[0].duration=1;},TypeError);
 });

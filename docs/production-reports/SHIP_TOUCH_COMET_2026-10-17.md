@@ -10,7 +10,7 @@ La reproducción válida anterior confirmó el problema: con el dedo de pilotaje
 
 Se conserva el motor legacy, `USE_ENGINE_V1 = false`, el propietario único de RAF, las campañas anteriores y los guardados. No se tocó main del juego, la PR #3, producción Netlify ni publicación móvil.
 
-# INFORME DE PRODUCCIÓN — NEON CATCHER
+# INFORME DE PRODUCCIÓN — NEON CRONIUM
 
 **Entrega:** SHIP_TOUCH_COMET · identidad modular elegida, cometa mineral y pilotaje con dos contactos.
 
@@ -120,7 +120,7 @@ El cometa procede de generación original con la herramienta disponible `image_g
 | `docs/production-tasks.json`, `docs/PRODUCTION_MASTER_CHECKLIST.md`, `docs/PRODUCTION_PROGRESS.md` | Seguimiento reconciliado del incremento; el JSON sigue siendo fuente principal. |
 | `docs/production-reports/evidence/ship-controls/` | Registros JSON, comandos, capturas reales, harness usado y fallos conservados. |
 
-La versión de caché pasa a `neon-catcher-pre-release-7-2-0-ship-touch-comet-1`. Se retiran del CORE los seis `ship_frame_*.webp` y `comet_animation_sheet_v1.webp`; se añaden los recursos actuales. Los archivos retirados permanecen en el paquete recuperable y sus registros. El resultado no depende de borrar historial.
+La versión de caché pasa a `neon-cronium-pre-release-7-2-0-ship-touch-comet-1`. Se retiran del CORE los seis `ship_frame_*.webp` y `comet_animation_sheet_v1.webp`; se añaden los recursos actuales. Los archivos retirados permanecen en el paquete recuperable y sus registros. El resultado no depende de borrar historial.
 
 ## F. Pruebas de fuentes y empaquetado
 
@@ -239,7 +239,7 @@ Commits funcionales identificados:
 | Actualización SW | Paquete final limpio, 3/3, salida 0. Escenario sintético de actualización ejecutado en Chromium; no Safari físico. |
 | ZIP recuperable | 8.160.486 bytes, 118 entradas; conservado en [package-f543056](evidence/ship-controls/package-f543056/). |
 | SHA-256 ZIP | `e3a1e13b50a4b8af12f2e795df2d4d5b5af4b50cae034f789f2fcb2fd125dc3c`. |
-| Sitio privado | [Abrir NEON CATCHER](https://neon-catcher-pruebas.chictide18.chatgpt.site). |
+| Sitio privado | [Abrir NEON CRONIUM]((web privada antigua, retirada)). |
 | Publicación | Versión **9**, estado terminal **succeeded**, 2026-10-17T20:04:54.585578+00:00, confirmado por la herramienta nativa. |
 | SHA de fuente del sitio | `b62289496b9da7cee168924e5f79a56923b1301f`. Es otro repositorio de hosting, distinto del SHA del juego y del documental. |
 | Visibilidad | Acceso privado: un propietario autorizado y cero visitantes externos. No se amplió audiencia. |

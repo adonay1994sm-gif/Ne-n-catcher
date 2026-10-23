@@ -1,5 +1,5 @@
 /** Cosmetic assembly data for the legacy renderer; no physics or loop owner. */
-export const SHIP_FLEET_SAVE_KEY = 'neonCatcher.shipFleet.v1';
+export const SHIP_FLEET_SAVE_KEY = 'neonCronium.shipFleet.v1';
 
 const SLOTS = Object.freeze(['hull','wings','engines']);
 const VARIANTS = Object.freeze(['aster','bastion']);

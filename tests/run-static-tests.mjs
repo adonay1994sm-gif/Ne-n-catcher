@@ -181,9 +181,9 @@ await test("proyecto iOS real conserva bundle, versión y orientación vertical"
   const project = await text("ios/App/App.xcodeproj/project.pbxproj");
   const info = await text("ios/App/App/Info.plist");
   const swiftPackage = await text("ios/App/CapApp-SPM/Package.swift");
-  assert.match(capacitorConfig, /appId: "com\.adonay\.neoncatcher"/);
+  assert.match(capacitorConfig, /appId: "com\.neoncronium"/);
   assert.match(capacitorConfig, /webDir: "www"/);
-  assert.match(project, /PRODUCT_BUNDLE_IDENTIFIER = com\.adonay\.neoncatcher;/);
+  assert.match(project, /PRODUCT_BUNDLE_IDENTIFIER = com\.neoncronium;/);
   assert.equal((project.match(/MARKETING_VERSION = 7\.2\.0;/g) || []).length, 2);
   assert.equal((project.match(/CURRENT_PROJECT_VERSION = 4;/g) || []).length, 2);
   assert.match(capacitorConfig, /loggingBehavior: "none"/);

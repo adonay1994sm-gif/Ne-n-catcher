@@ -6,7 +6,7 @@
 
 18/10/2026 · rama `continuity-assets-audit-20261013` · SHA inicial local/remoto limpio `8c5b44e6ea19f3ef29c0838703966fcae9027eaa`. Capturas del propietario: proyecto nuevo `neonpreviewdeploy`, contextoProduction, rama autorizada y build del SHA8c5b44e; log termina en la puerta `--require-enabled`, exit1, antes de compilar. El propietario confirma opt-in1 en Production del proyecto nuevo.
 
-Causa confirmada: la puerta sólo admitía local/branch-deploy, sin distinguir producción del sitio principal de la etiqueta técnica Production de un proyecto de pruebas separado. La conexión GitHub–Netlify ya existe; la falta de acceso autenticado de Codex no implica una cuenta desconectada. main, PR3 y el sitio original se preservan.
+Causa confirmada: la puerta sólo admitía local/branch-deploy, sin distinguir producción del sitio principal de la etiqueta técnica Production de un proyecto de pruebas separado. La conexión GitHub–Netlify ya existe; la falta de acceso autenticado no implica una cuenta desconectada. main, PR3 y el sitio original se preservan.
 
 # INFORME DE PRODUCCIÓN — NETLIFY_ISOLATED_PREVIEW_FIX
 
@@ -26,7 +26,7 @@ Commit funcional publicado **82c3311c147fb71da4ff93348a105bbf148c2828**, CI comp
 
 ## Continuación
 
-El propietario solicita un intento directo desde Codex. Se emite un segundo push normal con este cierre para producir un evento Git nuevo, conservando el código de puerta ya probado. [Solicitud de reintento](evidence/netlify-isolated-fix/retry-request.json). Después se comprueba la CI del nuevo SHA y se observa HTTP/build-info del sitio de pruebas. Si Netlify no se puede observar desde GitHub o HTTP, registrar esa limitación y pedir sólo el error concreto del panel; no inventar una URL accesible ni desplegar al sitio principal. La web privada22 y el paquete limpio da3 siguen disponibles mientras tanto.
+El propietario solicita un intento directo. Se emite un segundo push normal con este cierre para producir un evento Git nuevo, conservando el código de puerta ya probado. [Solicitud de reintento](evidence/netlify-isolated-fix/retry-request.json). Después se comprueba la CI del nuevo SHA y se observa HTTP/build-info del sitio de pruebas. Si Netlify no se puede observar desde GitHub o HTTP, registrar esa limitación y pedir sólo el error concreto del panel; no inventar una URL accesible ni desplegar al sitio principal. La web privada22 y el paquete limpio da3 siguen disponibles mientras tanto.
 
 ## Acceso comprobado y límite del intento directo
 

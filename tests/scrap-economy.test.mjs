@@ -62,8 +62,8 @@ test('enemy families drop different small scrap values, never minted silver or a
 });
 
 test('empty profile is isolated from all legacy campaign and equipment keys', () => {
-  const map = new Map([['neonCatcher.flightEquipment.v1', '{legacy equipment bytes'],
-    ['neonCatcher.journey.v1', '{legacy journey credits'], ['unlocked', '10']]);
+  const map = new Map([['neonCronium.flightEquipment.v1', '{legacy equipment bytes'],
+    ['neonCronium.journey.v1', '{legacy journey credits'], ['unlocked', '10']]);
   const original = new Map(map), device = memory(map), log = ledger(device);
   assert.equal(log.getBalance(), null);
   assert.deepEqual(log.load(), {ok: true, status: 'new', state: createScrapRecord()});
@@ -130,7 +130,7 @@ test('C9 purchase commits balance, entitlement and receipt in one write without 
   assert.equal(result.state.spent, 24);
   assert.equal(Object.hasOwn(result.state, 'unlocked'), false);
   assert.equal(Object.hasOwn(result.state, 'equipment'), false);
-  assert.equal(device.map.has('neonCatcher.flightEquipment.v1'), false);
+  assert.equal(device.map.has('neonCronium.flightEquipment.v1'), false);
   assert.equal(SCRAP_UPGRADES['twin-preparation'].price, 24);
   assert.equal(SCRAP_UPGRADES['hull-reinforcement'].price, 30);
   assert.equal(SCRAP_UPGRADES['coolant-feed'].price, 45);

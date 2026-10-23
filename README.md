@@ -1,8 +1,8 @@
 # NEON CRONIUM
 
-Aventura arcade espacial en desarrollo. Nombre vigente desde el 17/10/2026; anteriormente NEON CATCHER. Rama principal: `main`.
+Aventura arcade espacial en desarrollo. Rama principal: `main`.
 
-[Web de pruebas (Netlify)](https://neon-preview-deploy.netlify.app) · [Web privada anterior](https://neon-catcher-pruebas.chictide18.chatgpt.site) · [Estado vigente](docs/CODEX_STATUS.md) · [Visión de producto](docs/PRODUCT_VISION.md) · [Dirección artística](ART_DIRECTION_NEON_CRONIUM.md).
+[Web de pruebas (Netlify)](https://neon-preview-deploy.netlify.app) · [Roadmap](docs/ROADMAP.md) · [Visión de producto](docs/PRODUCT_VISION.md) · [Dirección artística](ART_DIRECTION_NEON_CRONIUM.md).
 
 La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recuperación de CRONIUM, taller C9 desde el HUD y Atlas móvil como guardián de acceso. Las campañas y partidas anteriores se conservan. Los nombres técnicos de guardado/instalación y la URL histórica permanecen compatibles; las nuevas compilaciones y archivos de entrega se identifican como NEON CRONIUM. Los informes y ZIP previos conservan su nombre/procedencia histórica. Motor V1 desactivado; sin publicación comercial.
 
@@ -80,7 +80,7 @@ npm ci
 npm run cap:sync
 ```
 
-La compilación y firma del IPA requieren macOS/Xcode o el flujo de Codemagic. El bundle ID permanece en `com.adonay.neoncatcher`.
+La compilación y firma del IPA requieren macOS/Xcode o el flujo de Codemagic. El bundle ID es `com.neoncronium`.
 
 ## Publicidad
 
@@ -91,4 +91,4 @@ Los IDs incluidos son las unidades de demostración oficiales de Google. No gene
 - `docs/CHANGELOG.md`: cambios y funciones preservadas.
 - `src/game/README.md`: mapa de responsabilidades y reglas de edición.
 - `ASSET_MANIFEST.json`: inventario, dimensiones, pivotes, secuencias y uso de assets.
-- Los informes de versiones anteriores (V6–V7, Codex) se retiraron el 23/10/2026 y siguen en el historial de git.
+- Los informes de versiones anteriores (V6–V7) se retiraron el 23/10/2026 y siguen en el historial de git.

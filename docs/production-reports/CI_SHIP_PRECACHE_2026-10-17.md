@@ -85,11 +85,11 @@ Esta prueba es Chromium local. No certifica Safari, iPhone físico, rendimiento 
 
 | Dato | Resultado |
 | --- | --- |
-| Workflow | NEON CATCHER N-7 Integrated Preview QA |
+| Workflow | NEON CRONIUM N-7 Integrated Preview QA |
 | Ejecución del refuerzo | [39065781507](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065781507) |
 | SHA verificado | `f69d3651e9a180c8502d17aa523a27d9abed92e7` |
 | Resultado | `completed / success`; doce pasos satisfactorios, sin pasos posteriores omitidos |
-| Artefacto | `NEON-CATCHER-N7-ARTPASS-NETLIFY-DROP`, ID `12113146729`, disponible al verificar |
+| Artefacto | `NEON-CRONIUM-N7-ARTPASS-NETLIFY-DROP`, ID `12113146729`, disponible al verificar |
 | ZIP de GitHub | 8.163.033 bytes; 117 entradas |
 | SHA-256 del ZIP | `3fd91520bd9bd7e8485c875e508a2fa9fabe63bbf1caa826cebd5807d8824a3e` |
 | Verificación de descarga | Digest de los bytes descargados igual al informado por GitHub; `build-info.json` contiene `f69d365…`, `dirty=false`. Tres bundles y los tres recursos gráficos actuales coinciden byte por byte con la preview local probada. Los seis originales de nave siguen empaquetados. |

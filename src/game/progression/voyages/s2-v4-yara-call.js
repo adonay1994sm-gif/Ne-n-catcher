@@ -19,7 +19,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S2_V4_YARA_CALL = immutable({
   id: 'S2-V4', sector: 2, number: 4, title: 'Responde a la llamada de Yara', planet: 'volcanico',
-  chapter: 9, version: 's2-v4-voyage-v1', saveKey: 'neonCatcher.voyage.S2-V4.v1',
+  chapter: 9, version: 's2-v4-voyage-v1', saveKey: 'neonCronium.voyage.S2-V4.v1',
   routeId: 'yara-call', eventPrefix: 's2-v4', baseGoal: 36,
   origin: 'Cinturón de escoria', destination: 'Órbita alta de Vulkar',
   arrivalDestinationId: 'vulkar-high-orbit', cinematicDuration: 0, recoveryAt: 0,

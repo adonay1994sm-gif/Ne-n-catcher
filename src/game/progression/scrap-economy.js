@@ -3,7 +3,7 @@
  * purchased entitlement and its receipt together. It deliberately knows
  * nothing about campaign saves, weapon ownership, rendering or browser time.
  */
-export const SCRAP_ECONOMY_KEY = 'neonCatcher.classicSalvage.v1';
+export const SCRAP_ECONOMY_KEY = 'neonCronium.classicSalvage.v1';
 export const SCRAP_ECONOMY_RULES = Object.freeze({
   version: 1, revision: 2, silver: 100000, gold: 10000000, stellar: 100000000,
   baseHullReserve: 30, reinforcedHullReserve: 45, maxMissiles: 3, missileUnitPrice: 6,

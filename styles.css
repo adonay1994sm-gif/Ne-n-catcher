@@ -969,7 +969,6 @@ button.sector-place{cursor:pointer}button.sector-place:focus-visible{outline:2px
 .briefing-visual:not([data-scene="belt"]):not([data-scene="rift"]):not([data-scene="cronos"]){display:none}
 
 /* ===== Sistema de diseño A · Cabina táctica (propietario, 22/10/2026) =====
-   Lienzo: https://claude.ai/artifact/8fojiVmqWZq1NURntLKpXQ (hoja «Sistema»).
    Botones con 3 niveles de profundidad, esquinas cortadas y 4 estados.
    El borde es el fondo del botón y la cara va en ::before, 1 px dentro,
    porque clip-path recorta border y box-shadow exteriores. */

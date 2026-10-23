@@ -19,7 +19,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S2_V1_GAIA_DEPARTURE = immutable({
   id: 'S2-V1', sector: 2, number: 1, title: 'Sal de Gaia con paso libre', planet: 'volcanico',
-  chapter: 6, version: 's2-v1-voyage-v1', saveKey: 'neonCatcher.voyage.S2-V1.v1',
+  chapter: 6, version: 's2-v1-voyage-v1', saveKey: 'neonCronium.voyage.S2-V1.v1',
   routeId: 'gaia-free-passage', eventPrefix: 's2-v1', baseGoal: 36,
   origin: 'Gaia Nova', destination: 'Borde del sistema de Gaia',
   arrivalDestinationId: 'gaia-system-edge', cinematicDuration: 0, recoveryAt: 0,

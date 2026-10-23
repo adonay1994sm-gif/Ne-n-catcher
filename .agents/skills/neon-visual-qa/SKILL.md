@@ -23,9 +23,8 @@ Inspeccionar los argumentos actuales antes de invocar un script. Ejemplos de her
 
 - `node scripts/certify-local.mjs <directorio-nuevo>`: build y suites; registrar cada salida.
 - `npm run build:preview` y `npm run test:preview`: paquete y contrato de preview.
-- `node scripts/chapter-one-visual-smoke.cjs --root <paquete> --output <directorio-nuevo> --expected-commit <sha40>`: escenas controladas, no partida natural.
-- `node scripts/chapter-one-browser-smoke.cjs --root <paquete> --output <directorio-nuevo> --expected-commit <sha40> --timeout 900000`: recorrido natural automatizado, cuando aplique.
-- `node scripts/two-touch-browser-smoke.cjs --root <paquete> --output <directorio-nuevo>`: contactos reales CDP, sin certificar Safari físico.
+- `node scripts/capture-intro.cjs --times 1,5,9 --output <directorio-nuevo>`: capturas del inicio.
+- `node scripts/capture-levels.cjs --levels 2,4,6 --output <directorio-nuevo>`: un fotograma por nivel, sin menús.
 - `node scripts/audit-asset-inventory.mjs`: inventario; no sustituye revisar el render.
 
 No iniciar navegadores competidores durante una medición de rendimiento ni certificar fuentes que siguen cambiando. Cerrar navegador, contexto y servidor al terminar.

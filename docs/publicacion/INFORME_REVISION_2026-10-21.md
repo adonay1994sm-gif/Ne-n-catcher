@@ -12,7 +12,7 @@ Es cierto: hoy conviven **dos juegos con guardados separados**.
 |---|---|---|
 | Qué es | S1-V1 (Chronos → Gaia) y S1-V2…S2-V5 por fichas | 10 niveles `LEVELS` con escenas dibujadas, estrellas y récords |
 | Dónde se entra | Mapa en RUTA | Rejilla «Niveles clásicos» en RUTA |
-| Guardado | `neonCatcher.chronosVoyage.v2` y `neonCatcher.voyage.<ID>.v1` | `neon-unlocked-v2`, `neon-stars-v2`, `neon-level-best-v2` |
+| Guardado | `neonCronium.chronosVoyage.v2` y `neonCronium.voyage.<ID>.v1` | `neon-unlocked-v2`, `neon-stars-v2`, `neon-level-best-v2` |
 | Historia | Chronos → Gaia → Vulkar (10 viajes) | Repite Gaia, Vulkar, Cryon… con otro tono |
 
 **Dónde no enlazaban los viajes (y estado):**

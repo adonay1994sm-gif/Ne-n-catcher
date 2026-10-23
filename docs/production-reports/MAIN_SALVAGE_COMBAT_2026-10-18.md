@@ -28,7 +28,7 @@ Motor: **USE_ENGINE_V1=false**, renderizador legacy y propietario único de RAF 
 
 Netlify: sin nuevo despliegue; se publicó primero el Site privado18 y finalmente el **Site privado19**, con acceso exclusivo del propietario y sin modificar producción Netlify.
 
-Web comprobada: https://neon-catcher-pruebas.chictide18.chatgpt.site
+Web comprobada: (web privada antigua, retirada)
 
 Estado: ocho tareas nuevas técnicamente verificadas, **IN_REVIEW** por aceptación artística y dispositivo pendientes. No se declara terminado el juego, el capítulo entero ni diez escenarios visualmente completos.
 
@@ -48,7 +48,7 @@ En «El gran vacío» y1.9 aparecen diez cometas en ráfagas3/4/3, con velocidad
 
 Matar genera un objeto recuperable; **no suma dinero automáticamente**. Valores actuales: asaltante6, Scout9, Interceptor15, Atlas180. El objeto normal deriva y atrae suavemente en proximidad; el de Atlas usa recuperación magnética visible antes del cierre. Su recogida confirma un recibo durable único. Recargar un checkpoint no duplica ese recibo.
 
-La clave nueva `neonCatcher.classicSalvage.v1` es independiente de los guardados clásicos, N-7 y de los créditos de la demo histórica; la preview añade su namespace existente. El registro incluye saldo, obtenido, gastado, expedición, recibos y mejoras. Saldo y concesión se guardan juntos. Se prueban pagos repetidos, falta de fondos, interrupciones, datos corruptos y versiones futuras; los casos inseguros conservan los datos y bloquean compras.
+La clave nueva `neonCronium.classicSalvage.v1` es independiente de los guardados clásicos, N-7 y de los créditos de la demo histórica; la preview añade su namespace existente. El registro incluye saldo, obtenido, gastado, expedición, recibos y mejoras. Saldo y concesión se guardan juntos. Se prueban pagos repetidos, falta de fondos, interrupciones, datos corruptos y versiones futuras; los casos inseguros conservan los datos y bloquean compras.
 
 | Compra | Coste de chatarra | Efecto |
 | --- | ---: | --- |
@@ -214,7 +214,7 @@ Chromium actual49e4e59: **cometas2/2**,39,2069s naturales desde el checkpoint de
 
 **Actualización offline18→19:5/5**,23,633s, ambos paquetes inmutables. Guardados conservados, ambos atlas y fallback con hash/1024² desdeSW, disparoGemelo real y un único RAF. [Resultados](evidence/main-salvage-combat/offline-v2/results.json). Las pruebas naturales de economía y Atlas del cuerpo corresponden al runtimeb2; sus sistemas no cambiaron. La porción de viaje modificada se volvió a ejecutar en49. No se presenta la partida completa anterior como una nueva partida completa de49.
 
-Publicación final: **Site privado19**, https://neon-catcher-pruebas.chictide18.chatgpt.site. Fuente del Site **`49fa305aca7f804166d44f9f8b689df288149a08`**; deployment `appgdep_6ad48d4e4ff48191a5fffc91c66840ad`, **succeeded**, propietario único. HTTP real**7/7** confirmó portada, manifest,build-info,game.js,**content-runtime.js** y ambos atlas. Se comprobó específicamente el bundle de contenido modificado, evitando usar el hash de game.js —que no cambió— como prueba suficiente. Los146archivos protegidos del Site conservaron sus hashes. [Prueba HTTP](evidence/main-salvage-combat/site-http-v2/results.json), [preservación](evidence/main-salvage-combat/site-preservation-v2.json).
+Publicación final: **Site privado19**, (web privada antigua, retirada) Fuente del Site **`49fa305aca7f804166d44f9f8b689df288149a08`**; deployment `appgdep_6ad48d4e4ff48191a5fffc91c66840ad`, **succeeded**, propietario único. HTTP real**7/7** confirmó portada, manifest,build-info,game.js,**content-runtime.js** y ambos atlas. Se comprobó específicamente el bundle de contenido modificado, evitando usar el hash de game.js —que no cambió— como prueba suficiente. Los146archivos protegidos del Site conservaron sus hashes. [Prueba HTTP](evidence/main-salvage-combat/site-http-v2/results.json), [preservación](evidence/main-salvage-combat/site-preservation-v2.json).
 
 Paquete final: **NEON-CRONIUM-SALVAGE-49e4e59.zip**,9.425.350B,123entradas; SHA-256 **`d08d41ed4799e08790f8d0c2da5c2b9a0acf79353e3700d928b718387e2f7e5f`**. Revisión **`5077c4fdf3072408366d41fef38aed5f0ed66cd2a4b2cc51dcd660196e9777b2`**, árbol limpio al empaquetar. `content-runtime.js` servido:SHA-256 `ba171dc6e8908c2a46d5610900f948e5f76bd98b2b7e81f378d57d81147223b6`. [Metadatos del paquete](evidence/main-salvage-combat/package-v2.json). El ZIPb2 previo es histórico y no corresponde aSite19.
 

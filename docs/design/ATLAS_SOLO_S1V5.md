@@ -142,9 +142,9 @@ manual, cámara lenta, salvas).
 
 ## Pendiente
 
-- `scripts/chapter-one-browser-smoke.cjs` (prueba manual en Chromium, fuera de
-  `npm test`) todavía espera combatir a Atlas al final de S1-V1. Hay que
-  rehacerla para S1-V1 sin Atlas y otra para S1-V5. Necesita Playwright (sin
+- La prueba de recorrido en Chromium (`chapter-one-browser-smoke.cjs`) se
+  retiró el 23/10/2026. Hay que escribir una nueva para S1-V1 sin Atlas y
+  otra para S1-V5. Necesita Playwright (sin
   instalar, requiere permiso del propietario).
 - Revisar con capturas reales la pantalla de completado de S1-V1 y de S1-V5
   (texto largo de Iria + Gemelo + siguiente viaje).

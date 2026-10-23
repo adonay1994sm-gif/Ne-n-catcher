@@ -1809,7 +1809,7 @@
       "files": [
         "scripts/content-browser-smoke.cjs",
         "scripts/build-preview.mjs",
-        "docs/production-reports/evidence/netlify-drop-20261016/neon-catcher-preview-5a2f916.zip"
+        "docs/production-reports/evidence/netlify-drop-20261016/neon-cronium-preview-5a2f916.zip"
       ],
       "commit": "5a2f91647f582ad117b18df58da3d1a77b6c08e0",
       "tests": [
@@ -2892,7 +2892,7 @@
         "docs/visual-rebirth/evidence/level-09-10-gameplay-browser-01/results.json",
         "docs/visual-rebirth/evidence/visual-rebirth-final-certification-01/results.json",
         "docs/visual-rebirth/evidence/clean-preview-browser-01/results.json",
-        "docs/visual-rebirth/evidence/neon-catcher-visual-preview-8054088.zip",
+        "docs/visual-rebirth/evidence/neon-cronium-visual-preview-8054088.zip",
         "docs/visual-rebirth/INFORME_FINAL_10_NIVELES.md"
       ],
       "openErrors": [
@@ -7270,7 +7270,7 @@
       "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
       "packageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
       "privateSiteVersion": 16,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+      "privateSiteUrl": "(web privada antigua, retirada)",
       "verificationScope": {
         "naturalPlayedCommit": "612a3f34b99cc1e5197ebf066432a43fb848667f",
         "reentryCorrectedPackageCommit": "33263c5219240b5fb119f23b430f9c6698191e0c",
@@ -7413,7 +7413,7 @@
       "finalSHA": "d39ed440740b094f9dddb588c540c537f4499215",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+      "privateSiteUrl": "(web privada antigua, retirada)",
       "ciStatus": "PASSED_HISTORICAL_FIXTURE_FAILURE_RESOLVED",
       "qaHistory": {
         "priorAttempts": [
@@ -7532,7 +7532,7 @@
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+      "privateSiteUrl": "(web privada antigua, retirada)"
     },
     {
       "id": "P1-SHIP-CLEAN-01",
@@ -7587,7 +7587,7 @@
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+      "privateSiteUrl": "(web privada antigua, retirada)"
     },
     {
       "id": "P2-PULSE-VISUAL-01",
@@ -7648,7 +7648,7 @@
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+      "privateSiteUrl": "(web privada antigua, retirada)"
     },
     {
       "id": "P2-ENEMY-COMBAT-01",
@@ -7714,7 +7714,7 @@
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+      "privateSiteUrl": "(web privada antigua, retirada)"
     },
     {
       "id": "P1-ATLAS-MANUAL-01",
@@ -7788,7 +7788,7 @@
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+      "privateSiteUrl": "(web privada antigua, retirada)"
     },
     {
       "id": "P2-ARSENAL-01",
@@ -7857,7 +7857,7 @@
       "privateSiteStatus": "PUBLISHED_PRIVATE_VERIFIED_HTTP",
       "packageCommit": "8d651b51453c143d395d3feb8c0d5629066a72c9",
       "privateSiteVersion": 17,
-      "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site"
+      "privateSiteUrl": "(web privada antigua, retirada)"
     },
     {
       "id": "P2-ENTRY-CANON-01",
@@ -10029,7 +10029,7 @@
     "productName": "NEON CRONIUM",
     "brandChange": {
       "date": "2026-10-17",
-      "previousName": "NEON CATCHER",
+      "previousName": "NEON CRONIUM",
       "source": "Explicit owner instruction",
       "report": "docs/production-reports/REBRAND_NEON_CRONIUM_2026-10-17.md",
       "compatibility": "Preserve existing save keys, application/campaign IDs, repository and test-site origin. Historical evidence remains unmodified."
@@ -10126,7 +10126,7 @@
             "pendingFunctionalVerification": "Las seis tareas del nuevo lote permanecen IN_REVIEW con técnica PENDING_CHROMIUM; arte y prueba física pendientes. Mantener como histórica la certificación y web del lote anterior.",
             "currentVerifiedPackageCommit": "d39ed440740b094f9dddb588c540c537f4499215",
             "currentPrivateSiteSourceCommit": "8fb37f4d0ed9d4626bb2524c00abc406f6e954dd",
-            "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+            "currentPrivateSiteUrl": "(web privada antigua, retirada)",
             "currentPackageSha256": "87dfe31b679730d00de9adf2a03d2211e192598575d54c963fd41342c8732135",
             "currentPackageBytes": 8777108,
             "currentPackageEntries": 120,
@@ -10163,7 +10163,7 @@
             "pendingFunctionalVerification": "Sólo revisión artística/balance/audición humana y Safari/iPhone físicos pendientes. Natural4/4, visual6/6, actualización/offline7/7 y CI completos registrados por SHA.",
             "currentVerifiedPackageCommit": "f634a4635c4faacd33d19390706e0a97d1198662",
             "currentPrivateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
-            "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+            "currentPrivateSiteUrl": "(web privada antigua, retirada)",
             "currentPackageSha256": "5153eb0c06b9b5aea4ed40b05532178af1d9041ed84cab28f604da64e205b18a",
             "currentPackageBytes": 11327979,
             "currentPackageEntries": 128,
@@ -10197,7 +10197,7 @@
       "pendingFunctionalVerification": "Aceptación artística, balance/audición humanos y Safari/iPhone físico pendientes. No se presenta el paquete técnico como juego comercial terminado.",
       "currentVerifiedPackageCommit": "da3f4b839744940fee1032a8b637d5c3266c862f",
       "currentPrivateSiteSourceCommit": "3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932",
-      "currentPrivateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+      "currentPrivateSiteUrl": "(web privada antigua, retirada)",
       "currentPackageSha256": "a03143c6529b45d2b247ba567b5328bc15ac9004d3a612b32eeb77b30e21f246",
       "currentPackageBytes": 12755972,
       "currentPackageEntries": 135,
@@ -10296,7 +10296,7 @@
         "conclusion": "success",
         "scope": "Paquete limpio 33263c5: certificación 11/11, contenido 329/329, preview 23/23, Chromium reentrada 2/2, actualización/offline 5/5, Gaia enfocada 4/4 y combate/destrucción CH-02 gaia-05 4/4. Partida completa 4/4 sobre 612a y corrección final de reentrada probada por separado. CI previa del paquete aprobada; CI posterior de cierre 39104552902 falló y se investiga. Aceptación artística, balance humano y dispositivo pendientes.",
         "privateSiteVersion": 15,
-        "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+        "privateSiteUrl": "(web privada antigua, retirada)",
         "privateSiteSourceCommit": "0fdde843ec0b171d9022ed501a8b22fa0f2873b0",
         "privateSiteVerifiedAt": "2026-10-18T06:27:02Z",
         "ciStatus": "priorpackageCIpassed;latestCIflakyunderrepair",
@@ -10320,7 +10320,7 @@
         "workflowRun": 39120714906,
         "conclusion": "success",
         "privateSiteVersion": 20,
-        "privateSiteUrl": "https://neon-catcher-pruebas.chictide18.chatgpt.site",
+        "privateSiteUrl": "(web privada antigua, retirada)",
         "privateSiteSourceCommit": "a5c735e2c034f8fe81b288d52b290292a712c362",
         "scope": "Primer capítulo integrado: certificación11/11 a354, naturalfinalf6344/4, visual6/6, actualización/offline7/7, Site20HTTP12/12 y CI39120714906success. Artística/humana/física pendientes."
       },

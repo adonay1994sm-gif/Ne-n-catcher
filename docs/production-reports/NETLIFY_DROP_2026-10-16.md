@@ -1,4 +1,4 @@
-# INFORME DE PRODUCCIÓN — NEON CATCHER · preview Netlify
+# INFORME DE PRODUCCIÓN — NEON CRONIUM · preview Netlify
 
 Fecha: 2026-10-16 UTC
 Rama: `continuity-assets-audit-20261013`
