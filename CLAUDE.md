@@ -67,7 +67,8 @@ Si algo falla por el cambio, se deshace ese commit y se anota.
 - Cambios pequeños y reversibles. No borrar archivos; mover con `git mv`.
 - No cambiar balance, dificultad, economía ni guardados sin orden expresa.
 - No tocar iOS/Capacitor (`ios/`, `capacitor.config.ts`) salvo indicación.
-- `USE_ENGINE_V1 = false` y un único bucle `requestAnimationFrame`.
+- Un único bucle `requestAnimationFrame`. El motor experimental V1 se
+  retiró el 23/10/2026 (orden del propietario); sigue en el historial de git.
 - No inventar datos legales, contactos ni IDs: escribir `[COMPLETAR]`
   o "sin comprobar".
 - Progreso de la preparación de publicación: `docs/publicacion/PROGRESO.md`.

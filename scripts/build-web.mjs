@@ -33,9 +33,9 @@ for (const file of webOnlyFiles) {
   await cp(join(root, file), join(output, file));
 }
 await cp(join(root, "assets"), join(output, "assets"), { recursive: true });
-// La demo del motor experimental (engine-preview.html, engine/, js/engine/,
-// render/) y los mapas de código (*.js.map) se quedan en el repositorio para
-// desarrollo; no se publican en la web ni en la app (20/10/2026).
+// Los mapas de código (*.js.map) se quedan en el repositorio para desarrollo;
+// no se publican en la web ni en la app (20/10/2026). El motor experimental V1
+// se retiró el 23/10/2026.
 
 await rm(iosPublic, { recursive: true, force: true });
 await mkdir(iosPublic, { recursive: true });

@@ -18,7 +18,6 @@ La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recupe
 |---|---|
 | `src/game/` | **Código del juego.** Módulos `00-…` a `08-…` (se unen en `game.js`) y subcarpetas de contenido (`progression/`, `combat/`, `ship/`, `audio/`…). Aquí se edita. |
 | `src/core/` | Núcleo compartido (estado de partida, guardado, modelo del jugador, daño y pool de objetos). Genera `core-runtime.js`. |
-| `src/engine/` | Motor experimental V1, desactivado (`USE_ENGINE_V1 = false`). Solo lo usan pruebas. |
 | `src/native-admob-entry.js` | Puente de anuncios nativos. Genera `native-admob.js`. |
 | `assets/` | Imágenes y sonidos que usa el juego (inventariados en `ASSET_MANIFEST.json`). |
 | `art-source/` | Originales de arte de alta resolución (no se publican). |
@@ -29,7 +28,6 @@ La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recupe
 | `docs/publicacion/` | Preparación para la App Store: checklist, progreso e informes. |
 | `docs/propuestas/` | Propuestas pendientes de decisión del propietario. |
 | `docs/production-reports/` | Informes de producción. Sus capturas antiguas se retiraron el 20/10/2026 y siguen en el historial de git. |
-| `engine/`, `js/engine/`, `engine-preview.html`, `render/` | Demo aislada del motor experimental (solo web). |
 | `design/`, `preview/`, `tools/`, `.agents/` | Diseño de campaña, lanzador de preview, terceros revisados y skills de agentes. |
 | `www/` | Paquete web generado por `npm run build` (no está en Git). |
 

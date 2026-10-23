@@ -20,7 +20,7 @@ Leer `AGENTS.md`, `CLAUDE.md` y el diseño vigente (`docs/superpowers/specs/`). 
 
 ## Aplicar límites del proyecto
 
-- Mantener `USE_ENGINE_V1 = false`, el ciclo existente, guardados y campañas recuperables. No tocar `main`, PR #3, firmados, producción o monetización.
+- Mantener el ciclo existente (un único RAF), guardados y campañas recuperables. No tocar firmados, producción o monetización.
 - No solicitar aprobaciones rutinarias ya autorizadas. Reservar al propietario la aceptación estética y la decisión del motor; continuar tareas independientes.
 - Revisar licencia por archivo, versión y dependencias de terceros antes de ejecutar o incorporar. Fijar commit y conservar licencia/procedencia; consultar [revisión OSS](../../../docs/agents/OPEN_SOURCE_REVIEW.md). No usar APIs facturables ni servicios nuevos sin autorización económica.
 - Especializar mediante instrucciones y herramientas. No afirmar reentrenamiento permanente, autonomía fuera de la sesión ni creación automática de agentes por un archivo YAML.
