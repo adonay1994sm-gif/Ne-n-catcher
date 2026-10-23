@@ -43,8 +43,10 @@ var NeonCampaign = (() => {
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
     advanceCometShower: () => advanceCometShower,
+    advanceCrossBomb: () => advanceCrossBomb,
     advanceGaiaEnemy: () => advanceGaiaEnemy,
     advanceGuardianAtlas: () => advanceGuardianAtlas,
+    advanceMine: () => advanceMine,
     advanceShipBank: () => advanceShipBank,
     advanceShowerComet: () => advanceShowerComet,
     advanceVoyageHazardField: () => advanceVoyageHazardField,
@@ -7690,7 +7692,9 @@ var NeonCampaign = (() => {
       firstAttack: 1.2,
       salvageRole: "raider",
       basic: Object.freeze({ cooldown: 2.2 }),
-      unique: Object.freeze({ cooldown: 10, speed: 300 })
+      unique: Object.freeze({ cooldown: 10, speed: 300 }),
+      mine: Object.freeze({ arm: 0.8, radius: 70, life: 7, damage: 16 }),
+      bomb: Object.freeze({ raySpeed: 320, damage: 12 })
     }),
     aegis: Object.freeze({
       profile: "escort",
@@ -7744,7 +7748,7 @@ var NeonCampaign = (() => {
     const dx = to.x - from.x, dy = to.y - from.y, length = Math.hypot(dx, dy) || 1;
     return { vx: dx / length * speed, vy: dy / length * speed };
   }
-  function unleash(item, ability, emit) {
+  function unleash(item, ability, ctx, emit) {
     const { gaia } = item, rules = GAIA_ENEMY_RULES[gaia.kind];
     if (gaia.kind === "tracker") {
       if (ability === "unique") emit({ type: "mark", seconds: rules.unique.markSeconds });
@@ -7752,7 +7756,27 @@ var NeonCampaign = (() => {
         const from = { x: item.x, y: item.y - 30 };
         emit({ type: "shot", ...from, ...aimed(from, gaia.aim, rules.basic.speed), damage: rules.basic.damage, sprite: "orb" });
       }
+    } else if (gaia.kind === "sower") {
+      if (ability === "basic") emit({ type: "mine", x: item.x, y: item.y + 20 });
+      else emit({ type: "cross-bomb", x: item.x, y: item.y, vx: (item.x < ctx.bounds.w / 2 ? -1 : 1) * rules.unique.speed });
     }
+  }
+  function advanceMine(mine, dt, player) {
+    const rules = GAIA_ENEMY_RULES.sower.mine;
+    mine.age += dt;
+    mine.armed = mine.age >= rules.arm;
+    if (mine.armed && Math.hypot(player.x - mine.x, player.y - mine.y) < rules.radius) return "explode";
+    return mine.age >= rules.life ? "expire" : null;
+  }
+  function advanceCrossBomb(bomb, dt, bounds) {
+    bomb.x += bomb.vx * dt;
+    if (bomb.x > 0 && bomb.x < bounds.w) return null;
+    const { raySpeed: speed, damage } = GAIA_ENEMY_RULES.sower.bomb, x = bomb.x <= 0 ? 0 : bounds.w, inward = x === 0 ? 1 : -1;
+    return [
+      { x, y: bomb.y, vx: inward * speed, vy: 0, damage },
+      { x, y: bomb.y, vx: 0, vy: -speed, damage },
+      { x, y: bomb.y, vx: 0, vy: speed, damage }
+    ];
   }
   function advanceGaiaEnemy(item, dt, ctx, emit) {
     if (!(dt > 0)) return;
@@ -7761,7 +7785,7 @@ var NeonCampaign = (() => {
       gaia.telegraph = Math.min(1, gaia.telegraph + dt / Math.max(rules.warning, 1e-6));
       if (gaia.telegraph >= 1) {
         const ability = gaia.pending;
-        unleash(item, ability, emit);
+        unleash(item, ability, ctx, emit);
         gaia.cooldowns[ability] = ctx.now + rules[ability].cooldown;
         gaia.pending = null;
         gaia.telegraph = 0;

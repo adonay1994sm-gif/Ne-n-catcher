@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {GAIA_ENEMY_RULES, createGaiaEnemy, advanceGaiaEnemy} from '../src/game/combat/gaia-enemies.js';
+import {GAIA_ENEMY_RULES, createGaiaEnemy, advanceGaiaEnemy, advanceMine, advanceCrossBomb} from '../src/game/combat/gaia-enemies.js';
 import {createAttackTokens, requestAttack} from '../src/game/combat/attack-tokens.js';
 
 // Plan F3b: enemigos nuevos de Gaia (biblia §3.1) sobre la IA de perfiles.
@@ -63,4 +63,52 @@ test('it never attacks without a token', () => {
 test('same seed, same events', () => {
   const a = sim(spawn('tracker', {y: 1320}), 12).events, b = sim(spawn('tracker', {y: 1320}), 12).events;
   assert.deepEqual(a, b);
+});
+
+// Tarea 5: Sembrador, minas y bomba en cruz.
+test('the sower crosses the lower lane from edge to edge', () => {
+  const item = spawn('sower', {x: 80, y: 1000});
+  let minX = Infinity, maxX = -Infinity, worstY = 0;
+  sim(item, 12, {onStep: (now, it) => {
+    if (now < 2) return;
+    minX = Math.min(minX, it.x); maxX = Math.max(maxX, it.x);
+    worstY = Math.max(worstY, Math.abs(it.y - .78 * BOUNDS.h));
+  }});
+  assert.ok(minX <= 100 && maxX >= 620, `${minX}..${maxX}`);
+  assert.ok(worstY <= 40, `drifts ${worstY}`);
+});
+
+test('the sower drops a mine every 2.2 seconds', () => {
+  const mines = sim(spawn('sower', {x: 80, y: 1000}), 12).events.filter(event => event.type === 'mine');
+  assert.ok(mines.length >= 3);
+  for (let index = 1; index < mines.length; index++) assert.ok(mines[index].at - mines[index - 1].at >= 2.2 - 1e-9);
+});
+
+test('a mine arms after 0.8 s and only explodes near the ship', () => {
+  const near = {x: 360, y: 1000, age: 0, armed: false}, far = {x: 360, y: 1000, age: 0, armed: false};
+  const results = [];
+  for (let t = 0; t < 7.2; t += DT) {
+    results.push([t, advanceMine(near, DT, {x: 420, y: 1000}), advanceMine(far, DT, {x: 460, y: 1000})]);
+  }
+  const boom = results.find(([, result]) => result === 'explode');
+  assert.ok(boom && boom[0] >= .8 - DT, `explodes at ${boom?.[0]}`);
+  assert.ok(!results.some(([, , result]) => result === 'explode'), 'a mine 100 px away never explodes');
+  assert.ok(results.some(([t, , result]) => result === 'expire' && t >= 7 - 2 * DT));
+});
+
+test('the cross bomb bursts into three rays at the edge', () => {
+  const bomb = {x: 100, y: 900, vx: -300};
+  let rays = null;
+  for (let frame = 0; frame < 120 && !rays; frame++) rays = advanceCrossBomb(bomb, DT, BOUNDS);
+  assert.equal(rays.length, 3);
+  assert.ok(rays.some(ray => ray.vx > 0 && ray.vy === 0), 'inward');
+  assert.ok(rays.some(ray => ray.vy < 0 && ray.vx === 0), 'up');
+  assert.ok(rays.some(ray => ray.vy > 0 && ray.vx === 0), 'down');
+  for (const ray of rays) assert.ok(ray.x <= 1 && ray.damage > 0);
+});
+
+test('the sower throws its cross bomb toward the nearest edge', () => {
+  const bombs = sim(spawn('sower', {x: 80, y: 1000}), 12).events.filter(event => event.type === 'cross-bomb');
+  assert.ok(bombs.length >= 1);
+  for (const bomb of bombs) assert.equal(Math.sign(bomb.vx), bomb.x < BOUNDS.w / 2 ? -1 : 1);
 });
