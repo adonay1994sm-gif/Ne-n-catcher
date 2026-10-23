@@ -503,6 +503,13 @@
     atlasExplosion: loadSprite("assets/atlas_explosion_v1.webp", false),
     // Peligros del sector 2 (baúl, encargo enc-nucleo): núcleo de lava y mina de plasma.
     lavaCoreMine: loadSprite("assets/lava_core_mine_atlas_v1.webp", false),
+    // Enemigos nuevos de Gaia y proyectiles hostiles (plan F3b): celdas de 192
+    // (Alfa: 4 de 256; proyectiles: 6x4 de 128).
+    gaiaTracker: loadSprite("assets/gaia_tracker_atlas_v1.webp", false),
+    gaiaSower: loadSprite("assets/gaia_sower_atlas_v1.webp", false),
+    gaiaAegis: loadSprite("assets/gaia_aegis_atlas_v1.webp", false),
+    gaiaAlpha: loadSprite("assets/gaia_alpha_atlas_v1.webp", false),
+    hostileProjectiles2: loadSprite("assets/hostile_projectiles_v2.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),

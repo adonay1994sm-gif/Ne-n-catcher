@@ -1,0 +1,43 @@
+{
+  "fecha": "2026-10-23",
+  "origen": "Generación con GPT que el propietario subió al baúl de assets (neon-cronium-video-referencia.chictide18.chatgpt.site); originales sin cambios salvo las piezas del Alfa, pasadas de PNG a WebP sin pérdida e idénticas píxel a píxel.",
+  "empaquetado": "scripts/build-gaia-enemy-assets.py",
+  "archivos": [
+    {
+      "archivo": "ch04_rastreador_v1.webp",
+      "encargo": "camp-art-s1-rastreador",
+      "paquete": "camp-art-s1-rastreador-1.0.0"
+    },
+    {
+      "archivo": "ch05_sembrador_v1.webp",
+      "encargo": "camp-art-s1-sembrador",
+      "paquete": "camp-art-s1-sembrador-1.0.0"
+    },
+    {
+      "archivo": "ch06_egida_v1.webp",
+      "encargo": "camp-art-s1-egida",
+      "paquete": "camp-art-s1-egida-1.0.0",
+      "nota": "Entregada en naranja; la biblia pide marfil, grafito y núcleo rojo. Pendiente del propietario."
+    },
+    {
+      "archivo": "proyectiles_hostiles_v1.webp",
+      "encargo": "camp-art-proyectiles-hostiles",
+      "paquete": "camp-art-proyectiles-hostiles-1.0.0"
+    },
+    {
+      "archivo": "ch02_alfa_pieza_1_v1.webp … ch02_alfa_pieza_4_v1.webp",
+      "encargo": "enc-ch02alfa"
+    }
+  ],
+  "estado": "EN_REVISION; aceptación artística pendiente del propietario",
+  "sha256": {
+    "ch02_alfa_pieza_1_v1.webp": "090b154c57ad4bf8a75c65930c9ddc2f1f3820239957cd5dcec82a41f9db5695",
+    "ch02_alfa_pieza_2_v1.webp": "ac28827660c0096d33b628a8a99aab6c6d95a7216168627d9c4a3ef334f00a6d",
+    "ch02_alfa_pieza_3_v1.webp": "36d54761e1908dec033a9ef4890e0f116af7da4525a28919da422ad77f946342",
+    "ch02_alfa_pieza_4_v1.webp": "f4167d5d537ef7b6555f671d0c00fb784895f3e9d0135cbaeb6097602665745e",
+    "ch04_rastreador_v1.webp": "390756094a2692151864e063100d1a956e5d7a50c097660072e194f4fa8a5c97",
+    "ch05_sembrador_v1.webp": "65b33558a64f1c424cd1ee255ff140045cc00e972fac1dba4ddac47efd8fd506",
+    "ch06_egida_v1.webp": "beaadb6f7a4ae71c50b167f19281694963fca4388346835ec62472954799d5b2",
+    "proyectiles_hostiles_v1.webp": "40d0c3283d58e00705425d2f90d93d4a7106e03146e41d5fcc47107d2a6f85e8"
+  }
+}

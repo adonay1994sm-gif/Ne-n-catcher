@@ -1,0 +1,209 @@
+{
+  "asset": {
+    "id": "camp-art-s1-sembrador",
+    "identity_notes": "Encargo: camp-art-s1-sembrador. CH-05 ancho con bodega inferior. Dos filas de nave y una fila de mina apagada/activa y bomba en carga/explosión de unos 160 px. Propuesta revisada por el asistente; sin aprobación artística del usuario.",
+    "kind": "ship",
+    "project": "NEON CRONIUM",
+    "provenance": "adaptation",
+    "reference_files": [
+      "references/exec-29bd0065-db12-4a39-bc17-2f371b2d25e8.png"
+    ],
+    "version": "1.0.0"
+  },
+  "canvas": {
+    "height": 384,
+    "mode": "RGBA",
+    "padding_px": 4,
+    "pivot": {
+      "x": 192.0,
+      "y": 192.0
+    },
+    "transparency": "required",
+    "width": 384
+  },
+  "clips": [
+    {
+      "durations_ms": [
+        150,
+        150,
+        150,
+        150
+      ],
+      "frames": [
+        "f000",
+        "f001",
+        "f002",
+        "f003"
+      ],
+      "loop": true,
+      "motion_type": "articulation",
+      "name": "vuelo"
+    },
+    {
+      "durations_ms": [
+        180,
+        180,
+        180,
+        180
+      ],
+      "frames": [
+        "f004",
+        "f005",
+        "f006",
+        "f007"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "minado"
+    },
+    {
+      "durations_ms": [
+        220,
+        220
+      ],
+      "frames": [
+        "f008",
+        "f009"
+      ],
+      "loop": true,
+      "motion_type": "effects",
+      "name": "mina-parpadeo"
+    },
+    {
+      "durations_ms": [
+        190,
+        190
+      ],
+      "frames": [
+        "f010",
+        "f011"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "bomba-cruz"
+    }
+  ],
+  "delivery_profile": "delivery",
+  "frames": [
+    {
+      "file": "frames/f000.png",
+      "id": "f000"
+    },
+    {
+      "file": "frames/f001.png",
+      "id": "f001"
+    },
+    {
+      "file": "frames/f002.png",
+      "id": "f002"
+    },
+    {
+      "file": "frames/f003.png",
+      "id": "f003"
+    },
+    {
+      "file": "frames/f004.png",
+      "id": "f004"
+    },
+    {
+      "file": "frames/f005.png",
+      "id": "f005"
+    },
+    {
+      "file": "frames/f006.png",
+      "id": "f006"
+    },
+    {
+      "file": "frames/f007.png",
+      "id": "f007"
+    },
+    {
+      "file": "frames/f008.png",
+      "id": "f008"
+    },
+    {
+      "file": "frames/f009.png",
+      "id": "f009"
+    },
+    {
+      "file": "frames/f010.png",
+      "id": "f010"
+    },
+    {
+      "file": "frames/f011.png",
+      "id": "f011"
+    }
+  ],
+  "integration": {
+    "engine": "",
+    "evidence": [],
+    "status": "not_requested"
+  },
+  "previews": [
+    {
+      "clip": "vuelo",
+      "file": "previews/vuelo.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "minado",
+      "file": "previews/minado.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "mina-parpadeo",
+      "file": "previews/mina-parpadeo.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "bomba-cruz",
+      "file": "previews/bomba-cruz.webp",
+      "format": "WEBP"
+    }
+  ],
+  "publication": {
+    "status": "pending",
+    "urls": []
+  },
+  "review": {
+    "loop": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "motion": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "visual": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    }
+  },
+  "schema_version": "2.0",
+  "sheet": {
+    "cell_height": 384,
+    "cell_width": 384,
+    "columns": 4,
+    "file": "spritesheet.png",
+    "frame_order": [
+      "f000",
+      "f001",
+      "f002",
+      "f003",
+      "f004",
+      "f005",
+      "f006",
+      "f007",
+      "f008",
+      "f009",
+      "f010",
+      "f011"
+    ],
+    "margin": 0,
+    "rows": 3,
+    "spacing": 0
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "asset": {
+    "id": "camp-art-s1-rastreador",
+    "identity_notes": "Encargo: camp-art-s1-rastreador. CH-04 estrecho con dos aletas traseras, morro abajo y sensor que dispara hacia arriba. Núcleo rojo en los cuatro estados de ataque. Propuesta revisada por el asistente; sin aprobación artística del usuario.",
+    "kind": "ship",
+    "project": "NEON CRONIUM",
+    "provenance": "adaptation",
+    "reference_files": [
+      "references/exec-2f4e54eb-b76f-4712-ba76-124b8d3e78af.png"
+    ],
+    "version": "1.0.0"
+  },
+  "canvas": {
+    "height": 384,
+    "mode": "RGBA",
+    "padding_px": 4,
+    "pivot": {
+      "x": 192.0,
+      "y": 192.0
+    },
+    "transparency": "required",
+    "width": 384
+  },
+  "clips": [
+    {
+      "durations_ms": [
+        150,
+        150,
+        150,
+        150
+      ],
+      "frames": [
+        "f000",
+        "f001",
+        "f002",
+        "f003"
+      ],
+      "loop": true,
+      "motion_type": "articulation",
+      "name": "vuelo"
+    },
+    {
+      "durations_ms": [
+        130,
+        130,
+        130,
+        130
+      ],
+      "frames": [
+        "f004",
+        "f005",
+        "f006",
+        "f007"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "ataque-retaguardia"
+    }
+  ],
+  "delivery_profile": "delivery",
+  "frames": [
+    {
+      "file": "frames/f000.png",
+      "id": "f000"
+    },
+    {
+      "file": "frames/f001.png",
+      "id": "f001"
+    },
+    {
+      "file": "frames/f002.png",
+      "id": "f002"
+    },
+    {
+      "file": "frames/f003.png",
+      "id": "f003"
+    },
+    {
+      "file": "frames/f004.png",
+      "id": "f004"
+    },
+    {
+      "file": "frames/f005.png",
+      "id": "f005"
+    },
+    {
+      "file": "frames/f006.png",
+      "id": "f006"
+    },
+    {
+      "file": "frames/f007.png",
+      "id": "f007"
+    }
+  ],
+  "integration": {
+    "engine": "",
+    "evidence": [],
+    "status": "not_requested"
+  },
+  "previews": [
+    {
+      "clip": "vuelo",
+      "file": "previews/vuelo.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "ataque-retaguardia",
+      "file": "previews/ataque-retaguardia.webp",
+      "format": "WEBP"
+    }
+  ],
+  "publication": {
+    "status": "pending",
+    "urls": []
+  },
+  "review": {
+    "loop": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "motion": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "visual": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    }
+  },
+  "schema_version": "2.0",
+  "sheet": {
+    "cell_height": 384,
+    "cell_width": 384,
+    "columns": 4,
+    "file": "spritesheet.png",
+    "frame_order": [
+      "f000",
+      "f001",
+      "f002",
+      "f003",
+      "f004",
+      "f005",
+      "f006",
+      "f007"
+    ],
+    "margin": 0,
+    "rows": 2,
+    "spacing": 0
+  }
+}
