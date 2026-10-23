@@ -13,5 +13,5 @@ for (let i = 0; i < runs; i++) results.push(await runVoyage({voyage, seed: seed 
 const mean = key => Math.round(results.reduce((sum, run) => sum + run[key], 0) / runs * 100) / 100;
 console.log(JSON.stringify({voyage, runs, seed, maxSeconds: max,
   completionRate: Math.round(results.filter(run => run.result === 'complete').length / runs * 100) / 100,
-  avgStageReached: mean('stageReached'), avgDeaths: mean('deaths'), avgMaxIdleGap: mean('maxIdleGap'),
+  avgStageReached: mean('stageReached'), avgDeaths: mean('deaths'), avgMaxIdleGap: mean('maxIdleGap'), idleGapsOver6: results.reduce((sum, run) => sum + run.idleGapsOver6, 0),
   avgIdleSeconds: mean('idleSeconds'), avgThreats: mean('threatsAvg'), results}, null, 2));

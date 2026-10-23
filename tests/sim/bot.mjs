@@ -78,7 +78,7 @@ export async function runVoyage({voyage, seed, maxSeconds, invulnerable = false}
   else if (!S.startSideVoyage(voyage)) throw new RangeError(`Unknown voyage ${voyage}`);
 
   let seconds = 0, idle = 0, gap = 0, maxGap = 0, threatSum = 0, frames = 0, shots = 0, hits = 0, stageReached = 1, hull = 100;
-  let result = 'timeout', previous = new Set();
+  let result = 'timeout', previous = new Set(), started = false, gapsOver6 = 0;
   while (seconds < maxSeconds) {
     const view = B.step(invulnerable);
     S.update(DT); seconds += DT; frames++;
@@ -86,14 +86,20 @@ export async function runVoyage({voyage, seed, maxSeconds, invulnerable = false}
     for (const enemy of previous) if (!view.scouts.has(enemy) && enemy.y > 0 && enemy.y < 1280) hits++;
     previous = view.scouts;
     threatSum += view.threats;
-    if (view.threats === 0 && view.state === 'playing') { idle += DT; gap += DT; maxGap = Math.max(maxGap, gap); } else gap = 0;
+    // El hueco sin acción se mide desde la primera amenaza: el arranque del
+    // viaje no cuenta como tramo aburrido (revisión F2).
+    started ||= view.threats > 0;
+    if (started && view.threats === 0 && view.state === 'playing') {
+      idle += DT; gap += DT; maxGap = Math.max(maxGap, gap);
+    } else { if (gap > 6) gapsOver6++; gap = 0; }
     stageReached = Math.max(stageReached, view.stage); hull = view.hull;
     const now = S.ev('state');
     if (now === 'complete') { result = 'complete'; break; }
     if (now === 'gameover') { result = 'defeat'; break; }
   }
+  if (gap > 6) gapsOver6++;
   w.close();
   const round = value => Math.round(value * 100) / 100;
   return {voyage, seed, result, stageReached, seconds: round(seconds), hull: Math.round(hull), deaths: result === 'defeat' ? 1 : 0,
-    shots, hits, idleSeconds: round(idle), maxIdleGap: round(maxGap), threatsAvg: round(threatSum / Math.max(1, frames))};
+    shots, hits, idleSeconds: round(idle), maxIdleGap: round(maxGap), idleGapsOver6: gapsOver6, threatsAvg: round(threatSum / Math.max(1, frames))};
 }
