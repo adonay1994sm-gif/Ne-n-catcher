@@ -41,14 +41,14 @@ Cambio de marca visible, metadatos web/PWA/iOS, paquete npm, guías activas y nu
 - Silueta y hash de colisión V6.3/V6.4.3.
 - Objetivos, velocidades, frecuencia base, suministro, puntuación y combo x12.
 - Controles, sensibilidad, progreso, estrellas, récords y claves locales.
-- Daño, explosión, continuación, habilidades, anuncios de prueba y bundle ID `com.neoncronium`.
+- Daño, explosión, continuación, habilidades, anuncios de prueba y bundle ID (entonces con el nombre anterior del juego; desde el 23/10/2026, `com.neoncronium`).
 
 ## V6.4.4 Base Estable — 3 de agosto de 2026
 
 ### Corregido
 
 - Alineados nombre visible, `package.json`, README, código y caché en V6.4.4.
-- Sustituida la caché heredada V6.4.2 por `neon-cronium-v6-4-4-base-stable`.
+- Sustituida la caché heredada V6.4.2 por la caché `…-v6-4-4-base-stable` (con el nombre anterior del juego).
 - Añadido versionado de CSS/JavaScript y estrategia network-first para código.
 - Precargados en la PWA los 56 assets de producción para evitar una mezcla parcial offline.
 - Recuperada la migración idempotente de `neon-best-v1` sin reducir un récord V2 existente.
@@ -61,7 +61,7 @@ Cambio de marca visible, metadatos web/PWA/iOS, paquete npm, guías activas y nu
 
 - Dependencias fijadas y lockfile reproducible.
 - Build web limpio en `www/`.
-- Proyecto Capacitor iOS real con bundle ID `com.neoncronium`.
+- Proyecto Capacitor iOS real con bundle ID (entonces con el nombre anterior del juego).
 - AdMob nativo conectado con IDs oficiales de prueba, flujo de consentimiento y recompensa confirmada por evento.
 - Añadidos `ASSET_MANIFEST.json`, pruebas automatizadas y este changelog.
 
