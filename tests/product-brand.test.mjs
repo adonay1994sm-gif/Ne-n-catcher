@@ -11,7 +11,7 @@ const text = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 const oldVisibleBrand = /neon\s*catcher/i;
 
 test('NEON CRONIUM appears in live pages and accessible names without the retired wordmark', async () => {
-  for (const path of ['index.html', 'preview/launcher.html', 'privacy.html', 'terms.html', 'engine-preview.html']) {
+  for (const path of ['index.html', 'preview/launcher.html', 'privacy.html', 'terms.html']) {
     const dom = new JSDOM(await text(path));
     const document = dom.window.document;
     assert.match(document.title, /neon cronium/i, path);

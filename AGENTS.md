@@ -147,7 +147,7 @@ Antes de editar: verificar árbol/HEAD/remoto, el tablero del proyecto y `produc
 ## Límites y conservación
 
 - Integrar y publicar solamente en `main`, con PR desde la rama de trabajo. Sin force push y sin descartar trabajo válido (orden del propietario, 23/10/2026).
-- **`USE_ENGINE_V1 = false`**. No activar/migrar/reemplazar/fusionar motores sin orden técnica del propietario. Conservar módulos del motor experimental y un único propietario de RAF en la campaña; no otro motor paralelo.
+- **Un único propietario de RAF** en la campaña; no otro motor paralelo. El motor experimental V1 se retiró el 23/10/2026 por orden del propietario (sigue en el historial de git).
 - Preservar campañas y guardados existentes. Nueva campaña con claves/versiones propias y migraciones idempotentes con respaldo; sin equivalencias numéricas inventadas.
 - No producción, App Store, TestFlight, pagos/anuncios reales, compras, nuevas APIs facturables o secretos en repositorio/evidencias. Preview aislada solo con acceso/destino de pruebas autorizados y revisión/URL verificadas.
 - Desarrollo reversible, pruebas, assets, commits y push de la rama están autorizados sin aprobaciones rutinarias. Aceptación estética y decisión del motor corresponden al propietario; continuar tareas independientes mientras estén pendientes.

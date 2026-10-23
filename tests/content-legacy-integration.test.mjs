@@ -11,7 +11,6 @@ test('content is packaged before the campaign and adds no RAF owner or Engine V1
   assert.ok(html.indexOf('core-runtime.js') < html.indexOf('content-runtime.js'));
   assert.ok(html.indexOf('content-runtime.js') < html.indexOf('game.js'));
   assert.doesNotMatch(content, /requestAnimationFrame|EngineCore|CampaignAdapter/);
-  assert.match(await readFile(new URL('src/engine/CampaignAdapter.js', root), 'utf8'), /USE_ENGINE_V1 = false/);
   for (const target of ['www/content-runtime.js', 'ios/App/App/public/content-runtime.js']) {
     assert.equal(await readFile(new URL(target, root), 'utf8'), content);
   }

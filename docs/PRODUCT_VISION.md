@@ -123,7 +123,7 @@ Están autorizados el diseño reversible, código, refactorización razonada, re
 ### Límites permanentes
 
 - No modificar `main`, ni modificar o fusionar PR #3; no hacer force push ni borrar trabajo válido.
-- Mantener `USE_ENGINE_V1 = false`. No activar, migrar, reemplazar ni fusionar implementaciones del motor sin orden técnica específica; conservar EngineCore, Renderer, ParticleSystem y CampaignAdapter.
+- Un único bucle de juego. El motor experimental V1 (EngineCore, Renderer, ParticleSystem, CampaignAdapter) se retiró el 23/10/2026 por orden del propietario.
 - Un único propietario de `requestAnimationFrame` para la campaña; módulos compatibles con el ciclo existente, sin otro motor paralelo.
 - Preservar ambas campañas antiguas y sus guardados. Evitar cambios accidentales de N-7 al trabajar la campaña espacial.
 - No publicar producción, App Store o TestFlight, ni habilitar publicidad/pagos reales. No contratar servicios, APIs facturables externas o licencias sin autorización económica explícita. Usar herramientas disponibles dentro de sus límites.

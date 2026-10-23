@@ -14,7 +14,7 @@ Habla en español claro y sencillo.
 ## Antes de empezar
 
 1. Lee `CLAUDE.md` y, si hace falta, `AGENTS.md`. Sus reglas son requisitos:
-   un solo `requestAnimationFrame`, `USE_ENGINE_V1 = false`, no cambiar
+   un solo `requestAnimationFrame` (el motor V1 se retiró), no cambiar
    balance/economía/guardados sin orden, no editar a mano `game.js`,
    `core-runtime.js`, `content-runtime.js`, `www/` ni `ios/App/App/public/`,
    solo IDs de prueba de AdMob.
