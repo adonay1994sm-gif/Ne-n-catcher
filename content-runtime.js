@@ -20,6 +20,7 @@ var NeonCampaign = (() => {
   // src/game/progression/legacy-content-entry.js
   var legacy_content_entry_exports = {};
   __export(legacy_content_entry_exports, {
+    CHRONOS_CHAPTER_ROUTE_SECONDS: () => CHRONOS_CHAPTER_ROUTE_SECONDS,
     CHRONOS_INTRO_TIMELINE: () => CHRONOS_INTRO_TIMELINE,
     CHRONOS_VOYAGE_KEY: () => CHRONOS_VOYAGE_KEY,
     CHRONOS_VOYAGE_STAGES: () => CHRONOS_VOYAGE_STAGES,

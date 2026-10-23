@@ -1753,9 +1753,9 @@
 
   function advanceClassicVoyageEncounters(dt) {
     const view=classicFlightView,n=view.stageNumber;
-    // Los 9 s de espera son el inicio propio de S1-V1 (estación y tutorial).
+    // Los 9 s de espera son el inicio de Chronos (S1-V1 y el sector 1, recoveryAt).
     // Los viajes del mapa no tienen ese inicio: su primer CRONIUM llega en ~1 s.
-    if(view.elapsed<(classicSideVoyage?0:9) || view.canFinish || classicChapterControlsLocked())return;
+    if(view.elapsed<(classicSideVoyage?classicSideVoyage.ficha.recoveryAt:9) || view.canFinish || classicChapterControlsLocked())return;
     // Reglas del tramo: salen de la ficha del viaje (patrullas, peligros, cometas y reparación).
     const rules=NeonCampaign.getVoyageStageRulesFor(view.routeId,n,settings.difficulty);
     if(!rules)return;
@@ -1972,6 +1972,11 @@
     const saved=storage.setJSON(NeonCampaign.SECTOR_SAVE_KEY,save);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
     return saved;
+  }
+  // El inicio de Chronos (historia y tutorial) es de S1-V1 y de las fichas con
+  // `intro`, como el sector 1 (propietario, 23/10/2026).
+  function fichaHasIntro() {
+    return !classicSideVoyage||classicSideVoyage.ficha.intro===true;
   }
   function startSector(id) {
     const ficha=NeonCampaign.getSectorFicha(id);
@@ -2722,9 +2727,10 @@
     classicFlight=classicSideVoyage ? classicSideVoyage.route.create({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint})
       : currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
-    classicChapterStory=classicFlight&&!classicSideVoyage?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
+    // La historia del capítulo dura 360 s: en los tramos posteriores del sector no hay.
+    classicChapterStory=classicFlight&&fichaHasIntro()&&classicFlightView.elapsed<NeonCampaign.CHRONOS_CHAPTER_ROUTE_SECONDS?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry&&!classicSideVoyage?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;
-    classicTutorial=classicFlight&&!classicSideVoyage?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
+    classicTutorial=classicFlight&&fichaHasIntro()?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
     classicTutorialAnchor=null;classicTutorialSignature='';
     classicWeapons=NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H});
     beginClassicSalvageRun(Boolean(voyageEntry||(classicSideVoyage&&voyageCheckpoint)));
@@ -4526,7 +4532,9 @@
   // pose pura de NeonCampaign.getChronosIntroPose; sin piezas cargadas se
   // sigue usando el inicio anterior.
   function chronosIntroPose(view) {
-    if (typeof NeonCampaign.getChronosIntroPose !== "function" || view.routeId !== "chronos-to-gaia") return null;
+    const introRoute = view.routeId === "chronos-to-gaia" ||
+      (typeof classicSideVoyage !== "undefined" && classicSideVoyage?.ficha.intro === true);
+    if (typeof NeonCampaign.getChronosIntroPose !== "function" || !introRoute) return null;
     // Tras la secuencia, la estación rota sigue girando y alejándose con la
     // ruta (sin volver al dibujo antiguo mientras siga a la vista).
     const pose = NeonCampaign.getChronosIntroPose(view.elapsed,

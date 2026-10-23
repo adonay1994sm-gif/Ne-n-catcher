@@ -117,6 +117,45 @@ test('the menu shows the sector and hides the old voyage map', () => {
   assert.match(w.document.getElementById('playSector').textContent, /TRAMO 4\/10/);
 });
 
+// Tarea 3: el sector empieza con el inicio de Chronos y el tutorial.
+const story = T => T.ev('Boolean(classicChapterStory)');
+const tutorial = T => T.ev('Boolean(classicTutorial)');
+
+test('a fresh sector plays the Chronos opening and the tutorial', () => {
+  const {T} = harness();
+  T.startSector('S1');
+  T.adv(3);
+  assert.equal(story(T), true);
+  assert.equal(tutorial(T), true);
+  drawnTexts.length = 0; T.draw();
+  assert.ok(drawnTexts.some(text => /^image:.*chronos_intro_station_atlas/.test(text)), 'the Chronos station is drawn');
+});
+
+test('no patrol spawns before recoveryAt', () => {
+  const {T} = harness();
+  T.startSector('S1');
+  for (let second = 0; second < 8; second++) {
+    T.adv(1);
+    assert.equal(T.ev('items.filter(item=>item.classicScout).length'), 0, `second ${second + 1}`);
+  }
+});
+
+test('continuing late in the sector does not throw and has no chapter story', () => {
+  for (const stageNumber of [8, 9]) {
+    const {w, T} = harness();
+    putRun(w, {sector: 1, stageNumber, stageHull: 90, reviveUsed: false});
+    click(w, 'play');
+    assert.equal(T.stage(), stageNumber);
+    assert.equal(story(T), false, `stage ${stageNumber}`);
+  }
+});
+
+test('old side voyages still skip the intro', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2');
+  assert.equal(story(T), false);
+  assert.equal(tutorial(T), false);
+});
 
 test('a sector stage spawns CRONIUM and patrols', () => {
   const {T} = harness();
