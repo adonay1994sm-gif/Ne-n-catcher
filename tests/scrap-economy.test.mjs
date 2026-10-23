@@ -683,3 +683,11 @@ test('a beacon bought at an older price still loads after the price changes', ()
   const old = createScrapRecord(); delete old.consumableSpent; delete old.lastConsumable;
   assert.deepEqual(normalizeScrapRecord(old), createScrapRecord(), 'saves from before the beacon load unchanged');
 });
+
+test('an upgrade cannot reuse the id of the last consumable', () => {
+  const device = memory(), log = ledger(device), run = start(log); fund(log, run.runId, 12);
+  assert.equal(log.buyConsumable({transactionId: 'beacon:salvage-run:1', sku: 'sector-beacon'}).ok, true);
+  const result = log.purchase({transactionId: 'beacon:salvage-run:1', sku: 'hull-reinforcement'});
+  assert.equal(result.reason, 'transaction-id-conflict');
+  assert.equal(log.getBalance(), 108 - 40);
+});

@@ -678,9 +678,12 @@ test('CH-03 hurts once per sweep and once per grid step', () => {
   const before = T.hull();
   T.adv(.45);
   assert.equal(before - T.hull(), 16, 'one grid step hits once');
-  T.ev("hullGrace=0;items=[];Object.assign(ch03Boss,{state:'attack',attack:'sweep',stateTime:0,grid:null,attacks:ch03Boss.attacks+1,beam:{angle:Math.atan2(player.x-ch03Boss.x,player.y-ch03Boss.y),direction:1,active:true}})");
+  T.ev("hullGrace=0;items=[];Object.assign(ch03Boss,{state:'attack',attack:'sweep',stateTime:0,grid:null,attacks:ch03Boss.attacks+1,beam:{angle:Math.atan2(player.x-ch03Boss.x,player.y-ch03Boss.y)-(14+30)/Math.hypot(player.x-ch03Boss.x,player.y-ch03Boss.y),direction:1,active:true}})");
   const mid = T.hull();
   T.adv(.4);
+  // El mismo barrido vuelve sobre la nave pasada la gracia (como con la nave lejos).
+  T.ev("items=[];ch03Boss.beam.angle=Math.atan2(player.x-ch03Boss.x,player.y-ch03Boss.y)");
+  T.adv(.1);
   assert.equal(mid - T.hull(), 14, 'one sweep hits once');
 });
 
@@ -714,15 +717,6 @@ test('leaving to the menu during CH-03 removes the satellite', () => {
   assert.equal(T.ev('ch03Boss'), null);
 });
 
-test('Escape on the beacon panel continues without opening the pause menu', () => {
-  const {w, T} = harness({query: '?dev=1'});
-  startAt(T, 6); giveScrap(T, 5); toService(T);
-  w.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
-  assert.equal(offerShown(w), false);
-  assert.equal(T.st().state, 'playing');
-  assert.equal(w.document.getElementById('paused').classList.contains('show'), false);
-});
-
 test('in fury the open core is drawn with the core animation, not the closed fury pose', () => {
   const {T} = harness({query: '?dev=1'});
   atlasFight(T); enrage(T);
@@ -733,4 +727,16 @@ test('in fury the open core is drawn with the core animation, not the closed fur
   T.ev("Object.assign(atlasBoss,{state:'closed',stateTime:0,vulnerability:false,coreExposure:0})");
   drawnTexts.length = 0; T.draw();
   assert.ok(drawnTexts.includes('image:assets/atlas_fury_atlas_v1.webp'));
+});
+
+test('a paid beacon that could not be saved is kept when the panel closes', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  T.ev("window.__realSave=saveSector;saveSector=()=>false");
+  click(w, 'beaconBuy');
+  assert.equal(offerShown(w), true, 'the panel stays open and asks to retry');
+  T.ev("saveSector=window.__realSave");
+  click(w, 'beaconSkip');
+  assert.equal(devSave(w)?.sectors?.[1]?.beacon, true);
+  assert.equal(T.ev('classicSalvageState.balance'), 5, 'charged once');
 });

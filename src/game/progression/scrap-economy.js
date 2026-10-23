@@ -384,6 +384,7 @@ export function createScrapLedger({storage, key = SCRAP_ECONOMY_KEY} = {}) {
     const prior = current.purchases.find(receipt => receipt.id === transactionId);
     if (prior) return prior.sku === sku ? success('duplicate', {duplicate: true, sku, price: 0})
       : blocked('transaction-id-conflict');
+    if (current.lastConsumable?.id === transactionId) return blocked('transaction-id-conflict');
     if (current.upgrades.includes(sku)) return {ok: false, status: 'unavailable', reason: 'already-owned', state: copy(current)};
     if (current.purchases.length >= SCRAP_ECONOMY_RULES.maxPurchaseReceipts) return blocked('purchase-receipt-capacity');
     const requires = SCRAP_UPGRADES[sku].requires.filter(required => !current.upgrades.includes(required));

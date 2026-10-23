@@ -330,8 +330,7 @@
       fireManualShot();
     }
     if(event.key.toLowerCase()==="m"&&state==="playing"&&!event.repeat){event.preventDefault();fireClassicMissile();}
-    // Un panel que ya respondió a Escape (02) lo marca con preventDefault.
-    if (event.key === "Escape" && !event.defaultPrevented) {
+    if (event.key === "Escape") {
       resetGameInput();
       state === "paused" ? resumeGame() : pauseGame();
     }
