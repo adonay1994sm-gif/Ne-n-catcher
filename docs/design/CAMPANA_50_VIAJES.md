@@ -1,6 +1,6 @@
 # NEON CRONIUM · Campaña de 50 viajes
 
-> Versión 1 · 20/10/2026. Propuesta de Claude para el propietario. **Nada está
+> Versión 1 · 20/10/2026. Propuesta para el propietario. **Nada está
 > implementado** salvo el viaje actual Chronos → Gaia (S1-V1) y Atlas.
 > Estructura aprobada: **10 sectores × 5 viajes**. Se apoya en
 > `BIBLIA_HISTORIA.md`, `DECISIONES_VIAJES_2026-10-20.md`,
@@ -19,7 +19,7 @@
     → tramos → llegada (evento de llegada, sin jefe) → llega C9.
   - **V5**: tramos → jefe intermedio → llega C9 → tramos → llegada →
     **jefe principal del sector** → llega C9.
-  - Interpretación de Claude: en V1–V4 el final es una llegada sin jefe.
+  - Interpretación técnica: en V1–V4 el final es una llegada sin jefe.
     Si el propietario quiere un segundo jefe de familia al final, se añade
     sin cambiar nada más.
 - Tramos de 30–36 s; S1-V1 tiene 10 tramos (~360 s); el resto, de 7 a 10.
@@ -54,8 +54,7 @@
 la firma falsa y Cronos Prime, ya despierto, da el golpe. Nadie sabe aún
 qué es; se nombra en S10.
 
-**Destino de Lira (decidido por Claude, el propietario delegó la
-historia):** Lira se queda en la torre para enviar el registro y su señal
+**Destino de Lira (decidido al escribir la historia):** Lira se queda en la torre para enviar el registro y su señal
 se apaga con la ruptura; el piloto la da por muerta (duelo). En S7-V2 su
 eco revela que el sabotaje estaba previsto. En S9 se descubre que la flota
 de extracción se la llevó viva a Titan Omega, porque conoce los códigos del
@@ -465,4 +464,4 @@ Solo personajes de la biblia y del manuscrito; no hay datos reales.
 2. ⏳ Jefe de S3 (propuesta: **Crisol**): «vamos viéndolo».
 3. ✔ Prólogo: el C-17 abre la puerta, Cronos Prime da el golpe.
 4. ⏸ Armas nuevas y mejoras: aparcadas; el propietario las está diseñando.
-5. ✔ Lira: la historia la decide Claude (ver §1).
+5. ✔ Lira: se decide al escribir la historia (ver §1).

@@ -1,6 +1,6 @@
 # Encargos de arte para GPT · NEON CRONIUM
 
-Actualizado: 2026-10-22. Lista pública que Claude mantiene al día desde el tablero del proyecto.
+Actualizado: 2026-10-22. Lista pública que se mantiene al día desde el tablero del proyecto.
 Versión para máquinas: https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/docs/art/encargos-gpt.json
 
 **Antes de nada lee la guía:** https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md (qué es el juego, modelos de referencia y reglas).

@@ -2,7 +2,7 @@
 
 # Capítulo 1 · música original v1
 
-Producción: 18/10/2026, por Codex para NEON CRONIUM. **IN_REVIEW**: archivos reales, composición y decodificación verificadas; aceptación musical del propietario, mezcla dentro del juego y certificación física pendientes. No se ha realizado una audición humana en esta sesión.
+Producción: 18/10/2026, para NEON CRONIUM. **IN_REVIEW**: archivos reales, composición y decodificación verificadas; aceptación musical del propietario, mezcla dentro del juego y certificación física pendientes. No se ha realizado una audición humana en esta sesión.
 
 | Recurso | Función y arreglo | Duración | Exportación |
 | --- | --- | --- | --- |

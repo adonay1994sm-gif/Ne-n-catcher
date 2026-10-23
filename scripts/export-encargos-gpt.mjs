@@ -2,7 +2,7 @@
 // Convierte las tareas del tablero (una carpeta de JSON, una por tarea, como
 // las guarda ArtifactData con out_dir) en la lista pública de encargos para
 // GPT: docs/art/ENCARGOS_GPT.md y docs/art/encargos-gpt.json. GPT no puede
-// entrar al tablero (es privado de Claude); estos archivos están en el
+// entrar al tablero (es privado); estos archivos están en el
 // repositorio público y los lee por su URL «raw» de GitHub.
 //
 // Uso: node scripts/export-encargos-gpt.mjs <carpeta-con-las-tareas>
@@ -38,7 +38,7 @@ await writeFile(new URL('encargos-gpt.json', OUT), JSON.stringify({
 }, null, 2) + '\n');
 
 const md = [`# Encargos de arte para GPT · NEON CRONIUM`, '',
-  `Actualizado: ${updated}. Lista pública que Claude mantiene al día desde el tablero del proyecto.`,
+  `Actualizado: ${updated}. Lista pública que se mantiene al día desde el tablero del proyecto.`,
   `Versión para máquinas: ${RAW}/encargos-gpt.json`, '',
   `**Antes de nada lee la guía:** ${RAW}/GUIA_GPT.md (qué es el juego, modelos de referencia y reglas).`, '',
   '## Cómo trabajar', '',

@@ -5,8 +5,8 @@
 > **Pendiente de aprobación del propietario.**
 >
 > Amplía `BIBLIA_HISTORIA.md`: conserva su trama, personajes y jefes, y la
-> reparte en 10 sistemas, cada uno con su facción. Lo nuevo lo propone
-> Claude y se puede cambiar. Los encargos de arte salen de aquí; ver
+> reparte en 10 sistemas, cada uno con su facción. Lo nuevo es propuesta y
+> se puede cambiar. Los encargos de arte salen de aquí; ver
 > `docs/art/GUIA_GPT.md`.
 
 ## 1. Reglas del mundo
@@ -24,7 +24,7 @@
   - el color propio de cada facción va en el **casco y su luz de reposo**
     (hielo azul en Cryon, violeta en Aether, como en sus dosieres), pero
     **lo que hace daño pasa a cálido**: al cargar el ataque el núcleo vira a
-    ámbar y los proyectiles son rojos o naranjas **(decisión de Claude para
+    ámbar y los proyectiles son rojos o naranjas **(decisión técnica para
     unir los dosieres con la regla de legibilidad)**;
   - el cian es del jugador y del CRONIUM;
   - el violeta es de lo temporal: Cronos Prime, Aether y Kairos.

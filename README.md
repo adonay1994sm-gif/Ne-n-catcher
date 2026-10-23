@@ -91,4 +91,4 @@ Los IDs incluidos son las unidades de demostración oficiales de Google. No gene
 - `docs/CHANGELOG.md`: cambios y funciones preservadas.
 - `src/game/README.md`: mapa de responsabilidades y reglas de edición.
 - `ASSET_MANIFEST.json`: inventario, dimensiones, pivotes, secuencias y uso de assets.
-- Los informes de versiones anteriores (V6–V7, Codex) se retiraron el 23/10/2026 y siguen en el historial de git.
+- Los informes de versiones anteriores (V6–V7) se retiraron el 23/10/2026 y siguen en el historial de git.

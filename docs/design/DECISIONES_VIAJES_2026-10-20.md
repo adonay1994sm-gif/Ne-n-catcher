@@ -1,6 +1,6 @@
 # Decisiones de diseño · Viajes, jefes, C9 y dificultad
 
-> Fecha: 20/10/2026. Debate técnico entre el propietario y Claude.
+> Fecha: 20/10/2026. Debate técnico del propietario.
 > Estado: **DECIDIDO** salvo lo marcado como pendiente. Aún no implementado.
 > Sustituye las partes incompatibles de `CAPITULO_02_GAIA_VULKAR.md`
 > (HALO, Pinza Roja, Magma Serpent) y del mapa de `CAMPAIGN_100_STAGES.md`.
@@ -102,7 +102,7 @@ Arreglo (siguiendo el concepto de 4 viñetas del propietario):
 - Planetas grandes (~2048 px) y capas aparte (nubes, luces) si es posible.
 - Fondo transparente real; misma referencia y misma frase de estilo en cada
   petición. ChatGPT como herramienta principal; Gemini solo para ideas.
-- Para cada elemento, Claude entregará una ficha con el texto para pegar en
+- Para cada elemento, se entregará una ficha con el texto para pegar en
   ChatGPT y la lista de piezas.
 
 ## 9. Técnica (resumen)

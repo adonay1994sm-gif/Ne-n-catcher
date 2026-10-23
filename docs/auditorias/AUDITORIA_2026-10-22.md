@@ -1,7 +1,6 @@
 # Auditoría visual y de comportamiento — 22/10/2026
 
 Rama: `claude/preparar-publicacion-rtfl9q` (HEAD `fcaa37f`).
-Lienzo con capturas: https://claude.ai/artifact/X8dhpjnH4XERhRx6ssx8ge (privado).
 
 Tres revisores independientes:
 

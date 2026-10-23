@@ -524,7 +524,7 @@ Basado en `docs/design/DECISIONES_VIAJES_2026-10-20.md` §8 y
   español con versión (`tema_que_es_v1.webp`), `.json` con fecha, autor y
   SHA-256, y fila en `docs/art/CATALOGO_ARTE.md` (RECIBIDO → INTEGRADO →
   ACEPTADO).
-- Claude entrega una **ficha** por encargo: texto para pegar en ChatGPT,
+- Cada encargo lleva una **ficha**: texto para pegar en ChatGPT,
   lista de piezas, medidas de celda y ancla.
 
 ## 14. Sí y no

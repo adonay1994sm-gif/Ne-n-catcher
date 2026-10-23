@@ -91,7 +91,7 @@ un Chromium de escritorio; no sustituyen a un iPhone real ni a Xcode.
   (`scripts/*-smoke.cjs`) para que copien los círculos. **No se han
   ejecutado aquí** porque dependen del paquete de preview.
 - Subir la caché obligó a cambiar el nombre esperado en 4 archivos de prueba.
-- **`git push` devolvió 403**: la app de GitHub de Claude no tiene permiso de
+- **`git push` devolvió 403**: la app de GitHub conectada no tiene permiso de
   escritura por git en este repositorio. Ver la sección final.
 
 ## Qué queda por decidir (tú)

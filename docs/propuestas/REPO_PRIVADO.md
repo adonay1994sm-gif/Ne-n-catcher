@@ -26,7 +26,7 @@ de pruebas" del README y la URL de la preview de Netlify.
   accesibles.
 
 ## Pasos
-1. Revisar que Netlify y la app de Claude tienen acceso a repos privados.
+1. Revisar que Netlify y las apps conectadas tienen acceso a repos privados.
 2. Cambiar la visibilidad en GitHub.
 3. Comprobar que la web de Netlify sigue desplegando y que `privacy.html`
    y `terms.html` son accesibles sin sesión.
