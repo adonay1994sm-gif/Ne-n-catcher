@@ -46,23 +46,18 @@ Límites (dilos siempre al informar):
 - Es Chromium sin ventana; **no certifica Safari ni iPhone físico**.
 - Los tiempos son de reloj de pared; el reloj interno del juego puede
   desviarse unas décimas. Para fotogramas exactos de una pose hace falta un
-  gancho controlado como el de `scripts/visual-rebirth-capture.cjs`.
+  gancho controlado (aún no existe).
 - Siempre arranca con perfil nuevo (primera partida). No usa ni modifica tus
   guardados.
 
-## Capturas más completas (scripts existentes)
+## Capturas de otros tramos
 
-Estos scripts ya existen y prueban más cosas, pero necesitan el paquete de
-preview (`npm run build:preview` → `preview-dist/`) y a veces un commit
-esperado limpio. Lee sus argumentos (`parseArgs` al principio) antes de usarlos:
+- `node scripts/capture-levels.cjs --levels 2,4,6 --wait 4 --output DIR`
+  (tras `npm run build`): abre cada nivel directamente, sin menús, y hace una
+  foto tras `--wait` segundos de juego.
 
-- `scripts/visual-rebirth-capture.cjs --levels 1,2 --output DIR`: un fotograma
-  por nivel y la onda de choque congelada en 4 fases.
-- `scripts/current-level-visual-smoke.cjs`, `scripts/chapter-one-visual-smoke.cjs`,
-  `scripts/hud-redesign-smoke.cjs`: escenas controladas, HUD y geometría de
-  botones (44 px, solapes, desbordamiento) con `--root`, `--output` y
-  `--expected-commit`.
-- `scripts/combat-readability-smoke.cjs`: legibilidad en combate.
+Los scripts de prueba en navegador antiguos se retiraron el 23/10/2026
+porque buscaban pantallas que ya no existen.
 
 ## Alternativa: Playwright CLI
 

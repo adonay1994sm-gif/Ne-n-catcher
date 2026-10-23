@@ -30,7 +30,8 @@ cada tarea está en el tablero del proyecto; el diseño, en
 ## Por hacer
 
 ### 0. Terminar la limpieza
-- Revisar los scripts de prueba en navegador y quitar los obsoletos (en curso).
+- Scripts de prueba en navegador: hecho. Se retiraron los 34 que buscaban
+  pantallas antiguas; quedan `capture-intro.cjs` y `capture-levels.cjs`.
 - **Propietario:**
   - en Netlify, `neon-preview-deploy` debe publicar `main`;
   - borrar las ramas antiguas en GitHub.

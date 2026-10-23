@@ -18,12 +18,11 @@ Habla en español claro y sencillo.
   HUD o a los controles). Puedes mirar imágenes con la herramienta Read.
 - Reutiliza los scripts existentes en vez de inventar otros; lee sus
   argumentos antes de usarlos. Por ejemplo:
-  - `npm run build` y luego
-    `node scripts/chapter-one-visual-smoke.cjs --root www --output <carpeta-nueva> --expected-commit <sha40>`
-    (escenas controladas);
-  - `node scripts/chapter-one-browser-smoke.cjs --root www --output <carpeta-nueva> --expected-commit <sha40> --timeout 900000`
-    (recorrido natural automatizado);
-  - `node scripts/two-touch-browser-smoke.cjs` si cambian controles.
+  - `npm run build` y luego `node scripts/capture-intro.cjs --times 1,5,9`
+    (inicio);
+  - `node scripts/capture-levels.cjs --levels 2,4,6 --wait 4 --output <carpeta-nueva>`
+    (otros tramos);
+  - para controles o una partida natural no hay script todavía: dilo.
   - Guarda la evidencia en el directorio temporal, no dentro del repositorio.
 - Si hay un vídeo, extrae fotogramas (por ejemplo con `ffmpeg`, si está
   instalado) y míralos. Si no puedes ver vídeo, dilo.

@@ -160,6 +160,6 @@ la explosión azul (12 s). Sin `--output` guarda en
 
 Un agente propio del proyecto, `neon-playtester`, que lance el juego en
 Chromium con tamaño de iPhone, juegue un tramo concreto y devuelva capturas,
-errores y métricas (reutilizando `scripts/chapter-one-browser-smoke.cjs`).
+errores y métricas (partiendo de `scripts/capture-levels.cjs`).
 Daría a `critico-juego` y `director-arte` la evidencia que hoy tienen que
 generar ellos mismos.

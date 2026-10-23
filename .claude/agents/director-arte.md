@@ -36,9 +36,8 @@ des por bueno algo solo porque se parece a una lámina conceptual.
   aplica, sobre atlas mostrados sobre negro, blanco y damero. Puedes mirar
   imágenes con Read. Para el inicio, usa la skill `capturas-juego`
   (`node scripts/capture-intro.cjs --times 1,5,9` tras `npm run build`).
-  Para otros tramos, usa los scripts de captura existentes (por ejemplo
-  `scripts/chapter-one-visual-smoke.cjs` o `scripts/current-level-visual-smoke.cjs`;
-  lee sus argumentos antes) y guarda la evidencia fuera del repositorio.
+  Para otros tramos, usa `node scripts/capture-levels.cjs --levels 2,4,6
+  --output <carpeta-nueva>` y guarda la evidencia fuera del repositorio.
 - Para una cinemática o animación, mira varios fotogramas seguidos, no uno.
 - Si no puedes generar o ver capturas, **dilo en la primera línea** y no
   emitas un veredicto positivo.

@@ -423,8 +423,8 @@ planetas; 5) decoración.
    comunicaciones `#061521e8`, avisos breves `#112b3bf5`) o con sombra de texto
    (`0 5px 18px #000` en rótulos). Texto suelto sobre estrellas: no.
 6. **Toque:** todo control mide **44×44 px o más**, sin solapes entre mandos
-   y dentro del viewport (lo comprueban `scripts/hud-redesign-smoke.cjs` y
-   `chapter-one-visual-smoke.cjs`). Enlaces legales también 44 px.
+   y dentro del viewport (se comprueba con capturas). Enlaces legales también
+   44 px.
 7. **Comodidad:** ajuste "Reducir sacudidas y destellos" (clase
    `.reduced-effects`) y `prefers-reduced-motion` quitan sacudidas y pulsos
    pero mantienen avisos y control. "Calidad visual" (bajo/normal/alto) solo
