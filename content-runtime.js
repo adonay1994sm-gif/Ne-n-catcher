@@ -31,7 +31,7 @@ var NeonCampaign = (() => {
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
-    SECTORS: () => SECTORS2,
+    SECTORS: () => SECTORS,
     SECTOR_MAPS: () => SECTOR_MAPS,
     SECTOR_SAVE_KEY: () => SECTOR_SAVE_KEY,
     SHIP_FLEET: () => SHIP_FLEET,
@@ -3252,6 +3252,135 @@ var NeonCampaign = (() => {
     }
   });
 
+  // src/game/progression/sectors/s1-gaia.js
+  var immutable12 = (object2) => Object.freeze(object2);
+  var ROSTERS11 = immutable12({
+    escape: immutable12(["raider", "scout"]),
+    flank: immutable12(["raider", "tracker", "scout"]),
+    mines: immutable12(["sower", "raider", "interceptor"]),
+    shield: immutable12(["aegis", "interceptor", "tracker", "scout"]),
+    elite: immutable12(["alpha", "aegis", "interceptor", "sower"]),
+    gate: immutable12(["interceptor", "tracker", "aegis", "raider"])
+  });
+  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null } = {}) => immutable12({
+    patrol: patrol && immutable12({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
+    hazards: VOYAGE_HAZARD_PROFILES[profile2],
+    comets,
+    repairAt,
+    boss: boss && immutable12(boss)
+  });
+  var S1_GAIA = immutable12({
+    id: "S1",
+    sector: 1,
+    number: 1,
+    title: "Escapa de Chronos",
+    boss: "atlas",
+    // El tramo 1 abre con el inicio de Chronos y el tutorial (propietario, 23/10/2026).
+    intro: true,
+    chapter: 1,
+    version: "s1-sector-v1",
+    saveKey: "neonCronium.sector.S1.v1",
+    routeId: "sector-1-gaia",
+    eventPrefix: "sector-1",
+    baseGoal: 60,
+    origin: "Centro Chronos",
+    destination: "Acceso orbital de Gaia Nova",
+    arrivalDestinationId: "gaia-atlas-approach",
+    cinematicDuration: 90,
+    recoveryAt: 9,
+    invalidCheckpointMessage: "Invalid sector 1 checkpoint",
+    stages: immutable12([
+      ["Emergencia en Chronos", 48, 5, "Recupera los primeros fragmentos del reactor", "Chronos \xB7 reactor", "Campo de restos", "reactor-strike", 0.18, 0.7, 0.4],
+      ["Campo de restos", 50, 11, "Cruza los restos; algo te sigue por detr\xE1s", "Campo de restos", "Salida orbital", "wreckage-crossing", 0.15, 0.8, 0.52],
+      ["La red exterior", 52, 17, "La red de Gaia siembra minas en tu ruta", "Salida orbital", "Red exterior de Gaia", "net-edge", 0.12, 0.6, 0.58],
+      ["Cuarentena", 52, 23, "Rompe los escudos de la \xC9gida y sigue adelante", "Red exterior de Gaia", "Anillo de sat\xE9lites", "quarantine", 0.16, 0.62, 0.64],
+      ["El sat\xE9lite CH-03", 56, 27, "Derriba el sat\xE9lite de defensa que cierra el anillo", "Anillo de sat\xE9lites", "Corredor de enlace", "sub-boss", 0.18, 0.66, 0.7],
+      ["Enlace C9", 48, 27, "Repara en C9 y prueba tu nave en el corredor", "Corredor de enlace", "Lado nocturno", "service-stop", 0.06, 0.34, 0.3],
+      ["El Alfa", 54, 38, "El Alfa del C-17 lidera la caza en la oscuridad", "Lado nocturno", "Escolta del C-17", "alpha-hunt", 0.08, 0.28, 0.72],
+      ["Lluvia en el acceso", 52, 44, "Cruza la lluvia de meteoritos sin dejar de combatir", "Escolta del C-17", "Piquetes de Gaia", "meteor-rain", 0.14, 0.58, 0.76],
+      ["Defensa orbital", 54, 50, "Resiste la defensa orbital mientras Atlas se activa", "Piquetes de Gaia", "Acceso orbital", "orbital-defence", 0.16, 0.62, 0.82],
+      ["Atlas", 60, 54, "Vence a Atlas para que verifique el registro", "Acceso orbital", "Acceso orbital de Gaia Nova", "boss", 0.18, 0.62, 0.9]
+    ].map((stage) => immutable12(stage))),
+    events: immutable12([
+      { id: "sector-1-intruder", type: "attack", at: 2.25, attackerId: "cronium-raider", targetId: "chronos-reactor" },
+      { id: "sector-1-breach", type: "rupture", at: 9, resourceId: "cronium", cause: "hostile-reactor-strike" },
+      { id: "sector-1-perimeter-exit", type: "departure", at: 108, originId: "chronos-scientific-centre" },
+      { id: "sector-1-recovered-module", type: "twin-module-marker", at: 90, moduleId: "twin-emitter", resourceId: "cronium" },
+      { id: "sector-1-gaia-beacon", type: "gaia-beacon", at: 470, destinationId: "gaia-atlas-approach" }
+    ].map((event2) => immutable12(event2))),
+    service: immutable12({
+      stage: 6,
+      approach: 1.2,
+      visibleApproach: 2.4,
+      departure: 2.4,
+      renamedStage: "Corredor de Gaia",
+      renamedObjective: "Prueba tu nave en el corredor; C9 sigue disponible en la pausa"
+    }),
+    encounters: immutable12([
+      encounter11(1, [2, ROSTERS11.escape, 8]),
+      encounter11(2, [3, ROSTERS11.flank, 7]),
+      encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30 }),
+      encounter11(7, [4, ROSTERS11.shield, 6], { comets: true }),
+      encounter11(4, [2, ROSTERS11.flank, 9], { boss: { id: "ch03", role: "subjefe" } }),
+      encounter11(5, [2, ROSTERS11.escape, 8]),
+      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32 }),
+      encounter11(9, [4, ROSTERS11.elite, 6], { comets: true }),
+      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30 }),
+      encounter11(10, [2, ROSTERS11.gate, 8], { boss: { id: "guardian-atlas", role: "jefe" } })
+    ]),
+    phase(stageIndex) {
+      return stageIndex < 2 ? "recovery" : stageIndex < 5 ? "gaia-net" : stageIndex < 8 ? "deep-space" : "atlas-approach";
+    },
+    scenery({ p, stageIndex, stage, arrived }) {
+      const departure = smooth(p, 0, 0.25), gate = smooth(p, 0.75, 1);
+      return {
+        station: immutable12({
+          x: 0.48 - 0.72 * departure,
+          y: 0.43 + 0.94 * departure,
+          scale: 1.12 * Math.pow(0.032, departure),
+          rotation: -0.1 * departure,
+          visible: p < 0.25,
+          alpha: 1,
+          state: "ruptured"
+        }),
+        planet: immutable12({
+          x: 0.79 - 0.4 * smooth(p, 0.2, 1),
+          y: 0.08 + 0.08 * gate,
+          scale: 0.02 + 0.9 * smooth(p, 0.2, 1) ** 2,
+          rotation: 0.06 * p,
+          visible: true,
+          alpha: 0.5 + 0.5 * smooth(p, 0.1, 0.4)
+        }),
+        beacon: immutable12({ x: 0.54, y: 0.14 + 0.1 * gate, scale: 0.03 + 0.2 * gate, visible: p >= 0.75, alpha: 1, active: stageIndex >= 9 }),
+        relay: immutable12({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
+        attacker: immutable12({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
+        deepSpace: immutable12({
+          travel: p,
+          offsetX: -0.12 * p,
+          offsetY: 2.2 * p,
+          speed: 0.45 + 0.45 * smooth(p, 0.05, 0.3),
+          alpha: 1,
+          nebulaOpacity: stage.nebulaOpacity,
+          starDensity: stage.starDensity,
+          dustDensity: stageIndex === 5 ? 0.1 : 0.26
+        }),
+        debris: immutable12({
+          visible: !arrived && stageIndex <= 1,
+          travel: p,
+          directionX: -0.26,
+          directionY: 0.96,
+          depth: 0.35,
+          density: stageIndex === 1 ? 0.7 : 0.4
+        })
+      };
+    }
+  });
+
+  // src/game/progression/sectors/index.js
+  var SECTORS = Object.freeze([S1_GAIA]);
+  var byId = new Map(SECTORS.map((ficha) => [ficha.id, ficha]));
+  var getSectorFicha = (id) => byId.get(id) || null;
+
   // src/game/progression/voyages/index.js
   var VOYAGES = Object.freeze([
     S1_V1_CHRONOS_GAIA,
@@ -3266,7 +3395,7 @@ var NeonCampaign = (() => {
     S2_V5_VULKAR_TITAN
   ]);
   var PLAYABLE_VOYAGES = Object.freeze(VOYAGES.filter((ficha) => ficha.playable !== false));
-  var byRoute = new Map(VOYAGES.map((ficha) => [ficha.routeId, ficha]));
+  var byRoute = new Map([...VOYAGES, ...SECTORS].map((ficha) => [ficha.routeId, ficha]));
   var getVoyageFicha = (routeId) => byRoute.get(routeId) || null;
   var rulesOf = (ficha) => ficha.encounters;
   var REFERENCE = rulesOf(S1_V1_CHRONOS_GAIA).reduce((sum, rules) => sum + stagePressure(rules), 0) / S1_V1_CHRONOS_GAIA.encounters.length;
@@ -5639,21 +5768,21 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/chronos-flight.js
-  var immutable12 = (object2) => Object.freeze(object2);
-  var CHRONOS_FLIGHT_EVENTS = immutable12([
-    immutable12({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
-    immutable12({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
-    immutable12({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
-    immutable12({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
-    immutable12({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
-    immutable12({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
+  var immutable13 = (object2) => Object.freeze(object2);
+  var CHRONOS_FLIGHT_EVENTS = immutable13([
+    immutable13({ id: "chronos-intruder", type: "attack", at: 0.025, attackerId: "cronium-raider", targetId: "chronos-reactor" }),
+    immutable13({ id: "chronos-breach", type: "rupture", at: 0.1, resourceId: "cronium", cause: "hostile-reactor-strike" }),
+    immutable13({ id: "chronos-perimeter-exit", type: "departure", at: 0.3, originId: "chronos-scientific-centre" }),
+    immutable13({ id: "chronos-recovered-module", type: "twin-module-marker", at: 0.6, moduleId: "twin-emitter", resourceId: "cronium" }),
+    immutable13({ id: "gaia-navigation-beacon", type: "gaia-beacon", at: 0.83, destinationId: "gaia-atlas-approach" }),
+    immutable13({ id: "chronos-flight-arrival", type: "arrival", at: 1, destinationId: "gaia-atlas-approach" })
   ]);
-  var PHASES = immutable12([
-    immutable12({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
-    immutable12({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
-    immutable12({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
-    immutable12({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
-    immutable12({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
+  var PHASES = immutable13([
+    immutable13({ id: "emergency", from: 0, to: 0.1, name: "Emergencia en Chronos" }),
+    immutable13({ id: "recovery", from: 0.1, to: 0.3, name: "Recuperar el CRONIUM disperso" }),
+    immutable13({ id: "departure", from: 0.3, to: 0.52, name: "Salir del per\xEDmetro orbital" }),
+    immutable13({ id: "deep-space", from: 0.52, to: 0.82, name: "Rastro de CRONIUM en espacio profundo" }),
+    immutable13({ id: "gaia-approach", from: 0.82, to: 1, name: "Aproximaci\xF3n a la baliza de Gaia" })
   ]);
   var CHRONOS_VOYAGE_ROUTE = createVoyageRoute(S1_V1_CHRONOS_GAIA);
   var CHRONOS_VOYAGE_VERSION = S1_V1_CHRONOS_GAIA.version;
@@ -6783,7 +6912,7 @@ var NeonCampaign = (() => {
   var FAR = Object.freeze({ x: 0.72, y: 0.22, scale: 0.07 });
   var HOVER = Object.freeze({ x: 0.48, y: 0.25, scale: 1 });
   var EXIT = Object.freeze({ x: 0.94, y: 0.12, scale: 0.05 });
-  var SECTORS = 8;
+  var SECTORS2 = 8;
   var FRAGMENTS = Object.freeze([
     [-0.95, -0.35, 1.6],
     [0.9, -0.45, -1.2],
@@ -6847,7 +6976,7 @@ var NeonCampaign = (() => {
       // Al impacto la estación entera pasa a ser la explosión: no queda nada entero.
       whole: elapsed < T.stationGone,
       towerCell: ruptured ? 4 : 3,
-      sectorLights: Array.from({ length: SECTORS }, (_, index) => ruptured ? 0 : flicker * (1 - smooth3(drain * SECTORS, index, index + 0.8))),
+      sectorLights: Array.from({ length: SECTORS2 }, (_, index) => ruptured ? 0 : flicker * (1 - smooth3(drain * SECTORS2, index, index + 0.8))),
       zoom: STATION_FRAME.zoom * (1 - 0.5 * smooth3(elapsed, T.rupture + 1, 18)),
       drop: STATION_FRAME.drop,
       // Lo que queda (la torre partida) es fondo: oscuro y lejano.
@@ -6880,8 +7009,8 @@ var NeonCampaign = (() => {
       size: 0.02 + 0.03 * smooth3(elapsed, T.omen, T.approach)
     } : null;
     const drainStreams = elapsed >= T.drain && elapsed < T.rupture ? station2.sectorLights.map((light, index) => ({
-      angle: -Math.PI / 2 + (index + 0.5) * Math.PI * 2 / SECTORS,
-      alpha: smooth3(drain * SECTORS, index - 0.3, index) * (1 - smooth3(drain * SECTORS, index + 0.8, index + 1.4)) * (1 - smooth3(elapsed, T.beamStart, T.rupture)),
+      angle: -Math.PI / 2 + (index + 0.5) * Math.PI * 2 / SECTORS2,
+      alpha: smooth3(drain * SECTORS2, index - 0.3, index) * (1 - smooth3(drain * SECTORS2, index + 0.8, index + 1.4)) * (1 - smooth3(elapsed, T.beamStart, T.rupture)),
       cell: 1 + (index + Math.floor(elapsed * 14)) % 6,
       progress: ((elapsed - T.drain) * 1.8 + index * 0.37) % 1
     })) : [];
@@ -7410,135 +7539,6 @@ var NeonCampaign = (() => {
     state.lastY = null;
     return true;
   }
-
-  // src/game/progression/sectors/s1-gaia.js
-  var immutable13 = (object2) => Object.freeze(object2);
-  var ROSTERS11 = immutable13({
-    escape: immutable13(["raider", "scout"]),
-    flank: immutable13(["raider", "tracker", "scout"]),
-    mines: immutable13(["sower", "raider", "interceptor"]),
-    shield: immutable13(["aegis", "interceptor", "tracker", "scout"]),
-    elite: immutable13(["alpha", "aegis", "interceptor", "sower"]),
-    gate: immutable13(["interceptor", "tracker", "aegis", "raider"])
-  });
-  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null } = {}) => immutable13({
-    patrol: patrol && immutable13({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
-    hazards: VOYAGE_HAZARD_PROFILES[profile2],
-    comets,
-    repairAt,
-    boss: boss && immutable13(boss)
-  });
-  var S1_GAIA = immutable13({
-    id: "S1",
-    sector: 1,
-    number: 1,
-    title: "Escapa de Chronos",
-    boss: "atlas",
-    // El tramo 1 abre con el inicio de Chronos y el tutorial (propietario, 23/10/2026).
-    intro: true,
-    chapter: 1,
-    version: "s1-sector-v1",
-    saveKey: "neonCronium.sector.S1.v1",
-    routeId: "sector-1-gaia",
-    eventPrefix: "sector-1",
-    baseGoal: 60,
-    origin: "Centro Chronos",
-    destination: "Acceso orbital de Gaia Nova",
-    arrivalDestinationId: "gaia-atlas-approach",
-    cinematicDuration: 90,
-    recoveryAt: 9,
-    invalidCheckpointMessage: "Invalid sector 1 checkpoint",
-    stages: immutable13([
-      ["Emergencia en Chronos", 48, 5, "Recupera los primeros fragmentos del reactor", "Chronos \xB7 reactor", "Campo de restos", "reactor-strike", 0.18, 0.7, 0.4],
-      ["Campo de restos", 50, 11, "Cruza los restos; algo te sigue por detr\xE1s", "Campo de restos", "Salida orbital", "wreckage-crossing", 0.15, 0.8, 0.52],
-      ["La red exterior", 52, 17, "La red de Gaia siembra minas en tu ruta", "Salida orbital", "Red exterior de Gaia", "net-edge", 0.12, 0.6, 0.58],
-      ["Cuarentena", 52, 23, "Rompe los escudos de la \xC9gida y sigue adelante", "Red exterior de Gaia", "Anillo de sat\xE9lites", "quarantine", 0.16, 0.62, 0.64],
-      ["El sat\xE9lite CH-03", 56, 27, "Derriba el sat\xE9lite de defensa que cierra el anillo", "Anillo de sat\xE9lites", "Corredor de enlace", "sub-boss", 0.18, 0.66, 0.7],
-      ["Enlace C9", 48, 27, "Repara en C9 y prueba tu nave en el corredor", "Corredor de enlace", "Lado nocturno", "service-stop", 0.06, 0.34, 0.3],
-      ["El Alfa", 54, 38, "El Alfa del C-17 lidera la caza en la oscuridad", "Lado nocturno", "Escolta del C-17", "alpha-hunt", 0.08, 0.28, 0.72],
-      ["Lluvia en el acceso", 52, 44, "Cruza la lluvia de meteoritos sin dejar de combatir", "Escolta del C-17", "Piquetes de Gaia", "meteor-rain", 0.14, 0.58, 0.76],
-      ["Defensa orbital", 54, 50, "Resiste la defensa orbital mientras Atlas se activa", "Piquetes de Gaia", "Acceso orbital", "orbital-defence", 0.16, 0.62, 0.82],
-      ["Atlas", 60, 54, "Vence a Atlas para que verifique el registro", "Acceso orbital", "Acceso orbital de Gaia Nova", "boss", 0.18, 0.62, 0.9]
-    ].map((stage) => immutable13(stage))),
-    events: immutable13([
-      { id: "sector-1-intruder", type: "attack", at: 2.25, attackerId: "cronium-raider", targetId: "chronos-reactor" },
-      { id: "sector-1-breach", type: "rupture", at: 9, resourceId: "cronium", cause: "hostile-reactor-strike" },
-      { id: "sector-1-perimeter-exit", type: "departure", at: 108, originId: "chronos-scientific-centre" },
-      { id: "sector-1-recovered-module", type: "twin-module-marker", at: 90, moduleId: "twin-emitter", resourceId: "cronium" },
-      { id: "sector-1-gaia-beacon", type: "gaia-beacon", at: 470, destinationId: "gaia-atlas-approach" }
-    ].map((event2) => immutable13(event2))),
-    service: immutable13({
-      stage: 6,
-      approach: 1.2,
-      visibleApproach: 2.4,
-      departure: 2.4,
-      renamedStage: "Corredor de Gaia",
-      renamedObjective: "Prueba tu nave en el corredor; C9 sigue disponible en la pausa"
-    }),
-    encounters: immutable13([
-      encounter11(1, [2, ROSTERS11.escape, 8]),
-      encounter11(2, [3, ROSTERS11.flank, 7]),
-      encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30 }),
-      encounter11(7, [4, ROSTERS11.shield, 6], { comets: true }),
-      encounter11(4, [2, ROSTERS11.flank, 9], { boss: { id: "ch03", role: "subjefe" } }),
-      encounter11(5, [2, ROSTERS11.escape, 8]),
-      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32 }),
-      encounter11(9, [4, ROSTERS11.elite, 6], { comets: true }),
-      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30 }),
-      encounter11(10, [2, ROSTERS11.gate, 8], { boss: { id: "guardian-atlas", role: "jefe" } })
-    ]),
-    phase(stageIndex) {
-      return stageIndex < 2 ? "recovery" : stageIndex < 5 ? "gaia-net" : stageIndex < 8 ? "deep-space" : "atlas-approach";
-    },
-    scenery({ p, stageIndex, stage, arrived }) {
-      const departure = smooth(p, 0, 0.25), gate = smooth(p, 0.75, 1);
-      return {
-        station: immutable13({
-          x: 0.48 - 0.72 * departure,
-          y: 0.43 + 0.94 * departure,
-          scale: 1.12 * Math.pow(0.032, departure),
-          rotation: -0.1 * departure,
-          visible: p < 0.25,
-          alpha: 1,
-          state: "ruptured"
-        }),
-        planet: immutable13({
-          x: 0.79 - 0.4 * smooth(p, 0.2, 1),
-          y: 0.08 + 0.08 * gate,
-          scale: 0.02 + 0.9 * smooth(p, 0.2, 1) ** 2,
-          rotation: 0.06 * p,
-          visible: true,
-          alpha: 0.5 + 0.5 * smooth(p, 0.1, 0.4)
-        }),
-        beacon: immutable13({ x: 0.54, y: 0.14 + 0.1 * gate, scale: 0.03 + 0.2 * gate, visible: p >= 0.75, alpha: 1, active: stageIndex >= 9 }),
-        relay: immutable13({ visible: false, x: 0, y: 0, scale: 0, alpha: 0, active: false, state: "approach" }),
-        attacker: immutable13({ x: 1.2, y: 0, scale: 0, rotation: 0, visible: false, state: "retreat" }),
-        deepSpace: immutable13({
-          travel: p,
-          offsetX: -0.12 * p,
-          offsetY: 2.2 * p,
-          speed: 0.45 + 0.45 * smooth(p, 0.05, 0.3),
-          alpha: 1,
-          nebulaOpacity: stage.nebulaOpacity,
-          starDensity: stage.starDensity,
-          dustDensity: stageIndex === 5 ? 0.1 : 0.26
-        }),
-        debris: immutable13({
-          visible: !arrived && stageIndex <= 1,
-          travel: p,
-          directionX: -0.26,
-          directionY: 0.96,
-          depth: 0.35,
-          density: stageIndex === 1 ? 0.7 : 0.4
-        })
-      };
-    }
-  });
-
-  // src/game/progression/sectors/index.js
-  var SECTORS2 = Object.freeze([S1_GAIA]);
-  var byId = new Map(SECTORS2.map((ficha) => [ficha.id, ficha]));
-  var getSectorFicha = (id) => byId.get(id) || null;
 
   // src/game/combat/attack-tokens.js
   function createAttackTokens({ max }) {

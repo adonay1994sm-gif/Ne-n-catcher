@@ -1815,7 +1815,11 @@
     }
   }
 
+  // Enemigos nuevos de Gaia (Rastreador, Sembrador, Égida y Alfa) sin IA propia
+  // todavía: hasta la F3b salen con el aspecto y la táctica de uno actual.
+  const CLASSIC_PATROL_STAND_INS={tracker:"interceptor",sower:"raider",aegis:"scout",alpha:"interceptor"};
   function spawnClassicFlightPatrol(role="scout") {
+    role=CLASSIC_PATROL_STAND_INS[role]||role;
     const ordinal=classicPatrolSequence++;
     const stage=classicFlightView?.stageNumber||0;
     const interceptor=role==="interceptor"&&spriteReady(SPRITES.ch02);

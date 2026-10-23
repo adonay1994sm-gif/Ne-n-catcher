@@ -61,6 +61,10 @@ const KEY = 'neonCronium.sectors.v1';
 const sectorSave = w => JSON.parse(w.localStorage.getItem(KEY) || 'null');
 const putRun = (w, run) => w.localStorage.setItem(KEY, JSON.stringify({version: 1, unlocked: 1, sectors: {}, run}));
 const click = (w, id) => w.document.getElementById(id).click();
+// Como el panel de desarrollo: tramo pedido + ficha pendiente + startLevel.
+const startAt = (T, stageNumber) => {
+  T.ev("classicSideVoyagePending=NeonCampaign.getSectorFicha('S1')"); T.requestStage(stageNumber); T.startLevel(0);
+};
 
 test('play starts sector 1 at stage 1 on a fresh device', () => {
   const {w, T} = harness({unlocked: '1'});
@@ -111,4 +115,26 @@ test('the menu shows the sector and hides the old voyage map', () => {
   putRun(w, {sector: 1, stageNumber: 4, stageHull: 80, reviveUsed: false});
   T.ev('updateMenu()');
   assert.match(w.document.getElementById('playSector').textContent, /TRAMO 4\/10/);
+});
+
+
+test('a sector stage spawns CRONIUM and patrols', () => {
+  const {T} = harness();
+  startAt(T, 2);
+  assert.equal(T.stage(), 2);
+  T.adv(12);
+  assert.ok(T.ev('energySpawned') > 0, 'CRONIUM appears');
+  assert.ok(T.ev('items.filter(item=>item.classicScout).length') > 0, 'a patrol appears');
+});
+
+test('new Gaia enemies spawn as current stand-ins until they exist (F3b)', () => {
+  // Tramos 3, 4 y 7 abren con sower, aegis y alpha (ficha del sector 1).
+  for (const stageNumber of [3, 4, 7]) {
+    const {T} = harness();
+    startAt(T, stageNumber);
+    assert.equal(T.stage(), stageNumber);
+    T.adv(20);
+    assert.equal(T.st().state, 'playing', `stage ${stageNumber}`);
+    assert.ok(T.ev('items.filter(item=>item.classicScout).length') > 0, `stage ${stageNumber} has a patrol`);
+  }
 });

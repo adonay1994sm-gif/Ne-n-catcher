@@ -61,3 +61,9 @@ test('every sector event id is unique and uses the sector prefix', () => {
   assert.equal(new Set(ids).size, ids.length);
   for (const id of ids) assert.ok(id.startsWith('sector-1-'), id);
 });
+
+test('the game finds the stage rules of a sector by its route', async () => {
+  const {getVoyageStageRulesFor, getVoyageStageRules} = await import('../src/game/progression/voyages/index.js');
+  assert.equal(getVoyageStageRules('sector-1-gaia', 1), S1_GAIA.encounters[0]);
+  assert.ok(getVoyageStageRulesFor('sector-1-gaia', 2, 'normal')?.patrol, 'stage 2 has a patrol');
+});
