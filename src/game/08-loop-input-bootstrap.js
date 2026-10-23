@@ -8,6 +8,7 @@
       if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
     }
     background(t);
+    if (typeof drawAtlasFuryScene === "function") drawAtlasFuryScene();
     drawWarp();
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
@@ -23,6 +24,7 @@
       else drawPower(item);
     }
     if (typeof drawMeteorWarnings === "function") drawMeteorWarnings();
+    if (typeof drawAtlasBeam === "function") drawAtlasBeam();
     drawGuardianAtlas();
     if (typeof drawCh03Satellite === "function") drawCh03Satellite();
     drawPlayer(t);

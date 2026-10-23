@@ -7957,9 +7957,21 @@ var NeonCampaign = (() => {
       salvageRole: "interceptor",
       basic: Object.freeze({ cooldown: 1.6, speed: 360, spacing: 28, damage: 12 }),
       unique: Object.freeze({ cooldown: 7, speed: 240, damage: 12 })
+    }),
+    // Escolta de la furia de Atlas (plan F3c): gira a su alrededor a 1,6·r y
+    // dispara hacia abajo cuando tiene turno de ataque.
+    atlasEscort: Object.freeze({
+      profile: "escort",
+      hp: 3,
+      speed: 260,
+      warning: 0.35,
+      firstAttack: 1.4,
+      salvageRole: "scout",
+      orbit: Object.freeze({ radius: 1.6, speed: 0.9 }),
+      basic: Object.freeze({ cooldown: 2.6, speed: 360, damage: 10 })
     })
   });
-  function createGaiaEnemy({ kind, x, y, now = 0 }) {
+  function createGaiaEnemy({ kind, x, y, now = 0, angle = 0 }) {
     const rules = GAIA_ENEMY_RULES[kind];
     if (!rules || ![x, y, now].every(Number.isFinite)) throw new RangeError("Invalid Gaia enemy spawn");
     return {
@@ -7968,14 +7980,15 @@ var NeonCampaign = (() => {
       hp: rules.hp,
       maxHp: rules.hp,
       bornAt: now,
-      cooldowns: { basic: now + rules.firstAttack, unique: now + rules.unique.cooldown * 0.5 },
+      cooldowns: { basic: now + rules.firstAttack, unique: rules.unique ? now + rules.unique.cooldown * 0.5 : Infinity },
       telegraph: 0,
       pending: null,
       aim: null,
       heading: void 0,
       guardId: null,
       attacks: 0,
-      leaving: false
+      leaving: false,
+      angle
     };
   }
   function moveToward(item, target, maxStep) {
@@ -8003,6 +8016,9 @@ var NeonCampaign = (() => {
     } else if (gaia.kind === "sower") {
       if (ability === "basic") emit({ type: "mine", x: item.x, y: item.y + 20 });
       else emit({ type: "cross-bomb", x: item.x, y: item.y, vx: (item.x < ctx.bounds.w / 2 ? -1 : 1) * rules.unique.speed });
+    } else if (gaia.kind === "atlasEscort") {
+      const { speed, damage } = rules.basic;
+      emit({ type: "shot", x: item.x, y: item.y + 24, vx: 0, vy: speed, damage, sprite: "orb" });
     } else if (gaia.kind === "alpha") {
       if (ability === "basic") {
         const { spacing, speed, damage } = rules.basic;
@@ -8047,6 +8063,19 @@ var NeonCampaign = (() => {
         gaia.telegraph = 0;
         gaia.aim = null;
         releaseAttack(ctx.tokens, item.id);
+      }
+      return;
+    }
+    if (rules.orbit) {
+      if (ctx.anchor) {
+        gaia.angle += rules.orbit.speed * dt;
+        const radius = ctx.anchor.r * rules.orbit.radius;
+        moveToward(item, { x: ctx.anchor.x + Math.cos(gaia.angle) * radius, y: ctx.anchor.y + Math.sin(gaia.angle) * radius }, rules.speed * dt);
+      }
+      if (gaia.cooldowns.basic <= ctx.now && requestAttack(ctx.tokens, { id: item.id, bornAt: gaia.bornAt }, ctx.now)) {
+        gaia.pending = "basic";
+        gaia.aim = { x: item.x, y: ctx.bounds.h };
+        gaia.telegraph = 0;
       }
       return;
     }

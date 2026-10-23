@@ -1975,7 +1975,7 @@
       flightPatrol:true,gaiaEnemy:true,damage:16,r:kind==="alpha"?58:34,hp:rules.hp,maxHp:rules.hp,salvageRole:rules.salvageRole,
       salvageDropId:`${classicFlightView?.stageId||`${currentLevel+1}.0`}:enemy:${classicSalvageEnemySequence++}`,
       gaia:NeonCampaign.createGaiaEnemy({kind,x,y,now:elapsed})});
-    ensureSprite(SPRITES[{tracker:"gaiaTracker",sower:"gaiaSower",aegis:"gaiaAegis",alpha:"gaiaAlpha"}[kind]]);
+    ensureSprite(SPRITES[{tracker:"gaiaTracker",sower:"gaiaSower",aegis:"gaiaAegis",alpha:"gaiaAlpha",atlasEscort:"atlasEscorts"}[kind]]);
     ensureSprite(SPRITES.hostileProjectiles2);
     items.push(item);
     return item;
@@ -2020,7 +2020,7 @@
     const allies=items.filter(other=>other.gaiaEnemy||other.classicScout).map(other=>({id:other.id,x:other.x,y:other.y,hp:other.hp??1,maxHp:other.maxHp??1}));
     const tokens=sectorAttackTokens||(gaiaFallbackTokens??=NeonCampaign.createAttackTokens({max:2}));
     NeonCampaign.advanceGaiaEnemy(item,dt,{now:elapsed,player:{x:player.x,y:player.y,hull,reloading:Boolean(classicWeapons)&&classicWeapons.charges<1},
-      bounds:{w:W,h:H},allies,tokens},event=>handleGaiaEvent(item,event));
+      bounds:{w:W,h:H},allies,tokens,anchor:atlasAnchor()},event=>handleGaiaEvent(item,event));
     return true;
   }
   function spawnClassicFlightPatrol(role="scout") {
@@ -2256,7 +2256,7 @@
     runToken += 1;cancelSupplyFailureTimer();
     setState("complete");setClassicFlightHudVisible(false);
     if(classicWeapons){classicWeapons.projectiles.length=0;NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);}
-    atlasBoss=null;ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
+    atlasBoss=null;resetAtlasFury();ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
     hideWarning();hideStoryTransmission();
     ui.hud.classList.add("hidden");ui.powerHud.classList.add("hidden");ui.fire.classList.add("hidden");ui.banner.classList.remove("show");
     // Decisión del propietario (tablero, rev32-ads): un viaje del mapa cuenta
@@ -2327,7 +2327,7 @@
     if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || collected < level().goal || state !== "playing") return false;
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
-    atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
+    atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});resetAtlasFury();
     // Vida de Atlas según el modo de dificultad (Normal = la de siempre).
     const bossHealth=NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.bossHealth??1;
     if(bossHealth!==1)atlasBoss.hp=atlasBoss.maxHp=Math.round(atlasBoss.maxHp*bossHealth);
@@ -2372,21 +2372,61 @@
     if (layoutChanged) positionAtlasArena();
   }
 
+  // Furia de Atlas (plan F3c): escenario roto, rayo Fulminante (su aviso
+  // marca la mitad que va a barrer) y escoltas, nunca más de 4 a la vez.
+  let atlasFuryScene=false,atlasBeam=null,atlasBeamWarning=null;
+  function resetAtlasFury() { atlasFuryScene=false;atlasBeam=null;atlasBeamWarning=null; }
+  function spawnAtlasEscorts(count) {
+    if(!atlasBoss)return;
+    const alive=items.filter(item=>item.gaia?.kind==="atlasEscort").length;
+    for(let k=alive;k<count;k++) {
+      const angle=k*Math.PI/2,radius=atlasAnchor().r*NeonCampaign.GAIA_ENEMY_RULES.atlasEscort.orbit.radius;
+      const item=spawnGaiaEnemy("atlasEscort");
+      item.gaia.angle=angle;item.x=item.baseX=atlasBoss.x+Math.cos(angle)*radius;item.y=atlasBoss.y+Math.sin(angle)*radius;
+    }
+  }
+  function spawnAtlasDrones(event) {
+    for(let k=0;k<event.count;k++) {
+      const item=spawnClassicFlightPatrol("scout");
+      item.atlasDrone=true;item.x=item.baseX=event.x+(k%2?60:-60);item.y=event.y+30;
+    }
+  }
+  // Las escoltas giran a 1,6·r del radio visible de Atlas, no del de colisión:
+  // así quedan por fuera de su silueta.
+  function atlasAnchor() {
+    return atlasBoss&&!atlasBoss.disabled?{x:atlasBoss.x,y:atlasBoss.y,r:(atlasBoss.visualSize||350)*.45}:null;
+  }
+  function updateAtlasBeam(dt) {
+    if(!atlasBeam)return;
+    atlasBeam.remaining-=dt;
+    if(atlasBeam.remaining<=0){atlasBeam=null;return;}
+    if(!atlasBeam.hit&&player.x+SHIP_COLLISION_HALF_WIDTH>=atlasBeam.x0&&player.x-SHIP_COLLISION_HALF_WIDTH<=atlasBeam.x1) {
+      atlasBeam.hit=true;damageShip(atlasBeam.damage,player.x,player.y);
+    }
+  }
+
   function consumeAtlasEvent(event) {
     if (event.type === "projectile") items.push(event.projectile);
     if (event.clearProjectiles || event.type === "shutdown") {
       items = items.filter(item => !item.guardianProjectile);
     }
     if (event.type === "volley") combatSound(event.attackTier==="basic"?"enemy-phaser":"enemy-heavy",event.x??atlasBoss.x);
-    // Ruptura Crono: alarma durante la carga y golpe al soltar la cortina. El
-    // aviso no indica dónde quedará el hueco.
+    // Fulminante: alarma durante la carga, que dice qué mitad va a barrer.
     if (event.type === "fulminant") {
+      atlasBeamWarning={x0:event.x0,x1:event.x1};
       combatSound("atlas-charge",atlasBoss.x);flash=Math.max(flash,.22);
-      showStoryTransmission("COMANDANTE IRIA · GAIA","¡Ruptura Crono! Atlas va a barrer la pantalla: busca el hueco.",1.6);
+      showStoryTransmission("COMANDANTE IRIA · GAIA","¡Fulminante! Atlas va a barrer tu mitad: cambia de lado.",1.6);
     }
+    if (event.type === "beam") { atlasBeamWarning=null;atlasBeam={x0:event.x0,x1:event.x1,remaining:event.seconds,damage:event.damage,hit:false}; }
+    if (event.type === "drones") spawnAtlasDrones(event);
+    if (event.type === "fury") { atlasFuryScene=true;ensureSprite(SPRITES.atlasFury);ensureSprite(SPRITES.atlasEscorts);spawnAtlasEscorts(event.escorts); }
     if (event.type === "volley" && event.fulminant) { shake=Math.max(shake,6);cameraKickY=Math.max(cameraKickY,4); }
     if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
+      atlasBeam=atlasBeamWarning=null;
+      // Las escoltas caen con Atlas.
+      for(const escort of items.filter(item=>item.gaia?.kind==="atlasEscort"))addExplosion(escort.x,escort.y,.6,.4);
+      items=items.filter(item=>item.gaia?.kind!=="atlasEscort");
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
       // Explosión del baúl durante el apagado (1,55 s): el completado llega
       // como siempre, ~0,75 s después de que se apague. Sin imagen, como antes.
@@ -2407,6 +2447,7 @@
     // En un viaje del mapa la victoria completa el viaje dentro del evento y
     // retira a Atlas; no queda nada que actualizar en este fotograma.
     if(!atlasBoss)return;
+    updateAtlasBeam(dt * (powers.slow > 0 ? .5 : 1));
     if(atlasBoss.state==="charge"&&previousState!=="charge")combatSound("atlas-charge",atlasBoss.x);
     if (state !== "playing") return;
     atlasFireTimer = Math.max(0, atlasFireTimer - dt);
@@ -3005,7 +3046,7 @@
       ensureSprite(SPRITES.guardianAtlas);
     }
 
-    atlasBoss = null;
+    atlasBoss = null;resetAtlasFury();
     atlasFireTimer = atlasReentryGrace = 0;
     atlasLastStatus = "";
     ui.goal.previousElementSibling.textContent = "NÚCLEOS";
@@ -3135,7 +3176,7 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("menu");
-    atlasBoss = null;
+    atlasBoss = null;resetAtlasFury();
     ui.atlasEncounter?.classList.add("hidden");
     document.body.classList.remove("atlas-combat");
     ui.hud.classList.add("hidden");
@@ -5862,6 +5903,15 @@
         drawAtlasVfx(3,48,48,.45+boss.telegraph.progress*.5);ctx.restore();
       }
     }
+    // Furia (plan F3c): hoja propia de 4 poses (anillo roto, carga,
+    // Fulminante, derrota), centrada en el mismo núcleo. La pose 2 no se usa:
+    // su haz cae recto y el rayo del juego barre media pantalla.
+    if (boss.phase === 2 && spriteReady(SPRITES.atlasFury)) {
+      const pose = boss.disabled ? 3 : atlasBeam || boss.state === "charge" ? 1 : 0;
+      const sheet = SPRITES.atlasFury, cell = sheet.naturalWidth / 4, size = (boss.visualSize || 350) * 1.25;
+      ctx.drawImage(sheet, pose * cell, 0, cell, sheet.naturalHeight, boss.x - size / 2, boss.y - size / 2, size, size);
+      return;
+    }
     const animation = NeonCampaign.guardianAtlasAnimation(boss);
     const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
     const frameHeight = SPRITES.guardianAtlas.naturalHeight / 2;
@@ -5879,6 +5929,33 @@
     };
     if (animation.previousFrame !== null) paint(animation.previousFrame, 1 - animation.blend);
     paint(animation.frame, animation.blend);
+  }
+
+  // Fondo oscurecido mientras Atlas está en furia.
+  function drawAtlasFuryScene() {
+    if (!atlasFuryScene) return;
+    ctx.save(); ctx.fillStyle = "rgba(12,0,6,.42)"; ctx.fillRect(0, 0, W, H); ctx.restore();
+  }
+  // Fulminante: una cuña que sale del núcleo y, a la altura de la nave, cubre
+  // la mitad que daña. Al cargar parpadea su contorno; al disparar arde
+  // (amenaza = cálido, DESIGN §9.1).
+  function drawAtlasBeam() {
+    const band = atlasBeam || atlasBeamWarning;
+    if (!band || !atlasBoss) return;
+    const top = atlasBoss.y, mouth = 26;
+    ctx.save();
+    ctx.beginPath(); ctx.moveTo(atlasBoss.x - mouth, top); ctx.lineTo(atlasBoss.x + mouth, top);
+    ctx.lineTo(band.x1, H); ctx.lineTo(band.x0, H); ctx.closePath();
+    if (atlasBeam) {
+      const glow = ctx.createLinearGradient(band.x0, 0, band.x1, 0);
+      glow.addColorStop(0, "rgba(255,50,40,.35)"); glow.addColorStop(.5, "rgba(255,226,200,.9)"); glow.addColorStop(1, "rgba(255,50,40,.35)");
+      ctx.globalAlpha = .78 + .22 * Math.sin(elapsed * 40);
+      ctx.shadowBlur = 30; ctx.shadowColor = "#ff3b2f"; ctx.fillStyle = glow; ctx.fill();
+    } else {
+      ctx.globalAlpha = .16 + .16 * Math.abs(Math.sin(elapsed * 10)); ctx.fillStyle = "#ff3b3b"; ctx.fill();
+      ctx.globalAlpha = .9; ctx.strokeStyle = "#ff6b5c"; ctx.lineWidth = 4; ctx.setLineDash([18, 12]); ctx.stroke();
+    }
+    ctx.restore();
   }
 
   // Authored component crops share explicit mounting coordinates, not icon offsets.
@@ -6174,7 +6251,7 @@
 
   // Guardia de Gaia (plan F3b): hojas del baúl. Enemigos en celdas de 192 (4 por
   // fila; el Alfa, 4 de 256); minas, bombas y disparos en la hoja 6×4 de 128.
-  const GAIA_SHEETS = {tracker: "gaiaTracker", sower: "gaiaSower", aegis: "gaiaAegis", alpha: "gaiaAlpha"};
+  const GAIA_SHEETS = {tracker: "gaiaTracker", sower: "gaiaSower", aegis: "gaiaAegis", alpha: "gaiaAlpha", atlasEscort: "atlasEscorts"};
   const GAIA_SHOT_CELLS = {orb: 21, missile: 18};
   function drawGaiaCell(sprite, columns, cell, size) {
     const side = sprite.naturalWidth / columns;
@@ -6651,6 +6728,7 @@
       if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
     }
     background(t);
+    if (typeof drawAtlasFuryScene === "function") drawAtlasFuryScene();
     drawWarp();
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
@@ -6666,6 +6744,7 @@
       else drawPower(item);
     }
     if (typeof drawMeteorWarnings === "function") drawMeteorWarnings();
+    if (typeof drawAtlasBeam === "function") drawAtlasBeam();
     drawGuardianAtlas();
     if (typeof drawCh03Satellite === "function") drawCh03Satellite();
     drawPlayer(t);

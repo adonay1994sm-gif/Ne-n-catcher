@@ -215,6 +215,15 @@
         drawAtlasVfx(3,48,48,.45+boss.telegraph.progress*.5);ctx.restore();
       }
     }
+    // Furia (plan F3c): hoja propia de 4 poses (anillo roto, carga,
+    // Fulminante, derrota), centrada en el mismo núcleo. La pose 2 no se usa:
+    // su haz cae recto y el rayo del juego barre media pantalla.
+    if (boss.phase === 2 && spriteReady(SPRITES.atlasFury)) {
+      const pose = boss.disabled ? 3 : atlasBeam || boss.state === "charge" ? 1 : 0;
+      const sheet = SPRITES.atlasFury, cell = sheet.naturalWidth / 4, size = (boss.visualSize || 350) * 1.25;
+      ctx.drawImage(sheet, pose * cell, 0, cell, sheet.naturalHeight, boss.x - size / 2, boss.y - size / 2, size, size);
+      return;
+    }
     const animation = NeonCampaign.guardianAtlasAnimation(boss);
     const frameWidth = SPRITES.guardianAtlas.naturalWidth / 4;
     const frameHeight = SPRITES.guardianAtlas.naturalHeight / 2;
@@ -232,6 +241,33 @@
     };
     if (animation.previousFrame !== null) paint(animation.previousFrame, 1 - animation.blend);
     paint(animation.frame, animation.blend);
+  }
+
+  // Fondo oscurecido mientras Atlas está en furia.
+  function drawAtlasFuryScene() {
+    if (!atlasFuryScene) return;
+    ctx.save(); ctx.fillStyle = "rgba(12,0,6,.42)"; ctx.fillRect(0, 0, W, H); ctx.restore();
+  }
+  // Fulminante: una cuña que sale del núcleo y, a la altura de la nave, cubre
+  // la mitad que daña. Al cargar parpadea su contorno; al disparar arde
+  // (amenaza = cálido, DESIGN §9.1).
+  function drawAtlasBeam() {
+    const band = atlasBeam || atlasBeamWarning;
+    if (!band || !atlasBoss) return;
+    const top = atlasBoss.y, mouth = 26;
+    ctx.save();
+    ctx.beginPath(); ctx.moveTo(atlasBoss.x - mouth, top); ctx.lineTo(atlasBoss.x + mouth, top);
+    ctx.lineTo(band.x1, H); ctx.lineTo(band.x0, H); ctx.closePath();
+    if (atlasBeam) {
+      const glow = ctx.createLinearGradient(band.x0, 0, band.x1, 0);
+      glow.addColorStop(0, "rgba(255,50,40,.35)"); glow.addColorStop(.5, "rgba(255,226,200,.9)"); glow.addColorStop(1, "rgba(255,50,40,.35)");
+      ctx.globalAlpha = .78 + .22 * Math.sin(elapsed * 40);
+      ctx.shadowBlur = 30; ctx.shadowColor = "#ff3b2f"; ctx.fillStyle = glow; ctx.fill();
+    } else {
+      ctx.globalAlpha = .16 + .16 * Math.abs(Math.sin(elapsed * 10)); ctx.fillStyle = "#ff3b3b"; ctx.fill();
+      ctx.globalAlpha = .9; ctx.strokeStyle = "#ff6b5c"; ctx.lineWidth = 4; ctx.setLineDash([18, 12]); ctx.stroke();
+    }
+    ctx.restore();
   }
 
   // Authored component crops share explicit mounting coordinates, not icon offsets.
@@ -527,7 +563,7 @@
 
   // Guardia de Gaia (plan F3b): hojas del baúl. Enemigos en celdas de 192 (4 por
   // fila; el Alfa, 4 de 256); minas, bombas y disparos en la hoja 6×4 de 128.
-  const GAIA_SHEETS = {tracker: "gaiaTracker", sower: "gaiaSower", aegis: "gaiaAegis", alpha: "gaiaAlpha"};
+  const GAIA_SHEETS = {tracker: "gaiaTracker", sower: "gaiaSower", aegis: "gaiaAegis", alpha: "gaiaAlpha", atlasEscort: "atlasEscorts"};
   const GAIA_SHOT_CELLS = {orb: 21, missile: 18};
   function drawGaiaCell(sprite, columns, cell, size) {
     const side = sprite.naturalWidth / columns;

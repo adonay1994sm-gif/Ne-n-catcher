@@ -603,3 +603,69 @@ test('the panel is not offered twice or when the beacon is already owned', () =>
   startAt(early.T, 4); giveScrap(early.T, 5); early.T.ev('DEV.invulnerable=true'); early.T.toStage(6); early.T.adv(4);
   assert.equal(offerShown(early.w), false, 'sin vencer al CH-03 en este intento no se ofrece');
 });
+
+// Furia de Atlas (plan F3c, tarea 6): escoltas, drones, rayo y escenario roto.
+const atlasFight = T => { startAt(T, 10); T.ev('DEV.invulnerable=true'); toFinish(T); T.adv(3); };
+const enrage = T => T.ev("Object.assign(atlasBoss,{state:'exposed',vulnerability:true});for(const e of NeonCampaign.hitGuardianAtlas(atlasBoss,atlasBoss.maxHp-Math.floor(atlasBoss.maxHp*.3)).events)consumeAtlasEvent(e)");
+const escorts = T => T.ev("items.filter(item=>item.gaia?.kind==='atlasEscort').length");
+
+test('fury spawns four escorts and never more', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  assert.equal(T.ev('Boolean(atlasBoss)'), true);
+  enrage(T);
+  assert.equal(T.ev('atlasBoss.phase'), 2);
+  assert.equal(escorts(T), 4);
+  T.ev("consumeAtlasEvent({type:'fury',escorts:4})");
+  assert.equal(escorts(T), 4, 'a second fury event does not add more');
+  T.adv(1);
+  assert.ok(escorts(T) <= 4);
+  T.ev('DEV.invulnerable=false;hull=0'); T.finishGame('hull'); T.resumeReward();
+  T.ev("consumeAtlasEvent({type:'fury',escorts:4})");
+  assert.equal(escorts(T), 4, 'reviving never leaves more than four');
+});
+
+test('drones spawn two CH-01', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  const before = T.ev("items.filter(item=>item.classicScout).length");
+  T.ev("consumeAtlasEvent({type:'drones',count:2,x:atlasBoss.x,y:atlasBoss.y})");
+  const drones = T.ev("JSON.stringify(items.filter(item=>item.classicScout&&item.atlasDrone).map(item=>({x:item.x,y:item.y,role:item.salvageRole})))");
+  assert.equal(T.ev("items.filter(item=>item.classicScout).length"), before + 2);
+  for (const drone of JSON.parse(drones)) {
+    assert.equal(drone.role, 'scout');
+    assert.ok(Math.abs(drone.x - T.ev('atlasBoss.x')) < 140 && Math.abs(drone.y - T.ev('atlasBoss.y')) < 140, 'they leave from Atlas');
+  }
+});
+
+test('the beam hurts only inside its half', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  T.ev("DEV.invulnerable=false;player.x=player.target=100;hullGrace=0;classicHullReserve=0;items=items.filter(item=>!item.guardianProjectile)");
+  const start = T.hull();
+  T.ev("consumeAtlasEvent({type:'beam',side:1,x0:W*.55,x1:W,seconds:1.2,damage:26})");
+  T.adv(.1);
+  assert.equal(T.hull(), start, 'the other half is safe');
+  T.ev("atlasBeam=null;hullGrace=0;items=items.filter(item=>!item.guardianProjectile)");
+  T.ev("consumeAtlasEvent({type:'beam',side:-1,x0:0,x1:W*.45,seconds:1.2,damage:26})");
+  T.adv(.1);
+  assert.equal(T.hull(), start - 26);
+  T.ev("hullGrace=0;items=items.filter(item=>!item.guardianProjectile)");
+  T.adv(.3);
+  assert.equal(T.hull(), start - 26, 'one beam hurts once');
+  T.adv(1.2);
+  assert.equal(T.ev('atlasBeam'), null, 'the beam goes out');
+});
+
+test('fury darkens the scene', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  assert.equal(T.ev('atlasFuryScene'), false);
+  enrage(T);
+  assert.equal(T.ev('atlasFuryScene'), true);
+  drawnTexts.length = 0; T.draw();
+  assert.ok(drawnTexts.includes('image:assets/atlas_fury_atlas_v1.webp'), 'the broken-ring sheet');
+  assert.ok(drawnTexts.includes('image:assets/atlas_escorts_atlas_v1.webp'), 'its escorts');
+  T.goHome();
+  assert.equal(T.ev('atlasFuryScene'), false);
+});
