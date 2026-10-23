@@ -1487,6 +1487,10 @@
   }
   function closeSectorBeacon() {
     if(state!=="paused"||!ui.beaconOffer.classList.contains("show"))return;
+    // Pagada pero sin guardar en el sector (fallo de escritura): se reintenta
+    // al salir, así seguir sin pulsar otra vez no pierde el pago.
+    const sector=classicSideVoyage.ficha.sector,save=loadSectorSave();
+    if(classicSalvageState?.lastConsumable?.id===`beacon:${classicSalvageRunId}`&&!save.sectors[sector]?.beacon)saveSector(NeonCampaign.buyBeacon(save,sector));
     if(typeof resetGameInput==="function")resetGameInput();
     setState("playing");overlay();last=performance.now();resumeAudio();
     grantResumeGrace();syncClassicFlightHud();hud();
@@ -7055,8 +7059,7 @@
       fireManualShot();
     }
     if(event.key.toLowerCase()==="m"&&state==="playing"&&!event.repeat){event.preventDefault();fireClassicMissile();}
-    // Un panel que ya respondió a Escape (02) lo marca con preventDefault.
-    if (event.key === "Escape" && !event.defaultPrevented) {
+    if (event.key === "Escape") {
       resetGameInput();
       state === "paused" ? resumeGame() : pauseGame();
     }
