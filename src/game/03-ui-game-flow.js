@@ -988,7 +988,16 @@
   // Sector continuo (plan F3a): su progreso vive solo en el guardado de
   // sectores. Un guardado ilegible o inválido cuenta como partida nueva.
   // Revivir con anuncio en el sector: lo prepara finishGame y lo gasta resumeReward.
-  let sectorRevive=null;
+  let sectorRevive=null,sectorDeathRecorded=false;
+  // La regla de morir se guarda al estallar la nave (tramo 1, o 6 con baliza),
+  // no al abrir la derrota: cerrar la app durante la explosión no la salta.
+  function recordSectorDeath() {
+    if(!isSectorRun()||sectorDeathRecorded)return;
+    const save=loadSectorSave();
+    sectorRevive=NeonCampaign.useRevive(save);
+    saveSector(NeonCampaign.dieInSector(save));
+    sectorDeathRecorded=true;
+  }
   function isSectorRun() {
     const ficha=classicSideVoyage?.ficha;
     return Boolean(ficha)&&NeonCampaign.getSectorFicha(ficha.id)===ficha;
@@ -1768,7 +1777,10 @@
     classicTutorial=classicFlight&&fichaHasIntro()?NeonCampaign.createFlightTutorial({routeElapsed:classicFlightView.elapsed,checkpoint:settings.flightTutorial}):null;classicWorkshopOpened=false;
     classicTutorialAnchor=null;classicTutorialSignature='';
     classicWeapons=NeonCampaign.createClassicWeapons({type:classicEquipment.selected,unlocked:classicEquipment.unlocked,width:W,height:H});
-    beginClassicSalvageRun(Boolean(voyageEntry||(classicSideVoyage&&voyageCheckpoint)));
+    // En el sector, empezar en el tramo 1 es un intento nuevo: sus enemigos
+    // vuelven a soltar chatarra (lo ya cobrado se conserva en la bodega).
+    beginClassicSalvageRun(isSectorRun()?classicFlightView.stageNumber>1:Boolean(voyageEntry||(classicSideVoyage&&voyageCheckpoint)));
+    sectorDeathRecorded=false;
     resetClassicCometShower();
     // A restored entry has already emitted its checkpoint event. Initialize
     // the same encounter grace here instead of waiting for that event to replay.
@@ -1812,7 +1824,7 @@
     collected = 0;
     if(classicFlight){
       collected=classicFlightView.collected;
-      if(voyageEntry){hull=Math.max(voyageEntry.hull,CLASSIC_RESUME_HULL_FLOOR);classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
+      if(voyageEntry){hull=isSectorRun()?voyageEntry.hull:Math.max(voyageEntry.hull,CLASSIC_RESUME_HULL_FLOOR);classicHullReserve=Math.min(classicHullReserveCapacity,voyageEntry.reserve??classicHullReserveCapacity);score=voyageEntry.score;maxCombo=voyageEntry.maxCombo;}
     }
     ammo = classicWeapons?classicWeapons.charges:INITIAL_AMMO;
     manualShotCooldown = 0;
@@ -2061,13 +2073,10 @@
     ui.reward.classList.toggle("hidden", continued || supplyFailed);
     // En el viaje se reintenta desde la entrada del tramo guardado, no el sector entero.
     $("retry").textContent = classicFlightView?.stageId ? `REINTENTAR TRAMO ${classicFlightView.stageId}` : "REINTENTAR SECTOR";
-    // Sector: el guardado pasa ya al reinicio (tramo 1, o 6 con baliza), así
-    // cerrar la app aquí no salta la regla. El anuncio, si queda en este
-    // intento, vuelve a escribir el punto donde estabas.
+    // Sector: el anuncio, si queda en este intento, vuelve a escribir el punto
+    // donde estabas.
     if(isSectorRun()) {
-      const save=loadSectorSave();
-      sectorRevive=NeonCampaign.useRevive(save);
-      saveSector(NeonCampaign.dieInSector(save));
+      recordSectorDeath();
       if(!sectorRevive)ui.reward.classList.add("hidden");
       $("retry").textContent=`REINTENTAR SECTOR · TRAMO ${NeonCampaign.continuePoint(loadSectorSave())?.stageNumber||1}`;
     }
@@ -2089,7 +2098,7 @@
     // La pantalla de derrota se abre después de la animación final, por lo que
     // hay que cancelar cualquier resto de ese estado antes de volver a jugar.
     // En el sector se vuelve con el 25 % (diseño 6.2), una vez por intento.
-    if (isSectorRun()) { hull = sectorRevive.hull; saveSector(sectorRevive.save); sectorRevive = null; }
+    if (isSectorRun()) { hull = sectorRevive.hull; saveSector(sectorRevive.save); sectorRevive = null; sectorDeathRecorded = false; }
     else hull = Math.max(hull, 35);
     hullGrace = 0; // la continuación no da invulnerabilidad temporizada
     continued = true;

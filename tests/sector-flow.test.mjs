@@ -275,3 +275,45 @@ test('replaying a completed sector starts at stage 1 and keeps its stars', () =>
   assert.deepEqual([T.st().side, T.stage()], ['S1', 1]);
   assert.equal(sectorSave(w).sectors[1].stars, stars);
 });
+
+// Revisión final del plan F3a (auditor-codigo).
+test('the death rule is saved as soon as the ship explodes', () => {
+  const {w, T} = harness();
+  startAt(T, 5);
+  T.ev('hull=1');
+  T.hitNow(60);
+  assert.equal(T.st().state, 'destroying');
+  assert.equal(sectorSave(w).run.stageNumber, 1, 'closing the app during the explosion still restarts the sector');
+  T.adv(2);
+  assert.equal(T.st().state, 'gameover');
+  assert.equal(rewardShown(w), true);
+  assert.equal(T.resumeReward(), true);
+  assert.equal(T.stage(), 5);
+  assert.equal(sectorSave(w).run.stageNumber, 5);
+});
+
+test('a new attempt opens a new salvage run; continuing keeps it', () => {
+  const salvageRun = T => T.ev('classicSalvageState?.activeRun?.id||null');
+  {
+    const {T} = harness();
+    T.startSector('S1');
+    const first = salvageRun(T);
+    T.finishGame('hull'); T.startLevel(0);
+    assert.notEqual(salvageRun(T), first, 'enemies of the new attempt drop scrap again');
+  }
+  {
+    const {w, T} = harness();
+    putRun(w, {sector: 1, stageNumber: 4, stageHull: 70, reviveUsed: false});
+    click(w, 'play');
+    const first = salvageRun(T);
+    T.goHome(); click(w, 'play');
+    assert.equal(salvageRun(T), first, 'replaying the same stage gives no scrap twice');
+  }
+});
+
+test('continuing keeps the hull you had at the start of the stage, even below 50 %', () => {
+  const {w, T} = harness();
+  putRun(w, {sector: 1, stageNumber: 4, stageHull: 20, reviveUsed: false});
+  click(w, 'play');
+  assert.equal(T.hull(), 20);
+});
