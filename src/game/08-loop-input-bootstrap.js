@@ -332,16 +332,11 @@
     }
   });
 
-  $("play").onclick = () => {
-    if(classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2){prepareLevel(0,"menu");return;}
-    // La campaña sigue por el siguiente viaje abierto del mapa; si no queda
-    // ninguno, se abre el mapa (ya no hay niveles clásicos).
-    const nextVoyage=nextCampaignVoyage();
-    if(!nextVoyage){buildLevelGrid();overlay(ui.levelSelect);return;}
-    if(nextVoyage.voyage==="S1-V1"){prepareLevel(0,"menu");return;}
-    startSideVoyage(nextVoyage.voyage);
-  };
+  // JUGAR abre el sector 1 continuo (decisión del propietario, 23/10/2026).
+  $("play").onclick = () => startSector("S1");
   $("levels").onclick = () => { buildLevelGrid(); overlay(ui.levelSelect); };
+  // El mapa de viajes antiguo se oculta hasta que exista el de la galaxia (F5).
+  $("levels").classList.add("hidden");
   $("levelBack").onclick = () => { closeBaseTalk(); overlay(ui.menu); };
   $("baseTalkClose").onclick = closeBaseTalk;
   $("baseTalkNext").onclick = () => { if (!baseTalkState) return; baseTalkState.index++; showBaseTalkLine(); };
@@ -527,9 +522,9 @@
       window.location.reload();
     }), button("Volver", close));
     panel.append(options);
-    for (const ficha of NeonCampaign.VOYAGES) {
+    for (const ficha of [...NeonCampaign.SECTORS, ...NeonCampaign.VOYAGES]) {
       const row = document.createElement("div"); row.className = "dev-row";
-      const name = document.createElement("b"); name.textContent = `${ficha.id} · ${ficha.title}${ficha.boss ? " · jefe" : ""}`;
+      const name = document.createElement("b"); name.textContent = `${ficha.id} · ${NeonCampaign.SECTORS.includes(ficha) ? "Sector · " : ""}${ficha.title}${ficha.boss ? " · jefe" : ""}`;
       const stages = document.createElement("div"); stages.className = "dev-stages";
       const count = NeonCampaign.createVoyageRoute(ficha).stageCount;
       for (let stage = 1; stage <= count; stage++) stages.append(button(String(stage), () => play(() => {

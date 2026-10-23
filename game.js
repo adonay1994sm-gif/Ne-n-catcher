@@ -1372,6 +1372,10 @@
 
   function saveClassicVoyageCheckpoint(checkpoint,completed=false) {
     if(!checkpoint)return false;
+    if(isSectorRun()){
+      const save=loadSectorSave();
+      return Boolean(save.run)&&saveSector(NeonCampaign.enterStage(save,checkpoint.stageNumber,hull));
+    }
     if(classicSideVoyage)return saveSideVoyage(checkpoint,completed);
     if(completionPersistenceBlocked&&!recoverCampaignCompletion())return false;
     const record=classicVoyageCheckpointRecord(checkpoint,completed);
@@ -1951,6 +1955,25 @@
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
     return saved;
   }
+  // Sector continuo (plan F3a): su progreso vive solo en el guardado de
+  // sectores. Un guardado ilegible o inválido cuenta como partida nueva.
+  function isSectorRun() {
+    const ficha=classicSideVoyage?.ficha;
+    return Boolean(ficha)&&NeonCampaign.getSectorFicha(ficha.id)===ficha;
+  }
+  function loadSectorSave() {
+    return NeonCampaign.normalizeSectorSave(storage.getJSON(NeonCampaign.SECTOR_SAVE_KEY,null))||NeonCampaign.createSectorSave();
+  }
+  function saveSector(save) {
+    const saved=storage.setJSON(NeonCampaign.SECTOR_SAVE_KEY,save);
+    if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
+    return saved;
+  }
+  function startSector(id) {
+    const ficha=NeonCampaign.getSectorFicha(id);
+    if(!ficha)return false;
+    classicVoyageRequestedStage=null;classicSideVoyagePending=ficha;startLevel(0);return true;
+  }
   function startSideVoyage(voyageId) {
     const ficha=NeonCampaign.getVoyageFicha(NeonCampaign.VOYAGES.find(item=>item.id===voyageId)?.routeId);
     if(!ficha)return false;
@@ -2290,28 +2313,19 @@
   function updateMenu() {
 
     ui.best.textContent = bestScore();
-    // El progreso del menú cuenta los viajes de la campaña, no los niveles.
-    const routes = campaignSectors().flatMap(sector => sector.routes);
-    const voyagesDone = routes.filter(route => route.status === "done").length;
-    const voyagePercent = routes.length ? Math.round(voyagesDone / routes.length * 100) : 0;
-    ui.unlockedText.textContent = `${voyagesDone}/${routes.length}`;
-    ui.totalStars.textContent = `${routes.reduce((sum, route) => sum + voyageStars(route.voyage), 0)}/${routes.length * 3}`;
-    ui.campaignPercent.textContent = `${voyagePercent}%`;
-    ui.campaignFill.style.width = `${voyagePercent}%`;
-    ui.playLabel.textContent = "CONTINUAR VIAJE";
-    ui.playSector.textContent=`CHRONOS → GAIA · TRAMO 1.${classicVoyageRecord?.checkpoint.stageNumber||1}/10`;
-    // Tras S1-V1, «Jugar» sigue la campaña de viajes, no los niveles clásicos.
-    // Una rejugada de S1-V1 a medias no frena la campaña (auditoría L02).
-    const s1v1Pending=classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2;
-    const nextVoyage=s1v1Pending?null:nextCampaignVoyage();
-    if(nextVoyage&&nextVoyage.voyage!=="S1-V1")ui.playSector.textContent=`${nextVoyage.voyage} · ${nextVoyage.title.toUpperCase()}`;
-    if(!nextVoyage&&getUnlocked()>=2){
-      ui.playLabel.textContent="VER EL MAPA";ui.playSector.textContent="TODOS LOS VIAJES DISPONIBLES HECHOS";
-    }
-    const current = routes.findIndex(route => route.status === "open");
-    ui.campaignNodes.innerHTML = routes.map((route, index) =>
-      `<span class="${route.status === "done" ? "done " : ""}${index === current ? "current" : ""}"></span>`
-    ).join("");
+    // El menú sigue el sector continuo (decisión del propietario, 23/10/2026:
+    // JUGAR abre el sector 1; los viajes antiguos solo en el panel de desarrollo).
+    const save=loadSectorSave(),run=save.run,done=save.sectors[1]?.completed===true;
+    const stars=Object.values(save.sectors).reduce((sum,record)=>sum+record.stars,0);
+    const stage=run?run.stageNumber:done?11:1,percent=Math.round((stage-1)*10);
+    ui.unlockedText.textContent=`${save.unlocked}/10`;
+    ui.totalStars.textContent=`${stars}/30`;
+    ui.campaignPercent.textContent=`${percent}%`;
+    ui.campaignFill.style.width=`${percent}%`;
+    ui.playLabel.textContent=run?"CONTINUAR":done?"REPETIR":"JUGAR";
+    ui.playSector.textContent=run?`SECTOR 1 · TRAMO ${run.stageNumber}/10`:done?"SECTOR 1 COMPLETADO":"SECTOR 1 · CHRONOS → GAIA";
+    ui.campaignNodes.innerHTML=Array.from({length:10},(_,index)=>
+      `<span class="${index+1<stage?"done ":""}${index+1===stage?"current":""}"></span>`).join("");
     buildLevelGrid();
   }
 
@@ -2674,7 +2688,20 @@
     const sideReplay=!classicSideVoyagePending&&state==="complete";
     classicSideVoyage=currentLevel===0&&sideFicha?{ficha:sideFicha,route:NeonCampaign.createVoyageRoute(sideFicha)}:null;
     classicSideVoyagePending=null;
-    if(classicSideVoyage){
+    if(isSectorRun()){
+      // «Continuar» vuelve al inicio del tramo guardado con su casco; sin
+      // partida en curso (o tras completar el sector) se empieza en el tramo 1.
+      const {ficha,route}=classicSideVoyage,requested=classicVoyageRequestedStage;
+      let save=loadSectorSave();
+      const point=NeonCampaign.continuePoint(save);
+      if(requested>=1&&requested<=route.stageCount){
+        voyageCheckpoint=route.createCheckpoint(requested,{goal:LEVELS[0].goal});
+        saveSector(NeonCampaign.enterStage(NeonCampaign.startSectorRun(save,ficha.sector),requested,100));
+      } else if(point&&point.sector===ficha.sector){
+        voyageCheckpoint=route.createCheckpoint(point.stageNumber,{goal:LEVELS[0].goal});
+        voyageEntry={hull:point.hull,score:0,maxCombo:1};
+      } else saveSector(NeonCampaign.startSectorRun(save,ficha.sector));
+    } else if(classicSideVoyage){
       const record=loadSideVoyageRecord(classicSideVoyage.ficha);
       // Un tramo pedido (panel de desarrollo) manda sobre el punto guardado.
       const requested=classicVoyageRequestedStage;
@@ -6561,16 +6588,11 @@
     }
   });
 
-  $("play").onclick = () => {
-    if(classicVoyageRecord&&!classicVoyageRecord.completed&&getUnlocked()<2){prepareLevel(0,"menu");return;}
-    // La campaña sigue por el siguiente viaje abierto del mapa; si no queda
-    // ninguno, se abre el mapa (ya no hay niveles clásicos).
-    const nextVoyage=nextCampaignVoyage();
-    if(!nextVoyage){buildLevelGrid();overlay(ui.levelSelect);return;}
-    if(nextVoyage.voyage==="S1-V1"){prepareLevel(0,"menu");return;}
-    startSideVoyage(nextVoyage.voyage);
-  };
+  // JUGAR abre el sector 1 continuo (decisión del propietario, 23/10/2026).
+  $("play").onclick = () => startSector("S1");
   $("levels").onclick = () => { buildLevelGrid(); overlay(ui.levelSelect); };
+  // El mapa de viajes antiguo se oculta hasta que exista el de la galaxia (F5).
+  $("levels").classList.add("hidden");
   $("levelBack").onclick = () => { closeBaseTalk(); overlay(ui.menu); };
   $("baseTalkClose").onclick = closeBaseTalk;
   $("baseTalkNext").onclick = () => { if (!baseTalkState) return; baseTalkState.index++; showBaseTalkLine(); };
@@ -6756,9 +6778,9 @@
       window.location.reload();
     }), button("Volver", close));
     panel.append(options);
-    for (const ficha of NeonCampaign.VOYAGES) {
+    for (const ficha of [...NeonCampaign.SECTORS, ...NeonCampaign.VOYAGES]) {
       const row = document.createElement("div"); row.className = "dev-row";
-      const name = document.createElement("b"); name.textContent = `${ficha.id} · ${ficha.title}${ficha.boss ? " · jefe" : ""}`;
+      const name = document.createElement("b"); name.textContent = `${ficha.id} · ${NeonCampaign.SECTORS.includes(ficha) ? "Sector · " : ""}${ficha.title}${ficha.boss ? " · jefe" : ""}`;
       const stages = document.createElement("div"); stages.className = "dev-stages";
       const count = NeonCampaign.createVoyageRoute(ficha).stageCount;
       for (let stage = 1; stage <= count; stage++) stages.append(button(String(stage), () => play(() => {

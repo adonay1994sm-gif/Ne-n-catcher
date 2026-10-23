@@ -120,7 +120,7 @@ test('?dev=1 opens every voyage and stage with a separate save and an optional i
   w.document.getElementById('devOpen').click();
   const panel = w.document.getElementById('devPanel');
   assert.equal(panel.classList.contains('show'), true);
-  assert.equal(panel.querySelectorAll('.dev-row').length, 10, 'the 10 voyages; no classic levels any more');
+  assert.equal(panel.querySelectorAll('.dev-row').length, 11, 'sector 1 and the 10 old voyages; no classic levels any more');
   const row = [...panel.querySelectorAll('.dev-row')].find(node => node.textContent.includes('S2-V3'));
   [...row.querySelectorAll('button')].find(node => node.textContent === '4').click();
   assert.deepEqual([T.st().side, T.st().route], ['S2-V3', 'slag-belt']);
@@ -142,36 +142,35 @@ test('a stage picked for S1-V1 never leaks into another voyage and going home cl
   assert.equal(T.st().side, null);
 });
 
-test('after S1-V1, Play continues the voyage campaign with the next open route', () => {
+// Decisión del propietario (23/10/2026): JUGAR abre el sector 1 continuo; los
+// viajes antiguos solo se juegan desde el panel de desarrollo.
+test('after S1-V1, Play opens sector 1 instead of the next old voyage', () => {
   const {w, T} = harness({unlocked: '2'});
-  assert.match(w.document.getElementById('playSector').textContent, /S1-V2/);
+  assert.match(w.document.getElementById('playSector').textContent, /SECTOR 1/);
   w.document.getElementById('play').click();
-  assert.deepEqual([T.st().state, T.st().side], ['playing', 'S1-V2']);
-  T.finish();
-  T.goHome();
-  assert.match(w.document.getElementById('playSector').textContent, /S1-V3/);
+  assert.deepEqual([T.st().state, T.st().side], ['playing', 'S1']);
 });
 
-test('classic levels are gone from the game: RUTA only shows the voyage map and the menu counts voyages', () => {
+test('classic levels are gone from the game: RUTA only shows the voyage map and the menu counts sectors', () => {
   const {w, T} = harness({unlocked: '10'});
   assert.equal(w.document.getElementById('levelGrid'), null);
   assert.equal(w.document.querySelector('.level-card'), null);
   T.buildLevelGrid();
   assert.ok(w.document.querySelector('.sector-route'));
-  assert.match(w.document.getElementById('unlockedText').textContent, /^1\/10$/, 'only S1-V1 counts as done');
+  assert.match(w.document.getElementById('unlockedText').textContent, /^1\/10$/, 'only sector 1 is unlocked');
   w.document.getElementById('play').click();
-  assert.equal(T.st().side, 'S1-V2', 'Play continues with the next voyage');
+  assert.equal(T.st().side, 'S1', 'Play opens sector 1');
 });
 
-test('with every voyage done, Play opens the map and Next never starts a classic level', () => {
+test('with every voyage done, Play opens sector 1 and Next never starts a classic level', () => {
   const {w, T} = harness({unlocked: '10'});
   assert.equal(T.level(), 0, 'old saves with classic levels unlocked start at level 0');
   for (const id of ['S1-V2', 'S1-V3', 'S1-V4', 'S1-V5', 'S2-V1', 'S2-V2', 'S2-V3', 'S2-V4', 'S2-V5']) {
     T.startSideVoyage(id); T.finish(); T.goHome();
   }
   w.document.getElementById('play').click();
-  assert.equal(T.st().state, 'menu');
-  assert.equal(w.document.getElementById('levelSelect').classList.contains('show'), true, 'Play opens the map');
+  assert.equal(T.st().side, 'S1', 'Play opens sector 1');
+  T.goHome();
   T.startLevel(0); T.forceComplete();
   w.document.getElementById('nextLevel').click();
   assert.equal(T.level(), 0, 'Next after replaying S1-V1 never opens classic level 2');
@@ -206,7 +205,7 @@ test('the S1-V1 briefing opened from the map names a Chronos → Gaia stage', ()
   assert.match(w.document.getElementById('briefingSector').textContent, /^TRAMO 1\.\d+ · CHRONOS → GAIA$/);
 });
 
-test('map voyages earn 0-3 stars like S1-V1, keep the best and the menu counts them out of 30', () => {
+test('map voyages earn 0-3 stars like S1-V1 and keep the best; the menu counts sector stars', () => {
   const {w, T, saved, route} = harness();
   const lit = () => w.document.querySelectorAll('#starsAwarded span:not(.off)').length;
   T.startSideVoyage('S1-V2'); T.finish();
@@ -216,7 +215,7 @@ test('map voyages earn 0-3 stars like S1-V1, keep the best and the menu counts t
   assert.equal(lit(), 2, 'a damaged hull earns fewer stars this run');
   assert.equal(saved('S1-V2').stars, 3, 'but the best result is kept');
   T.goHome();
-  assert.equal(w.document.getElementById('totalStars').textContent, '4/30', 'S1-V2 (3) + S1-V1 done (at least 1)');
+  assert.equal(w.document.getElementById('totalStars').textContent, '0/30', 'old voyages no longer add menu stars');
   T.buildLevelGrid();
   assert.match(w.document.querySelector('.sector-route[data-voyage="S1-V2"] small').textContent, /★★★/);
   assert.equal(route('S1-V2'), 'done');
@@ -228,7 +227,6 @@ test('voyages finished before per-voyage stars count at least one star instead o
   const key = 'neonCronium.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
   delete record.stars; w.localStorage.setItem(key, JSON.stringify(record));
   T.goHome();
-  assert.equal(w.document.getElementById('totalStars').textContent, '2/30', 'S1-V1 and S1-V2 done: one star each');
   T.buildLevelGrid();
   assert.match(w.document.querySelector('.sector-route[data-voyage="S1-V2"] small').textContent, /★☆☆/);
 });
@@ -239,7 +237,6 @@ test('a voyage that is not done adds no stars, whatever its record says', () => 
     T.startSideVoyage('S1-V2'); T.finish(); T.goHome(); return w.localStorage.getItem('neonCronium.voyage.S1-V2.v1');
   })()), completed: false, stars: 3}));
   T.goHome();
-  assert.equal(w.document.getElementById('totalStars').textContent, '1/30', 'only S1-V1 counts');
   T.buildLevelGrid();
   assert.notEqual(route('S1-V2'), 'done');
 });
@@ -375,17 +372,16 @@ test('retrying a replayed finished voyage resumes the stage it promises, and a n
   assert.equal(T.ev('classicFlightView.stageNumber'), 1, 'after finishing again, a replay starts from the beginning');
 });
 
-test('after replaying S1-V1 halfway, «JUGAR» follows the campaign instead of reopening S1-V1', () => {
+test('after replaying S1-V1 halfway, «JUGAR» opens sector 1 instead of reopening S1-V1', () => {
   // Auditoría 22/10, L02: rejugar S1-V1 dejaba «JUGAR» atascado en su ficha.
   const {w, T} = harness({unlocked: '1'});
   T.startLevel(0); T.adv(.1); T.finish(); T.goHome();
   T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
   T.startLevel(0); T.adv(.2); T.toStage(2); T.goHome();
   assert.equal(T.ev('nextCampaignVoyage()?.voyage'), 'S1-V3');
-  assert.match(w.document.getElementById('playSector').textContent, /S1-V3/);
   w.document.getElementById('play').click();
   assert.equal(w.document.getElementById('briefing').classList.contains('show'), false, 'no S1-V1 briefing');
-  assert.equal(T.st().side, 'S1-V3');
+  assert.equal(T.st().side, 'S1');
 });
 
 test('retrying S1-V1 keeps the CRONIUM lost before the checkpoint, like the map voyages', () => {
