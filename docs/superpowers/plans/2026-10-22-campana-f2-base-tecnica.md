@@ -4,8 +4,9 @@
 
 **Goal:** Construir, sin cambiar todavía lo que ve el jugador, las piezas que
 necesita el sector continuo: la ficha del sector 1, los turnos de ataque, los
-perfiles de IA, el guardado de sectores con migración y un simulador con bot
-que mide la dificultad.
+perfiles de IA, el guardado de sectores y un simulador con bot que mide la
+dificultad y la acción (segundos sin nada que hacer). Sin migración: no hay
+jugadores actuales (propietario, 23/10/2026).
 
 **Architecture:** Módulos ES puros en `src/game/progression/` y
 `src/game/combat/`, que se exportan por `legacy-content-entry.js` al global
@@ -33,8 +34,8 @@ y `docs/design/BIBLIA_GALAXIA.md` (aprobada).
   como semilla, nunca con `Math.random` directo dentro del módulo.
 - No tocar anuncios (`ads-config.js`, `native-admob.js`, `ad-bridge.js`), iOS
   ni Capacitor.
-- No borrar los guardados antiguos (`neonCatcher.chronosVoyage.v2`,
-  `neonCatcher.voyage.S*-V*.v1`): la migración los lee y no los escribe.
+- No hay jugadores actuales: no se migra nada. Las claves antiguas se dejan
+  como están (no se borran) hasta la F3.
 - Commits en español, cortos, un cambio por commit, con la atribución de la
   sesión.
 - **Cifras del diseño:**
@@ -51,18 +52,16 @@ y `docs/design/BIBLIA_GALAXIA.md` (aprobada).
 ## Review Focus
 
 1. **Guardado dañado o a medias** (JSON roto, campos fuera de rango, versión
-   desconocida): se trata como «sin guardado». El juego no se rompe y no se
-   pierde el progreso migrable. Prueba en la tarea 4.
+   desconocida): se trata como «sin guardado». El juego no se rompe. Prueba en la tarea 4.
 2. **Enemigo que muere con un turno de ataque concedido:** el turno se libera
    y otro puede atacar ya. Prueba en la tarea 2.
 3. **Pausa:** la IA y los turnos usan el reloj de juego (`now` que pasa el
    llamador), no la hora real. Con el mismo `now`, tras una pausa larga,
    nadie ataca de golpe. Prueba en la tarea 3.
-4. **Migración con `localStorage` que falla al leer** (lanza excepción): se
-   devuelve el guardado nuevo vacío, sin propagar el error. Prueba en la
-   tarea 5.
+4. **Tramo aburrido:** más de 6 s seguidos sin ninguna amenaza en pantalla
+   (auditoría J05). El simulador lo mide y lo informa. Prueba en la tarea 5.
 5. **Simulador no determinista:** la misma semilla da exactamente el mismo
-   resultado. Si no, el ajuste de dificultad no sirve. Prueba en la tarea 6.
+   resultado. Si no, el ajuste de dificultad no sirve. Prueba en la tarea 5.
 
 ---
 
@@ -228,41 +227,7 @@ y `docs/design/BIBLIA_GALAXIA.md` (aprobada).
 - [ ] **Step 4:** La prueba → PASS.
 - [ ] **Step 5:** Commit «Guardado de sectores: revivir una vez por intento, baliza y continuar al inicio del tramo».
 
-### Task 5: Migración desde los viajes antiguos
-
-**Files:**
-- Modify: `src/game/progression/sector-save.js`
-- Test: `tests/sector-save-migration.test.mjs`
-
-**Interfaces:**
-- Consumes: `createSectorSave`, `completeSector` (tarea 4).
-- Produces: `migrateLegacyVoyages(readJSON: (key) => unknown) → save`.
-  - `readJSON` es el lector de `storage.getJSON` del juego.
-  - Lee `neonCatcher.chronosVoyage.v2` y `neonCatcher.voyage.S1-V2.v1` …
-    `neonCatcher.voyage.S2-V5.v1`.
-- Reglas (spec, «Migración»):
-  - S1-V5 completado → sector 1 completado y sector 2 desbloqueado;
-  - S2-V5 completado → sector 2 completado y sector 3 desbloqueado;
-  - estrellas del sector = la mejor de sus viajes;
-  - un viaje a medias no deja `run`: ese sector empieza en el tramo 1.
-  - No toca armas, mejoras, chatarra ni CRONIUM: siguen en sus claves.
-
-- [ ] **Step 1: Write the failing test** `tests/sector-save-migration.test.mjs`:
-  - `a player who beat Atlas has sector 1 done and sector 2 open`.
-  - `sector stars are the best of its voyages`: S1-V2 con 1 estrella y S1-V5
-    con 3 → `sectors[1].stars === 3`.
-  - `a half-played voyage starts its sector at stage 1`: `run === null`.
-  - `a new player gets an empty save`: igual que `createSectorSave()`.
-  - `a reader that throws gives an empty save` (Review Focus 4): no propaga
-    el error.
-  - `legacy keys are only read`: el lector falso registra las claves leídas,
-    y el módulo no recibe ningún escritor.
-- [ ] **Step 2:** `node --test tests/sector-save-migration.test.mjs` → FAIL.
-- [ ] **Step 3:** Implementa `migrateLegacyVoyages`.
-- [ ] **Step 4:** La prueba → PASS.
-- [ ] **Step 5:** Commit «Migración de los viajes antiguos al guardado de sectores sin perder progreso».
-
-### Task 6: Simulador con bot
+### Task 5: Simulador con bot
 
 **Files:**
 - Create: `scripts/sim-voyage.mjs`
@@ -274,7 +239,8 @@ y `docs/design/BIBLIA_GALAXIA.md` (aprobada).
   `tests/side-voyage-flow.test.mjs`: cópialo en `tests/sim/bot.mjs` sin
   cambiar esa prueba.
 - Produces:
-  - `runVoyage({voyage: 'S1-V1', seed: number, maxSeconds: number, invulnerable?: boolean}) → {voyage, seed, result: 'complete' | 'defeat' | 'timeout', stageReached, seconds, hull, deaths, shots, hits}`;
+  - `runVoyage({voyage: 'S1-V1', seed: number, maxSeconds: number, invulnerable?: boolean}) → {voyage, seed, result: 'complete' | 'defeat' | 'timeout', stageReached, seconds, hull, deaths, shots, hits, idleSeconds, maxIdleGap, threatsAvg}`
+    (`idleSeconds`: segundos sin ninguna amenaza ni enemigo en pantalla; `maxIdleGap`: el tramo más largo así; `threatsAvg`: amenazas medias en pantalla)`;
   - CLI `node scripts/sim-voyage.mjs --voyage S1-V1 --runs 20 --seed 1`: escribe
     JSON con la tasa de completado, el tramo medio alcanzado y la media de
     muertes.
@@ -294,8 +260,10 @@ y `docs/design/BIBLIA_GALAXIA.md` (aprobada).
     idénticos (`deepEqual`).
   - `the bot survives the first stage with invulnerability`:
     `runVoyage({voyage: 'S1-V1', seed: 1, maxSeconds: 60, invulnerable: true}).stageReached >= 2`.
-  - `the report has every field`: el objeto devuelto tiene las 10 claves de
+  - `the report has every field`: el objeto devuelto tiene las 13 claves de
     la interfaz.
+  - `idle time is measured` (Review Focus 4): con `maxSeconds: 40`,
+    `idleSeconds` está entre 0 y 40 y `maxIdleGap <= idleSeconds`.
 - [ ] **Step 2:** `npm run build && node --test tests/sim-voyage.test.mjs` → FAIL.
 - [ ] **Step 3:** Implementa el arnés, el bot y la CLI.
 - [ ] **Step 4:** La prueba → PASS.
@@ -304,7 +272,7 @@ y `docs/design/BIBLIA_GALAXIA.md` (aprobada).
   línea base contra la que se ajusta la F3.
 - [ ] **Step 6:** Commit «Simulador con bot: partidas deterministas por semilla y línea base de S1-V1».
 
-### Task 7: Exportar y registrar
+### Task 6: Exportar y registrar
 
 **Files:**
 - Modify: `src/game/progression/legacy-content-entry.js`
@@ -316,12 +284,10 @@ y `docs/design/BIBLIA_GALAXIA.md` (aprobada).
   - `createAttackTokens`, `requestAttack`, `releaseAttack`, `forgetEnemy`,
     `attackHolders`;
   - `ENEMY_AI_PROFILES`, `decideEnemyIntent`;
-  - `SECTOR_SAVE_KEY` y todas las funciones de la tarea 4;
-  - `migrateLegacyVoyages`.
+  - `SECTOR_SAVE_KEY` y todas las funciones de la tarea 4.
 
-- [ ] **Step 1:** Añade las exportaciones y las 5 pruebas nuevas
-  (`sector-fichas`, `attack-tokens`, `enemy-ai`, `sector-save`,
-  `sector-save-migration`) al final de `test:content`. `sim-voyage` va
+- [ ] **Step 1:** Añade las exportaciones y las 4 pruebas nuevas
+  (`sector-fichas`, `attack-tokens`, `enemy-ai`, `sector-save`) al final de `test:content`. `sim-voyage` va
   aparte, porque es lento: script nuevo `"test:sim": "node --test tests/sim-voyage.test.mjs"`.
 - [ ] **Step 2:** `npm run build && npm test && npm run test:static && npm run test:content && npm run test:architecture` → todo verde.
   `content-runtime.js` regenerado define `NeonCampaign.decideEnemyIntent`

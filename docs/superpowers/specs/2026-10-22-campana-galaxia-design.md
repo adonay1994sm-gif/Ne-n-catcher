@@ -45,7 +45,7 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
   salida o el jugador sin munición contra enemigos imposibles.
 - Que la historia **frene la acción** con textos largos en mitad del combate.
 - Que el progreso **dependa de pagar o de anuncios** para poder avanzar.
-- Perder el progreso de los jugadores actuales al cambiar los guardados.
+- Un tramo con más de 6 s seguidos sin nada que hacer (auditoría J05).
 
 ## 5. Restricciones
 
@@ -61,8 +61,8 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
   - la recompensa de revivir ya existe (`resumeReward`) y solo cambia su
     efecto.
 - **Balance, economía y guardados:** este diseño es la orden expresa del
-  propietario para cambiarlos. Hay que migrar los guardados sin perder lo
-  conseguido: viajes completados, estrellas, armas, mejoras y chatarra.
+  propietario para cambiarlos. No hay jugadores actuales: no se migra nada
+  (propietario, 23/10/2026).
 - **Móvil:** debe ir fluido en un iPhone medio. Muchos enemigos en pantalla
   no pueden bajar de 60 fps.
 - **Diseño visual:** rigen `DESIGN.md` y el sistema A de botones (chaflán,
@@ -104,13 +104,8 @@ llegar al final de la historia. Lo resume como «mundo abierto pero lineal».
   segura del jefe de su sector: nunca bloquea.
 - **Estrellas:** se mantienen de 0 a 3, ahora por sector **(decisión de
   Claude)**.
-- **Migración (decisión de Claude):**
-  - se conservan armas, mejoras, chatarra y CRONIUM;
-  - quien completó S1-V5 (Atlas) tiene el sector 1 completado y el 2
-    desbloqueado;
-  - quien completó parte del sector 1 lo empieza desde el tramo 1 con todo
-    lo conseguido;
-  - las estrellas del sector salen de la mejor que tuviera en sus viajes.
+- **Migración:** no hace falta; no hay jugadores actuales (propietario,
+  23/10/2026).
 
 ### 6.2 Morir (R1B)
 
