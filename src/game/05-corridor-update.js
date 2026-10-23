@@ -377,7 +377,8 @@
         item.hordeAnimator.update(dt * scale, {hp: item.hp, maxHp: item.maxHp, vx: item.vx, vy: item.vy});
         if (item.x < -120 || item.x > W + 120) { items.splice(index, 1); continue; }
       } else if (item.gaiaEnemy || item.gaiaMine || item.gaiaBomb) {
-        if (!advanceGaiaItem(item, dt * scale)) { items.splice(index, 1); continue; }
+        // También desaparece el enemigo que se retira al salir por arriba.
+        if (!advanceGaiaItem(item, dt * scale) || (item.gaia?.leaving && item.y < -80)) { items.splice(index, 1); continue; }
       } else if (item.guardianProjectile) {
         item.previousX=item.x;item.previousY=item.y;
         item.x += item.vx * dt * scale;

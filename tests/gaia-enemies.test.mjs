@@ -47,7 +47,8 @@ test('the tracker warns before shooting upward at the ship', () => {
 test('the tracker marks the ship every 9 seconds', () => {
   const item = spawn('tracker', {y: 1320});
   const marks = sim(item, 30).events.filter(event => event.type === 'mark');
-  assert.ok(marks.length >= 2);
+  // Se va como mucho a los 12 s (revisión F3b): le da tiempo a una marca.
+  assert.ok(marks.length >= 1);
   assert.equal(marks[0].seconds, 4);
   for (let index = 1; index < marks.length; index++) assert.ok(marks[index].at - marks[index - 1].at >= 9 - 1e-9);
 });
@@ -154,4 +155,19 @@ test('the alpha cross volley has eight shots', () => {
   const cross = [...volleys.values()].find(volley => volley.length === 8);
   assert.ok(cross, 'a cross volley was fired');
   assert.equal(new Set(cross.map(shot => Math.atan2(shot.vy, shot.vx).toFixed(3))).size, 8);
+});
+
+// Revisión final F3b: el Rastreador no se queda para siempre detrás de la nave.
+test('the tracker overtakes the ship and leaves after three attacks or 12 seconds', () => {
+  const item = spawn('tracker', {y: 1320}), player = {x: 360, y: 1050};
+  let leftAt = null, aboveShip = false, shotsWhileLeaving = 0;
+  const {events} = sim(item, 30, {player, onStep: (now, it) => {
+    if (it.gaia.leaving && leftAt === null) leftAt = now;
+    if (it.gaia.leaving && it.y < player.y - 100) aboveShip = true;
+  }});
+  for (const event of events) if (leftAt !== null && event.at > leftAt + 1e-9 && event.type === 'shot') shotsWhileLeaving++;
+  assert.ok(leftAt !== null && leftAt <= 12 + 1e-9, `leaves at ${leftAt}`);
+  assert.ok(aboveShip, 'it passes in front of the ship, where it can be shot');
+  assert.ok(item.y < -60, `ends above the screen (y=${item.y})`);
+  assert.equal(shotsWhileLeaving, 0);
 });

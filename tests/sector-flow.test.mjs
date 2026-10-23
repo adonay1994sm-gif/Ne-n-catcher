@@ -449,3 +449,24 @@ test('a pending warning is dropped when the ship revives or the stage changes', 
   T.toStage(5);
   assert.equal(T.ev('classicMeteorWarnings.length'), 0);
 });
+
+// Revisión final F3b: chatarra de los enemigos nuevos y salida del Rastreador.
+test('destroyed Gaia enemies and horde units drop scrap', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  for (const make of ["spawnGaiaEnemy('tracker')", "spawnGaiaEnemy('sower')", "spawnGaiaEnemy('aegis')", "spawnGaiaEnemy('alpha')",
+    "(spawnHordeWave(1),items.at(-1))"]) {
+    const before = T.ev('items.filter(item=>item.salvagePickup).length');
+    T.ev(`window.__e=${make};window.__e.y=400;animateScoutHit(window.__e,true)`);
+    assert.ok(T.ev('items.filter(item=>item.salvagePickup).length') > before, make);
+  }
+});
+
+test('a tracker leaves the screen instead of staying behind the ship forever', () => {
+  const {T} = harness({query: '?dev=1'});
+  startAt(T, 3);
+  T.ev('DEV.invulnerable=true;classicPatrolTimer=999;classicHordeTimer=999');
+  T.ev("window.__r=spawnGaiaEnemy('tracker')");
+  T.adv(25);
+  assert.equal(T.ev('items.includes(window.__r)'), false);
+});

@@ -7757,7 +7757,10 @@ var NeonCampaign = (() => {
       firstAttack: 1.2,
       salvageRole: "interceptor",
       basic: Object.freeze({ cooldown: 2.4, speed: 380, damage: 12 }),
-      unique: Object.freeze({ cooldown: 9, markSeconds: 4 })
+      unique: Object.freeze({ cooldown: 9, markSeconds: 4 }),
+      // Las armas solo disparan hacia arriba: tras 3 ataques o 12 s adelanta a la
+      // nave por un lado y sale por arriba, donde se le puede derribar.
+      leave: Object.freeze({ attacks: 3, seconds: 12, speed: 260, sideOffset: 120, exitY: -100 })
     }),
     sower: Object.freeze({
       profile: "miner",
@@ -7806,7 +7809,9 @@ var NeonCampaign = (() => {
       pending: null,
       aim: null,
       heading: void 0,
-      guardId: null
+      guardId: null,
+      attacks: 0,
+      leaving: false
     };
   }
   function moveToward(item, target, maxStep) {
@@ -7872,12 +7877,23 @@ var NeonCampaign = (() => {
       if (gaia.telegraph >= 1) {
         const ability = gaia.pending;
         unleash(item, ability, ctx, emit);
+        if (ability === "basic") gaia.attacks++;
         gaia.cooldowns[ability] = ctx.now + rules[ability].cooldown;
         gaia.pending = null;
         gaia.telegraph = 0;
         gaia.aim = null;
         releaseAttack(ctx.tokens, item.id);
       }
+      return;
+    }
+    const { leave } = rules;
+    if (leave && !gaia.leaving && (gaia.attacks >= leave.attacks || ctx.now - gaia.bornAt >= leave.seconds)) {
+      gaia.leaving = true;
+      releaseAttack(ctx.tokens, item.id);
+    }
+    if (gaia.leaving) {
+      const side = item.x < ctx.player.x ? -1 : 1, { w } = ctx.bounds;
+      moveToward(item, { x: Math.max(40, Math.min(w - 40, ctx.player.x + side * leave.sideOffset)), y: leave.exitY }, leave.speed * dt);
       return;
     }
     const view = {

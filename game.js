@@ -1102,7 +1102,9 @@
     if(target.salvageRunId&&target.salvageRunId!==classicSalvageRunId)return null;
     const boss=target.bossSalvage===true;
     const wreckage=["debris","satellite"].includes(target.type);
-    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
+    // Enemigos de Gaia y hordas no llevan piloto clásico, pero también sueltan chatarra.
+    const enemy=target.classicScout||target.gaiaEnemy||target.hordeUnit;
+    if(!boss&&((!enemy&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
     const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
@@ -4392,7 +4394,8 @@
         item.hordeAnimator.update(dt * scale, {hp: item.hp, maxHp: item.maxHp, vx: item.vx, vy: item.vy});
         if (item.x < -120 || item.x > W + 120) { items.splice(index, 1); continue; }
       } else if (item.gaiaEnemy || item.gaiaMine || item.gaiaBomb) {
-        if (!advanceGaiaItem(item, dt * scale)) { items.splice(index, 1); continue; }
+        // También desaparece el enemigo que se retira al salir por arriba.
+        if (!advanceGaiaItem(item, dt * scale) || (item.gaia?.leaving && item.y < -80)) { items.splice(index, 1); continue; }
       } else if (item.guardianProjectile) {
         item.previousX=item.x;item.previousY=item.y;
         item.x += item.vx * dt * scale;

@@ -121,7 +121,9 @@
     if(target.salvageRunId&&target.salvageRunId!==classicSalvageRunId)return null;
     const boss=target.bossSalvage===true;
     const wreckage=["debris","satellite"].includes(target.type);
-    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
+    // Enemigos de Gaia y hordas no llevan piloto clásico, pero también sueltan chatarra.
+    const enemy=target.classicScout||target.gaiaEnemy||target.hordeUnit;
+    if(!boss&&((!enemy&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
     const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
