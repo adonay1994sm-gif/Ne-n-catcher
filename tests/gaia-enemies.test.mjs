@@ -112,3 +112,46 @@ test('the sower throws its cross bomb toward the nearest edge', () => {
   assert.ok(bombs.length >= 1);
   for (const bomb of bombs) assert.equal(Math.sign(bomb.vx), bomb.x < BOUNDS.w / 2 ? -1 : 1);
 });
+
+// Tarea 6: Égida y Alfa.
+test('the aegis follows the weakest ally and shields it', () => {
+  const item = spawn('aegis', {x: 600, y: 300});
+  const weak = {id: 'weak', x: 200, y: 400, hp: 2, maxHp: 4}, strong = {id: 'strong', x: 500, y: 300, hp: 4, maxHp: 4};
+  const start = Math.hypot(item.x - weak.x, item.y - weak.y);
+  const shields = sim(item, 20, {allies: [weak, strong]}).events.filter(event => event.type === 'shield');
+  assert.ok(Math.hypot(item.x - weak.x, item.y - weak.y) < start);
+  assert.ok(shields.length >= 2);
+  assert.deepEqual({targetId: shields[0].targetId, hits: shields[0].hits}, {targetId: 'weak', hits: 3});
+  for (let index = 1; index < shields.length; index++) assert.ok(shields[index].at - shields[index - 1].at >= 8 - 1e-9);
+});
+
+test('the aegis never shoots and needs no token', () => {
+  const tokens = createAttackTokens({max: 1});
+  requestAttack(tokens, {id: 'other', bornAt: -1}, 0);
+  const {events} = sim(spawn('aegis'), 12, {tokens, allies: [{id: 'ally', x: 300, y: 300, hp: 1, maxHp: 2}]});
+  assert.ok(events.some(event => event.type === 'shield'));
+  assert.ok(!events.some(event => event.type === 'shot'));
+});
+
+test('the alpha keeps 320 px above the ship', () => {
+  const player = {x: 360, y: 1050};
+  sim(spawn('alpha', {y: 200}), 12, {player, onStep: (now, it) => assert.ok(it.y <= player.y - 320 + 1e-9, `y=${it.y}`)});
+});
+
+test('the alpha fires four parallel cannons', () => {
+  const shots = sim(spawn('alpha', {y: 200}), 6).events.filter(event => event.type === 'shot');
+  const first = shots.filter(shot => shot.at === shots[0].at);
+  assert.equal(first.length, 4);
+  const xs = first.map(shot => shot.x).sort((a, b) => a - b);
+  for (const shot of first) assert.equal(shot.vx, 0);
+  for (let index = 1; index < xs.length; index++) assert.ok(Math.abs(xs[index] - xs[index - 1] - 28) < 1e-9);
+});
+
+test('the alpha cross volley has eight shots', () => {
+  const shots = sim(spawn('alpha', {y: 200}), 12).events.filter(event => event.type === 'shot');
+  const volleys = new Map();
+  for (const shot of shots) volleys.set(shot.at, [...(volleys.get(shot.at) || []), shot]);
+  const cross = [...volleys.values()].find(volley => volley.length === 8);
+  assert.ok(cross, 'a cross volley was fired');
+  assert.equal(new Set(cross.map(shot => Math.atan2(shot.vy, shot.vx).toFixed(3))).size, 8);
+});

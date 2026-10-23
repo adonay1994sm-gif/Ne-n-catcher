@@ -7759,6 +7759,17 @@ var NeonCampaign = (() => {
     } else if (gaia.kind === "sower") {
       if (ability === "basic") emit({ type: "mine", x: item.x, y: item.y + 20 });
       else emit({ type: "cross-bomb", x: item.x, y: item.y, vx: (item.x < ctx.bounds.w / 2 ? -1 : 1) * rules.unique.speed });
+    } else if (gaia.kind === "alpha") {
+      if (ability === "basic") {
+        const { spacing, speed, damage } = rules.basic;
+        for (let k = 0; k < 4; k++) emit({ type: "shot", x: item.x + (k - 1.5) * spacing, y: item.y + 40, vx: 0, vy: speed, damage, sprite: "missile" });
+      } else {
+        const { speed, damage } = rules.unique;
+        for (let k = 0; k < 8; k++) {
+          const angle = k * Math.PI / 4;
+          emit({ type: "shot", x: item.x, y: item.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, damage, sprite: "orb" });
+        }
+      }
     }
   }
   function advanceMine(mine, dt, player) {
@@ -7807,7 +7818,16 @@ var NeonCampaign = (() => {
     };
     const intent = decideEnemyIntent(view, ctx);
     if (intent.heading !== void 0) gaia.heading = intent.heading;
-    moveToward(item, { x: intent.targetX, y: intent.targetY }, rules.speed * dt);
+    const targetY = rules.clearance ? Math.min(intent.targetY, ctx.player.y - rules.clearance) : intent.targetY;
+    moveToward(item, { x: intent.targetX, y: targetY }, rules.speed * dt);
+    if (gaia.profile === "escort") {
+      gaia.guardId = intent.guardId;
+      if (intent.ability === "unique" && intent.guardId) {
+        emit({ type: "shield", targetId: intent.guardId, hits: rules.unique.hits });
+        gaia.cooldowns.unique = ctx.now + rules.unique.cooldown;
+      }
+      return;
+    }
     if (intent.attack) {
       gaia.pending = intent.ability;
       gaia.aim = { x: ctx.player.x, y: ctx.player.y };

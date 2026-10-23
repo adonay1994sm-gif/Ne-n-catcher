@@ -58,6 +58,19 @@ function unleash(item, ability, ctx, emit) {
   } else if (gaia.kind === 'sower') {
     if (ability === 'basic') emit({type: 'mine', x: item.x, y: item.y + 20});
     else emit({type: 'cross-bomb', x: item.x, y: item.y, vx: (item.x < ctx.bounds.w / 2 ? -1 : 1) * rules.unique.speed});
+  } else if (gaia.kind === 'alpha') {
+    if (ability === 'basic') {
+      // Cuatro cañones paralelos hacia abajo.
+      const {spacing, speed, damage} = rules.basic;
+      for (let k = 0; k < 4; k++) emit({type: 'shot', x: item.x + (k - 1.5) * spacing, y: item.y + 40, vx: 0, vy: speed, damage, sprite: 'missile'});
+    } else {
+      // Andanada en cruz: ocho direcciones.
+      const {speed, damage} = rules.unique;
+      for (let k = 0; k < 8; k++) {
+        const angle = k * Math.PI / 4;
+        emit({type: 'shot', x: item.x, y: item.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, damage, sprite: 'orb'});
+      }
+    }
   }
 }
 
@@ -102,7 +115,18 @@ export function advanceGaiaEnemy(item, dt, ctx, emit) {
     cooldowns: gaia.cooldowns, bornAt: gaia.bornAt, ...(gaia.heading !== undefined ? {heading: gaia.heading} : {})};
   const intent = decideEnemyIntent(view, ctx);
   if (intent.heading !== undefined) gaia.heading = intent.heading;
-  moveToward(item, {x: intent.targetX, y: intent.targetY}, rules.speed * dt);
+  // El Alfa caza desde arriba: nunca baja a menos de `clearance` de la nave.
+  const targetY = rules.clearance ? Math.min(intent.targetY, ctx.player.y - rules.clearance) : intent.targetY;
+  moveToward(item, {x: intent.targetX, y: targetY}, rules.speed * dt);
+  // La Égida no dispara ni pide turno: su escudo cubre al aliado que protege.
+  if (gaia.profile === 'escort') {
+    gaia.guardId = intent.guardId;
+    if (intent.ability === 'unique' && intent.guardId) {
+      emit({type: 'shield', targetId: intent.guardId, hits: rules.unique.hits});
+      gaia.cooldowns.unique = ctx.now + rules.unique.cooldown;
+    }
+    return;
+  }
   if (intent.attack) {
     gaia.pending = intent.ability;
     gaia.aim = {x: ctx.player.x, y: ctx.player.y};
