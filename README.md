@@ -25,10 +25,9 @@ La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recupe
 | `ios/` | Proyecto Xcode de Capacitor. `ios/App/App/public/` lo regenera el build. |
 | `scripts/` | Build (`build-*.mjs`), auditorías y pruebas de navegador (`*-smoke.cjs`). |
 | `tests/` | Pruebas automáticas (`npm test`, `npm run test:static`, `npm run test:content`…). |
-| `docs/` | Documentación. Estado vigente en `docs/CODEX_STATUS.md`; tareas en `docs/production-tasks.json`. |
+| `docs/` | Documentación. Diseño vigente en `docs/superpowers/specs/` y `docs/design/BIBLIA_GALAXIA.md`; tareas en el tablero del proyecto (ver `CLAUDE.md`). |
 | `docs/publicacion/` | Preparación para la App Store: checklist, progreso e informes. |
 | `docs/propuestas/` | Propuestas pendientes de decisión del propietario. |
-| `docs/historico/` | Notas de versiones anteriores. |
 | `docs/production-reports/` | Informes de producción. Sus capturas antiguas se retiraron el 20/10/2026 y siguen en el historial de git. |
 | `engine/`, `js/engine/`, `engine-preview.html`, `render/` | Demo aislada del motor experimental (solo web). |
 | `design/`, `preview/`, `tools/`, `.agents/` | Diseño de campaña, lanzador de preview, terceros revisados y skills de agentes. |
@@ -92,9 +91,6 @@ Los IDs incluidos son las unidades de demostración oficiales de Google. No gene
 ## Documentación de control
 
 - `docs/CHANGELOG.md`: cambios y funciones preservadas.
-- `docs/historico/TEST_REPORT.md`: evidencia de pruebas de la base V6.6.
-- `docs/historico/MODULAR_REFACTOR_REPORT.md`: separación, controles y límites del refactor.
-- `docs/historico/MODULAR_SMOKE_REPORT.md`: prueba funcional y lógica posterior a la separación.
 - `src/game/README.md`: mapa de responsabilidades y reglas de edición.
 - `ASSET_MANIFEST.json`: inventario, dimensiones, pivotes, secuencias y uso de assets.
-- `docs/historico/OPTIMIZACION.md`, `docs/historico/CORRECCIONES_V6_4_2.md` y `docs/historico/CORRECCIONES_V6_4_3.md`: historial técnico conservado.
+- Los informes de versiones anteriores (V6–V7, Codex) se retiraron el 23/10/2026 y siguen en el historial de git.
