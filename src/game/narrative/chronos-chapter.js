@@ -4,7 +4,7 @@
  * This module emits presentation cues, never gameplay rewards or route events.
  */
 export const CHRONOS_CHAPTER_VERSION = 'chronos-chapter-v1';
-export const CHRONOS_CHAPTER_STORY_KEY = 'neonCatcher.chronosChapterStory.v1';
+export const CHRONOS_CHAPTER_STORY_KEY = 'neonCronium.chronosChapterStory.v1';
 export const CHRONOS_CHAPTER_OPENING_SECONDS = 26;
 // En el juego el inicio es una animación: sin HUD, sin nave y sin control
 // hasta que Cronos Prime se marcha (12,6 s) y pasa un instante.

@@ -19,7 +19,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S2_V3_SLAG_BELT = immutable({
   id: 'S2-V3', sector: 2, number: 3, title: 'Cruza el cinturón de escoria', planet: 'volcanico',
-  chapter: 8, version: 's2-v3-voyage-v1', saveKey: 'neonCatcher.voyage.S2-V3.v1',
+  chapter: 8, version: 's2-v3-voyage-v1', saveKey: 'neonCronium.voyage.S2-V3.v1',
   routeId: 'slag-belt', eventPrefix: 's2-v3', baseGoal: 36,
   origin: 'Ruta de carga abandonada', destination: 'Cinturón de escoria',
   arrivalDestinationId: 'vulkar-slag-belt', cinematicDuration: 0, recoveryAt: 0,

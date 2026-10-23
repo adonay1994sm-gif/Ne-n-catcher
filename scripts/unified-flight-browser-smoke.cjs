@@ -306,7 +306,7 @@ async function touch(type, x, y) {
     assert.ok(twin.weapons.projectiles[0].x < twin.weapons.projectiles[1].x);
     await capture('gaia-twin-flight', twin);
     report.gaiaTwin = twin;
-    const saved = Object.entries(twin.saves).find(([key]) => key.endsWith('neonCatcher.flightEquipment.v1'));
+    const saved = Object.entries(twin.saves).find(([key]) => key.endsWith('neonCronium.flightEquipment.v1'));
     assert.ok(saved, 'Equipment did not persist');
     assert.equal(JSON.parse(saved[1]).selected, 'twin');
     await page.locator('#pause').click(); await page.locator('#quit').click();

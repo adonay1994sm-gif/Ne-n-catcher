@@ -1282,7 +1282,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/progression/scrap-economy.js
-  var SCRAP_ECONOMY_KEY = "neonCatcher.classicSalvage.v1";
+  var SCRAP_ECONOMY_KEY = "neonCronium.classicSalvage.v1";
   var SCRAP_ECONOMY_RULES = Object.freeze({
     version: 1,
     revision: 2,
@@ -2229,7 +2229,7 @@ var NeonCampaign = (() => {
     title: "Escapa de Chronos",
     chapter: 1,
     version: "chronos-voyage-v2",
-    saveKey: "neonCatcher.chronosVoyage.v2",
+    saveKey: "neonCronium.chronosVoyage.v2",
     routeId: "chronos-to-gaia",
     eventPrefix: "chronos-voyage",
     baseGoal: 36,
@@ -2440,7 +2440,7 @@ var NeonCampaign = (() => {
     title: "Cruza la red exterior de Gaia",
     chapter: 2,
     version: "s1-v2-voyage-v1",
-    saveKey: "neonCatcher.voyage.S1-V2.v1",
+    saveKey: "neonCronium.voyage.S1-V2.v1",
     routeId: "gaia-outer-net",
     eventPrefix: "s1-v2",
     baseGoal: 36,
@@ -2541,7 +2541,7 @@ var NeonCampaign = (() => {
     title: "Escolta a los evacuados",
     chapter: 3,
     version: "s1-v3-voyage-v1",
-    saveKey: "neonCatcher.voyage.S1-V3.v1",
+    saveKey: "neonCronium.voyage.S1-V3.v1",
     routeId: "gaia-evacuee-escort",
     eventPrefix: "s1-v3",
     baseGoal: 36,
@@ -2628,7 +2628,7 @@ var NeonCampaign = (() => {
     title: "Sigue la se\xF1al falsa",
     chapter: 4,
     version: "s1-v4-voyage-v1",
-    saveKey: "neonCatcher.voyage.S1-V4.v1",
+    saveKey: "neonCronium.voyage.S1-V4.v1",
     routeId: "gaia-false-signal",
     eventPrefix: "s1-v4",
     baseGoal: 36,
@@ -2718,7 +2718,7 @@ var NeonCampaign = (() => {
     boss: "atlas",
     chapter: 5,
     version: "s1-v5-voyage-v1",
-    saveKey: "neonCatcher.voyage.S1-V5.v1",
+    saveKey: "neonCronium.voyage.S1-V5.v1",
     routeId: "gaia-atlas-gate",
     eventPrefix: "s1-v5",
     baseGoal: 36,
@@ -2820,7 +2820,7 @@ var NeonCampaign = (() => {
     planet: "volcanico",
     chapter: 6,
     version: "s2-v1-voyage-v1",
-    saveKey: "neonCatcher.voyage.S2-V1.v1",
+    saveKey: "neonCronium.voyage.S2-V1.v1",
     routeId: "gaia-free-passage",
     eventPrefix: "s2-v1",
     baseGoal: 36,
@@ -2910,7 +2910,7 @@ var NeonCampaign = (() => {
     planet: "volcanico",
     chapter: 7,
     version: "s2-v2-voyage-v1",
-    saveKey: "neonCatcher.voyage.S2-V2.v1",
+    saveKey: "neonCronium.voyage.S2-V2.v1",
     routeId: "c17-pursuit",
     eventPrefix: "s2-v2",
     baseGoal: 36,
@@ -3000,7 +3000,7 @@ var NeonCampaign = (() => {
     planet: "volcanico",
     chapter: 8,
     version: "s2-v3-voyage-v1",
-    saveKey: "neonCatcher.voyage.S2-V3.v1",
+    saveKey: "neonCronium.voyage.S2-V3.v1",
     routeId: "slag-belt",
     eventPrefix: "s2-v3",
     baseGoal: 36,
@@ -3090,7 +3090,7 @@ var NeonCampaign = (() => {
     planet: "volcanico",
     chapter: 9,
     version: "s2-v4-voyage-v1",
-    saveKey: "neonCatcher.voyage.S2-V4.v1",
+    saveKey: "neonCronium.voyage.S2-V4.v1",
     routeId: "yara-call",
     eventPrefix: "s2-v4",
     baseGoal: 36,
@@ -3180,7 +3180,7 @@ var NeonCampaign = (() => {
     planet: "volcanico",
     chapter: 10,
     version: "s2-v5-voyage-v1",
-    saveKey: "neonCatcher.voyage.S2-V5.v1",
+    saveKey: "neonCronium.voyage.S2-V5.v1",
     routeId: "vulkar-titan",
     eventPrefix: "s2-v5",
     baseGoal: 36,
@@ -6575,7 +6575,7 @@ var NeonCampaign = (() => {
   }
 
   // src/game/ship/modular-ship.js
-  var SHIP_FLEET_SAVE_KEY = "neonCatcher.shipFleet.v1";
+  var SHIP_FLEET_SAVE_KEY = "neonCronium.shipFleet.v1";
   var SLOTS = Object.freeze(["hull", "wings", "engines"]);
   var VARIANTS = Object.freeze(["aster", "bastion"]);
   var preset = (id) => Object.freeze({ hull: id, wings: id, engines: id });

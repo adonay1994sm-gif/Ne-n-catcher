@@ -391,7 +391,7 @@
       "level": 1,
       "animation": "4 different painted phases over 620 ms, non-looping; pivot 0.5,0.5",
       "status": "IN_REVIEW",
-      "origin": "original image generation for NEON CATCHER on 2026-10-16; master preserved",
+      "origin": "original image generation for NEON CRONIUM on 2026-10-16; master preserved",
       "version": "visual-rebirth-v1",
       "size": 622232
     },
@@ -406,7 +406,7 @@
       "animation": "Route-progress driven depth, drift and rotation; not an enemy animation",
       "pivot": "0.5,0.5",
       "status": "IN_REVIEW",
-      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; master preserved",
+      "origin": "Original built-in image generation for NEON CRONIUM on 2026-10-17; master preserved",
       "version": "chronos-gaia-demo-v1",
       "size": 101668
     },
@@ -421,7 +421,7 @@
       "animation": "Shared banking; articulated wing roots; nozzle-anchored exhaust pulse. Impact/smoke use legacy states. Dedicated destruction frames pending.",
       "use": "Two compatible modular ship configurations in hangar, menu, briefing and both retained campaigns",
       "status": "IN_REVIEW",
-      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; master retained",
+      "origin": "Original built-in image generation for NEON CRONIUM on 2026-10-17; master retained",
       "version": "modular-ships-v1"
     },
     {
@@ -453,7 +453,7 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
-      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
+      "origin": "Original built-in image generation for NEON CRONIUM on 2026-10-17; generated and packed masters preserved",
       "version": "chronos-flight-v1"
     },
     {
@@ -472,7 +472,7 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
-      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
+      "origin": "Original built-in image generation for NEON CRONIUM on 2026-10-17; generated and packed masters preserved",
       "version": "chronos-flight-v1"
     },
     {
@@ -491,7 +491,7 @@
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
-      "origin": "Original built-in image generation for NEON CATCHER on 2026-10-17; generated and packed masters preserved",
+      "origin": "Original built-in image generation for NEON CRONIUM on 2026-10-17; generated and packed masters preserved",
       "version": "chronos-flight-v1",
       "integrationNote": "Reused in the ten authored Chronos–Gaia stages (chronos-voyage-v2); depth, origin retreat, C9 relay and destination approach follow one route snapshot. Original v1 master and exports retained unchanged."
     },
@@ -525,7 +525,7 @@
       "level": 3,
       "use": "Independent volcanic Vulkar planet and small orbital refinery arc seen from outer space",
       "animation": "One original transparent planet; route-driven approach and drift independent of the deep-space plate. Not a frame sequence.",
-      "origin": "Original built-in image generation for NEON CATCHER, 2026-10-17; generated master and prompts retained",
+      "origin": "Original built-in image generation for NEON CRONIUM, 2026-10-17; generated master and prompts retained",
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",
@@ -546,7 +546,7 @@
       "level": "1-10",
       "use": "Transparent force field surrounding the player hull; stable center remains clear",
       "animation": "Four distinct authored states: activation cell0 200ms; stable/pulse cells1/2 crossfade with 1200ms cycle; impact cell3 180ms. No activation-to-impact idle loop.",
-      "origin": "Original built-in image generation for NEON CATCHER, 2026-10-17; generated and packed masters retained",
+      "origin": "Original built-in image generation for NEON CRONIUM, 2026-10-17; generated and packed masters retained",
       "status": "IN_REVIEW",
       "artisticAcceptance": "PENDING_OWNER",
       "physicalAcceptance": "PENDING",

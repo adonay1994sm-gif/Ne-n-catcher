@@ -121,12 +121,12 @@ async function menuLaunch() {
   context = await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,
     hasTouch:true,serviceWorkers:'block'});
   await context.addInitScript(({fixture,equipment,salvage,salvageKey,sentinels,prefix}) => {
-    const key = prefix+'neonCatcher.chronosVoyage.v2';
+    const key = prefix+'neonCronium.chronosVoyage.v2';
     // Only the absent initial record is seeded. Reload must consume actual
     // application writes rather than resetting the fixture or hiding save loss.
     if(location.pathname.endsWith('/juego/index.html') && !localStorage.getItem(key)) {
       localStorage.setItem(key,JSON.stringify(fixture));
-      localStorage.setItem(prefix+'neonCatcher.flightEquipment.v1',JSON.stringify(equipment));
+      localStorage.setItem(prefix+'neonCronium.flightEquipment.v1',JSON.stringify(equipment));
       localStorage.setItem(prefix+salvageKey,JSON.stringify(salvage));
       for(const [name,value] of Object.entries(sentinels)) localStorage.setItem(name,value);
     }
@@ -289,16 +289,16 @@ async function menuLaunch() {
     assert.ok(exitDraws.length,'The actual departure pose was never drawn');
     assert.ok(exitDraws.every(draw=>draw.stageElapsed < 3.6+.034),'Station remained visible beyond its2.4s exit');
     await capture('c9-departed-back-in-the-flight-corridor',departed);
-    const savedBytes = departed.saves[prefix+'neonCatcher.chronosVoyage.v2'];
-    const equipmentBytes = departed.saves[prefix+'neonCatcher.flightEquipment.v1'];
+    const savedBytes = departed.saves[prefix+'neonCronium.chronosVoyage.v2'];
+    const equipmentBytes = departed.saves[prefix+'neonCronium.flightEquipment.v1'];
     const salvageBytes=departed.saves[prefix+report.salvageFixtureSource.key];
     assert.equal(JSON.parse(salvageBytes).spent,24);assert.equal(JSON.parse(salvageBytes).balance,0);
     assert.equal(JSON.parse(savedBytes).entry.hull,100);
     report.departure={undocked,departed,savedBytes,equipmentBytes,salvageBytes};
     await page.reload({waitUntil:'load'});
     await wait(()=>typeof window.__C9_POLISH_QA__ === 'function' && document.querySelector('#menu.show'));
-    const menu = await inspect();assert.equal(menu.saves[prefix+'neonCatcher.chronosVoyage.v2'],savedBytes);
-    assert.equal(menu.saves[prefix+'neonCatcher.flightEquipment.v1'],equipmentBytes);
+    const menu = await inspect();assert.equal(menu.saves[prefix+'neonCronium.chronosVoyage.v2'],savedBytes);
+    assert.equal(menu.saves[prefix+'neonCronium.flightEquipment.v1'],equipmentBytes);
     assert.equal(menu.saves[prefix+report.salvageFixtureSource.key],salvageBytes,'Reload must preserve the paid entitlement and exact balance');
     await menuLaunch();await wait(()=>window.__C9_POLISH_QA__().state === 'playing');
     const restored = await inspect();

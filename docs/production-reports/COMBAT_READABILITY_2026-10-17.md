@@ -4,7 +4,7 @@ El punto de partida fue `a787c8dcfa70064a65c07865ec1a119e29c4825d`, coincidente 
 
 Los defectos concretos eran: gemelo abierto y con daño individual reducido; Atlas señalaba explícitamente su corredor seguro; el nivel 3 utilizaba una caldera como escenario; orbes demasiado grandes; escudo poco reconocible; transiciones reducidas y poco legibles. Se implementó este lote sobre las fuentes actuales, sin ampliar capítulos ni activar el motor reservado.
 
-# INFORME DE PRODUCCIÓN — NEON CATCHER
+# INFORME DE PRODUCCIÓN — NEON CRONIUM
 
 Fecha: 17 de octubre de 2026. Publicación comprobada: 19:31:54 UTC.
 
@@ -52,7 +52,7 @@ Tiempo: no se atribuyen horas de producción no medidas. Los JSON contienen fech
 
 Se modificaron los módulos `00`, `01`, `03`, `04`, `05`, `06` y `07` de `src/game/`, los modelos `combat/classic-weapons.js` y `combat/guardian-atlas.js`, el mapa de animación, `index.html`, `styles.css`, `sw.js`, manifests, pruebas y herramientas de navegador. El build regeneró `game.js`, `content-runtime.js` y sus copias web/iOS; no existen parches exclusivos de los bundles.
 
-La nueva lanza amplía de forma aditiva el perfil `neonCatcher.flightEquipment.v1`: `lanceCalibrated:true` solo se guarda al calibrar. Los perfiles v1 anteriores conservan forma y comportamiento. Una selección de lanza sin calibración o sin gemelo se respalda como inválida, sin conceder armas. Las claves de campaña y N-7 permanecen separadas; los tests comprueban sus valores después de recargar.
+La nueva lanza amplía de forma aditiva el perfil `neonCronium.flightEquipment.v1`: `lanceCalibrated:true` solo se guarda al calibrar. Los perfiles v1 anteriores conservan forma y comportamiento. Una selección de lanza sin calibración o sin gemelo se respalda como inválida, sin conceder armas. Las claves de campaña y N-7 permanecen separadas; los tests comprueban sus valores después de recargar.
 
 No se alteraron main, PR#3, el guardado de niveles ni la geometría física para ajustar el dibujo. No hubo force push, anuncios reales, pagos ni publicación móvil. La rama interna del repositorio independiente de Sites no es main del repositorio del juego.
 
@@ -131,10 +131,10 @@ Se conserva un único RAF. Las pruebas de controles, reinicio, pausa y campañas
 
 ## Paquete y publicación
 
-- Sitio privado: https://neon-catcher-pruebas.chictide18.chatgpt.site . Versión8, confirmación nativa `succeeded` a19:31:54, sin cambiar su audiencia.
+- Sitio privado: (web privada antigua, retirada) . Versión8, confirmación nativa `succeeded` a19:31:54, sin cambiar su audiencia.
 - Fuente del sitio: `aefbbac7b8b5b2e647bc4fe98fa0b4cc6bb56293`.116 archivos estáticos comparados byte a byte con el paquete.
 - Paquete del juego: `d93b1352c9a036ccec0fc6337b02e41acd8a7832`, revisión `3ab2e4eb9b54164b0f63eb7d7d2148cc39680f0d6cf3411f39b508f0e1d0ae53`, limpio.
-- ZIP: [neon-catcher-preview-d93b135.zip](evidence/combat-readability/package-d93b135/neon-catcher-preview-d93b135.zip),7940222B,116 entradas.
+- ZIP: [neon-cronium-preview-d93b135.zip](evidence/combat-readability/package-d93b135/neon-cronium-preview-d93b135.zip),7940222B,116 entradas.
 - SHA-256 del ZIP: `3622b2718f35ebab2859eb54da8aaf314e72fe3e90b2d26d1ed6a2591bd8a82c`.
 - [Metadatos](evidence/combat-readability/package-d93b135/package.json), [build-info](evidence/combat-readability/package-d93b135/build-info.json), [publicación](evidence/combat-readability/package-d93b135/site-deployment.json).
 

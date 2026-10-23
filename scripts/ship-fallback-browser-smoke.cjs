@@ -128,7 +128,7 @@ async function capture(name){
     const state=await inspect();
     assert.ok(state.menuImages.every(source=>source==='assets/ship_frame_01.webp'));
     report.persistedLegacy=await page.evaluate(()=>{
-      const key=Object.keys(localStorage).find(key=>key.endsWith('neonCatcher.shipFleet.v1'));
+      const key=Object.keys(localStorage).find(key=>key.endsWith('neonCronium.shipFleet.v1'));
       return {key,value:key?JSON.parse(localStorage.getItem(key)):null};
     });
     assert.equal(report.persistedLegacy.value.mode,'legacy');

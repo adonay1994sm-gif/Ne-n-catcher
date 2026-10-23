@@ -1,8 +1,8 @@
 # NEON CRONIUM
 
-Aventura arcade espacial en desarrollo. Nombre vigente desde el 17/10/2026; anteriormente NEON CATCHER. Rama principal: `main`.
+Aventura arcade espacial en desarrollo. Rama principal: `main`.
 
-[Web de pruebas (Netlify)](https://neon-preview-deploy.netlify.app) · [Web privada anterior](https://neon-catcher-pruebas.chictide18.chatgpt.site) · [Estado vigente](docs/CODEX_STATUS.md) · [Visión de producto](docs/PRODUCT_VISION.md) · [Dirección artística](ART_DIRECTION_NEON_CRONIUM.md).
+[Web de pruebas (Netlify)](https://neon-preview-deploy.netlify.app) · [Roadmap](docs/ROADMAP.md) · [Visión de producto](docs/PRODUCT_VISION.md) · [Dirección artística](ART_DIRECTION_NEON_CRONIUM.md).
 
 La ruta Chronos → Gaia contiene diez etapas conectadas con checkpoints, recuperación de CRONIUM, taller C9 desde el HUD y Atlas móvil como guardián de acceso. Las campañas y partidas anteriores se conservan. Los nombres técnicos de guardado/instalación y la URL histórica permanecen compatibles; las nuevas compilaciones y archivos de entrega se identifican como NEON CRONIUM. Los informes y ZIP previos conservan su nombre/procedencia histórica. Motor V1 desactivado; sin publicación comercial.
 

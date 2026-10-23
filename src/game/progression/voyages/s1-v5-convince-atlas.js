@@ -19,7 +19,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S1_V5_CONVINCE_ATLAS = immutable({
   id: 'S1-V5', sector: 1, number: 5, title: 'Convence a Atlas', boss: 'atlas',
-  chapter: 5, version: 's1-v5-voyage-v1', saveKey: 'neonCatcher.voyage.S1-V5.v1',
+  chapter: 5, version: 's1-v5-voyage-v1', saveKey: 'neonCronium.voyage.S1-V5.v1',
   routeId: 'gaia-atlas-gate', eventPrefix: 's1-v5', baseGoal: 36,
   origin: 'Lado nocturno de Gaia', destination: 'Acceso orbital de Gaia Nova',
   arrivalDestinationId: 'gaia-atlas-approach', cinematicDuration: 0, recoveryAt: 0,

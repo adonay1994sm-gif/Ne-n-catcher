@@ -20,7 +20,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S2_V5_VULKAR_TITAN = immutable({
   id: 'S2-V5', sector: 2, number: 5, title: 'Detén al Titán de Vulkar', planet: 'volcanico',
-  chapter: 10, version: 's2-v5-voyage-v1', saveKey: 'neonCatcher.voyage.S2-V5.v1',
+  chapter: 10, version: 's2-v5-voyage-v1', saveKey: 'neonCronium.voyage.S2-V5.v1',
   routeId: 'vulkar-titan', eventPrefix: 's2-v5', baseGoal: 36,
   origin: 'Órbita alta de Vulkar', destination: 'Descenso a las forjas',
   arrivalDestinationId: 'vulkar-forges', cinematicDuration: 0, recoveryAt: 0,

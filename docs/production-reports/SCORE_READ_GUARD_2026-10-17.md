@@ -76,7 +76,7 @@ El [primer arnés Chromium](evidence/score-read-guard/browser-attempt-01/results
 - SHA-256: `9e84933240081b7b767bd25272cc92f91364fc424cddc7318c907099c66d4000`.
 - Peso: 8.504.676 B; 119 entradas. Revisión: `8bbfa6fb32c6d1ca12369f84e16b8bc4ff8e11559c459a094eca1f78cc5db72e`; `dirty:false`.
 - Abrir `index.html` o `juego/index.html` desde un servidor; para NetlifyDrop subir el contenido completo del ZIP a un destino de pruebas explícito. No se creó un despliegue Netlify ni se alteró producción.
-- Web privada: **https://neon-catcher-pruebas.chictide18.chatgpt.site**, versión 14, `succeeded` 2026-10-17T22:29:15.384509+00:00. CONTINUAR VIAJE abre `/clasico-actual/juego/index.html`.
+- Web privada: **(web privada antigua, retirada)**, versión 14, `succeeded` 2026-10-17T22:29:15.384509+00:00. CONTINUAR VIAJE abre `/clasico-actual/juego/index.html`.
 - Fuente Site: `5f06e6343f187cc0d689289e2000120c0a33660d`; [recibo nativo](evidence/score-read-guard/site-deployment.json).
 - 147 archivos externos existentes idénticos por SHA-256; misión orbital/fuentes/licencias/entrada histórica preservadas. 119 archivos del clásico coinciden con el paquete probado. [Prueba de conservación](evidence/score-read-guard/site-preservation.json).
 - Audiencia owner-private mantenida, un propietario y cero visitantes externos; no invitaciones. URL y bundle remoto comprobados por HTTP autenticado. Esto no es una partida remota completa ni una certificación de la misión orbital ajena.

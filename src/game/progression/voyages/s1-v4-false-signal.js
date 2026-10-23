@@ -19,7 +19,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S1_V4_FALSE_SIGNAL = immutable({
   id: 'S1-V4', sector: 1, number: 4, title: 'Sigue la señal falsa',
-  chapter: 4, version: 's1-v4-voyage-v1', saveKey: 'neonCatcher.voyage.S1-V4.v1',
+  chapter: 4, version: 's1-v4-voyage-v1', saveKey: 'neonCronium.voyage.S1-V4.v1',
   routeId: 'gaia-false-signal', eventPrefix: 's1-v4', baseGoal: 36,
   origin: 'Órbita alta de Gaia', destination: 'Lado nocturno de Gaia',
   arrivalDestinationId: 'gaia-night-side', cinematicDuration: 0, recoveryAt: 0,

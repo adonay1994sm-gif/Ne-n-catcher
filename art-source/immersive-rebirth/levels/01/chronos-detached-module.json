@@ -16,7 +16,7 @@
   "frames": 1,
   "animation": "Route-controlled receding environment layer. This is not an enemy pose animation or a completed classic level.",
   "integration": "src/game/06-world-rendering.js drawJourneyBackground; isolated campaign=journey",
-  "origin": "Original built-in image generation on 2026-10-17 for NEON CATCHER; no franchise reference or external licensed source supplied.",
+  "origin": "Original built-in image generation on 2026-10-17 for NEON CRONIUM; no franchise reference or external licensed source supplied.",
   "direction": "Broken Chronos research hull, exposed cyan CRONIUM conduits, scorched titanium and orange emergency lamps; isolated clean alpha silhouette.",
   "optimization": "ImageMagick resize to 640x640, WebP method6 quality82, alpha retained; master and generated original preserved.",
   "artisticAcceptance": "PENDING_OWNER_REVIEW",

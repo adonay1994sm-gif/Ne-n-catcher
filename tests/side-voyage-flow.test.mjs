@@ -52,20 +52,20 @@ function harness({unlocked = '2', query = ''} = {}) {
       completeLevel();if(atlasBoss){atlasBoss.resolved=true;completeLevel();}}};\n`;
   assert.equal(game.split(MARKER).length, 2);
   w.eval(game.replace(MARKER, hook + MARKER));
-  const saved = id => JSON.parse(w.localStorage.getItem(`neonCatcher.voyage.${id}.v1`) || 'null');
+  const saved = id => JSON.parse(w.localStorage.getItem(`neonCronium.voyage.${id}.v1`) || 'null');
   const route = id => w.document.querySelector(`.sector-route[data-voyage="${id}"]`)?.dataset.status;
   return {w, T: w.T, saved, route};
 }
 
 test('retrying after dying in a side voyage stays in that voyage and never touches S1-V1', () => {
   const {w, T} = harness();
-  const v1 = w.localStorage.getItem('neonCatcher.chronosVoyage.v2');
+  const v1 = w.localStorage.getItem('neonCronium.chronosVoyage.v2');
   T.startSideVoyage('S1-V2'); T.adv(1);
   T.finishGame('hull');
   T.startLevel(0);
   assert.deepEqual([T.st().side, T.st().route], ['S1-V2', 'gaia-outer-net']);
   T.adv(1);
-  assert.equal(w.localStorage.getItem('neonCatcher.chronosVoyage.v2'), v1);
+  assert.equal(w.localStorage.getItem('neonCronium.chronosVoyage.v2'), v1);
 });
 
 test('replaying a finished voyage keeps it done on the map and keeps the next route open', () => {
@@ -125,8 +125,8 @@ test('?dev=1 opens every voyage and stage with a separate save and an optional i
   [...row.querySelectorAll('button')].find(node => node.textContent === '4').click();
   assert.deepEqual([T.st().side, T.st().route], ['S2-V3', 'slag-belt']);
   T.adv(.5);
-  assert.equal(w.localStorage.getItem('neonCatcher.voyage.S2-V3.v1'), null);
-  assert.ok(w.localStorage.getItem('neon-dev-v1:neonCatcher.voyage.S2-V3.v1'));
+  assert.equal(w.localStorage.getItem('neonCronium.voyage.S2-V3.v1'), null);
+  assert.ok(w.localStorage.getItem('neon-dev-v1:neonCronium.voyage.S2-V3.v1'));
   assert.ok(T.hit(40) < 100, 'damage counts while the option is off');
   const god = w.document.getElementById('devInvulnerable'); god.checked = true; god.dispatchEvent(new w.Event('change'));
   assert.equal(T.hit(40), 100, 'the invulnerable hull ignores damage');
@@ -225,7 +225,7 @@ test('map voyages earn 0-3 stars like S1-V1, keep the best and the menu counts t
 test('voyages finished before per-voyage stars count at least one star instead of ☆☆☆', () => {
   const {w, T} = harness();
   T.startSideVoyage('S1-V2'); T.finish(); T.goHome();
-  const key = 'neonCatcher.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
+  const key = 'neonCronium.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
   delete record.stars; w.localStorage.setItem(key, JSON.stringify(record));
   T.goHome();
   assert.equal(w.document.getElementById('totalStars').textContent, '2/30', 'S1-V1 and S1-V2 done: one star each');
@@ -235,8 +235,8 @@ test('voyages finished before per-voyage stars count at least one star instead o
 
 test('a voyage that is not done adds no stars, whatever its record says', () => {
   const {w, T, route} = harness();
-  w.localStorage.setItem('neonCatcher.voyage.S1-V2.v1', JSON.stringify({...JSON.parse((() => {
-    T.startSideVoyage('S1-V2'); T.finish(); T.goHome(); return w.localStorage.getItem('neonCatcher.voyage.S1-V2.v1');
+  w.localStorage.setItem('neonCronium.voyage.S1-V2.v1', JSON.stringify({...JSON.parse((() => {
+    T.startSideVoyage('S1-V2'); T.finish(); T.goHome(); return w.localStorage.getItem('neonCronium.voyage.S1-V2.v1');
   })()), completed: false, stars: 3}));
   T.goHome();
   assert.equal(w.document.getElementById('totalStars').textContent, '1/30', 'only S1-V1 counts');
@@ -344,7 +344,7 @@ test('retrying a map voyage after dying uses the entry hull of the stage with th
 test('old map voyage records without the entry fields still resume', () => {
   const {w, T} = harness();
   T.startSideVoyage('S1-V2'); T.adv(.5); T.toStage(2); T.goHome();
-  const key = 'neonCatcher.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
+  const key = 'neonCronium.voyage.S1-V2.v1', record = JSON.parse(w.localStorage.getItem(key));
   delete record.entry; w.localStorage.setItem(key, JSON.stringify(record));
   T.startSideVoyage('S1-V2');
   assert.deepEqual([T.st().state, T.st().side, T.hull()], ['playing', 'S1-V2', 100]);

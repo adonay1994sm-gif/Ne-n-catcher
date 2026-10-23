@@ -44,7 +44,7 @@ Cambio de marca visible, metadatos web/PWA/iOS, paquete npm, guías activas y nu
 ### Corregido
 
 - Alineados nombre visible, `package.json`, README, código y caché en V6.4.4.
-- Sustituida la caché heredada V6.4.2 por `neon-catcher-v6-4-4-base-stable`.
+- Sustituida la caché heredada V6.4.2 por `neon-cronium-v6-4-4-base-stable`.
 - Añadido versionado de CSS/JavaScript y estrategia network-first para código.
 - Precargados en la PWA los 56 assets de producción para evitar una mezcla parcial offline.
 - Recuperada la migración idempotente de `neon-best-v1` sin reducir un récord V2 existente.

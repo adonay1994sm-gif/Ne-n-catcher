@@ -55,8 +55,8 @@ async function createContext({stage,reducedMotion='no-preference',workers='block
   const fixture=checkpoint?{version:2,checkpoint,entry:{hull:100,score:160,maxCombo:3,collected:checkpoint.collected},unlockedStage:stage,completed:false}:null;
   report.fixtures??=[];report.fixtures.push({stage,serviceReady,reducedMotion,workers,voyage:fixture,equipment:equipment||null});
   await currentContext.addInitScript(({fixture,equipment,prefix})=>{
-    if(fixture&&!localStorage.getItem(prefix+'neonCatcher.chronosVoyage.v2'))localStorage.setItem(prefix+'neonCatcher.chronosVoyage.v2',JSON.stringify(fixture));
-    if(equipment&&!localStorage.getItem(prefix+'neonCatcher.flightEquipment.v1'))localStorage.setItem(prefix+'neonCatcher.flightEquipment.v1',JSON.stringify(equipment));
+    if(fixture&&!localStorage.getItem(prefix+'neonCronium.chronosVoyage.v2'))localStorage.setItem(prefix+'neonCronium.chronosVoyage.v2',JSON.stringify(fixture));
+    if(equipment&&!localStorage.getItem(prefix+'neonCronium.flightEquipment.v1'))localStorage.setItem(prefix+'neonCronium.flightEquipment.v1',JSON.stringify(equipment));
     const q=window.__POLISH_OBSERVER__={frames:0,maximum:0,pending:new Set(),errors:[],draw:{},voices:[]};
     const request=window.requestAnimationFrame.bind(window),cancel=window.cancelAnimationFrame.bind(window);
     window.requestAnimationFrame=callback=>{const id=request(now=>{q.pending.delete(id);q.frames++;try{callback(now);}catch(error){q.errors.push(error.stack||String(error));throw error;}});

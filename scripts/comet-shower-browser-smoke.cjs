@@ -124,9 +124,9 @@ function frozenState(q){return{state:q.state,elapsed:q.elapsed,hull:q.hull,route
   context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,
     isMobile:true,hasTouch:true,serviceWorkers:'block'});
   await context.addInitScript(({prefix,fixture,equipment})=>{
-    if(location.pathname.endsWith('/juego/index.html')&&!localStorage.getItem(prefix+'neonCatcher.chronosVoyage.v2')){
-      localStorage.setItem(prefix+'neonCatcher.chronosVoyage.v2',JSON.stringify(fixture));
-      localStorage.setItem(prefix+'neonCatcher.flightEquipment.v1',JSON.stringify(equipment));
+    if(location.pathname.endsWith('/juego/index.html')&&!localStorage.getItem(prefix+'neonCronium.chronosVoyage.v2')){
+      localStorage.setItem(prefix+'neonCronium.chronosVoyage.v2',JSON.stringify(fixture));
+      localStorage.setItem(prefix+'neonCronium.flightEquipment.v1',JSON.stringify(equipment));
     }
     const observer=window.__COMET_SHOWER_OBSERVER__={frames:0,maximum:0,pending:new Set(),errors:[],
       draws:0,cells:new Set(),recentDraws:[],births:{},warnings:[],peak:0};

@@ -206,7 +206,7 @@ function combatTarget(q) {
         localStorage.setItem(prefix + 'neon-stars-v2', '{}');
         localStorage.setItem(prefix + 'neon-n7-unlocked-v1', '37');
         localStorage.setItem(prefix + 'neon-n7-best-v1', '2037');
-        localStorage.setItem(prefix + 'neonCatcher.flightEquipment.v1', JSON.stringify(equipment));
+        localStorage.setItem(prefix + 'neonCronium.flightEquipment.v1', JSON.stringify(equipment));
       }
       sessionStorage.setItem('atlas-natural-seeded', '1');
     }
@@ -412,8 +412,8 @@ function combatTarget(q) {
       stars: JSON.parse(localStorage.getItem(prefix + 'neon-stars-v2') || '{}'),
       n7Unlocked: localStorage.getItem(prefix + 'neon-n7-unlocked-v1'),
       n7Best: localStorage.getItem(prefix + 'neon-n7-best-v1'),
-      equipment: JSON.parse(localStorage.getItem(prefix + 'neonCatcher.flightEquipment.v1') || 'null'),
-      salvage: JSON.parse(localStorage.getItem(prefix + 'neonCatcher.classicSalvage.v1') || 'null')
+      equipment: JSON.parse(localStorage.getItem(prefix + 'neonCronium.flightEquipment.v1') || 'null'),
+      salvage: JSON.parse(localStorage.getItem(prefix + 'neonCronium.classicSalvage.v1') || 'null')
     }), storagePrefix);
     assert.equal(saved.unlocked, '3'); assert.ok(saved.stars['2'] >= 1);
     assert.equal(saved.n7Unlocked, '37'); assert.equal(saved.n7Best, '2037');
@@ -456,7 +456,7 @@ function combatTarget(q) {
     assert.equal(afterReload.unlocked, 3);
     const persisted = await page.evaluate(prefix => ({
       stars: JSON.parse(localStorage.getItem(prefix + 'neon-stars-v2') || '{}'),
-      equipment: JSON.parse(localStorage.getItem(prefix + 'neonCatcher.flightEquipment.v1') || 'null'),
+      equipment: JSON.parse(localStorage.getItem(prefix + 'neonCronium.flightEquipment.v1') || 'null'),
       n7Unlocked: localStorage.getItem(prefix + 'neon-n7-unlocked-v1'),
       n7Best: localStorage.getItem(prefix + 'neon-n7-best-v1')
     }), storagePrefix);

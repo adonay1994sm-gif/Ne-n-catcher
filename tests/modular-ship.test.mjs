@@ -7,7 +7,7 @@ import {
 const stock={hull:'aster',wings:'aster',engines:'aster'};
 
 test('two immutable cosmetic presets have a separate stable save key and no collision or combat modifiers',()=>{
-  assert.equal(SHIP_FLEET_SAVE_KEY,'neonCatcher.shipFleet.v1');
+  assert.equal(SHIP_FLEET_SAVE_KEY,'neonCronium.shipFleet.v1');
   assert.deepEqual(SHIP_FLEET.map(ship=>ship.id),['aster','bastion']);
   assert.equal(Object.isFrozen(SHIP_FLEET),true);
   for(const ship of SHIP_FLEET){

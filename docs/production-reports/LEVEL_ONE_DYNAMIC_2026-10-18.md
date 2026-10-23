@@ -12,7 +12,7 @@ Defectos confirmados: el callback de emisión enemiga no invocaba audio; Atlasv5
 
 - **SHA funcional limpio, publicado y probado:** [da3f4b839744940fee1032a8b637d5c3266c862f](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/da3f4b839744940fee1032a8b637d5c3266c862f).
 - **SHA de cierre documental:** el commit que introduce esta revisión del informe; resolver sin ambigüedad con `git log -1 --format=%H -- docs/production-reports/LEVEL_ONE_DYNAMIC_2026-10-18.md`. El recibo externo de cierre registra su SHA literal. Este cierre no reconstruye ni reetiqueta el paquete funcional.
-- **Web privada22:** https://neon-catcher-pruebas.chictide18.chatgpt.site. Publicación `succeeded`, 18/10/2026 13:36:31 UTC; HTTP real16/16 con huellas del paquete. [Recibo de publicación](evidence/level-one-followup/site-deployment.json) y [verificación HTTP](evidence/level-one-followup/site-http/results.json).
+- **Web privada22:** (web privada antigua, retirada) Publicación `succeeded`, 18/10/2026 13:36:31 UTC; HTTP real16/16 con huellas del paquete. [Recibo de publicación](evidence/level-one-followup/site-deployment.json) y [verificación HTTP](evidence/level-one-followup/site-http/results.json).
 - Fuente del sitio separado: `3ad7ce85a52a383d9284ab49f9c1d3eee0e3a932`. Se preservaron146 archivos ajenos; mismo origen y audiencia: un propietario, cero editores y cero visitantes externos. No se modificó `main` del juego; la rama de servicio del repositorio del sitio es independiente.
 - [GitHub Actions funcional39131063614](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614): **completed/success**, incluido empaquetado. [Recibo exacto](evidence/level-one-followup/github-actions-runtime.json).
 

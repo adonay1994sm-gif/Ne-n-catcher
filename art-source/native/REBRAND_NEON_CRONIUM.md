@@ -2,7 +2,7 @@
 
 Fecha: 17/10/2026. Estado técnico del recurso: integrado en los tres PNG existentes del catálogo de lanzamiento iOS; revisión artística del propietario y prueba física pendientes.
 
-El rótulo incrustado del splash se ha cambiado de «NEON CATCHER» a «NEON CRONIUM» mediante edición de imagen con `image_gen.imagegen`. Se revisaron visualmente la ortografía y la conservación de la composición: monograma N, marco cian, iluminación violeta/azul y fondo espacial. El icono de aplicación mantiene el monograma N y no se ha modificado.
+El rótulo incrustado del splash se ha cambiado al nombre «NEON CRONIUM» mediante edición de imagen con `image_gen.imagegen`. Se revisaron visualmente la ortografía y la conservación de la composición: monograma N, marco cian, iluminación violeta/azul y fondo espacial. El icono de aplicación mantiene el monograma N y no se ha modificado.
 
 ## Archivos y trazabilidad
 
@@ -20,7 +20,7 @@ Procedencia: edición del recurso que ya pertenecía al repositorio; no se incor
 
 ## Instrucción exacta de edición
 
-> Edit the provided square game splash screen. Change ONLY the existing white uppercase spaced title below the N emblem from NEON CATCHER to exactly NEON CRONIUM. Preserve the same slim futuristic letter style, white color, tracking, baseline, centered placement and approximate title width. Keep the original composition, dark navy outer-space background, tiny cyan stars, blue/violet glow, cyan rounded-square outline and white N monogram exactly as shown; do not redesign, add objects or alter their positions. The title must read NEON CRONIUM with correct spelling and nothing else. Keep the square framing and opaque dark background. This is a surgical typographic rebrand of the supplied original asset, not a new illustration.
+> Edit the provided square game splash screen. Change ONLY the existing white uppercase spaced title below the N emblem to exactly NEON CRONIUM. Preserve the same slim futuristic letter style, white color, tracking, baseline, centered placement and approximate title width. Keep the original composition, dark navy outer-space background, tiny cyan stars, blue/violet glow, cyan rounded-square outline and white N monogram exactly as shown; do not redesign, add objects or alter their positions. The title must read NEON CRONIUM with correct spelling and nothing else. Keep the square framing and opaque dark background. This is a surgical typographic rebrand of the supplied original asset, not a new illustration.
 
 ## Verificación y límites
 

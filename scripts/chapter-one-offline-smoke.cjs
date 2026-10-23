@@ -117,7 +117,7 @@ function brand(text) {
 }
 function savedBytesEqual(actual, fixture, allowEconomyMigration=false) {
   for (const [key, value] of Object.entries(fixture)) {
-    if(allowEconomyMigration&&key.endsWith('neonCatcher.classicSalvage.v1')) {
+    if(allowEconomyMigration&&key.endsWith('neonCronium.classicSalvage.v1')) {
       const migrated=JSON.parse(actual[key]);
       assert.equal(migrated.version,1);assert.equal(migrated.revision,2);
       for(const field of ['balance','earned','spent'])assert.equal(migrated[field],0);
@@ -279,8 +279,8 @@ async function prepareContext() {
   const fixture = report.seededPreviousSaveFixture = {
     [`${prefix}neon-best-v2`]: '1739', [`${prefix}neon-unlocked-v2`]: '1',
     [`${prefix}neon-n7-unlocked-v1`]: '37',
-    [`${prefix}neonCatcher.shipFleet.v1`]: JSON.stringify({version: 1, mode: 'modular', loadout: {hull: 'aster', wings: 'bastion', engines: 'aster'}}),
-    [`${prefix}neonCatcher.flightEquipment.v1`]: JSON.stringify({version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin'], selected: 'twin'}),
+    [`${prefix}neonCronium.shipFleet.v1`]: JSON.stringify({version: 1, mode: 'modular', loadout: {hull: 'aster', wings: 'bastion', engines: 'aster'}}),
+    [`${prefix}neonCronium.flightEquipment.v1`]: JSON.stringify({version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin'], selected: 'twin'}),
     [`${prefix}${model.CHRONOS_VOYAGE_KEY}`]: JSON.stringify({version: 2, checkpoint,
       entry: {hull: 74, score: 160, maxCombo: 3, collected: checkpoint.collected}, unlockedStage: 3, completed: false}),
     [`${prefix}${economy.SCRAP_ECONOMY_KEY}`]:JSON.stringify(historicalEmptySalvage),

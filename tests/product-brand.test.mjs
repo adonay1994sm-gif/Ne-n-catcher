@@ -49,12 +49,12 @@ test('package, install names and generated preview agree while application ident
 
 test('renaming preserves existing preview saves and resumes a pre-rename voyage checkpoint', () => {
   assert.equal(STORAGE_PREFIX, 'neon-preview-v1:');
-  assert.equal(CHRONOS_VOYAGE_KEY, 'neonCatcher.chronosVoyage.v2');
-  assert.equal(SHIP_FLEET_SAVE_KEY, 'neonCatcher.shipFleet.v1');
+  assert.equal(CHRONOS_VOYAGE_KEY, 'neonCronium.chronosVoyage.v2');
+  assert.equal(SHIP_FLEET_SAVE_KEY, 'neonCronium.shipFleet.v1');
   const checkpoint = createChronosVoyageCheckpoint(5, {goal: 36, collected: 16});
   const saved = new Map([
     [STORAGE_PREFIX + CHRONOS_VOYAGE_KEY, JSON.stringify(checkpoint)],
-    [STORAGE_PREFIX + 'neonCatcher.flightEquipment.v1', '{"version":1,"weapon":"twin"}'],
+    [STORAGE_PREFIX + 'neonCronium.flightEquipment.v1', '{"version":1,"weapon":"twin"}'],
     ['neon-best-v2', '12345']
   ]);
   const before = [...saved];
@@ -69,7 +69,7 @@ test('renaming preserves existing preview saves and resumes a pre-rename voyage 
   assert.equal(voyage.snapshot().stageNumber, 5);
   assert.equal(voyage.snapshot().collected, 16);
   assert.deepEqual([...saved], before, 'Opening the new name must neither migrate nor delete old data');
-  assert.equal(context.window.NeonPreview.storage.getItem('neonCatcher.flightEquipment.v1'), before[1][1]);
+  assert.equal(context.window.NeonPreview.storage.getItem('neonCronium.flightEquipment.v1'), before[1][1]);
 });
 
 test('ordinary PWA gets a fresh branded cache and active art documentation resolves after the filename change', async () => {

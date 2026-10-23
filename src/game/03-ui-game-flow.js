@@ -1,4 +1,4 @@
-  const CLASSIC_EQUIPMENT_KEY = "neonCatcher.flightEquipment.v1";
+  const CLASSIC_EQUIPMENT_KEY = "neonCronium.flightEquipment.v1";
 
   function classicChapterControlsLocked() {
     return Boolean(classicChapterView?.opening?.controlsLocked);

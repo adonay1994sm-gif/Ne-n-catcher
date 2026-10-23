@@ -24,7 +24,7 @@
 1. **No reescribir (recomendado salvo que aparezca un secreto).** Usar LFS y
    Releases para lo nuevo; aceptar el peso del historial.
 2. **Reescribir con `git filter-repo`** para quitar `art-source/` antiguo,
-   ZIP de evidencia y `Neon_Catcher_V6_8_0_Netlify_Directo.zip`.
+   ZIP de evidencia y `Neon_Cronium_V6_8_0_Netlify_Directo.zip`.
    - Ventajas: clon mucho más ligero; elimina datos del historial.
    - Riesgos: cambian **todos** los SHA (los informes citan SHA concretos
      como evidencia: quedarían rotos); hay que hacer force push a todas las

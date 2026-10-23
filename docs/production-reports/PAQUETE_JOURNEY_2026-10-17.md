@@ -4,7 +4,7 @@ Fecha: 17/10/2026 UTC. Rama: `continuity-assets-audit-20261013`.
 
 - Código funcional probado: `ce71b299cb0eea8cbb908dd4886319e4e859580e`.
 - Cierre documental y snapshot limpio utilizado: `24b591ca6814e21a8cfd75eb017ad869b18e1e66`.
-- [ZIP autocontenido](evidence/journey-p1/neon-catcher-journey-24b591c.zip): **5 194 332 bytes**.
+- [ZIP autocontenido](evidence/journey-p1/neon-cronium-journey-24b591c.zip): **5 194 332 bytes**.
 - SHA-256 ZIP: `3b3732900e789490521fdf9f4b766fe9ce0d485f2472b4a58418a6963396930c`.
 - [build-info.json](evidence/journey-p1/clean-build-info.json): `dirty:false`, `engineV1:false`, revisión `013b653ef9db2c28d9bfa0e963a7effe74e1f4e7f75debafea0afe38046508d7`.
 - SHA-256 de `juego/game.js`: `95d502d76f1f3bfa6cbe44877468c14bbfa55b23d903fe9b6b115745bcc9f696`, idéntico al de la [partida Chromium natural final](evidence/journey-p1/browser-04/results.json).

@@ -11,7 +11,7 @@ README y todo el historial.
 
 | Línea | Contenido | Por qué | Propuesta |
 |---|---|---|---|
-| 5 | Enlace "Web privada de pruebas" a `https://neon-catcher-pruebas.chictide18.chatgpt.site` | Se llama "privada" pero queda expuesta a cualquiera; además el subdominio incluye un identificador de cuenta de un servicio de terceros. | Quitar el enlace del README. Si hace falta, guardarlo en una nota fuera del repositorio. |
+| 5 | Enlace "Web privada de pruebas" a `(web privada antigua, retirada)` | Se llama "privada" pero queda expuesta a cualquiera; además el subdominio incluye un identificador de cuenta de un servicio de terceros. | Quitar el enlace del README. Si hace falta, guardarlo en una nota fuera del repositorio. |
 | 3 y 7 | "Rama de integración `continuity-assets-audit-20261013`", "Motor V1 desactivado; sin publicación comercial", referencias a campañas/guardados internos | Información interna de desarrollo; no daña, pero confunde a un visitante y no aporta a un jugador. | Mover a `CLAUDE.md`/`AGENTS.md` o a `docs/`. |
 | 5 | Enlaces a `docs/CODEX_STATUS.md` y otros documentos internos | Muestran estado y órdenes internas del proyecto. | Sustituir por un enlace a `docs/` o retirarlos del README. |
 | 13 | Enlace a `docs/agents/NETLIFY_TEST_SETUP.md` | Describe la preview de Netlify de pruebas (`neon-preview-deploy.netlify.app`) y sus protecciones. | Mantenerlo solo si el repositorio pasa a privado. |

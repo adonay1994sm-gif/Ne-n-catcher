@@ -119,7 +119,7 @@ export function createChronosFlight({goal=36,minDuration=CHRONOS_FLIGHT_MIN_DURA
  * the first classic territory, not replacements for the ten classic worlds.
  */
 export const CHRONOS_VOYAGE_VERSION = 'chronos-voyage-v2';
-export const CHRONOS_VOYAGE_KEY = 'neonCatcher.chronosVoyage.v2';
+export const CHRONOS_VOYAGE_KEY = 'neonCronium.chronosVoyage.v2';
 export const CHRONOS_VOYAGE_ROUTE_ID = 'chronos-to-gaia';
 const VOYAGE_STAGE_DATA = [
   ['Emergencia en Chronos',36,4,'Recupera los primeros fragmentos del reactor','Chronos · reactor','Perímetro destruido','reactor-strike',.18,.70,.36],

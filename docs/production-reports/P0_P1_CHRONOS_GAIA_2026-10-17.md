@@ -24,7 +24,7 @@ Confirmado por el propietario: aventura espacial canónica 10 capítulos×10 eta
 
 Decisiones reversibles de esta demo: tres tramos de 20+24+20 s; disparo básico automático inicialmente activado y configurable, pulso manual ilimitado; escudo y tractor como dos habilidades con duración/cooldown; aleta C9 recuperada de instalación gratuita; robot de servicio **Mira**, nombre y papel propuestos; recompensa de 120 créditos sin gasto ni mercado todavía. No son preferencias históricas confirmadas ni balance comercial definitivo.
 
-Mapa y guardado: IDs `demo-departure`, `demo-transit`, `demo-border`, versión `chronos-gaia-demo-v1`. Orígenes/destinos se conectan explícitamente. N-7 conserva cinco sectores y sus claves; no hay equivalencia numérica con las nuevas etapas. El viaje usa `neonCatcher.journeyDemo.v1`, con aislamiento adicional en preview; una entrada inválida se respalda antes de recuperarla.
+Mapa y guardado: IDs `demo-departure`, `demo-transit`, `demo-border`, versión `chronos-gaia-demo-v1`. Orígenes/destinos se conectan explícitamente. N-7 conserva cinco sectores y sus claves; no hay equivalencia numérica con las nuevas etapas. El viaje usa `neonCronium.journeyDemo.v1`, con aislamiento adicional en preview; una entrada inválida se respalda antes de recuperarla.
 
 ## 3. Archivos y sistemas
 

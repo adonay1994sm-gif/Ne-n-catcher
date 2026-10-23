@@ -9,14 +9,14 @@ const [html, core, content, game] = await Promise.all(
   ['index.html', 'core-runtime.js', 'content-runtime.js', 'game.js']
     .map(file => readFile(new URL(file, repository), 'utf8'))
 );
-const EQUIPMENT_KEY = 'neonCatcher.flightEquipment.v1';
-const SALVAGE_KEY = 'neonCatcher.classicSalvage.v1';
+const EQUIPMENT_KEY = 'neonCronium.flightEquipment.v1';
+const SALVAGE_KEY = 'neonCronium.classicSalvage.v1';
 const fundedSalvage = balance => {
   const value = {...createScrapRecord(), balance, earned: balance};
   assert.ok(normalizeScrapRecord(value), 'The explicit C9 monetary fixture must be a valid ledger record');
   return value;
 };
-const VOYAGE_KEY = 'neonCatcher.chronosVoyage.v2';
+const VOYAGE_KEY = 'neonCronium.chronosVoyage.v2';
 const DESTRUCTION_PATH = 'assets/chronos_destruction_atlas_v1.webp';
 const FLIGHT_KIT_PATH = 'assets/chronos_flight_atlas_v1.webp';
 const INTRO_STATION_PATH = 'assets/chronos_intro_station_atlas_v1.webp';

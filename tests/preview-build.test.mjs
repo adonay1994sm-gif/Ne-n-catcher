@@ -109,7 +109,7 @@ test('unit: entering the canonical journey preserves ordinary, historical, achie
     const {window} = dom;
     const saved = {'neon-unlocked-v2':'7', [`${STORAGE_PREFIX}neon-stars-v2`]:'{"1":2}',
       [`${STORAGE_PREFIX}neon-unlocked-v2`]:'2', [`${STORAGE_PREFIX}neon-n7-unlocked-v1`]:'37',
-      [`${STORAGE_PREFIX}neonCatcher.classicSalvage.v1`]:'{"fixture":"opaque archived bytes"}'};
+      [`${STORAGE_PREFIX}neonCronium.classicSalvage.v1`]:'{"fixture":"opaque archived bytes"}'};
     for (const [key,value] of Object.entries(saved)) window.localStorage.setItem(key,value);
     const link = window.document.getElementById('classiclink');
     link.addEventListener('click', event => event.preventDefault());

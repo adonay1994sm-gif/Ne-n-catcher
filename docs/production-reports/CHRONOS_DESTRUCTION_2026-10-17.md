@@ -4,7 +4,7 @@ Se retomó la rama autorizada con árbol limpio y HEAD local/remoto **81fdf21f08
 
 La integración anterior tenía dos estados de estación, una onda de solo 1,1 s y una explosión genérica que ocultaba el reactor. El núcleo estaba parcialmente bajo el HUD. Había recursos ilustrados reutilizables: espacio profundo, Gaia, atacante, frente temporal y fragmentos. Se desarrolló el acontecimiento con ellos, sin otra arquitectura ni nuevos niveles.
 
-# INFORME DE PRODUCCIÓN — NEON CATCHER / CHRONOS
+# INFORME DE PRODUCCIÓN — NEON CRONIUM / CHRONOS
 
 - **Fecha:** 17/10/2026 UTC.
 - **Rama:** continuity-assets-audit-20261013.
@@ -122,11 +122,11 @@ Cadencia RAF observada en82 ventanas de la misión:media 24,29/s, mediana 9,39, 
 
 ## H. Paquete, GitHub y publicación
 
-ZIP limpio [neon-catcher-chronos-73e117b.zip](evidence/chronos-destruction/package-73e117b/neon-catcher-chronos-73e117b.zip):**7382977 B,113 entradas**, CRC y comparación byte a byte aprobados. SHA-256 **25713066656b9a597a39a7eb2d909810e32ee10d6436995f9c1e15e211331af4**. Revisión **8ef4444967c63e76828e1b131ad8ab8b30d53788ce501633fd2309b9a22e6aeb**. [Inventario y hashes](evidence/chronos-destruction/package-73e117b/package.json).
+ZIP limpio [neon-cronium-chronos-73e117b.zip](evidence/chronos-destruction/package-73e117b/neon-cronium-chronos-73e117b.zip):**7382977 B,113 entradas**, CRC y comparación byte a byte aprobados. SHA-256 **25713066656b9a597a39a7eb2d909810e32ee10d6436995f9c1e15e211331af4**. Revisión **8ef4444967c63e76828e1b131ad8ab8b30d53788ce501633fd2309b9a22e6aeb**. [Inventario y hashes](evidence/chronos-destruction/package-73e117b/package.json).
 
 Para revisión local: descomprimir, mantener index.html en la raíz y servir el directorio mediante HTTP. Abrir CONTINUAR VIAJE;desde un guardado avanzado usar NIVELES→La Onda de Choque. El archivo QA de N-7/Journey conserva sus claves separadas. El ZIP también es apto para un destino Netlify de pruebas aislado; no se ha ejecutado un despliegue Netlify nuevo.
 
-**Sitio privado actualizado y confirmado:** https://neon-catcher-pruebas.chictide18.chatgpt.site . Sites devolvió **succeeded, versión 6,17:58:28UTC**, conservando audiencia privada del propietario. Juego 73e117b; fuente de distribución 5cd815b0f6eb4610aa023c2f706edf05382362d8,113 archivos idénticos al paquete. [Acta de publicación](evidence/chronos-destruction/package-73e117b/site-deployment.json). No se jugó remotamente con la cuenta del propietario ni se certificó Safari/iPhone; el resultado nativo acredita publicación, no esa prueba física.
+**Sitio privado actualizado y confirmado:** (web privada antigua, retirada) . Sites devolvió **succeeded, versión 6,17:58:28UTC**, conservando audiencia privada del propietario. Juego 73e117b; fuente de distribución 5cd815b0f6eb4610aa023c2f706edf05382362d8,113 archivos idénticos al paquete. [Acta de publicación](evidence/chronos-destruction/package-73e117b/site-deployment.json). No se jugó remotamente con la cuenta del propietario ni se certificó Safari/iPhone; el resultado nativo acredita publicación, no esa prueba física.
 
 ## I. Seguimiento y siguiente trabajo
 

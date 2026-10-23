@@ -1,4 +1,4 @@
-# NEON CATCHER — Diseño editorial de la campaña espacial
+# NEON CRONIUM — Diseño editorial de la campaña espacial
 
 Fecha: 17/10/2026. Versión: **space-campaign-design-v1**. Fuente de datos: [campaign-space-v1.json](../../design/campaign-space-v1.json).
 

@@ -149,9 +149,9 @@ async function runProfile(profile){
       await page.locator('#shipApply').click();
       assert.deepEqual((await inspect(page)).loadout,mixed);assert.equal((await inspect(page)).mode,'modular');
       const saved=await page.evaluate(()=>Object.fromEntries(Object.keys(localStorage).map(key=>[key,localStorage.getItem(key)])));
-      const keys=Object.keys(saved).filter(key=>key.endsWith('neonCatcher.shipFleet.v1'));
+      const keys=Object.keys(saved).filter(key=>key.endsWith('neonCronium.shipFleet.v1'));
       assert.equal(keys.length,1,'Fleet configuration has no unique save key');
-      if(nested)assert.equal(keys[0],'neon-preview-v1:neonCatcher.shipFleet.v1');
+      if(nested)assert.equal(keys[0],'neon-preview-v1:neonCronium.shipFleet.v1');
       result.fleetSave={key:keys[0],value:JSON.parse(saved[keys[0]])};
       assert.deepEqual(result.fleetSave.value,{version:1,mode:'modular',loadout:mixed});
       await page.reload({waitUntil:'load'});

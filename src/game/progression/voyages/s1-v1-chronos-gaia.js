@@ -20,7 +20,7 @@ const encounter = (stage, patrol, {comets = false, repairAt = null} = {}) => imm
 
 export const S1_V1_CHRONOS_GAIA = immutable({
   id: 'S1-V1', sector: 1, number: 1, title: 'Escapa de Chronos',
-  chapter: 1, version: 'chronos-voyage-v2', saveKey: 'neonCatcher.chronosVoyage.v2',
+  chapter: 1, version: 'chronos-voyage-v2', saveKey: 'neonCronium.chronosVoyage.v2',
   routeId: 'chronos-to-gaia', eventPrefix: 'chronos-voyage', baseGoal: 36,
   origin: 'Centro Chronos', destination: 'Baliza de acceso a Gaia Nova',
   arrivalDestinationId: 'gaia-atlas-approach', cinematicDuration: 90, recoveryAt: 9,

@@ -166,8 +166,8 @@ function pilotTarget(q, enemy, collecting = false) {
     const url = new URL(location.href);
     if (url.pathname.endsWith('/juego/index.html') || url.pathname.endsWith('/juego/')) {
       if (localStorage.getItem(prefix + 'neon-unlocked-v2') === null) localStorage.setItem(prefix + 'neon-unlocked-v2', '2');
-      if (localStorage.getItem(prefix + 'neonCatcher.flightEquipment.v1') === null) {
-        localStorage.setItem(prefix + 'neonCatcher.flightEquipment.v1', JSON.stringify(equipment));
+      if (localStorage.getItem(prefix + 'neonCronium.flightEquipment.v1') === null) {
+        localStorage.setItem(prefix + 'neonCronium.flightEquipment.v1', JSON.stringify(equipment));
       }
     }
     const request = window.requestAnimationFrame.bind(window), cancel = window.cancelAnimationFrame.bind(window);

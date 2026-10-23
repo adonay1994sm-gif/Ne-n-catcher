@@ -20,7 +20,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S1_V3_EVACUEE_ESCORT = immutable({
   id: 'S1-V3', sector: 1, number: 3, title: 'Escolta a los evacuados',
-  chapter: 3, version: 's1-v3-voyage-v1', saveKey: 'neonCatcher.voyage.S1-V3.v1',
+  chapter: 3, version: 's1-v3-voyage-v1', saveKey: 'neonCronium.voyage.S1-V3.v1',
   routeId: 'gaia-evacuee-escort', eventPrefix: 's1-v3', baseGoal: 36,
   origin: 'Anillo de satélites', destination: 'Órbita alta de Gaia',
   arrivalDestinationId: 'gaia-high-orbit', cinematicDuration: 0, recoveryAt: 0,

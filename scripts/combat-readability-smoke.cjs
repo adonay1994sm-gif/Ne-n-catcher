@@ -16,7 +16,7 @@ const {values} = parseArgs({options: {root: {type: 'string'}, output: {type: 'st
 const root = path.resolve(values.root || 'preview-dist');
 const output = path.resolve(values.output || `docs/production-reports/evidence/combat-readability/browser-${Date.now()}`);
 const started = Date.now();
-const equipmentKey = 'neonCatcher.flightEquipment.v1';
+const equipmentKey = 'neonCronium.flightEquipment.v1';
 const legacyEquipment = {version: 1, recoveredTwin: true, unlocked: ['pulse', 'twin'], selected: 'twin'};
 const report = {status: 'running', exitCode: null, startedAt: new Date().toISOString(), command: process.argv,
   sourceRoot: root, checks: [], screenshots: [], fixtureCalls: [], errors: [], consoleErrors: [], failedRequests: [],

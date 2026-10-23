@@ -8,13 +8,13 @@ Fecha:17/10/2026. Rama del juego: continuity-assets-audit-20261013.
 
 - SHA funcional y paquete limpio: **11dfa7bf7d3e287dd979c8dfc1dbafd8c1388473**; conservación anterior 009e5299e1d0cad12fadde787060d658ae87bb3b. Ambos comprobados en el remoto.
 - Revisión: `41e1a8ebe6541b0e750357ea15f1d809cdafe3f2393e8366c08ea66dc80b7f56`, dirty:false, EngineV1:false.
-- ZIP: [neon-catcher-atlas-11dfa7b.zip](evidence/guardian-atlas/package-11dfa7b/neon-catcher-atlas-11dfa7b.zip),6411035 bytes. SHA-256: `704c218ec499d956773ae1fec12565108b32a3d9d76a2d0c7c98d27c5955b081`.
+- ZIP: [neon-cronium-atlas-11dfa7b.zip](evidence/guardian-atlas/package-11dfa7b/neon-cronium-atlas-11dfa7b.zip),6411035 bytes. SHA-256: `704c218ec499d956773ae1fec12565108b32a3d9d76a2d0c7c98d27c5955b081`.
 - CRC del ZIP y hashes de108 archivos verificados frente a build-info.json. El propio build-info se conserva dentro del ZIP. Hash juego: `25200ad0049a8bf269b825757efcf9cd37fb1b3a907e2ac58656fa28626887d2`, coincide con Chromium visual04.
 - Fuente de distribución: `ab1ea23893946f756ecaefc045bb8fc229914ccb`. Es el repositorio separado de Sites; su rama no es main del videojuego. Copia de dist cotejada archivo por archivo antes de publicar.
 
 ## Publicación real
 
-**https://neon-catcher-pruebas.chictide18.chatgpt.site**
+**(web privada antigua, retirada)**
 
 Sites devolvió **succeeded** a 12:08:42 UTC. Mismo project_id `appgprj_6ad34f65ce74819195e871d7dd99fe21`, owner-private conservado; puede requerir login en ChatGPT. Version_id `appgprj_6ad34f65ce74819195e871d7dd99fe21~appgver_1bed27aa450881919787e4df8e18d3ab`, deployment_id `appgdep_6ad365395a248191a966d7e730cb5bd7`. [Respuesta nativa sin credenciales](evidence/guardian-atlas/package-11dfa7b/site-deployment.json).
 

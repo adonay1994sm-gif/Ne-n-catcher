@@ -19,7 +19,7 @@ const encounter = (profile, patrol, {comets = false, repairAt = null} = {}) => i
 
 export const S2_V2_FOLLOW_C17 = immutable({
   id: 'S2-V2', sector: 2, number: 2, title: 'Sigue al C-17', planet: 'volcanico',
-  chapter: 7, version: 's2-v2-voyage-v1', saveKey: 'neonCatcher.voyage.S2-V2.v1',
+  chapter: 7, version: 's2-v2-voyage-v1', saveKey: 'neonCronium.voyage.S2-V2.v1',
   routeId: 'c17-pursuit', eventPrefix: 's2-v2', baseGoal: 36,
   origin: 'Borde del sistema de Gaia', destination: 'Ruta de carga abandonada',
   arrivalDestinationId: 'abandoned-cargo-route', cinematicDuration: 0, recoveryAt: 0,

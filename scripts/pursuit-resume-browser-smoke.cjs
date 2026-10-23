@@ -46,8 +46,8 @@ async function check(name,action){
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,
     isMobile:true,hasTouch:true,serviceWorkers:'block'});
   await context.addInitScript(record=>{
-    if(location.pathname.endsWith('/juego/index.html')&&!localStorage.getItem('neon-preview-v1:neonCatcher.chronosVoyage.v2')){
-      localStorage.setItem('neon-preview-v1:neonCatcher.chronosVoyage.v2',JSON.stringify(record));
+    if(location.pathname.endsWith('/juego/index.html')&&!localStorage.getItem('neon-preview-v1:neonCronium.chronosVoyage.v2')){
+      localStorage.setItem('neon-preview-v1:neonCronium.chronosVoyage.v2',JSON.stringify(record));
     }
   },checkpoint);
   page=await context.newPage();
