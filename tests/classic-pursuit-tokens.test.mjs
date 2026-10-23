@@ -59,3 +59,20 @@ test('a long pause does not make anyone fire', () => {
   for (let frame = 0; frame < 600; frame++) advanceClassicPursuer(item, 0, {x: 360, y: 1080}, shot => shots.push(shot), {tokens, now: 3});
   assert.equal(shots.length, 0);
 });
+
+// Plan F3b, tarea 2: abanicos abiertos (spec 6.10).
+test('an open fan fires five shots across about 68 degrees', () => {
+  const fans = [];
+  for (const seed of [3, 21, 58, 90]) {
+    const item = enemyAt('fan', 360, seed), bySerial = new Map();
+    for (const shot of run([item], 60)) bySerial.set(shot.attackSerial, [...(bySerial.get(shot.attackSerial) || []), shot]);
+    fans.push(...[...bySerial.values()].filter(volley => volley[0].volley === 'spread'));
+  }
+  assert.ok(fans.length > 0, 'some fans were fired');
+  for (const fan of fans) {
+    assert.equal(fan.length, 5);
+    const angles = fan.map(shot => Math.atan2(shot.vx, shot.vy));
+    assert.ok(Math.max(...angles) - Math.min(...angles) >= 1.15, `span ${Math.max(...angles) - Math.min(...angles)}`);
+    for (const shot of fan) assert.ok(shot.vy > 0);
+  }
+});

@@ -66,7 +66,8 @@ function chooseVolley(enemy, weights) {
 }
 
 // Proyectiles por ataque, separación de la ráfaga doble y apertura del abanico.
-export const CLASSIC_PURSUIT_VOLLEY = Object.freeze({maxProjectiles: 3, doubleGap: .2, spreadAngle: .24, cone: .65});
+// Abanico abierto (spec 6.10, plan F3b): 5 disparos muy separados en un cono mayor.
+export const CLASSIC_PURSUIT_VOLLEY = Object.freeze({maxProjectiles: 5, doubleGap: .2, spreadAngle: .30, spreadCount: 5, cone: 1.2});
 
 /** An encounter policy inside the existing item/update loop; owns no clock or RAF.
  * Aim uses bounded lead from past position samples, locked at weapon deployment.
@@ -283,8 +284,10 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile, gate = 
     const dx = clamp(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
     // Los laterales del abanico se abren desde el tiro apuntado y se quedan
     // dentro del mismo cono hacia abajo; ninguno persigue tras salir.
+    // El centro del abanico se desplaza lo justo para que quepa entero en el cono.
     const limit = Math.atan(CLASSIC_PURSUIT_VOLLEY.cone);
-    const angle = clamp(Math.atan2(dx, dy) + angleOffset, -limit, limit);
+    const half = enemy.volley === 'spread' ? CLASSIC_PURSUIT_VOLLEY.spreadAngle * (CLASSIC_PURSUIT_VOLLEY.spreadCount - 1) / 2 : 0;
+    const angle = clamp(Math.atan2(dx, dy), -limit + half, limit - half) + angleOffset;
     const speed = profile.projectileSpeed;
     spawnProjectile({
       type: 'meteor', x: item.x, baseX: item.x, y: item.y + 38,
@@ -312,7 +315,8 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile, gate = 
     enemy.attackScheduled = false;
     enter('fire');
     if (enemy.volley === 'spread') {
-      for (const offset of [0, -CLASSIC_PURSUIT_VOLLEY.spreadAngle, CLASSIC_PURSUIT_VOLLEY.spreadAngle]) launch(offset);
+      const {spreadAngle, spreadCount} = CLASSIC_PURSUIT_VOLLEY;
+      for (let k = 0; k < spreadCount; k++) launch((k - (spreadCount - 1) / 2) * spreadAngle);
     } else {
       launch(0);
       if (enemy.volley === 'double') enemy.followUp = enemy.age + CLASSIC_PURSUIT_VOLLEY.doubleGap;
