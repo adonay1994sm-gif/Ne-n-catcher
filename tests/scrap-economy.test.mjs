@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {SCRAP_ECONOMY_KEY, SCRAP_ECONOMY_RULES, SCRAP_UPGRADES, SCRAP_REWARDS,
   createScrapRecord, normalizeScrapRecord, formatDenominations, rewardForEnemy,
-  createScrapLedger, hullReserveCapacity, classicWorkshopState} from '../src/game/progression/scrap-economy.js';
+  createScrapLedger, hullReserveCapacity, classicWorkshopState, SCRAP_CONSUMABLES} from '../src/game/progression/scrap-economy.js';
 
 function memory(map = new Map(), {failWrite = 0, afterWrite = false, denyReads = new Set(),
   throwRead = false, throwWrite = false, interceptRead = null} = {}) {
@@ -51,7 +51,9 @@ test('denominations exactly preserve the requested 100000 / 100 / 10 conversion 
 });
 
 test('enemy families drop different small scrap values, never minted silver or arbitrary terrain rewards', () => {
-  assert.deepEqual(SCRAP_REWARDS, {raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18});
+  // ch03: subjefe del sector 1 (plan F3c).
+  assert.deepEqual(SCRAP_REWARDS, {raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18, ch03: 120});
+  assert.equal(rewardForEnemy('ch03'), 120);
   assert.equal(rewardForEnemy('ch-01'), 9);
   assert.equal(rewardForEnemy('ch-02'), 15);
   assert.equal(rewardForEnemy('guardian-atlas'), 600);
@@ -616,4 +618,68 @@ test('the expanded catalogue loads old v2 profiles without rewriting or changing
   assert.equal(log.getBalance(), 1); assert.equal(log.getState().missileAmmo, 3);
   assert.equal(log.purchase({transactionId: 'two', sku: 'hull-reinforcement'}).duplicate, true);
   assert.equal(device.writes.length, 0);
+});
+
+// Baliza de reaparición (plan F3c, tarea 4): compra consumible, se puede repetir.
+test('a consumable charges once per transaction and is not an upgrade', () => {
+  assert.deepEqual(SCRAP_CONSUMABLES, {'sector-beacon': {price: 40}});
+  const device = memory(), log = ledger(device), run = start(log); fund(log, run.runId);
+  const bought = log.buyConsumable({transactionId: 'beacon:S1_GAIA:1', sku: 'sector-beacon'});
+  assert.equal(bought.ok, true);
+  assert.equal(bought.price, 40);
+  assert.equal(log.getBalance(), 14);
+  assert.deepEqual(bought.state.upgrades, []);
+  assert.deepEqual(bought.state.purchases, [], 'a consumable never takes an upgrade receipt slot');
+  assert.equal(bought.state.consumableSpent, 40);
+  assert.deepEqual(bought.state.lastConsumable, {id: 'beacon:S1_GAIA:1', sku: 'sector-beacon', price: 40});
+  const again = log.buyConsumable({transactionId: 'beacon:S1_GAIA:1', sku: 'sector-beacon'});
+  assert.equal(again.duplicate, true);
+  assert.equal(again.price, 0);
+  assert.equal(log.getBalance(), 14, 'la misma transacción no cobra dos veces');
+  for (let index = 6; index < 12; index++) log.claimDrop({runId: run.runId, dropId: `stage:2:enemy:${index}`, enemyType: 'scout'});
+  assert.equal(log.buyConsumable({transactionId: 'beacon:S1_GAIA:2', sku: 'sector-beacon'}).ok, true,
+    'otra transacción puede volver a comprarla');
+  assert.equal(log.getBalance(), 28);
+  const reloaded = ledger(device).load();
+  assert.equal(reloaded.ok, true);
+  assert.equal(reloaded.state.spent, 80);
+  assert.notEqual(normalizeScrapRecord(reloaded.state), null);
+  assert.throws(() => log.buyConsumable({transactionId: 'x', sku: 'twin-preparation'}), TypeError);
+  assert.throws(() => log.purchase({transactionId: 'x', sku: 'sector-beacon'}), TypeError);
+});
+
+test('a consumable without funds fails with the missing amount', () => {
+  const device = memory(), log = ledger(device), run = start(log); fund(log, run.runId, 2);
+  const writes = device.writes.length;
+  const result = log.buyConsumable({transactionId: 'beacon:S1_GAIA:1', sku: 'sector-beacon'});
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'insufficient-funds');
+  assert.equal(result.missing, 22);
+  assert.equal(log.getBalance(), 18);
+  assert.equal(device.writes.length, writes);
+});
+
+// Revisión final F3c: las balizas no agotan el cupo de recibos de mejoras.
+test('hundreds of beacons never block workshop upgrades', () => {
+  const device = memory(), log = ledger(device), run = start(log);
+  for (let index = 0; index < 30; index++) log.claimDrop({runId: run.runId, dropId: `atlas:${index}`, enemyType: 'atlas'});
+  for (let index = 1; index <= 200; index++) {
+    assert.equal(log.buyConsumable({transactionId: `beacon:${index}`, sku: 'sector-beacon'}).ok, true, `beacon ${index}`);
+  }
+  assert.equal(log.purchase({transactionId: 'c9:hull-reinforcement', sku: 'hull-reinforcement'}).ok, true);
+  const reloaded = ledger(device).load();
+  assert.equal(reloaded.ok, true);
+  assert.equal(reloaded.state.consumableSpent, 8000);
+  assert.equal(reloaded.state.balance, 18000 - 8000 - 30);
+});
+
+test('a beacon bought at an older price still loads after the price changes', () => {
+  const record = {...createScrapRecord(), balance: 25, earned: 60, spent: 35,
+    consumableSpent: 35, lastConsumable: {id: 'beacon:salvage-run:1', sku: 'sector-beacon', price: 35}};
+  assert.notEqual(normalizeScrapRecord(record), null);
+  assert.equal(normalizeScrapRecord({...record, consumableSpent: 30}), null, 'the last receipt cannot exceed the consumable spending');
+  assert.equal(normalizeScrapRecord({...record, lastConsumable: null}), null, 'spending without a receipt is invalid');
+  assert.equal(normalizeScrapRecord({...record, lastConsumable: {...record.lastConsumable, sku: 'twin-preparation'}}), null);
+  const old = createScrapRecord(); delete old.consumableSpent; delete old.lastConsumable;
+  assert.deepEqual(normalizeScrapRecord(old), createScrapRecord(), 'saves from before the beacon load unchanged');
 });

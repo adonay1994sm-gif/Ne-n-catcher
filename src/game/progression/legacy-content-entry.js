@@ -4,7 +4,7 @@ export {createChapterScore} from '../audio/chapter-score.js';
 export {createChronosChapterStory, normalizeChronosChapterCheckpoint, CHRONOS_CHAPTER_ROUTE_SECONDS} from '../narrative/chronos-chapter.js';
 export {resolveHullReinforcement} from '../combat/hull-reinforcement.js';
 export {createCompletionJournal} from './completion-journal.js';
-export {SCRAP_ECONOMY_KEY, SCRAP_UPGRADES,
+export {SCRAP_ECONOMY_KEY, SCRAP_UPGRADES, SCRAP_CONSUMABLES,
   createScrapLedger, rewardForEnemy, formatDenominations, classicWorkshopState} from './scrap-economy.js';
 export {createVoyageHazardField, advanceVoyageHazardField} from './voyage-hazards.js';
 export {VOYAGES, PLAYABLE_VOYAGES, getVoyageFicha, getVoyageStageRules, getVoyageStageRulesFor} from './voyages/index.js';
@@ -21,6 +21,7 @@ export {createCh02Animator} from '../animation/ch02-animator.js';
 export {createCh01Animator} from '../animation/ch01-animator.js';
 export {HORDE_RULES, createHordeWave} from '../combat/horde.js';
 export {AIMED_METEOR_RULES, createAimedMeteorRain, advanceAimedMeteorRain} from './aimed-meteors.js';
+export {CH03_RULES, createCh03Satellite, advanceCh03Satellite, ch03HitsShip, hitCh03Satellite} from '../combat/ch03-satellite.js';
 export {getVoyageTransitionPresentation} from '../presentation/voyage-transitions.js';
 export {sectorPlanetPose} from '../presentation/sector-planets.js';
 export {createGuardianAtlas, advanceGuardianAtlas, hitGuardianAtlas, GUARDIAN_ATLAS_RULES} from '../combat/guardian-atlas.js';

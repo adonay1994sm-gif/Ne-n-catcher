@@ -470,3 +470,267 @@ test('a tracker leaves the screen instead of staying behind the ship forever', (
   T.adv(25);
   assert.equal(T.ev('items.includes(window.__r)'), false);
 });
+
+// Plan F3c, tarea 3: CH-03 defiende el tramo 5.
+const ch03Fight = T => { startAt(T, 5); T.ev('DEV.invulnerable=true'); T.adv(9); }; // aparece a los 6 s y entra en 2 s
+
+test('CH-03 appears 6 s into stage 5 and holds the route', () => {
+  const {T} = harness({query: '?dev=1'});
+  ch03Fight(T);
+  assert.equal(T.ev('Boolean(ch03Boss)'), true);
+  const elapsed = T.ev('classicFlightView.stageElapsed');
+  T.adv(20);
+  assert.equal(T.stage(), 5);
+  assert.ok(Math.abs(T.ev('classicFlightView.stageElapsed') - elapsed) < .1, 'the stage clock is held');
+});
+
+test('patrols stop while CH-03 fights', () => {
+  const {T} = harness({query: '?dev=1'});
+  ch03Fight(T);
+  const patrols = T.ev('classicPatrolSequence');
+  T.adv(15);
+  assert.equal(T.ev('classicPatrolSequence'), patrols);
+});
+
+test('beating CH-03 resumes the route and drops scrap', () => {
+  const {T} = harness({query: '?dev=1'});
+  ch03Fight(T);
+  T.ev('NeonCampaign.hitCh03Satellite(ch03Boss, 999)');
+  T.adv(2);
+  assert.equal(T.ev('ch03Boss'), null);
+  assert.equal(T.ev('ch03Beaten'), true);
+  // La chatarra del jefe vuela hacia la nave: o sigue en pantalla o ya se cobró.
+  assert.ok(T.ev("items.some(item=>item.salvagePickup&&item.enemyType==='ch03')||classicSalvageState.activeRun.claimed.some(receipt=>receipt.id==='ch03')"));
+  assert.equal(T.toStage(6), 6);
+});
+
+test('its beam and grid hurt the ship', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(8);
+  T.ev("hullGrace=0;classicHullReserve=0;Object.assign(ch03Boss,{state:'attack',attack:'sweep',stateTime:0,beam:{angle:Math.atan2(player.x-ch03Boss.x,player.y-ch03Boss.y),direction:1,active:true}})");
+  const before = T.hull();
+  T.adv(1 / 60);
+  assert.ok(T.hull() < before, 'the beam hurts');
+  T.ev("hullGrace=0;classicHullReserve=0;const c=Math.floor(player.x/(W/6));Object.assign(ch03Boss,{state:'attack',attack:'grid',beam:null,grid:{columns:6,step:0,safe:(c+3)%6,active:true,time:0}})");
+  const mid = T.hull();
+  T.adv(1 / 60);
+  assert.ok(T.hull() < mid, 'the grid hurts');
+});
+
+test('dying during CH-03 and reviving keeps its damage; retrying restarts at stage 1', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(9);
+  T.ev('NeonCampaign.hitCh03Satellite(ch03Boss, 15)');
+  const hp = T.ev('ch03Boss.hp');
+  assert.ok(hp < 40, 'the hit counted');
+  T.ev('hull=0'); T.finishGame('hull'); T.resumeReward();
+  assert.equal(T.ev('ch03Boss.hp'), hp);
+  T.finishGame('hull'); T.startLevel(0);
+  assert.deepEqual([T.stage(), T.ev('ch03Boss')], [1, null]);
+});
+
+test('CH-03 only fights in the sector', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.toStage(5); T.adv(10);
+  assert.equal(T.ev('ch03Boss'), null);
+});
+
+// Baliza de reaparición (plan F3c, tarea 4): 40 chatarra en la parada de C9.
+const giveScrap = (T, scouts) => T.ev(`for(let i=0;i<${scouts};i++)classicSalvageState=classicSalvageLedger.claimDrop({runId:classicSalvageRunId,dropId:'prueba:'+i,enemyType:'scout'}).state`);
+const offerShown = w => w.document.getElementById('beaconOffer').classList.contains('show');
+// ?dev=1 guarda aparte, con el prefijo neon-dev-v1:.
+const devSave = w => JSON.parse(w.localStorage.getItem(`neon-dev-v1:${KEY}`) || 'null');
+const toService = T => { T.ev('DEV.invulnerable=true'); T.adv(4); };
+
+test('after beating CH-03, C9 offers the beacon', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  assert.equal(offerShown(w), true);
+  assert.equal(T.st().state, 'paused');
+  assert.equal(w.document.getElementById('beaconBuy').textContent, 'COMPRAR · 40 CHATARRA');
+  click(w, 'beaconSkip');
+  assert.deepEqual([offerShown(w), T.st().state], [false, 'playing']);
+});
+
+test('buying it saves the beacon and charges 40 scrap', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  click(w, 'beaconBuy');
+  assert.equal(devSave(w).sectors[1].beacon, true);
+  assert.equal(T.ev('classicSalvageState.balance'), 5);
+  assert.deepEqual([offerShown(w), T.st().state], [false, 'playing']);
+});
+
+test('without enough scrap the button explains it and nothing is charged', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 2); toService(T);
+  const buy = w.document.getElementById('beaconBuy');
+  assert.equal(buy.disabled, true);
+  assert.match(buy.textContent, /FALTAN 22/);
+  T.ev('buySectorBeacon()');
+  assert.equal(T.ev('classicSalvageState.balance'), 18);
+  assert.notEqual(devSave(w).sectors[1]?.beacon, true);
+});
+
+test('with the beacon, dying after stage 6 restarts at stage 6; completing the sector clears it', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  click(w, 'beaconBuy');
+  T.ev('DEV.invulnerable=false');
+  T.toStage(8);
+  T.ev('hull=0'); T.finishGame('hull');
+  assert.match(w.document.getElementById('retry').textContent, /TRAMO 6/);
+  assert.match(w.document.getElementById('supplyStatus').textContent, /baliza/i);
+  T.goHome();
+  assert.match(w.document.getElementById('playSector').textContent, /CON BALIZA/);
+  click(w, 'play');
+  assert.equal(T.stage(), 6);
+  T.toStage(10); T.finish();
+  assert.deepEqual([devSave(w).sectors[1].completed, devSave(w).sectors[1].beacon], [true, false]);
+});
+
+test('the panel is not offered twice or when the beacon is already owned', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  click(w, 'beaconSkip');
+  T.ev('offerSectorBeacon()'); T.adv(2);
+  assert.equal(offerShown(w), false);
+  const owned = harness({query: '?dev=1'});
+  owned.w.localStorage.setItem(`neon-dev-v1:${KEY}`, JSON.stringify({version: 1, unlocked: 1, sectors: {1: {completed: false, stars: 0, beacon: true}}, run: null}));
+  startAt(owned.T, 6); giveScrap(owned.T, 5); toService(owned.T);
+  assert.equal(offerShown(owned.w), false);
+  const early = harness({query: '?dev=1'});
+  startAt(early.T, 4); giveScrap(early.T, 5); early.T.ev('DEV.invulnerable=true'); early.T.toStage(6); early.T.adv(4);
+  assert.equal(offerShown(early.w), false, 'sin vencer al CH-03 en este intento no se ofrece');
+});
+
+// Furia de Atlas (plan F3c, tarea 6): escoltas, drones, rayo y escenario roto.
+const atlasFight = T => { startAt(T, 10); T.ev('DEV.invulnerable=true'); toFinish(T); T.adv(3); };
+const enrage = T => T.ev("Object.assign(atlasBoss,{state:'exposed',vulnerability:true});for(const e of NeonCampaign.hitGuardianAtlas(atlasBoss,atlasBoss.maxHp-Math.floor(atlasBoss.maxHp*.3)).events)consumeAtlasEvent(e)");
+const escorts = T => T.ev("items.filter(item=>item.gaia?.kind==='atlasEscort').length");
+
+test('fury spawns four escorts and never more', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  assert.equal(T.ev('Boolean(atlasBoss)'), true);
+  enrage(T);
+  assert.equal(T.ev('atlasBoss.phase'), 2);
+  assert.equal(escorts(T), 4);
+  T.ev("consumeAtlasEvent({type:'fury',escorts:4})");
+  assert.equal(escorts(T), 4, 'a second fury event does not add more');
+  T.adv(1);
+  assert.ok(escorts(T) <= 4);
+  T.ev('DEV.invulnerable=false;hull=0'); T.finishGame('hull'); T.resumeReward();
+  T.ev("consumeAtlasEvent({type:'fury',escorts:4})");
+  assert.equal(escorts(T), 4, 'reviving never leaves more than four');
+});
+
+test('drones spawn two CH-01', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  const before = T.ev("items.filter(item=>item.classicScout).length");
+  T.ev("consumeAtlasEvent({type:'drones',count:2,x:atlasBoss.x,y:atlasBoss.y})");
+  const drones = T.ev("JSON.stringify(items.filter(item=>item.classicScout&&item.atlasDrone).map(item=>({x:item.x,y:item.y,role:item.salvageRole})))");
+  assert.equal(T.ev("items.filter(item=>item.classicScout).length"), before + 2);
+  for (const drone of JSON.parse(drones)) {
+    assert.equal(drone.role, 'scout');
+    assert.ok(Math.abs(drone.x - T.ev('atlasBoss.x')) < 140 && Math.abs(drone.y - T.ev('atlasBoss.y')) < 140, 'they leave from Atlas');
+  }
+});
+
+test('the beam hurts only inside its half', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  T.ev("DEV.invulnerable=false;player.x=player.target=100;hullGrace=0;classicHullReserve=0;items=items.filter(item=>!item.guardianProjectile)");
+  const start = T.hull();
+  T.ev("consumeAtlasEvent({type:'beam',side:1,x0:W*.55,x1:W,seconds:1.2,damage:26})");
+  T.adv(.1);
+  assert.equal(T.hull(), start, 'the other half is safe');
+  T.ev("atlasBeam=null;hullGrace=0;items=items.filter(item=>!item.guardianProjectile)");
+  T.ev("consumeAtlasEvent({type:'beam',side:-1,x0:0,x1:W*.45,seconds:1.2,damage:26})");
+  T.adv(.1);
+  assert.equal(T.hull(), start - 26);
+  T.ev("hullGrace=0;items=items.filter(item=>!item.guardianProjectile)");
+  T.adv(.3);
+  assert.equal(T.hull(), start - 26, 'one beam hurts once');
+  T.adv(1.2);
+  assert.equal(T.ev('atlasBeam'), null, 'the beam goes out');
+});
+
+test('fury darkens the scene', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  assert.equal(T.ev('atlasFuryScene'), false);
+  enrage(T);
+  assert.equal(T.ev('atlasFuryScene'), true);
+  drawnTexts.length = 0; T.draw();
+  assert.ok(drawnTexts.includes('image:assets/atlas_fury_atlas_v1.webp'), 'the broken-ring sheet');
+  assert.ok(drawnTexts.includes('image:assets/atlas_escorts_atlas_v1.webp'), 'its escorts');
+  T.goHome();
+  assert.equal(T.ev('atlasFuryScene'), false);
+});
+
+// Revisión final F3c (auditor-codigo): un golpe por ataque del CH-03.
+test('CH-03 hurts once per sweep and once per grid step', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(8);
+  T.ev("hullGrace=0;classicHullReserve=0;items=[];const c=Math.floor(player.x/(W/6));Object.assign(ch03Boss,{state:'attack',attack:'grid',stateTime:0,beam:null,grid:{columns:6,step:0,safe:(c+3)%6,active:true,time:0}})");
+  const before = T.hull();
+  T.adv(.45);
+  assert.equal(before - T.hull(), 16, 'one grid step hits once');
+  T.ev("hullGrace=0;items=[];Object.assign(ch03Boss,{state:'attack',attack:'sweep',stateTime:0,grid:null,attacks:ch03Boss.attacks+1,beam:{angle:Math.atan2(player.x-ch03Boss.x,player.y-ch03Boss.y),direction:1,active:true}})");
+  const mid = T.hull();
+  T.adv(.4);
+  assert.equal(mid - T.hull(), 14, 'one sweep hits once');
+});
+
+test('beating CH-03 in stage 5 makes C9 offer the beacon in stage 6', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  ch03Fight(T); giveScrap(T, 5);
+  T.ev('NeonCampaign.hitCh03Satellite(ch03Boss, 999)');
+  T.adv(2);
+  T.toStage(6); T.adv(4);
+  assert.equal(offerShown(w), true);
+});
+
+test('a beam that starts during the hit grace still burns the ship once the grace ends', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T);
+  T.ev("DEV.invulnerable=false;player.x=player.target=100;hullGrace=.3;classicHullReserve=0;items=items.filter(item=>!item.guardianProjectile)");
+  const start = T.hull();
+  T.ev("consumeAtlasEvent({type:'beam',side:-1,x0:0,x1:W*.45,seconds:1.2,damage:26})");
+  T.adv(.1);
+  assert.equal(T.hull(), start, 'no damage during the grace');
+  T.ev("items=items.filter(item=>!item.guardianProjectile)");
+  T.adv(.4);
+  assert.equal(T.hull(), start - 26);
+});
+
+test('leaving to the menu during CH-03 removes the satellite', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(9);
+  assert.equal(T.ev('Boolean(ch03Boss)'), true);
+  T.goHome();
+  assert.equal(T.ev('ch03Boss'), null);
+});
+
+test('Escape on the beacon panel continues without opening the pause menu', () => {
+  const {w, T} = harness({query: '?dev=1'});
+  startAt(T, 6); giveScrap(T, 5); toService(T);
+  w.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+  assert.equal(offerShown(w), false);
+  assert.equal(T.st().state, 'playing');
+  assert.equal(w.document.getElementById('paused').classList.contains('show'), false);
+});
+
+test('in fury the open core is drawn with the core animation, not the closed fury pose', () => {
+  const {T} = harness({query: '?dev=1'});
+  atlasFight(T); enrage(T);
+  T.ev("Object.assign(atlasBoss,{state:'exposed',stateTime:0,vulnerability:true,coreExposure:1})");
+  drawnTexts.length = 0; T.draw();
+  assert.ok(!drawnTexts.includes('image:assets/atlas_fury_atlas_v1.webp'));
+  assert.ok(drawnTexts.some(text => text.startsWith('image:') && text.includes('atlas') && !text.includes('fury') && !text.includes('escort')));
+  T.ev("Object.assign(atlasBoss,{state:'closed',stateTime:0,vulnerability:false,coreExposure:0})");
+  drawnTexts.length = 0; T.draw();
+  assert.ok(drawnTexts.includes('image:assets/atlas_fury_atlas_v1.webp'));
+});

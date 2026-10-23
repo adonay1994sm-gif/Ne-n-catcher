@@ -1,0 +1,189 @@
+{
+  "asset": {
+    "id": "camp-art-s1-ch03",
+    "identity_notes": "Encargo: camp-art-s1-ch03. Se prioriza el modelo exacto del baúl: gris, luces cian/violeta, cuatro cañones diagonales y seis nodos de anillo. El resto del prompt aún describe otro modelo marfil de ocho módulos: se conservan las piezas canónicas y se interpretan ocho puntos de fogonazo sobre salidas existentes. Estados intactos reutilizan el montaje original sin rediseño ni cambio de escala; efectos cálidos separados. Daño y derrota son adaptaciones nativas del mismo maestro. Propuesta revisada por el asistente; sin aprobación artística del usuario.",
+    "kind": "boss",
+    "project": "NEON CRONIUM",
+    "provenance": "adaptation",
+    "reference_files": [
+      "references/exec-96a02be0-130e-432c-94d4-4bf3dfc4a5d9.png",
+      "references/ch03-piece-1.png",
+      "references/ch03-piece-2.png",
+      "references/ch03-piece-3.png",
+      "references/ch03-piece-4.png",
+      "references/ch03-canonical-idle.png",
+      "references/exec-78d20e90-ee9c-48f6-b9f1-ea162866230a.png"
+    ],
+    "version": "1.0.0"
+  },
+  "canvas": {
+    "height": 800,
+    "mode": "RGBA",
+    "padding_px": 0,
+    "pivot": {
+      "x": 400.0,
+      "y": 400.0
+    },
+    "transparency": "required",
+    "width": 800
+  },
+  "clips": [
+    {
+      "durations_ms": [
+        240,
+        240,
+        240
+      ],
+      "frames": [
+        "f000",
+        "f001",
+        "f002"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "barrido"
+    },
+    {
+      "durations_ms": [
+        180,
+        180
+      ],
+      "frames": [
+        "f000",
+        "f003"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "canonazos"
+    },
+    {
+      "durations_ms": [
+        260,
+        260
+      ],
+      "frames": [
+        "f004",
+        "f005"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "rejilla"
+    },
+    {
+      "durations_ms": [
+        350,
+        350
+      ],
+      "frames": [
+        "f006",
+        "f007"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "derrota"
+    }
+  ],
+  "delivery_profile": "delivery",
+  "frames": [
+    {
+      "file": "frames/f000.png",
+      "id": "f000"
+    },
+    {
+      "file": "frames/f001.png",
+      "id": "f001"
+    },
+    {
+      "file": "frames/f002.png",
+      "id": "f002"
+    },
+    {
+      "file": "frames/f003.png",
+      "id": "f003"
+    },
+    {
+      "file": "frames/f004.png",
+      "id": "f004"
+    },
+    {
+      "file": "frames/f005.png",
+      "id": "f005"
+    },
+    {
+      "file": "frames/f006.png",
+      "id": "f006"
+    },
+    {
+      "file": "frames/f007.png",
+      "id": "f007"
+    }
+  ],
+  "integration": {
+    "engine": "",
+    "evidence": [],
+    "status": "not_requested"
+  },
+  "previews": [
+    {
+      "clip": "barrido",
+      "file": "previews/barrido.gif",
+      "format": "GIF"
+    },
+    {
+      "clip": "canonazos",
+      "file": "previews/canonazos.gif",
+      "format": "GIF"
+    },
+    {
+      "clip": "rejilla",
+      "file": "previews/rejilla.gif",
+      "format": "GIF"
+    },
+    {
+      "clip": "derrota",
+      "file": "previews/derrota.gif",
+      "format": "GIF"
+    }
+  ],
+  "publication": {
+    "status": "pending",
+    "urls": []
+  },
+  "review": {
+    "loop": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "not_applicable"
+    },
+    "motion": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "visual": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    }
+  },
+  "schema_version": "2.0",
+  "sheet": {
+    "cell_height": 800,
+    "cell_width": 800,
+    "columns": 4,
+    "file": "spritesheet.png",
+    "frame_order": [
+      "f000",
+      "f001",
+      "f002",
+      "f003",
+      "f004",
+      "f005",
+      "f006",
+      "f007"
+    ],
+    "margin": 0,
+    "rows": 2,
+    "spacing": 0
+  }
+}

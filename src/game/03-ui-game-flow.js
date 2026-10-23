@@ -124,7 +124,7 @@
     // Enemigos de Gaia y hordas no llevan piloto clásico, pero también sueltan chatarra.
     const enemy=target.classicScout||target.gaiaEnemy||target.hordeUnit;
     if(!boss&&((!enemy&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
-    const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
+    const enemyType=boss?(target.salvageRole||"guardian-atlas"):wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
     const stage=classicFlightView?.stageId||`${currentLevel+1}.0`;
@@ -264,6 +264,7 @@
       const selected = classicEquipment.unlocked[(classicEquipment.unlocked.indexOf(classicEquipment.selected)+1)%classicEquipment.unlocked.length];
       if (persistClassicEquipment({...classicEquipment, selected})) { tone(selected === "twin" ? 860 : 650, .12, "triangle", .045); syncClassicFlightHud(); }
     };
+    $("beaconBuy").onclick=()=>buySectorBeacon();$("beaconSkip").onclick=()=>closeSectorBeacon();
     ui.flightInstallTwin.onclick = () => buyClassicC9Upgrade("twin-preparation");
     ui.c9BuyShield.onclick=()=>buyClassicC9Upgrade("hull-reinforcement");
     ui.c9BuyMissiles.onclick=()=>buyClassicC9Upgrade("missile-refill");
@@ -458,6 +459,49 @@
     classicFlight.resolveService(classicFlightEvent);classicFlightView=classicFlight.snapshot();
     signalClassicChapter("c9-departure");
     saveClassicVoyageCheckpoint(classicFlight.exportCheckpoint());hud();
+    offerSectorBeacon();
+  }
+
+  // Baliza de reaparición (plan F3c): se ofrece en la parada de C9 si el CH-03
+  // cayó en este intento y el sector no la tiene. La partida queda en pausa.
+  // El recibo lleva el id de la partida de chatarra: reintentar no cobra dos veces.
+  let sectorBeaconOffered=false;
+  function offerSectorBeacon() {
+    if(!isSectorRun()||!ch03Beaten||sectorBeaconOffered||state!=="playing")return false;
+    if(loadSectorSave().sectors[classicSideVoyage.ficha.sector]?.beacon)return false;
+    sectorBeaconOffered=true;
+    if(typeof resetGameInput==="function")resetGameInput();
+    NeonCampaign.endFlightInput(classicFlightInput);
+    setState("paused");pauseStartedAt=performance.now();
+    const price=NeonCampaign.SCRAP_CONSUMABLES["sector-beacon"].price,balance=classicSalvageState?.balance??0;
+    const buy=$("beaconBuy");
+    buy.disabled=!classicSalvageLedger||balance<price;
+    buy.textContent=balance<price?`FALTAN ${price-balance} CHATARRA`:`COMPRAR · ${price} CHATARRA`;
+    $("beaconStatus").textContent=balance<price?"Recupera restos de las naves enemigas para la próxima vez.":"";
+    overlay(ui.beaconOffer);return true;
+  }
+  function buySectorBeacon() {
+    if(!classicSalvageLedger||!classicSalvageRunId||!isSectorRun())return false;
+    const result=classicSalvageLedger.buyConsumable({transactionId:`beacon:${classicSalvageRunId}`,sku:"sector-beacon"});
+    if(result.state)classicSalvageState=result.state;
+    if(!result.ok) {
+      $("beaconStatus").textContent=result.reason==="insufficient-funds"
+        ? `Faltan ${result.missing} de chatarra.` : "No se ha confirmado el pago. Puedes reintentarlo.";
+      return false;
+    }
+    const sector=classicSideVoyage.ficha.sector;
+    if(!saveSector(NeonCampaign.buyBeacon(loadSectorSave(),sector))) {
+      $("beaconStatus").textContent="Pago guardado. Pulsa otra vez para activar la baliza sin volver a cobrar.";
+      return false;
+    }
+    tone(720,.10,"triangle",.035);updateAmmoHud();
+    closeSectorBeacon();return true;
+  }
+  function closeSectorBeacon() {
+    if(state!=="paused"||!ui.beaconOffer.classList.contains("show"))return;
+    if(typeof resetGameInput==="function")resetGameInput();
+    setState("playing");overlay();last=performance.now();resumeAudio();
+    grantResumeGrace();syncClassicFlightHud();hud();
   }
 
   function resumeClassicVoyageService() {
@@ -714,6 +758,8 @@
 
   function advanceClassicFlight(dt) {
     const introBefore=classicFlightView?.elapsed;
+    // Mientras el subjefe CH-03 vive, la ruta no avanza (plan F3c).
+    if(ch03Holds())return;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
     // Auditoría J05: en un viaje del mapa, con la cuota del tramo cumplida y
     // 20 s jugados, el reloj del tramo corre al triple para no dejar tiempo
@@ -756,7 +802,7 @@
         const text=`${missing===1?"Falta 1":`Faltan ${missing}`} CRONIUM para seguir al siguiente tramo.`;
         showStoryTransmission("N-7",text,4);classicCroniumWaitShown={text,collected};
       }
-      if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
+      if(state==="playing" && !atlasBoss && !ch03Holds() && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
     }
     if(classicFlightView?.routeProgress>=.30 && classicFlightView.routeProgress<.82) {
@@ -870,6 +916,51 @@
     }
   }
 
+  // Subjefe CH-03 del sector 1 (plan F3c): defiende el tramo 5; mientras vive,
+  // la ruta y las patrullas se paran. ch03Beaten: vencido en este intento.
+  let ch03Boss=null,ch03Beaten=false;
+  const CH03_HIT_RADIUS=90;
+  function ch03Holds(){return Boolean(ch03Boss)&&!ch03Boss.resolved;}
+  function showBossHud(name,phase,health,status) {
+    if(!ui.atlasEncounter)return;
+    ui.atlasEncounter.classList.remove("hidden");
+    const title=ui.atlasEncounter.querySelector(".atlas-identity b");
+    if(title&&title.textContent!==name)title.textContent=name;
+    if(ui.atlasPhase.textContent!==phase)ui.atlasPhase.textContent=phase;
+    if(ui.atlasHealth.value!==health)ui.atlasHealth.value=health;
+    if(ui.atlasStatus.textContent!==status)ui.atlasStatus.textContent=status;
+  }
+  function maybeStartCh03() {
+    const view=classicFlightView;
+    if(ch03Boss||ch03Beaten||!isSectorRun()||state!=="playing"||!view)return;
+    if(NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.boss?.id!=="ch03"||view.stageElapsed<6)return;
+    ch03Boss=NeonCampaign.createCh03Satellite({width:W,height:H,seed:view.stageNumber*97});
+    ensureSprite(SPRITES.ch03);ensureSprite(SPRITES.hostileProjectiles2);
+    showStoryTransmission("RED ATLAS","Satélite CH-03 en línea. El anillo de Gaia queda cerrado.",3.4);
+  }
+  function updateCh03Encounter(dt) {
+    maybeStartCh03();
+    if(!ch03Boss)return;
+    NeonCampaign.advanceCh03Satellite(ch03Boss,dt,event=>{
+      if(event.type==="projectile")items.push(gaiaShot({...event,sprite:"orb"}));
+      if(event.type==="warning")combatSound("atlas-charge",ch03Boss.x);
+      if(event.type==="defeated") {
+        ch03Beaten=true;addExplosion(ch03Boss.x,ch03Boss.y,1.4,.9);
+        spawnClassicScrap({x:ch03Boss.x,y:ch03Boss.y,bossSalvage:true,salvageRole:"ch03",salvageDropId:"ch03"});
+        showStoryTransmission("N-7","CH-03 fuera de combate. El anillo se abre: C9 nos espera.",3.4);
+      }
+    });
+    // Un golpe por barrido y por paso de rejilla. Durante la gracia no cuenta,
+    // así el ataque aún puede alcanzar la nave cuando acabe.
+    const damage=NeonCampaign.ch03HitsShip(ch03Boss,{x:player.x,y:player.y,r:30});
+    const hitKey=damage?`${ch03Boss.attacks}:${ch03Boss.attack}:${ch03Boss.grid?.step??0}`:null;
+    if(damage&&hitKey!==ch03Boss.lastHitKey&&hullGrace<=0){ch03Boss.lastHitKey=hitKey;damageShip(damage,player.x,player.y);}
+    if(ch03Boss.resolved){ch03Boss=null;ui.atlasEncounter?.classList.add("hidden");return;}
+    const status=ch03Boss.state==="warning"?"CARGANDO · prepárate para esquivar"
+      :ch03Boss.state==="defeated"?"SATÉLITE ABATIDO":"Dispara al núcleo y esquiva sus láseres.";
+    showBossHud("SATÉLITE CH-03","SUBJEFE",ch03Boss.hp/ch03Boss.maxHp,status);
+  }
+
   // Enemigos de la Guardia de Gaia (plan F3b): Rastreador, Sembrador, Égida y
   // Alfa con su IA de perfiles, minas, bombas en cruz, escudo y marca.
   const GAIA_KINDS=new Set(["tracker","sower","aegis","alpha"]);
@@ -899,7 +990,7 @@
       flightPatrol:true,gaiaEnemy:true,damage:16,r:kind==="alpha"?58:34,hp:rules.hp,maxHp:rules.hp,salvageRole:rules.salvageRole,
       salvageDropId:`${classicFlightView?.stageId||`${currentLevel+1}.0`}:enemy:${classicSalvageEnemySequence++}`,
       gaia:NeonCampaign.createGaiaEnemy({kind,x,y,now:elapsed})});
-    ensureSprite(SPRITES[{tracker:"gaiaTracker",sower:"gaiaSower",aegis:"gaiaAegis",alpha:"gaiaAlpha"}[kind]]);
+    ensureSprite(SPRITES[{tracker:"gaiaTracker",sower:"gaiaSower",aegis:"gaiaAegis",alpha:"gaiaAlpha",atlasEscort:"atlasEscorts"}[kind]]);
     ensureSprite(SPRITES.hostileProjectiles2);
     items.push(item);
     return item;
@@ -944,7 +1035,7 @@
     const allies=items.filter(other=>other.gaiaEnemy||other.classicScout).map(other=>({id:other.id,x:other.x,y:other.y,hp:other.hp??1,maxHp:other.maxHp??1}));
     const tokens=sectorAttackTokens||(gaiaFallbackTokens??=NeonCampaign.createAttackTokens({max:2}));
     NeonCampaign.advanceGaiaEnemy(item,dt,{now:elapsed,player:{x:player.x,y:player.y,hull,reloading:Boolean(classicWeapons)&&classicWeapons.charges<1},
-      bounds:{w:W,h:H},allies,tokens},event=>handleGaiaEvent(item,event));
+      bounds:{w:W,h:H},allies,tokens,anchor:atlasAnchor()},event=>handleGaiaEvent(item,event));
     return true;
   }
   function spawnClassicFlightPatrol(role="scout") {
@@ -1022,6 +1113,14 @@
         const t=length?clamp(((atlasBoss.x-(shot.previousX??shot.x))*dx+(atlasBoss.y-(shot.previousY??shot.y))*dy)/length,0,1):0;
         resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage,weapon:shot.weapon,
           impactX:(shot.previousX??shot.x)+dx*t,impactY:(shot.previousY??shot.y)+dy*t});
+      }
+    }
+    if(ch03Boss&&ch03Boss.state!=="defeated") {
+      for(const shot of [...classicWeapons.projectiles]) {
+        if(squaredDistanceToSegment(ch03Boss.x,ch03Boss.y,shot.previousX??shot.x,shot.previousY??shot.y,shot.x,shot.y)>(CH03_HIT_RADIUS+shot.radius)**2)continue;
+        const contact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,"ch03");
+        if(!contact.accepted)continue;
+        if(NeonCampaign.hitCh03Satellite(ch03Boss,contact.damage).accepted){addImpactEffect(shot.x,shot.y,.8);combatSound("impact-metal",ch03Boss.x);}
       }
     }
     if(events.some(event=>event.type==="recharged")){tone(520,.035,"sine",.025);updateAmmoHud();}
@@ -1172,7 +1271,7 @@
     runToken += 1;cancelSupplyFailureTimer();
     setState("complete");setClassicFlightHudVisible(false);
     if(classicWeapons){classicWeapons.projectiles.length=0;NeonCampaign.setClassicUnlimitedFire(classicWeapons,false);}
-    atlasBoss=null;ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
+    atlasBoss=null;resetAtlasFury();ui.atlasEncounter?.classList.add("hidden");document.body.classList.remove("atlas-combat");
     hideWarning();hideStoryTransmission();
     ui.hud.classList.add("hidden");ui.powerHud.classList.add("hidden");ui.fire.classList.add("hidden");ui.banner.classList.remove("show");
     // Decisión del propietario (tablero, rev32-ads): un viaje del mapa cuenta
@@ -1243,7 +1342,7 @@
     if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || collected < level().goal || state !== "playing") return false;
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
-    atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});
+    atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});resetAtlasFury();
     // Vida de Atlas según el modo de dificultad (Normal = la de siempre).
     const bossHealth=NeonCampaign.DIFFICULTY_MODES?.[settings.difficulty]?.bossHealth??1;
     if(bossHealth!==1)atlasBoss.hp=atlasBoss.maxHp=Math.round(atlasBoss.maxHp*bossHealth);
@@ -1268,6 +1367,9 @@
   function syncAtlasHud() {
     if (!ui.atlasEncounter) return;
     if (!atlasBoss) return;
+    // El mismo panel muestra al CH-03 (plan F3c): el título vuelve a ser el de Atlas.
+    const title = ui.atlasEncounter.querySelector(".atlas-identity b");
+    if (title && title.textContent !== "GUARDIAN ATLAS") title.textContent = "GUARDIAN ATLAS";
     const health = atlasBoss.hp / atlasBoss.maxHp;
     const phaseLabel = atlasBoss.disabled ? "ENLACE RESTAURADO" : `FASE ${atlasBoss.phase}`;
     if (ui.atlasHealth.value !== health) ui.atlasHealth.value = health;
@@ -1285,21 +1387,62 @@
     if (layoutChanged) positionAtlasArena();
   }
 
+  // Furia de Atlas (plan F3c): escenario roto, rayo Fulminante (su aviso
+  // marca la mitad que va a barrer) y escoltas, nunca más de 4 a la vez.
+  let atlasFuryScene=false,atlasBeam=null,atlasBeamWarning=null;
+  function resetAtlasFury() { atlasFuryScene=false;atlasBeam=null;atlasBeamWarning=null; }
+  function spawnAtlasEscorts(count) {
+    if(!atlasBoss)return;
+    const alive=items.filter(item=>item.gaia?.kind==="atlasEscort").length;
+    for(let k=alive;k<count;k++) {
+      const angle=k*Math.PI/2,radius=atlasAnchor().r*NeonCampaign.GAIA_ENEMY_RULES.atlasEscort.orbit.radius;
+      const item=spawnGaiaEnemy("atlasEscort");
+      item.gaia.angle=angle;item.x=item.baseX=atlasBoss.x+Math.cos(angle)*radius;item.y=atlasBoss.y+Math.sin(angle)*radius;
+    }
+  }
+  function spawnAtlasDrones(event) {
+    for(let k=0;k<event.count;k++) {
+      const item=spawnClassicFlightPatrol("scout");
+      item.atlasDrone=true;item.x=item.baseX=event.x+(k%2?60:-60);item.y=event.y+30;
+    }
+  }
+  // Las escoltas giran a 1,6·r del radio visible de Atlas, no del de colisión:
+  // así quedan por fuera de su silueta.
+  function atlasAnchor() {
+    return atlasBoss&&!atlasBoss.disabled?{x:atlasBoss.x,y:atlasBoss.y,r:(atlasBoss.visualSize||350)*.45}:null;
+  }
+  function updateAtlasBeam(dt) {
+    if(!atlasBeam)return;
+    atlasBeam.remaining-=dt;
+    if(atlasBeam.remaining<=0){atlasBeam=null;return;}
+    // Durante la gracia no cuenta: el rayo aún puede alcanzar la nave cuando acabe.
+    if(!atlasBeam.hit&&hullGrace<=0&&player.x+SHIP_COLLISION_HALF_WIDTH>=atlasBeam.x0&&player.x-SHIP_COLLISION_HALF_WIDTH<=atlasBeam.x1) {
+      atlasBeam.hit=true;damageShip(atlasBeam.damage,player.x,player.y);
+    }
+  }
+
   function consumeAtlasEvent(event) {
     if (event.type === "projectile") items.push(event.projectile);
     if (event.clearProjectiles || event.type === "shutdown") {
       items = items.filter(item => !item.guardianProjectile);
     }
     if (event.type === "volley") combatSound(event.attackTier==="basic"?"enemy-phaser":"enemy-heavy",event.x??atlasBoss.x);
-    // Ruptura Crono: alarma durante la carga y golpe al soltar la cortina. El
-    // aviso no indica dónde quedará el hueco.
+    // Fulminante: alarma durante la carga, que dice qué mitad va a barrer.
     if (event.type === "fulminant") {
+      atlasBeamWarning={x0:event.x0,x1:event.x1};
       combatSound("atlas-charge",atlasBoss.x);flash=Math.max(flash,.22);
-      showStoryTransmission("COMANDANTE IRIA · GAIA","¡Ruptura Crono! Atlas va a barrer la pantalla: busca el hueco.",1.6);
+      showStoryTransmission("COMANDANTE IRIA · GAIA","¡Fulminante! Atlas va a barrer tu mitad: cambia de lado.",1.6);
     }
+    if (event.type === "beam") { atlasBeamWarning=null;atlasBeam={x0:event.x0,x1:event.x1,remaining:event.seconds,damage:event.damage,hit:false}; }
+    if (event.type === "drones") spawnAtlasDrones(event);
+    if (event.type === "fury") { atlasFuryScene=true;ensureSprite(SPRITES.atlasFury);ensureSprite(SPRITES.atlasEscorts);spawnAtlasEscorts(event.escorts); }
     if (event.type === "volley" && event.fulminant) { shake=Math.max(shake,6);cameraKickY=Math.max(cameraKickY,4); }
     if (event.type === "phase") { cameraKickY = Math.max(cameraKickY, 3); tone(180, .3, "triangle", .055); }
     if (event.type === "shutdown") {
+      atlasBeam=atlasBeamWarning=null;
+      // Las escoltas caen con Atlas.
+      for(const escort of items.filter(item=>item.gaia?.kind==="atlasEscort"))addExplosion(escort.x,escort.y,.6,.4);
+      items=items.filter(item=>item.gaia?.kind!=="atlasEscort");
       score += 250;combatSound("atlas-collapse",atlasBoss.x);
       // Explosión del baúl durante el apagado (1,55 s): el completado llega
       // como siempre, ~0,75 s después de que se apague. Sin imagen, como antes.
@@ -1320,6 +1463,7 @@
     // En un viaje del mapa la victoria completa el viaje dentro del evento y
     // retira a Atlas; no queda nada que actualizar en este fotograma.
     if(!atlasBoss)return;
+    updateAtlasBeam(dt * (powers.slow > 0 ? .5 : 1));
     if(atlasBoss.state==="charge"&&previousState!=="charge")combatSound("atlas-charge",atlasBoss.x);
     if (state !== "playing") return;
     atlasFireTimer = Math.max(0, atlasFireTimer - dt);
@@ -1489,7 +1633,7 @@
     ui.campaignPercent.textContent=`${percent}%`;
     ui.campaignFill.style.width=`${percent}%`;
     ui.playLabel.textContent=run?"CONTINUAR":done?"REPETIR":"JUGAR";
-    ui.playSector.textContent=run?`SECTOR 1 · TRAMO ${run.stageNumber}/10`:done?"SECTOR 1 COMPLETADO":"SECTOR 1 · CHRONOS → GAIA";
+    ui.playSector.textContent=run?`SECTOR 1 · TRAMO ${run.stageNumber}/10${save.sectors[1]?.beacon?" · CON BALIZA":""}`:done?"SECTOR 1 COMPLETADO":"SECTOR 1 · CHRONOS → GAIA";
     ui.campaignNodes.innerHTML=Array.from({length:10},(_,index)=>
       `<span class="${index+1<stage?"done ":""}${index+1===stage?"current":""}"></span>`).join("");
     buildLevelGrid();
@@ -1886,6 +2030,8 @@
       : currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     resetSectorAttackTokens();
+    // Un intento que empieza pasado el tramo 5 ya dejó atrás al CH-03.
+    ch03Boss=null;ch03Beaten=Boolean(classicFlightView)&&classicFlightView.stageNumber>5;sectorBeaconOffered=false;
     // La historia del capítulo dura 360 s: en los tramos posteriores del sector no hay.
     classicChapterStory=classicFlight&&fichaHasIntro()&&classicFlightView.elapsed<NeonCampaign.CHRONOS_CHAPTER_ROUTE_SECONDS?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry&&!classicSideVoyage?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;
@@ -1916,7 +2062,7 @@
       ensureSprite(SPRITES.guardianAtlas);
     }
 
-    atlasBoss = null;
+    atlasBoss = null;resetAtlasFury();
     atlasFireTimer = atlasReentryGrace = 0;
     atlasLastStatus = "";
     ui.goal.previousElementSibling.textContent = "NÚCLEOS";
@@ -2037,7 +2183,7 @@
 
   function goHome() {
     if (typeof resetGameInput === "function") resetGameInput();
-    classicSideVoyage=null;
+    classicSideVoyage=null;ch03Boss=null;
     classicTutorial=null;classicFlight=null;classicFlightView=null;classicChapterStory=null;classicChapterView=null;
     syncClassicChapterPresentation();
     if(classicWeapons)classicWeapons.projectiles.length=0;
@@ -2046,7 +2192,7 @@
     runToken += 1;
     cancelSupplyFailureTimer();
     setState("menu");
-    atlasBoss = null;
+    atlasBoss = null;resetAtlasFury();
     ui.atlasEncounter?.classList.add("hidden");
     document.body.classList.remove("atlas-combat");
     ui.hud.classList.add("hidden");
@@ -2193,7 +2339,9 @@
     if(isSectorRun()) {
       recordSectorDeath();
       if(!sectorRevive)ui.reward.classList.add("hidden");
-      $("retry").textContent=`REINTENTAR SECTOR · TRAMO ${NeonCampaign.continuePoint(loadSectorSave())?.stageNumber||1}`;
+      const after=loadSectorSave();
+      $("retry").textContent=`REINTENTAR SECTOR · TRAMO ${NeonCampaign.continuePoint(after)?.stageNumber||1}`;
+      if(after.sectors[classicSideVoyage.ficha.sector]?.beacon)ui.supplyStatus.textContent="Con baliza: vuelves al tramo 6.";
     }
     overlay(ui.over);
     // Tras continuar con un anuncio con recompensa, otra muerte no cuenta de nuevo.

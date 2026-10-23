@@ -8,6 +8,7 @@
       if (shake) ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
     }
     background(t);
+    if (typeof drawAtlasFuryScene === "function") drawAtlasFuryScene();
     drawWarp();
     drawTractorCable();
     for (const gate of gates) drawGate(gate);
@@ -23,7 +24,9 @@
       else drawPower(item);
     }
     if (typeof drawMeteorWarnings === "function") drawMeteorWarnings();
+    if (typeof drawAtlasBeam === "function") drawAtlasBeam();
     drawGuardianAtlas();
+    if (typeof drawCh03Satellite === "function") drawCh03Satellite();
     drawPlayer(t);
     drawShots();
     drawClassicProjectiles();
@@ -327,7 +330,8 @@
       fireManualShot();
     }
     if(event.key.toLowerCase()==="m"&&state==="playing"&&!event.repeat){event.preventDefault();fireClassicMissile();}
-    if (event.key === "Escape") {
+    // Un panel que ya respondió a Escape (02) lo marca con preventDefault.
+    if (event.key === "Escape" && !event.defaultPrevented) {
       resetGameInput();
       state === "paused" ? resumeGame() : pauseGame();
     }

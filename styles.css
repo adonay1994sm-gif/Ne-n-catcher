@@ -1084,3 +1084,6 @@ body.flight-mode :is(.hud small, #bannerSector, .hazard-warning small, .menu-top
   #rotateNotice p{margin:0;font-size:22px;font-weight:750;letter-spacing:.04em}
   #rotateNotice small{max-width:32ch;font-size:14px;color:var(--ui-muted)}
 }
+/* Baliza de reaparición (plan F3c): primera celda de la hoja de la baliza. */
+.beacon-offer-art{display:block;width:96px;height:96px;margin:8px auto 0;background:url(assets/sector_beacon_atlas_v1.webp) 0 0/400% 100% no-repeat;filter:drop-shadow(0 0 14px #67ffe555)}
+.beacon-offer .primary:disabled{opacity:.62;cursor:not-allowed}

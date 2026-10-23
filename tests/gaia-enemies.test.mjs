@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {GAIA_ENEMY_RULES, createGaiaEnemy, advanceGaiaEnemy, advanceMine, advanceCrossBomb} from '../src/game/combat/gaia-enemies.js';
-import {createAttackTokens, requestAttack} from '../src/game/combat/attack-tokens.js';
+import {createAttackTokens, requestAttack, releaseAttack} from '../src/game/combat/attack-tokens.js';
 
 // Plan F3b: enemigos nuevos de Gaia (biblia §3.1) sobre la IA de perfiles.
 const DT = 1 / 60, BOUNDS = {w: 720, h: 1280};
@@ -11,13 +11,13 @@ function spawn(kind, {x = 360, y = 300, id = kind} = {}) {
   return {id, x, y, hp: gaia.hp, maxHp: gaia.maxHp, gaia};
 }
 
-function sim(item, seconds, {player = {x: 360, y: 1050}, tokens = createAttackTokens({max: 2}), allies = [], onStep} = {}) {
+function sim(item, seconds, {player = {x: 360, y: 1050}, tokens = createAttackTokens({max: 2}), allies = [], anchor, onStep} = {}) {
   const events = [], warnings = [];
   let now = 0, wasPending = false;
   for (let frame = 0; frame < Math.round(seconds / DT); frame++) {
     now += DT;
     advanceGaiaEnemy(item, DT, {now, player: {...player, hull: 100, reloading: false}, bounds: BOUNDS,
-      allies: [item, ...allies], tokens}, event => events.push({...event, at: now}));
+      allies: [item, ...allies], tokens, anchor}, event => events.push({...event, at: now}));
     if (item.gaia.pending && !wasPending) warnings.push({at: now, aim: {...item.gaia.aim}, ability: item.gaia.pending});
     wasPending = Boolean(item.gaia.pending);
     onStep?.(now, item);
@@ -170,4 +170,27 @@ test('the tracker overtakes the ship and leaves after three attacks or 12 second
   assert.ok(aboveShip, 'it passes in front of the ship, where it can be shot');
   assert.ok(item.y < -60, `ends above the screen (y=${item.y})`);
   assert.equal(shotsWhileLeaving, 0);
+});
+
+// Plan F3c: escoltas de la furia de Atlas (3 de vida, órbita de 1,6·r, disparo hacia abajo con turno).
+test('atlas escorts circle Atlas and shoot down with a token', () => {
+  const anchor = {x: 360, y: 300, r: 100}, tokens = createAttackTokens({max: 1});
+  const item = spawn('atlasEscort', {x: 360, y: 140});
+  assert.equal(item.hp, 3);
+  assert.equal(GAIA_ENEMY_RULES.atlasEscort.salvageRole, 'scout');
+  assert.ok(requestAttack(tokens, {id: 'rival', bornAt: -1}, 0), 'a rival holds the only turn');
+  const angles = [];
+  const held = sim(item, 4, {tokens, anchor, onStep: (now, enemy) => {
+    if (now > 2) {
+      assert.ok(Math.abs(Math.hypot(enemy.x - anchor.x, enemy.y - anchor.y) - 1.6 * anchor.r) < 12, 'it orbits at 1.6·r');
+      angles.push(Math.atan2(enemy.y - anchor.y, enemy.x - anchor.x));
+    }
+  }});
+  assert.equal(held.events.filter(event => event.type === 'shot').length, 0, 'no shot without a turn');
+  assert.ok(new Set(angles.map(angle => angle.toFixed(1))).size > 5, 'it keeps circling');
+  releaseAttack(tokens, 'rival');
+  const {events, warnings} = sim(item, 6, {tokens, anchor});
+  const shots = events.filter(event => event.type === 'shot');
+  assert.ok(shots.length >= 1 && warnings.length >= 1);
+  assert.ok(shots.every(shot => shot.vx === 0 && shot.vy > 0 && shot.damage > 0), 'it shoots straight down');
 });

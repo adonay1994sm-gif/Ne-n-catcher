@@ -74,6 +74,7 @@ function harness({ready = true, fx = 70, music = 50} = {}) {
     classicWeapons: weapons.createClassicWeapons(), classicSalvageLedger: createScrapLedger({storage}),
     classicSalvageState: null, warpTimer: 0, atlasBoss: null, atlasReentryGrace: 0, atlasFireTimer: 0,
     SPRITES: {atlasVfx: {}, guardianAtlas: {}}, spriteReady: () => true, SHIP_VISUAL: {classicScale: .52},
+    SHIP_COLLISION_HALF_WIDTH: 40,
     cameraKickY: 0, ammo: 20, manualShotCooldown: 0, ui: {}, powers: {slow: 0, shield: 0}, items: [],
     impactEffects: [], EFFECT_LIMITS: {impacts: 32}, elapsed: 0, classicChapterOutroStartedAt: null,
     score: 0, hudScoreTarget: 0, hull: 100, classicHullReserve: 30, classicHullReserveCapacity: 30,
@@ -93,6 +94,8 @@ function harness({ready = true, fx = 70, music = 50} = {}) {
   sandbox.syncAtlasHud = () => {};
   sandbox.signalClassicChapter = () => {};
   sandbox.spawnClassicScrap = item => calls.scrap.push(item);
+  // Atlas v9 (plan F3c): los drones son patrullas CH-01, fuera de este contrato de sonido.
+  sandbox.spawnAtlasDrones = () => {};
   for (const name of ['burst','pulseRing','addImpactEffect','addMissileImpact','hud','animateScoutHit','addExplosion']) {
     sandbox[name] = () => {};
   }

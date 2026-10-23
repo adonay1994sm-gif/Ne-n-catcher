@@ -81,6 +81,7 @@
     paused: $("paused"),
     complete: $("complete"),
     over: $("over"),
+    beaconOffer: $("beaconOffer"),
     sectorMap: $("sectorMap"),
     baseTalk: $("baseTalk"),
     result: $("result"),

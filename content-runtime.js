@@ -21,6 +21,7 @@ var NeonCampaign = (() => {
   var legacy_content_entry_exports = {};
   __export(legacy_content_entry_exports, {
     AIMED_METEOR_RULES: () => AIMED_METEOR_RULES,
+    CH03_RULES: () => CH03_RULES,
     CHRONOS_CHAPTER_ROUTE_SECONDS: () => CHRONOS_CHAPTER_ROUTE_SECONDS,
     CHRONOS_INTRO_TIMELINE: () => CHRONOS_INTRO_TIMELINE,
     CHRONOS_VOYAGE_KEY: () => CHRONOS_VOYAGE_KEY,
@@ -33,6 +34,7 @@ var NeonCampaign = (() => {
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     HORDE_RULES: () => HORDE_RULES,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
+    SCRAP_CONSUMABLES: () => SCRAP_CONSUMABLES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
     SECTORS: () => SECTORS,
@@ -42,6 +44,7 @@ var NeonCampaign = (() => {
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     VOYAGES: () => VOYAGES,
     advanceAimedMeteorRain: () => advanceAimedMeteorRain,
+    advanceCh03Satellite: () => advanceCh03Satellite,
     advanceClassicPursuer: () => advanceClassicPursuer,
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
@@ -60,6 +63,7 @@ var NeonCampaign = (() => {
     buyBeacon: () => buyBeacon,
     calculateFlightBounds: () => calculateFlightBounds,
     canTriggerClassicMissile: () => canTriggerClassicMissile,
+    ch03HitsShip: () => ch03HitsShip,
     classicWeaponSnapshot: () => classicWeaponSnapshot,
     classicWorkshopState: () => classicWorkshopState,
     cometShowerSnapshot: () => cometShowerSnapshot,
@@ -69,6 +73,7 @@ var NeonCampaign = (() => {
     createAttackTokens: () => createAttackTokens,
     createCh01Animator: () => createCh01Animator,
     createCh02Animator: () => createCh02Animator,
+    createCh03Satellite: () => createCh03Satellite,
     createChapterScore: () => createChapterScore,
     createChronosChapterStory: () => createChronosChapterStory,
     createChronosVoyage: () => createChronosVoyage,
@@ -104,6 +109,7 @@ var NeonCampaign = (() => {
     getVoyageStageRulesFor: () => getVoyageStageRulesFor,
     getVoyageTransitionPresentation: () => getVoyageTransitionPresentation,
     guardianAtlasAnimation: () => guardianAtlasAnimation,
+    hitCh03Satellite: () => hitCh03Satellite,
     hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
     moveFlightInput: () => moveFlightInput,
@@ -1309,7 +1315,7 @@ var NeonCampaign = (() => {
     maxPurchaseReceipts: 128,
     maxInvalidBackups: 8
   });
-  var SCRAP_REWARDS = Object.freeze({ raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18 });
+  var SCRAP_REWARDS = Object.freeze({ raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18, ch03: 120 });
   var upgrade = (definition) => Object.freeze({
     ...definition,
     requires: Object.freeze([...definition.requires || []]),
@@ -1401,6 +1407,7 @@ var NeonCampaign = (() => {
       tradeoff: "Mantiene el da\xF1o directo de 2: destaca frente a objetivos alineados."
     })
   });
+  var SCRAP_CONSUMABLES = Object.freeze({ "sector-beacon": Object.freeze({ price: 40 }) });
   var integer = (value) => Number.isSafeInteger(value) && value >= 0;
   var object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
   var identifier = (value) => typeof value === "string" && value.length > 0 && value.length <= 160 && !/[\u0000-\u001f\u007f]/.test(value);
@@ -1441,7 +1448,8 @@ var NeonCampaign = (() => {
     };
   }
   var upgradeName = (sku) => sku === "shield-cell" ? "hull-reinforcement" : sku;
-  var historicalReward = (type, amount) => amount === SCRAP_REWARDS[type] || type === "atlas" && amount === 180;
+  var REWARD_HISTORY = Object.freeze({ atlas: Object.freeze([180]), ch03: Object.freeze([120]) });
+  var historicalReward = (type, amount) => amount === SCRAP_REWARDS[type] || (REWARD_HISTORY[type] || []).includes(amount);
   var operationSequence = (id, prefix) => {
     if (typeof id !== "string" || !id.startsWith(prefix)) return null;
     const tail = id.slice(prefix.length);
@@ -1481,7 +1489,9 @@ var NeonCampaign = (() => {
       missileShotsSpent: 0,
       missileRoundsPurchased: 0,
       missileRefillSequence: 0,
-      lastMissileRefill: null
+      lastMissileRefill: null,
+      consumableSpent: 0,
+      lastConsumable: null
     };
   }
   function normalizeScrapRecord(value) {
@@ -1503,6 +1513,12 @@ var NeonCampaign = (() => {
     if (missileRefillSequence === 0) {
       if (lastMissileRefill !== null) return null;
     } else if (!object(lastMissileRefill) || lastMissileRefill.sequence !== missileRefillSequence || lastMissileRefill.id !== `c9:missiles:${missileRefillSequence}` || !integer(lastMissileRefill.amount) || lastMissileRefill.amount < 1 || lastMissileRefill.amount > 3 || lastMissileRefill.price !== lastMissileRefill.amount * SCRAP_ECONOMY_RULES.missileUnitPrice) return null;
+    const consumableSpent = has(value, "consumableSpent") ? value.consumableSpent : 0;
+    const lastConsumable = has(value, "lastConsumable") ? value.lastConsumable : null;
+    if (!integer(consumableSpent)) return null;
+    if (lastConsumable === null) {
+      if (consumableSpent !== 0) return null;
+    } else if (!object(lastConsumable) || !identifier(lastConsumable.id) || typeof lastConsumable.sku !== "string" || !has(SCRAP_CONSUMABLES, lastConsumable.sku) || !integer(lastConsumable.price) || lastConsumable.price < 1 || lastConsumable.price > consumableSpent) return null;
     const transactionIds = /* @__PURE__ */ new Set(), purchased = /* @__PURE__ */ new Set();
     let spent = 0;
     for (const receipt of value.purchases) {
@@ -1513,7 +1529,7 @@ var NeonCampaign = (() => {
       spent += receipt.price;
     }
     if ([...purchased].some((sku) => SCRAP_UPGRADES[sku].requires.some((required) => !purchased.has(required)))) return null;
-    if (spent + missileRoundsPurchased * SCRAP_ECONOMY_RULES.missileUnitPrice !== value.spent || upgrades.length !== purchased.size || upgrades.some((sku) => !purchased.has(sku))) return null;
+    if (spent + missileRoundsPurchased * SCRAP_ECONOMY_RULES.missileUnitPrice + consumableSpent !== value.spent || upgrades.length !== purchased.size || upgrades.some((sku) => !purchased.has(sku))) return null;
     if (value.activeRun !== null) {
       const run = value.activeRun;
       if (!object(run) || run.sequence !== value.runSequence || run.sequence < 1 || run.id !== `salvage-run:${run.sequence}` || !identifier(run.scope) || !Array.isArray(run.claimed) || run.claimed.length > SCRAP_ECONOMY_RULES.maxDropReceipts) return null;
@@ -1558,7 +1574,9 @@ var NeonCampaign = (() => {
         sequence: lastMissileRefill.sequence,
         amount: lastMissileRefill.amount,
         price: lastMissileRefill.price
-      }
+      },
+      consumableSpent,
+      lastConsumable: lastConsumable === null ? null : { id: lastConsumable.id, sku: lastConsumable.sku, price: lastConsumable.price }
     };
   }
   function createScrapLedger({ storage, key = SCRAP_ECONOMY_KEY } = {}) {
@@ -1793,6 +1811,29 @@ var NeonCampaign = (() => {
       next.purchases.push({ id: transactionId, sku, price });
       return commit(next, loaded.raw, { sku, price, duplicate: false });
     }
+    function buyConsumable({ transactionId, sku } = {}) {
+      if (!identifier(transactionId) || typeof sku !== "string" || !has(SCRAP_CONSUMABLES, sku) || transactionId.startsWith("c9:missiles:")) throw new TypeError("A stable transaction ID and consumable SKU are required");
+      const loaded = readState();
+      if (loaded.error) return loaded.error;
+      if (current.lastConsumable?.id === transactionId) return current.lastConsumable.sku === sku ? success("duplicate", { duplicate: true, sku, price: 0 }) : blocked("transaction-id-conflict");
+      if (current.purchases.some((receipt) => receipt.id === transactionId)) return blocked("transaction-id-conflict");
+      const price = SCRAP_CONSUMABLES[sku].price;
+      if (!Number.isSafeInteger(current.consumableSpent + price)) return blocked("consumable-capacity");
+      if (current.balance < price) return {
+        ok: false,
+        status: "unavailable",
+        reason: "insufficient-funds",
+        price,
+        missing: price - current.balance,
+        state: copy(current)
+      };
+      const next = copy(current);
+      next.balance -= price;
+      next.spent += price;
+      next.consumableSpent += price;
+      next.lastConsumable = { id: transactionId, sku, price };
+      return commit(next, loaded.raw, { sku, price, duplicate: false });
+    }
     return Object.freeze({
       key,
       backupKey,
@@ -1802,6 +1843,7 @@ var NeonCampaign = (() => {
       claimDrop,
       grant: ({ runId, rewardId, enemyType } = {}) => claimDrop({ runId, dropId: rewardId, enemyType }),
       purchase,
+      buyConsumable,
       spendMissile,
       nextMissileShotId: () => current === null ? null : `missile:${current.missileShotsSpent + 1}`,
       nextMissileRefillId: () => current === null ? null : `c9:missiles:${current.missileRefillSequence + 1}`,
@@ -4458,7 +4500,7 @@ var NeonCampaign = (() => {
       if (vx > bankThreshold) return "bankRight";
       return Math.abs(vy) > bankThreshold ? "flight" : "idle";
     }
-    function enter(next) {
+    function enter2(next) {
       state = next;
       elapsedMs = 0;
       eventCursor = 0;
@@ -4481,7 +4523,7 @@ var NeonCampaign = (() => {
           fired: attackFired
         });
       }
-      enter(next);
+      enter2(next);
       return true;
     }
     function update(dt, sample = {}) {
@@ -4501,7 +4543,7 @@ var NeonCampaign = (() => {
         vy = nextVy;
         if (health === 0) request("destroy");
         else if (lostHealth) request("hurt");
-        else if (!animations[state].locked && state !== baseState()) enter(baseState());
+        else if (!animations[state].locked && state !== baseState()) enter2(baseState());
       }
       const emitted = pending;
       pending = [];
@@ -4536,7 +4578,7 @@ var NeonCampaign = (() => {
           elapsedMs = 0;
           eventCursor = 0;
         } else {
-          enter(baseState());
+          enter2(baseState());
         }
       }
       return emitted;
@@ -4847,7 +4889,7 @@ var NeonCampaign = (() => {
     observePlayer(enemy, player, profile2.sampleInterval);
     const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
     enemy.previousHp = hp;
-    const enter = (state) => {
+    const enter2 = (state) => {
       enemy.state = enemy.stage = state;
       enemy.stateAge = 0;
     };
@@ -4884,7 +4926,7 @@ var NeonCampaign = (() => {
       enemy.targetX = laneTarget();
       enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
       enemy.nextFire = enemy.age + profile2.recovery * (1 - 0.18 * enemy.intensity) * (0.65 + nextRandom(enemy) * 0.7);
-      enter("reposition");
+      enter2("reposition");
     };
     const retreat = (reason) => {
       releaseTurn();
@@ -4892,13 +4934,13 @@ var NeonCampaign = (() => {
       enemy.followUp = null;
       enemy.retreatReason = reason;
       enemy.targetX = player.x < enemy.width / 2 ? enemy.width - 56 : 56;
-      enter("retreat");
+      enter2("retreat");
     };
     if (hp <= 0) {
       releaseTurn();
       clearCharge();
       enemy.followUp = null;
-      if (enemy.state !== "destroyed") enter("destroyed");
+      if (enemy.state !== "destroyed") enter2("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
       enemy.intensity = gate ? 0 : Math.min(2, Math.floor(heldFor / profile2.holdSeconds));
@@ -4910,17 +4952,17 @@ var NeonCampaign = (() => {
         reposition();
       }
     }
-    if (enemy.state === "entry" && item.y >= enemy.holdY - 110) enter("brake");
+    if (enemy.state === "entry" && item.y >= enemy.holdY - 110) enter2("brake");
     if (enemy.state === "brake" && Math.abs(item.y - enemy.holdY) <= 32 && Math.abs(item.s) <= 62 && item.x >= enemy.combatMinX && item.x <= enemy.combatMaxX) {
       enemy.combatStartedAt ??= enemy.age;
       enemy.targetX = laneTarget();
       enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
-      enter("track");
+      enter2("track");
     }
     if (enemy.state === "fire" && enemy.stateAge >= 0.34) {
       reposition();
     }
-    if (enemy.state === "reposition" && enemy.age >= enemy.nextFire) enter("track");
+    if (enemy.state === "reposition" && enemy.age >= enemy.nextFire) enter2("track");
     if (enemy.state === "reposition" && enemy.age >= enemy.nextTargetAt) {
       enemy.targetX = laneTarget();
       enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
@@ -4942,7 +4984,7 @@ var NeonCampaign = (() => {
         enemy.chargeStartedAt = enemy.age;
         enemy.chargeSerial++;
         enemy.volley = chooseVolley(enemy, profile2.volleys);
-        enter("charge");
+        enter2("charge");
       }
     }
     if (enemy.state === "charge") {
@@ -5011,7 +5053,7 @@ var NeonCampaign = (() => {
       enemy.fired++;
       enemy.telegraph = 0;
       enemy.attackScheduled = false;
-      enter("fire");
+      enter2("fire");
       if (enemy.volley === "spread") {
         const { spreadAngle, spreadCount } = CLASSIC_PURSUIT_VOLLEY;
         for (let k = 0; k < spreadCount; k++) launch((k - (spreadCount - 1) / 2) * spreadAngle);
@@ -5716,7 +5758,7 @@ var NeonCampaign = (() => {
       if (vx > bankThreshold) return "bankRight";
       return Math.abs(vy) > bankThreshold ? "flight" : "idle";
     }
-    function enter(next) {
+    function enter2(next) {
       state = next;
       elapsedMs = 0;
       eventCursor = 0;
@@ -5739,7 +5781,7 @@ var NeonCampaign = (() => {
           fired: attackFired
         });
       }
-      enter(next);
+      enter2(next);
       return true;
     }
     function update(dt, sample = {}) {
@@ -5759,7 +5801,7 @@ var NeonCampaign = (() => {
         vy = nextVy;
         if (health === 0) request("destroy");
         else if (lostHealth) request("hurt");
-        else if (!animations2[state].locked && state !== baseState()) enter(baseState());
+        else if (!animations2[state].locked && state !== baseState()) enter2(baseState());
       }
       const emitted = pending;
       pending = [];
@@ -5794,7 +5836,7 @@ var NeonCampaign = (() => {
           elapsedMs = 0;
           eventCursor = 0;
         } else {
-          enter(baseState());
+          enter2(baseState());
         }
       }
       return emitted;
@@ -5885,6 +5927,167 @@ var NeonCampaign = (() => {
       emit({ type: "meteor", id: meteor.id, x: meteor.x, y: meteor.y, vx: dx / length * speed, vy: dy / length * speed, damage });
     }
     state.done = state.announced === state.count && state.pending.length === 0;
+  }
+
+  // src/game/combat/ch03-satellite.js
+  var CH03_RULES = Object.freeze({
+    hp: 40,
+    entrySeconds: 2,
+    holdY: 0.24,
+    warning: 0.8,
+    rest: 1.2,
+    defeatSeconds: 1.4,
+    // ±0,5 rad: a la altura de la nave el rayo recorre la pantalla de borde a borde.
+    sweep: Object.freeze({ range: 0.5, speed: 0.3, width: 28, damage: 14 }),
+    ring: Object.freeze({ count: 8, speed: 260, gap: 0.5, tail: 0.3, damage: 12 }),
+    grid: Object.freeze({ columns: 6, steps: 4, warning: 0.7, active: 0.5, damage: 16 })
+  });
+  var ORDER = Object.freeze(["sweep", "ring", "grid"]);
+  function nextRandom3(boss) {
+    boss.rng = boss.rng + 1831565813 >>> 0;
+    let value = Math.imul(boss.rng ^ boss.rng >>> 15, 1 | boss.rng);
+    value ^= value + Math.imul(value ^ value >>> 7, 61 | value);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  }
+  function createCh03Satellite({ width, height, seed = 0 }) {
+    if (![width, height, seed].every(Number.isFinite) || width < 280 || height < 540) throw new RangeError("Invalid CH-03 arena");
+    return {
+      width,
+      height,
+      x: width / 2,
+      y: -120,
+      holdY: height * CH03_RULES.holdY,
+      hp: CH03_RULES.hp,
+      maxHp: CH03_RULES.hp,
+      state: "entry",
+      stateTime: 0,
+      attack: null,
+      attacks: 0,
+      beam: null,
+      grid: null,
+      ringsFired: 0,
+      resolved: false,
+      defeatAnnounced: false,
+      rng: (Math.imul(Math.trunc(seed) >>> 0, 2654435769) ^ 1128804403) >>> 0
+    };
+  }
+  function chooseAttack(boss) {
+    if (boss.attacks < ORDER.length) return ORDER[boss.attacks];
+    const options = ORDER.filter((attack) => attack !== boss.attack);
+    return options[Math.floor(nextRandom3(boss) * options.length)];
+  }
+  function enter(boss, state) {
+    boss.state = state;
+    boss.stateTime = 0;
+  }
+  function startAttack(boss, emit) {
+    enter(boss, "attack");
+    if (boss.attack === "sweep") {
+      const direction = nextRandom3(boss) < 0.5 ? -1 : 1;
+      boss.beam = { angle: -direction * CH03_RULES.sweep.range, direction, active: true };
+    } else if (boss.attack === "ring") {
+      boss.ringsFired = 0;
+      fireRing(boss, emit);
+    } else {
+      boss.grid = {
+        columns: CH03_RULES.grid.columns,
+        step: 0,
+        safe: Math.floor(nextRandom3(boss) * CH03_RULES.grid.columns),
+        active: false,
+        time: 0
+      };
+    }
+  }
+  function fireRing(boss, emit) {
+    const { count, speed, damage } = CH03_RULES.ring, offset = boss.ringsFired * Math.PI / count;
+    for (let k = 0; k < count; k++) {
+      const angle = offset + k * 2 * Math.PI / count;
+      emit({ type: "projectile", x: boss.x, y: boss.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, damage });
+    }
+    boss.ringsFired++;
+  }
+  function endAttack(boss) {
+    boss.beam = null;
+    boss.grid = null;
+    boss.attacks++;
+    enter(boss, "idle");
+  }
+  function advanceAttack(boss, dt, emit) {
+    if (boss.attack === "sweep") {
+      const { range: range2, speed } = CH03_RULES.sweep;
+      boss.beam.angle += boss.beam.direction * speed * dt;
+      if (Math.abs(boss.beam.angle) >= range2 && Math.sign(boss.beam.angle) === boss.beam.direction) endAttack(boss);
+    } else if (boss.attack === "ring") {
+      const { gap, tail } = CH03_RULES.ring;
+      if (boss.ringsFired === 1 && boss.stateTime >= gap) fireRing(boss, emit);
+      if (boss.stateTime >= gap + tail) endAttack(boss);
+    } else {
+      const rules = CH03_RULES.grid, grid = boss.grid;
+      grid.time += dt;
+      if (!grid.active && grid.time >= rules.warning) {
+        grid.active = true;
+        grid.time = 0;
+      } else if (grid.active && grid.time >= rules.active) {
+        grid.step++;
+        if (grid.step >= rules.steps) {
+          endAttack(boss);
+          return;
+        }
+        const step = grid.safe === 0 ? 1 : grid.safe === rules.columns - 1 ? -1 : nextRandom3(boss) < 0.5 ? -1 : 1;
+        grid.safe += step;
+        grid.active = false;
+        grid.time = 0;
+      }
+    }
+  }
+  function advanceCh03Satellite(boss, dt, emit) {
+    if (!(dt > 0) || boss.resolved) return;
+    boss.stateTime += dt;
+    if (boss.state === "entry") {
+      const progress = Math.min(1, boss.stateTime / CH03_RULES.entrySeconds);
+      boss.y = -120 + (boss.holdY + 120) * (1 - (1 - progress) ** 3);
+      if (progress >= 1) enter(boss, "idle");
+    } else if (boss.state === "idle") {
+      if (boss.stateTime >= CH03_RULES.rest) {
+        boss.attack = chooseAttack(boss);
+        enter(boss, "warning");
+        emit({ type: "warning", attack: boss.attack });
+      }
+    } else if (boss.state === "warning") {
+      if (boss.stateTime >= CH03_RULES.warning) startAttack(boss, emit);
+    } else if (boss.state === "attack") advanceAttack(boss, dt, emit);
+    else if (boss.state === "defeated") {
+      if (!boss.defeatAnnounced) {
+        boss.defeatAnnounced = true;
+        emit({ type: "defeated" });
+      }
+      if (boss.stateTime >= CH03_RULES.defeatSeconds) boss.resolved = true;
+    }
+  }
+  function ch03HitsShip(boss, ship) {
+    if (boss.state !== "attack") return 0;
+    if (boss.attack === "sweep" && boss.beam?.active) {
+      const dx = Math.sin(boss.beam.angle), dy = Math.cos(boss.beam.angle);
+      const along = (ship.x - boss.x) * dx + (ship.y - boss.y) * dy;
+      if (along <= 0) return 0;
+      const across = Math.abs((ship.x - boss.x) * dy - (ship.y - boss.y) * dx);
+      return across <= CH03_RULES.sweep.width / 2 + ship.r ? CH03_RULES.sweep.damage : 0;
+    }
+    if (boss.attack === "grid" && boss.grid?.active) {
+      const column = Math.floor(ship.x / (boss.width / boss.grid.columns));
+      return column === boss.grid.safe ? 0 : CH03_RULES.grid.damage;
+    }
+    return 0;
+  }
+  function hitCh03Satellite(boss, damage = 1) {
+    if (!(damage > 0) || boss.state === "entry" || boss.state === "defeated") return { accepted: false, hp: boss.hp };
+    boss.hp = Math.max(0, boss.hp - damage);
+    if (boss.hp === 0) {
+      boss.beam = null;
+      boss.grid = null;
+      enter(boss, "defeated");
+    }
+    return { accepted: true, hp: boss.hp };
   }
 
   // src/game/progression/chronos-flight.js
@@ -6001,9 +6204,12 @@ var NeonCampaign = (() => {
     return value;
   };
   var GUARDIAN_ATLAS_RULES = Object.freeze({
-    version: "guardian-atlas-v8",
+    version: "guardian-atlas-v9",
     maxHp: 96,
     maxDelta: 0.05,
+    // v9 (plan F3c, spec §6.11): furia al 30 % de vida, no al 50 %.
+    furyAt: 0.3,
+    furyEscorts: 4,
     entrySeconds: 2.2,
     closedSeconds: 0.85,
     // v8: ventana de núcleo más corta (antes 3,8 s) y más corta aún en la fase 2.
@@ -6027,33 +6233,33 @@ var NeonCampaign = (() => {
       exposedPhaseTwoSpeed: 38,
       observationSeconds: 0.22
     }),
+    // Tres ataques habituales: cañones gemelos (basic), abanico abierto (medium)
+    // y despliegue de drones (superpower, sin disparos propios: los lanza el juego).
     attacks: Object.freeze({
-      basic: Object.freeze({ chargeSeconds: 0.36, volleyTimes: Object.freeze([0]), damage: 13 }),
-      medium: Object.freeze({ chargeSeconds: 0.52, volleyTimes: Object.freeze([0, 0.34]), damage: 15 }),
-      superpower: Object.freeze({ chargeSeconds: 0.86, volleyTimes: Object.freeze([0, 0.45]), damage: 22 }),
-      // Ataque fulminante: carga larga y visible, un muro de orbes pesados con
-      // un único hueco alcanzable que obliga a moverse.
+      basic: Object.freeze({ chargeSeconds: 0.36, volleyTimes: Object.freeze([0, 0.24]), damage: 13 }),
+      medium: Object.freeze({ chargeSeconds: 0.52, volleyTimes: Object.freeze([0]), damage: 15 }),
+      superpower: Object.freeze({ chargeSeconds: 0.86, volleyTimes: Object.freeze([0]), damage: 0 }),
+      // Fulminante: carga larga y visible, luego un rayo sobre la mitad de la nave.
       fulminant: Object.freeze({ chargeSeconds: 1.05, volleyTimes: Object.freeze([0]), damage: 26 })
     }),
+    twin: Object.freeze({ projectiles: 2, spread: 0.045 }),
+    fan: Object.freeze({ projectiles: 7, spread: 0.7, speed: 360, minGap: 150 }),
+    drones: Object.freeze({ count: 2 }),
+    // El rayo cubre del borde a la nave observada: entre el 45 % y el 50 % del
+    // ancho, así la otra mitad siempre queda libre. everyAttacks cuenta los
+    // ataques normales entre dos Fulminantes (en furia, uno cada 2–3 ataques).
     fulminant: Object.freeze({
-      spacing: 64,
-      gapHalf: 115,
-      phaseTwoGapHalf: 100,
-      speed: 390,
-      phaseTwoSpeed: 440,
-      minPlayerDistance: 170,
+      width: 0.45,
+      maxWidth: 0.5,
+      reach: 40,
+      beamSeconds: 1.2,
       everyAttacks: Object.freeze([3, 5]),
-      phaseTwoEveryAttacks: Object.freeze([2, 4])
+      phaseTwoEveryAttacks: Object.freeze([1, 2])
     }),
-    // Ataques encadenados antes de abrir el núcleo, una vez presentadas las rutinas.
-    chains: Object.freeze({ phaseOneChance: 0.45, phaseTwoMinimum: 1, phaseTwoExtraChance: 0.4 }),
-    patterns: Object.freeze({
-      duelBurst: Object.freeze({ volleyTimes: Object.freeze([0, 0.24]), projectiles: 2 }),
-      staggeredSalvo: Object.freeze({ volleyTimes: Object.freeze([0, 0.25, 0.58]), projectiles: 3 }),
-      flankSalvo: Object.freeze({ volleyTimes: Object.freeze([0, 0.36]), projectiles: 4 }),
-      reactorSweep: Object.freeze({ volleyTimes: Object.freeze([0, 0.34, 0.72]), projectiles: 3 }),
-      reactorPincer: Object.freeze({ volleyTimes: Object.freeze([0, 0.48]), projectiles: 5 })
-    })
+    // Fase 1: tras presentar las rutinas, a veces encadena un ataque más antes de
+    // abrir el núcleo. En furia siempre encadena dos.
+    chains: Object.freeze({ phaseOneChance: 0.45, phaseTwo: 1 }),
+    patterns: Object.freeze({ basic: "twinCannons", medium: "openFan", superpower: "droneLaunch", fulminant: "fulminantBeam" })
   });
   function createGuardianAtlas({
     width = 720,
@@ -6107,7 +6313,6 @@ var NeonCampaign = (() => {
       nextObservationAt: 0,
       lastPattern: null,
       attackDecision: null,
-      previousPatterns: { basic: null, medium: null, superpower: null },
       tacticalManeuver: "patrol",
       attacksSinceSuperpower: 0,
       attacksSinceFulminant: 0,
@@ -6126,7 +6331,7 @@ var NeonCampaign = (() => {
       recordId: "chronos-sabotage-atlas-log"
     };
   }
-  function nextRandom3(boss) {
+  function nextRandom4(boss) {
     let value = boss.seed;
     value ^= value << 13;
     value ^= value >>> 17;
@@ -6136,8 +6341,7 @@ var NeonCampaign = (() => {
   }
   var phaseRules = (boss) => boss.phase === 1 ? GUARDIAN_ATLAS_RULES.phaseOne : GUARDIAN_ATLAS_RULES.phaseTwo;
   var attackRules = (boss) => GUARDIAN_ATLAS_RULES.attacks[boss.attackTier];
-  var patternRules = (boss) => GUARDIAN_ATLAS_RULES.patterns[boss.telegraph?.pattern];
-  var volleyTimes = (boss) => patternRules(boss)?.volleyTimes || attackRules(boss).volleyTimes;
+  var volleyTimes = (boss) => attackRules(boss).volleyTimes;
   function updateCore(boss) {
     boss.vulnerability = boss.state === "exposed" && !boss.disabled;
     boss.coreExposure = boss.state === "exposed" ? 1 : boss.state === "opening" ? clamp10(boss.stateTime / GUARDIAN_ATLAS_RULES.openingSeconds, 0, 1) : boss.state === "closing" ? 1 - clamp10(boss.stateTime / GUARDIAN_ATLAS_RULES.closingSeconds, 0, 1) : 0;
@@ -6179,13 +6383,13 @@ var NeonCampaign = (() => {
     if (tacticalAttack && boss.tacticalManeuver === "flank") {
       boss.motionSide = boss.telegraph.sweepDirection;
     }
-    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom3(boss) * 0.17);
+    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom4(boss) * 0.17);
     const lead = clamp10(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
     const target = exposed ? boss.x + boss.motionSide * flank : tacticalAttack && boss.tacticalManeuver === "withdraw" ? boss.width / 2 + boss.motionSide * space * 0.34 : sample.x + lead + boss.motionSide * flank;
     boss.motionX = clamp10(target, bounds.left, bounds.right);
     const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
     boss.motionY = clamp10(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
-    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom3(boss) * 0.5);
+    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom4(boss) * 0.5);
     boss.motionDecision++;
   }
   function moveAtlas(boss, dt) {
@@ -6221,53 +6425,45 @@ var NeonCampaign = (() => {
   }
   function scheduleFulminant(boss) {
     const [low, high] = boss.phase === 1 ? GUARDIAN_ATLAS_RULES.fulminant.everyAttacks : GUARDIAN_ATLAS_RULES.fulminant.phaseTwoEveryAttacks;
-    boss.nextFulminantAfter = low + Math.floor(nextRandom3(boss) * (high - low + 1));
+    boss.nextFulminantAfter = low + Math.floor(nextRandom4(boss) * (high - low + 1));
   }
   function beginCharge(boss, player, events, chained = false) {
     boss.attackId++;
     boss.phaseAttacks++;
     boss.volley = 0;
     boss.attackClearanceSeconds = 0;
-    const tiers = boss.phase === 1 ? ["basic", "medium", "superpower"] : ["medium", "basic", "superpower"];
     const sample = boss.observation || { x: player.x, y: boss.playerY, vx: 0, at: boss.age };
-    if (boss.phaseAttacks <= 3) {
-      boss.attackTier = tiers[boss.phaseAttacks - 1];
+    const teaching = boss.phase === 1 && boss.phaseAttacks <= 3;
+    if (teaching) {
+      boss.attackTier = ["basic", "medium", "superpower"][boss.phaseAttacks - 1];
       boss.attackDecision = "introduce-routine";
     } else if (boss.attacksSinceFulminant >= boss.nextFulminantAfter) {
       boss.attackTier = "fulminant";
-      boss.attackDecision = "crono-rupture";
+      boss.attackDecision = "fulminant-beam";
     } else if (boss.attacksSinceSuperpower >= 3) {
       boss.attackTier = "superpower";
       boss.attackDecision = "reactor-recharged";
     } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * 0.27) {
-      boss.attackTier = nextRandom3(boss) < 0.7 ? "medium" : "basic";
+      boss.attackTier = nextRandom4(boss) < 0.7 ? "medium" : "basic";
       boss.attackDecision = "intercept-flank";
     } else {
-      boss.attackTier = nextRandom3(boss) < 0.5 ? "medium" : "basic";
+      boss.attackTier = nextRandom4(boss) < 0.5 ? "medium" : "basic";
       boss.attackDecision = "pressure-observed-lane";
     }
     boss.attacksSinceSuperpower = boss.attackTier === "superpower" ? 0 : boss.attacksSinceSuperpower + 1;
     if (boss.attackTier === "fulminant") {
       boss.attacksSinceFulminant = 0;
       scheduleFulminant(boss);
-    } else if (boss.phaseAttacks > 3) boss.attacksSinceFulminant++;
+    } else if (!teaching) boss.attacksSinceFulminant++;
     if (!chained) {
-      const chains = GUARDIAN_ATLAS_RULES.chains;
-      boss.chainRemaining = boss.phase === 2 ? chains.phaseTwoMinimum + (nextRandom3(boss) < chains.phaseTwoExtraChance ? 1 : 0) : boss.phaseAttacks <= 3 ? 0 : nextRandom3(boss) < chains.phaseOneChance ? 1 : 0;
+      boss.chainRemaining = boss.phase === 2 ? GUARDIAN_ATLAS_RULES.chains.phaseTwo : teaching ? 0 : nextRandom4(boss) < GUARDIAN_ATLAS_RULES.chains.phaseOneChance ? 1 : 0;
     }
-    const tier = boss.attackTier;
-    let pattern = tier === "fulminant" ? "cronoRupture" : tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
-    if ((boss.phaseAttacks > 3 || boss.phase === 2) && tier !== "fulminant") {
-      const options = tier === "basic" ? ["duelBurst"] : tier === "medium" ? Math.abs(sample.vx) >= 85 ? ["flankSalvo", "staggeredSalvo"] : ["staggeredSalvo", "flankSalvo"] : ["reactorSweep", "reactorPincer"];
-      const candidates = options.filter((candidate) => candidate !== boss.previousPatterns[tier]);
-      pattern = candidates[Math.floor(nextRandom3(boss) * candidates.length)] || options[0];
-    }
-    boss.previousPatterns[tier] = pattern;
+    const tier = boss.attackTier, pattern = GUARDIAN_ATLAS_RULES.patterns[tier];
     const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp10(sample.vx * 0.28, -100, 100);
     const originY = boss.y + boss.r * 0.7;
     boss.lastPattern = pattern;
     const sweepDirection = sample.vx ? Math.sign(sample.vx) : sample.x < boss.width / 2 ? 1 : -1;
-    boss.tacticalManeuver = tier === "fulminant" ? "withdraw" : pattern === "flankSalvo" || pattern === "staggeredSalvo" ? "flank" : tier === "superpower" ? "withdraw" : "pressure";
+    boss.tacticalManeuver = tier === "fulminant" || tier === "superpower" ? "withdraw" : tier === "medium" ? "flank" : "pressure";
     boss.nextMotionAt = boss.age;
     boss.telegraph = {
       kind: "mechanicalDeployment",
@@ -6289,7 +6485,8 @@ var NeonCampaign = (() => {
       attackId: boss.attackId,
       decision: boss.attackDecision,
       sweepDirection,
-      maneuver: boss.tacticalManeuver
+      maneuver: boss.tacticalManeuver,
+      beam: tier === "fulminant" ? fulminantBeam(boss, sample.x) : null
     };
     transition(boss, "charge", events);
     events.push({ type: "warning", phase: boss.phase, ...boss.telegraph });
@@ -6297,18 +6494,28 @@ var NeonCampaign = (() => {
       type: "fulminant",
       phase: boss.phase,
       attackId: boss.attackId,
-      seconds: attackRules(boss).chargeSeconds
+      seconds: attackRules(boss).chargeSeconds,
+      ...boss.telegraph.beam
     });
   }
+  function fulminantBeam(boss, observedX) {
+    const rule = GUARDIAN_ATLAS_RULES.fulminant, width = boss.width;
+    const side = observedX < width / 2 ? -1 : 1;
+    const reach = clamp10(
+      side < 0 ? observedX + rule.reach : width - observedX + rule.reach,
+      width * rule.width,
+      width * rule.maxWidth
+    );
+    return side < 0 ? { side, x0: 0, x1: reach } : { side, x0: width - reach, x1: width };
+  }
   function projectile(boss, x, y, vx, vy, ordinal, targetX) {
-    const aim = boss.telegraph, heavy = boss.attackTier === "superpower" || boss.attackTier === "fulminant";
+    const aim = boss.telegraph;
     const damage = boss.attackTier === "basic" ? phaseRules(boss).projectileDamage : attackRules(boss).damage;
     return {
       type: "meteor",
       guardianProjectile: true,
       pattern: aim.pattern,
       attackTier: boss.attackTier,
-      heavy,
       attackId: boss.attackId,
       volley: boss.volley,
       projectileId: `${boss.attackId}:${boss.volley}:${ordinal}`,
@@ -6318,7 +6525,7 @@ var NeonCampaign = (() => {
       vx,
       vy,
       s: vy,
-      r: heavy ? 14 : 10,
+      r: 10,
       damage,
       duration: 7,
       life: 7,
@@ -6340,84 +6547,44 @@ var NeonCampaign = (() => {
       maxHp: 1
     };
   }
-  function fireCronoRupture(boss, events, fireTime) {
-    const rule = GUARDIAN_ATLAS_RULES.fulminant, aim = boss.telegraph;
-    const originY = boss.y + boss.r * 0.7;
-    const gapHalf = Math.min(boss.phase === 1 ? rule.gapHalf : rule.phaseTwoGapHalf, boss.width * 0.3);
-    const low = gapHalf + 12, high = boss.width - gapHalf - 12;
-    let gapX = (low + high) / 2, best = -1;
-    for (let attempt = 0; attempt < 6; attempt++) {
-      const candidate = low + nextRandom3(boss) * Math.max(0, high - low);
-      const distance2 = Math.abs(candidate - aim.observedX);
-      if (distance2 >= rule.minPlayerDistance) {
-        gapX = candidate;
-        break;
-      }
-      if (distance2 > best) {
-        best = distance2;
-        gapX = candidate;
-      }
-    }
-    const spacing = Math.min(rule.spacing, (boss.width - 48) / 8);
-    const speed = boss.phase === 1 ? rule.speed : rule.phaseTwoSpeed;
-    let ordinal = 0;
-    for (let x = 24; x <= boss.width - 24 + 1e-9 && ordinal < GUARDIAN_ATLAS_RULES.maxProjectilesPerAttack; x += spacing) {
-      if (Math.abs(x - gapX) < gapHalf) continue;
-      const shot = projectile(boss, x, originY, 0, speed, ordinal++, x);
-      shot.targetY = Math.max(originY + 180, aim.targetY);
-      shot.fulminant = true;
-      boss.attackClearanceSeconds = Math.max(
-        boss.attackClearanceSeconds,
-        fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy
-      );
-      events.push({ type: "projectile", projectile: shot });
-    }
-    events.push({
-      type: "volley",
-      attackId: boss.attackId,
-      phase: boss.phase,
-      attackTier: boss.attackTier,
-      volley: boss.volley,
-      x: boss.x,
-      y: originY,
-      fulminant: true
-    });
-    boss.volley++;
-  }
   function fireVolley(boss, events, fireTime = boss.stateTime) {
-    if (boss.attackTier === "fulminant") return fireCronoRupture(boss, events, fireTime);
-    const aim = boss.telegraph, tier = boss.attackTier, heavy = tier === "superpower";
-    const crossfire = ["crossfire", "flankSalvo", "reactorPincer"].includes(aim.pattern);
-    const originSide = (boss.volley === 0 ? -1 : 1) * (aim.pattern === "crossfire" ? 1 : aim.sweepDirection);
-    const originX = boss.x + (crossfire ? originSide * boss.r * 0.72 : 0);
-    const originY = boss.y + boss.r * 0.7;
-    const targetY = Math.max(originY + 180, aim.targetY);
-    const rake = Math.min(44, (targetY - originY) * 0.09);
-    const sweep = aim.pattern === "staggeredSalvo" ? [-1, 1, 0][boss.volley] * boss.width * 0.065 : aim.pattern === "reactorSweep" ? (boss.volley - 1) * boss.width * 0.09 : aim.pattern === "reactorPincer" ? (boss.volley === 0 ? -1 : 1) * boss.width * 0.055 : aim.pattern === "flankSalvo" ? (boss.volley === 0 ? -0.025 : 0.04) * boss.width : aim.pattern === "duelBurst" ? (boss.volley === 0 ? -0.018 : 0.018) * boss.width : 0;
-    const targetX = clamp10(aim.targetX + sweep * aim.sweepDirection + (aim.pattern === "rakingSalvo" ? boss.volley === 0 ? -rake : rake : 0), 24, boss.width - 24);
-    const distance2 = targetY - originY;
-    const direction = Math.atan2(distance2, targetX - originX);
-    const spread2 = heavy ? Math.atan2(boss.width * (boss.width < 440 ? 0.055 : patternRules(boss) ? 0.12 : 0.24), distance2) : aim.pattern === "rakingSalvo" ? 0.035 : 0.045;
-    const count = patternRules(boss)?.projectiles;
-    const offsets = count ? Array.from({ length: count }, (_, index) => (index / (count - 1) * 2 - 1) * spread2) : heavy || tier === "medium" && boss.phase === 2 ? [-spread2, -spread2 / 2, 0, spread2 / 2, spread2] : [-spread2, 0, spread2];
-    const speed = heavy ? boss.phase === 1 ? 300 : 325 : phaseRules(boss).projectileSpeed;
-    for (const [index, offset] of offsets.entries()) {
-      const angle = direction + offset;
-      const shot = projectile(
-        boss,
-        originX,
-        originY,
-        Math.cos(angle) * speed,
-        Math.sin(angle) * speed,
-        index,
-        targetX
+    const aim = boss.telegraph, tier = boss.attackTier, originY = boss.y + boss.r * 0.7;
+    if (tier === "superpower") {
+      events.push({ type: "drones", count: GUARDIAN_ATLAS_RULES.drones.count, x: boss.x, y: originY, attackId: boss.attackId });
+    } else if (tier === "fulminant") {
+      const rule = GUARDIAN_ATLAS_RULES.fulminant;
+      boss.attackClearanceSeconds = Math.max(boss.attackClearanceSeconds, fireTime + rule.beamSeconds);
+      events.push({
+        type: "beam",
+        ...aim.beam,
+        seconds: rule.beamSeconds,
+        damage: attackRules(boss).damage,
+        attackId: boss.attackId,
+        x: boss.x,
+        y: originY
+      });
+    } else {
+      const fan = tier === "medium", rule = fan ? GUARDIAN_ATLAS_RULES.fan : GUARDIAN_ATLAS_RULES.twin;
+      const targetY = Math.max(originY + 180, aim.targetY);
+      const targetX = clamp10(
+        aim.targetX + (fan ? 0 : (boss.volley === 0 ? -0.018 : 0.018) * boss.width * aim.sweepDirection),
+        24,
+        boss.width - 24
       );
-      shot.targetY = targetY;
-      boss.attackClearanceSeconds = Math.max(
-        boss.attackClearanceSeconds,
-        fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy
-      );
-      events.push({ type: "projectile", projectile: shot });
+      const aimed2 = Math.atan2(targetY - originY, targetX - boss.x), distance2 = Math.hypot(targetY - originY, targetX - boss.x);
+      const spread2 = !fan || distance2 * Math.tan(2 * rule.spread / (rule.projectiles - 1)) >= rule.minGap ? rule.spread : Math.atan2(boss.width * 0.2, distance2);
+      const direction = fan ? clamp10(aimed2, spread2 + 0.25, Math.PI - spread2 - 0.25) : aimed2;
+      const speed = fan ? rule.speed : phaseRules(boss).projectileSpeed;
+      for (let index = 0; index < rule.projectiles; index++) {
+        const angle = direction + (index / (rule.projectiles - 1) * 2 - 1) * spread2;
+        const shot = projectile(boss, boss.x, originY, Math.cos(angle) * speed, Math.sin(angle) * speed, index, targetX);
+        shot.targetY = targetY;
+        boss.attackClearanceSeconds = Math.max(
+          boss.attackClearanceSeconds,
+          fireTime + (boss.playerY + GUARDIAN_ATLAS_RULES.tailClearance + shot.r - shot.y) / shot.vy
+        );
+        events.push({ type: "projectile", projectile: shot });
+      }
     }
     events.push({
       type: "volley",
@@ -6425,8 +6592,9 @@ var NeonCampaign = (() => {
       phase: boss.phase,
       attackTier: tier,
       volley: boss.volley,
-      x: originX,
-      y: originY
+      x: boss.x,
+      y: originY,
+      fulminant: tier === "fulminant"
     });
     boss.volley++;
   }
@@ -6541,7 +6709,7 @@ var NeonCampaign = (() => {
       boss.telegraph = null;
       transition(boss, "disabled", events);
       events.push({ type: "shutdown", rewardId: "guardian-atlas-access", recordId: boss.recordId });
-    } else if (boss.phase === 1 && boss.hp <= boss.maxHp / 2) {
+    } else if (boss.phase === 1 && boss.hp <= boss.maxHp * GUARDIAN_ATLAS_RULES.furyAt) {
       boss.phase = 2;
       boss.phaseAttacks = 0;
       boss.telegraph = null;
@@ -6550,6 +6718,7 @@ var NeonCampaign = (() => {
       scheduleFulminant(boss);
       transition(boss, "phaseBreak", events);
       events.push({ type: "phase", phase: 2, clearProjectiles: true });
+      events.push({ type: "fury", escorts: GUARDIAN_ATLAS_RULES.furyEscorts });
     }
     return { accepted: true, damage: lost, events };
   }
@@ -7793,9 +7962,21 @@ var NeonCampaign = (() => {
       salvageRole: "interceptor",
       basic: Object.freeze({ cooldown: 1.6, speed: 360, spacing: 28, damage: 12 }),
       unique: Object.freeze({ cooldown: 7, speed: 240, damage: 12 })
+    }),
+    // Escolta de la furia de Atlas (plan F3c): gira a su alrededor a 1,6·r y
+    // dispara hacia abajo cuando tiene turno de ataque.
+    atlasEscort: Object.freeze({
+      profile: "escort",
+      hp: 3,
+      speed: 260,
+      warning: 0.35,
+      firstAttack: 1.4,
+      salvageRole: "scout",
+      orbit: Object.freeze({ radius: 1.6, speed: 0.9 }),
+      basic: Object.freeze({ cooldown: 2.6, speed: 360, damage: 10 })
     })
   });
-  function createGaiaEnemy({ kind, x, y, now = 0 }) {
+  function createGaiaEnemy({ kind, x, y, now = 0, angle = 0 }) {
     const rules = GAIA_ENEMY_RULES[kind];
     if (!rules || ![x, y, now].every(Number.isFinite)) throw new RangeError("Invalid Gaia enemy spawn");
     return {
@@ -7804,14 +7985,15 @@ var NeonCampaign = (() => {
       hp: rules.hp,
       maxHp: rules.hp,
       bornAt: now,
-      cooldowns: { basic: now + rules.firstAttack, unique: now + rules.unique.cooldown * 0.5 },
+      cooldowns: { basic: now + rules.firstAttack, unique: rules.unique ? now + rules.unique.cooldown * 0.5 : Infinity },
       telegraph: 0,
       pending: null,
       aim: null,
       heading: void 0,
       guardId: null,
       attacks: 0,
-      leaving: false
+      leaving: false,
+      angle
     };
   }
   function moveToward(item, target, maxStep) {
@@ -7839,6 +8021,9 @@ var NeonCampaign = (() => {
     } else if (gaia.kind === "sower") {
       if (ability === "basic") emit({ type: "mine", x: item.x, y: item.y + 20 });
       else emit({ type: "cross-bomb", x: item.x, y: item.y, vx: (item.x < ctx.bounds.w / 2 ? -1 : 1) * rules.unique.speed });
+    } else if (gaia.kind === "atlasEscort") {
+      const { speed, damage } = rules.basic;
+      emit({ type: "shot", x: item.x, y: item.y + 24, vx: 0, vy: speed, damage, sprite: "orb" });
     } else if (gaia.kind === "alpha") {
       if (ability === "basic") {
         const { spacing, speed, damage } = rules.basic;
@@ -7883,6 +8068,19 @@ var NeonCampaign = (() => {
         gaia.telegraph = 0;
         gaia.aim = null;
         releaseAttack(ctx.tokens, item.id);
+      }
+      return;
+    }
+    if (rules.orbit) {
+      if (ctx.anchor) {
+        gaia.angle += rules.orbit.speed * dt;
+        const radius = ctx.anchor.r * rules.orbit.radius;
+        moveToward(item, { x: ctx.anchor.x + Math.cos(gaia.angle) * radius, y: ctx.anchor.y + Math.sin(gaia.angle) * radius }, rules.speed * dt);
+      }
+      if (gaia.cooldowns.basic <= ctx.now && requestAttack(ctx.tokens, { id: item.id, bornAt: gaia.bornAt }, ctx.now)) {
+        gaia.pending = "basic";
+        gaia.aim = { x: item.x, y: ctx.bounds.h };
+        gaia.telegraph = 0;
       }
       return;
     }

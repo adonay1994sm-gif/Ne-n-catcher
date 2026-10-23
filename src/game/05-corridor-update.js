@@ -283,6 +283,7 @@
 
     advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
+    if (typeof updateCh03Encounter === "function") updateCh03Encounter(dt);
     if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {

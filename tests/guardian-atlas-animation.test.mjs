@@ -111,7 +111,8 @@ test('a real phase-one hit shows the authored damaged open pose only during its 
 });
 
 test('phase-two impact preserves the split ring instead of restoring the phase-one hurt pose or changing its clock',()=>{
-  const boss=createGuardianAtlas();until(boss,b=>b.state==='exposed');hitGuardianAtlas(boss,boss.maxHp/2);
+  // Furia al 30 % de vida (spec §6.11, plan F3c).
+  const boss=createGuardianAtlas();until(boss,b=>b.state==='exposed');hitGuardianAtlas(boss,boss.maxHp-Math.floor(boss.maxHp*.3));
   assert.equal(boss.state,'phaseBreak');assert.equal(guardianAtlasAnimation(boss).frame,2);
   until(boss,b=>b.state==='exposed');const time=boss.stateTime;
   hitGuardianAtlas(boss,1);const visual=guardianAtlasAnimation(boss);

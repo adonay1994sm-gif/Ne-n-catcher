@@ -1,0 +1,34 @@
+{
+  "fecha": "2026-10-23",
+  "origen": "Generación con GPT que el propietario subió al baúl de assets (neon-cronium-video-referencia.chictide18.chatgpt.site); PNG pasados a WebP sin pérdida e idénticos píxel a píxel.",
+  "empaquetado": "scripts/build-s1-boss-assets.py",
+  "archivos": [
+    {
+      "archivo": "ch03_satelite_v1.webp",
+      "encargo": "camp-art-s1-ch03",
+      "paquete": "camp-art-s1-ch03-1.0.0"
+    },
+    {
+      "archivo": "atlas_furia_v1.webp",
+      "encargo": "camp-art-s1-atlas-furia",
+      "paquete": "camp-art-s1-atlas-furia-1.0.0"
+    },
+    {
+      "archivo": "atlas_escoltas_v1.webp",
+      "encargo": "camp-art-s1-atlas-escoltas",
+      "paquete": "camp-art-s1-atlas-escoltas-1.0.0"
+    },
+    {
+      "archivo": "baliza_v1.webp",
+      "encargo": "camp-art-baliza",
+      "paquete": "camp-art-baliza-1.0.0"
+    }
+  ],
+  "estado": "EN_REVISION; aceptación artística pendiente del propietario",
+  "sha256": {
+    "atlas_escoltas_v1.webp": "c7f69b178e6d92216f4a9a763ebaf3c9037e13859d39d0f3a9dee9e6e7a6aef3",
+    "atlas_furia_v1.webp": "664c92a2380b1df1f38a74b76e197d6b6fa6fdf5ca7bca28242887f76d3a537f",
+    "baliza_v1.webp": "73fabd99ed2f0acb7b491abc5f9ecc84eb1208a83d20661b4587e319be27ea4e",
+    "ch03_satelite_v1.webp": "83268130c6b7ec1f81f387682526aedfe308339c2f43383cd38273ef46b2c011"
+  }
+}
