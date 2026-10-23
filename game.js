@@ -503,6 +503,13 @@
     atlasExplosion: loadSprite("assets/atlas_explosion_v1.webp", false),
     // Peligros del sector 2 (baúl, encargo enc-nucleo): núcleo de lava y mina de plasma.
     lavaCoreMine: loadSprite("assets/lava_core_mine_atlas_v1.webp", false),
+    // Enemigos nuevos de Gaia y proyectiles hostiles (plan F3b): celdas de 192
+    // (Alfa: 4 de 256; proyectiles: 6x4 de 128).
+    gaiaTracker: loadSprite("assets/gaia_tracker_atlas_v1.webp", false),
+    gaiaSower: loadSprite("assets/gaia_sower_atlas_v1.webp", false),
+    gaiaAegis: loadSprite("assets/gaia_aegis_atlas_v1.webp", false),
+    gaiaAlpha: loadSprite("assets/gaia_alpha_atlas_v1.webp", false),
+    hostileProjectiles2: loadSprite("assets/hostile_projectiles_v2.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
@@ -1095,7 +1102,9 @@
     if(target.salvageRunId&&target.salvageRunId!==classicSalvageRunId)return null;
     const boss=target.bossSalvage===true;
     const wreckage=["debris","satellite"].includes(target.type);
-    if(!boss&&((!target.classicScout&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
+    // Enemigos de Gaia y hordas no llevan piloto clásico, pero también sueltan chatarra.
+    const enemy=target.classicScout||target.gaiaEnemy||target.hordeUnit;
+    if(!boss&&((!enemy&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
     const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
@@ -1124,10 +1133,13 @@
     return true;
   }
 
+  // Meteoritos dirigidos del sector (plan F3b): sin pasillo marcado; avisos en el borde.
+  let classicAimedRain=null,classicMeteorWarnings=[];
   function resetClassicCometShower() {
-    classicCometShower=null;classicCometCorridor=null;
-    const view=classicFlightView;
-    if(!view||!NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)return;
+    classicCometShower=null;classicCometCorridor=null;classicAimedRain=null;classicMeteorWarnings=[];
+    const view=classicFlightView,comets=view&&NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets;
+    if(!comets)return;
+    if(comets==="aimed"){classicAimedRain=NeonCampaign.createAimedMeteorRain({seed:view.stageNumber*811,width:W,height:H});return;}
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
       shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
@@ -1632,8 +1644,9 @@
       // real shots keep flying across the boundary. C9 clears its safe dock only.
       classicVoyageStageId=classicFlightView.stageId;
       classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;
-      classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;
+      classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;classicHordeTimer=null;
       classicSalvageEnemySequence=0;resetClassicCometShower();applyClassicSalvageShield();
+      resetSectorAttackTokens();
       saveClassicVoyageCheckpoint(event.checkpoint);
     }
     if(event.type==="stage-start") {
@@ -1779,6 +1792,11 @@
         classicPatrolTimer=gap*(.8+Math.random()*.4);
       }
     }
+    // Hordas de CH-01 en V: la primera a media cadencia y luego cada `every`.
+    if(rules.horde) {
+      classicHordeTimer=(classicHordeTimer??rules.horde.every/2)-dt;
+      if(classicHordeTimer<=0){spawnHordeWave(rules.horde.size);classicHordeTimer=rules.horde.every;}
+    }
     // Campo de meteoritos, restos de naves y satélites con densidad propia de
     // cada tramo y un hueco transitable garantizado. Las pruebas que quieren
     // un tramo vacío lo desactivan con un temporizador muy alto (>=900).
@@ -1801,7 +1819,25 @@
         items.push(threat);
       });
     }
-    if(rules.comets) {
+    if(rules.comets==="aimed"&&classicAimedRain) {
+      const firstWarning=classicAimedRain.announced===0;
+      NeonCampaign.advanceAimedMeteorRain(classicAimedRain,dt,player,event=>{
+        if(event.type==="warning"){
+          if(firstWarning)showStoryTransmission("N-7","Meteoritos hacia nosotros · esquiva",2);
+          classicMeteorWarnings.push({id:event.id,x:event.x,until:elapsed+NeonCampaign.AIMED_METEOR_RULES.warning});
+        }
+        if(event.type==="meteor") {
+          classicMeteorWarnings=classicMeteorWarnings.filter(warning=>warning.id!==event.id);
+          items.push({type:"meteor",flightComet:true,aimedMeteor:true,id:event.id,x:event.x,baseX:event.x,y:event.y,
+            vx:event.vx,vy:event.vy,r:NeonCampaign.AIMED_METEOR_RULES.radius,s:Math.hypot(event.vx,event.vy),damage:event.damage,
+            hp:2,maxHp:2,special:"comet",spriteKey:"comet",rot:Math.atan2(event.vy,event.vx),rs:0,p:0,phase:0,amp:0,alpha:1,life:6});
+        }
+      });
+    }
+    classicMeteorWarnings=classicMeteorWarnings.filter(warning=>warning.until>elapsed);
+    // Mientras dura la lluvia dirigida solo ataca un enemigo a la vez.
+    if(sectorAttackTokens)sectorAttackTokens.max=classicAimedRain&&!classicAimedRain.done?1:sectorAttackTokens.baseMax;
+    if(rules.comets&&rules.comets!=="aimed") {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
       NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
         if(event.type==="warning"){showStoryTransmission("N-7",event.text,2);
@@ -1815,11 +1851,85 @@
     }
   }
 
-  // Enemigos nuevos de Gaia (Rastreador, Sembrador, Égida y Alfa) sin IA propia
-  // todavía: hasta la F3b salen con el aspecto y la táctica de uno actual.
-  const CLASSIC_PATROL_STAND_INS={tracker:"interceptor",sower:"raider",aegis:"scout",alpha:"interceptor"};
+  // Enemigos de la Guardia de Gaia (plan F3b): Rastreador, Sembrador, Égida y
+  // Alfa con su IA de perfiles, minas, bombas en cruz, escudo y marca.
+  const GAIA_KINDS=new Set(["tracker","sower","aegis","alpha"]);
+  let playerMarkedUntil=-Infinity,gaiaFallbackTokens=null;
+  // Hordas (plan F3b): null = la primera oleada del tramo aún no está programada.
+  let classicHordeTimer=null,classicHordeSequence=0;
+  function spawnHordeWave(size) {
+    const wave=classicHordeSequence++,stage=classicFlightView?.stageNumber||0;
+    NeonCampaign.createHordeWave({size,width:W,seed:wave+stage}).forEach((unit,index)=>{
+      const item=createThreat("scout",level());
+      Object.assign(item,{id:`horde:${currentLevel}:${stage}:${wave}:${index}`,x:unit.x,baseX:unit.x,y:unit.y,vx:unit.vx,vy:unit.vy,
+        s:0,rot:0,rs:0,amp:0,classicScout:null,hordeUnit:true,r:30,hp:1,maxHp:1,damage:12,salvageRole:"raider",
+        salvageDropId:`${classicFlightView?.stageId||`${currentLevel+1}.0`}:enemy:${classicSalvageEnemySequence++}`,
+        hordeAnimator:NeonCampaign.createCh01Animator({hp:1,maxHp:1})});
+      items.push(item);
+    });
+    ensureSprite(SPRITES.ch01);
+  }
+  function spawnGaiaEnemy(kind) {
+    const ordinal=classicPatrolSequence++,stage=classicFlightView?.stageNumber||0,rules=NeonCampaign.GAIA_ENEMY_RULES[kind];
+    // El Rastreador entra por abajo, el Sembrador por un lado del carril bajo y los demás por arriba.
+    const x=kind==="sower"?(ordinal%2===0?-30:W+30):W*(ordinal%2===0?.3:.7);
+    const y=kind==="tracker"?H+30:kind==="sower"?H*.78:-70;
+    const item=createThreat("scout",level());
+    // Sin el piloto del explorador antiguo: lo mueve su propia IA.
+    Object.assign(item,{id:`gaia:${currentLevel}:${stage}:${ordinal}`,x,baseX:x,y,s:0,rot:0,rs:0,amp:0,classicScout:null,
+      flightPatrol:true,gaiaEnemy:true,damage:16,r:kind==="alpha"?58:34,hp:rules.hp,maxHp:rules.hp,salvageRole:rules.salvageRole,
+      salvageDropId:`${classicFlightView?.stageId||`${currentLevel+1}.0`}:enemy:${classicSalvageEnemySequence++}`,
+      gaia:NeonCampaign.createGaiaEnemy({kind,x,y,now:elapsed})});
+    ensureSprite(SPRITES[{tracker:"gaiaTracker",sower:"gaiaSower",aegis:"gaiaAegis",alpha:"gaiaAlpha"}[kind]]);
+    ensureSprite(SPRITES.hostileProjectiles2);
+    items.push(item);
+    return item;
+  }
+  function gaiaHazard(fields) {
+    return {type:"meteor",s:0,rot:0,rs:0,p:0,phase:Math.random()*4,amp:0,alpha:1,special:"",hp:1,maxHp:1,...fields};
+  }
+  function spawnGaiaMine(x,y) {
+    const item=gaiaHazard({id:`gaia-mine:${++classicThreatSequence}`,gaiaMine:true,x,baseX:x,y,r:16,
+      damage:NeonCampaign.GAIA_ENEMY_RULES.sower.mine.damage,mine:{x,y,age:0,armed:false}});
+    items.push(item);return item;
+  }
+  function gaiaShot(shot) {
+    return gaiaHazard({classicScoutProjectile:true,tacticsVersion:NeonCampaign.CLASSIC_PURSUIT_VERSION,gaiaSprite:shot.sprite||"orb",
+      x:shot.x,baseX:shot.x,y:shot.y,vx:shot.vx,vy:shot.vy,s:Math.hypot(shot.vx,shot.vy),r:9,life:5,damage:shot.damage});
+  }
+  function handleGaiaEvent(item,event) {
+    if(event.type==="shot"){items.push(gaiaShot(event));combatSound("enemy-phaser",event.x);}
+    if(event.type==="mark"){playerMarkedUntil=elapsed+event.seconds;}
+    if(event.type==="mine")spawnGaiaMine(event.x,event.y);
+    if(event.type==="cross-bomb")items.push(gaiaHazard({id:`gaia-bomb:${++classicThreatSequence}`,gaiaBomb:true,
+      x:event.x,baseX:event.x,y:event.y,r:14,damage:NeonCampaign.GAIA_ENEMY_RULES.sower.bomb.damage,bomb:{x:event.x,y:event.y,vx:event.vx}}));
+    if(event.type==="shield"){
+      const target=items.find(other=>other.id===event.targetId);
+      if(target){target.shieldHits=event.hits;target.shieldBy=item.id;}
+    }
+  }
+  /** Avanza un enemigo, mina o bomba de Gaia; false si desaparece. */
+  function advanceGaiaItem(item,dt) {
+    if(item.gaiaMine) {
+      const result=NeonCampaign.advanceMine(item.mine,dt,player);
+      if(result==="explode"){addExplosion(item.x,item.y,.6,.4);damageShip(item.damage,item.x,item.y);}
+      return result===null;
+    }
+    if(item.gaiaBomb) {
+      const rays=NeonCampaign.advanceCrossBomb(item.bomb,dt,{w:W,h:H});
+      item.x=item.bomb.x;
+      if(!rays)return true;
+      for(const ray of rays)items.push(gaiaShot({...ray,sprite:"orb"}));
+      return false;
+    }
+    const allies=items.filter(other=>other.gaiaEnemy||other.classicScout).map(other=>({id:other.id,x:other.x,y:other.y,hp:other.hp??1,maxHp:other.maxHp??1}));
+    const tokens=sectorAttackTokens||(gaiaFallbackTokens??=NeonCampaign.createAttackTokens({max:2}));
+    NeonCampaign.advanceGaiaEnemy(item,dt,{now:elapsed,player:{x:player.x,y:player.y,hull,reloading:Boolean(classicWeapons)&&classicWeapons.charges<1},
+      bounds:{w:W,h:H},allies,tokens},event=>handleGaiaEvent(item,event));
+    return true;
+  }
   function spawnClassicFlightPatrol(role="scout") {
-    role=CLASSIC_PATROL_STAND_INS[role]||role;
+    if(GAIA_KINDS.has(role))return spawnGaiaEnemy(role);
     const ordinal=classicPatrolSequence++;
     const stage=classicFlightView?.stageNumber||0;
     const interceptor=role==="interceptor"&&spriteReady(SPRITES.ch02);
@@ -1911,6 +2021,8 @@
       if(!intersects)continue;
       const impact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,item.id);
       if(!impact.accepted)continue;
+      // El escudo de la Égida recibe el disparo antes que el casco (plan F3b).
+      if(item.shieldHits>0){item.shieldHits--;addImpactEffect(item.x,item.y,.6);combatSound("impact-metal",item.x);continue;}
       item.hp=Math.max(0,(item.hp??1)-impact.damage);
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);
@@ -1963,6 +2075,14 @@
   // sectores. Un guardado ilegible o inválido cuenta como partida nueva.
   // Revivir con anuncio en el sector: lo prepara finishGame y lo gasta resumeReward.
   let sectorRevive=null,sectorDeathRecorded=false;
+  // Turnos de ataque del tramo (plan F3b): solo en el sector; los viajes
+  // antiguos conservan su escalada.
+  let sectorAttackTokens=null;
+  function resetSectorAttackTokens() {
+    const rules=isSectorRun()&&classicFlightView?NeonCampaign.getVoyageStageRules(classicFlightView.routeId,classicFlightView.stageNumber):null;
+    sectorAttackTokens=rules?NeonCampaign.createAttackTokens({max:rules.attackers??2}):null;
+    if(sectorAttackTokens)sectorAttackTokens.baseMax=sectorAttackTokens.max;
+  }
   // La regla de morir se guarda al estallar la nave (tramo 1, o 6 con baliza),
   // no al abrir la derrota: cerrar la app durante la explosión no la salta.
   function recordSectorDeath() {
@@ -2701,6 +2821,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     hullGrace = 0;
+    playerMarkedUntil = -Infinity;
     classicGuideSeen = null;classicCroniumWaitNotice = null;classicCroniumWaitAt = -Infinity;classicCroniumWaitShown = null;lastResumeGraceAt = -Infinity;
     cancelSupplyFailureTimer();
     startMusic();
@@ -2745,6 +2866,7 @@
     classicFlight=classicSideVoyage ? classicSideVoyage.route.create({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint})
       : currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
+    resetSectorAttackTokens();
     // La historia del capítulo dura 360 s: en los tramos posteriores del sector no hay.
     classicChapterStory=classicFlight&&fichaHasIntro()&&classicFlightView.elapsed<NeonCampaign.CHRONOS_CHAPTER_ROUTE_SECONDS?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry&&!classicSideVoyage?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;
@@ -2759,7 +2881,7 @@
     // A restored entry has already emitted its checkpoint event. Initialize
     // the same encounter grace here instead of waiting for that event to replay.
     classicPatrolTimer=classicFlightView?(classicFlightView.stageNumber===1?4:7):0;
-    classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicHordeTimer=null;classicHordeSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     // Un reintento empieza con un campo nuevo (y su respiro), no con el gastado.
     classicVoyageHazards=null;
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";
@@ -3102,6 +3224,8 @@
     levelOneShockwave = 0;
     hideStoryTransmission();
 
+    // Avisos de meteoritos pendientes: se cancelan al volver (plan F3b).
+    classicMeteorWarnings=[];if(classicAimedRain)classicAimedRain.pending.length=0;
     // Elimina amenazas próximas y todos los residuos visuales de destrucción.
     items = items.filter((item) => !isThreat(item) || item.y < H * 0.38);
     gates = [];
@@ -4235,6 +4359,17 @@
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
+    // Un turno de ataque de quien ya no está (derribado o fuera) se libera ya.
+    const attackTokens = typeof sectorAttackTokens === "undefined" ? null : sectorAttackTokens;
+    if (attackTokens) {
+      const alive = new Set(items.map(item => item.id));
+      for (const id of [...attackTokens.holders.keys(), ...attackTokens.waiting.keys()])
+        if (!alive.has(id)) NeonCampaign.forgetEnemy(attackTokens, id);
+      // Un escudo de Égida sin su Égida desaparece.
+      for (const item of items) if (item.shieldHits > 0 && !alive.has(item.shieldBy)) item.shieldHits = 0;
+    }
+    // Marca del Rastreador: los perseguidores apuntan mejor mientras dura.
+    if (typeof playerMarkedUntil !== "undefined") player.marked = elapsed < playerMarkedUntil;
     for (let index = items.length - 1; index >= 0; index--) {
       const item = items[index];
       // Recovering the final fragment can replace the field with the Atlas
@@ -4253,6 +4388,14 @@
       } else if(item.flightComet) {
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
+      } else if (item.hordeUnit) {
+        // Cruzan en diagonal sin detenerse; salen por un lado o por abajo.
+        item.x += item.vx * dt * scale; item.y += item.vy * dt * scale;
+        item.hordeAnimator.update(dt * scale, {hp: item.hp, maxHp: item.maxHp, vx: item.vx, vy: item.vy});
+        if (item.x < -120 || item.x > W + 120) { items.splice(index, 1); continue; }
+      } else if (item.gaiaEnemy || item.gaiaMine || item.gaiaBomb) {
+        // También desaparece el enemigo que se retira al salir por arriba.
+        if (!advanceGaiaItem(item, dt * scale) || (item.gaia?.leaving && item.y < -80)) { items.splice(index, 1); continue; }
       } else if (item.guardianProjectile) {
         item.previousX=item.x;item.previousY=item.y;
         item.x += item.vx * dt * scale;
@@ -4267,11 +4410,13 @@
       if (item.classicScout) {
         item.classicScout.holdFire=cometShowerActive();
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
-        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
+        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);},
+          attackTokens?{tokens:attackTokens,now:elapsed}:null);
       }
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
-      if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
+      if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile &&
+          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb && !item.hordeUnit && !item.aimedMeteor) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
       if (lv.hazard === "phantom" && isThreat(item) && !item.showerComet) {
@@ -4307,7 +4452,7 @@
         continue;
       }
 
-      if (!item.showerComet && item.y - item.r > H) {
+      if (!item.showerComet && !item.gaiaEnemy && item.y - item.r > H) {
         if (item.type === "energy") {
           combo = 1;
           comboTimer = 0;
@@ -5883,18 +6028,73 @@
     return true;
   }
 
+  // Guardia de Gaia (plan F3b): hojas del baúl. Enemigos en celdas de 192 (4 por
+  // fila; el Alfa, 4 de 256); minas, bombas y disparos en la hoja 6×4 de 128.
+  const GAIA_SHEETS = {tracker: "gaiaTracker", sower: "gaiaSower", aegis: "gaiaAegis", alpha: "gaiaAlpha"};
+  const GAIA_SHOT_CELLS = {orb: 21, missile: 18};
+  function drawGaiaCell(sprite, columns, cell, size) {
+    const side = sprite.naturalWidth / columns;
+    ctx.drawImage(sprite, (cell % columns) * side, Math.floor(cell / columns) * side, side, side, -size / 2, -size / 2, size, size);
+  }
+  function drawGaiaItem(item) {
+    const tick = Math.floor(elapsed * 7 + (item.phase || 0));
+    if (item.gaiaMine || item.gaiaBomb || item.gaiaSprite) {
+      const sheet = SPRITES.hostileProjectiles2;
+      if (!spriteReady(sheet)) return false;
+      const cell = item.gaiaMine ? 12 + (item.mine.armed ? 1 + tick % 2 : 0)
+        : item.gaiaBomb ? 15 + tick % 2 : GAIA_SHOT_CELLS[item.gaiaSprite] + tick % 3;
+      // Amenaza = cálido (DESIGN §9.1).
+      ctx.shadowBlur = 12; ctx.shadowColor = "#ff5b3d";
+      if (item.gaiaSprite) ctx.rotate(Math.atan2(item.vy, item.vx) - Math.PI / 2);
+      drawGaiaCell(sheet, 6, cell, item.r * (item.gaiaSprite ? 4.6 : 4));
+      return true;
+    }
+    if (!item.gaiaEnemy) return false;
+    const {kind, pending, telegraph} = item.gaia, sprite = SPRITES[GAIA_SHEETS[kind]];
+    if (!spriteReady(sprite)) return false;
+    // Fila 1: vuelo; fila 2: aviso de ataque (brillo rojo). Alfa: abierto,
+    // compacto al cargar, dañado por debajo de la mitad.
+    const cell = kind === "alpha" ? (item.hp <= item.maxHp * .5 ? 2 : pending ? 1 : 0)
+      : pending ? 4 + Math.min(3, Math.floor(telegraph * 4)) : tick % 4;
+    ctx.shadowBlur = pending ? 18 : 0; ctx.shadowColor = "#ff3b5c";
+    drawGaiaCell(sprite, 4, cell, item.r * (kind === "alpha" ? 2.6 : 3.2));
+    return true;
+  }
+  // Aviso de meteorito dirigido: cuña roja que parpadea en el borde superior.
+  function drawMeteorWarnings() {
+    if (typeof classicMeteorWarnings === "undefined" || !classicMeteorWarnings.length) return;
+    const top = (classicFlightBounds?.presentationTop || 95) + 18, blink = .55 + .45 * Math.abs(Math.sin(elapsed * 14));
+    ctx.save(); ctx.fillStyle = "#ff4d5e"; ctx.shadowBlur = 16; ctx.shadowColor = "#ff2d45"; ctx.globalAlpha = blink;
+    for (const warning of classicMeteorWarnings) {
+      ctx.beginPath(); ctx.moveTo(warning.x - 18, top); ctx.lineTo(warning.x + 18, top); ctx.lineTo(warning.x, top + 26); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  // Escudo hexagonal de la Égida sobre el aliado que protege (fila 2 de su hoja).
+  function drawGaiaShield(item) {
+    const sprite = SPRITES.gaiaAegis;
+    if (!(item.shieldHits > 0) || !spriteReady(sprite)) return;
+    ctx.save(); ctx.translate(item.x, item.y); ctx.globalAlpha = .85;
+    drawGaiaCell(sprite, 4, item.shieldHits >= 3 ? 5 : item.shieldHits === 2 ? 6 : 7, item.r * 3.4);
+    ctx.restore();
+  }
+
   function drawMeteor(item) {
     ctx.save();
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
+    if (drawGaiaItem(item)) {
+      ctx.restore();
+      return;
+    }
     if (item.classicScoutProjectile) {
       ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
       if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,
         item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
       ctx.restore(); return;
     }
-    if (drawCh01Frame(item.classicScout?.animator)) {
+    if (drawCh01Frame(item.classicScout?.animator || item.hordeAnimator)) {
       ctx.restore();
       return;
     }
@@ -6316,11 +6516,12 @@
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "energy") drawEnergy(item);
-      else if (item.type === "meteor" || item.type === "scout") drawMeteor(item);
+      else if (item.type === "meteor" || item.type === "scout") { drawMeteor(item); if (typeof drawGaiaShield === "function") drawGaiaShield(item); }
       else if (item.type === "debris") drawDebris(item);
       else if (item.type === "satellite") drawSatellite(item);
       else drawPower(item);
     }
+    if (typeof drawMeteorWarnings === "function") drawMeteorWarnings();
     drawGuardianAtlas();
     drawPlayer(t);
     drawShots();

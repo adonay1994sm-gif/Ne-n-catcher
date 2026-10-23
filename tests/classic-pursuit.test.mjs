@@ -326,7 +326,8 @@ test('undamaged enemies remain engaged beyond three attacks with a bounded proje
     const onScreen = shot => Math.min(shot.life, (1280 - shot.y) / shot.vy);
     const activeAt = seconds => shots.filter(shot => shot.at <= seconds && shot.at + onScreen(shot) > seconds).length;
     for (let seconds = 0; seconds < item.classicScout.age; seconds += .1) {
-      assert.ok(activeAt(seconds) <= 6, `${role} cannot saturate the screen with unlimited persistent shots`);
+      // Un abanico abierto (5) más la ráfaga anterior (hasta 3) siguen en pantalla (plan F3b).
+      assert.ok(activeAt(seconds) <= CLASSIC_PURSUIT_VOLLEY.spreadCount + 3, `${role} cannot saturate the screen with unlimited persistent shots`);
     }
     assert.ok(shots.length >= 4 && shots.length <= 40 * CLASSIC_PURSUIT_VOLLEY.maxProjectiles);
     assert.ok(new Set(shots.map(shot => shot.volley)).size >= 2, `${role} varies its volleys`);
@@ -351,8 +352,9 @@ test('v5 opponents mix single, double and spread volleys with irregular waits in
       }
       if (volley[0].volley === 'spread') {
         spreads++;
-        assert.equal(volley.length, 3);
-        assert.ok(new Set(volley.map(shot => shot.vx.toFixed(3))).size === 3, 'a fan has three distinct directions');
+        // Abanico abierto desde la F3b (spec 6.10): cinco disparos.
+        assert.equal(volley.length, CLASSIC_PURSUIT_VOLLEY.spreadCount);
+        assert.ok(new Set(volley.map(shot => shot.vx.toFixed(3))).size === CLASSIC_PURSUIT_VOLLEY.spreadCount, 'a fan has distinct directions');
         for (const shot of volley) assert.ok(shot.vy > 0 && Math.abs(shot.vx / shot.vy) <= CLASSIC_PURSUIT_VOLLEY.cone + 1e-9);
       }
     }

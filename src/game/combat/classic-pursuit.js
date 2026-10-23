@@ -1,4 +1,5 @@
 import {createCh01Animator} from '../animation/ch01-animator.js';
+import {requestAttack, releaseAttack} from './attack-tokens.js';
 
 export const CLASSIC_PURSUIT_VERSION = 'classic-pursuit-v5';
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
@@ -65,7 +66,8 @@ function chooseVolley(enemy, weights) {
 }
 
 // Proyectiles por ataque, separación de la ráfaga doble y apertura del abanico.
-export const CLASSIC_PURSUIT_VOLLEY = Object.freeze({maxProjectiles: 3, doubleGap: .2, spreadAngle: .24, cone: .65});
+// Abanico abierto (spec 6.10, plan F3b): 5 disparos muy separados en un cono mayor.
+export const CLASSIC_PURSUIT_VOLLEY = Object.freeze({maxProjectiles: 5, doubleGap: .2, spreadAngle: .30, spreadCount: 5, cone: 1.2});
 
 /** An encounter policy inside the existing item/update loop; owns no clock or RAF.
  * Aim uses bounded lead from past position samples, locked at weapon deployment.
@@ -100,12 +102,14 @@ export function createClassicPursuer({x, width = 720, height = 1280,
     fired: 0, telegraph: 0, lockedTarget: null, attackScheduled: false,
     chargeSerial: 0, firedSerial: -1, previousHp: null, chargeStartedAt: null,
     rng: (Math.imul(Math.trunc(seed) >>> 0, 0x9E3779B9) ^ 0x51ED270B) >>> 0,
-    volley: 'single', followUp: null, dashing: false,
+    volley: 'single', followUp: null, dashing: false, bornAt: null,
     animator: createCh01Animator({hp: 2, maxHp: 2})
   };
 }
 
-export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
+/** `gate = {tokens, now}` (sector, plan F3b): solo carga quien tiene turno de
+ * ataque y lo devuelve al recolocarse, retirarse o morir; sin escalada. */
+export function advanceClassicPursuer(item, dt, player, spawnProjectile, gate = null) {
   if (!Number.isFinite(dt) || dt < 0) throw new RangeError('Invalid pursuer delta');
   if (typeof spawnProjectile !== 'function') throw new TypeError('Spawn callback required');
   const enemy = item.classicScout;
@@ -120,6 +124,8 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   enemy.baseSpeed ??= Math.max(1, item.s);
   enemy.age += step;
   enemy.stateAge += step;
+  if (gate) enemy.bornAt ??= gate.now;
+  const releaseTurn = () => { if (gate) releaseAttack(gate.tokens, item.id); };
   observePlayer(enemy, player, profile.sampleInterval);
   const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
   enemy.previousHp = hp;
@@ -156,6 +162,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
         observedX + enemy.side * span * .42 + sweep);
   };
   const reposition = () => {
+    releaseTurn();
     clearCharge();
     enemy.followUp = null;
     // No siempre cambia de flanco, a veces acelera, y la espera varía.
@@ -168,6 +175,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     enter('reposition');
   };
   const retreat = reason => {
+    releaseTurn();
     clearCharge();
     enemy.followUp = null;
     enemy.retreatReason = reason;
@@ -178,6 +186,7 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
   };
 
   if (hp <= 0) {
+    releaseTurn();
     clearCharge();
     enemy.followUp = null;
     if (enemy.state !== 'destroyed') enter('destroyed');
@@ -188,7 +197,8 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     // auditoría J01: recarga ×0,64),
     // para que con muchas patrullas haya que decidir a quién derribar primero.
     // Solo se retira si nunca puede atacar (p. ej. nave pegada al marcador).
-    enemy.intensity = Math.min(2, Math.floor(heldFor / profile.holdSeconds));
+    // Con turnos de ataque (sector) no hay escalada: los turnos la sustituyen (spec 6.9).
+    enemy.intensity = gate ? 0 : Math.min(2, Math.floor(heldFor / profile.holdSeconds));
     if ((enemy.fired === 0 && heldFor >= profile.holdSeconds) ||
         (enemy.combatStartedAt === null && enemy.age >= profile.holdSeconds + 8)) {
       retreat('time-limit');
@@ -226,9 +236,11 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
       enemy.nextTargetAt = enemy.age + profile.sampleInterval;
     }
     if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth &&
-        Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
+        Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62 &&
+        (!gate || requestAttack(gate.tokens, {id: item.id, bornAt: enemy.bornAt}, gate.now))) {
       const sample = enemy.observation;
-      enemy.leadOffset = clamp(sample.vx * profile.leadSeconds, -110, 110);
+      // La marca del Rastreador de Gaia (plan F3b) afina el adelanto ×1,5.
+      enemy.leadOffset = clamp(sample.vx * profile.leadSeconds * (player.marked ? 1.5 : 1), -110, 110);
       enemy.observedTarget = Object.freeze({...sample});
       enemy.lockedTarget = Object.freeze({
         x: clamp(sample.x + enemy.leadOffset, 24, enemy.width - 24),
@@ -273,8 +285,10 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     const dx = clamp(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
     // Los laterales del abanico se abren desde el tiro apuntado y se quedan
     // dentro del mismo cono hacia abajo; ninguno persigue tras salir.
+    // El centro del abanico se desplaza lo justo para que quepa entero en el cono.
     const limit = Math.atan(CLASSIC_PURSUIT_VOLLEY.cone);
-    const angle = clamp(Math.atan2(dx, dy) + angleOffset, -limit, limit);
+    const half = enemy.volley === 'spread' ? CLASSIC_PURSUIT_VOLLEY.spreadAngle * (CLASSIC_PURSUIT_VOLLEY.spreadCount - 1) / 2 : 0;
+    const angle = clamp(Math.atan2(dx, dy), -limit + half, limit - half) + angleOffset;
     const speed = profile.projectileSpeed;
     spawnProjectile({
       type: 'meteor', x: item.x, baseX: item.x, y: item.y + 38,
@@ -302,7 +316,8 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile) {
     enemy.attackScheduled = false;
     enter('fire');
     if (enemy.volley === 'spread') {
-      for (const offset of [0, -CLASSIC_PURSUIT_VOLLEY.spreadAngle, CLASSIC_PURSUIT_VOLLEY.spreadAngle]) launch(offset);
+      const {spreadAngle, spreadCount} = CLASSIC_PURSUIT_VOLLEY;
+      for (let k = 0; k < spreadCount; k++) launch((k - (spreadCount - 1) / 2) * spreadAngle);
     } else {
       launch(0);
       if (enemy.volley === 'double') enemy.followUp = enemy.age + CLASSIC_PURSUIT_VOLLEY.doubleGap;

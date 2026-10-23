@@ -18,6 +18,9 @@ export {normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,sync
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../combat/classic-pursuit.js';
 export {createCh02Animator} from '../animation/ch02-animator.js';
+export {createCh01Animator} from '../animation/ch01-animator.js';
+export {HORDE_RULES, createHordeWave} from '../combat/horde.js';
+export {AIMED_METEOR_RULES, createAimedMeteorRain, advanceAimedMeteorRain} from './aimed-meteors.js';
 export {getVoyageTransitionPresentation} from '../presentation/voyage-transitions.js';
 export {sectorPlanetPose} from '../presentation/sector-planets.js';
 export {createGuardianAtlas, advanceGuardianAtlas, hitGuardianAtlas, GUARDIAN_ATLAS_RULES} from '../combat/guardian-atlas.js';
@@ -38,5 +41,6 @@ export {calculateFlightBounds, createRelativeFlightInput, beginFlightInput, move
 export {SECTORS, getSectorFicha} from './sectors/index.js';
 export {createAttackTokens, requestAttack, releaseAttack, forgetEnemy, attackHolders} from '../combat/attack-tokens.js';
 export {ENEMY_AI_PROFILES, decideEnemyIntent, decideEnemyIntents} from '../combat/enemy-ai.js';
+export {GAIA_ENEMY_RULES, createGaiaEnemy, advanceGaiaEnemy, advanceMine, advanceCrossBomb} from '../combat/gaia-enemies.js';
 export {SECTOR_SAVE_KEY, createSectorSave, normalizeSectorSave, startSectorRun, enterStage, buyBeacon,
   useRevive, dieInSector, continuePoint, completeSector} from './sector-save.js';

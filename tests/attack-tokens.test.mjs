@@ -35,3 +35,30 @@ test('asking twice does not take two tokens', () => {
   assert.equal(requestAttack(tokens, {id: 'a', bornAt: 1}, 10.2), true);
   assert.equal(attackHolders(tokens).length, 1);
 });
+
+// Plan F3b, tarea 1: cola por antigüedad. El bucle del juego no pide en orden
+// de edad; un enemigo más viejo que espera turno pasa delante.
+test('an older waiting enemy gets the next free token before a younger one', () => {
+  const tokens = createAttackTokens({max: 1});
+  assert.equal(requestAttack(tokens, {id: 'holder', bornAt: 0}, 1), true);
+  assert.equal(requestAttack(tokens, {id: 'old', bornAt: 2}, 1), false);
+  releaseAttack(tokens, 'holder');
+  assert.equal(requestAttack(tokens, {id: 'young', bornAt: 5}, 1.1), false, 'the old one is still waiting');
+  assert.equal(requestAttack(tokens, {id: 'old', bornAt: 2}, 1.1), true);
+});
+
+test('a waiting entry expires after half a second without asking', () => {
+  const tokens = createAttackTokens({max: 1});
+  requestAttack(tokens, {id: 'holder', bornAt: 0}, 1);
+  requestAttack(tokens, {id: 'old', bornAt: 2}, 1);
+  releaseAttack(tokens, 'holder');
+  assert.equal(requestAttack(tokens, {id: 'young', bornAt: 5}, 1.6), true);
+});
+
+test('forgetting an enemy also removes it from the queue', () => {
+  const tokens = createAttackTokens({max: 1});
+  requestAttack(tokens, {id: 'holder', bornAt: 0}, 1);
+  requestAttack(tokens, {id: 'old', bornAt: 2}, 1);
+  forgetEnemy(tokens, 'old'); releaseAttack(tokens, 'holder');
+  assert.equal(requestAttack(tokens, {id: 'young', bornAt: 5}, 1.1), true);
+});

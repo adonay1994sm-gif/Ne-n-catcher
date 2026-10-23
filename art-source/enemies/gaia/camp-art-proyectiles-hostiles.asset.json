@@ -1,0 +1,335 @@
+{
+  "asset": {
+    "id": "camp-art-proyectiles-hostiles",
+    "identity_notes": "Encargo: camp-art-proyectiles-hostiles. Montaje de arte existente: Cometa Ámbar para escoria, explosión cálida V03, mina/bomba del Sembrador, núcleo de lava para orbe. Aro y misil aislados nuevos; expansión por escala y atenuación de alfa, sin fondo pintado. Propuesta revisada por el asistente; sin aprobación artística del usuario.",
+    "kind": "vfx",
+    "project": "NEON CRONIUM",
+    "provenance": "adaptation",
+    "reference_files": [
+      "references/exec-15aee0eb-3f4c-4a87-ae9e-ad0c3af18a5e.png"
+    ],
+    "version": "1.0.0"
+  },
+  "canvas": {
+    "height": 128,
+    "mode": "RGBA",
+    "padding_px": 0,
+    "pivot": {
+      "x": 64.0,
+      "y": 64.0
+    },
+    "transparency": "required",
+    "width": 128
+  },
+  "clips": [
+    {
+      "durations_ms": [
+        100,
+        100,
+        100
+      ],
+      "frames": [
+        "f000",
+        "f001",
+        "f002"
+      ],
+      "loop": true,
+      "motion_type": "effects",
+      "name": "mortero-vuelo"
+    },
+    {
+      "durations_ms": [
+        100,
+        100,
+        100
+      ],
+      "frames": [
+        "f003",
+        "f004",
+        "f005"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "mortero-estallido"
+    },
+    {
+      "durations_ms": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "frames": [
+        "f006",
+        "f007",
+        "f008",
+        "f009",
+        "f010",
+        "f011"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "aro-calor"
+    },
+    {
+      "durations_ms": [
+        180,
+        180,
+        180
+      ],
+      "frames": [
+        "f012",
+        "f013",
+        "f014"
+      ],
+      "loop": true,
+      "motion_type": "effects",
+      "name": "mina"
+    },
+    {
+      "durations_ms": [
+        120,
+        120,
+        120
+      ],
+      "frames": [
+        "f015",
+        "f016",
+        "f017"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "bomba-cruz"
+    },
+    {
+      "durations_ms": [
+        110,
+        110,
+        110
+      ],
+      "frames": [
+        "f018",
+        "f019",
+        "f020"
+      ],
+      "loop": true,
+      "motion_type": "effects",
+      "name": "misil"
+    },
+    {
+      "durations_ms": [
+        130,
+        130,
+        130
+      ],
+      "frames": [
+        "f021",
+        "f022",
+        "f023"
+      ],
+      "loop": true,
+      "motion_type": "effects",
+      "name": "orbe"
+    }
+  ],
+  "delivery_profile": "delivery",
+  "frames": [
+    {
+      "file": "frames/f000.png",
+      "id": "f000"
+    },
+    {
+      "file": "frames/f001.png",
+      "id": "f001"
+    },
+    {
+      "file": "frames/f002.png",
+      "id": "f002"
+    },
+    {
+      "file": "frames/f003.png",
+      "id": "f003"
+    },
+    {
+      "file": "frames/f004.png",
+      "id": "f004"
+    },
+    {
+      "file": "frames/f005.png",
+      "id": "f005"
+    },
+    {
+      "file": "frames/f006.png",
+      "id": "f006"
+    },
+    {
+      "file": "frames/f007.png",
+      "id": "f007"
+    },
+    {
+      "file": "frames/f008.png",
+      "id": "f008"
+    },
+    {
+      "file": "frames/f009.png",
+      "id": "f009"
+    },
+    {
+      "file": "frames/f010.png",
+      "id": "f010"
+    },
+    {
+      "file": "frames/f011.png",
+      "id": "f011"
+    },
+    {
+      "file": "frames/f012.png",
+      "id": "f012"
+    },
+    {
+      "file": "frames/f013.png",
+      "id": "f013"
+    },
+    {
+      "file": "frames/f014.png",
+      "id": "f014"
+    },
+    {
+      "file": "frames/f015.png",
+      "id": "f015"
+    },
+    {
+      "file": "frames/f016.png",
+      "id": "f016"
+    },
+    {
+      "file": "frames/f017.png",
+      "id": "f017"
+    },
+    {
+      "file": "frames/f018.png",
+      "id": "f018"
+    },
+    {
+      "file": "frames/f019.png",
+      "id": "f019"
+    },
+    {
+      "file": "frames/f020.png",
+      "id": "f020"
+    },
+    {
+      "file": "frames/f021.png",
+      "id": "f021"
+    },
+    {
+      "file": "frames/f022.png",
+      "id": "f022"
+    },
+    {
+      "file": "frames/f023.png",
+      "id": "f023"
+    }
+  ],
+  "integration": {
+    "engine": "",
+    "evidence": [],
+    "status": "not_requested"
+  },
+  "previews": [
+    {
+      "clip": "mortero-vuelo",
+      "file": "previews/mortero-vuelo.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "mortero-estallido",
+      "file": "previews/mortero-estallido.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "aro-calor",
+      "file": "previews/aro-calor.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "mina",
+      "file": "previews/mina.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "bomba-cruz",
+      "file": "previews/bomba-cruz.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "misil",
+      "file": "previews/misil.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "orbe",
+      "file": "previews/orbe.webp",
+      "format": "WEBP"
+    }
+  ],
+  "publication": {
+    "status": "pending",
+    "urls": []
+  },
+  "review": {
+    "loop": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "motion": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "visual": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    }
+  },
+  "schema_version": "2.0",
+  "sheet": {
+    "cell_height": 128,
+    "cell_width": 128,
+    "columns": 6,
+    "file": "spritesheet.png",
+    "frame_order": [
+      "f000",
+      "f001",
+      "f002",
+      "f003",
+      "f004",
+      "f005",
+      "f006",
+      "f007",
+      "f008",
+      "f009",
+      "f010",
+      "f011",
+      "f012",
+      "f013",
+      "f014",
+      "f015",
+      "f016",
+      "f017",
+      "f018",
+      "f019",
+      "f020",
+      "f021",
+      "f022",
+      "f023"
+    ],
+    "margin": 0,
+    "rows": 4,
+    "spacing": 0
+  }
+}

@@ -20,6 +20,7 @@ var NeonCampaign = (() => {
   // src/game/progression/legacy-content-entry.js
   var legacy_content_entry_exports = {};
   __export(legacy_content_entry_exports, {
+    AIMED_METEOR_RULES: () => AIMED_METEOR_RULES,
     CHRONOS_CHAPTER_ROUTE_SECONDS: () => CHRONOS_CHAPTER_ROUTE_SECONDS,
     CHRONOS_INTRO_TIMELINE: () => CHRONOS_INTRO_TIMELINE,
     CHRONOS_VOYAGE_KEY: () => CHRONOS_VOYAGE_KEY,
@@ -28,7 +29,9 @@ var NeonCampaign = (() => {
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
     DIFFICULTY_MODES: () => DIFFICULTY_MODES,
     ENEMY_AI_PROFILES: () => ENEMY_AI_PROFILES,
+    GAIA_ENEMY_RULES: () => GAIA_ENEMY_RULES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
+    HORDE_RULES: () => HORDE_RULES,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
@@ -38,11 +41,15 @@ var NeonCampaign = (() => {
     SHIP_FLEET: () => SHIP_FLEET,
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     VOYAGES: () => VOYAGES,
+    advanceAimedMeteorRain: () => advanceAimedMeteorRain,
     advanceClassicPursuer: () => advanceClassicPursuer,
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
     advanceCometShower: () => advanceCometShower,
+    advanceCrossBomb: () => advanceCrossBomb,
+    advanceGaiaEnemy: () => advanceGaiaEnemy,
     advanceGuardianAtlas: () => advanceGuardianAtlas,
+    advanceMine: () => advanceMine,
     advanceShipBank: () => advanceShipBank,
     advanceShowerComet: () => advanceShowerComet,
     advanceVoyageHazardField: () => advanceVoyageHazardField,
@@ -58,7 +65,9 @@ var NeonCampaign = (() => {
     cometShowerSnapshot: () => cometShowerSnapshot,
     completeSector: () => completeSector,
     continuePoint: () => continuePoint,
+    createAimedMeteorRain: () => createAimedMeteorRain,
     createAttackTokens: () => createAttackTokens,
+    createCh01Animator: () => createCh01Animator,
     createCh02Animator: () => createCh02Animator,
     createChapterScore: () => createChapterScore,
     createChronosChapterStory: () => createChronosChapterStory,
@@ -71,7 +80,9 @@ var NeonCampaign = (() => {
     createCometShower: () => createCometShower,
     createCompletionJournal: () => createCompletionJournal,
     createFlightTutorial: () => createFlightTutorial,
+    createGaiaEnemy: () => createGaiaEnemy,
     createGuardianAtlas: () => createGuardianAtlas,
+    createHordeWave: () => createHordeWave,
     createRelativeFlightInput: () => createRelativeFlightInput,
     createScrapLedger: () => createScrapLedger,
     createSectorSave: () => createSectorSave,
@@ -3263,12 +3274,15 @@ var NeonCampaign = (() => {
     elite: immutable12(["alpha", "aegis", "interceptor", "sower"]),
     gate: immutable12(["interceptor", "tracker", "aegis", "raider"])
   });
-  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null } = {}) => immutable12({
+  var HORDE = immutable12({ every: 14, size: 5 });
+  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null, attackers = 2, horde = null } = {}) => immutable12({
     patrol: patrol && immutable12({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
     hazards: VOYAGE_HAZARD_PROFILES[profile2],
     comets,
     repairAt,
-    boss: boss && immutable12(boss)
+    boss: boss && immutable12(boss),
+    attackers,
+    horde
   });
   var S1_GAIA = immutable12({
     id: "S1",
@@ -3318,15 +3332,15 @@ var NeonCampaign = (() => {
       renamedObjective: "Prueba tu nave en el corredor; C9 sigue disponible en la pausa"
     }),
     encounters: immutable12([
-      encounter11(1, [2, ROSTERS11.escape, 8]),
-      encounter11(2, [3, ROSTERS11.flank, 7]),
-      encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30 }),
-      encounter11(7, [4, ROSTERS11.shield, 6], { comets: true }),
+      encounter11(1, [2, ROSTERS11.escape, 8], { attackers: 1 }),
+      encounter11(2, [3, ROSTERS11.flank, 7], { attackers: 1 }),
+      encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30, horde: HORDE }),
+      encounter11(7, [4, ROSTERS11.shield, 6], { comets: "aimed" }),
       encounter11(4, [2, ROSTERS11.flank, 9], { boss: { id: "ch03", role: "subjefe" } }),
-      encounter11(5, [2, ROSTERS11.escape, 8]),
-      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32 }),
-      encounter11(9, [4, ROSTERS11.elite, 6], { comets: true }),
-      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30 }),
+      encounter11(5, [2, ROSTERS11.escape, 8], { attackers: 3 }),
+      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32, attackers: 3, horde: HORDE }),
+      encounter11(9, [4, ROSTERS11.elite, 6], { comets: "aimed", attackers: 3 }),
+      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30, attackers: 3, horde: HORDE }),
       encounter11(10, [2, ROSTERS11.gate, 8], { boss: { id: "guardian-atlas", role: "jefe" } })
     ]),
     phase(stageIndex) {
@@ -4620,6 +4634,34 @@ var NeonCampaign = (() => {
     scout.telegraph = 0;
   }
 
+  // src/game/combat/attack-tokens.js
+  var WAIT_EXPIRY = 0.5;
+  function createAttackTokens({ max }) {
+    if (!Number.isInteger(max) || max < 1) throw new RangeError("max must be a positive integer");
+    return { max, holders: /* @__PURE__ */ new Map(), waiting: /* @__PURE__ */ new Map() };
+  }
+  function requestAttack(tokens, enemy, now) {
+    const { holders, waiting } = tokens;
+    if (holders.has(enemy.id)) return true;
+    for (const [id, entry] of waiting) if (now - entry.at > WAIT_EXPIRY) waiting.delete(id);
+    const olderWaiting = [...waiting].some(([id, entry]) => id !== enemy.id && entry.bornAt < enemy.bornAt);
+    if (holders.size < tokens.max && !olderWaiting) {
+      waiting.delete(enemy.id);
+      holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
+      return true;
+    }
+    waiting.set(enemy.id, { bornAt: enemy.bornAt, at: now });
+    return false;
+  }
+  function releaseAttack(tokens, enemyId) {
+    tokens.holders.delete(enemyId);
+  }
+  function forgetEnemy(tokens, enemyId) {
+    tokens.holders.delete(enemyId);
+    tokens.waiting.delete(enemyId);
+  }
+  var attackHolders = (tokens) => [...tokens.holders.keys()];
+
   // src/game/combat/classic-pursuit.js
   var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v5";
   var clamp7 = (value, low, high) => Math.max(low, Math.min(high, value));
@@ -4718,7 +4760,7 @@ var NeonCampaign = (() => {
     }
     return "single";
   }
-  var CLASSIC_PURSUIT_VOLLEY = Object.freeze({ maxProjectiles: 3, doubleGap: 0.2, spreadAngle: 0.24, cone: 0.65 });
+  var CLASSIC_PURSUIT_VOLLEY = Object.freeze({ maxProjectiles: 5, doubleGap: 0.2, spreadAngle: 0.3, spreadCount: 5, cone: 1.2 });
   function createClassicPursuer({
     x,
     width = 720,
@@ -4781,10 +4823,11 @@ var NeonCampaign = (() => {
       volley: "single",
       followUp: null,
       dashing: false,
+      bornAt: null,
       animator: createCh01Animator({ hp: 2, maxHp: 2 })
     };
   }
-  function advanceClassicPursuer(item, dt, player, spawnProjectile) {
+  function advanceClassicPursuer(item, dt, player, spawnProjectile, gate = null) {
     if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Invalid pursuer delta");
     if (typeof spawnProjectile !== "function") throw new TypeError("Spawn callback required");
     const enemy = item.classicScout;
@@ -4797,6 +4840,10 @@ var NeonCampaign = (() => {
     enemy.baseSpeed ??= Math.max(1, item.s);
     enemy.age += step;
     enemy.stateAge += step;
+    if (gate) enemy.bornAt ??= gate.now;
+    const releaseTurn = () => {
+      if (gate) releaseAttack(gate.tokens, item.id);
+    };
     observePlayer(enemy, player, profile2.sampleInterval);
     const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
     enemy.previousHp = hp;
@@ -4828,6 +4875,7 @@ var NeonCampaign = (() => {
       return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span * 0.68 + sweep : enemy.role === "scout" ? enemy.baseX * 0.45 + observedX * 0.55 + enemy.side * span * 0.2 + sweep : observedX + enemy.side * span * 0.42 + sweep);
     };
     const reposition = () => {
+      releaseTurn();
       clearCharge();
       enemy.followUp = null;
       if (nextRandom(enemy) < profile2.flipChance) enemy.side *= -1;
@@ -4839,6 +4887,7 @@ var NeonCampaign = (() => {
       enter("reposition");
     };
     const retreat = (reason) => {
+      releaseTurn();
       clearCharge();
       enemy.followUp = null;
       enemy.retreatReason = reason;
@@ -4846,12 +4895,13 @@ var NeonCampaign = (() => {
       enter("retreat");
     };
     if (hp <= 0) {
+      releaseTurn();
       clearCharge();
       enemy.followUp = null;
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-      enemy.intensity = Math.min(2, Math.floor(heldFor / profile2.holdSeconds));
+      enemy.intensity = gate ? 0 : Math.min(2, Math.floor(heldFor / profile2.holdSeconds));
       if (enemy.fired === 0 && heldFor >= profile2.holdSeconds || enemy.combatStartedAt === null && enemy.age >= profile2.holdSeconds + 8) {
         retreat("time-limit");
       } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {
@@ -4880,9 +4930,9 @@ var NeonCampaign = (() => {
         enemy.targetX = laneTarget();
         enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
       }
-      if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
+      if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62 && (!gate || requestAttack(gate.tokens, { id: item.id, bornAt: enemy.bornAt }, gate.now))) {
         const sample = enemy.observation;
-        enemy.leadOffset = clamp7(sample.vx * profile2.leadSeconds, -110, 110);
+        enemy.leadOffset = clamp7(sample.vx * profile2.leadSeconds * (player.marked ? 1.5 : 1), -110, 110);
         enemy.observedTarget = Object.freeze({ ...sample });
         enemy.lockedTarget = Object.freeze({
           x: clamp7(sample.x + enemy.leadOffset, 24, enemy.width - 24),
@@ -4918,7 +4968,8 @@ var NeonCampaign = (() => {
       const dy = Math.max(1, aim.y - (item.y + 38));
       const dx = clamp7(aim.x - item.x, -dy * CLASSIC_PURSUIT_VOLLEY.cone, dy * CLASSIC_PURSUIT_VOLLEY.cone);
       const limit = Math.atan(CLASSIC_PURSUIT_VOLLEY.cone);
-      const angle = clamp7(Math.atan2(dx, dy) + angleOffset, -limit, limit);
+      const half = enemy.volley === "spread" ? CLASSIC_PURSUIT_VOLLEY.spreadAngle * (CLASSIC_PURSUIT_VOLLEY.spreadCount - 1) / 2 : 0;
+      const angle = clamp7(Math.atan2(dx, dy), -limit + half, limit - half) + angleOffset;
       const speed = profile2.projectileSpeed;
       spawnProjectile({
         type: "meteor",
@@ -4962,7 +5013,8 @@ var NeonCampaign = (() => {
       enemy.attackScheduled = false;
       enter("fire");
       if (enemy.volley === "spread") {
-        for (const offset of [0, -CLASSIC_PURSUIT_VOLLEY.spreadAngle, CLASSIC_PURSUIT_VOLLEY.spreadAngle]) launch(offset);
+        const { spreadAngle, spreadCount } = CLASSIC_PURSUIT_VOLLEY;
+        for (let k = 0; k < spreadCount; k++) launch((k - (spreadCount - 1) / 2) * spreadAngle);
       } else {
         launch(0);
         if (enemy.volley === "double") enemy.followUp = enemy.age + CLASSIC_PURSUIT_VOLLEY.doubleGap;
@@ -5768,6 +5820,73 @@ var NeonCampaign = (() => {
     return Object.freeze({ request, update, getFrame });
   }
 
+  // src/game/combat/horde.js
+  var HORDE_RULES = Object.freeze({ speed: 260, spacingX: 90, spacingY: 70, drift: 0.45 });
+  function createHordeWave({ size, width, seed = 0 }) {
+    if (!Number.isInteger(size) || size < 1 || !Number.isFinite(width) || width < 250) throw new RangeError("Invalid horde wave");
+    const { speed, spacingX, spacingY, drift } = HORDE_RULES;
+    const direction = Math.abs(Math.trunc(seed)) % 2 ? 1 : -1;
+    const centerX = width * (direction > 0 ? 0.3 : 0.7);
+    const vx = direction * speed * drift, vy = speed * Math.sqrt(1 - drift * drift);
+    return Array.from({ length: size }, (_, index) => {
+      const rank = Math.ceil(index / 2), side = index === 0 ? 0 : index % 2 ? -1 : 1;
+      return { x: centerX + side * rank * spacingX, y: -60 - rank * spacingY, vx, vy, delay: 0 };
+    });
+  }
+
+  // src/game/progression/aimed-meteors.js
+  var AIMED_METEOR_RULES = Object.freeze({
+    warning: 0.8,
+    speed: 470,
+    gap: 0.75,
+    jitter: 0.5,
+    first: 1,
+    count: 10,
+    radius: 22,
+    damage: 14,
+    margin: 40,
+    entryY: -40
+  });
+  function nextRandom2(state) {
+    state.rng = state.rng + 1831565813 >>> 0;
+    let value = Math.imul(state.rng ^ state.rng >>> 15, 1 | state.rng);
+    value ^= value + Math.imul(value ^ value >>> 7, 61 | value);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  }
+  function createAimedMeteorRain({ seed = 0, width, height, count = AIMED_METEOR_RULES.count }) {
+    if (![seed, width, height].every(Number.isFinite) || !Number.isInteger(count) || count < 1) throw new RangeError("Invalid aimed meteor rain");
+    return {
+      width,
+      height,
+      count,
+      clock: 0,
+      next: AIMED_METEOR_RULES.first,
+      announced: 0,
+      pending: [],
+      done: false,
+      rng: (Math.imul(Math.trunc(seed) >>> 0, 2654435769) ^ 625341585) >>> 0
+    };
+  }
+  function advanceAimedMeteorRain(state, dt, player, emit) {
+    if (state.done || !(dt > 0)) return;
+    const { warning, speed, gap, jitter, margin, entryY, damage } = AIMED_METEOR_RULES;
+    state.clock += dt;
+    while (state.announced < state.count && state.clock >= state.next) {
+      const id = `aimed-meteor:${state.announced}`;
+      const x = margin + nextRandom2(state) * (state.width - margin * 2);
+      state.pending.push({ id, at: state.next + warning, x, y: entryY, aim: { x: player.x, y: player.y } });
+      emit({ type: "warning", id, x, y: 0 });
+      state.announced++;
+      state.next += gap + nextRandom2(state) * jitter;
+    }
+    while (state.pending.length && state.clock >= state.pending[0].at) {
+      const meteor = state.pending.shift();
+      const dx = meteor.aim.x - meteor.x, dy = meteor.aim.y - meteor.y, length = Math.hypot(dx, dy) || 1;
+      emit({ type: "meteor", id: meteor.id, x: meteor.x, y: meteor.y, vx: dx / length * speed, vy: dy / length * speed, damage });
+    }
+    state.done = state.announced === state.count && state.pending.length === 0;
+  }
+
   // src/game/progression/chronos-flight.js
   var immutable13 = (object2) => Object.freeze(object2);
   var CHRONOS_FLIGHT_EVENTS = immutable13([
@@ -6007,7 +6126,7 @@ var NeonCampaign = (() => {
       recordId: "chronos-sabotage-atlas-log"
     };
   }
-  function nextRandom2(boss) {
+  function nextRandom3(boss) {
     let value = boss.seed;
     value ^= value << 13;
     value ^= value >>> 17;
@@ -6060,13 +6179,13 @@ var NeonCampaign = (() => {
     if (tacticalAttack && boss.tacticalManeuver === "flank") {
       boss.motionSide = boss.telegraph.sweepDirection;
     }
-    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom2(boss) * 0.17);
+    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom3(boss) * 0.17);
     const lead = clamp10(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
     const target = exposed ? boss.x + boss.motionSide * flank : tacticalAttack && boss.tacticalManeuver === "withdraw" ? boss.width / 2 + boss.motionSide * space * 0.34 : sample.x + lead + boss.motionSide * flank;
     boss.motionX = clamp10(target, bounds.left, bounds.right);
     const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
     boss.motionY = clamp10(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
-    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom2(boss) * 0.5);
+    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom3(boss) * 0.5);
     boss.motionDecision++;
   }
   function moveAtlas(boss, dt) {
@@ -6102,7 +6221,7 @@ var NeonCampaign = (() => {
   }
   function scheduleFulminant(boss) {
     const [low, high] = boss.phase === 1 ? GUARDIAN_ATLAS_RULES.fulminant.everyAttacks : GUARDIAN_ATLAS_RULES.fulminant.phaseTwoEveryAttacks;
-    boss.nextFulminantAfter = low + Math.floor(nextRandom2(boss) * (high - low + 1));
+    boss.nextFulminantAfter = low + Math.floor(nextRandom3(boss) * (high - low + 1));
   }
   function beginCharge(boss, player, events, chained = false) {
     boss.attackId++;
@@ -6121,10 +6240,10 @@ var NeonCampaign = (() => {
       boss.attackTier = "superpower";
       boss.attackDecision = "reactor-recharged";
     } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * 0.27) {
-      boss.attackTier = nextRandom2(boss) < 0.7 ? "medium" : "basic";
+      boss.attackTier = nextRandom3(boss) < 0.7 ? "medium" : "basic";
       boss.attackDecision = "intercept-flank";
     } else {
-      boss.attackTier = nextRandom2(boss) < 0.5 ? "medium" : "basic";
+      boss.attackTier = nextRandom3(boss) < 0.5 ? "medium" : "basic";
       boss.attackDecision = "pressure-observed-lane";
     }
     boss.attacksSinceSuperpower = boss.attackTier === "superpower" ? 0 : boss.attacksSinceSuperpower + 1;
@@ -6134,14 +6253,14 @@ var NeonCampaign = (() => {
     } else if (boss.phaseAttacks > 3) boss.attacksSinceFulminant++;
     if (!chained) {
       const chains = GUARDIAN_ATLAS_RULES.chains;
-      boss.chainRemaining = boss.phase === 2 ? chains.phaseTwoMinimum + (nextRandom2(boss) < chains.phaseTwoExtraChance ? 1 : 0) : boss.phaseAttacks <= 3 ? 0 : nextRandom2(boss) < chains.phaseOneChance ? 1 : 0;
+      boss.chainRemaining = boss.phase === 2 ? chains.phaseTwoMinimum + (nextRandom3(boss) < chains.phaseTwoExtraChance ? 1 : 0) : boss.phaseAttacks <= 3 ? 0 : nextRandom3(boss) < chains.phaseOneChance ? 1 : 0;
     }
     const tier = boss.attackTier;
     let pattern = tier === "fulminant" ? "cronoRupture" : tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
     if ((boss.phaseAttacks > 3 || boss.phase === 2) && tier !== "fulminant") {
       const options = tier === "basic" ? ["duelBurst"] : tier === "medium" ? Math.abs(sample.vx) >= 85 ? ["flankSalvo", "staggeredSalvo"] : ["staggeredSalvo", "flankSalvo"] : ["reactorSweep", "reactorPincer"];
       const candidates = options.filter((candidate) => candidate !== boss.previousPatterns[tier]);
-      pattern = candidates[Math.floor(nextRandom2(boss) * candidates.length)] || options[0];
+      pattern = candidates[Math.floor(nextRandom3(boss) * candidates.length)] || options[0];
     }
     boss.previousPatterns[tier] = pattern;
     const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp10(sample.vx * 0.28, -100, 100);
@@ -6228,7 +6347,7 @@ var NeonCampaign = (() => {
     const low = gapHalf + 12, high = boss.width - gapHalf - 12;
     let gapX = (low + high) / 2, best = -1;
     for (let attempt = 0; attempt < 6; attempt++) {
-      const candidate = low + nextRandom2(boss) * Math.max(0, high - low);
+      const candidate = low + nextRandom3(boss) * Math.max(0, high - low);
       const distance2 = Math.abs(candidate - aim.observedX);
       if (distance2 >= rule.minPlayerDistance) {
         gapX = candidate;
@@ -7541,28 +7660,6 @@ var NeonCampaign = (() => {
     return true;
   }
 
-  // src/game/combat/attack-tokens.js
-  function createAttackTokens({ max }) {
-    if (!Number.isInteger(max) || max < 1) throw new RangeError("max must be a positive integer");
-    return { max, holders: /* @__PURE__ */ new Map() };
-  }
-  function requestAttack(tokens, enemy, now) {
-    const { holders } = tokens;
-    if (holders.has(enemy.id)) return true;
-    if (holders.size < tokens.max) {
-      holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
-      return true;
-    }
-    return false;
-  }
-  function releaseAttack(tokens, enemyId) {
-    tokens.holders.delete(enemyId);
-  }
-  function forgetEnemy(tokens, enemyId) {
-    tokens.holders.delete(enemyId);
-  }
-  var attackHolders = (tokens) => [...tokens.holders.keys()];
-
   // src/game/combat/enemy-ai.js
   var ENEMY_AI_PROFILES = Object.freeze({
     hunter: Object.freeze({ attackRange: 700, chaseOffset: 170 }),
@@ -7586,9 +7683,13 @@ var NeonCampaign = (() => {
       }
       case "escort": {
         const allies = ctx.allies.filter((ally) => ally.id !== enemy.id);
-        if (!allies.length) return { x: enemy.x, y: enemy.y };
+        if (!allies.length) return { x: enemy.x, y: enemy.y, guardId: null };
         const weakest = allies.reduce((a, b) => b.hp / b.maxHp < a.hp / a.maxHp ? b : a);
-        return { x: weakest.x + (enemy.x <= weakest.x ? -rules.sideOffset : rules.sideOffset), y: weakest.y + rules.depthOffset };
+        return {
+          x: weakest.x + (enemy.x <= weakest.x ? -rules.sideOffset : rules.sideOffset),
+          y: weakest.y + rules.depthOffset,
+          guardId: weakest.id
+        };
       }
       case "opportunist":
         return { x: enemy.x <= bounds.w / 2 ? bounds.w * 0.2 : bounds.w * 0.8, y: Math.max(120, player.y - rules.hover) };
@@ -7633,7 +7734,7 @@ var NeonCampaign = (() => {
       ...move.heading !== void 0 ? { heading: move.heading } : {}
     };
     const ready = enemy.cooldowns.unique <= ctx.now ? "unique" : enemy.cooldowns.basic <= ctx.now ? "basic" : null;
-    if (enemy.profile === "escort") return { ...intent, ability: ready === "unique" ? "unique" : null };
+    if (enemy.profile === "escort") return { ...intent, ability: ready === "unique" ? "unique" : null, guardId: move.guardId };
     if (!ready || !wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) {
       releaseAttack(ctx.tokens, enemy.id);
       return intent;
@@ -7644,6 +7745,185 @@ var NeonCampaign = (() => {
     const intents = /* @__PURE__ */ new Map();
     for (const enemy of [...enemies].sort((a, b) => a.bornAt - b.bornAt)) intents.set(enemy, decideEnemyIntent(enemy, ctx));
     return enemies.map((enemy) => intents.get(enemy));
+  }
+
+  // src/game/combat/gaia-enemies.js
+  var GAIA_ENEMY_RULES = Object.freeze({
+    tracker: Object.freeze({
+      profile: "ambusher",
+      hp: 2,
+      speed: 230,
+      warning: 0.4,
+      firstAttack: 1.2,
+      salvageRole: "interceptor",
+      basic: Object.freeze({ cooldown: 2.4, speed: 380, damage: 12 }),
+      unique: Object.freeze({ cooldown: 9, markSeconds: 4 }),
+      // Las armas solo disparan hacia arriba: tras 3 ataques o 12 s adelanta a la
+      // nave por un lado y sale por arriba, donde se le puede derribar.
+      leave: Object.freeze({ attacks: 3, seconds: 12, speed: 260, sideOffset: 120, exitY: -100 })
+    }),
+    sower: Object.freeze({
+      profile: "miner",
+      hp: 3,
+      speed: 150,
+      warning: 0.3,
+      firstAttack: 1.2,
+      salvageRole: "raider",
+      basic: Object.freeze({ cooldown: 2.2 }),
+      unique: Object.freeze({ cooldown: 10, speed: 300 }),
+      mine: Object.freeze({ arm: 0.8, radius: 70, life: 7, damage: 16 }),
+      bomb: Object.freeze({ raySpeed: 320, damage: 12 })
+    }),
+    aegis: Object.freeze({
+      profile: "escort",
+      hp: 3,
+      speed: 200,
+      warning: 0,
+      firstAttack: 1.5,
+      salvageRole: "scout",
+      unique: Object.freeze({ cooldown: 8, hits: 3 })
+    }),
+    alpha: Object.freeze({
+      profile: "hunter",
+      hp: 12,
+      speed: 170,
+      warning: 0.5,
+      firstAttack: 1.5,
+      clearance: 320,
+      salvageRole: "interceptor",
+      basic: Object.freeze({ cooldown: 1.6, speed: 360, spacing: 28, damage: 12 }),
+      unique: Object.freeze({ cooldown: 7, speed: 240, damage: 12 })
+    })
+  });
+  function createGaiaEnemy({ kind, x, y, now = 0 }) {
+    const rules = GAIA_ENEMY_RULES[kind];
+    if (!rules || ![x, y, now].every(Number.isFinite)) throw new RangeError("Invalid Gaia enemy spawn");
+    return {
+      kind,
+      profile: rules.profile,
+      hp: rules.hp,
+      maxHp: rules.hp,
+      bornAt: now,
+      cooldowns: { basic: now + rules.firstAttack, unique: now + rules.unique.cooldown * 0.5 },
+      telegraph: 0,
+      pending: null,
+      aim: null,
+      heading: void 0,
+      guardId: null,
+      attacks: 0,
+      leaving: false
+    };
+  }
+  function moveToward(item, target, maxStep) {
+    const dx = target.x - item.x, dy = target.y - item.y, distance2 = Math.hypot(dx, dy);
+    if (distance2 <= maxStep || distance2 === 0) {
+      item.x = target.x;
+      item.y = target.y;
+      return;
+    }
+    item.x += dx / distance2 * maxStep;
+    item.y += dy / distance2 * maxStep;
+  }
+  function aimed(from, to, speed) {
+    const dx = to.x - from.x, dy = to.y - from.y, length = Math.hypot(dx, dy) || 1;
+    return { vx: dx / length * speed, vy: dy / length * speed };
+  }
+  function unleash(item, ability, ctx, emit) {
+    const { gaia } = item, rules = GAIA_ENEMY_RULES[gaia.kind];
+    if (gaia.kind === "tracker") {
+      if (ability === "unique") emit({ type: "mark", seconds: rules.unique.markSeconds });
+      else {
+        const from = { x: item.x, y: item.y - 30 };
+        emit({ type: "shot", ...from, ...aimed(from, gaia.aim, rules.basic.speed), damage: rules.basic.damage, sprite: "orb" });
+      }
+    } else if (gaia.kind === "sower") {
+      if (ability === "basic") emit({ type: "mine", x: item.x, y: item.y + 20 });
+      else emit({ type: "cross-bomb", x: item.x, y: item.y, vx: (item.x < ctx.bounds.w / 2 ? -1 : 1) * rules.unique.speed });
+    } else if (gaia.kind === "alpha") {
+      if (ability === "basic") {
+        const { spacing, speed, damage } = rules.basic;
+        for (let k = 0; k < 4; k++) emit({ type: "shot", x: item.x + (k - 1.5) * spacing, y: item.y + 40, vx: 0, vy: speed, damage, sprite: "missile" });
+      } else {
+        const { speed, damage } = rules.unique;
+        for (let k = 0; k < 8; k++) {
+          const angle = k * Math.PI / 4;
+          emit({ type: "shot", x: item.x, y: item.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, damage, sprite: "orb" });
+        }
+      }
+    }
+  }
+  function advanceMine(mine, dt, player) {
+    const rules = GAIA_ENEMY_RULES.sower.mine;
+    mine.age += dt;
+    mine.armed = mine.age >= rules.arm;
+    if (mine.armed && Math.hypot(player.x - mine.x, player.y - mine.y) < rules.radius) return "explode";
+    return mine.age >= rules.life ? "expire" : null;
+  }
+  function advanceCrossBomb(bomb, dt, bounds) {
+    bomb.x += bomb.vx * dt;
+    if (bomb.x > 0 && bomb.x < bounds.w) return null;
+    const { raySpeed: speed, damage } = GAIA_ENEMY_RULES.sower.bomb, x = bomb.x <= 0 ? 0 : bounds.w, inward = x === 0 ? 1 : -1;
+    return [
+      { x, y: bomb.y, vx: inward * speed, vy: 0, damage },
+      { x, y: bomb.y, vx: 0, vy: -speed, damage },
+      { x, y: bomb.y, vx: 0, vy: speed, damage }
+    ];
+  }
+  function advanceGaiaEnemy(item, dt, ctx, emit) {
+    if (!(dt > 0)) return;
+    const { gaia } = item, rules = GAIA_ENEMY_RULES[gaia.kind];
+    if (gaia.pending) {
+      gaia.telegraph = Math.min(1, gaia.telegraph + dt / Math.max(rules.warning, 1e-6));
+      if (gaia.telegraph >= 1) {
+        const ability = gaia.pending;
+        unleash(item, ability, ctx, emit);
+        if (ability === "basic") gaia.attacks++;
+        gaia.cooldowns[ability] = ctx.now + rules[ability].cooldown;
+        gaia.pending = null;
+        gaia.telegraph = 0;
+        gaia.aim = null;
+        releaseAttack(ctx.tokens, item.id);
+      }
+      return;
+    }
+    const { leave } = rules;
+    if (leave && !gaia.leaving && (gaia.attacks >= leave.attacks || ctx.now - gaia.bornAt >= leave.seconds)) {
+      gaia.leaving = true;
+      releaseAttack(ctx.tokens, item.id);
+    }
+    if (gaia.leaving) {
+      const side = item.x < ctx.player.x ? -1 : 1, { w } = ctx.bounds;
+      moveToward(item, { x: Math.max(40, Math.min(w - 40, ctx.player.x + side * leave.sideOffset)), y: leave.exitY }, leave.speed * dt);
+      return;
+    }
+    const view = {
+      id: item.id,
+      x: item.x,
+      y: item.y,
+      hp: item.hp,
+      maxHp: item.maxHp,
+      profile: gaia.profile,
+      cooldowns: gaia.cooldowns,
+      bornAt: gaia.bornAt,
+      ...gaia.heading !== void 0 ? { heading: gaia.heading } : {}
+    };
+    const intent = decideEnemyIntent(view, ctx);
+    if (intent.heading !== void 0) gaia.heading = intent.heading;
+    const targetY = rules.clearance ? Math.min(intent.targetY, ctx.player.y - rules.clearance) : intent.targetY;
+    moveToward(item, { x: intent.targetX, y: targetY }, rules.speed * dt);
+    if (gaia.profile === "escort") {
+      gaia.guardId = intent.guardId;
+      if (intent.ability === "unique" && intent.guardId) {
+        emit({ type: "shield", targetId: intent.guardId, hits: rules.unique.hits });
+        gaia.cooldowns.unique = ctx.now + rules.unique.cooldown;
+      }
+      return;
+    }
+    if (intent.attack) {
+      gaia.pending = intent.ability;
+      gaia.aim = { x: ctx.player.x, y: ctx.player.y };
+      gaia.telegraph = 0;
+    }
   }
 
   // src/game/progression/sector-save.js

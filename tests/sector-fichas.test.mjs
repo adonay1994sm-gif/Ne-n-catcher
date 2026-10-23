@@ -67,3 +67,18 @@ test('the game finds the stage rules of a sector by its route', async () => {
   assert.equal(getVoyageStageRules('sector-1-gaia', 1), S1_GAIA.encounters[0]);
   assert.ok(getVoyageStageRulesFor('sector-1-gaia', 2, 'normal')?.patrol, 'stage 2 has a patrol');
 });
+
+test('every sector stage sets how many enemies may attack at once', () => {
+  assert.deepEqual(S1_GAIA.encounters.map(rules => rules.attackers), [1, 1, 2, 2, 2, 3, 3, 3, 3, 2]);
+});
+
+test('hordes cross stages 3, 7 and 9', () => {
+  S1_GAIA.encounters.forEach((rules, index) => {
+    if ([2, 6, 8].includes(index)) assert.deepEqual(rules.horde, {every: 14, size: 5}, `stage ${index + 1}`);
+    else assert.equal(rules.horde, null, `stage ${index + 1}`);
+  });
+});
+
+test('stages 4 and 8 bring aimed meteor rain instead of the marked corridor', () => {
+  assert.deepEqual(S1_GAIA.encounters.map(rules => rules.comets), [false, false, false, 'aimed', false, false, false, 'aimed', false, false]);
+});

@@ -1,6 +1,6 @@
 # Encargos de arte para GPT · NEON CRONIUM
 
-Actualizado: 2026-10-22. Lista pública que se mantiene al día desde el tablero del proyecto.
+Actualizado: 2026-10-23. Lista pública que se mantiene al día desde el tablero del proyecto.
 Versión para máquinas: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/encargos-gpt.json
 
 **Antes de nada lee la guía:** https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md (qué es el juego, modelos de referencia y reglas).
@@ -66,6 +66,15 @@ Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cro
 
 ```text
 Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md y la biblia https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/design/BIBLIA_GALAXIA.md. Modelos de referencia: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ship-identity/player_ship_identity_v1.png https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/forja-c9/generated-master.png. UNA ilustración OPACA vertical de 1440×2560 px, sin texto. El taller de reparación de Mira dentro de la nave nodriza C9: la nave del jugador (la de player_ship_identity) suspendida en una grúa en el centro, brazos robóticos, chispas cálidas de soldadura, paneles con luz cian, herramientas y piezas en estanterías. El 40 % inferior más oscuro y limpio, porque ahí va la interfaz. Misma luz y nivel que las referencias. Estilo: arte de juego sci-fi pintado y semirrealista, vista cenital estricta, blindaje con paneles y juntas visibles, luz fría de estudio desde arriba a la izquierda, sombras grafito, como el dosier de Gaia y los estados de Atlas de NEON CRONIUM. El casco y su luz de reposo pueden llevar el color de la facción, pero lo que hace daño vira a cálido: núcleo ámbar al cargar y proyectiles rojos o naranjas. Nada de cian en lo que hace daño (el cian es del jugador); el violeta solo en lo temporal (Aether, Kairos, Cronos Prime).
+```
+
+## Decisión: la Égida (CH-06) llegó naranja
+
+- **Id:** `dec-egida-color` · **Prioridad:** 2 · **Archivo:** `encargo-dec-egida-color-v1.png`
+- **Para qué:** La biblia dice que Gaia es marfil, grafito y núcleo cian/rojo; la Égida del baúl es naranja (más de Vulkar). Está integrada tal cual (pendiente de aceptación). Opciones: aceptarla, o pedir a GPT una versión en la paleta de Gaia con el mismo modelo.
+
+```text
+NEON CRONIUM · CH-06 Égida (Escolta de la Guardia de Gaia). Usa EXACTAMENTE el mismo modelo, poses y hoja 4x2 de celdas de 384 px del encargo camp-art-s1-egida v1, pero en la paleta de Gaia: blindaje marfil blanco, chasis grafito, núcleos cian que pasan a rojo al activar el escudo, y el escudo hexagonal en cian claro en lugar de naranja. Fila 1: vuelo girando (4). Fila 2: escudo formándose, intacto, agrietándose y rompiéndose (4). Fondo transparente real, sin texto ni rejilla.
 ```
 
 ## Colores del daño: real en cálido y absorbido en ámbar con chispas (R5)
