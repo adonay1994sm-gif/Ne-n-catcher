@@ -7433,6 +7433,9 @@ var NeonCampaign = (() => {
     sector: 1,
     number: 1,
     title: "Escapa de Chronos",
+    boss: "atlas",
+    // El tramo 1 abre con el inicio de Chronos y el tutorial (propietario, 23/10/2026).
+    intro: true,
     chapter: 1,
     version: "s1-sector-v1",
     saveKey: "neonCronium.sector.S1.v1",
@@ -7442,8 +7445,8 @@ var NeonCampaign = (() => {
     origin: "Centro Chronos",
     destination: "Acceso orbital de Gaia Nova",
     arrivalDestinationId: "gaia-atlas-approach",
-    cinematicDuration: 0,
-    recoveryAt: 0,
+    cinematicDuration: 90,
+    recoveryAt: 9,
     invalidCheckpointMessage: "Invalid sector 1 checkpoint",
     stages: immutable13([
       ["Emergencia en Chronos", 48, 5, "Recupera los primeros fragmentos del reactor", "Chronos \xB7 reactor", "Campo de restos", "reactor-strike", 0.18, 0.7, 0.4],
@@ -7458,6 +7461,10 @@ var NeonCampaign = (() => {
       ["Atlas", 60, 54, "Vence a Atlas para que verifique el registro", "Acceso orbital", "Acceso orbital de Gaia Nova", "boss", 0.18, 0.62, 0.9]
     ].map((stage) => immutable13(stage))),
     events: immutable13([
+      { id: "sector-1-intruder", type: "attack", at: 2.25, attackerId: "cronium-raider", targetId: "chronos-reactor" },
+      { id: "sector-1-breach", type: "rupture", at: 9, resourceId: "cronium", cause: "hostile-reactor-strike" },
+      { id: "sector-1-perimeter-exit", type: "departure", at: 108, originId: "chronos-scientific-centre" },
+      { id: "sector-1-recovered-module", type: "twin-module-marker", at: 90, moduleId: "twin-emitter", resourceId: "cronium" },
       { id: "sector-1-gaia-beacon", type: "gaia-beacon", at: 470, destinationId: "gaia-atlas-approach" }
     ].map((event2) => immutable13(event2))),
     service: immutable13({
