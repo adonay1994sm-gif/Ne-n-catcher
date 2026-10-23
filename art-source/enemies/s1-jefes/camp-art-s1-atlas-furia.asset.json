@@ -1,0 +1,127 @@
+{
+  "asset": {
+    "id": "camp-art-s1-atlas-furia",
+    "identity_notes": "Encargo: camp-art-s1-atlas-furia. Adaptación del Atlas de referencia: anillo roto, carga con cañones retraídos, Fulminante y derrota. Única excepción de recorte: haz en borde inferior del estado 3. Propuesta revisada por el asistente; sin aprobación artística del usuario.",
+    "kind": "boss",
+    "project": "NEON CRONIUM",
+    "provenance": "adaptation",
+    "reference_files": [
+      "references/exec-bdc4cc6d-454d-456c-a2ae-35cab0213258.png"
+    ],
+    "version": "1.0.0"
+  },
+  "canvas": {
+    "height": 800,
+    "mode": "RGBA",
+    "padding_px": 0,
+    "pivot": {
+      "x": 400.0,
+      "y": 400.0
+    },
+    "transparency": "required",
+    "width": 800
+  },
+  "clips": [
+    {
+      "durations_ms": [
+        220,
+        220,
+        220
+      ],
+      "frames": [
+        "f000",
+        "f001",
+        "f002"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "fulminante"
+    },
+    {
+      "durations_ms": [
+        350,
+        350
+      ],
+      "frames": [
+        "f002",
+        "f003"
+      ],
+      "loop": false,
+      "motion_type": "effects",
+      "name": "derrota"
+    }
+  ],
+  "delivery_profile": "delivery",
+  "frames": [
+    {
+      "file": "frames/f000.png",
+      "id": "f000"
+    },
+    {
+      "file": "frames/f001.png",
+      "id": "f001"
+    },
+    {
+      "file": "frames/f002.png",
+      "id": "f002"
+    },
+    {
+      "file": "frames/f003.png",
+      "id": "f003"
+    }
+  ],
+  "integration": {
+    "engine": "",
+    "evidence": [],
+    "status": "not_requested"
+  },
+  "previews": [
+    {
+      "clip": "fulminante",
+      "file": "previews/fulminante.webp",
+      "format": "WEBP"
+    },
+    {
+      "clip": "derrota",
+      "file": "previews/derrota.webp",
+      "format": "WEBP"
+    }
+  ],
+  "publication": {
+    "status": "pending",
+    "urls": []
+  },
+  "review": {
+    "loop": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "not_applicable"
+    },
+    "motion": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    },
+    "visual": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "pending"
+    }
+  },
+  "schema_version": "2.0",
+  "sheet": {
+    "cell_height": 800,
+    "cell_width": 800,
+    "columns": 4,
+    "file": "spritesheet.png",
+    "frame_order": [
+      "f000",
+      "f001",
+      "f002",
+      "f003"
+    ],
+    "margin": 0,
+    "rows": 1,
+    "spacing": 0
+  }
+}

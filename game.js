@@ -510,6 +510,12 @@
     gaiaAegis: loadSprite("assets/gaia_aegis_atlas_v1.webp", false),
     gaiaAlpha: loadSprite("assets/gaia_alpha_atlas_v1.webp", false),
     hostileProjectiles2: loadSprite("assets/hostile_projectiles_v2.webp", false),
+    // Jefes del sector 1 (plan F3c): CH-03 y Atlas en furia en celdas de 384,
+    // escoltas de Atlas y baliza en celdas de 192.
+    ch03: loadSprite("assets/ch03_satellite_atlas_v1.webp", false),
+    atlasFury: loadSprite("assets/atlas_fury_atlas_v1.webp", false),
+    atlasEscorts: loadSprite("assets/atlas_escorts_atlas_v1.webp", false),
+    sectorBeacon: loadSprite("assets/sector_beacon_atlas_v1.webp", false),
     debrisMetal: loadSprite("assets/debris_metal.webp"),
     debrisPanel: loadSprite("assets/debris_panel.webp"),
     debrisHot0: loadSprite("assets/debris_hot_00.webp"),
