@@ -156,6 +156,39 @@
     return true;
   }
 
+  // Satélite CH-03 (plan F3c). Celdas de la hoja: 0 reposo, 1-2 carga y rayo,
+  // 3 cañones, 4 láseres cruzados, 5 rejilla, 6 dañado, 7 destruido.
+  function drawCh03Satellite() {
+    if (typeof ch03Boss === "undefined" || !ch03Boss) return;
+    const boss = ch03Boss, size = 300;
+    if (boss.attack === "grid" && boss.grid && boss.state === "attack") {
+      // Columnas de la rejilla: aviso tenue, láser encendido brillante; la segura, libre.
+      const column = W / boss.grid.columns;
+      ctx.save();
+      for (let c = 0; c < boss.grid.columns; c++) {
+        if (c === boss.grid.safe) continue;
+        ctx.fillStyle = boss.grid.active ? "rgba(255,70,90,.42)" : "rgba(255,120,120,.12)";
+        ctx.fillRect(c * column + 6, boss.y, column - 12, H - boss.y);
+      }
+      ctx.restore();
+    }
+    if (boss.attack === "sweep" && boss.beam?.active && boss.state === "attack") {
+      ctx.save(); ctx.translate(boss.x, boss.y); ctx.rotate(-boss.beam.angle);
+      ctx.fillStyle = "rgba(255,60,80,.85)"; ctx.shadowBlur = 22; ctx.shadowColor = "#ff2d45";
+      ctx.fillRect(-NeonCampaign.CH03_RULES.sweep.width / 2, 0, NeonCampaign.CH03_RULES.sweep.width, H * 1.5);
+      ctx.fillStyle = "rgba(255,240,240,.9)"; ctx.fillRect(-4, 0, 8, H * 1.5);
+      ctx.restore();
+    }
+    if (!spriteReady(SPRITES.ch03)) return;
+    const cell = boss.state === "defeated" ? (boss.stateTime < .5 ? 6 : 7)
+      : boss.state === "warning" ? (boss.attack === "ring" ? 3 : boss.attack === "grid" ? 4 : 1)
+      : boss.state === "attack" ? (boss.attack === "sweep" ? 2 : boss.attack === "ring" ? 3 : 5)
+      : boss.hp <= boss.maxHp * .35 ? 6 : 0;
+    ctx.save(); ctx.translate(boss.x, boss.y);
+    drawGaiaCell(SPRITES.ch03, 4, cell, size);
+    ctx.restore();
+  }
+
   function drawGuardianAtlas() {
     if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
     const boss = atlasBoss;

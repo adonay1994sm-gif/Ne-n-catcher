@@ -51,7 +51,9 @@ test('denominations exactly preserve the requested 100000 / 100 / 10 conversion 
 });
 
 test('enemy families drop different small scrap values, never minted silver or arbitrary terrain rewards', () => {
-  assert.deepEqual(SCRAP_REWARDS, {raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18});
+  // ch03: subjefe del sector 1 (plan F3c).
+  assert.deepEqual(SCRAP_REWARDS, {raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18, ch03: 120});
+  assert.equal(rewardForEnemy('ch03'), 120);
   assert.equal(rewardForEnemy('ch-01'), 9);
   assert.equal(rewardForEnemy('ch-02'), 15);
   assert.equal(rewardForEnemy('guardian-atlas'), 600);

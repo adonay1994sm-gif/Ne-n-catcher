@@ -24,6 +24,7 @@
     }
     if (typeof drawMeteorWarnings === "function") drawMeteorWarnings();
     drawGuardianAtlas();
+    if (typeof drawCh03Satellite === "function") drawCh03Satellite();
     drawPlayer(t);
     drawShots();
     drawClassicProjectiles();

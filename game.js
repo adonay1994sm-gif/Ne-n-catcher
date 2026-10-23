@@ -1111,7 +1111,7 @@
     // Enemigos de Gaia y hordas no llevan piloto clásico, pero también sueltan chatarra.
     const enemy=target.classicScout||target.gaiaEnemy||target.hordeUnit;
     if(!boss&&((!enemy&&!wreckage)||target.classicScoutProjectile||target.guardianProjectile))return null;
-    const enemyType=boss?"guardian-atlas":wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
+    const enemyType=boss?(target.salvageRole||"guardian-atlas"):wreckage?target.type:target.salvageRole||target.classicScout?.role||"scout";
     const amount=NeonCampaign.rewardForEnemy(enemyType);
     if(!amount)return null;
     const stage=classicFlightView?.stageId||`${currentLevel+1}.0`;
@@ -1701,6 +1701,8 @@
 
   function advanceClassicFlight(dt) {
     const introBefore=classicFlightView?.elapsed;
+    // Mientras el subjefe CH-03 vive, la ruta no avanza (plan F3c).
+    if(ch03Holds())return;
     if(classicFlight) classicFlightView=classicFlight.advance(dt,collected,classicFlightEvent);
     // Auditoría J05: en un viaje del mapa, con la cuota del tramo cumplida y
     // 20 s jugados, el reloj del tramo corre al triple para no dejar tiempo
@@ -1743,7 +1745,7 @@
         const text=`${missing===1?"Falta 1":`Faltan ${missing}`} CRONIUM para seguir al siguiente tramo.`;
         showStoryTransmission("N-7",text,4);classicCroniumWaitShown={text,collected};
       }
-      if(state==="playing" && !atlasBoss && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
+      if(state==="playing" && !atlasBoss && !ch03Holds() && classicFlightView.waitingFor!=="service") advanceClassicVoyageEncounters(dt);
       syncClassicFlightHud();return;
     }
     if(classicFlightView?.routeProgress>=.30 && classicFlightView.routeProgress<.82) {
@@ -1855,6 +1857,48 @@
       classicCometWarning=n;const x=W*.45;
       items.push({type:"repair",x,baseX:x,y:-45,r:22,s:150,rot:0,rs:.15,p:0,phase:0,amp:18,special:"",alpha:1});
     }
+  }
+
+  // Subjefe CH-03 del sector 1 (plan F3c): defiende el tramo 5; mientras vive,
+  // la ruta y las patrullas se paran. ch03Beaten: vencido en este intento.
+  let ch03Boss=null,ch03Beaten=false;
+  const CH03_HIT_RADIUS=90;
+  function ch03Holds(){return Boolean(ch03Boss)&&!ch03Boss.resolved;}
+  function showBossHud(name,phase,health,status) {
+    if(!ui.atlasEncounter)return;
+    ui.atlasEncounter.classList.remove("hidden");
+    const title=ui.atlasEncounter.querySelector(".atlas-identity b");
+    if(title&&title.textContent!==name)title.textContent=name;
+    if(ui.atlasPhase.textContent!==phase)ui.atlasPhase.textContent=phase;
+    if(ui.atlasHealth.value!==health)ui.atlasHealth.value=health;
+    if(ui.atlasStatus.textContent!==status)ui.atlasStatus.textContent=status;
+  }
+  function maybeStartCh03() {
+    const view=classicFlightView;
+    if(ch03Boss||ch03Beaten||!isSectorRun()||state!=="playing"||!view)return;
+    if(NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.boss?.id!=="ch03"||view.stageElapsed<6)return;
+    ch03Boss=NeonCampaign.createCh03Satellite({width:W,height:H,seed:view.stageNumber*97});
+    ensureSprite(SPRITES.ch03);ensureSprite(SPRITES.hostileProjectiles2);
+    showStoryTransmission("RED ATLAS","Satélite CH-03 en línea. El anillo de Gaia queda cerrado.",3.4);
+  }
+  function updateCh03Encounter(dt) {
+    maybeStartCh03();
+    if(!ch03Boss)return;
+    NeonCampaign.advanceCh03Satellite(ch03Boss,dt,event=>{
+      if(event.type==="projectile")items.push(gaiaShot({...event,sprite:"orb"}));
+      if(event.type==="warning")combatSound("atlas-charge",ch03Boss.x);
+      if(event.type==="defeated") {
+        ch03Beaten=true;addExplosion(ch03Boss.x,ch03Boss.y,1.4,.9);
+        spawnClassicScrap({x:ch03Boss.x,y:ch03Boss.y,bossSalvage:true,salvageRole:"ch03",salvageDropId:"ch03"});
+        showStoryTransmission("N-7","CH-03 fuera de combate. El anillo se abre: C9 nos espera.",3.4);
+      }
+    });
+    const damage=NeonCampaign.ch03HitsShip(ch03Boss,{x:player.x,y:player.y,r:30});
+    if(damage)damageShip(damage,player.x,player.y);
+    if(ch03Boss.resolved){ch03Boss=null;ui.atlasEncounter?.classList.add("hidden");return;}
+    const status=ch03Boss.state==="warning"?"CARGANDO · prepárate para esquivar"
+      :ch03Boss.state==="defeated"?"SATÉLITE ABATIDO":"Dispara al núcleo y esquiva sus láseres.";
+    showBossHud("SATÉLITE CH-03","SUBJEFE",ch03Boss.hp/ch03Boss.maxHp,status);
   }
 
   // Enemigos de la Guardia de Gaia (plan F3b): Rastreador, Sembrador, Égida y
@@ -2009,6 +2053,14 @@
         const t=length?clamp(((atlasBoss.x-(shot.previousX??shot.x))*dx+(atlasBoss.y-(shot.previousY??shot.y))*dy)/length,0,1):0;
         resolveAtlasPulse({atlasTarget:atlasBoss,x2:atlasBoss.x,damage:contact.damage,weapon:shot.weapon,
           impactX:(shot.previousX??shot.x)+dx*t,impactY:(shot.previousY??shot.y)+dy*t});
+      }
+    }
+    if(ch03Boss&&ch03Boss.state!=="defeated") {
+      for(const shot of [...classicWeapons.projectiles]) {
+        if(squaredDistanceToSegment(ch03Boss.x,ch03Boss.y,shot.previousX??shot.x,shot.previousY??shot.y,shot.x,shot.y)>(CH03_HIT_RADIUS+shot.radius)**2)continue;
+        const contact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,"ch03");
+        if(!contact.accepted)continue;
+        if(NeonCampaign.hitCh03Satellite(ch03Boss,contact.damage).accepted){addImpactEffect(shot.x,shot.y,.8);combatSound("impact-metal",ch03Boss.x);}
       }
     }
     if(events.some(event=>event.type==="recharged")){tone(520,.035,"sine",.025);updateAmmoHud();}
@@ -2255,6 +2307,9 @@
   function syncAtlasHud() {
     if (!ui.atlasEncounter) return;
     if (!atlasBoss) return;
+    // El mismo panel muestra al CH-03 (plan F3c): el título vuelve a ser el de Atlas.
+    const title = ui.atlasEncounter.querySelector(".atlas-identity b");
+    if (title && title.textContent !== "GUARDIAN ATLAS") title.textContent = "GUARDIAN ATLAS";
     const health = atlasBoss.hp / atlasBoss.maxHp;
     const phaseLabel = atlasBoss.disabled ? "ENLACE RESTAURADO" : `FASE ${atlasBoss.phase}`;
     if (ui.atlasHealth.value !== health) ui.atlasHealth.value = health;
@@ -2873,6 +2928,8 @@
       : currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
     resetSectorAttackTokens();
+    // Un intento que empieza pasado el tramo 5 ya dejó atrás al CH-03.
+    ch03Boss=null;ch03Beaten=Boolean(classicFlightView)&&classicFlightView.stageNumber>5;
     // La historia del capítulo dura 360 s: en los tramos posteriores del sector no hay.
     classicChapterStory=classicFlight&&fichaHasIntro()&&classicFlightView.elapsed<NeonCampaign.CHRONOS_CHAPTER_ROUTE_SECONDS?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry&&!classicSideVoyage?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;
@@ -4306,6 +4363,7 @@
 
     advanceClassicFlight(dt);
     if(state!=="playing"){updateEffects(dt);return;}
+    if (typeof updateCh03Encounter === "function") updateCh03Encounter(dt);
     if (!atlasBoss && !classicFlightView) {
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
@@ -5698,6 +5756,39 @@
     return true;
   }
 
+  // Satélite CH-03 (plan F3c). Celdas de la hoja: 0 reposo, 1-2 carga y rayo,
+  // 3 cañones, 4 láseres cruzados, 5 rejilla, 6 dañado, 7 destruido.
+  function drawCh03Satellite() {
+    if (typeof ch03Boss === "undefined" || !ch03Boss) return;
+    const boss = ch03Boss, size = 300;
+    if (boss.attack === "grid" && boss.grid && boss.state === "attack") {
+      // Columnas de la rejilla: aviso tenue, láser encendido brillante; la segura, libre.
+      const column = W / boss.grid.columns;
+      ctx.save();
+      for (let c = 0; c < boss.grid.columns; c++) {
+        if (c === boss.grid.safe) continue;
+        ctx.fillStyle = boss.grid.active ? "rgba(255,70,90,.42)" : "rgba(255,120,120,.12)";
+        ctx.fillRect(c * column + 6, boss.y, column - 12, H - boss.y);
+      }
+      ctx.restore();
+    }
+    if (boss.attack === "sweep" && boss.beam?.active && boss.state === "attack") {
+      ctx.save(); ctx.translate(boss.x, boss.y); ctx.rotate(-boss.beam.angle);
+      ctx.fillStyle = "rgba(255,60,80,.85)"; ctx.shadowBlur = 22; ctx.shadowColor = "#ff2d45";
+      ctx.fillRect(-NeonCampaign.CH03_RULES.sweep.width / 2, 0, NeonCampaign.CH03_RULES.sweep.width, H * 1.5);
+      ctx.fillStyle = "rgba(255,240,240,.9)"; ctx.fillRect(-4, 0, 8, H * 1.5);
+      ctx.restore();
+    }
+    if (!spriteReady(SPRITES.ch03)) return;
+    const cell = boss.state === "defeated" ? (boss.stateTime < .5 ? 6 : 7)
+      : boss.state === "warning" ? (boss.attack === "ring" ? 3 : boss.attack === "grid" ? 4 : 1)
+      : boss.state === "attack" ? (boss.attack === "sweep" ? 2 : boss.attack === "ring" ? 3 : 5)
+      : boss.hp <= boss.maxHp * .35 ? 6 : 0;
+    ctx.save(); ctx.translate(boss.x, boss.y);
+    drawGaiaCell(SPRITES.ch03, 4, cell, size);
+    ctx.restore();
+  }
+
   function drawGuardianAtlas() {
     if (!atlasBoss || !spriteReady(SPRITES.guardianAtlas)) return;
     const boss = atlasBoss;
@@ -6529,6 +6620,7 @@
     }
     if (typeof drawMeteorWarnings === "function") drawMeteorWarnings();
     drawGuardianAtlas();
+    if (typeof drawCh03Satellite === "function") drawCh03Satellite();
     drawPlayer(t);
     drawShots();
     drawClassicProjectiles();

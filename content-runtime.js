@@ -1314,7 +1314,7 @@ var NeonCampaign = (() => {
     maxPurchaseReceipts: 128,
     maxInvalidBackups: 8
   });
-  var SCRAP_REWARDS = Object.freeze({ raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18 });
+  var SCRAP_REWARDS = Object.freeze({ raider: 6, scout: 9, interceptor: 15, atlas: 600, debris: 6, satellite: 18, ch03: 120 });
   var upgrade = (definition) => Object.freeze({
     ...definition,
     requires: Object.freeze([...definition.requires || []]),

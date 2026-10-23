@@ -470,3 +470,67 @@ test('a tracker leaves the screen instead of staying behind the ship forever', (
   T.adv(25);
   assert.equal(T.ev('items.includes(window.__r)'), false);
 });
+
+// Plan F3c, tarea 3: CH-03 defiende el tramo 5.
+const ch03Fight = T => { startAt(T, 5); T.ev('DEV.invulnerable=true'); T.adv(9); }; // aparece a los 6 s y entra en 2 s
+
+test('CH-03 appears 6 s into stage 5 and holds the route', () => {
+  const {T} = harness({query: '?dev=1'});
+  ch03Fight(T);
+  assert.equal(T.ev('Boolean(ch03Boss)'), true);
+  const elapsed = T.ev('classicFlightView.stageElapsed');
+  T.adv(20);
+  assert.equal(T.stage(), 5);
+  assert.ok(Math.abs(T.ev('classicFlightView.stageElapsed') - elapsed) < .1, 'the stage clock is held');
+});
+
+test('patrols stop while CH-03 fights', () => {
+  const {T} = harness({query: '?dev=1'});
+  ch03Fight(T);
+  const patrols = T.ev('classicPatrolSequence');
+  T.adv(15);
+  assert.equal(T.ev('classicPatrolSequence'), patrols);
+});
+
+test('beating CH-03 resumes the route and drops scrap', () => {
+  const {T} = harness({query: '?dev=1'});
+  ch03Fight(T);
+  T.ev('NeonCampaign.hitCh03Satellite(ch03Boss, 999)');
+  T.adv(2);
+  assert.equal(T.ev('ch03Boss'), null);
+  assert.equal(T.ev('ch03Beaten'), true);
+  // La chatarra del jefe vuela hacia la nave: o sigue en pantalla o ya se cobró.
+  assert.ok(T.ev("items.some(item=>item.salvagePickup&&item.enemyType==='ch03')||classicSalvageState.activeRun.claimed.some(receipt=>receipt.id==='ch03')"));
+  assert.equal(T.toStage(6), 6);
+});
+
+test('its beam and grid hurt the ship', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(8);
+  T.ev("hullGrace=0;classicHullReserve=0;Object.assign(ch03Boss,{state:'attack',attack:'sweep',stateTime:0,beam:{angle:Math.atan2(player.x-ch03Boss.x,player.y-ch03Boss.y),direction:1,active:true}})");
+  const before = T.hull();
+  T.adv(1 / 60);
+  assert.ok(T.hull() < before, 'the beam hurts');
+  T.ev("hullGrace=0;classicHullReserve=0;const c=Math.floor(player.x/(W/6));Object.assign(ch03Boss,{state:'attack',attack:'grid',beam:null,grid:{columns:6,step:0,safe:(c+3)%6,active:true,time:0}})");
+  const mid = T.hull();
+  T.adv(1 / 60);
+  assert.ok(T.hull() < mid, 'the grid hurts');
+});
+
+test('dying during CH-03 and reviving keeps its damage; retrying restarts at stage 1', () => {
+  const {T} = harness();
+  startAt(T, 5); T.adv(9);
+  T.ev('NeonCampaign.hitCh03Satellite(ch03Boss, 15)');
+  const hp = T.ev('ch03Boss.hp');
+  assert.ok(hp < 40, 'the hit counted');
+  T.ev('hull=0'); T.finishGame('hull'); T.resumeReward();
+  assert.equal(T.ev('ch03Boss.hp'), hp);
+  T.finishGame('hull'); T.startLevel(0);
+  assert.deepEqual([T.stage(), T.ev('ch03Boss')], [1, null]);
+});
+
+test('CH-03 only fights in the sector', () => {
+  const {T} = harness();
+  T.startSideVoyage('S1-V2'); T.toStage(5); T.adv(10);
+  assert.equal(T.ev('ch03Boss'), null);
+});
