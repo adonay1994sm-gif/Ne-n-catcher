@@ -1,0 +1,63 @@
+{
+  "assetId": "cronium_energy_atlas_v2",
+  "createdUTC": "2026-10-18",
+  "producedFor": "NEON CRONIUM",
+  "generation": {
+    "tool": "image_gen.imagegen",
+    "transparent_background": true,
+    "references": [],
+    "sourceOutput": "/workspace/generated_images/exec-432c0fc3-821e-4518-895d-9f7a6b3a4e78.png",
+    "prompt": "Create an original production-ready 2D game sprite atlas for NEON CRONIUM: collectable CRONIUM ENERGY, pure luminous cyan-white spatial energy, NOT a crystal, NOT an object, NO metal ring, no frame, no text. One square image with a precisely regular 2-by-2 grid of four equal cells, transparent background throughout. In every cell place ONE self-contained glowing energy sphere at the exact cell center with IDENTICAL overall size and center, airy soft gradual transparent corona. Energy orb should have a small dazzling white-hot center, layered aqua/cyan energetic plasma veils with translucent swirling filaments, one delicate electric blue curl breaking circular perfection, exquisite hand-painted arcade sci-fi light, clean legible at small scale. No hard spherical bubble outline and no glass/metal housing. Four genuinely distinct temporal animation states: top-left compact rising flame spiral, top-right outward plasma curl with lifted filaments, bottom-left rolling crescent of energy flowing anticlockwise, bottom-right gathered pulse releasing two tiny free sparks. Keep shape coherent between frames; do not simply repeat identical orb. Very carefully avoid any square color background, dark matte, opaque black pixels, cut-off glow or cropped filaments. Leave at least one eighth of each cell entirely empty transparent padding on all four sides; all glow and spark alpha must smoothly reach zero WELL BEFORE that boundary. No other decorations, no lines dividing cells, no labels, no stars. Output square high quality RGBA PNG atlas, the art occupies at most 70 percent of each cell width/height. This is real final sprite artwork for energy pickups in outer space; needs beautiful soft volumetric light and reliable silhouette on dark AND light backgrounds.",
+    "copiedOriginalUnmodified": true
+  },
+  "technicalExport": {
+    "script": "export-atlas.cjs",
+    "originalCellSize": 627,
+    "runtimeCellSize": 256,
+    "paddingPixels": 32,
+    "alphaCleanup": "Discard alpha <=2/255 only; preserve original master unmodified",
+    "normalization": "Center by intensity-weighted white-hot energy; enclose full illustrated alpha silhouette; resize and pack",
+    "webp": {
+      "quality": 90,
+      "alphaQuality": 100,
+      "effort": 6,
+      "smartSubsample": true
+    }
+  },
+  "files": [
+    {
+      "path": "masters/cronium_energy_atlas_generated_v2.png",
+      "bytes": 1708798,
+      "sha256": "5f313a9588f6d6b2a5d8eaa26521e545da2d05aba2989c931cad4166c270ddc0"
+    },
+    {
+      "path": "masters/cronium_energy_atlas_normalized_v2.png",
+      "bytes": 247275,
+      "sha256": "5b1ef7589b6d2d7c578dd3818432a462ead43a889bd5f2e436e51203cde195f2"
+    },
+    {
+      "path": "../../assets/cronium_energy_atlas_v2.webp",
+      "bytes": 72176,
+      "sha256": "3b374f972a69d13f9ec11436c8a6221d970b66d31eeb39cb64af61d344820a15"
+    }
+  ],
+  "externalArtworkOrSamples": [],
+  "sourceLicenses": "Original generated artwork; no third-party artwork imported. No assertion of exclusive copyright ownership.",
+  "verification": {
+    "staticAsset": "qa/static-asset-report.json",
+    "blackGrayWhiteVisualReview": "PASS",
+    "browserGameplay": "PENDING_INTEGRATOR",
+    "physicalIPhone": "PENDING",
+    "ownerArtisticApproval": "PENDING"
+  },
+  "integrationStatus": "PENDING_INTEGRATOR",
+  "historicalAssetsPreserved": [
+    "assets/cronium_fragment_v1.webp",
+    "assets/core_frame_00.webp",
+    "assets/core_frame_01.webp",
+    "assets/core_frame_02.webp",
+    "assets/core_frame_03.webp",
+    "assets/core_frame_04.webp",
+    "assets/core_frame_05.webp"
+  ]
+}

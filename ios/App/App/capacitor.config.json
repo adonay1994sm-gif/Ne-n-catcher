@@ -1,0 +1,18 @@
+{
+	"appId": "com.adonay.neoncatcher",
+	"appName": "NEON CRONIUM",
+	"webDir": "www",
+	"backgroundColor": "#050610",
+	"loggingBehavior": "debug",
+	"ios": {
+		"contentInset": "never",
+		"preferredContentMode": "mobile",
+		"scrollEnabled": false
+	},
+	"server": {
+		"androidScheme": "https"
+	},
+	"packageClassList": [
+		"AdMobPlugin"
+	]
+}

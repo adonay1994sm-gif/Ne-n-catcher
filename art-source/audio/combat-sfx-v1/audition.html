@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON CRONIUM · escucha de foley v1</title>
+<style>
+body{background:#07121c;color:#e2f3ff;font:18px/1.5 system-ui;max-width:780px;margin:28px auto;padding:16px}
+button{background:#15354a;border:1px solid #65bccc;border-radius:9px;color:white;padding:14px;margin:8px;cursor:pointer;font:inherit}
+small{color:#91aab7}#status{min-height:2em}
+</style>
+<h1>Foley de combate · escucha manual</h1>
+<p>Banco original. Cada botón alterna dos interpretaciones. No empieza ningún
+sonido hasta pulsar. La mezcla dentro del juego debe revisarse por separado.</p>
+<button id="mute">Detener</button><label>Volumen <input id="volume" type="range" min="0" max="1" step=".05" value=".7"></label>
+<div id="buttons"></div><p id="status" role="status">Pendiente de escucha.</p>
+<small>Servir desde la raíz del repositorio. Este panel es una herramienta de
+autoría, no una captura del juego ni una certificación de dispositivo.</small>
+<script type="module">
+import {createCombatSfx,COMBAT_SFX_CUES} from '../../../src/game/audio/combat-sfx.js';
+let context,sfx;
+const status=document.querySelector('#status');
+for(const name of Object.keys(COMBAT_SFX_CUES)){
+ const button=document.createElement('button');button.textContent=name;button.type='button';
+ button.onclick=async()=>{
+  try{
+   context||=new (window.AudioContext||window.webkitAudioContext)();
+   if(context.state!=='running')await context.resume();
+   sfx||=createCombatSfx({context,output:context.destination,
+    fetchAsset:()=>fetch('../../../assets/combat_sfx_atlas_v1.m4a')});
+   if(!await sfx.load())throw new Error('No se pudo decodificar el banco');
+   sfx.setVolume(Number(document.querySelector('#volume').value));sfx.setPaused(false);
+   status.textContent=sfx.play(name)?'Reproduciendo '+name:'Evento omitido por límite de repetición';
+  }catch(error){status.textContent=error.message;}
+ };
+ document.querySelector('#buttons').append(button);
+}
+document.querySelector('#mute').onclick=()=>{sfx?.setPaused(true);status.textContent='Detenido';};
+document.querySelector('#volume').oninput=event=>sfx?.setVolume(Number(event.target.value));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)sfx?.setPaused(true);});
+</script>
+</html>

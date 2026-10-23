@@ -1,0 +1,232 @@
+{
+  "id": "VFX-FORCE-SHIELD-V1",
+  "name": "Campo envolvente de fuerza — escudo de nave",
+  "created_date": "2026-10-17",
+  "owner": "Neon Catcher art production",
+  "provenance": {
+    "method": "OpenAI image_gen; original generation for this project, then ImageMagick crop/packing/resizing and lossless WebP export. No code-drawn artwork.",
+    "source_generation_path": "/workspace/generated_images/exec-0a0777fe-518e-469b-87da-58730297cf7f.png",
+    "external_assets": [],
+    "rights_notes": "Original generated output for the project; no third-party asset or named franchise requested. No independent legal clearance claimed."
+  },
+  "master": {
+    "generated_file": "art-source/combat-readability/shield/force_shield_generated_master.png",
+    "generated_dimensions": [
+      2172,
+      724
+    ],
+    "packed_file": "art-source/combat-readability/shield/force_shield_atlas_master.png",
+    "packed_dimensions": [
+      2048,
+      512
+    ],
+    "cell_dimensions": [
+      512,
+      512
+    ],
+    "pivot_px": [
+      256,
+      256
+    ],
+    "packing": "Four 543×724 source cells, each resized proportionally to 336×448 and centered on a transparent 512×512 canvas. No stretching or copied frames."
+  },
+  "runtime": {
+    "file": "assets/force_shield_atlas_v1.webp",
+    "format": "WebP lossless RGBA",
+    "dimensions": [
+      1536,
+      384
+    ],
+    "cell_dimensions": [
+      384,
+      384
+    ],
+    "columns": 4,
+    "rows": 1,
+    "pivot_px": [
+      192,
+      192
+    ],
+    "transparency": true,
+    "decoded_rgba_bytes": 2359296,
+    "decoded_rgba_mib": 2.25,
+    "sprite_object_facing": "forward/up, screen-space top-down",
+    "scale_notes": "Do not fit the complete padded square to the hull dimensions. Visible stable rim occupies about 190×287 px of a 384-square cell. Size the rim around the hull; preserve player collision geometry."
+  },
+  "animation_recommendation": {
+    "activation_seconds": 0.2,
+    "stable_pose_cycle_seconds": 1.2,
+    "stable_logical_pose_fps": 1.6666666666666667,
+    "stable_states": [
+      1,
+      2
+    ],
+    "stable_interpolation": "Crossfade stable/pulse using the existing game clock; do not loop activation/impact in idle.",
+    "impact_seconds": 0.18,
+    "impact_state": 3,
+    "events": "Presentation only; damage, collision and power duration remain owned by gameplay.",
+    "raf": "Use existing legacy update/render only; no new RAF, timer or audio owner."
+  },
+  "frames": [
+    {
+      "index": 0,
+      "state": "activation",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 384,
+        "height": 384
+      },
+      "pivot_px": [
+        192,
+        192
+      ],
+      "rgba_sha256": "e9c21a6a92a7d25984999a81015a7e2adce976b1d8d574f0c2c84516f1596bec",
+      "center_probe": {
+        "rect": [
+          156,
+          136,
+          72,
+          112
+        ],
+        "alpha_min_max": [
+          0,
+          74
+        ],
+        "zero_alpha_fraction": 0.6875
+      },
+      "visible_alpha_above_32_bbox": [
+        99,
+        61,
+        286,
+        336
+      ]
+    },
+    {
+      "index": 1,
+      "state": "stable",
+      "rect": {
+        "x": 384,
+        "y": 0,
+        "width": 384,
+        "height": 384
+      },
+      "pivot_px": [
+        192,
+        192
+      ],
+      "rgba_sha256": "ae32402bfd659a9c5e315cdfaf427264ef73fdfa8fda7c36976c19f3f68adab4",
+      "center_probe": {
+        "rect": [
+          156,
+          136,
+          72,
+          112
+        ],
+        "alpha_min_max": [
+          0,
+          1
+        ],
+        "zero_alpha_fraction": 0.9091021825396826
+      },
+      "visible_alpha_above_32_bbox": [
+        97,
+        50,
+        287,
+        337
+      ]
+    },
+    {
+      "index": 2,
+      "state": "pulse",
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 384,
+        "height": 384
+      },
+      "pivot_px": [
+        192,
+        192
+      ],
+      "rgba_sha256": "79d3dc068f22a3bf4ac183f1f66d1399cec9049b65be2df9bc2af810625e4b36",
+      "center_probe": {
+        "rect": [
+          156,
+          136,
+          72,
+          112
+        ],
+        "alpha_min_max": [
+          0,
+          2
+        ],
+        "zero_alpha_fraction": 0.9326636904761905
+      },
+      "visible_alpha_above_32_bbox": [
+        96,
+        45,
+        287,
+        339
+      ]
+    },
+    {
+      "index": 3,
+      "state": "impact",
+      "rect": {
+        "x": 1152,
+        "y": 0,
+        "width": 384,
+        "height": 384
+      },
+      "pivot_px": [
+        192,
+        192
+      ],
+      "rgba_sha256": "f2b508616faffe58dcd53dbfc5e593bd7dfd574e2933cce14ed52d2c1735acb1",
+      "center_probe": {
+        "rect": [
+          156,
+          136,
+          72,
+          112
+        ],
+        "alpha_min_max": [
+          0,
+          32
+        ],
+        "zero_alpha_fraction": 0.9026537698412699
+      },
+      "visible_alpha_above_32_bbox": [
+        97,
+        38,
+        302,
+        337
+      ]
+    }
+  ],
+  "qa": {
+    "generation_visually_reviewed": true,
+    "runtime_visually_reviewed": true,
+    "rgba_unique_frame_count": 4,
+    "center_transparency_probes": "Stable center max alpha 1, pulse max alpha 2, impact max alpha 32 in 72×112 center probe. Interior retains real alpha, not black fill.",
+    "runtime_integration": "PENDING_ROOT_INTEGRATION",
+    "browser_in_game": "PENDING_ROOT_QA",
+    "artistic_acceptance": "PENDING_OWNER",
+    "physical_iphone": "NOT_EXECUTED"
+  },
+  "files": {
+    "art-source/combat-readability/shield/force_shield_generated_master.png": {
+      "bytes": 1745830,
+      "sha256": "fe4ab6ec1f7610a9a06b7a93194fc0bb1e326ec32b4d634ac9f5288cc231bea1"
+    },
+    "art-source/combat-readability/shield/force_shield_atlas_master.png": {
+      "bytes": 691291,
+      "sha256": "db48f4a2a7819696b3ce37d9c28c9e7652c2a3be9194676cd97196988ea0f987"
+    },
+    "assets/force_shield_atlas_v1.webp": {
+      "bytes": 319358,
+      "sha256": "2be20a0f6f8c17035f88bafde15d5607571a9e216d75b1415737ca683c86b5dc"
+    }
+  }
+}

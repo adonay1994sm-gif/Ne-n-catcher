@@ -1,0 +1,65 @@
+# Plan de trabajo nocturno · 21/10/2026
+
+Orden del propietario: «créate suficientes tareas para que no pares; intenta
+fusionar tú los cambios». Assets de referencia:
+https://neon-cronium-video-referencia.chictide18.chatgpt.site (catalog.json).
+
+Reglas de cada tarea:
+
+1. Trabajar en `claude/preparar-publicacion-rtfl9q` (traer antes la base con
+   `git merge --ff-only origin/continuity-assets-audit-20261013`).
+2. Commits pequeños en español; CI completa en local (`check.sh`: build, test,
+   static, content, architecture, engine, run-v7-web-tests, visual-artpass,
+   audio-lifecycle) y `test:preview` en la copia de trabajo.
+3. PR a `continuity-assets-audit-20261013` y **fusionarlo** si todo está verde.
+4. Sin tocar balance, economía, guardados, anuncios, iOS ni `main`.
+5. Marcar la tarea aquí y en `PROGRESO.md`.
+
+## Tareas
+
+- [x] **N1 · Planetas animados por sector.** Integrar los 4 atlas de 7
+      fotogramas (volcánico → Vulkar, glacial → Cryon, violeta → Aether,
+      tormentoso → Titan Omega) en el cielo dibujado de cada sector, con
+      fundido entre fotogramas y giro lento. Pruebas y capturas.
+- [x] **N2 · Capturas por nivel.** Nuevo `scripts/capture-levels.cjs`
+      (`node scripts/capture-levels.cjs --levels 4,6 --wait 3`); el antiguo
+      `visual-rebirth-capture.cjs` depende de menús retirados.
+- [x] **N3 · Especificación del mapa de sector.** `docs/design/MAPA_SECTOR.md`:
+      planetas, rutas, bases, misiones y diálogo con personajes; qué existe y
+      qué falta. Con los planetas del catálogo.
+- [x] **N4 · Mapa de sector jugable (sector 1).** Hecho dentro de RUTA (Jugar sigue retomando el viaje). Pantalla entre viajes con
+      Chronos, la baliza y Gaia, rutas S1-V1…S1-V5 y la base C9; solo S1-V1
+      abre por ahora. Sin cambiar guardados existentes.
+- [x] **N5 · Diálogo con personajes en las bases.** (Mira en C9, Iria en Gaia; retratos pequeños: pedir grandes.) Escena de conversación
+      con retrato, nombre y frases cortas (Mira en C9, Iria en Gaia), usando
+      los retratos que ya existen.
+- [~] **N6 · Fase B · fichas S1-V2…S1-V5.** Ficha S1-V2 hecha y probada con el motor (aún no jugable); mapa de acoplamientos en `docs/design/FASE_B_ACOPLAMIENTOS.md`. Rutas nuevas con el motor por
+      fichas (paisaje y encuentros propios); Atlas pasa a S1-V5 (opción B)
+      solo cuando V2–V5 sean jugables.
+- [x] **N7 · Lanzar S1-V2 desde el mapa.** Hecho como «viaje secundario» (`scripts/side-voyage-smoke.cjs`). Seguir los pasos 1–6 de
+      `FASE_B_ACOPLAMIENTOS.md`; S1-V1 debe seguir idéntico (pruebas actuales).
+- [x] **N8 · Fichas S1-V3, S1-V4 y S1-V5.** Las tres jugables; S1-V5 termina con Atlas.
+- [ ] **N9 · Opción B completa: quitar a Atlas del final de S1-V1.** S1-V1
+      acabaría en la baliza (Atlas visto de lejos); el premio del Gemelo y la
+      conversación de Iria pasan a S1-V5. Unas 65 referencias en 14 pruebas dan
+      por hecho a Atlas en S1-V1: hacerlo en un PR propio, con cuidado.
+      **Probado y deshecho (02:00 UTC):** quitar a Atlas de S1-V1 rompe 26
+      pruebas. Las delicadas son las del diario de completado (270–278, 410,
+      411): hoy la recompensa del Gemelo se guarda de forma atómica junto al
+      desbloqueo de Gaia. Para S1-V5 hay que llevar esa misma garantía al cierre
+      del viaje secundario. Es un cambio de guardados: **espera la revisión del
+      propietario** antes de fusionarlo.
+- [x] **N10 · Sector 2 (Vulkar), primeros viajes.** Pestañas de sector en el
+      mapa (el 2 se abre al completar S1-V5), planeta volcánico por ficha,
+      S2-V1 y S2-V2 jugables.
+- [x] **N11 · S2-V3, S2-V4 y S2-V5** (S2-V5 necesita al Titán de Vulkar: sin
+      arte todavía; de momento sin jefe).
+- [x] **N12 · Encargos de arte** en `docs/art/ENCARGOS_2026-10-21.md`
+      (retratos grandes, Titán de Vulkar, CH-03, iconos del mapa, C-17).
+- [x] **N13 · Auditoría de la noche (auditor-codigo).** Veredicto «NO APTO»
+      con 3 fallos reproducidos; arreglados con prueba JSDOM
+      (`tests/side-voyage-flow.test.mjs`): reintentar tras morir lanzaba S1-V1,
+      rejugar borraba «hecho», HUD visible en el mapa, chatarra con ámbito
+      propio, foco de la conversación, «Etapa n de N» e Iria convencida solo
+      tras S1-V5. Pendiente menor: si se juega un viaje secundario a mitad de
+      S1-V1, la run de chatarra de S1-V1 empieza de nuevo al volver.

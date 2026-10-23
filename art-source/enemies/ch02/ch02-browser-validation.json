@@ -1,0 +1,96 @@
+{
+  "kind": "asset-decoder-check-not-gameplay",
+  "checkedAt": "2026-10-18T06:02:03.160Z",
+  "browser": "154.0.8037.57",
+  "runtime": "assets/ch02_interceptor_atlas_v1.webp",
+  "sha256": "0b1b84b7a14edbc315136339f6f423989d685c7ea4c6122a7a7b88939be78729",
+  "background": "#050b16",
+  "outcome": "PASS",
+  "explanation": "The red inter-cell streaks seen by view_image exist in RGB channels only where alpha is zero. Chromium drawImage composites every fully transparent pixel to the exact requested background.",
+  "naturalWidth": 1024,
+  "naturalHeight": 1024,
+  "transparentPixelCount": 722725,
+  "unexpectedTransparentPixelColor": 0,
+  "samples": [
+    {
+      "x": 250,
+      "y": 340,
+      "decodedCanvasRgba": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compositedRgba": [
+        5,
+        11,
+        22,
+        255
+      ]
+    },
+    {
+      "x": 255,
+      "y": 380,
+      "decodedCanvasRgba": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compositedRgba": [
+        5,
+        11,
+        22,
+        255
+      ]
+    },
+    {
+      "x": 255,
+      "y": 450,
+      "decodedCanvasRgba": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compositedRgba": [
+        5,
+        11,
+        22,
+        255
+      ]
+    },
+    {
+      "x": 512,
+      "y": 540,
+      "decodedCanvasRgba": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compositedRgba": [
+        5,
+        11,
+        22,
+        255
+      ]
+    },
+    {
+      "x": 500,
+      "y": 540,
+      "decodedCanvasRgba": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "compositedRgba": [
+        5,
+        11,
+        22,
+        255
+      ]
+    }
+  ]
+}

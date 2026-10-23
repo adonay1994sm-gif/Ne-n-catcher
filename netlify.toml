@@ -1,5 +1,22 @@
 [build]
-  publish = "."
+  command = "npm run build"
+  publish = "www"
 
 [build.environment]
   NODE_VERSION = "22.13.0"
+
+# Dedicated preview: only main (the working branch since 23/10/2026) receives
+# the non-secret opt-in. The gate still verifies branch, Netlify identity, exact
+# site name and HTTPS host: the original sites that also build main are skipped,
+# and only the separate neon-preview-deploy project publishes; PRs are rejected.
+[context.main]
+  ignore = "node ./scripts/netlify-preview-gate.mjs --ignore"
+  command = "node ./scripts/netlify-preview-gate.mjs --require-enabled && npm run build:preview && npm run test:static && npm run test:preview"
+  publish = "preview-dist"
+
+[context.main.environment]
+  NEON_PREVIEW_DEPLOY = "1"
+
+# Each publish directory supplies its own _headers. The ordinary build copies
+# the existing root _headers unchanged; preview-dist supplies its isolated policy.
+# Do not duplicate headers here: TOML values would override the preview policy.

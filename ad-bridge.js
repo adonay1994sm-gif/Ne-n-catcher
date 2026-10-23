@@ -10,17 +10,35 @@
   const emit = (name, detail = {}) => window.dispatchEvent(new CustomEvent(name, { detail }));
   let initialized = false;
   let adInProgress = false;
+  let adState = "idle";
 
   const isNative = Boolean(nativeBridge?.isAvailable?.());
+
+  function setAdState(next, detail = {}) {
+    adState = next;
+    emit("neon-ad-state", { state: next, ...detail });
+  }
 
   async function withAdLifecycle(kind, operation) {
     if (adInProgress) return false;
     adInProgress = true;
+    setAdState("loading", { kind });
     emit("neon-ad-opening", { kind });
     try {
-      return Boolean(await operation());
+      if (navigator.onLine === false) {
+        setAdState("offline", { kind });
+        return false;
+      }
+      setAdState("show", { kind });
+      const completed = Boolean(await operation());
+      setAdState(completed ? "completed" : "no-fill", { kind });
+      return completed;
+    } catch (error) {
+      setAdState("failed", { kind, message: String(error?.message || error) });
+      return false;
     } finally {
       emit("neon-ad-closed", { kind });
+      setAdState("closed", { kind });
       adInProgress = false;
     }
   }
@@ -42,6 +60,7 @@
 
   window.AdBridge = Object.freeze({
     isNative,
+    getState: () => adState,
 
     async initialize() {
       if (initialized) return isNative;
@@ -50,7 +69,7 @@
         try {
           return await nativeBridge.initialize(nativeConfig);
         } catch (error) {
-          console.warn("[Neon Catcher] AdMob de prueba no pudo inicializarse", error);
+          console.warn("[NEON CRONIUM] AdMob de prueba no pudo inicializarse", error);
           return false;
         }
       }

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-18",
+  "title": "NEON CRONIUM original layered combat foley v2: hostile weapon launches",
+  "initialCommit": "d4b08dcb2f22268944aa73fc4b71bca5f3496c7e",
+  "creator": "Codex combat audio specialist, original offline authoring for project owner",
+  "construction": "Original NumPy/SciPy synthesis. Two enemy-phaser emissions and two enemy-heavy cannon emissions appended to the sixteen retained original v1 performances. No imported samples, soundfont, voice, preset waveform, paid API or additional runtime audio library.",
+  "authoringSource": "art-source/audio/combat-sfx-v2/render_bank.py",
+  "masters": "art-source/audio/combat-sfx-v2/masters",
+  "atlasMaster": "art-source/audio/combat-sfx-v2/combat_sfx_atlas_v2.wav",
+  "runtime": [
+    "assets/combat_sfx_atlas_v2.m4a",
+    "assets/combat_sfx_atlas_v2.json"
+  ],
+  "runtimeSha256": "81a09c0979225d81357cc45b9f45e833a8b751f8c424a95233bcb9ab0a249c27",
+  "runtimeBytes": 277049,
+  "metadataSha256": "ef92c62219e511fb53b054f4c5cbdfdfd281d70e5c574204df8823ce1c504a57",
+  "metadataBytes": 3049,
+  "sourceDurationSeconds": 15.96,
+  "originalPerformances": 20,
+  "measuredDecodedDurationFFmpegSeconds": 15.978666666666667,
+  "estimatedDecodedFloat32Bytes48k": 3064320,
+  "estimatedDecodedFloat32Bytes44100Hz": 2818636,
+  "aacPeakDbfsMeasuredFFmpeg": -2.552554130554199,
+  "aacClippedSamplesMeasuredFFmpeg": 0,
+  "environments": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "rights": {
+    "assets": "Original work created for NEON CRONIUM project owner; no third-party samples or additional asset-license obligations introduced. No new public license asserted for the private project.",
+    "code": "Existing original project renderer and player extended; no external DSP source copied. NumPy/SciPy/FFmpeg are installed authoring tools, not shipped runtime dependencies."
+  },
+  "previousBankRetained": {
+    "audio": "assets/combat_sfx_atlas_v1.m4a",
+    "metadata": "assets/combat_sfx_atlas_v1.json",
+    "source": "art-source/audio/combat-sfx-v1/",
+    "oldPerformancesByteIdentical": true
+  },
+  "review": {
+    "moduleContractTests": "34/34 passed; node --test tests/combat-sfx.test.mjs",
+    "codecDecodeFFmpeg": "PASS: no isolated-bank clipped samples",
+    "runtimeIntegration": "PENDING_ROOT_INTEGRATION",
+    "browserDecode": "PENDING_ROOT_QA",
+    "humanListening": "PENDING",
+    "physicalSafariIPhone": "PENDING",
+    "artisticAcceptance": "PENDING"
+  },
+  "limitations": [
+    "No new music, human recording or final subjective mix is claimed.",
+    "FFmpeg measurements and mocked Web Audio contract tests are not browser or physical-device audio certification.",
+    "The runtime owner must emit enemy-phaser once per accepted patrol projectile and enemy-heavy once per accepted heavy Atlas volley. Mute/pause/throttle must never fall back to a beep."
+  ]
+}

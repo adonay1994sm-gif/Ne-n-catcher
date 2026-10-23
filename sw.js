@@ -1,30 +1,57 @@
-const CACHE = "neon-catcher-v6-8-base-maestra";
+const CACHE = "neon-cronium-pre-release-7-2-0-orbital-hud-2";
 const CORE = [
+  "assets/combat_sfx_atlas_v2.m4a",
+  "assets/combat_sfx_atlas_v2.json",
+  "assets/cronium_energy_atlas_v2.webp",
+  "assets/chapter1_opening_score_v1.m4a",
+  "assets/chapter1_voyage_score_v1.m4a",
+  "assets/chapter1_portraits_v1.webp",
+  "assets/chapter1_missile_atlas_v1.webp",
+  "assets/c9_upgrade_icons_v1.webp",
+  "assets/forja_modules_atlas_v1.webp",
+  "assets/player_ship_identity_v1.webp",
+  "assets/comet_flight_atlas_v3.webp",
+  "assets/sector_map_icons_v1.webp",
+  "assets/character_portraits_v1.webp",
+  "assets/mission_sector1_v1.webp",
+  "assets/mission_sector2_v1.webp",
+  "assets/hull_impact_sparks_v1.webp",
+  "assets/cronos_prime_trail_v1.webp",
+  "assets/atlas_explosion_v1.webp",
+  "assets/lava_core_mine_atlas_v1.webp",
   "./",
   "index.html",
-  "styles.css?v=6.8.0",
-  "native-admob.js?v=6.8.0",
-  "ads-config.js?v=6.8.0",
-  "ad-bridge.js?v=6.8.0",
-  "core-runtime.js?v=6.8.0",
-  "game.js?v=6.8.0",
+  "styles.css?v=7.2.0",
+  "native-admob.js?v=7.2.0",
+  "ads-config.js?v=7.2.0",
+  "ad-bridge.js?v=7.2.0",
+  "analytics-manager.js?v=7.2.0",
+  "core-runtime.js?v=7.2.0",
+  "content-runtime.js?v=7.2.0",
+  "game.js?v=7.2.0",
   "manifest.webmanifest",
   "privacy.html",
   "terms.html",
   "assets/icon-192.png",
   "assets/icon-512.png",
-  "assets/ship_frame_00.webp",
-  "assets/ship_frame_01.webp",
-  "assets/ship_frame_02.webp",
-  "assets/ship_frame_03.webp",
-  "assets/ship_frame_04.webp",
-  "assets/ship_frame_05.webp",
+  "assets/ship_modular_atlas_v1.webp",
+  "assets/chronos_flight_atlas_v1.webp",
+  "assets/chronos_destruction_atlas_v1.webp",
+  "assets/chronos_flight_weapons_v1.webp",
+  "assets/chronos_flight_space_v1.webp",
+  "assets/vulkar_orbit_planet_v1.webp",
+  "assets/planet_volcanico_atlas_v1.webp",
+  "assets/planet_glacial_atlas_v1.webp",
+  "assets/planet_violeta_atlas_v1.webp",
+  "assets/planet_tormentoso_atlas_v1.webp",
+  "assets/force_shield_atlas_v1.webp",
   "assets/core_frame_00.webp",
   "assets/core_frame_01.webp",
   "assets/core_frame_02.webp",
   "assets/core_frame_03.webp",
   "assets/core_frame_04.webp",
   "assets/core_frame_05.webp",
+  "assets/cronium_fragment_v1.webp",
   "assets/phaser_frame_00.webp",
   "assets/phaser_frame_01.webp",
   "assets/phaser_frame_02.webp",
@@ -57,7 +84,13 @@ const CORE = [
   "assets/meteor_medium.webp",
   "assets/meteor_medium_alt.webp",
   "assets/meteor_large.webp",
-  "assets/comet_fire.webp",
+  "assets/ch01_atlas_v1.webp",
+  "assets/ch02_interceptor_atlas_v1.webp",
+  "assets/guardian_atlas_states_v2.webp",
+  "assets/atlas_combat_vfx_v1.webp",
+  "assets/arcade_pulse_atlas_v2.webp",
+  "assets/hostile_ordnance_atlas_v1.webp",
+  "assets/gaia_pulse_atlas_v3.webp",
   "assets/debris_metal.webp",
   "assets/debris_panel.webp",
   "assets/debris_hot_00.webp",
@@ -67,42 +100,63 @@ const CORE = [
   "assets/shield_effect.webp",
   "assets/shield_idle.webp",
   "assets/explosion_small.webp",
-  "assets/cronos_level1_background.webp"
+  "assets/chronos_shockwave_atlas_v1.webp",
+  "assets/chronos_detached_module_v1.webp"
 ];
 
+// addAll es "todo o nada": si un solo archivo falla, la instalación entera
+// falla y el juego se queda sin modo sin conexión. En ese caso se guarda
+// archivo a archivo y solo se omiten los que fallen; se descargarán al usarse.
+async function precache() {
+  const cache = await caches.open(CACHE);
+  try {
+    await cache.addAll(CORE);
+  } catch {
+    await Promise.all(CORE.map(async (path) => {
+      try {
+        const response = await fetch(path);
+        if (response?.ok) await cache.put(path, response);
+      } catch {
+        // Archivo omitido; networkFirst/cacheFirst lo recuperarán más tarde.
+      }
+    }));
+  }
+}
+
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)));
-  self.skipWaiting();
+  event.waitUntil(precache().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 async function networkFirst(request) {
+  // Retain this generation's handle before waiting for the network. If a newer
+  // worker deletes its name, this response must not reopen that retired cache.
+  const cache = await caches.open(CACHE);
   try {
     const response = await fetch(request, { cache: "no-store" });
     if (response?.status === 200) {
       const copy = response.clone();
-      const cache = await caches.open(CACHE);
       await cache.put(request, copy);
     }
     return response;
   } catch {
-    return (await caches.match(request)) || (request.mode === "navigate" ? caches.match("index.html") : undefined);
+    return (await cache.match(request)) || (request.mode === "navigate" ? cache.match("index.html") : undefined);
   }
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(request);
   if (cached) return cached;
   const response = await fetch(request);
   if (response?.status === 200) {
     const copy = response.clone();
-    const cache = await caches.open(CACHE);
     await cache.put(request, copy);
   }
   return response;

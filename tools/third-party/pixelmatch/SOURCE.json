@@ -1,0 +1,32 @@
+{
+  "repo": "mapbox/pixelmatch",
+  "default_branch": "main",
+  "sha": "ab76f526ef951c0ec6284e314a700e161b1800e6",
+  "pushed_at": "2026-10-06T14:08:46Z",
+  "license_metadata": {
+    "key": "isc",
+    "name": "ISC License",
+    "spdx_id": "ISC",
+    "url": "https://api.github.com/licenses/isc",
+    "node_id": "MDc6TGljZW5zZTEw"
+  },
+  "archived": false,
+  "interesting_files": [
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "usage": "Development-only RGBA asset QA; no runtime bundle or upstream CLI dependencies",
+  "files": {
+    "index.js": {
+      "sha256": "5b8583627704b4e1fe4fea472c283c8ca03d10ae4c94e5e029ea3b271a998ee6",
+      "bytes": 24743,
+      "url": "https://raw.githubusercontent.com/mapbox/pixelmatch/ab76f526ef951c0ec6284e314a700e161b1800e6/index.js"
+    },
+    "LICENSE": {
+      "sha256": "cfec0482fb785fe27e3b368a2d9e84bf7a61b275e83ec582bf288e98cd530bb0",
+      "bytes": 738,
+      "url": "https://raw.githubusercontent.com/mapbox/pixelmatch/ab76f526ef951c0ec6284e314a700e161b1800e6/LICENSE"
+    }
+  }
+}

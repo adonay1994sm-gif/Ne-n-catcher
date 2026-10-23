@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Neon Catcher: Expedition",
-  "short_name": "NeonCatcher",
+  "name": "NEON CRONIUM",
+  "short_name": "NEON CRONIUM",
   "description": "Expedición arcade por diez sectores galácticos con núcleos limitados, obstáculos espaciales y sistemas de nave.",
   "lang": "es",
   "start_url": "./",
@@ -23,3 +23,4 @@
     }
   ]
 }
+

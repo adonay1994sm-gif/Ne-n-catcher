@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "id": "chapter1.portraits.v1",
+  "status": "IN_REVIEW",
+  "technicalAcceptance": "GAMEPLAY_AND_VISUAL_CHROMIUM_PASSED",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "runtime": "assets/chapter1_portraits_v1.webp",
+  "master": "chapter1-portraits-generated-master.png",
+  "packedMaster": "portraits-packed-master.png",
+  "masterDimensions": {
+    "width": 2172,
+    "height": 724
+  },
+  "dimensions": {
+    "width": 768,
+    "height": 256
+  },
+  "layout": {
+    "columns": 3,
+    "rows": 1,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "transparent": true,
+  "runtimeBytes": 67988,
+  "decodedRgbaBytes": 786432,
+  "runtimeSha256": "445980a34b7d2982a61632e2ac0ca73a2f48cd9906cba6c82996afc098b115f3",
+  "masterSha256": "c5143b3e8c5de36f9305afe3b16acd393d56c5797a0b84cfe2787448040f2a20",
+  "uniqueFrames": 3,
+  "animation": {
+    "type": "Three static illustrated portraits, not animation frames",
+    "loop": false
+  },
+  "frames": [
+    {
+      "index": 0,
+      "kind": "lira-chronos-operator",
+      "source": "frames/00-lira-chronos-operator.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 0,
+        "width": 724,
+        "height": 724
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "817fced5da7736c658aef06424de9c821be0a4c7d3003f3484a9c1f9bb0e0db4",
+      "alphaBounds": {
+        "minX": 16,
+        "minY": 18,
+        "maxX": 237,
+        "maxY": 239
+      },
+      "visiblePixels": 28969,
+      "transparentPixels": 34936,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 1,
+      "kind": "mira-c9-chief",
+      "source": "frames/01-mira-c9-chief.png",
+      "sourceRect": {
+        "x": 724,
+        "y": 0,
+        "width": 724,
+        "height": 724
+      },
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "8d97a1720ab02f958a90586534a56c4bc95aa379b29e69315cef68dffece29de",
+      "alphaBounds": {
+        "minX": 22,
+        "minY": 16,
+        "maxX": 234,
+        "maxY": 239
+      },
+      "visiblePixels": 30167,
+      "transparentPixels": 34242,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 2,
+      "kind": "iria-gaia-commander",
+      "source": "frames/02-iria-gaia-commander.png",
+      "sourceRect": {
+        "x": 1448,
+        "y": 0,
+        "width": 724,
+        "height": 724
+      },
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "bf0b4046d2c9e684d824c623d3c16591e02e2578fcaf1a1b2543bfdd949ea22f",
+      "alphaBounds": {
+        "minX": 20,
+        "minY": 16,
+        "maxX": 237,
+        "maxY": 239
+      },
+      "visiblePixels": 27268,
+      "transparentPixels": 37160,
+      "maximumSixteenPixelGutterAlpha": 0
+    }
+  ],
+  "provenance": {
+    "created": "2026-10-18",
+    "productionTool": "image_gen.imagegen",
+    "productionMode": "Original generation from a written brief, in parallel with Canva concept; no image-to-image reference supplied",
+    "sourceOriginal": "/workspace/generated_images/exec-84b40b1f-25d0-48a8-a0bc-d59bcef7ae54.png",
+    "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
+    "canvaConcept": null,
+    "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
+  },
+  "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
+}

@@ -1,0 +1,587 @@
+{
+  "schemaVersion": 1,
+  "id": "combat.arcade-pulse.v2",
+  "revision": "arcade-pulse-v2",
+  "status": "IN_REVIEW",
+  "technicalAcceptance": "ASSET_EXPORT_VALIDATED_GAMEPLAY_PENDING",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "runtime": "assets/arcade_pulse_atlas_v2.webp",
+  "master": "arcade-pulse-master-v2.png",
+  "masterDimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "dimensions": {
+    "width": 1024,
+    "height": 1024
+  },
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "forward": {
+    "x": 0,
+    "y": -1
+  },
+  "transparent": true,
+  "decodedRgbaBytes": 4194304,
+  "runtimeBytes": 119850,
+  "frames": [
+    {
+      "index": 0,
+      "kind": "pulse",
+      "sourceRect": {
+        "x": 21,
+        "y": 20,
+        "width": 300,
+        "height": 320
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "57b094158fc1972ca5acf4762cdde8378f5cbfd9c1bf0c2344c5eba67ba1ec2b",
+      "alphaBounds": {
+        "minX": 96,
+        "minY": 26,
+        "maxX": 212,
+        "maxY": 226
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.47201492537313,
+        "y": 101.83582089552239
+      }
+    },
+    {
+      "index": 1,
+      "kind": "pulse",
+      "sourceRect": {
+        "x": 326,
+        "y": 20,
+        "width": 300,
+        "height": 320
+      },
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "77228a1b3259b8333e7d673a9b938b222470ced1a813ba77fca9aacafe654e44",
+      "alphaBounds": {
+        "minX": 44,
+        "minY": 26,
+        "maxX": 219,
+        "maxY": 232
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.7726864330638,
+        "y": 102.38724168912849
+      }
+    },
+    {
+      "index": 2,
+      "kind": "pulse",
+      "sourceRect": {
+        "x": 630,
+        "y": 20,
+        "width": 300,
+        "height": 320
+      },
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "276c45db9c747e063f9679b055c398419befd981bfbe67e7ef15c40c57a64a0b",
+      "alphaBounds": {
+        "minX": 49,
+        "minY": 38,
+        "maxX": 219,
+        "maxY": 225
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 128.0013966480447,
+        "y": 109.03212290502793
+      }
+    },
+    {
+      "index": 3,
+      "kind": "pulse",
+      "sourceRect": {
+        "x": 936,
+        "y": 20,
+        "width": 300,
+        "height": 320
+      },
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "4c973a48e5e43ca9cc2a1239d115875036d11704b105b1c6d5c50a4d2226e435",
+      "alphaBounds": {
+        "minX": 46,
+        "minY": 21,
+        "maxX": 219,
+        "maxY": 231
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.31362467866325,
+        "y": 102.69151670951157
+      }
+    },
+    {
+      "index": 4,
+      "kind": "twin",
+      "sourceRect": {
+        "x": 21,
+        "y": 350,
+        "width": 300,
+        "height": 270
+      },
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "6a322ddb4b319d9003503b3e8430b248077a36ca3d1c07b19191d2dfe651d677",
+      "alphaBounds": {
+        "minX": 21,
+        "minY": 43,
+        "maxX": 229,
+        "maxY": 223
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.42057942057941,
+        "y": 117.61638361638362
+      }
+    },
+    {
+      "index": 5,
+      "kind": "twin",
+      "sourceRect": {
+        "x": 327,
+        "y": 350,
+        "width": 300,
+        "height": 270
+      },
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "a248484ff82623917e475b0b56a8a277c036a3383acf8405ff3fe58d1e8949c6",
+      "alphaBounds": {
+        "minX": 24,
+        "minY": 31,
+        "maxX": 231,
+        "maxY": 227
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 128.22447552447554,
+        "y": 118.53006993006993
+      }
+    },
+    {
+      "index": 6,
+      "kind": "twin",
+      "sourceRect": {
+        "x": 631,
+        "y": 350,
+        "width": 300,
+        "height": 270
+      },
+      "rect": {
+        "x": 512,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "5a8a02886e418a2103d37eb93c4de5527ab0c909654ef9205e69bbd07bf1dc8e",
+      "alphaBounds": {
+        "minX": 22,
+        "minY": 36,
+        "maxX": 227,
+        "maxY": 213
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 128.0663856691254,
+        "y": 113.65753424657534
+      }
+    },
+    {
+      "index": 7,
+      "kind": "twin",
+      "sourceRect": {
+        "x": 937,
+        "y": 350,
+        "width": 300,
+        "height": 270
+      },
+      "rect": {
+        "x": 768,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "82d4d2a3d1376d6c27d0986cbcc7c3f30026c39f164629c5942c6937861c9fad",
+      "alphaBounds": {
+        "minX": 38,
+        "minY": 31,
+        "maxX": 238,
+        "maxY": 215
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.59448275862069,
+        "y": 109.83586206896551
+      }
+    },
+    {
+      "index": 8,
+      "kind": "lance",
+      "sourceRect": {
+        "x": 21,
+        "y": 620,
+        "width": 300,
+        "height": 340
+      },
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "f67c06c5004711c3f9218d2db907d3d76aea833fce744b328dc2163b9a9dffcd",
+      "alphaBounds": {
+        "minX": 54,
+        "minY": 30,
+        "maxX": 192,
+        "maxY": 230
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.96931659693166,
+        "y": 117.08228730822873
+      }
+    },
+    {
+      "index": 9,
+      "kind": "lance",
+      "sourceRect": {
+        "x": 327,
+        "y": 620,
+        "width": 300,
+        "height": 340
+      },
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "62d78cb9eaa15eba0efa87c2b419db82e56a5b7621de7c2340262575262ca615",
+      "alphaBounds": {
+        "minX": 43,
+        "minY": 22,
+        "maxX": 203,
+        "maxY": 239
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.72535211267606,
+        "y": 111.57130281690141
+      }
+    },
+    {
+      "index": 10,
+      "kind": "lance",
+      "sourceRect": {
+        "x": 631,
+        "y": 620,
+        "width": 300,
+        "height": 340
+      },
+      "rect": {
+        "x": 512,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "ddc0e77dc47606009f2f525cbd95aaa6166394c353b1792309fe061d5fd1f0bf",
+      "alphaBounds": {
+        "minX": 59,
+        "minY": 16,
+        "maxX": 197,
+        "maxY": 231
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.75430539609644,
+        "y": 117.40068886337544
+      }
+    },
+    {
+      "index": 11,
+      "kind": "lance",
+      "sourceRect": {
+        "x": 937,
+        "y": 620,
+        "width": 300,
+        "height": 340
+      },
+      "rect": {
+        "x": 768,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "976710c8a8787ad41350f67ac72dbd0cec832741ad395bbdb8e20eb5cc2d89e1",
+      "alphaBounds": {
+        "minX": 54,
+        "minY": 32,
+        "maxX": 213,
+        "maxY": 230
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 127.5527950310559,
+        "y": 116.11024844720497
+      }
+    },
+    {
+      "index": 12,
+      "kind": "impact",
+      "sourceRect": {
+        "x": 21,
+        "y": 975,
+        "width": 300,
+        "height": 245
+      },
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "9cf6321ca7c80a079bb68d1c1dff2441128cf5ab19e8b44fc847cb87ed830eaa",
+      "alphaBounds": {
+        "minX": 33,
+        "minY": 42,
+        "maxX": 235,
+        "maxY": 203
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 128.02461538461537,
+        "y": 127.56923076923077
+      }
+    },
+    {
+      "index": 13,
+      "kind": "impact",
+      "sourceRect": {
+        "x": 328,
+        "y": 975,
+        "width": 300,
+        "height": 245
+      },
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "e86a36ee78beea2c71c7d5e5a6014fcfddf8832d2830f883f5f5c3e26eeb26d1",
+      "alphaBounds": {
+        "minX": 16,
+        "minY": 36,
+        "maxX": 236,
+        "maxY": 215
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 129.8008385744235,
+        "y": 127.38574423480084
+      }
+    },
+    {
+      "index": 14,
+      "kind": "impact",
+      "sourceRect": {
+        "x": 632,
+        "y": 975,
+        "width": 300,
+        "height": 245
+      },
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "c57067224a308b267610fe7ba4bceaf8a7722d873ab89a0418c8392de9d69e5a",
+      "alphaBounds": {
+        "minX": 26,
+        "minY": 52,
+        "maxX": 234,
+        "maxY": 215
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 111.79797979797979,
+        "y": 112.5050505050505
+      }
+    },
+    {
+      "index": 15,
+      "kind": "impact",
+      "sourceRect": {
+        "x": 936,
+        "y": 975,
+        "width": 300,
+        "height": 245
+      },
+      "rect": {
+        "x": 768,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "d49de835313625f95f7b9e7a2231e5fdc8af13b95e69642ac1ff8779c06f8afb",
+      "alphaBounds": {
+        "minX": 76,
+        "minY": 73,
+        "maxX": 188,
+        "maxY": 205
+      },
+      "maximumBorderAlpha": 0,
+      "brightCoreCenter": {
+        "x": 114,
+        "y": 132.875
+      }
+    }
+  ],
+  "animations": {
+    "pulse": {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "durationMs": [
+        60,
+        60,
+        60,
+        60
+      ],
+      "totalMs": 240,
+      "nominalFps": 16.666666666666668,
+      "loop": true,
+      "recommendedDrawSizeLogical": 72
+    },
+    "twin": {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "durationMs": [
+        50,
+        50,
+        50,
+        50
+      ],
+      "totalMs": 200,
+      "nominalFps": 20,
+      "loop": true,
+      "recommendedDrawSizeLogical": 72
+    },
+    "lance": {
+      "frames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "durationMs": [
+        55,
+        55,
+        55,
+        55
+      ],
+      "totalMs": 220,
+      "nominalFps": 18.181818181818183,
+      "loop": true,
+      "recommendedDrawSizeLogical": 88
+    },
+    "impact": {
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "durationMs": [
+        35,
+        55,
+        75,
+        95
+      ],
+      "totalMs": 260,
+      "nominalFps": 28.571428571428573,
+      "loop": false,
+      "recommendedDrawSizeLogical": 42
+    }
+  },
+  "playback": {
+    "clock": "Use elapsed age from the existing projectile/impact update; no new RAF or timers.",
+    "orientation": "Artwork points up. Do not rotate for the default ascending shot; atan2(vy,vx)+PI/2 only for nonvertical paths.",
+    "anchoring": "Logical collision position and illustrated projectile center share x/y. All square atlas cells use normalized pivot .5/.5.",
+    "impact": "Play once on a real collision, then remove after 260 ms; never create a second damage event from a visual frame."
+  },
+  "provenance": {
+    "method": "OpenAI image_gen original generation; ImageMagick registration, crop/repack and WebP export",
+    "generatedAtUtcDate": "2026-10-18",
+    "sourceOutput": "exec-f53f3c9a-3a21-49ee-8eaf-3a7539a3607d.png",
+    "styleReferencesInspected": [
+      "assets/chronos_flight_weapons_v1.webp",
+      "assets/atlas_combat_vfx_v1.webp"
+    ],
+    "generationReferenceImagesSubmitted": [],
+    "prompt": "PROVENANCE.md",
+    "rights": "Original effects generated for this project using the available image_gen tool. No third-party stock, purchased licenses or copied franchise assets. Legal clearance is not asserted."
+  },
+  "hashes": {
+    "masterSha256": "9c2b0840081033839893a253ffbf2529b80e5713a63b0065dafdcf05de4715f3",
+    "runtimeSha256": "f76d93ddc2f23fde7f70f7bf6d423c5566d81721f049b2316b7a91c4c3604cb9"
+  },
+  "verificationLimits": [
+    "Not a gameplay capture; runtime loader, combat alignment and effects must be integrated and verified separately.",
+    "Generated core and glow vary by pose; exact geometric registration is approximate and the collision anchor remains code-owned.",
+    "Sixteen unique illustrated poses are not a promise of skeletal interpolation or physical iPhone certification."
+  ]
+}

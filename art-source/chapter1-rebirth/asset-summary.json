@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "status": "IN_REVIEW",
+  "assets": [
+    {
+      "schemaVersion": 1,
+      "id": "chapter1.intro.v1",
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "GAMEPLAY_AND_VISUAL_CHROMIUM_PASSED",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "runtime": "assets/chapter1_intro_atlas_v1.webp",
+      "master": "chapter1-intro-generated-master.png",
+      "packedMaster": "intro-packed-master.png",
+      "masterDimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "layout": {
+        "columns": 2,
+        "rows": 2,
+        "frameWidth": 512,
+        "frameHeight": 768
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "transparent": false,
+      "runtimeBytes": 490076,
+      "decodedRgbaBytes": 6291456,
+      "runtimeSha256": "231c0e399aca61b83582c456cf2eb992b605474f1329ee5faf4ddac2170bf724",
+      "masterSha256": "970004f0bccdd1ac9bf91b51c0fdd03975e5f4759d55ee729ca02c3a21525bb6",
+      "uniqueFrames": 4,
+      "animation": {
+        "frames": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "Four distinct authored story states; timed transitions belong to game presentation",
+        "loop": false
+      },
+      "provenance": {
+        "created": "2026-10-18",
+        "productionTool": "image_gen.imagegen",
+        "productionMode": "Original generation from a written brief, in parallel with Canva concept; no image-to-image reference supplied",
+        "sourceOriginal": "/workspace/generated_images/exec-082afceb-188a-4016-b4c9-b12d8caa86c5.png",
+        "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
+        "canvaConcept": {
+          "mediaId": "MAHYWkFSixE",
+          "retained": "canva-concept-thumbnail.jpg",
+          "link": "https://www.canva.com/M/MAHYWkFSixE?utm_source=OC-AaBlKrqBJJNF&utm_campaign=agent_connector_create_image_asset_opened",
+          "limitation": "Available Canva image connector returns a preview and MEDIA reference, without an original-byte export endpoint. No video export or paid capability was purchased."
+        },
+        "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
+      },
+      "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "chapter1.portraits.v1",
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "GAMEPLAY_AND_VISUAL_CHROMIUM_PASSED",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "runtime": "assets/chapter1_portraits_v1.webp",
+      "master": "chapter1-portraits-generated-master.png",
+      "packedMaster": "portraits-packed-master.png",
+      "masterDimensions": {
+        "width": 2172,
+        "height": 724
+      },
+      "dimensions": {
+        "width": 768,
+        "height": 256
+      },
+      "layout": {
+        "columns": 3,
+        "rows": 1,
+        "frameWidth": 256,
+        "frameHeight": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "transparent": true,
+      "runtimeBytes": 67988,
+      "decodedRgbaBytes": 786432,
+      "runtimeSha256": "445980a34b7d2982a61632e2ac0ca73a2f48cd9906cba6c82996afc098b115f3",
+      "masterSha256": "c5143b3e8c5de36f9305afe3b16acd393d56c5797a0b84cfe2787448040f2a20",
+      "uniqueFrames": 3,
+      "animation": {
+        "type": "Three static illustrated portraits, not animation frames",
+        "loop": false
+      },
+      "provenance": {
+        "created": "2026-10-18",
+        "productionTool": "image_gen.imagegen",
+        "productionMode": "Original generation from a written brief, in parallel with Canva concept; no image-to-image reference supplied",
+        "sourceOriginal": "/workspace/generated_images/exec-84b40b1f-25d0-48a8-a0bc-d59bcef7ae54.png",
+        "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
+        "canvaConcept": null,
+        "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
+      },
+      "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "chapter1.missile.v1",
+      "status": "IN_REVIEW",
+      "technicalAcceptance": "LAUNCH_FLIGHT_CHROMIUM_PASSED_IMPACT_POSES_PENDING",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalAcceptance": "PENDING",
+      "runtime": "assets/chapter1_missile_atlas_v1.webp",
+      "master": "chapter1-missile-generated-master.png",
+      "packedMaster": "missile-packed-master.png",
+      "masterDimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "layout": {
+        "columns": 4,
+        "rows": 4,
+        "frameWidth": 256,
+        "frameHeight": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "forward": {
+        "x": 0,
+        "y": -1
+      },
+      "transparent": true,
+      "runtimeBytes": 246250,
+      "decodedRgbaBytes": 4194304,
+      "runtimeSha256": "8b4949b8e87b8b1e2c744ea9b3f227025ca21e365251d9266d4c09ee6f379a05",
+      "masterSha256": "02a09c3cbeeb32412e670fe736295d4f3c500c40f31e8ccd38b753bf6e15fa03",
+      "uniqueFrames": 16,
+      "animation": {
+        "flight": {
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fps": 12,
+          "loop": true
+        },
+        "launch": {
+          "frames": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "fps": 12,
+          "loop": false,
+          "durationSeconds": 0.3333333333333333
+        },
+        "impact": {
+          "frames": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "fps": 16,
+          "loop": false,
+          "durationSeconds": 0.25
+        },
+        "aftermath": {
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "fps": 10,
+          "loop": false,
+          "durationSeconds": 0.4
+        }
+      },
+      "provenance": {
+        "created": "2026-10-18",
+        "productionTool": "image_gen.imagegen",
+        "productionMode": "Original generation from a written brief, in parallel with Canva concept; no image-to-image reference supplied",
+        "sourceOriginal": "/workspace/generated_images/exec-ded0a96a-5681-478f-b7eb-48074c6e9e0b.png",
+        "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
+        "canvaConcept": null,
+        "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
+      },
+      "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+      "runtimeStateIntegration": {
+        "launch": "INTEGRATED",
+        "flight": "INTEGRATED",
+        "impact": "PENDING_OWN_ATLAS_POSES_USES_EXISTING_GAIA_VFX",
+        "aftermath": "PENDING_OWN_ATLAS_POSES"
+      }
+    }
+  ]
+}

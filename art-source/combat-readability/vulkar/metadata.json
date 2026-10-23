@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-17",
+  "productionBatch": "combat-readability-vulkar-orbit",
+  "generator": "image_gen.imagegen",
+  "generationProvenance": "generation-prompts.json",
+  "provenanceRights": {
+    "source": "original generation using the session-provided image generation tool",
+    "thirdPartyAssetImports": [],
+    "franchiseReferences": [],
+    "commercialLegalClearance": "NOT_ASSESSED; generation provenance is not a legal guarantee"
+  },
+  "status": "GENERATED_EXPORTED_PENDING_GAME_INTEGRATION",
+  "assets": [
+    {
+      "id": "VR-VULKAR-ORBIT-BG-01",
+      "name": "Vulkar — espacio y restos de refinería",
+      "state": "IN_REVIEW",
+      "technicalArtExport": "PASSED",
+      "integration": "PENDING_INTEGRATOR",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalDevice": "NOT_TESTED",
+      "master": {
+        "path": "art-source/combat-readability/vulkar/background-master.png",
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "mode": "RGB",
+        "bytes": 2191751,
+        "sha256": "8c25abf632ed7bd41d6dd191e28e455fee72c6465b7dce5d34f780732ce8ddad",
+        "decodedRGBABytes": 6291456
+      },
+      "runtime": {
+        "path": "assets/vulkar_orbit_background_v1.webp",
+        "width": 768,
+        "height": 1152,
+        "format": "WEBP",
+        "mode": "RGB",
+        "bytes": 84274,
+        "sha256": "1d927708973b8b53b091f4e23e28e3f5bc51192b53336074124d0387dde8b1ed",
+        "decodedRGBABytes": 3538944
+      },
+      "transparent": false,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5,
+        "normalized": true
+      },
+      "frames": 1,
+      "fps": 0,
+      "animation": {
+        "type": "independent illustrated layer; route-driven transform pending integration",
+        "loop": false,
+        "frameEvents": []
+      },
+      "scale": {
+        "policy": "preserve aspect ratio",
+        "worldGeometryChanged": false
+      },
+      "optimization": {
+        "tool": "ImageMagick 7.1.1-43 Q16",
+        "quality": 87,
+        "webpMethod": 6,
+        "alphaQuality": null
+      }
+    },
+    {
+      "id": "VR-VULKAR-ORBIT-PLANET-01",
+      "name": "Vulkar — planeta volcánico orbital",
+      "state": "IN_REVIEW",
+      "technicalArtExport": "PASSED",
+      "integration": "PENDING_INTEGRATOR",
+      "artisticAcceptance": "PENDING_OWNER",
+      "physicalDevice": "NOT_TESTED",
+      "master": {
+        "path": "art-source/combat-readability/vulkar/planet-master.png",
+        "width": 1254,
+        "height": 1254,
+        "format": "PNG",
+        "mode": "RGBA",
+        "bytes": 2641307,
+        "sha256": "e23d483ccd11ddf52dec4a76b816af92d84c16f82fcdfbb5ad0464f7fee3209a",
+        "decodedRGBABytes": 6290064,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "fullyTransparentPixels": 471226,
+          "partiallyTransparentPixels": 1100982
+        }
+      },
+      "runtime": {
+        "path": "assets/vulkar_orbit_planet_v1.webp",
+        "width": 640,
+        "height": 640,
+        "format": "WEBP",
+        "mode": "RGBA",
+        "bytes": 147122,
+        "sha256": "a9ffc6ec2e860f281dea3557bda3f1b54c5f91a9beb623fd57b6b6014742bd67",
+        "decodedRGBABytes": 1638400,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "fullyTransparentPixels": 122863,
+          "partiallyTransparentPixels": 286737
+        }
+      },
+      "transparent": true,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5,
+        "normalized": true
+      },
+      "frames": 1,
+      "fps": 0,
+      "animation": {
+        "type": "independent illustrated layer; route-driven transform pending integration",
+        "loop": false,
+        "frameEvents": []
+      },
+      "scale": {
+        "policy": "preserve aspect ratio",
+        "worldGeometryChanged": false
+      },
+      "optimization": {
+        "tool": "ImageMagick 7.1.1-43 Q16",
+        "quality": 89,
+        "webpMethod": 6,
+        "alphaQuality": 100
+      }
+    }
+  ],
+  "totals": {
+    "runtimeEncodedBytes": 231396,
+    "runtimeDecodedRGBABytes": 5177344,
+    "masterEncodedBytes": 4833058
+  },
+  "review": {
+    "mastersViewed": true,
+    "runtimeViewed": true,
+    "transparentLayerCompositedOnDark": true,
+    "preview": "planet-runtime-on-dark-qa.png",
+    "gameplayScreenshot": false,
+    "buildRun": false,
+    "gameplayCertified": false
+  }
+}

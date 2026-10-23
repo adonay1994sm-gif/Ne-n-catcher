@@ -1,0 +1,42 @@
+✔ authoring manifest matches exact runtime offsets, and all 20 performances are original distinct PCM (6.242693ms)
+✔ v2 preserves all existing original PCM performances and adds weapon launches distinct from impacts (0.514677ms)
+✔ cue boundaries have silence guards and cannot leak into a neighboring event (0.159234ms)
+✔ unsupported boundaries use legacy fallback without constructing another AudioContext (0.239602ms)
+✔ construction connects only to its supplied bus, starts paused, and never fetches or plays automatically (0.521237ms)
+✔ concurrent loads share one network request and decoder allocation, including calls after readiness (0.432917ms)
+✔ a real playback uses exactly one bounded segment and alternates distinct performances (0.729883ms)
+✔ enemy firing uses its own emission slices, alternates variants, and never borrows an impact (0.781509ms)
+✔ a repeated enemy emission event remains silent but a new physical volley can play (0.279381ms)
+✔ loading or retrying does not queue obsolete enemy shots or bypass mute once decoding finishes (0.504973ms)
+✔ missing stereo panner still plays through the shared gain graph without creating spatial polyfills (0.225472ms)
+✔ repeating an animation event ID cannot fire the sound twice, even after its original voice has ended (0.628775ms)
+✔ an impact storm is rate-limited and low-priority bursts cannot exhaust the mix budget (3.421984ms)
+✔ player hull impact steals expendable phaser voices instead of getting lost in a busy mix (0.371356ms)
+✔ Atlas collapse is prioritised above combat, but repeated collapse frames remain one event (0.166355ms)
+✔ pause stops or suppresses playback and does not replay an old burst on recovery (0.190981ms)
+✔ mute stops or suppresses playback and does not replay an old burst on recovery (0.097694ms)
+✔ zero-volume stops or suppresses playback and does not replay an old burst on recovery (0.093978ms)
+✔ suspended-context stops or suppresses playback and does not replay an old burst on recovery (0.109221ms)
+✔ volume clamps to the supported range and uses smoothing on the existing local bus (0.226273ms)
+✔ a heavy enemy launch can displace player pulses while respecting the existing mix budget (0.198312ms)
+✔ http load failure is contained and exposes fallback without scheduling a retry loop (0.351366ms)
+✔ empty load failure is contained and exposes fallback without scheduling a retry loop (0.173905ms)
+✔ oversized load failure is contained and exposes fallback without scheduling a retry loop (0.136941ms)
+✔ decoder load failure is contained and exposes fallback without scheduling a retry loop (0.329434ms)
+✔ short load failure is contained and exposes fallback without scheduling a retry loop (0.143431ms)
+✔ old-bank load failure is contained and exposes fallback without scheduling a retry loop (0.158053ms)
+✔ long load failure is contained and exposes fallback without scheduling a retry loop (0.128239ms)
+✔ a synchronous fetch failure permits a later explicit load retry (0.163421ms)
+✔ ending a voice releases nodes once even when callbacks race with pause (0.130492ms)
+✔ elapsed voices are pruned even if the audio thread delays onended (0.187876ms)
+✔ disposing during decoding cannot revive the graph or retain decoded memory (0.265921ms)
+✔ unknown names and prototype keys cannot schedule sources; snapshots cannot mutate policy (0.17705ms)
+✔ a failed source start releases the partially constructed graph and remains recoverable (0.130282ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 110.14214

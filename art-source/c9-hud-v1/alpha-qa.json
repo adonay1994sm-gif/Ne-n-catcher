@@ -1,0 +1,56 @@
+{
+  "kind": "ASSET_ALPHA_QA",
+  "runtime": "assets/c9_upgrade_icons_v1.webp",
+  "width": 1024,
+  "height": 1024,
+  "frames": [
+    {
+      "index": 0,
+      "visiblePixels": 72842,
+      "bounds": [
+        48,
+        79,
+        416,
+        374
+      ],
+      "minimumGutter": 48,
+      "gutterMaxAlpha": 0
+    },
+    {
+      "index": 1,
+      "visiblePixels": 73351,
+      "bounds": [
+        48,
+        97,
+        403,
+        327
+      ],
+      "minimumGutter": 48,
+      "gutterMaxAlpha": 0
+    },
+    {
+      "index": 2,
+      "visiblePixels": 70703,
+      "bounds": [
+        87,
+        81,
+        356,
+        366
+      ],
+      "minimumGutter": 65,
+      "gutterMaxAlpha": 0
+    },
+    {
+      "index": 3,
+      "visiblePixels": 95198,
+      "bounds": [
+        66,
+        64,
+        391,
+        369
+      ],
+      "minimumGutter": 55,
+      "gutterMaxAlpha": 0
+    }
+  ]
+}

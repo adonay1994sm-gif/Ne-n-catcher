@@ -1,0 +1,4 @@
+interface:
+  display_name: "NEON · Revisión visual"
+  short_description: "Comprobar arte, contornos y juego real en navegador"
+  default_prompt: "Usa $neon-visual-qa para revisar contornos y capturas reales de una compilación de NEON CRONIUM."

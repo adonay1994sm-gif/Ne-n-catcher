@@ -1,0 +1,83 @@
+# NEON CRONIUM — prueba externa de Chronos → Gaia y Atlas
+
+Estado: **PREPARADA; NO EJECUTADA**. Fecha de preparación: 17/10/2026. Diez participantes previstos, ninguno reclutado mediante este documento. No hay resultados de jugadores ni certificación física. Este protocolo ejecuta la preparación de la [meta 2 de la auditoría](../production-reports/AUDITORIA_PUBLICACION_NEON_CRONIUM_2026-10-17.md); no la da por superada.
+
+Objetivo: descubrir si una persona ajena al desarrollo entiende el inicio, controla la nave con ambos pulgares, comprende la recarga, encuentra sentido a C9, reconoce qué le daña en Atlas y quiere seguir jugando. Separar problemas de funcionamiento, comprensión, ritmo y gusto; no utilizar una partida automatizada como sustituto.
+
+## Preparación y acceso sin tocar los guardados del propietario
+
+Web privada de pruebas: **https://neon-catcher-pruebas.chictide18.chatgpt.site**. Es el sitio existente, no producción Netlify. La dirección conserva su nombre histórico aunque la marca del juego sea NEON CRONIUM. El acceso puede requerir una cuenta autorizada de ChatGPT. La contratación/reclutamiento, disponibilidad de dispositivos y permisos de acceso **no se han realizado ni concedido**. No compartir la sesión, contraseñas o enlaces de acceso privados del propietario. Si una persona no tiene acceso autorizado, registrar `ACCESS_BLOCKED` y resolver el acceso mediante el propietario o un paquete local de pruebas; no hacer público el sitio para sortearlo.
+
+Antes de cada participante:
+
+1. Crear un **perfil de navegador exclusivo y vacío para esa sesión**, sin sincronización de datos. Una pestaña nueva no aísla el guardado. En ordenador puede utilizarse un perfil nuevo de Chrome/Edge; en un iPhone compatible, un perfil de Safari separado del personal. Si el navegador/dispositivo no permite aislamiento verificable, usar otro navegador/perfil o dispositivo de pruebas. No abrir el perfil habitual del propietario para esta prueba.
+2. Iniciar sesión sólo si el sitio privado lo exige y la cuenta tiene permiso. La autenticación no autoriza usar o compartir las credenciales de otra persona. Si aparece progreso previo o una etapa distinta de 1.1 antes de jugar, ese perfil no es una sesión nueva: detenerse y crear otro perfil vacío.
+3. Abrir la portada y **Ver procedencia** (`/build-info.json`). Anotar en la plantilla el commit completo y `revision` que realmente devuelve esa sesión, fecha UTC de consulta y estado `dirty` si aparece. Registrar también la versión de publicación si está disponible en el acta de despliegue. **No prellenar una versión histórica ni deducir el paquete por el HEAD de GitHub:** el código remoto y la web pueden ser diferentes. Si falta identidad verificable, resolverla antes de comparar resultados.
+4. Anotar modelo del dispositivo, versión del sistema/navegador, orientación, tamaño visible y modalidad de acceso (web privada/local). No hace falta el número de serie ni identificador del aparato. Mantener la misma compilación durante el lote; si cambia, abrir un lote distinto y no sumar sus resultados como una sola versión.
+5. Comprobar fuera de la sesión que el paquete abre, tiene sonido opcional y permite el inicio. No activar el desbloqueo QA ni sembrar checkpoints para la parte natural. El perfil observado debe seguir vacío al comenzar. No borrar almacenamiento, desinstalar una PWA, restablecer ajustes ni ejecutar `localStorage.clear()` en el entorno personal del propietario.
+
+**Repetición segura:** cerrar la sesión de prueba y crear otro perfil aislado para un inicio nuevo. Para comprobar la reentrada de esa misma sesión, conservar su perfil y volver a abrirlo: debe continuar su propio checkpoint. No mezclar un reinicio de etapa con una partida nueva ni borrar datos para aparentar una recuperación satisfactoria. Los perfiles y registros de prueba se conservan sólo el tiempo acordado con quien participa.
+
+## Muestra y duración
+
+- Diez personas ajenas al desarrollo; procurar variedad de experiencia arcade y de tamaño de pantalla. Registrar experiencia como `NONE`, `OCCASIONAL` o `REGULAR`, sin datos personales.
+- Priorizar teléfonos físicos: idealmente al menos cinco sesiones en iPhone/Safari y, si se anuncia Android, al menos tres en Android/Chrome. Es una **propuesta logística**, no disponibilidad confirmada ni certificación de esos dispositivos. Registrar la composición real; una muestra sólo de escritorio no cierra la interacción móvil.
+- Sesión prevista: 20–30 minutos. Intro natural: máximo 15 minutos de juego activo y hasta tres reintentos. Este límite sirve para observar bloqueos, no para obligar a terminar. La persona puede parar en cualquier momento.
+- Un moderador toma notas y tiempos con reloj; otra persona puede observar si resulta útil. No se necesita instalar telemetría ni una cuenta de analítica. Grabación de pantalla/audio sólo si se acepta expresamente; no grabar la autenticación, notificaciones, datos privados ni otros sitios.
+
+Usar IDs `R01` a `R10`. No solicitar nombre, correo, edad exacta, ubicación, cuenta de ChatGPT ni identificadores publicitarios. Las notas deben describir acciones y frases sobre el juego, no información personal.
+
+## Guion del moderador
+
+Inicio, sin enseñar botones: «Estamos probando el juego, no tus habilidades. Úsalo como lo harías por tu cuenta. Puedes parar cuando quieras. Primero te observaré sin explicarte cómo se juega».
+
+No decir que es divertido, fácil, difícil, bonito o que necesita dos dedos. No prometer una recompensa por continuar ni pedir elogios. No pensar en voz alta durante combate si interfiere con el pilotaje; recoger explicaciones al pausar o al cerrar cada bloque. Una ayuda necesaria se ofrece y se registra con tiempo y texto exacto; desde ese momento el tramo correspondiente es **asistido**, no un éxito sin ayuda.
+
+**Orden para conservar la medida natural:** observar primero portada → intro → decisión de seguir/terminar. Durante ese recorrido sólo hacer preguntas abiertas en pausas oportunas, sin enseñar la solución. Los bloques de dos pulgares, batería o Atlas que requieran una tarea indicada se realizan después de cerrar la medida natural y se etiquetan como estructurados/asistidos. Si una de esas conductas aparece espontáneamente antes, puede observarse y registrarse sin interrumpirla.
+
+| Bloque | Acción y observación | Preguntas neutrales, después de observar | Qué registrar |
+| --- | --- | --- | --- |
+| **Entrada y primer minuto** | Entregar la portada. Observar cómo encuentra CONTINUAR VIAJE, inicia la expedición y juega sin instrucciones privadas. Cronometrar desde portada hasta primer movimiento controlado; iniciar un segundo reloj de juego activo al lanzar 1.1. No explicar la historia ni señalar un objetivo. A los 60 segundos activos, pausar si puede hacerlo por sí mismo. | «¿Qué intentabas conseguir?», «¿Qué ocurrió al tocar o deslizar?», «¿Qué crees que está pasando aquí?». No corregir hasta anotar la respuesta. | Tiempo para iniciar/mover; disparo descubierto; objetivo descrito con sus palabras; ayuda; abandonos; choques/saltos percibidos. La primera impresión no se repite tras enseñar controles. |
+| **Dos pulgares** | Tras cerrar la medida natural de la intro, tarea estructurada: «Sigue moviéndote mientras intentas disparar». Pedir repetir iniciando primero el movimiento y después el disparo, y en el orden inverso. Probar soltar sólo uno y seguir con el otro. No confundir esta tarea solicitada con descubrimiento espontáneo. | «¿Ocurrió lo que esperabas?», «¿Qué te impidió hacer lo que querías?». | Dos órdenes y liberaciones: `PASS`, `FAIL` o `NOT_RUN`; pérdida de contacto/salto; botón o dedo que oculta la nave; dispositivo y postura. No inferir latencia en milisegundos a partir de la impresión. |
+| **Batería y recarga** | Observar primero el uso natural y qué hace al agotar cargas. Si no ocurre, después de cerrar la medida natural de la intro pedir «Prueba a disparar varias veces mientras pilotas» y marcarlo como tarea solicitada. No dar el tiempo de recarga ni explicar su indicador. | «¿Qué pasó cuando intentaste volver a disparar?», «¿Qué harías ahora?», «¿Qué información utilizaste?». | Si entiende que recupera cargas y puede seguir sin una compra; si espera o busca un botón inexistente; explicación incorrecta; tiempo de bloqueo observado. Anotar `NOT_EXPOSED` si nunca vació la batería. |
+| **Tránsito y ritmo** | Dejar continuar 1.1–1.10 sin pedir que complete cuotas concretas ni guiarle hacia objetos. Anotar pausas, movimientos sin propósito, esperas, comprobaciones repetidas del HUD y abandonos con etapa y reloj. No declarar aburrimiento sólo porque no dispara. | Al llegar a C9 o después de la partida: «¿En qué momento cambió lo que estabas haciendo?», «¿Hubo algún tramo en el que no supieras qué hacer?», «¿Qué estabas esperando allí?». | Etapa y duración del intervalo; conducta observada separada de valoración. Si dice que se aburrió, anotar la frase y el tramo que identifica, sin convertirla en una métrica de retención. |
+| **Pieza y C9** | Observar si distingue el módulo recuperable, entiende que lo lleva a bordo y decide qué hacer al llegar al taller. No pulsar por él ni insinuar que montar la pieza sea la única respuesta válida. Tras su elección, comprobar qué cambio percibe al volver a volar. | «¿Qué opciones crees que tienes aquí?», «¿Qué esperas que pase con la que has elegido?», «¿Qué cambió después?». | Pieza vista/recogida; opción escogida; motivo y resultado esperado; si nota el cambio real de arma; confusión entre montaje cosmético y efecto táctico; ayuda. Una reparación automática no cuenta como decisión del jugador. |
+| **Llegada y reentrada** | Definir el cierre de la intro como terminar 1.1–1.10, salir de C9 y alcanzar la llegada persistida a Gaia. Si llega naturalmente, cerrar y reabrir sólo ese perfil, o volver al menú y continuar. No intervenir en almacenamiento. | «¿Dónde crees que vas ahora?», «¿Desde dónde esperabas continuar?». | Si llegó antes del límite, número de reintentos y ayuda. Checkpoint real antes/después; pérdida/repetición inesperada. Si no terminó, registrar última etapa y causa; no reemplazarla por una escena QA y marcar la intro como completada. |
+| **Atlas** | Si llega a Gaia por sus propios medios y quiere seguir, observar la recuperación y encuentro. Tras el primer daño claro, al pausar o terminar preguntar por lo ocurrido; no frenar una esquiva para entrevistar. Registrar avisos vistos y respuestas intentadas, también si no recibe daño. | «¿Qué crees que te alcanzó?», «¿Qué podrías intentar de otra forma?», «¿Qué te hizo cambiar de dirección o disparar?». | Causa que atribuye frente a lo visible en grabación/notas; ataque/estado de Atlas si se conoce; aviso advertido, maniobra y desenlace. No provocar daño para fabricar una respuesta ni llamar injusto a un ataque sólo por una muerte. |
+| **Continuación voluntaria y cierre** | Ofrecer una decisión real, sin presión: «Puedes terminar aquí o seguir jugando unos minutos; ambas opciones nos sirven». Observar la elección. Terminar con preguntas abiertas y después recoger una sugerencia prioritaria. | «¿Qué recordarías de esta partida?», «¿Qué cambiarías primero?», «¿Qué te hizo elegir seguir o terminar?». | `CONTINUE`, `STOP` o `NO_OPPORTUNITY`; acción real y motivo textual. No equiparar una respuesta de cortesía «lo jugaría» con retorno al día siguiente. |
+
+Si no alcanza Atlas, puede ofrecerse **después de cerrar la evaluación natural** un bloque separado de QA: en el mismo perfil de prueba, desde la portada abrir ARCHIVO DE PRUEBAS, activar el desbloqueo clásico, CONTINUAR VIAJE → NIVELES → PERÍMETRO ATLAS. Anotar `ATLAS_QA_ASSISTED`, configuración visible y cualquier explicación. Esto sólo evalúa el encuentro expuesto; no cuenta como llegada natural ni demuestra que la dificultad previa sea transitable. No introducir checkpoints con consola. Si la ruta/UI de una compilación cambia, registrar la ruta real y adaptar este bloque antes del siguiente participante.
+
+## Datos y definiciones
+
+La [plantilla CSV](session-template.csv) tiene una fila vacía por participante, sin resultados predeterminados. Tiempos en segundos medidos con reloj:
+
+- `time_to_launch_s`: desde entregar la portada hasta lanzar 1.1; `time_to_controlled_move_s`: desde entregar la portada hasta primer desplazamiento intencional. Si se agota el minuto sin conseguirlo, anotar el hecho y dejar el tiempo de éxito vacío.
+- `active_intro_s`: tiempo de partida activa hasta llegar o detenerse. Excluir pausa, taller, conversación y fallos de acceso/carga; registrar aparte el tiempo de taller y de sesión total. No confundir los 360 segundos mínimos de ruta del diseño existente con una duración humana medida.
+- `understands_first_minute`: `YES` sólo si, sin ayuda privada, mueve la nave intencionalmente, descubre el disparo y explica un objetivo consistente con recuperar CRONIUM y avanzar hacia Gaia al terminar el primer minuto. Registrar cada componente por separado para saber qué falla. No exigir la terminología exacta.
+- `intro_finished_unassisted`: `YES` sólo para cierre natural anterior al límite y con hasta tres reintentos, sin indicaciones privadas de controles/objetivos. Leer las ayudas del propio juego está permitido. Una avería se registra como avería; no se transforma en fallo del participante.
+- `recharge_understood`, `c9_choice_understood`, `atlas_damage_understood`: `YES`, `NO`, `UNCLEAR` o `NOT_EXPOSED`. Se basan en conducta y explicación, no en que acertara por casualidad. Para Atlas, `NO_DAMAGE` es válido si no recibió impactos observables.
+- `two_thumb_*`: `PASS`, `FAIL` o `NOT_RUN`. Cualquier salto/pérdida de contacto reproducible debe tener etapa, orden de contactos y evidencia; abrir incidencia técnica aunque la muestra global sea buena.
+- `waiting_segments`: etapa/instante/duración/conducta, por ejemplo formato `1.x | t=... | ...s | conducta`; no rellenar con un ejemplo como si fuera un resultado. Separar `reported_boredom` (lo que expresó) de espera observada.
+- `assistance_log`: instante, motivo y palabras del moderador. `evidence_ref`: ruta de una captura/registro autorizado sin datos de autenticación; vacío si no se obtuvo. Observación manual no es telemetría automática.
+
+No medir FPS, temperatura, latencia exacta, retención diaria o satisfacción del mercado mediante esta plantilla. Si se añaden instrumentos de rendimiento, identificarlos y registrar su metodología en otro lote.
+
+## Umbrales orientativos y decisión
+
+**Propuestos, todavía no aceptados ni alcanzados:** al menos **8 de 10** comprenden pilotaje, disparo y objetivo en el primer minuto; al menos **7 de 10** completan la intro sin ayuda dentro de los límites anteriores. La muestra es formativa, no una estimación estadística de éxito comercial. Un fallo crítico de control, progreso o guardado impide cerrar la aceptación técnica aunque se alcancen esos números.
+
+Para recarga, C9, daño de Atlas y deseo de continuar, publicar `sí/no/no expuesto` con denominador y motivos; no inventar un porcentaje si apenas llegaron al encuentro. La observación de gusto no tiene un aprobado automático. Si se repite el mismo problema de comprensión/ritmo en tres personas, investigarlo y elegir una corrección verificable; es una señal orientativa, no una regla que invalide hallazgos graves de una sola persona.
+
+Si una sesión queda bloqueada antes de jugar por acceso o dispositivo, conservarla como bloqueada y realizar otra para completar diez sesiones jugadas; no ocultar la exclusión. Las caídas, errores y pérdidas de progreso después de empezar se conservan como resultados de la versión, sin sustituir participantes para mejorar la cifra. No sumar sesiones incomparables de compilaciones distintas. Si no se alcanza el tamaño previsto o no hay teléfonos físicos, registrar el alcance incompleto.
+
+Al cerrar el lote: publicar identidad exacta del paquete, composición anónima de dispositivos, resultados crudos, ayudas, abandonos, problemas repetidos, evidencias autorizadas y cinco correcciones prioritarias como máximo. Separar **aceptación técnica**, **experiencia observada**, **aceptación artística del propietario** y **certificación de dispositivo**. Este protocolo no levanta la puerta del Motor V1 ni autoriza producción, TestFlight o App Store.
+
+## Estado pendiente
+
+- Reclutamiento y permisos de participantes: **PENDING**.
+- Acceso autorizado al sitio y perfiles aislados: **PENDING**.
+- Matriz real de dispositivos disponibles: **PENDING**.
+- Diez sesiones, métricas y evidencias humanas: **NOT RUN**.
+- Análisis de resultados y correcciones derivadas: **PENDING**.
+- Aceptación estética final: **reservada al propietario**.

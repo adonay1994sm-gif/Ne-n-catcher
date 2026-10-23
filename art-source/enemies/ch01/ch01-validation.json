@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-10-16T05:47:49.037208+00:00",
+  "status": "passed",
+  "exitCode": 0,
+  "scope": "decoded asset dimensions, alpha gutters, distinct frames and animation metadata only; no game integration or device certification",
+  "image": "ch01-atlas-v1.webp",
+  "bytes": 484814,
+  "sha256": "ec2d3c48e3715450b4aefd6757dd0b49236437f699ac719c07e03c45360be430",
+  "dimensions": [
+    1024,
+    1536
+  ],
+  "decodedRgbaBytes": 6291456,
+  "frameCount": 24,
+  "uniqueFrameCount": 24,
+  "frames": [
+    {
+      "index": 0,
+      "sha256": "da5647c1c13f38e0d8cf32ab498146b11c18f525ca027c6c35b28c89d4d72dbe",
+      "visibleBoundsAlpha8": [
+        77,
+        50,
+        182,
+        227
+      ],
+      "minimumVisibleGutterPx": 29,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 1,
+      "sha256": "a3d69b253c2d78020921284de8ab64873a8b54a5464568415ab6de05310efebc",
+      "visibleBoundsAlpha8": [
+        57,
+        52,
+        199,
+        226
+      ],
+      "minimumVisibleGutterPx": 30,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 2,
+      "sha256": "c2333cabad9ad3b088dce8fd29c75eccbc0760048390e5be0962936611b369f6",
+      "visibleBoundsAlpha8": [
+        38,
+        40,
+        220,
+        228
+      ],
+      "minimumVisibleGutterPx": 28,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 3,
+      "sha256": "38d2622b0e883a6b01e6a9d6da129d386438500e2135b84d6cbc9af2a4aba801",
+      "visibleBoundsAlpha8": [
+        25,
+        40,
+        231,
+        228
+      ],
+      "minimumVisibleGutterPx": 25,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 4,
+      "sha256": "3644e5ab31069031dfcdb52c856d7344608c86a681ad65690455d5e346e7c5e3",
+      "visibleBoundsAlpha8": [
+        24,
+        20,
+        236,
+        227
+      ],
+      "minimumVisibleGutterPx": 20,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 5,
+      "sha256": "0561a7db43344f84159f1f5c52455d7eda9cdbf273a03b071e1c928dd41a8c0b",
+      "visibleBoundsAlpha8": [
+        23,
+        21,
+        234,
+        227
+      ],
+      "minimumVisibleGutterPx": 21,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 6,
+      "sha256": "818420ba31c133673a8ccbc2b3fb0244838d5db7ece768fcd99ce4519dfe4b60",
+      "visibleBoundsAlpha8": [
+        22,
+        22,
+        234,
+        227
+      ],
+      "minimumVisibleGutterPx": 22,
+      "border4MaxAlpha255": 2
+    },
+    {
+      "index": 7,
+      "sha256": "171ef93681a2a49d5df27f256144e2ace85ecb60d2a0e0037e0f6b036fb994ad",
+      "visibleBoundsAlpha8": [
+        22,
+        21,
+        233,
+        227
+      ],
+      "minimumVisibleGutterPx": 21,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 8,
+      "sha256": "59fc93c228d94d09507cbf9f7cdc1899b5fc2075f9024270363bb66545159e98",
+      "visibleBoundsAlpha8": [
+        44,
+        13,
+        216,
+        228
+      ],
+      "minimumVisibleGutterPx": 13,
+      "border4MaxAlpha255": 2
+    },
+    {
+      "index": 9,
+      "sha256": "4108f28e304d0794044632be7676296607c0676ecbefd26002ebbeed244b4899",
+      "visibleBoundsAlpha8": [
+        23,
+        19,
+        234,
+        228
+      ],
+      "minimumVisibleGutterPx": 19,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 10,
+      "sha256": "4cd5bd8db0941c37fd6c6072eb417720afd2d0f99bc9baa51bb56ec17e91d6f4",
+      "visibleBoundsAlpha8": [
+        42,
+        13,
+        214,
+        228
+      ],
+      "minimumVisibleGutterPx": 13,
+      "border4MaxAlpha255": 2
+    },
+    {
+      "index": 11,
+      "sha256": "06f96d4e6fbfbac8ec8494e75b54f4c9e65fe8bf3f23c686b797c1587c2c0781",
+      "visibleBoundsAlpha8": [
+        22,
+        19,
+        233,
+        228
+      ],
+      "minimumVisibleGutterPx": 19,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 12,
+      "sha256": "b30e510fc2e2f10fbc8faf84af123a56c04ed9e3485434ec6127b4edcf456979",
+      "visibleBoundsAlpha8": [
+        23,
+        18,
+        235,
+        235
+      ],
+      "minimumVisibleGutterPx": 18,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 13,
+      "sha256": "53722cef44af15d176c17bc526adc43ea5a9cee69d3785d2dc5830f8e9d0225e",
+      "visibleBoundsAlpha8": [
+        21,
+        18,
+        234,
+        238
+      ],
+      "minimumVisibleGutterPx": 18,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 14,
+      "sha256": "437eb1f3cc134e6abb22d5bf6e62013e7b3ff66a3749e166a64e8e52cf46554d",
+      "visibleBoundsAlpha8": [
+        22,
+        19,
+        234,
+        240
+      ],
+      "minimumVisibleGutterPx": 16,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 15,
+      "sha256": "369a1e8cabcea66f50b52b0e62ab17dd9e171a083810d0f20e8ec50f8aec7e74",
+      "visibleBoundsAlpha8": [
+        22,
+        18,
+        234,
+        229
+      ],
+      "minimumVisibleGutterPx": 18,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 16,
+      "sha256": "1578b0a7dcf5bca25b8b81d352c3508ed6860b7a0c587dbf00035123ccf10341",
+      "visibleBoundsAlpha8": [
+        23,
+        22,
+        235,
+        229
+      ],
+      "minimumVisibleGutterPx": 21,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 17,
+      "sha256": "af7c06c8142124883330832696b8cb761ab4952c661e444e412fbdc282a66435",
+      "visibleBoundsAlpha8": [
+        23,
+        21,
+        234,
+        229
+      ],
+      "minimumVisibleGutterPx": 21,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 18,
+      "sha256": "5e64f378e9deadec2cf1d6e2fc670b0c50e201414773a06a4238118ed2968591",
+      "visibleBoundsAlpha8": [
+        22,
+        19,
+        236,
+        229
+      ],
+      "minimumVisibleGutterPx": 19,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 19,
+      "sha256": "d2ab116e50c395458314229c51ab543842f7f19777490eb89fa6d09b65627a76",
+      "visibleBoundsAlpha8": [
+        22,
+        21,
+        233,
+        229
+      ],
+      "minimumVisibleGutterPx": 21,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 20,
+      "sha256": "61f961cc71ce2f7485bf77fca972004fc2e5136804036d8197736b6623bb9253",
+      "visibleBoundsAlpha8": [
+        23,
+        18,
+        236,
+        230
+      ],
+      "minimumVisibleGutterPx": 18,
+      "border4MaxAlpha255": 1
+    },
+    {
+      "index": 21,
+      "sha256": "7c0339a9d6e153bc7e04243851cb5658bab5548fe1e7e11ab8837e4152636c37",
+      "visibleBoundsAlpha8": [
+        18,
+        18,
+        239,
+        228
+      ],
+      "minimumVisibleGutterPx": 17,
+      "border4MaxAlpha255": 2
+    },
+    {
+      "index": 22,
+      "sha256": "1fb102ecf9a9885b27389fd330f25245b3d2555e9c82cc4152ff5809825b6bdc",
+      "visibleBoundsAlpha8": [
+        11,
+        18,
+        240,
+        232
+      ],
+      "minimumVisibleGutterPx": 11,
+      "border4MaxAlpha255": 2
+    },
+    {
+      "index": 23,
+      "sha256": "70505c040b09a2a981c716104a41bce11e0d1522515b4c85ed8bce736d040888",
+      "visibleBoundsAlpha8": [
+        23,
+        19,
+        235,
+        221
+      ],
+      "minimumVisibleGutterPx": 19,
+      "border4MaxAlpha255": 1
+    }
+  ]
+}

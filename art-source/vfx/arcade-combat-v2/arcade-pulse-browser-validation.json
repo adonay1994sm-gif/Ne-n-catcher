@@ -1,0 +1,14 @@
+{
+  "kind": "asset-decoder-check-not-gameplay",
+  "checkedAt": "2026-10-18T07:21:45.916Z",
+  "browser": "154.0.8037.57",
+  "runtime": "assets/arcade_pulse_atlas_v2.webp",
+  "sha256": "f76d93ddc2f23fde7f70f7bf6d423c5566d81721f049b2316b7a91c4c3604cb9",
+  "background": "#050b16",
+  "outcome": "PASS",
+  "naturalWidth": 1024,
+  "naturalHeight": 1024,
+  "transparentPixelCount": 906230,
+  "maximumCellBorderAlpha": 0,
+  "unexpectedlyVisibleTransparentPixels": 0
+}

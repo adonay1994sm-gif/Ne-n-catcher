@@ -1,0 +1,51 @@
+{
+  "id": "player-ship-identity-v1",
+  "name": "Astér · assembled gameplay portrait",
+  "version": 1,
+  "master": {
+    "path": "art-source/ship-identity/player_ship_identity_v1.png",
+    "width": 1024,
+    "height": 1280,
+    "pivot": [
+      512,
+      512
+    ],
+    "sha256": "0af32ceaa2bf4da71b8f2f668599946a424c61ebc7c7466274118edc87eebe81"
+  },
+  "runtime": {
+    "path": "assets/player_ship_identity_v1.webp",
+    "width": 512,
+    "height": 640,
+    "pivot": [
+      256,
+      256
+    ],
+    "bytes": 67122,
+    "sha256": "bd22a7d85ccc774c3b5e5fdb219ba417febf547ddc3f08541ac8fa083ae68413",
+    "decodedRGBABytes": 1310720
+  },
+  "transparency": true,
+  "frames": 1,
+  "fps": 0,
+  "scale": "Same 512-unit assembly artboard as gameplay; image extends to y=384 for exhaust.",
+  "sourceAtlas": {
+    "path": "assets/ship_modular_atlas_v1.webp",
+    "sha256": "71c050bdf64044fdfe6f009136d352afdb1873fdd00020e165c7141d8bb5fbac"
+  },
+  "assemblySource": {
+    "path": "src/game/07-player-item-rendering.js",
+    "sha256": "9406be2024b244c36eadbeb3e178ebaa41d950d292b942cfebe073c2c3ca9cc2",
+    "scope": "Source slice from drawShipComponent through drawModularShip, before syncShipPresentation"
+  },
+  "loadout": {
+    "hull": "aster",
+    "wings": "aster",
+    "engines": "aster"
+  },
+  "provenance": "Deterministic Chromium Canvas export of existing authored components using the gameplay drawModularShip function. No new third-party art.",
+  "usage": "Launcher and emergency fallback only. Gameplay animates the original modular component atlas.",
+  "status": "IN_REVIEW",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "baseArtisticAcceptance": "Owner selected the current modular fleet as the definitive visual base; not commercial/device certification"
+}

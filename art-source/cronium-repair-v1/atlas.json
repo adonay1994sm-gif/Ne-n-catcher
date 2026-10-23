@@ -1,0 +1,131 @@
+{
+  "id": "cronium_energy_atlas_v2",
+  "version": 2,
+  "output": "assets/cronium_energy_atlas_v2.webp",
+  "width": 512,
+  "height": 512,
+  "columns": 2,
+  "rows": 2,
+  "frameCount": 4,
+  "frameWidth": 256,
+  "frameHeight": 256,
+  "pivot": {
+    "x": 128,
+    "y": 128,
+    "normalizedX": 0.5,
+    "normalizedY": 0.5
+  },
+  "transparentPadding": 32,
+  "decodedRGBABytes": 1048576,
+  "bytes": 72176,
+  "sha256": "3b374f972a69d13f9ec11436c8a6221d970b66d31eeb39cb64af61d344820a15",
+  "suggestedAnimation": {
+    "fps": 8,
+    "loop": true,
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "actualStates": [
+      "rising-spiral",
+      "outward-curl",
+      "rolling-crescent",
+      "gathered-pulse"
+    ]
+  },
+  "frames": [
+    {
+      "frame": 0,
+      "sourceCell": {
+        "x": 0,
+        "y": 0,
+        "width": 627,
+        "height": 627
+      },
+      "sourceLuminousCenter": {
+        "x": 351,
+        "y": 364
+      },
+      "sourceAlphaBounds": {
+        "left": 128,
+        "top": 87,
+        "right": 572,
+        "bottom": 610
+      },
+      "normalizationRadius": 285,
+      "file": "frames/cronium_energy_00.png",
+      "sha256": "b28a76644f465460cbd0e68fb7702eb49bbdaea85e9284bc759f548b6ab1bf98"
+    },
+    {
+      "frame": 1,
+      "sourceCell": {
+        "x": 627,
+        "y": 0,
+        "width": 627,
+        "height": 627
+      },
+      "sourceLuminousCenter": {
+        "x": 317,
+        "y": 359
+      },
+      "sourceAlphaBounds": {
+        "left": 55,
+        "top": 111,
+        "right": 534,
+        "bottom": 610
+      },
+      "normalizationRadius": 270,
+      "file": "frames/cronium_energy_01.png",
+      "sha256": "22b0166888d295fe064261bd9349017a4973bf39c00bbf0ed322af28428804ee"
+    },
+    {
+      "frame": 2,
+      "sourceCell": {
+        "x": 0,
+        "y": 627,
+        "width": 627,
+        "height": 627
+      },
+      "sourceLuminousCenter": {
+        "x": 284,
+        "y": 348
+      },
+      "sourceAlphaBounds": {
+        "left": 95,
+        "top": 66,
+        "right": 572,
+        "bottom": 561
+      },
+      "normalizationRadius": 296,
+      "file": "frames/cronium_energy_02.png",
+      "sha256": "1b8025aaaa9afc8a6e1e1a5f43a42444173ec6184e5ba38229c3e6e1e05ffd44"
+    },
+    {
+      "frame": 3,
+      "sourceCell": {
+        "x": 627,
+        "y": 627,
+        "width": 627,
+        "height": 627
+      },
+      "sourceLuminousCenter": {
+        "x": 326,
+        "y": 303
+      },
+      "sourceAlphaBounds": {
+        "left": 69,
+        "top": 67,
+        "right": 549,
+        "bottom": 558
+      },
+      "normalizationRadius": 265,
+      "file": "frames/cronium_energy_03.png",
+      "sha256": "285086b3f24eadaf836b145beee4e094b02d79ab95fb2351022850ef61940b83"
+    }
+  ],
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalDeviceQA": "PENDING",
+  "runtimeIntegration": "PENDING_INTEGRATOR"
+}

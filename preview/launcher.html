@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07131d">
+<meta name="build-revision" content="__NEON_PREVIEW_COMMIT__">
+<meta name="description" content="Pilota entre las estrellas, recupera el CRONIUM y sigue el rastro del ataque a Chronos.">
+<title>NEON CRONIUM</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="juego/assets/icon-192.png">
+<style>
+:root{color-scheme:dark;--ink:#07131d;--panel:#10232f;--titanium:#405761;--paper:#edf2e8;--muted:#a4bac2;--signal:#8bebe4;--amber:#f0b75b;font-family:"Trebuchet MS",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;color:var(--paper);background:var(--ink);display:grid;place-items:center;padding:max(28px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left))}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(90deg,#07131de8,#07131d33 80%),linear-gradient(0deg,#07131d,transparent 75%),url("juego/assets/chronos_flight_space_v1.webp") center/cover no-repeat}
+main{width:100%;max-width:490px;position:relative;text-align:left;border-top:1px solid var(--titanium);padding-top:18px}
+.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:7px;height:7px;background:var(--signal);box-shadow:0 0 12px #8bebe455}
+.hero{position:relative;height:242px;display:flex;align-items:center;justify-content:center;margin-bottom:-5px}
+.hero::after{content:"";position:absolute;inset:12% 19%;border:1px solid #a4bac226;clip-path:polygon(0 0,20% 0,20% 1px,80% 1px,80% 0,100% 0,100% 100%,80% 100%,80% calc(100% - 1px),20% calc(100% - 1px),20% 100%,0 100%);pointer-events:none}
+.hero img{width:174px;height:auto;filter:drop-shadow(0 14px 24px #0008);animation:shipDrift 6s ease-in-out infinite}
+h1{font-size:clamp(44px,13.5vw,64px);line-height:.9;letter-spacing:-.045em;margin:0 0 20px;font-weight:900;text-shadow:0 4px 18px #0008}
+p{color:#bfced2;line-height:1.55;font-size:15px;max-width:380px;margin:0 0 25px}
+.journey-label{display:block;font-size:11px;letter-spacing:.08em;color:var(--amber);margin:0 0 10px;font-weight:750}
+.primary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;border:1px solid var(--signal);border-radius:3px;padding:18px 20px;color:var(--ink);background:var(--signal);text-decoration:none;font-size:16px;font-weight:850;letter-spacing:.02em;box-shadow:inset 0 2px #e5fffa77;transition:background-color .14s,transform .14s}
+.primary span{font-size:24px;line-height:1}
+.primary:hover{background:#b4faf0}.primary:active{transform:translateY(1px);background:#6fd5d0}
+a:focus-visible{outline:3px solid var(--paper);outline-offset:4px}
+.controls{display:block;font-size:12px;color:var(--muted);margin:15px 0 18px;line-height:1.5}
+.legal{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:8px 22px;border-top:1px solid #40576166;padding-top:8px}
+.legal a{display:inline-flex;align-items:center;min-width:44px;min-height:44px;font-size:12px;color:#a4bac2;text-underline-offset:4px;text-decoration:none}.legal a:hover{text-decoration:underline}
+@keyframes shipDrift{50%{transform:translateY(-5px)}}
+@media(max-height:720px){.hero{height:156px}.hero img{width:128px}h1{font-size:44px;margin-bottom:14px}p{font-size:14px;margin-bottom:18px}.controls{margin:12px 0}.primary{min-height:58px}}
+@media(orientation:landscape) and (max-height:550px){main{max-width:760px;display:grid;grid-template-columns:.85fr 1.15fr;gap:0 28px;align-items:center}.eyebrow{grid-column:1/-1}.hero{grid-column:1;grid-row:2/8;height:200px}.hero img{width:160px}h1,p,.journey-label,.primary,.controls{grid-column:2}h1{font-size:40px;margin-top:14px}p{font-size:13px;margin-bottom:12px}.primary{min-height:54px;padding:12px 16px;font-size:14px}.controls{margin:10px 0}.legal{grid-column:1/-1;margin-top:6px}}
+@media(prefers-reduced-motion:reduce){.hero img{animation:none}.primary{transition:none}.primary:active{transform:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">EL VIAJE DE CHRONOS</div>
+  <div class="hero"><img src="juego/assets/player_ship_identity_v1.webp" width="512" height="640" alt="Astér, la nave modular de Neon Cronium"></div>
+  <h1>NEON<br>CRONIUM</h1>
+  <p>Chronos ha sido atacado. Recupera el CRONIUM disperso y sigue su rastro entre las estrellas.</p>
+  <span class="journey-label">CHRONOS → GAIA NOVA</span>
+  <a class="primary" id="classiclink" href="juego/index.html">CONTINUAR VIAJE <span aria-hidden="true">→</span></a>
+  <small class="controls">Desliza un dedo para pilotar. Mantén DISPARAR con el otro.</small>
+  <nav class="legal" aria-label="Información del juego"><a href="juego/privacy.html">Privacidad</a><a href="juego/terms.html">Términos</a><a href="juego/privacy.html#contacto">Soporte</a></nav>
+</main>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('launcher-sw.js', {scope: './'}).catch(function() {});
+  });
+}
+</script>
+</body>
+</html>

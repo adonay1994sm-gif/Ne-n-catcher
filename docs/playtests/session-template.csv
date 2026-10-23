@@ -1,0 +1,11 @@
+session_id,date_utc,build_commit,build_revision,build_dirty,publication_version,identity_checked_at_utc,access_mode,device_model,os_version,browser_version,orientation,visible_viewport,experience,isolated_profile_verified,access_status,time_to_launch_s,time_to_controlled_move_s,first_minute_pilot,first_minute_fire,first_minute_objective,understands_first_minute,two_thumb_move_then_fire,two_thumb_fire_then_move,two_thumb_release_one,recharge_exposure,recharge_understood,module_recovered,c9_reached,c9_choice,c9_choice_understood,upgrade_effect_noticed,c9_wall_time_s,active_intro_s,intro_retries,intro_finished_unassisted,last_stage,stop_reason,reentry_checkpoint_before,reentry_checkpoint_after,atlas_mode,atlas_exposure,atlas_damage_understood,atlas_outcome,waiting_segments,reported_boredom,willingness_action,willingness_reason,assistance_log,technical_incidents,evidence_ref,session_total_s,notes
+R01,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R02,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R03,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R04,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R05,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R07,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R08,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R09,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+R10,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

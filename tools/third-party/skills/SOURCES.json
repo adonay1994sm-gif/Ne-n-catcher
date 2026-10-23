@@ -1,0 +1,166 @@
+{
+  "retrieved_date": "2026-10-18",
+  "scope": "Pinned third-party guidance and reviewed authoring helpers. No game runtime dependency.",
+  "files": [
+    {
+      "file": "openai-skill-creator/SKILL.md",
+      "repo": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "upstream_path": "skills/.system/skill-creator/SKILL.md",
+      "source_url": "https://github.com/openai/skills/blob/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator/SKILL.md",
+      "license": "Apache-2.0",
+      "sha256": "a17383bfb1448637ac1f757ad891ddb9676fa30b0eff620200f0e1cbc0cc0d50",
+      "modified": false
+    },
+    {
+      "file": "openai-skill-creator/LICENSE.txt",
+      "repo": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "upstream_path": "skills/.system/skill-creator/LICENSE.txt",
+      "source_url": "https://github.com/openai/skills/blob/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator/LICENSE.txt",
+      "license": "Apache-2.0",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "modified": false
+    },
+    {
+      "file": "openai-skill-creator/scripts/init_skill.py",
+      "repo": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "upstream_path": "skills/.system/skill-creator/scripts/init_skill.py",
+      "source_url": "https://github.com/openai/skills/blob/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator/scripts/init_skill.py",
+      "license": "Apache-2.0",
+      "sha256": "bcb8982d3f033a094f2f1be43123ac8537e2562d25d8ba4d8ef2196ae514d96d",
+      "modified": false
+    },
+    {
+      "file": "openai-skill-creator/scripts/generate_openai_yaml.py",
+      "repo": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "upstream_path": "skills/.system/skill-creator/scripts/generate_openai_yaml.py",
+      "source_url": "https://github.com/openai/skills/blob/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator/scripts/generate_openai_yaml.py",
+      "license": "Apache-2.0",
+      "sha256": "b8f6be33a9d72dd7a8da02e7a9fffea23dc79e94862e6dd6358b57a8899d8f73",
+      "modified": false
+    },
+    {
+      "file": "openai-skill-creator/scripts/quick_validate.py",
+      "repo": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "upstream_path": "skills/.system/skill-creator/scripts/quick_validate.py",
+      "source_url": "https://github.com/openai/skills/blob/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator/scripts/quick_validate.py",
+      "license": "Apache-2.0",
+      "sha256": "6cc9dc3199c935916cf6f73fcbbbb0e3bb1b58c8f5109fefa499978908164f51",
+      "modified": false
+    },
+    {
+      "file": "openai-skill-creator/references/openai_yaml.md",
+      "repo": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "upstream_path": "skills/.system/skill-creator/references/openai_yaml.md",
+      "source_url": "https://github.com/openai/skills/blob/49f948faa9258a0c61caceaf225e179651397431/skills/.system/skill-creator/references/openai_yaml.md",
+      "license": "Apache-2.0",
+      "sha256": "9fb5928b7f4a746fdb39df503ebbd7a659d5e64b47f85a60626aa1a03fd76b17",
+      "modified": false
+    },
+    {
+      "file": "anthropic-webapp-testing/SKILL.md",
+      "repo": "anthropics/skills",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "upstream_path": "skills/webapp-testing/SKILL.md",
+      "source_url": "https://github.com/anthropics/skills/blob/dbd4588f9e1033efb41dad4bef2f7947c8993d44/skills/webapp-testing/SKILL.md",
+      "license": "Apache-2.0",
+      "sha256": "51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2",
+      "modified": false
+    },
+    {
+      "file": "anthropic-webapp-testing/LICENSE.txt",
+      "repo": "anthropics/skills",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "upstream_path": "skills/webapp-testing/LICENSE.txt",
+      "source_url": "https://github.com/anthropics/skills/blob/dbd4588f9e1033efb41dad4bef2f7947c8993d44/skills/webapp-testing/LICENSE.txt",
+      "license": "Apache-2.0",
+      "sha256": "bc6b3af2f331cbc7fb0da1344efb2cbe5877a31498b4d70dbc7000f3405a1362",
+      "modified": false
+    },
+    {
+      "file": "anthropic-webapp-testing/scripts/with_server.py",
+      "repo": "anthropics/skills",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "upstream_path": "skills/webapp-testing/scripts/with_server.py",
+      "source_url": "https://github.com/anthropics/skills/blob/dbd4588f9e1033efb41dad4bef2f7947c8993d44/skills/webapp-testing/scripts/with_server.py",
+      "license": "Apache-2.0",
+      "sha256": "b0dcf4918935b795f4eda9821579b9902119235ff4447f687a30286e7d0925fd",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/LICENSE",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "LICENSE",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/LICENSE",
+      "license": "MIT",
+      "sha256": "f89abb55d9f073f38f1703e4518f0613c788c6174be7f13b8dfe48a1c076c746",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/interaction-design/SKILL.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/interaction-design/SKILL.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/interaction-design/SKILL.md",
+      "license": "MIT",
+      "sha256": "87f2765ed1deeef3f1c06f9e4338ff103c391c6c4adcdffc885f3516b7c34ff2",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/accessibility-compliance/SKILL.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/accessibility-compliance/SKILL.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/accessibility-compliance/SKILL.md",
+      "license": "MIT",
+      "sha256": "3ad0fbcb0a69b69e70652641a8eeb59f168cceb4bc9d9b9c8b47154072b9e1a2",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/accessibility-compliance/references/details.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/accessibility-compliance/references/details.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/accessibility-compliance/references/details.md",
+      "license": "MIT",
+      "sha256": "1789504a4268186e62126059da48d8deb95d36631fac6263b368e715df2ca2fb",
+      "modified": false
+    },
+    {
+      "file": "wshobson-ui-design/accessibility-compliance/references/aria-patterns.md",
+      "repo": "wshobson/agents",
+      "commit": "0874a27b17a22e2b7c2e2bcd725768e0803cad06",
+      "upstream_path": "plugins/ui-design/skills/accessibility-compliance/references/aria-patterns.md",
+      "source_url": "https://github.com/wshobson/agents/blob/0874a27b17a22e2b7c2e2bcd725768e0803cad06/plugins/ui-design/skills/accessibility-compliance/references/aria-patterns.md",
+      "license": "MIT",
+      "sha256": "72e2f2cb2d168bb5d82260b703be863a6371284ba3cf4ac22da28a309728c14a",
+      "modified": false
+    },
+    {
+      "file": "anthropic-frontend-design/SKILL.md",
+      "repo": "anthropics/skills",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "upstream_path": "skills/frontend-design/SKILL.md",
+      "source_url": "https://github.com/anthropics/skills/blob/dbd4588f9e1033efb41dad4bef2f7947c8993d44/skills/frontend-design/SKILL.md",
+      "license": "Apache-2.0",
+      "sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3",
+      "modified": false
+    },
+    {
+      "file": "anthropic-frontend-design/LICENSE.txt",
+      "repo": "anthropics/skills",
+      "commit": "dbd4588f9e1033efb41dad4bef2f7947c8993d44",
+      "upstream_path": "skills/frontend-design/LICENSE.txt",
+      "source_url": "https://github.com/anthropics/skills/blob/dbd4588f9e1033efb41dad4bef2f7947c8993d44/skills/frontend-design/LICENSE.txt",
+      "license": "Apache-2.0",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "modified": false
+    }
+  ]
+}

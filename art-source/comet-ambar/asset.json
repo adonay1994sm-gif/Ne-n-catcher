@@ -1,0 +1,129 @@
+{
+  "asset": {
+    "id": "cometa-ambar-flicker",
+    "identity_notes": "Cometa de roca oscura incandescente; fuego exclusivamente cálido hacia la izquierda. Núcleo rígido registrado en (384,256). Cabeza maestra idéntica entre poses, cola variable. Propuesta sin aprobación humana.",
+    "kind": "vfx",
+    "project": "NEON CRONIUM",
+    "provenance": "new_design",
+    "reference_files": [
+      "references/generated-master.png",
+      "references/prompt.txt",
+      "FICHA.md",
+      "evidence/registration.json",
+      "evidence/alpha-contact.jpg",
+      "evidence/motion-review.md"
+    ],
+    "version": "1.0.0"
+  },
+  "canvas": {
+    "height": 512,
+    "mode": "RGBA",
+    "padding_px": 16,
+    "pivot": {
+      "x": 384,
+      "y": 256
+    },
+    "transparency": "required",
+    "width": 512
+  },
+  "clips": [
+    {
+      "durations_ms": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "frames": [
+        "f000",
+        "f001",
+        "f002",
+        "f003"
+      ],
+      "loop": true,
+      "motion_type": "effects",
+      "name": "flicker"
+    }
+  ],
+  "delivery_profile": "delivery",
+  "frames": [
+    {
+      "file": "frames/f000.png",
+      "id": "f000"
+    },
+    {
+      "file": "frames/f001.png",
+      "id": "f001"
+    },
+    {
+      "file": "frames/f002.png",
+      "id": "f002"
+    },
+    {
+      "file": "frames/f003.png",
+      "id": "f003"
+    }
+  ],
+  "integration": {
+    "engine": "",
+    "evidence": [],
+    "status": "not_requested"
+  },
+  "previews": [
+    {
+      "clip": "flicker",
+      "file": "previews/flicker.webp",
+      "format": "WEBP"
+    }
+  ],
+  "publication": {
+    "status": "published",
+    "urls": [
+      "https://neon-cronium-video-referencia.chictide18.chatgpt.site/downloads/cometa-ambar-flicker-1.0.0/spritesheet.png",
+      "https://neon-cronium-video-referencia.chictide18.chatgpt.site/downloads/cometa-ambar-flicker-1.0.0/cometa-ambar-flicker-1.0.0.zip"
+    ]
+  },
+  "review": {
+    "loop": {
+      "evidence": [
+        "evidence/motion-review.md",
+        "evidence/registration.json"
+      ],
+      "reviewer": "Asistente · cua_repl · Chrome · preview Sites",
+      "status": "passed"
+    },
+    "motion": {
+      "evidence": [
+        "evidence/motion-review.md",
+        "evidence/registration.json"
+      ],
+      "reviewer": "Asistente · cua_repl · Chrome · preview Sites",
+      "status": "passed"
+    },
+    "visual": {
+      "evidence": [
+        "evidence/static-review.md",
+        "evidence/alpha-contact.jpg",
+        "evidence/registration.json"
+      ],
+      "reviewer": "Asistente · view_image",
+      "status": "passed"
+    }
+  },
+  "schema_version": "2.0",
+  "sheet": {
+    "cell_height": 512,
+    "cell_width": 512,
+    "columns": 4,
+    "file": "spritesheet.png",
+    "frame_order": [
+      "f000",
+      "f001",
+      "f002",
+      "f003"
+    ],
+    "margin": 0,
+    "rows": 1,
+    "spacing": 0
+  }
+}

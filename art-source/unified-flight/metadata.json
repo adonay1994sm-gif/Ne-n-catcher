@@ -1,0 +1,379 @@
+{
+  "id": "chronos-flight-visual-kit-v1",
+  "version": 1,
+  "status": "IN_REVIEW",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "provenance": {
+    "tool": "image_gen.imagegen",
+    "date": "2026-10-17",
+    "creativeWork": "Original generated illustrations informed by project-owned Chronos / Gaia / Cronos Prime references.",
+    "sourceReferences": [
+      "assets/cronos_level1_background.webp",
+      "art-source/references/gaia_enemy_dossier_v1.jpeg",
+      "art-source/references/cronos_prime_dossier_v1.jpeg"
+    ],
+    "thirdPartyStockUsed": false
+  },
+  "atlas": {
+    "path": "assets/chronos_flight_atlas_v1.webp",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 314136,
+    "sha256": "7cb2bc69b582fbca961972443d20380ad73294483f111bc451a3ffbab17349d1",
+    "decodedRGBABytes": 6291456,
+    "alpha": true,
+    "packedMaster": "art-source/unified-flight/atlas-packed-master.png",
+    "generatedMaster": "art-source/unified-flight/atlas-generated-master.png",
+    "frames": {
+      "stationIntact": {
+        "crop": [
+          0,
+          0,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          256
+        ],
+        "sourceCrop": [
+          0,
+          0,
+          540,
+          554
+        ],
+        "sourcePivot": [
+          280,
+          289
+        ],
+        "packingScale": 0.78
+      },
+      "stationBroken": {
+        "crop": [
+          512,
+          0,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          256
+        ],
+        "sourceCrop": [
+          540,
+          0,
+          553,
+          554
+        ],
+        "sourcePivot": [
+          280,
+          289
+        ],
+        "packingScale": 0.78
+      },
+      "gaia": {
+        "crop": [
+          1024,
+          0,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          256
+        ],
+        "sourceCrop": [
+          1093,
+          0,
+          443,
+          554
+        ],
+        "sourcePivot": [
+          221.5,
+          294
+        ],
+        "packingScale": 0.9
+      },
+      "bomberApproach": {
+        "crop": [
+          0,
+          512,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          256
+        ],
+        "sourceCrop": [
+          0,
+          548,
+          540,
+          476
+        ],
+        "sourcePivot": [
+          278,
+          195
+        ],
+        "packingScale": 0.7
+      },
+      "bomberCharge": {
+        "crop": [
+          512,
+          512,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          256
+        ],
+        "sourceCrop": [
+          540,
+          548,
+          520,
+          476
+        ],
+        "sourcePivot": [
+          274,
+          195
+        ],
+        "packingScale": 0.7
+      },
+      "bomberFire": {
+        "crop": [
+          1024,
+          512,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          256
+        ],
+        "sourceCrop": [
+          1008,
+          548,
+          528,
+          476
+        ],
+        "sourcePivot": [
+          343,
+          195
+        ],
+        "packingScale": 0.7
+      }
+    },
+    "animationNotes": "Station states share a reactor pivot. Bomber poses represent approach, mechanical weapon charging, firing; no animation controller or integration is claimed."
+  },
+  "weapons": {
+    "path": "assets/chronos_flight_weapons_v1.webp",
+    "width": 1536,
+    "height": 512,
+    "bytes": 84948,
+    "sha256": "f0f4b3bbdeed03cd25301ef6e1699e2d1c28d1659b7f08bc1ed53bebaffe9c71",
+    "decodedRGBABytes": 3145728,
+    "alpha": true,
+    "packedMaster": "art-source/unified-flight/weapons-packed-master.png",
+    "generatedMaster": "art-source/unified-flight/weapons-padded-master.png",
+    "frames": {
+      "idle": {
+        "crop": [
+          0,
+          0,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          440
+        ],
+        "mounts": [
+          [
+            154,
+            440
+          ],
+          [
+            358,
+            440
+          ]
+        ],
+        "muzzles": [
+          [
+            154,
+            190
+          ],
+          [
+            358,
+            190
+          ]
+        ],
+        "sourceGunCrops": [
+          [
+            90,
+            0,
+            210,
+            724
+          ],
+          [
+            370,
+            0,
+            210,
+            724
+          ]
+        ]
+      },
+      "charge": {
+        "crop": [
+          512,
+          0,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          440
+        ],
+        "mounts": [
+          [
+            154,
+            440
+          ],
+          [
+            358,
+            440
+          ]
+        ],
+        "muzzles": [
+          [
+            154,
+            190
+          ],
+          [
+            358,
+            190
+          ]
+        ],
+        "sourceGunCrops": [
+          [
+            780,
+            0,
+            290,
+            724
+          ],
+          [
+            1100,
+            0,
+            290,
+            724
+          ]
+        ]
+      },
+      "fire": {
+        "crop": [
+          1024,
+          0,
+          512,
+          512
+        ],
+        "pivot": [
+          256,
+          440
+        ],
+        "mounts": [
+          [
+            154,
+            440
+          ],
+          [
+            358,
+            440
+          ]
+        ],
+        "muzzles": [
+          [
+            154,
+            190
+          ],
+          [
+            358,
+            190
+          ]
+        ],
+        "sourceGunCrops": [
+          [
+            1550,
+            0,
+            290,
+            724
+          ],
+          [
+            1830,
+            0,
+            290,
+            724
+          ]
+        ]
+      }
+    },
+    "animationNotes": "Idle closed cowling; charge open capacitor rails; fire spread muzzle and short amber flare. Each pair has exact normalized mount centers x154/358 and basey440 for under-hull wing-root mounting."
+  },
+  "space": {
+    "path": "assets/chronos_flight_space_v1.webp",
+    "width": 768,
+    "height": 1152,
+    "bytes": 109484,
+    "sha256": "243362aac0c6815c667f3f7d7354407cda513259d30be6c0ae195ac1262cded3",
+    "decodedRGBABytes": 3538944,
+    "alpha": false,
+    "generatedMaster": "art-source/unified-flight/space-generated-master.png",
+    "layerRole": "Deep-space plate only: no planet, station, ship or large object. Compose isolated atlas sprites independently for actual travel rather than background crossfade."
+  },
+  "packingNotes": [
+    "Original generated masters retained unchanged.",
+    "ImageMagick crops, repacks, normalizes pivots, scales and compresses exports.",
+    "Bomber alpha-component masks prevent neighboring pose contamination where original rectangular bounding boxes overlap; original RGB and soft alpha retained inside expanded masks.",
+    "Runtime atlases use 512px square cells but gameplay pivots are explicitly declared; no source grid assumption.",
+    "This delivery provides real optimized assets, not renderer integration or gameplay certification."
+  ],
+  "masters": [
+    {
+      "path": "art-source/unified-flight/atlas-generated-master.png",
+      "bytes": 3022347,
+      "sha256": "212be6caea80b15532b5e8160a1fcd3516f90d40e05d856086921e4e07be18d1"
+    },
+    {
+      "path": "art-source/unified-flight/atlas-gutter-revision-master.png",
+      "bytes": 2897132,
+      "sha256": "e3bf0a759fad73f2ec9e0198326ad20b6c4da82e06d85a7f2b7939b74c129a9d"
+    },
+    {
+      "path": "art-source/unified-flight/atlas-packed-master.png",
+      "bytes": 1479700,
+      "sha256": "675d3a4b2ae4acead2c7564980e703204bea5e83096672f0805cb0c41da8c7b2"
+    },
+    {
+      "path": "art-source/unified-flight/space-generated-master.png",
+      "bytes": 2301076,
+      "sha256": "f75298cc667b259c85aac949758231278eb35d95a394042f285727522422f707"
+    },
+    {
+      "path": "art-source/unified-flight/weapons-generated-master.png",
+      "bytes": 1355024,
+      "sha256": "e5909e3103bbb29d67402a7321be36f7a2010d116cfc670bccd37406e108d599"
+    },
+    {
+      "path": "art-source/unified-flight/weapons-packed-master.png",
+      "bytes": 372988,
+      "sha256": "6382438618eddfa452629cc4e1d1cb96e5082f8c7ac1577267833c663dd140f3"
+    },
+    {
+      "path": "art-source/unified-flight/weapons-padded-master.png",
+      "bytes": 1124598,
+      "sha256": "1afec36564c8e7f7206de497e9d59cd8f862becf563badd4907e7d3f2da6f28d"
+    }
+  ],
+  "totalRuntimeBytes": 508568,
+  "totalDecodedRGBABytes": 12976128
+}

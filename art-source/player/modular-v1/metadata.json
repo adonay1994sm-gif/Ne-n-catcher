@@ -1,0 +1,17 @@
+{
+  "version": "modular-ships-v1",
+  "generatedAt": "2026-10-17",
+  "master": "modular-ships-master.png",
+  "runtime": "assets/ship_modular_atlas_v1.webp",
+  "dimensions": {
+    "width": 1774,
+    "height": 887
+  },
+  "decodedRgbaBytes": 6294152,
+  "runtimeBytes": 263716,
+  "masterSha256": "ecc9dc63cbe4e37a516ad8f3c1b01c949bbbf55e553e75ca141f9709156e291b",
+  "runtimeSha256": "71c050bdf64044fdfe6f009136d352afdb1873fdd00020e165c7141d8bb5fbac",
+  "provenance": "Original artwork generated with built-in image generation. No external licensed source assets. Generated master retained unchanged. WebP compression only.",
+  "layout": "Generator grid was not exact. Explicit source crops and authored mounting destinations in src/game/ship/modular-ship.js replace grid assumptions.",
+  "review": "IN_REVIEW; two chassis, two wing pairs, two engine pairs, two exhaust layers; not eight animated poses. Dedicated damage/destruction frames pending."
+}

@@ -1,0 +1,608 @@
+{
+  "schemaVersion": 1,
+  "id": "gaia.ch02.interceptor",
+  "revision": "ch02-art-v1",
+  "productionStatus": "IN_REVIEW",
+  "technicalAcceptance": "ASSET_AND_ANIMATOR_VALIDATED_RUNTIME_PENDING",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "image": "ch02-atlas-v1.webp",
+  "proposedRuntimeImage": "assets/ch02_interceptor_atlas_v1.webp",
+  "master": "ch02-master-v2.png",
+  "sourceHistorical": "ch02-master-v1.png",
+  "dimensions": {
+    "width": 1024,
+    "height": 1024
+  },
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "frameWidth": 256,
+    "frameHeight": 256,
+    "frameCount": 16
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "forward": {
+    "x": 0,
+    "y": 1
+  },
+  "recommendedDrawSizeLogical": 108,
+  "transparent": true,
+  "decodedRgbaBytes": 4194304,
+  "runtimeBytes": 252886,
+  "frames": [
+    {
+      "index": 0,
+      "stateRow": "navigation",
+      "sourceRect": {
+        "x": 0,
+        "y": 32,
+        "width": 314,
+        "height": 306
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "760e99a0fdfe1e847cdbfcd2dac8d969f986969250ecd27cea1806b5691bf498",
+      "alphaBounds": {
+        "minX": 36,
+        "minY": 47,
+        "maxX": 224,
+        "maxY": 222
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 1,
+      "stateRow": "navigation",
+      "sourceRect": {
+        "x": 314,
+        "y": 32,
+        "width": 313,
+        "height": 306
+      },
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "7fa96f8444836653f0c84888308b0625926a42798f6fb74bc8167135c33fcd15",
+      "alphaBounds": {
+        "minX": 32,
+        "minY": 29,
+        "maxX": 228,
+        "maxY": 218
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 2,
+      "stateRow": "navigation",
+      "sourceRect": {
+        "x": 627,
+        "y": 32,
+        "width": 314,
+        "height": 306
+      },
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "37f85e624042be660ec0116321987ba9d49a6e09fa676040d6722440f84a5cae",
+      "alphaBounds": {
+        "minX": 17,
+        "minY": 43,
+        "maxX": 222,
+        "maxY": 215
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 3,
+      "stateRow": "navigation",
+      "sourceRect": {
+        "x": 941,
+        "y": 32,
+        "width": 313,
+        "height": 306
+      },
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "a0e893b537c5d11ec22ee1527066e3b149ce1f9fbc3db5f9cecf1ff5be8deadf",
+      "alphaBounds": {
+        "minX": 39,
+        "minY": 48,
+        "maxX": 216,
+        "maxY": 212
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 4,
+      "stateRow": "attack",
+      "sourceRect": {
+        "x": 0,
+        "y": 329,
+        "width": 314,
+        "height": 294
+      },
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "6f7d7fce0fb53c04bf2b4320f6dfabee260f9e2c50fa8dfab6beb6a00d667392",
+      "alphaBounds": {
+        "minX": 27,
+        "minY": 41,
+        "maxX": 239,
+        "maxY": 216
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 5,
+      "stateRow": "attack",
+      "sourceRect": {
+        "x": 314,
+        "y": 329,
+        "width": 313,
+        "height": 294
+      },
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "4330b7f5c5909bc554e7347c050c1d970035638630626794b39f20bf3a8cab53",
+      "alphaBounds": {
+        "minX": 29,
+        "minY": 41,
+        "maxX": 232,
+        "maxY": 232
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 6,
+      "stateRow": "attack",
+      "sourceRect": {
+        "x": 627,
+        "y": 329,
+        "width": 314,
+        "height": 294
+      },
+      "rect": {
+        "x": 512,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "fa3837055b958d776048512a8ee3f9e312c395c5b48b01431b8bd8e58de0d2bc",
+      "alphaBounds": {
+        "minX": 27,
+        "minY": 42,
+        "maxX": 232,
+        "maxY": 232
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 7,
+      "stateRow": "attack",
+      "sourceRect": {
+        "x": 941,
+        "y": 329,
+        "width": 313,
+        "height": 294
+      },
+      "rect": {
+        "x": 768,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "a618fc24201f0b8fb7dcc3dd29871e6e7558830d2ef2c0e4ceafb851674ce0bc",
+      "alphaBounds": {
+        "minX": 31,
+        "minY": 41,
+        "maxX": 228,
+        "maxY": 220
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 8,
+      "stateRow": "damage",
+      "sourceRect": {
+        "x": 0,
+        "y": 624,
+        "width": 314,
+        "height": 298
+      },
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "fd6eb8aa613e2ea4fb71ebc33e46f3677ff551fe93504272f002edac13af51aa",
+      "alphaBounds": {
+        "minX": 29,
+        "minY": 47,
+        "maxX": 229,
+        "maxY": 220
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 9,
+      "stateRow": "damage",
+      "sourceRect": {
+        "x": 314,
+        "y": 624,
+        "width": 313,
+        "height": 298
+      },
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "f18b66c17d287637015b0eee25faf93deea6e143397966af79bd4b61341a363b",
+      "alphaBounds": {
+        "minX": 28,
+        "minY": 21,
+        "maxX": 228,
+        "maxY": 219
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 10,
+      "stateRow": "damage",
+      "sourceRect": {
+        "x": 627,
+        "y": 624,
+        "width": 314,
+        "height": 298
+      },
+      "rect": {
+        "x": 512,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "125c381ec01f6ee8bc11c689fcb48c30f37c5b8ebc1614c53904e7b56e86d10c",
+      "alphaBounds": {
+        "minX": 26,
+        "minY": 21,
+        "maxX": 233,
+        "maxY": 233
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 11,
+      "stateRow": "damage",
+      "sourceRect": {
+        "x": 941,
+        "y": 624,
+        "width": 313,
+        "height": 298
+      },
+      "rect": {
+        "x": 768,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "fa1d015cac8ac14d8caca984c8b27ab2e3dbead7005fbdfcbe53752ea0466140",
+      "alphaBounds": {
+        "minX": 29,
+        "minY": 24,
+        "maxX": 227,
+        "maxY": 220
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 12,
+      "stateRow": "destroy",
+      "sourceRect": {
+        "x": 0,
+        "y": 926,
+        "width": 314,
+        "height": 302
+      },
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "c0dad9f867370dfedebf3677bb621711d1ddc80c0dc690a0d4a70c9b1d646f4c",
+      "alphaBounds": {
+        "minX": 35,
+        "minY": 26,
+        "maxX": 232,
+        "maxY": 225
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 13,
+      "stateRow": "destroy",
+      "sourceRect": {
+        "x": 314,
+        "y": 926,
+        "width": 313,
+        "height": 302
+      },
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "7ac82ef3a1a0edce9d6b3326ada764aca225531ee1186551d20c8604fa15919c",
+      "alphaBounds": {
+        "minX": 29,
+        "minY": 22,
+        "maxX": 239,
+        "maxY": 216
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 14,
+      "stateRow": "destroy",
+      "sourceRect": {
+        "x": 627,
+        "y": 926,
+        "width": 314,
+        "height": 302
+      },
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "24673e19a13f1c9b175a49ea199e03915e7b1434e3b812de0b70c1e0c7f27ba5",
+      "alphaBounds": {
+        "minX": 16,
+        "minY": 20,
+        "maxX": 226,
+        "maxY": 219
+      },
+      "maximumBorderAlpha": 0
+    },
+    {
+      "index": 15,
+      "stateRow": "destroy",
+      "sourceRect": {
+        "x": 941,
+        "y": 926,
+        "width": 313,
+        "height": 302
+      },
+      "rect": {
+        "x": 768,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "rgbaSha256": "5334a37b83b1e12db440797acfb0b89f90c77c1f90f6df3c24e1f5830dd57b43",
+      "alphaBounds": {
+        "minX": 27,
+        "minY": 24,
+        "maxX": 209,
+        "maxY": 220
+      },
+      "maximumBorderAlpha": 0
+    }
+  ],
+  "animations": {
+    "spawn": {
+      "frames": [
+        0,
+        1
+      ],
+      "durationMs": [
+        130,
+        190
+      ],
+      "loop": false,
+      "locked": true,
+      "next": "idle"
+    },
+    "idle": {
+      "frames": [
+        0,
+        1
+      ],
+      "durationMs": [
+        180,
+        180
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "flight": {
+      "frames": [
+        1,
+        0
+      ],
+      "durationMs": [
+        100,
+        100
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "bankLeft": {
+      "frames": [
+        2
+      ],
+      "durationMs": [
+        100
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "bankRight": {
+      "frames": [
+        3
+      ],
+      "durationMs": [
+        100
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "attack": {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "durationMs": [
+        160,
+        80,
+        90,
+        170
+      ],
+      "loop": false,
+      "locked": true,
+      "next": "idle",
+      "events": [
+        {
+          "frameOffset": 0,
+          "name": "charge"
+        },
+        {
+          "frameOffset": 1,
+          "name": "fire"
+        }
+      ]
+    },
+    "hurt": {
+      "frames": [
+        8,
+        9,
+        10
+      ],
+      "durationMs": [
+        65,
+        75,
+        100
+      ],
+      "loop": false,
+      "locked": true,
+      "next": "idle"
+    },
+    "damaged": {
+      "frames": [
+        10,
+        11
+      ],
+      "durationMs": [
+        150,
+        150
+      ],
+      "loop": true,
+      "locked": false
+    },
+    "destroy": {
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "durationMs": [
+        90,
+        110,
+        140,
+        200
+      ],
+      "loop": false,
+      "locked": true,
+      "terminal": true,
+      "events": [
+        {
+          "frameOffset": 1,
+          "name": "coreBurst"
+        }
+      ],
+      "completionEvent": "removeVisual"
+    }
+  },
+  "transitionRules": {
+    "priority": [
+      "destroy",
+      "hurt",
+      "attack",
+      "spawn",
+      "bankLeft",
+      "bankRight",
+      "flight",
+      "idle"
+    ],
+    "destroyCannotBeInterrupted": true,
+    "gameplayCollisionIndependentOfArt": true,
+    "banking": "Use the bank pose matching actual lateral velocity; do not animate left/right while stationary.",
+    "fire": "Only the returned fire event may release projectiles; the visible muzzle pose is cell 5 at 160 ms.",
+    "destroy": "Remove gameplay hitbox at death; retain this visual until removeVisual, emitted once."
+  },
+  "palette": {
+    "titanium": "#E8EDF0",
+    "graphite": "#15202D",
+    "cyan": "#5CF5FF",
+    "hostile": "#B92328"
+  },
+  "catalogEntries": [
+    "gaia-ch02-move",
+    "gaia-ch02-attack",
+    "gaia-ch02-destroy"
+  ],
+  "provenance": {
+    "method": "OpenAI image_gen generation and image_gen correction; ImageMagick crop/repack/WebP export",
+    "generatorOutputOriginal": "exec-82980262-9067-4dce-adb2-589ed069ef5b.png",
+    "generatorOutputCorrection": "exec-70db54ea-4dff-402e-b4cb-2524f0dee78d.png",
+    "generatedAtUtcDate": "2026-10-18",
+    "preparedAtUtcDate": "2026-10-18",
+    "prompts": "PROVENANCE.md",
+    "rights": "Original generated design for this project. Existing project CH-01 and modular player ship inspected for style; neither was submitted as a generation reference. Correction references only the first generated CH-02. No downloaded stock or copied franchise assets; legal clearance is not asserted."
+  },
+  "checksums": {
+    "ch02-master-v1.png": "236cfee991023926667775798fdc0c612b5073d183c713f8d0e589a8386042ff",
+    "ch02-master-v2.png": "c63a6e176de139edb7e0807a62a3e4a581b924e90f69becab0c731d982fe8a69",
+    "ch02-atlas-v1.webp": "0b1b84b7a14edbc315136339f6f423989d685c7ea4c6122a7a7b88939be78729"
+  },
+  "verificationLimits": [
+    "Runtime integration, natural encounters and offline precache require root integration and browser QA.",
+    "Artistic acceptance remains with the owner. Sixteen distinct poses are not a skeletal or high-frame-rate animation.",
+    "Generative poses can have minor registration differences; source rectangles preserve the same fuselage pivot approximately.",
+    "The generated master has irregular vertical spacing. Recorded source rectangles isolate each row before transparent padding.",
+    "No physical iPhone or decoded GPU memory measurement has been performed."
+  ]
+}

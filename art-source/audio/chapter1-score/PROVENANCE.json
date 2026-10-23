@@ -1,0 +1,54 @@
+{
+  "collection": "chapter1-score-v1",
+  "project": "NEON CRONIUM",
+  "createdAt": "2026-10-18",
+  "status": "IN_REVIEW",
+  "production": "Original composition, arrangement and offline instrument synthesis by Codex for this project.",
+  "externalSamples": false,
+  "externalMelodies": false,
+  "soundfontUsed": false,
+  "paidServiceUsed": false,
+  "licenseNote": "No third-party music, samples or recordings included. This record does not change the project's global license or claim third-party rights. Owner artistic and release review pending.",
+  "discardedDependency": {
+    "path": "/usr/share/sounds/sf2/TimGM6mb.sf2",
+    "licenseInspected": "/usr/share/doc/timgm6mb-soundfont/copyright",
+    "declaredLicense": "GPL-2; package notes mention public-domain/GPL sample sources",
+    "used": false
+  },
+  "render": {
+    "script": "render_score.py",
+    "seed": 20261018,
+    "sampleRate": 44100,
+    "channels": 2,
+    "masterFormat": "PCM WAV, 24-bit",
+    "runtimeFormat": "AAC-LC in M4A, 112 kbit/s",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "ffmpeg": "7.1.5"
+  },
+  "integration": {
+    "openingDestination": "assets/chapter1_opening_score_v1.m4a",
+    "voyageDestination": "assets/chapter1_voyage_score_v1.m4a",
+    "openingSeconds": 28,
+    "ruptureSeconds": 9,
+    "voyageLoopStart": 0,
+    "voyageLoopEnd": 48,
+    "runtimeCopiedByIntegrator": true,
+    "inGameVerification": {
+      "commit": "f634a4635c4faacd33d19390706e0a97d1198662",
+      "evidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+      "result": "Native AAC playback in both controlled game viewports; readyState4/currentTime>0.9/errornull; human listening and physical Safari pending."
+    }
+  },
+  "evidence": {
+    "inventory": "inventory.json",
+    "browser": "browser-audio-results.json",
+    "render": "render-measurements.jsonl",
+    "loudness": [
+      "opening-loudness.txt",
+      "voyage-loudness.txt"
+    ],
+    "humanListening": "Not performed in this session",
+    "physicalSafariIPhone": "Not performed"
+  }
+}

@@ -1,0 +1,598 @@
+{
+  "schemaVersion": 1,
+  "id": "chapter1.missile.v1",
+  "status": "IN_REVIEW",
+  "technicalAcceptance": "LAUNCH_FLIGHT_CHROMIUM_PASSED_IMPACT_POSES_PENDING",
+  "artisticAcceptance": "PENDING_OWNER",
+  "physicalAcceptance": "PENDING",
+  "runtime": "assets/chapter1_missile_atlas_v1.webp",
+  "master": "chapter1-missile-generated-master.png",
+  "packedMaster": "missile-packed-master.png",
+  "masterDimensions": {
+    "width": 1254,
+    "height": 1254
+  },
+  "dimensions": {
+    "width": 1024,
+    "height": 1024
+  },
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "frameWidth": 256,
+    "frameHeight": 256
+  },
+  "pivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "forward": {
+    "x": 0,
+    "y": -1
+  },
+  "transparent": true,
+  "runtimeBytes": 246250,
+  "decodedRgbaBytes": 4194304,
+  "runtimeSha256": "8b4949b8e87b8b1e2c744ea9b3f227025ca21e365251d9266d4c09ee6f379a05",
+  "masterSha256": "02a09c3cbeeb32412e670fe736295d4f3c500c40f31e8ccd38b753bf6e15fa03",
+  "uniqueFrames": 16,
+  "animation": {
+    "flight": {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "fps": 12,
+      "loop": true
+    },
+    "launch": {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "fps": 12,
+      "loop": false,
+      "durationSeconds": 0.3333333333333333
+    },
+    "impact": {
+      "frames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "fps": 16,
+      "loop": false,
+      "durationSeconds": 0.25
+    },
+    "aftermath": {
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 10,
+      "loop": false,
+      "durationSeconds": 0.4
+    }
+  },
+  "frames": [
+    {
+      "index": 0,
+      "kind": "flight",
+      "source": "frames/00-flight.png",
+      "sourceRect": {
+        "x": 41,
+        "y": 16,
+        "width": 294,
+        "height": 309
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "e205d5aaa6d03c6a7f7efbab73f8c1a12d4b4f20368b35579a15e79452b9f7ee",
+      "alphaBounds": {
+        "minX": 60,
+        "minY": 24,
+        "maxX": 208,
+        "maxY": 234
+      },
+      "visiblePixels": 6632,
+      "transparentPixels": 56349,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 1,
+      "kind": "flight",
+      "source": "frames/01-flight.png",
+      "sourceRect": {
+        "x": 336,
+        "y": 16,
+        "width": 294,
+        "height": 309
+      },
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "2e953db9f271d2a273c0b33d0824ad488d3c253ab83c7aea1e95c8a17ec8e057",
+      "alphaBounds": {
+        "minX": 35,
+        "minY": 30,
+        "maxX": 226,
+        "maxY": 235
+      },
+      "visiblePixels": 6722,
+      "transparentPixels": 56011,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 2,
+      "kind": "flight",
+      "source": "frames/02-flight.png",
+      "sourceRect": {
+        "x": 628,
+        "y": 16,
+        "width": 294,
+        "height": 309
+      },
+      "rect": {
+        "x": 512,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "f2a3a723c5d0a9ce2612f3235b7ec666bcf202cc6ca6d440226b233bb18ffc29",
+      "alphaBounds": {
+        "minX": 42,
+        "minY": 26,
+        "maxX": 171,
+        "maxY": 233
+      },
+      "visiblePixels": 6898,
+      "transparentPixels": 55806,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 3,
+      "kind": "flight",
+      "source": "frames/03-flight.png",
+      "sourceRect": {
+        "x": 922,
+        "y": 16,
+        "width": 294,
+        "height": 309
+      },
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "7e26c7dc5375117204e43737afc4f5da5a413dfc1c0e24f05e4d59c509e911c2",
+      "alphaBounds": {
+        "minX": 28,
+        "minY": 20,
+        "maxX": 215,
+        "maxY": 235
+      },
+      "visiblePixels": 6698,
+      "transparentPixels": 55123,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 4,
+      "kind": "launch",
+      "source": "frames/04-launch.png",
+      "sourceRect": {
+        "x": 41,
+        "y": 325,
+        "width": 294,
+        "height": 316
+      },
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "a637806b770b6a365f8f39bf471a1110408c23a46a86227bab5fe6187bdb9658",
+      "alphaBounds": {
+        "minX": 63,
+        "minY": 22,
+        "maxX": 226,
+        "maxY": 228
+      },
+      "visiblePixels": 11803,
+      "transparentPixels": 51650,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 5,
+      "kind": "launch",
+      "source": "frames/05-launch.png",
+      "sourceRect": {
+        "x": 336,
+        "y": 325,
+        "width": 294,
+        "height": 316
+      },
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "3cf43f30dbd2190c3e1340b325e04aa4968b85aeae003419a0e98f4d7c392dbc",
+      "alphaBounds": {
+        "minX": 35,
+        "minY": 20,
+        "maxX": 198,
+        "maxY": 229
+      },
+      "visiblePixels": 12084,
+      "transparentPixels": 50381,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 6,
+      "kind": "launch",
+      "source": "frames/06-launch.png",
+      "sourceRect": {
+        "x": 628,
+        "y": 325,
+        "width": 294,
+        "height": 316
+      },
+      "rect": {
+        "x": 512,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "3c74da6b40681cb5b09f4850d927d7ec3c5ff72d32fbe5b8f9f33f1a2b4ee5a8",
+      "alphaBounds": {
+        "minX": 51,
+        "minY": 22,
+        "maxX": 202,
+        "maxY": 235
+      },
+      "visiblePixels": 10529,
+      "transparentPixels": 50325,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 7,
+      "kind": "launch",
+      "source": "frames/07-launch.png",
+      "sourceRect": {
+        "x": 922,
+        "y": 325,
+        "width": 294,
+        "height": 316
+      },
+      "rect": {
+        "x": 768,
+        "y": 256,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "863065472004e7f85f6430a3dbda8aea0a2c730176b898ad9419fde1e8395b01",
+      "alphaBounds": {
+        "minX": 35,
+        "minY": 20,
+        "maxX": 209,
+        "maxY": 235
+      },
+      "visiblePixels": 9819,
+      "transparentPixels": 50620,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 8,
+      "kind": "impact",
+      "source": "frames/08-impact.png",
+      "sourceRect": {
+        "x": 30,
+        "y": 650,
+        "width": 280,
+        "height": 294
+      },
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "f1f6df76dc773e74926cf8a3474a57e013bb6b9a44857856b2c4ced8d8ec2f63",
+      "alphaBounds": {
+        "minX": 43,
+        "minY": 39,
+        "maxX": 218,
+        "maxY": 222
+      },
+      "visiblePixels": 9406,
+      "transparentPixels": 48531,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 9,
+      "kind": "impact",
+      "source": "frames/09-impact.png",
+      "sourceRect": {
+        "x": 330,
+        "y": 650,
+        "width": 290,
+        "height": 294
+      },
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "18d55ed0f98efd525696e45a185e12cc97150476d4ce69020527dad0f73941fa",
+      "alphaBounds": {
+        "minX": 33,
+        "minY": 32,
+        "maxX": 221,
+        "maxY": 219
+      },
+      "visiblePixels": 17195,
+      "transparentPixels": 41114,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 10,
+      "kind": "impact",
+      "source": "frames/10-impact.png",
+      "sourceRect": {
+        "x": 629,
+        "y": 650,
+        "width": 299,
+        "height": 294
+      },
+      "rect": {
+        "x": 512,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "bc99c6442aae39775a2b70067fa438c21841673ee73128ca55784ae426aa2339",
+      "alphaBounds": {
+        "minX": 31,
+        "minY": 32,
+        "maxX": 224,
+        "maxY": 222
+      },
+      "visiblePixels": 20639,
+      "transparentPixels": 35042,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 11,
+      "kind": "impact",
+      "source": "frames/11-impact.png",
+      "sourceRect": {
+        "x": 956,
+        "y": 650,
+        "width": 285,
+        "height": 294
+      },
+      "rect": {
+        "x": 768,
+        "y": 512,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "bec7ef46b2e22ab093c2201e852284292ce9add81c3396cad39b4fdbb69e08a9",
+      "alphaBounds": {
+        "minX": 35,
+        "minY": 37,
+        "maxX": 202,
+        "maxY": 222
+      },
+      "visiblePixels": 14144,
+      "transparentPixels": 41463,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 12,
+      "kind": "aftermath",
+      "source": "frames/12-aftermath.png",
+      "sourceRect": {
+        "x": 30,
+        "y": 950,
+        "width": 280,
+        "height": 280
+      },
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "9ae1414551fc46403d8ff172f5afa958a0443296d7d1ae99252a2e46ba2e08ce",
+      "alphaBounds": {
+        "minX": 55,
+        "minY": 37,
+        "maxX": 218,
+        "maxY": 213
+      },
+      "visiblePixels": 11349,
+      "transparentPixels": 46782,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 13,
+      "kind": "aftermath",
+      "source": "frames/13-aftermath.png",
+      "sourceRect": {
+        "x": 330,
+        "y": 950,
+        "width": 290,
+        "height": 280
+      },
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "1da91c3d35c97f0cbc709c7fc0b0e73cb04eac4172a08dddbf3d81b3e8f69a45",
+      "alphaBounds": {
+        "minX": 33,
+        "minY": 37,
+        "maxX": 209,
+        "maxY": 218
+      },
+      "visiblePixels": 9731,
+      "transparentPixels": 47603,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 14,
+      "kind": "aftermath",
+      "source": "frames/14-aftermath.png",
+      "sourceRect": {
+        "x": 629,
+        "y": 950,
+        "width": 299,
+        "height": 280
+      },
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "b20a05c66863ebf06cd210d6605d3aca6f8dd10fdb574373304dde2798a19598",
+      "alphaBounds": {
+        "minX": 32,
+        "minY": 37,
+        "maxX": 224,
+        "maxY": 218
+      },
+      "visiblePixels": 8636,
+      "transparentPixels": 48208,
+      "maximumSixteenPixelGutterAlpha": 0
+    },
+    {
+      "index": 15,
+      "kind": "aftermath",
+      "source": "frames/15-aftermath.png",
+      "sourceRect": {
+        "x": 956,
+        "y": 950,
+        "width": 285,
+        "height": 280
+      },
+      "rect": {
+        "x": 768,
+        "y": 768,
+        "width": 256,
+        "height": 256
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "rgbaSha256": "24f4b0c0c31de1dd9fbf9ac833d93a21d7e917c36d1c89390b56c1233b29ae31",
+      "alphaBounds": {
+        "minX": 36,
+        "minY": 37,
+        "maxX": 188,
+        "maxY": 206
+      },
+      "visiblePixels": 4817,
+      "transparentPixels": 50788,
+      "maximumSixteenPixelGutterAlpha": 0
+    }
+  ],
+  "provenance": {
+    "created": "2026-10-18",
+    "productionTool": "image_gen.imagegen",
+    "productionMode": "Original generation from a written brief, in parallel with Canva concept; no image-to-image reference supplied",
+    "sourceOriginal": "/workspace/generated_images/exec-ded0a96a-5681-478f-b7eb-48074c6e9e0b.png",
+    "optimization": "ImageMagick crop, aspect-preserving resize, transparent padding and WebP export",
+    "canvaConcept": null,
+    "rights": "Original project-generated art; no stock purchase or external franchise image. Platform generation terms apply; exclusivity not asserted."
+  },
+  "integrationEvidence": "docs/production-reports/evidence/chapter1-living/visual-f634a46/results.json",
+  "runtimeStateIntegration": {
+    "launch": "INTEGRATED",
+    "flight": "INTEGRATED",
+    "impact": "PENDING_OWN_ATLAS_POSES_USES_EXISTING_GAIA_VFX",
+    "aftermath": "PENDING_OWN_ATLAS_POSES"
+  }
+}

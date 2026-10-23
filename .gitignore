@@ -1,0 +1,24 @@
+node_modules/
+www/
+ios/App/App/public/
+*.log
+.DS_Store
+DerivedData/
+xcuserdata/
+
+# Generated test site; not a repository source artifact
+preview-dist/
+
+# Netlify CLI connection/cache is machine-local and may contain deployment identity.
+.netlify/
+
+# Restos de una exportación para revisión (scripts/export-review-source.py)
+# descomprimida dentro del repositorio. No forman parte del juego.
+/CLAUDE_CODIGO_POR_PARTES/
+/00_LEER_PRIMERO_CLAUDE.txt
+/EXPORT_MANIFEST.json
+/LEER_PRIMERO_EXPORTACION.txt
+
+# Capturas y resultados que generan los scripts de navegador (*-smoke.cjs).
+# Se quedan en disco para revisarlas; no se versionan (limpieza 20/10/2026).
+docs/**/evidence/
