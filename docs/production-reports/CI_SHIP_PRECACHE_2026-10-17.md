@@ -4,9 +4,9 @@ Fecha: 17/10/2026, UTC. Rama: `continuity-assets-audit-20261013`.
 
 HEAD inicial local y remoto: `5bc9a16cf3d0ce907ee4623c77dda1e0204690b8`, árbol limpio. Se conservaron todos los commits posteriores al fallo; no se volvió a `d325e51`.
 
-**Causa confirmada:** la prueba web del commit `d325e51f19df0dd1e77ab9257ddcdeee775299be` todavía exigía precargar `assets/ship_frame_00.webp`, después de retirar esa presentación de la nave. La ejecución [39064407643](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39064407643) construyó correctamente la preview, pero falló en `tests/run-v7-web-tests.mjs:64`. Los pasos posteriores quedaron omitidos. [Error original conservado](evidence/ci-ship-precache/original-failure.txt).
+**Causa confirmada:** la prueba web del commit `d325e51f19df0dd1e77ab9257ddcdeee775299be` todavía exigía precargar `assets/ship_frame_00.webp`, después de retirar esa presentación de la nave. La ejecución [39064407643](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39064407643) construyó correctamente la preview, pero falló en `tests/run-v7-web-tests.mjs:64`. Los pasos posteriores quedaron omitidos. [Error original conservado](evidence/ci-ship-precache/original-failure.txt).
 
-La corrección principal ya existía en `53a8244db58227eee8cc32463a0593eee69ce3bd`. Al iniciar esta revisión, [39065361265](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065361265), correspondiente al HEAD inicial, ya había terminado con éxito. Esto se verificó en GitHub, además de leer los informes anteriores.
+La corrección principal ya existía en `53a8244db58227eee8cc32463a0593eee69ce3bd`. Al iniciar esta revisión, [39065361265](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39065361265), correspondiente al HEAD inicial, ya había terminado con éxito. Esto se verificó en GitHub, además de leer los informes anteriores.
 
 La revisión del código confirma que corregir el contrato, conservando las comprobaciones, es lo adecuado:
 
@@ -22,7 +22,7 @@ No hay un modo activo ni una recuperación offline que justifique reintroducir l
 
 ## Resultado y alcance
 
-**Incidencia verificada como resuelta en GitHub Actions.** Refuerzo publicado en [`f69d3651e9a180c8502d17aa523a27d9abed92e7`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/f69d3651e9a180c8502d17aa523a27d9abed92e7), un commit de un archivo, 20 líneas añadidas y una sustituida. [Nueva ejecución completa, 39065781507](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065781507): `completed / success`, doce pasos satisfactorios, incluido el empaquetado.
+**Incidencia verificada como resuelta en GitHub Actions.** Refuerzo publicado en [`f69d3651e9a180c8502d17aa523a27d9abed92e7`](https://github.com/adonay1994sm-gif/neon-cronium/commit/f69d3651e9a180c8502d17aa523a27d9abed92e7), un commit de un archivo, 20 líneas añadidas y una sustituida. [Nueva ejecución completa, 39065781507](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39065781507): `completed / success`, doce pasos satisfactorios, incluido el empaquetado.
 
 Este lote cambia pruebas y documentación. No incorpora funcionalidades, recursos artísticos ni modificaciones de jugabilidad, cargador, renderizador, service worker o guardados. No se desplegó en producción ni se actualizó el sitio privado: continúa la versión 9 publicada previamente.
 
@@ -86,7 +86,7 @@ Esta prueba es Chromium local. No certifica Safari, iPhone físico, rendimiento 
 | Dato | Resultado |
 | --- | --- |
 | Workflow | NEON CRONIUM N-7 Integrated Preview QA |
-| Ejecución del refuerzo | [39065781507](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065781507) |
+| Ejecución del refuerzo | [39065781507](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39065781507) |
 | SHA verificado | `f69d3651e9a180c8502d17aa523a27d9abed92e7` |
 | Resultado | `completed / success`; doce pasos satisfactorios, sin pasos posteriores omitidos |
 | Artefacto | `NEON-CRONIUM-N7-ARTPASS-NETLIFY-DROP`, ID `12113146729`, disponible al verificar |

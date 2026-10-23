@@ -9,7 +9,7 @@ La revisión final de [la entrega Chronos–Gaia](VOYAGE_POLISH_2026-10-17.md) r
 
 Estado: corrección integrada, regresión y Actions completos, paquete limpio y web privada **versión 14** publicada. Esto cierra el defecto reproducido; no declara la campaña comercial terminada.
 
-- SHA funcional probado/publicado: [`f39082f04667d7dc18ceba17705095bacb30806e`](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/f39082f04667d7dc18ceba17705095bacb30806e).
+- SHA funcional probado/publicado: [`f39082f04667d7dc18ceba17705095bacb30806e`](https://github.com/adonay1994sm-gif/neon-cronium/commit/f39082f04667d7dc18ceba17705095bacb30806e).
 - Cierre documental: el commit que contiene este informe y su recibo posterior `evidence/score-read-guard/closure.json`; se distinguen del binario probado.
 - Tiempo: se conservan marcas UTC y duración de comandos en evidencias; no se atribuyen horas de trabajo humano no medidas.
 - Bloques: P2, persistencia de récords y regresión de la edición privada. No se cambia ninguna etapa, semilla, colisión, arma, duración, ritmo o motor.
@@ -64,7 +64,7 @@ Todos los comandos siguientes terminaron con salida 0 salvo el primer intento de
 
 Comandos de navegador conservados: `node /tmp/neon-score-recovery-browser.cjs preview-dist /tmp/neon-cronium-score-guard-browser-02 f39082f04667d7dc18ceba17705095bacb30806e`; `node scripts/rebrand-browser-smoke.cjs --root preview-dist --previous /tmp/neon-cronium-polish-final/preview-dist --output /tmp/neon-cronium-score-guard-upgrade --timeout 180000`; `node scripts/voyage-polish-browser-smoke.cjs --root preview-dist --output /tmp/neon-cronium-score-guard-c9 --focus-c9 --expected-commit f39082f04667d7dc18ceba17705095bacb30806e`; `node scripts/content-browser-smoke.cjs --root preview-dist --output /tmp/neon-cronium-score-guard-n7 --profile 390x844 --mode n7`. Los arneses temporales usados se conservan junto a resultados para reproducirlos con rutas locales válidas.
 
-GitHub Actions **completo/success**, incluido `npm ci` en Node 22.13 y empaquetado: [39074965794](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39074965794). [Metadatos con SHA y pasos](evidence/score-read-guard/github-functional.json). Certificación local usa Node 24.19; no se equipara ninguna a iPhone físico.
+GitHub Actions **completo/success**, incluido `npm ci` en Node 22.13 y empaquetado: [39074965794](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39074965794). [Metadatos con SHA y pasos](evidence/score-read-guard/github-functional.json). Certificación local usa Node 24.19; no se equipara ninguna a iPhone físico.
 
 ### Fallos y correcciones de esta comprobación
 

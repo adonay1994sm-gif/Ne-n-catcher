@@ -9,8 +9,8 @@ La integración anterior tenía dos estados de estación, una onda de solo 1,1 s
 - **Fecha:** 17/10/2026 UTC.
 - **Rama:** continuity-assets-audit-20261013.
 - **SHA inicial:** 81fdf21f089bfb8d768c9ef01730d15df2fc7ad1.
-- **SHA funcional y paquete limpio:**[73e117bacc0b220e477c455c07e278a2326fb4dc](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/73e117bacc0b220e477c455c07e278a2326fb4dc), publicado en GitHub.
-- **Cierre documental publicado:**[61f1baa6950c40b6d7886d73aedf3a59a4bcf9b8](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/61f1baa6950c40b6d7886d73aedf3a59a4bcf9b8). La precisión posterior que registra esta referencia no cambia el ejecutable; el paquete jugable permanece73e117b.
+- **SHA funcional y paquete limpio:**[73e117bacc0b220e477c455c07e278a2326fb4dc](https://github.com/adonay1994sm-gif/neon-cronium/commit/73e117bacc0b220e477c455c07e278a2326fb4dc), publicado en GitHub.
+- **Cierre documental publicado:**[61f1baa6950c40b6d7886d73aedf3a59a4bcf9b8](https://github.com/adonay1994sm-gif/neon-cronium/commit/61f1baa6950c40b6d7886d73aedf3a59a4bcf9b8). La precisión posterior que registra esta referencia no cambia el ejecutable; el paquete jugable permanece73e117b.
 - **Bloque trabajado:** P1-CHRONOS-02, producción/integración del acontecimiento del primer nivel.
 - **Nivel modificado:** La Onda de Choque. Los otros nueve conservan su contenido.
 - **Estado:** IN_REVIEW. Aceptación artística del propietario y Safari/iPhone físico pendientes; ningún nivel se declara visualmente completo.

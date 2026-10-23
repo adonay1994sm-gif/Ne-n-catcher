@@ -10,7 +10,7 @@ Se verificó HEAD local/remoto96f75672a63940e58158806f367b06a74cbac20d con árbo
 - **Rama:** continuity-assets-audit-20261013.
 - **SHA inicial observado:**96f75672a63940e58158806f367b06a74cbac20d.
 - **SHA funcional probado y publicado:**6891f810c1fee09def8704729cf843e9926843c7; paquete limpio, huellas iguales a las pruebas finales.
-- **Cierre documental:**commit de esta edición, separado del ejecutable; [historial verificable](https://github.com/adonay1994sm-gif/Ne-n-catcher/commits/continuity-assets-audit-20261013/docs/production-reports/COMPACT_HUD_2026-10-17.md).
+- **Cierre documental:**commit de esta edición, separado del ejecutable; [historial verificable](https://github.com/adonay1994sm-gif/neon-cronium/commits/continuity-assets-audit-20261013/docs/production-reports/COMPACT_HUD_2026-10-17.md).
 - **Paquete y publicación:**ZIP verificado6891f81; Sites versión7, succeeded18:44:38UTC, URL y hashes en H.
 - **Alcance:**presentación, límites de movimiento derivados del HUD y regresión de su ciclo de visibilidad. No se declaran niveles visualmente completos.
 - **Aceptación técnica:**PASSED para este incremento HUD; límite de harness temporal documentado en E.1. **Artística:**pendiente del propietario. **Física:**Safari/iPhone pendientes.
@@ -156,8 +156,8 @@ La guía Sites se aplicó a este sitio existente. El helper oficial de source wo
 GitHub, rama continuity-assets-audit-20261013:
 
 1. Inicial96f75672a63940e58158806f367b06a74cbac20d; se conservaron los avances posteriores al mandato histórico.
-2. [ad4f82911f7c661f7762f84f202d7ba6099e49e2](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/ad4f82911f7c661f7762f84f202d7ba6099e49e2):HUD compacto, límites y regresiones.
-3. [6891f810c1fee09def8704729cf843e9926843c7](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/6891f810c1fee09def8704729cf843e9926843c7):poderes/avisos y evidencia; SHA del ejecutable limpio publicado.
+2. [ad4f82911f7c661f7762f84f202d7ba6099e49e2](https://github.com/adonay1994sm-gif/neon-cronium/commit/ad4f82911f7c661f7762f84f202d7ba6099e49e2):HUD compacto, límites y regresiones.
+3. [6891f810c1fee09def8704729cf843e9926843c7](https://github.com/adonay1994sm-gif/neon-cronium/commit/6891f810c1fee09def8704729cf843e9926843c7):poderes/avisos y evidencia; SHA del ejecutable limpio publicado.
 4. El commit que contiene este cierre añade solo documentación y paquete, sin otro ejecutable. Consultar su historial enlazado arriba para obtener su SHA sin autorreferencias de hash.
 
 Ambos commits funcionales fueron publicados y el SHA remoto se comprobó. El cierre documental se sincroniza después. Compilación local aprobada; no se atribuye a este código un workflow GitHub Actions antiguo ni un estado de CI remoto no consultado. [Relación completa de rutas del lote](evidence/compact-hud/modified-files-complete.txt).

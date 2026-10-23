@@ -38,14 +38,14 @@ La web privada actualizada es (web privada antigua, retirada) Conserva su direcc
 | Caché | `sw.js`: nueva generación `neon-cronium-pre-release-7-2-0-brand-1`; contratos actualizados en `tests/run-tests.mjs`, `run-static-tests.mjs`, `run-v7-web-tests.mjs`. Las aserciones de recursos permanecen. |
 | Runtime y diagnóstico | `src/game/08-loop-input-bootstrap.js` y `ad-bridge.js`: sólo prefijo de marca del log. Se regeneraron `game.js` y copias web/iOS, sin parches exclusivos. |
 | CI | `.github/workflows/n7-integrated-preview.yml`: nombre NEON CRONIUM y artefacto `NEON-CRONIUM-N7-ARTPASS-NETLIFY-DROP`; triggers, permisos y pruebas conservados. |
-| Guías/catálogos | `ART_DIRECTION_NEON_CRONIUM.md` renombrado a `ART_DIRECTION_NEON_CRONIUM.md`, enlaces de `PRODUCT_VISION`/`docs/art/CH01_PROVENANCE.md` reparados. README, AGENTS, visión, catálogo/manifest de assets y mapa de producción identifican la marca actual. |
+| Guías/catálogos | La guía de dirección de arte renombrada a `ART_DIRECTION_NEON_CRONIUM.md`, enlaces de `PRODUCT_VISION`/`docs/art/CH01_PROVENANCE.md` reparados. README, AGENTS, visión, catálogo/manifest de assets y mapa de producción identifican la marca actual. |
 | QA/seguimiento | `tests/product-brand.test.mjs`, `scripts/rebrand-browser-smoke.cjs`, ledger `P1-BRAND-01`, checklist/progreso generados y cierres vigentes enlazados. |
 
 La relación completa está en [changed-files.json](evidence/neon-cronium/changed-files.json); el diff Git conserva detalle y detección de renombrado.
 
 ## 3. Compatibilidad y archivos históricos
 
-El nombre visible es nuevo, pero se conservan deliberadamente `com.neoncronium`, claves `neonCronium.*`, claves clásicas `neon-*`, prefijo de preview `neon-preview-v1:`, IDs de contenido, globals públicos, URL del repositorio y origen del sitio. Son identidades técnicas persistentes, no rótulos para el jugador. Cambiarlos sin necesidad separaría instalaciones o partidas; no se diseñó una migración artificial para un cambio de nombre.
+El nombre visible es nuevo, pero se conservaron deliberadamente el bundle ID y las claves de guardado con el nombre anterior (cambiados el 23/10/2026 a `com.neoncronium` y `neonCronium.*`), claves clásicas `neon-*`, prefijo de preview `neon-preview-v1:`, IDs de contenido, globals públicos, URL del repositorio y origen del sitio. Son identidades técnicas persistentes, no rótulos para el jugador. Cambiarlos sin necesidad separaría instalaciones o partidas; no se diseñó una migración artificial para un cambio de nombre.
 
 Los ZIP, informes, evidencias, derechos/procedencia y maestros históricos conservan sus nombres y hashes originales. Los **archivos activos y nuevos paquetes** usan NEON CRONIUM. Renombrar un ZIP histórico no lo convertiría en la versión actual. Los nombres genéricos (`game.js`, sprites, `App.xcodeproj`) tampoco requieren prefijos nuevos. Se conservan los archivos reservados del motor y `USE_ENGINE_V1 = false`.
 
@@ -86,11 +86,11 @@ Son tres slots de lanzamiento, **no tres fotogramas de animación**. Las exporta
 
 [Build final](evidence/neon-cronium/build-preview-final.txt), [preview23](evidence/neon-cronium/preview-final-tests.txt). Los recuentos son por suite y no se suman como partidas distintas. Tras esta certificación sólo cambió el arnés de QA y documentación; el juego publicado no cambió.
 
-GitHub Actions terminó **completed/success**, con todos sus pasos y empaquetado, en [39069229533 — funcional e096a3b](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39069229533) y [39069397503 — paquete207a94e](https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39069397503). [Resultados remotos](evidence/neon-cronium/github-package-run.json). No se declara una compilación nativa de Xcode ni certificación física por estos resultados.
+GitHub Actions terminó **completed/success**, con todos sus pasos y empaquetado, en [39069229533 — funcional e096a3b](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39069229533) y [39069397503 — paquete207a94e](https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39069397503). [Resultados remotos](evidence/neon-cronium/github-package-run.json). No se declara una compilación nativa de Xcode ni certificación física por estos resultados.
 
 ## 6. Navegador real, errores encontrados y correcciones
 
-Comando final: `node scripts/rebrand-browser-smoke.cjs --root preview-dist --previous /workspace/sites/web privada antigua/dist --output /tmp/neon-cronium-rebrand/browser-04 --timeout 120000`.
+Comando final: `node scripts/rebrand-browser-smoke.cjs --root preview-dist --previous <web privada antigua>/dist --output /tmp/neon-cronium-rebrand/browser-04 --timeout 120000`.
 
 Se sirvió una copia temporal de la v10 y se instalaron sus workers nativos. Se sembró de forma explícita un fixture válido de guardado anterior: etapa1.3, casco74%, puntuación160,8fragmentos, emisor gemelo, hangar mixto y récord1739. Esto comprueba compatibilidad; **no es una nueva partida natural ganada desde1.1**.
 

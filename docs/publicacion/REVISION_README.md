@@ -3,7 +3,7 @@
 Fecha: 19/10/2026. **No se ha cambiado nada de lo que se señala aquí**; son
 recomendaciones para que decidas.
 
-Dato importante: el repositorio `adonay1994sm-gif/Ne-n-catcher` es
+Dato importante: el repositorio `adonay1994sm-gif/neon-cronium` es
 **público** en GitHub (comprobado el 19/10/2026). Cualquiera puede leer el
 README y todo el historial.
 

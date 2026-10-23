@@ -81,7 +81,7 @@ cada tarea está en el tablero del proyecto; el diseño, en
 - **Anuncios:** IDs reales de AdMob y aviso de consentimiento (solo con
   orden del propietario).
 - **Tiendas:**
-  - privacidad, términos, nombre y bundle id;
+  - privacidad, términos y nombre (bundle id decidido: `com.neoncronium`);
   - ficha de tienda, iconos y capturas.
 - Hay datos legales sin rellenar (`[COMPLETAR]`).
 
@@ -89,8 +89,6 @@ cada tarea está en el tablero del proyecto; el diseño, en
 - Sensibilidad 135: ¿también para quien ya tenía ajustes guardados?
 - Jerarquía de transmisiones, chispas del daño, sonidos de interfaz y
   tipografía.
-- Procedencia del arte y del sonido: qué hacer con los registros de
-  herramientas de generación.
 
 ## Aparcado
 - **Steam:**

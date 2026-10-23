@@ -146,9 +146,9 @@ Alternativa local/Netlify manual: extraer el ZIP en una carpeta vacía y servir 
 
 Commits funcionales y de QA publicados en la rama autorizada:
 
-- [be8e613](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/be8e613cc65f9f3b75ca545c9d411c0afe6334c1): integración, arte, modelos y pruebas.
-- [8364ecc](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/8364ecc): evidencias y registro de seguimiento.
-- [d93b135](https://github.com/adonay1994sm-gif/Ne-n-catcher/commit/d93b1352c9a036ccec0fc6337b02e41acd8a7832): normalización del esquema histórico y paquete limpio.
+- [be8e613](https://github.com/adonay1994sm-gif/neon-cronium/commit/be8e613cc65f9f3b75ca545c9d411c0afe6334c1): integración, arte, modelos y pruebas.
+- [8364ecc](https://github.com/adonay1994sm-gif/neon-cronium/commit/8364ecc): evidencias y registro de seguimiento.
+- [d93b135](https://github.com/adonay1994sm-gif/neon-cronium/commit/d93b1352c9a036ccec0fc6337b02e41acd8a7832): normalización del esquema histórico y paquete limpio.
 
 El cierre documental posterior y su comprobación remota figuran en `closure.json`; no se reutiliza una URL antigua como prueba del commit nuevo. La versión8 está vinculada a la fuente y paquete indicados.
 

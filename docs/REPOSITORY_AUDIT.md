@@ -4,7 +4,7 @@ Fecha de corte: 2026-08-28
 
 ## Base protegida
 
-- Repositorio: `adonay1994sm-gif/Ne-n-catcher`.
+- Repositorio: `adonay1994sm-gif/neon-cronium`.
 - Rama estable protegida: `main`.
 - Rama de trabajo: `pre-release-development`.
 - Base funcional seleccionada: la pre-release modular 7.1, derivada de la base V6.4.4/V6.5 verificada y superior a los ZIP experimentales por cobertura de pruebas, PWA e iOS.

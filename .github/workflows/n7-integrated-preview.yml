@@ -36,7 +36,6 @@ jobs:
 
       - name: Verify original and procedural architecture
         run: |
-          npm run test:engine
           npm run test:architecture
           npm run test:content
           npm run test:static

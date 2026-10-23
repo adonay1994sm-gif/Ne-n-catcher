@@ -13,7 +13,7 @@ const folder = process.argv[2];
 if (!folder) throw new Error('Uso: node scripts/export-encargos-gpt.mjs <carpeta-con-las-tareas>');
 const BAUL = 'https://neon-cronium-video-referencia.chictide18.chatgpt.site';
 const OUT = new URL('../docs/art/', import.meta.url);
-const RAW = 'https://raw.githubusercontent.com/adonay1994sm-gif/Ne-n-catcher/claude/preparar-publicacion-rtfl9q/docs/art';
+const RAW = 'https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art';
 
 const tasks = [];
 for (const name of (await readdir(folder)).filter(file => file.endsWith('.json')).sort()) {

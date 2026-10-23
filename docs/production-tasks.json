@@ -49,7 +49,7 @@
     {
       "scope": "Workflow integrado informado por Dirección",
       "commit": "f5b486ccfcdc56319417c33d7fa9282708ed6d64",
-      "evidence": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/38531391709",
+      "evidence": "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/38531391709",
       "note": "Estado remoto comprobado por integración mediante conector GitHub; conservar referencia y distinguirlo de Chromium/Safari."
     },
     {
@@ -6280,7 +6280,7 @@
         "docs/production-reports/evidence/ci-ship-precache/local-01/results.json",
         "docs/production-reports/evidence/ci-ship-precache/offline-06/results.json",
         "docs/production-reports/evidence/ci-ship-precache/github-fix-run.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39065781507"
+        "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39065781507"
       ],
       "openErrors": [],
       "acceptance": [
@@ -7223,7 +7223,7 @@
         "docs/production-reports/evidence/chronos-pursuit-gaia/pure-01.txt",
         "docs/production-reports/evidence/chronos-pursuit-gaia/integration-01.txt",
         "docs/production-reports/evidence/chronos-pursuit-gaia/natural-01/results.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39102869812",
+        "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39102869812",
         "docs/production-reports/evidence/chronos-pursuit-gaia/certificate-02/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/resume-browser-02/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/upgrade-02/results.json",
@@ -7233,7 +7233,7 @@
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-http/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-local/results.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39103902742",
+        "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39103902742",
         "docs/production-reports/evidence/chronos-pursuit-gaia/certificate-03/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/resume-browser-03/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/upgrade-03/results.json",
@@ -7244,7 +7244,7 @@
         "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication-02.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-http-02/results.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105045562"
+        "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39105045562"
       ],
       "openErrors": [
         "Aceptación artística y balance humano pendientes; Chromium automatizado no valida por sí solo la dificultad percibida ni certifica iPhone físico."
@@ -7360,7 +7360,7 @@
         "docs/production-reports/evidence/chronos-pursuit-gaia/natural-01/results.json",
         "art-source/enemies/ch02/ch02-atlas-v1.json",
         "art-source/enemies/ch02/ch02-browser-validation.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39102869812",
+        "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39102869812",
         "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-04/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/certificate-02/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/resume-browser-02/results.json",
@@ -7371,7 +7371,7 @@
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-http/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-local/results.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39103902742",
+        "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39103902742",
         "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-focused-final/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/n7-final/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-05/results.json",
@@ -7385,7 +7385,7 @@
         "docs/production-reports/evidence/chronos-pursuit-gaia/closing-package/runtime-equivalence.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-publication-02.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/site-http-02/results.json",
-        "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39105045562",
+        "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39105045562",
         "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/results.json",
         "docs/production-reports/evidence/chronos-pursuit-gaia/gaia-06/hud-observation-and-failed-combat-summary.json"
       ],
@@ -10174,7 +10174,7 @@
             "latestCIFailure": {
               "workflowRun": 39104552902,
               "conclusion": "failure",
-              "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902",
+              "url": "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39104552902",
               "error": "assert.ok(interceptors.length >= 1)",
               "file": "tests/unified-flight-legacy.test.mjs",
               "line": 986,
@@ -10208,7 +10208,7 @@
       "latestCIFailure": {
         "workflowRun": 39104552902,
         "conclusion": "failure",
-        "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902",
+        "url": "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39104552902",
         "error": "assert.ok(interceptors.length >= 1)",
         "file": "tests/unified-flight-legacy.test.mjs",
         "line": 986,
@@ -10303,7 +10303,7 @@
         "latestWorkflow": {
           "workflowRun": 39104552902,
           "conclusion": "failure",
-          "url": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39104552902",
+          "url": "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39104552902",
           "error": "assert.ok(interceptors.length >= 1)",
           "file": "tests/unified-flight-legacy.test.mjs",
           "line": 986,
@@ -10330,7 +10330,7 @@
         "batch": "LEVEL_ONE_DYNAMIC",
         "commit": "da3f4b839744940fee1032a8b637d5c3266c862f",
         "workflowRun": 39131063614,
-        "workflowUrl": "https://github.com/adonay1994sm-gif/Ne-n-catcher/actions/runs/39131063614",
+        "workflowUrl": "https://github.com/adonay1994sm-gif/neon-cronium/actions/runs/39131063614",
         "conclusion": "success",
         "scope": "Paquete limpio da3: Chromium visual12/12 sobre escenas controladas, partida natural4/4 y actualización/offline7/7; buildpreview y preview23/23. Certificación local11/11 corresponde al snapshot dirty basado end4, no a un árbol limpio da3. CI39131063614 comprueba el commit funcional publicado. Aceptación artística/humana/física pendientes; no despliegue Netlify certificado.",
         "evidence": [
