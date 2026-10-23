@@ -244,14 +244,14 @@ function runNetlifyPreviewGate({mode, flag = '1', branch = PREVIEW_BRANCH,
   });
 }
 
-test('unit: Netlify opt-in cannot authorize main or PR deploy contexts', () => {
+test('unit: Netlify opt-in cannot authorize other branches or PR deploy contexts', () => {
   const run = (mode, flag, branch = PREVIEW_BRANCH, context = 'branch-deploy') =>
     runNetlifyPreviewGate({mode, flag, branch, context});
   assert.equal(run('--ignore', '').status, 0);
   assert.equal(run('--require-enabled', '').status, 1);
   assert.equal(run('--ignore', '1').status, 1);
   assert.equal(run('--require-enabled', '1').status, 0);
-  for (const [branch, context] of [['main', 'production'], ['main', 'branch-deploy'], [PREVIEW_BRANCH, 'production'], [PREVIEW_BRANCH, 'deploy-preview']]) {
+  for (const [branch, context] of [['continuity-assets-audit-20261013', 'branch-deploy'], ['another-branch', 'branch-deploy'], [PREVIEW_BRANCH, 'production'], [PREVIEW_BRANCH, 'deploy-preview']]) {
     assert.equal(run('--require-enabled', '1', branch, context).status, 1, `${branch}/${context}`);
     assert.equal(run('--ignore', '1', branch, context).status, 0, `${branch}/${context}`);
   }
@@ -271,7 +271,7 @@ test('unit: Netlify production permits only the explicitly opted-in isolated tes
   const rejected = [
     ['missing opt-in', {flag: ''}],
     ['wrong opt-in', {flag: 'true'}],
-    ['protected main branch', {branch: 'main'}],
+    ['retired continuity branch', {branch: 'continuity-assets-audit-20261013'}],
     ['another branch', {branch: 'another-preview'}],
     ['PR deployment context', {context: 'deploy-preview'}],
     ['unknown context', {context: 'preview'}],
@@ -308,8 +308,9 @@ test('unit: Netlify production permits only the explicitly opted-in isolated tes
 
 test('unit: Netlify preview opt-in is scoped only to the authorized branch configuration', async () => {
   const config = await text('netlify.toml');
+  assert.equal(PREVIEW_BRANCH, 'main');
   const branchEnvironment = config.match(
-    /\[context\.continuity-assets-audit-20261013\.environment\]([\s\S]*?)(?=\n\[|$)/
+    /\[context\.main\.environment\]([\s\S]*?)(?=\n\[|$)/
   );
   assert.ok(branchEnvironment, 'authorized branch environment block');
   assert.match(branchEnvironment[1], /\bNEON_PREVIEW_DEPLOY\s*=\s*"1"/);

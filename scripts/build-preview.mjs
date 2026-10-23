@@ -6,7 +6,7 @@ import {dirname, join, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-export const PREVIEW_BRANCH = 'continuity-assets-audit-20261013';
+export const PREVIEW_BRANCH = 'main';
 export const STORAGE_PREFIX = 'neon-preview-v1:';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const git = (...args) => execFileSync('git', args, {cwd: root, encoding: 'utf8'}).trim();

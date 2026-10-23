@@ -3,7 +3,7 @@ name: NEON CRONIUM N-7 Integrated Preview QA
 on:
   push:
     branches:
-      - continuity-assets-audit-20261013
+      - main
   workflow_dispatch:
 
 permissions:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Checkout authorized continuity branch
+      - name: Checkout authorized main branch
         uses: actions/checkout@v4
 
       - name: Set up Node 22

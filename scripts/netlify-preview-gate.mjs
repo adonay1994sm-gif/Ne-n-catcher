@@ -2,7 +2,7 @@
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 
-const allowedBranch = 'continuity-assets-audit-20261013';
+const allowedBranch = 'main';
 const isolatedTestSite = 'neon-preview-deploy';
 const isolatedTestHost = 'neon-preview-deploy.netlify.app';
 const cwd = fileURLToPath(new URL('..', import.meta.url));
@@ -18,7 +18,7 @@ try {
     && !siteUrl.port && !siteUrl.username && !siteUrl.password;
 } catch {}
 // Netlify calls the default deployment of a separate test project "production".
-// This exception never authorizes the original site, another host, main or a PR.
+// This exception never authorizes the original site, another host, another branch or a PR.
 const permittedContext = context === 'branch-deploy' || context === 'local'
   || (context === 'production' && isolatedTestIdentity);
 const errors = [];
