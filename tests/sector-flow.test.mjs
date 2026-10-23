@@ -228,3 +228,50 @@ test('old side voyages keep their 35 % revive', () => {
   T.resumeReward();
   assert.equal(T.hull(), 35);
 });
+
+// Tarea 5: Atlas cierra el sector.
+const EQUIPMENT = 'neonCronium.flightEquipment.v1';
+const toFinish = T => T.ev('collected=99;for(let i=0;i<40000&&!classicFlight.snapshot().canFinish;i++)classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);');
+
+test('Atlas guards the end of stage 10', () => {
+  const {T} = harness();
+  startAt(T, 10);
+  toFinish(T);
+  T.adv(.5);
+  assert.equal(T.ev('Boolean(atlasBoss)'), true);
+});
+
+test('beating Atlas completes the sector with its stars and the Gemelo', () => {
+  const {w, T} = harness();
+  startAt(T, 10);
+  T.finish();
+  const save = sectorSave(w);
+  assert.equal(save.sectors[1].completed, true);
+  assert.equal(save.run, null);
+  assert.ok(save.sectors[1].stars >= 1 && save.sectors[1].stars <= 3);
+  assert.ok(JSON.parse(w.localStorage.getItem(EQUIPMENT)).unlocked.includes('twin'));
+  assert.equal(w.document.getElementById('completeLabel').textContent, 'SECTOR 1 COMPLETADO');
+  assert.equal(w.document.getElementById('nextLevel').textContent, 'VOLVER AL MENÚ');
+  click(w, 'nextLevel');
+  assert.equal(T.st().state, 'menu');
+});
+
+test('the sector is not marked complete if the Gemelo cannot be saved', () => {
+  const {w, T} = harness();
+  w.localStorage.setItem(EQUIPMENT, '{rota');
+  startAt(T, 10);
+  T.finish();
+  assert.notEqual(sectorSave(w).sectors[1]?.completed, true);
+});
+
+test('replaying a completed sector starts at stage 1 and keeps its stars', () => {
+  const {w, T} = harness();
+  startAt(T, 10);
+  T.finish();
+  const stars = sectorSave(w).sectors[1].stars;
+  T.goHome();
+  assert.match(w.document.getElementById('playSector').textContent, /SECTOR 1 COMPLETADO/);
+  click(w, 'play');
+  assert.deepEqual([T.st().side, T.stage()], ['S1', 1]);
+  assert.equal(sectorSave(w).sectors[1].stars, stars);
+});

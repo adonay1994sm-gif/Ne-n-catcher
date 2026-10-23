@@ -368,6 +368,7 @@
   // Tras cualquier viaje: el siguiente viaje del mapa o, si no queda
   // ninguno, el mapa. Nunca un nivel clásico (ya no forman parte del juego).
   ui.nextLevel.onclick = () => {
+    if (isSectorRun()) { goHome(); return; }
     const nextVoyage=nextCampaignVoyage();
     if(nextVoyage&&nextVoyage.voyage!=="S1-V1"){startSideVoyage(nextVoyage.voyage);return;}
     // El mapa se abre en el sector del viaje recién hecho.

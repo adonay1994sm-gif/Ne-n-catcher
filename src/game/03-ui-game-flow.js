@@ -1037,13 +1037,15 @@
   // con su puntuación y «Siguiente viaje». La ficha se conserva mientras se
   // ve, para que «Repetir» vuelva a lanzar este mismo viaje.
   function completeSideVoyage() {
-    const {ficha}=classicSideVoyage;
-    const firstTime=loadSideVoyageRecord(ficha)?.completed!==true;
+    const {ficha}=classicSideVoyage,sector=isSectorRun();
+    const firstTime=sector?loadSectorSave().sectors[ficha.sector]?.completed!==true:loadSideVoyageRecord(ficha)?.completed!==true;
     const earned=runStars();
     // Sin el arma guardada, el viaje del jefe no se marca como completado.
     const atlasVictory=ficha.boss==="atlas"&&Boolean(atlasBoss?.resolved);
     const award=atlasVictory?awardAtlasWeapon():null;
-    const saved=(!atlasVictory||award)&&saveSideVoyage(classicFlight.exportCheckpoint(),true,earned);
+    const saved=(!atlasVictory||award)&&(sector
+      ?saveSector(NeonCampaign.completeSector(loadSectorSave(),ficha.sector,earned))
+      :saveSideVoyage(classicFlight.exportCheckpoint(),true,earned));
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;cancelSupplyFailureTimer();
     setState("complete");setClassicFlightHudVisible(false);
@@ -1064,6 +1066,11 @@
     ui.maxCombo.textContent=`x${maxCombo}`;
     ui.unlockMessage.textContent=!saved?"No se pudo guardar el viaje en este dispositivo."
       :next?`Siguiente: ${next.voyage} · ${next.title}.`:"Has completado todos los viajes disponibles.";
+    // El sector 2 aún no existe: tras el sector 1 se vuelve al menú.
+    if(sector) {
+      ui.completeLabel.textContent=`SECTOR ${ficha.sector} COMPLETADO`;
+      if(saved)ui.unlockMessage.textContent="El sector 2 llega pronto.";
+    }
     if(atlasVictory) {
       ui.completeTitle.textContent="Atlas ha abierto el paso";
       ui.unlockMessage.textContent=!award
@@ -1071,7 +1078,7 @@
         :`IRIA · GAIA: Usaron tu señal para atacar Chronos. El convoy vino de Vulkar. Tienes paso libre.${award.granted?" Segundo cañón autorizado: Gemelo ×2 disponible en el taller.":""} ${ui.unlockMessage.textContent}`;
     }
     ui.nextLevel.classList.remove("hidden");
-    ui.nextLevel.textContent=next?`SIGUIENTE VIAJE: ${next.voyage} →`:"VER EL MAPA →";
+    ui.nextLevel.textContent=sector?"VOLVER AL MENÚ":next?`SIGUIENTE VIAJE: ${next.voyage} →`:"VER EL MAPA →";
     overlay(ui.complete);
     tone(760,.12,"triangle",.08);setTimeout(()=>tone(980,.18,"sine",.07),120);vibrate([30,40,70]);
     updateMenu();
