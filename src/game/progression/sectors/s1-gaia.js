@@ -37,7 +37,7 @@ export const S1_GAIA = immutable({
     ['La red exterior',52,17,'La red de Gaia siembra minas en tu ruta','Salida orbital','Red exterior de Gaia','net-edge',.12,.60,.58],
     ['Cuarentena',52,23,'Rompe los escudos de la Égida y sigue adelante','Red exterior de Gaia','Anillo de satélites','quarantine',.16,.62,.64],
     ['El satélite CH-03',56,27,'Derriba el satélite de defensa que cierra el anillo','Anillo de satélites','Corredor de enlace','sub-boss',.18,.66,.70],
-    ['Enlace C9',48,32,'Repara en C9 y prueba tu nave en el corredor','Corredor de enlace','Lado nocturno','service-stop',.06,.34,.30],
+    ['Enlace C9',48,27,'Repara en C9 y prueba tu nave en el corredor','Corredor de enlace','Lado nocturno','service-stop',.06,.34,.30],
     ['El Alfa',54,38,'El Alfa del C-17 lidera la caza en la oscuridad','Lado nocturno','Escolta del C-17','alpha-hunt',.08,.28,.72],
     ['Lluvia en el acceso',52,44,'Cruza la lluvia de meteoritos sin dejar de combatir','Escolta del C-17','Piquetes de Gaia','meteor-rain',.14,.58,.76],
     ['Defensa orbital',54,50,'Resiste la defensa orbital mientras Atlas se activa','Piquetes de Gaia','Acceso orbital','orbital-defence',.16,.62,.82],

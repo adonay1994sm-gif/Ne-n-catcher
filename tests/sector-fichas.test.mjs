@@ -18,8 +18,15 @@ test('the sub-boss fights in stage 5 and the boss in stage 10', () => {
   });
 });
 
-test('C9 docks at the start of stage 6', () => {
+test('C9 docks at the start of stage 6 with only the entry quota', () => {
   assert.equal(S1_GAIA.service.stage, 6);
+  const route = createVoyageRoute(S1_GAIA), voyage = route.create({goal: 60});
+  const entry = route.stages[4].goal; // cuota para entrar al tramo 6
+  let view = voyage.snapshot();
+  for (let i = 0; i < 40000 && view.stageNumber < 6; i++) view = voyage.advance(.034, entry);
+  assert.equal(view.stageNumber, 6);
+  for (let t = 0; t < 1.5 && view.waitingFor !== 'service'; t += .034) view = voyage.advance(.034, entry);
+  assert.equal(view.waitingFor, 'service');
 });
 
 test('stages 1 to 4 bring in the new Gaia profiles before the sub-boss', () => {
