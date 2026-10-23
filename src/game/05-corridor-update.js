@@ -342,6 +342,13 @@
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
+    // Un turno de ataque de quien ya no está (derribado o fuera) se libera ya.
+    const attackTokens = typeof sectorAttackTokens === "undefined" ? null : sectorAttackTokens;
+    if (attackTokens) {
+      const alive = new Set(items.map(item => item.id));
+      for (const id of [...attackTokens.holders.keys(), ...attackTokens.waiting.keys()])
+        if (!alive.has(id)) NeonCampaign.forgetEnemy(attackTokens, id);
+    }
     for (let index = items.length - 1; index >= 0; index--) {
       const item = items[index];
       // Recovering the final fragment can replace the field with the Atlas
@@ -374,7 +381,8 @@
       if (item.classicScout) {
         item.classicScout.holdFire=cometShowerActive();
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
-        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
+        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);},
+          attackTokens?{tokens:attackTokens,now:elapsed}:null);
       }
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";

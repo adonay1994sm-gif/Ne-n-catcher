@@ -317,3 +317,23 @@ test('continuing keeps the hull you had at the start of the stage, even below 50
   click(w, 'play');
   assert.equal(T.hull(), 20);
 });
+
+// Plan F3b, tarea 1: turnos de ataque por tramo.
+test('sector stages hand out attack tokens from the ficha', () => {
+  for (const [stage, max] of [[1, 1], [4, 2], [7, 3], [10, 2]]) {
+    const {T} = harness();
+    startAt(T, stage);
+    assert.equal(T.ev('sectorAttackTokens?.max'), max, `stage ${stage}`);
+  }
+  const {T} = harness();
+  T.startSideVoyage('S1-V2');
+  assert.equal(T.ev('sectorAttackTokens'), null, 'old voyages keep their own rules');
+});
+
+test('a removed enemy frees its token in the same frame', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  T.ev("sectorAttackTokens.holders.set('ghost',{bornAt:0,grantedAt:0})");
+  T.adv(1 / 60);
+  assert.equal(T.ev("sectorAttackTokens.holders.has('ghost')"), false);
+});

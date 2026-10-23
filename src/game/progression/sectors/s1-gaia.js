@@ -19,9 +19,10 @@ const ROSTERS = immutable({
   elite: immutable(['alpha', 'aegis', 'interceptor', 'sower']),
   gate: immutable(['interceptor', 'tracker', 'aegis', 'raider'])
 });
-const encounter = (profile, patrol, {comets = false, repairAt = null, boss = null} = {}) => immutable({
+// attackers: cuántos enemigos pueden atacar a la vez (turnos de ataque, plan F3b).
+const encounter = (profile, patrol, {comets = false, repairAt = null, boss = null, attackers = 2} = {}) => immutable({
   patrol: patrol && immutable({cap: patrol[0], roster: patrol[1], gap: patrol[2]}),
-  hazards: VOYAGE_HAZARD_PROFILES[profile], comets, repairAt, boss: boss && immutable(boss)
+  hazards: VOYAGE_HAZARD_PROFILES[profile], comets, repairAt, boss: boss && immutable(boss), attackers
 });
 
 export const S1_GAIA = immutable({
@@ -55,15 +56,15 @@ export const S1_GAIA = immutable({
   service: immutable({stage: 6, approach: 1.2, visibleApproach: 2.4, departure: 2.4,
     renamedStage: 'Corredor de Gaia', renamedObjective: 'Prueba tu nave en el corredor; C9 sigue disponible en la pausa'}),
   encounters: immutable([
-    encounter(1, [2, ROSTERS.escape, 8]),
-    encounter(2, [3, ROSTERS.flank, 7]),
+    encounter(1, [2, ROSTERS.escape, 8], {attackers: 1}),
+    encounter(2, [3, ROSTERS.flank, 7], {attackers: 1}),
     encounter(3, [3, ROSTERS.mines, 7], {repairAt: 30}),
     encounter(7, [4, ROSTERS.shield, 6], {comets: true}),
     encounter(4, [2, ROSTERS.flank, 9], {boss: {id: 'ch03', role: 'subjefe'}}),
-    encounter(5, [2, ROSTERS.escape, 8]),
-    encounter(8, [4, ROSTERS.elite, 6], {repairAt: 32}),
-    encounter(9, [4, ROSTERS.elite, 6], {comets: true}),
-    encounter(10, [5, ROSTERS.gate, 5], {repairAt: 30}),
+    encounter(5, [2, ROSTERS.escape, 8], {attackers: 3}),
+    encounter(8, [4, ROSTERS.elite, 6], {repairAt: 32, attackers: 3}),
+    encounter(9, [4, ROSTERS.elite, 6], {comets: true, attackers: 3}),
+    encounter(10, [5, ROSTERS.gate, 5], {repairAt: 30, attackers: 3}),
     encounter(10, [2, ROSTERS.gate, 8], {boss: {id: 'guardian-atlas', role: 'jefe'}})
   ]),
   phase(stageIndex) {

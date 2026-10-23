@@ -3263,12 +3263,13 @@ var NeonCampaign = (() => {
     elite: immutable12(["alpha", "aegis", "interceptor", "sower"]),
     gate: immutable12(["interceptor", "tracker", "aegis", "raider"])
   });
-  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null } = {}) => immutable12({
+  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null, attackers = 2 } = {}) => immutable12({
     patrol: patrol && immutable12({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
     hazards: VOYAGE_HAZARD_PROFILES[profile2],
     comets,
     repairAt,
-    boss: boss && immutable12(boss)
+    boss: boss && immutable12(boss),
+    attackers
   });
   var S1_GAIA = immutable12({
     id: "S1",
@@ -3318,15 +3319,15 @@ var NeonCampaign = (() => {
       renamedObjective: "Prueba tu nave en el corredor; C9 sigue disponible en la pausa"
     }),
     encounters: immutable12([
-      encounter11(1, [2, ROSTERS11.escape, 8]),
-      encounter11(2, [3, ROSTERS11.flank, 7]),
+      encounter11(1, [2, ROSTERS11.escape, 8], { attackers: 1 }),
+      encounter11(2, [3, ROSTERS11.flank, 7], { attackers: 1 }),
       encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30 }),
       encounter11(7, [4, ROSTERS11.shield, 6], { comets: true }),
       encounter11(4, [2, ROSTERS11.flank, 9], { boss: { id: "ch03", role: "subjefe" } }),
-      encounter11(5, [2, ROSTERS11.escape, 8]),
-      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32 }),
-      encounter11(9, [4, ROSTERS11.elite, 6], { comets: true }),
-      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30 }),
+      encounter11(5, [2, ROSTERS11.escape, 8], { attackers: 3 }),
+      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32, attackers: 3 }),
+      encounter11(9, [4, ROSTERS11.elite, 6], { comets: true, attackers: 3 }),
+      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30, attackers: 3 }),
       encounter11(10, [2, ROSTERS11.gate, 8], { boss: { id: "guardian-atlas", role: "jefe" } })
     ]),
     phase(stageIndex) {
@@ -4620,6 +4621,34 @@ var NeonCampaign = (() => {
     scout.telegraph = 0;
   }
 
+  // src/game/combat/attack-tokens.js
+  var WAIT_EXPIRY = 0.5;
+  function createAttackTokens({ max }) {
+    if (!Number.isInteger(max) || max < 1) throw new RangeError("max must be a positive integer");
+    return { max, holders: /* @__PURE__ */ new Map(), waiting: /* @__PURE__ */ new Map() };
+  }
+  function requestAttack(tokens, enemy, now) {
+    const { holders, waiting } = tokens;
+    if (holders.has(enemy.id)) return true;
+    for (const [id, entry] of waiting) if (now - entry.at > WAIT_EXPIRY) waiting.delete(id);
+    const olderWaiting = [...waiting].some(([id, entry]) => id !== enemy.id && entry.bornAt < enemy.bornAt);
+    if (holders.size < tokens.max && !olderWaiting) {
+      waiting.delete(enemy.id);
+      holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
+      return true;
+    }
+    waiting.set(enemy.id, { bornAt: enemy.bornAt, at: now });
+    return false;
+  }
+  function releaseAttack(tokens, enemyId) {
+    tokens.holders.delete(enemyId);
+  }
+  function forgetEnemy(tokens, enemyId) {
+    tokens.holders.delete(enemyId);
+    tokens.waiting.delete(enemyId);
+  }
+  var attackHolders = (tokens) => [...tokens.holders.keys()];
+
   // src/game/combat/classic-pursuit.js
   var CLASSIC_PURSUIT_VERSION = "classic-pursuit-v5";
   var clamp7 = (value, low, high) => Math.max(low, Math.min(high, value));
@@ -4781,10 +4810,11 @@ var NeonCampaign = (() => {
       volley: "single",
       followUp: null,
       dashing: false,
+      bornAt: null,
       animator: createCh01Animator({ hp: 2, maxHp: 2 })
     };
   }
-  function advanceClassicPursuer(item, dt, player, spawnProjectile) {
+  function advanceClassicPursuer(item, dt, player, spawnProjectile, gate = null) {
     if (!Number.isFinite(dt) || dt < 0) throw new RangeError("Invalid pursuer delta");
     if (typeof spawnProjectile !== "function") throw new TypeError("Spawn callback required");
     const enemy = item.classicScout;
@@ -4797,6 +4827,10 @@ var NeonCampaign = (() => {
     enemy.baseSpeed ??= Math.max(1, item.s);
     enemy.age += step;
     enemy.stateAge += step;
+    if (gate) enemy.bornAt ??= gate.now;
+    const releaseTurn = () => {
+      if (gate) releaseAttack(gate.tokens, item.id);
+    };
     observePlayer(enemy, player, profile2.sampleInterval);
     const lostHealth = enemy.previousHp !== null && hp < enemy.previousHp;
     enemy.previousHp = hp;
@@ -4828,6 +4862,7 @@ var NeonCampaign = (() => {
       return combatX(enemy.role === "interceptor" ? observedX + enemy.side * span * 0.68 + sweep : enemy.role === "scout" ? enemy.baseX * 0.45 + observedX * 0.55 + enemy.side * span * 0.2 + sweep : observedX + enemy.side * span * 0.42 + sweep);
     };
     const reposition = () => {
+      releaseTurn();
       clearCharge();
       enemy.followUp = null;
       if (nextRandom(enemy) < profile2.flipChance) enemy.side *= -1;
@@ -4839,6 +4874,7 @@ var NeonCampaign = (() => {
       enter("reposition");
     };
     const retreat = (reason) => {
+      releaseTurn();
       clearCharge();
       enemy.followUp = null;
       enemy.retreatReason = reason;
@@ -4846,12 +4882,13 @@ var NeonCampaign = (() => {
       enter("retreat");
     };
     if (hp <= 0) {
+      releaseTurn();
       clearCharge();
       enemy.followUp = null;
       if (enemy.state !== "destroyed") enter("destroyed");
     } else if (enemy.state !== "retreat" && enemy.state !== "destroyed") {
       const heldFor = enemy.combatStartedAt === null ? 0 : enemy.age - enemy.combatStartedAt;
-      enemy.intensity = Math.min(2, Math.floor(heldFor / profile2.holdSeconds));
+      enemy.intensity = gate ? 0 : Math.min(2, Math.floor(heldFor / profile2.holdSeconds));
       if (enemy.fired === 0 && heldFor >= profile2.holdSeconds || enemy.combatStartedAt === null && enemy.age >= profile2.holdSeconds + 8) {
         retreat("time-limit");
       } else if (lostHealth && !["entry", "brake"].includes(enemy.state)) {
@@ -4880,7 +4917,7 @@ var NeonCampaign = (() => {
         enemy.targetX = laneTarget();
         enemy.nextTargetAt = enemy.age + profile2.sampleInterval;
       }
-      if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62) {
+      if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62 && (!gate || requestAttack(gate.tokens, { id: item.id, bornAt: enemy.bornAt }, gate.now))) {
         const sample = enemy.observation;
         enemy.leadOffset = clamp7(sample.vx * profile2.leadSeconds, -110, 110);
         enemy.observedTarget = Object.freeze({ ...sample });
@@ -7540,28 +7577,6 @@ var NeonCampaign = (() => {
     state.lastY = null;
     return true;
   }
-
-  // src/game/combat/attack-tokens.js
-  function createAttackTokens({ max }) {
-    if (!Number.isInteger(max) || max < 1) throw new RangeError("max must be a positive integer");
-    return { max, holders: /* @__PURE__ */ new Map() };
-  }
-  function requestAttack(tokens, enemy, now) {
-    const { holders } = tokens;
-    if (holders.has(enemy.id)) return true;
-    if (holders.size < tokens.max) {
-      holders.set(enemy.id, { bornAt: enemy.bornAt, grantedAt: now });
-      return true;
-    }
-    return false;
-  }
-  function releaseAttack(tokens, enemyId) {
-    tokens.holders.delete(enemyId);
-  }
-  function forgetEnemy(tokens, enemyId) {
-    tokens.holders.delete(enemyId);
-  }
-  var attackHolders = (tokens) => [...tokens.holders.keys()];
 
   // src/game/combat/enemy-ai.js
   var ENEMY_AI_PROFILES = Object.freeze({

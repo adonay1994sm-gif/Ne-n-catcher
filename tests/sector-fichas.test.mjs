@@ -67,3 +67,7 @@ test('the game finds the stage rules of a sector by its route', async () => {
   assert.equal(getVoyageStageRules('sector-1-gaia', 1), S1_GAIA.encounters[0]);
   assert.ok(getVoyageStageRulesFor('sector-1-gaia', 2, 'normal')?.patrol, 'stage 2 has a patrol');
 });
+
+test('every sector stage sets how many enemies may attack at once', () => {
+  assert.deepEqual(S1_GAIA.encounters.map(rules => rules.attackers), [1, 1, 2, 2, 2, 3, 3, 3, 3, 2]);
+});

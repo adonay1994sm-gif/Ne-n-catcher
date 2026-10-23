@@ -1634,6 +1634,7 @@
       classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;
       classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;
       classicSalvageEnemySequence=0;resetClassicCometShower();applyClassicSalvageShield();
+      resetSectorAttackTokens();
       saveClassicVoyageCheckpoint(event.checkpoint);
     }
     if(event.type==="stage-start") {
@@ -1963,6 +1964,13 @@
   // sectores. Un guardado ilegible o inválido cuenta como partida nueva.
   // Revivir con anuncio en el sector: lo prepara finishGame y lo gasta resumeReward.
   let sectorRevive=null,sectorDeathRecorded=false;
+  // Turnos de ataque del tramo (plan F3b): solo en el sector; los viajes
+  // antiguos conservan su escalada.
+  let sectorAttackTokens=null;
+  function resetSectorAttackTokens() {
+    const rules=isSectorRun()&&classicFlightView?NeonCampaign.getVoyageStageRules(classicFlightView.routeId,classicFlightView.stageNumber):null;
+    sectorAttackTokens=rules?NeonCampaign.createAttackTokens({max:rules.attackers??2}):null;
+  }
   // La regla de morir se guarda al estallar la nave (tramo 1, o 6 con baliza),
   // no al abrir la derrota: cerrar la app durante la explosión no la salta.
   function recordSectorDeath() {
@@ -2745,6 +2753,7 @@
     classicFlight=classicSideVoyage ? classicSideVoyage.route.create({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint})
       : currentLevel===0 ? NeonCampaign.createChronosVoyage({goal:LEVELS[0].goal,checkpoint:voyageCheckpoint}) : null;
     classicFlightView=classicFlight?.snapshot() || null;
+    resetSectorAttackTokens();
     // La historia del capítulo dura 360 s: en los tramos posteriores del sector no hay.
     classicChapterStory=classicFlight&&fichaHasIntro()&&classicFlightView.elapsed<NeonCampaign.CHRONOS_CHAPTER_ROUTE_SECONDS?NeonCampaign.createChronosChapterStory({checkpoint:voyageEntry&&!classicSideVoyage?classicVoyageRecord?.chapter:null,routeElapsed:classicFlightView.elapsed,presentation:"in-world"}):null;
     classicChapterView=classicChapterStory?.snapshot()||null;
@@ -4235,6 +4244,13 @@
     const scale = powers.slow > 0 ? 0.50 : 1;
     if (!atlasBoss) updateGateSystem(dt, scale);
 
+    // Un turno de ataque de quien ya no está (derribado o fuera) se libera ya.
+    const attackTokens = typeof sectorAttackTokens === "undefined" ? null : sectorAttackTokens;
+    if (attackTokens) {
+      const alive = new Set(items.map(item => item.id));
+      for (const id of [...attackTokens.holders.keys(), ...attackTokens.waiting.keys()])
+        if (!alive.has(id)) NeonCampaign.forgetEnemy(attackTokens, id);
+    }
     for (let index = items.length - 1; index >= 0; index--) {
       const item = items[index];
       // Recovering the final fragment can replace the field with the Atlas
@@ -4267,7 +4283,8 @@
       if (item.classicScout) {
         item.classicScout.holdFire=cometShowerActive();
         const advance=item.classicScout.tacticsVersion?NeonCampaign.advanceClassicPursuer:NeonCampaign.advanceClassicScout;
-        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);});
+        advance(item,dt*scale,player,shot=>{items.push(shot);combatSound("enemy-phaser",shot.x);},
+          attackTokens?{tokens:attackTokens,now:elapsed}:null);
       }
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
