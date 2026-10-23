@@ -371,6 +371,11 @@
       } else if(item.flightComet) {
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
+      } else if (item.hordeUnit) {
+        // Cruzan en diagonal sin detenerse; salen por un lado o por abajo.
+        item.x += item.vx * dt * scale; item.y += item.vy * dt * scale;
+        item.hordeAnimator.update(dt * scale, {hp: item.hp, maxHp: item.maxHp, vx: item.vx, vy: item.vy});
+        if (item.x < -120 || item.x > W + 120) { items.splice(index, 1); continue; }
       } else if (item.gaiaEnemy || item.gaiaMine || item.gaiaBomb) {
         if (!advanceGaiaItem(item, dt * scale)) { items.splice(index, 1); continue; }
       } else if (item.guardianProjectile) {
@@ -393,7 +398,7 @@
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile &&
-          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb) {
+          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb && !item.hordeUnit) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
       if (lv.hazard === "phantom" && isThreat(item) && !item.showerComet) {

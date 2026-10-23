@@ -30,6 +30,7 @@ var NeonCampaign = (() => {
     ENEMY_AI_PROFILES: () => ENEMY_AI_PROFILES,
     GAIA_ENEMY_RULES: () => GAIA_ENEMY_RULES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
+    HORDE_RULES: () => HORDE_RULES,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
     SCRAP_UPGRADES: () => SCRAP_UPGRADES,
@@ -63,6 +64,7 @@ var NeonCampaign = (() => {
     completeSector: () => completeSector,
     continuePoint: () => continuePoint,
     createAttackTokens: () => createAttackTokens,
+    createCh01Animator: () => createCh01Animator,
     createCh02Animator: () => createCh02Animator,
     createChapterScore: () => createChapterScore,
     createChronosChapterStory: () => createChronosChapterStory,
@@ -77,6 +79,7 @@ var NeonCampaign = (() => {
     createFlightTutorial: () => createFlightTutorial,
     createGaiaEnemy: () => createGaiaEnemy,
     createGuardianAtlas: () => createGuardianAtlas,
+    createHordeWave: () => createHordeWave,
     createRelativeFlightInput: () => createRelativeFlightInput,
     createScrapLedger: () => createScrapLedger,
     createSectorSave: () => createSectorSave,
@@ -3268,13 +3271,15 @@ var NeonCampaign = (() => {
     elite: immutable12(["alpha", "aegis", "interceptor", "sower"]),
     gate: immutable12(["interceptor", "tracker", "aegis", "raider"])
   });
-  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null, attackers = 2 } = {}) => immutable12({
+  var HORDE = immutable12({ every: 14, size: 5 });
+  var encounter11 = (profile2, patrol, { comets = false, repairAt = null, boss = null, attackers = 2, horde = null } = {}) => immutable12({
     patrol: patrol && immutable12({ cap: patrol[0], roster: patrol[1], gap: patrol[2] }),
     hazards: VOYAGE_HAZARD_PROFILES[profile2],
     comets,
     repairAt,
     boss: boss && immutable12(boss),
-    attackers
+    attackers,
+    horde
   });
   var S1_GAIA = immutable12({
     id: "S1",
@@ -3326,13 +3331,13 @@ var NeonCampaign = (() => {
     encounters: immutable12([
       encounter11(1, [2, ROSTERS11.escape, 8], { attackers: 1 }),
       encounter11(2, [3, ROSTERS11.flank, 7], { attackers: 1 }),
-      encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30 }),
+      encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30, horde: HORDE }),
       encounter11(7, [4, ROSTERS11.shield, 6], { comets: true }),
       encounter11(4, [2, ROSTERS11.flank, 9], { boss: { id: "ch03", role: "subjefe" } }),
       encounter11(5, [2, ROSTERS11.escape, 8], { attackers: 3 }),
-      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32, attackers: 3 }),
+      encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32, attackers: 3, horde: HORDE }),
       encounter11(9, [4, ROSTERS11.elite, 6], { comets: true, attackers: 3 }),
-      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30, attackers: 3 }),
+      encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30, attackers: 3, horde: HORDE }),
       encounter11(10, [2, ROSTERS11.gate, 8], { boss: { id: "guardian-atlas", role: "jefe" } })
     ]),
     phase(stageIndex) {
@@ -5810,6 +5815,20 @@ var NeonCampaign = (() => {
       };
     }
     return Object.freeze({ request, update, getFrame });
+  }
+
+  // src/game/combat/horde.js
+  var HORDE_RULES = Object.freeze({ speed: 260, spacingX: 90, spacingY: 70, drift: 0.45 });
+  function createHordeWave({ size, width, seed = 0 }) {
+    if (!Number.isInteger(size) || size < 1 || !Number.isFinite(width) || width < 250) throw new RangeError("Invalid horde wave");
+    const { speed, spacingX, spacingY, drift } = HORDE_RULES;
+    const direction = Math.abs(Math.trunc(seed)) % 2 ? 1 : -1;
+    const centerX = width * (direction > 0 ? 0.3 : 0.7);
+    const vx = direction * speed * drift, vy = speed * Math.sqrt(1 - drift * drift);
+    return Array.from({ length: size }, (_, index) => {
+      const rank = Math.ceil(index / 2), side = index === 0 ? 0 : index % 2 ? -1 : 1;
+      return { x: centerX + side * rank * spacingX, y: -60 - rank * spacingY, vx, vy, delay: 0 };
+    });
   }
 
   // src/game/progression/chronos-flight.js

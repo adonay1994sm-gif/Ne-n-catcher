@@ -18,6 +18,8 @@ export {normalizeClassicEquipment,prepareClassicTwin,awardClassicBossWeapon,sync
 export {createClassicScout, advanceClassicScout} from './classic-scout.js';
 export {createClassicPursuer, advanceClassicPursuer, CLASSIC_PURSUIT_VERSION} from '../combat/classic-pursuit.js';
 export {createCh02Animator} from '../animation/ch02-animator.js';
+export {createCh01Animator} from '../animation/ch01-animator.js';
+export {HORDE_RULES, createHordeWave} from '../combat/horde.js';
 export {getVoyageTransitionPresentation} from '../presentation/voyage-transitions.js';
 export {sectorPlanetPose} from '../presentation/sector-planets.js';
 export {createGuardianAtlas, advanceGuardianAtlas, hitGuardianAtlas, GUARDIAN_ATLAS_RULES} from '../combat/guardian-atlas.js';

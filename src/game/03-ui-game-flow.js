@@ -658,7 +658,7 @@
       // real shots keep flying across the boundary. C9 clears its safe dock only.
       classicVoyageStageId=classicFlightView.stageId;
       classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;
-      classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;
+      classicPatrolTimer=classicFlightView.stageNumber===1?4:7;classicCometSequence=0;classicHordeTimer=null;
       classicSalvageEnemySequence=0;resetClassicCometShower();applyClassicSalvageShield();
       resetSectorAttackTokens();
       saveClassicVoyageCheckpoint(event.checkpoint);
@@ -806,6 +806,11 @@
         classicPatrolTimer=gap*(.8+Math.random()*.4);
       }
     }
+    // Hordas de CH-01 en V: la primera a media cadencia y luego cada `every`.
+    if(rules.horde) {
+      classicHordeTimer=(classicHordeTimer??rules.horde.every/2)-dt;
+      if(classicHordeTimer<=0){spawnHordeWave(rules.horde.size);classicHordeTimer=rules.horde.every;}
+    }
     // Campo de meteoritos, restos de naves y satélites con densidad propia de
     // cada tramo y un hueco transitable garantizado. Las pruebas que quieren
     // un tramo vacío lo desactivan con un temporizador muy alto (>=900).
@@ -846,6 +851,20 @@
   // Alfa con su IA de perfiles, minas, bombas en cruz, escudo y marca.
   const GAIA_KINDS=new Set(["tracker","sower","aegis","alpha"]);
   let playerMarkedUntil=-Infinity,gaiaFallbackTokens=null;
+  // Hordas (plan F3b): null = la primera oleada del tramo aún no está programada.
+  let classicHordeTimer=null,classicHordeSequence=0;
+  function spawnHordeWave(size) {
+    const wave=classicHordeSequence++,stage=classicFlightView?.stageNumber||0;
+    NeonCampaign.createHordeWave({size,width:W,seed:wave+stage}).forEach((unit,index)=>{
+      const item=createThreat("scout",level());
+      Object.assign(item,{id:`horde:${currentLevel}:${stage}:${wave}:${index}`,x:unit.x,baseX:unit.x,y:unit.y,vx:unit.vx,vy:unit.vy,
+        s:0,rot:0,rs:0,amp:0,classicScout:null,hordeUnit:true,r:30,hp:1,maxHp:1,damage:12,salvageRole:"raider",
+        salvageDropId:`${classicFlightView?.stageId||`${currentLevel+1}.0`}:enemy:${classicSalvageEnemySequence++}`,
+        hordeAnimator:NeonCampaign.createCh01Animator({hp:1,maxHp:1})});
+      items.push(item);
+    });
+    ensureSprite(SPRITES.ch01);
+  }
   function spawnGaiaEnemy(kind) {
     const ordinal=classicPatrolSequence++,stage=classicFlightView?.stageNumber||0,rules=NeonCampaign.GAIA_ENEMY_RULES[kind];
     // El Rastreador entra por abajo, el Sembrador por un lado del carril bajo y los demás por arriba.
@@ -1857,7 +1876,7 @@
     // A restored entry has already emitted its checkpoint event. Initialize
     // the same encounter grace here instead of waiting for that event to replay.
     classicPatrolTimer=classicFlightView?(classicFlightView.stageNumber===1?4:7):0;
-    classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
+    classicPatrolSequence=0;classicPursuitAnnounced=new Set();classicThreatSequence=0;classicHordeTimer=null;classicHordeSequence=0;classicCometSequence=0;classicCometWarning=-1;flightHudSignature="";
     // Un reintento empieza con un campo nuevo (y su respiro), no con el gastado.
     classicVoyageHazards=null;
     classicVoyageSpawnTimer=1;classicVoyageHazardTimer=10;classicVoyageStageId=classicFlightView?.stageId||"";

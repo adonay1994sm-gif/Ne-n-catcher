@@ -405,3 +405,17 @@ test('Gaia enemies are moved only by their own AI', () => {
   startAt(T, 3);
   assert.equal(T.ev("spawnGaiaEnemy('alpha').classicScout"), null);
 });
+
+// Plan F3b, tarea 8: hordas.
+test('horde stages launch a wave every 14 seconds', () => {
+  const {T} = harness({query: '?dev=1'});
+  startAt(T, 3);
+  T.ev('DEV.invulnerable=true');
+  T.adv(30);
+  assert.equal(T.ev('classicHordeSequence'), 2);
+  const {T: other} = harness({query: '?dev=1'});
+  startAt(other, 1);
+  other.ev('DEV.invulnerable=true');
+  other.adv(30);
+  assert.equal(other.ev('classicHordeSequence'), 0, 'stages without a horde have none');
+});

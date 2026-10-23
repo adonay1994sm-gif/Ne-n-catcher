@@ -548,7 +548,7 @@
         item.role === "interceptor" ? 60 : 52)) drawAtlasVfx(0, 28, 48, 1, .5);
       ctx.restore(); return;
     }
-    if (drawCh01Frame(item.classicScout?.animator)) {
+    if (drawCh01Frame(item.classicScout?.animator || item.hordeAnimator)) {
       ctx.restore();
       return;
     }
