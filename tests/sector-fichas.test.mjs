@@ -78,3 +78,7 @@ test('hordes cross stages 3, 7 and 9', () => {
     else assert.equal(rules.horde, null, `stage ${index + 1}`);
   });
 });
+
+test('stages 4 and 8 bring aimed meteor rain instead of the marked corridor', () => {
+  assert.deepEqual(S1_GAIA.encounters.map(rules => rules.comets), [false, false, false, 'aimed', false, false, false, 'aimed', false, false]);
+});

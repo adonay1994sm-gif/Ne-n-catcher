@@ -524,6 +524,16 @@
     drawGaiaCell(sprite, 4, cell, item.r * (kind === "alpha" ? 2.6 : 3.2));
     return true;
   }
+  // Aviso de meteorito dirigido: cuña roja que parpadea en el borde superior.
+  function drawMeteorWarnings() {
+    if (typeof classicMeteorWarnings === "undefined" || !classicMeteorWarnings.length) return;
+    const top = (classicFlightBounds?.presentationTop || 95) + 18, blink = .55 + .45 * Math.abs(Math.sin(elapsed * 14));
+    ctx.save(); ctx.fillStyle = "#ff4d5e"; ctx.shadowBlur = 16; ctx.shadowColor = "#ff2d45"; ctx.globalAlpha = blink;
+    for (const warning of classicMeteorWarnings) {
+      ctx.beginPath(); ctx.moveTo(warning.x - 18, top); ctx.lineTo(warning.x + 18, top); ctx.lineTo(warning.x, top + 26); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
   // Escudo hexagonal de la Égida sobre el aliado que protege (fila 2 de su hoja).
   function drawGaiaShield(item) {
     const sprite = SPRITES.gaiaAegis;

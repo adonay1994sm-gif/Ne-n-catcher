@@ -169,8 +169,9 @@ test('a sector stage spawns CRONIUM and patrols', () => {
 test('stages that open with new Gaia enemies play without errors', () => {
   // Tramos 3, 4 y 7 abren con sower, aegis y alpha (ficha del sector 1).
   for (const stageNumber of [3, 4, 7]) {
-    const {T} = harness();
+    const {T} = harness({query: '?dev=1'});
     startAt(T, stageNumber);
+    T.ev('DEV.invulnerable=true'); // comprueba errores, no supervivencia
     assert.equal(T.stage(), stageNumber);
     T.adv(20);
     assert.equal(T.st().state, 'playing', `stage ${stageNumber}`);
@@ -418,4 +419,33 @@ test('horde stages launch a wave every 14 seconds', () => {
   other.ev('DEV.invulnerable=true');
   other.adv(30);
   assert.equal(other.ev('classicHordeSequence'), 0, 'stages without a horde have none');
+});
+
+// Plan F3b, tarea 9: meteoritos dirigidos.
+test('aimed stages have no protected corridor and lower attack tokens during the rain', () => {
+  const {T} = harness({query: '?dev=1'});
+  startAt(T, 4);
+  T.ev('DEV.invulnerable=true');
+  assert.equal(T.ev('classicCometShower'), null);
+  assert.ok(T.ev('Boolean(classicAimedRain)'));
+  let lowered = false, meteors = 0;
+  for (let second = 0; second < 20; second++) {
+    T.adv(1);
+    if (T.ev('classicAimedRain&&!classicAimedRain.done')) lowered ||= T.ev('sectorAttackTokens.max') === 1;
+    meteors = Math.max(meteors, T.ev('items.filter(item=>item.aimedMeteor).length'));
+    assert.equal(T.ev('classicCometCorridor'), null, 'no corridor is drawn');
+  }
+  assert.ok(meteors > 0, 'meteors fly');
+  assert.ok(lowered, 'tokens drop to one while the rain lasts');
+});
+
+test('a pending warning is dropped when the ship revives or the stage changes', () => {
+  const {T} = harness();
+  startAt(T, 4);
+  T.ev("classicMeteorWarnings.push({id:'x',x:200,until:elapsed+5});classicAimedRain.pending.push({id:'x',at:99,x:200,y:-40,aim:{x:0,y:0}})");
+  T.ev('hull=0'); T.finishGame('hull'); T.resumeReward();
+  assert.deepEqual([T.ev('classicMeteorWarnings.length'), T.ev('classicAimedRain.pending.length')], [0, 0]);
+  T.ev("classicMeteorWarnings.push({id:'y',x:200,until:elapsed+5})");
+  T.toStage(5);
+  assert.equal(T.ev('classicMeteorWarnings.length'), 0);
 });

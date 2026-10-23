@@ -1131,10 +1131,13 @@
     return true;
   }
 
+  // Meteoritos dirigidos del sector (plan F3b): sin pasillo marcado; avisos en el borde.
+  let classicAimedRain=null,classicMeteorWarnings=[];
   function resetClassicCometShower() {
-    classicCometShower=null;classicCometCorridor=null;
-    const view=classicFlightView;
-    if(!view||!NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets)return;
+    classicCometShower=null;classicCometCorridor=null;classicAimedRain=null;classicMeteorWarnings=[];
+    const view=classicFlightView,comets=view&&NeonCampaign.getVoyageStageRules(view.routeId,view.stageNumber)?.comets;
+    if(!comets)return;
+    if(comets==="aimed"){classicAimedRain=NeonCampaign.createAimedMeteorRain({seed:view.stageNumber*811,width:W,height:H});return;}
     classicCometShower=NeonCampaign.createCometShower({width:W,height:H,seed:view.stageNumber*811,
       shipWidth:SHIP_VISUAL.assemblySize,shipSideClearance:119*SHIP_VISUAL.classicScale,
       stageId:view.stageId,elapsed:view.stageElapsed});
@@ -1814,7 +1817,25 @@
         items.push(threat);
       });
     }
-    if(rules.comets) {
+    if(rules.comets==="aimed"&&classicAimedRain) {
+      const firstWarning=classicAimedRain.announced===0;
+      NeonCampaign.advanceAimedMeteorRain(classicAimedRain,dt,player,event=>{
+        if(event.type==="warning"){
+          if(firstWarning)showStoryTransmission("N-7","Meteoritos hacia nosotros · esquiva",2);
+          classicMeteorWarnings.push({id:event.id,x:event.x,until:elapsed+NeonCampaign.AIMED_METEOR_RULES.warning});
+        }
+        if(event.type==="meteor") {
+          classicMeteorWarnings=classicMeteorWarnings.filter(warning=>warning.id!==event.id);
+          items.push({type:"meteor",flightComet:true,aimedMeteor:true,id:event.id,x:event.x,baseX:event.x,y:event.y,
+            vx:event.vx,vy:event.vy,r:NeonCampaign.AIMED_METEOR_RULES.radius,s:Math.hypot(event.vx,event.vy),damage:event.damage,
+            hp:2,maxHp:2,special:"comet",spriteKey:"comet",rot:Math.atan2(event.vy,event.vx),rs:0,p:0,phase:0,amp:0,alpha:1,life:6});
+        }
+      });
+    }
+    classicMeteorWarnings=classicMeteorWarnings.filter(warning=>warning.until>elapsed);
+    // Mientras dura la lluvia dirigida solo ataca un enemigo a la vez.
+    if(sectorAttackTokens)sectorAttackTokens.max=classicAimedRain&&!classicAimedRain.done?1:sectorAttackTokens.baseMax;
+    if(rules.comets&&rules.comets!=="aimed") {
       if(!classicCometShower||classicCometShower.stageId!==view.stageId)resetClassicCometShower();
       NeonCampaign.advanceCometShower(classicCometShower,dt,player,event=>{
         if(event.type==="warning"){showStoryTransmission("N-7",event.text,2);
@@ -2058,6 +2079,7 @@
   function resetSectorAttackTokens() {
     const rules=isSectorRun()&&classicFlightView?NeonCampaign.getVoyageStageRules(classicFlightView.routeId,classicFlightView.stageNumber):null;
     sectorAttackTokens=rules?NeonCampaign.createAttackTokens({max:rules.attackers??2}):null;
+    if(sectorAttackTokens)sectorAttackTokens.baseMax=sectorAttackTokens.max;
   }
   // La regla de morir se guarda al estallar la nave (tramo 1, o 6 con baliza),
   // no al abrir la derrota: cerrar la app durante la explosión no la salta.
@@ -3200,6 +3222,8 @@
     levelOneShockwave = 0;
     hideStoryTransmission();
 
+    // Avisos de meteoritos pendientes: se cancelan al volver (plan F3b).
+    classicMeteorWarnings=[];if(classicAimedRain)classicAimedRain.pending.length=0;
     // Elimina amenazas próximas y todos los residuos visuales de destrucción.
     items = items.filter((item) => !isThreat(item) || item.y < H * 0.38);
     gates = [];
@@ -4389,7 +4413,7 @@
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile &&
-          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb && !item.hordeUnit) {
+          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb && !item.hordeUnit && !item.aimedMeteor) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
       if (lv.hazard === "phantom" && isThreat(item) && !item.showerComet) {
@@ -6033,6 +6057,16 @@
     drawGaiaCell(sprite, 4, cell, item.r * (kind === "alpha" ? 2.6 : 3.2));
     return true;
   }
+  // Aviso de meteorito dirigido: cuña roja que parpadea en el borde superior.
+  function drawMeteorWarnings() {
+    if (typeof classicMeteorWarnings === "undefined" || !classicMeteorWarnings.length) return;
+    const top = (classicFlightBounds?.presentationTop || 95) + 18, blink = .55 + .45 * Math.abs(Math.sin(elapsed * 14));
+    ctx.save(); ctx.fillStyle = "#ff4d5e"; ctx.shadowBlur = 16; ctx.shadowColor = "#ff2d45"; ctx.globalAlpha = blink;
+    for (const warning of classicMeteorWarnings) {
+      ctx.beginPath(); ctx.moveTo(warning.x - 18, top); ctx.lineTo(warning.x + 18, top); ctx.lineTo(warning.x, top + 26); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
   // Escudo hexagonal de la Égida sobre el aliado que protege (fila 2 de su hoja).
   function drawGaiaShield(item) {
     const sprite = SPRITES.gaiaAegis;
@@ -6479,11 +6513,12 @@
       else if (item.type === "salvage") drawSalvagePickup(item);
       else if (item.type === "flightModule") drawFlightModule(item);
       else if (item.type === "energy") drawEnergy(item);
-      else if (item.type === "meteor" || item.type === "scout") { drawMeteor(item); drawGaiaShield(item); }
+      else if (item.type === "meteor" || item.type === "scout") { drawMeteor(item); if (typeof drawGaiaShield === "function") drawGaiaShield(item); }
       else if (item.type === "debris") drawDebris(item);
       else if (item.type === "satellite") drawSatellite(item);
       else drawPower(item);
     }
+    if (typeof drawMeteorWarnings === "function") drawMeteorWarnings();
     drawGuardianAtlas();
     drawPlayer(t);
     drawShots();

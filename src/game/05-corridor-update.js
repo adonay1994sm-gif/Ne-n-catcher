@@ -398,7 +398,7 @@
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
       if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile &&
-          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb && !item.hordeUnit) {
+          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb && !item.hordeUnit && !item.aimedMeteor) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
       if (lv.hazard === "phantom" && isThreat(item) && !item.showerComet) {

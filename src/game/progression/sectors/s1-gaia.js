@@ -20,7 +20,8 @@ const ROSTERS = immutable({
   gate: immutable(['interceptor', 'tracker', 'aegis', 'raider'])
 });
 // attackers: cuántos enemigos pueden atacar a la vez (turnos de ataque) y
-// horde: oleadas de CH-01 en V cada `every` segundos (plan F3b).
+// horde: oleadas de CH-01 en V cada `every` segundos; comets: 'aimed' = meteoritos
+// dirigidos sin pasillo marcado (plan F3b).
 const HORDE = immutable({every: 14, size: 5});
 const encounter = (profile, patrol, {comets = false, repairAt = null, boss = null, attackers = 2, horde = null} = {}) => immutable({
   patrol: patrol && immutable({cap: patrol[0], roster: patrol[1], gap: patrol[2]}),
@@ -61,11 +62,11 @@ export const S1_GAIA = immutable({
     encounter(1, [2, ROSTERS.escape, 8], {attackers: 1}),
     encounter(2, [3, ROSTERS.flank, 7], {attackers: 1}),
     encounter(3, [3, ROSTERS.mines, 7], {repairAt: 30, horde: HORDE}),
-    encounter(7, [4, ROSTERS.shield, 6], {comets: true}),
+    encounter(7, [4, ROSTERS.shield, 6], {comets: 'aimed'}),
     encounter(4, [2, ROSTERS.flank, 9], {boss: {id: 'ch03', role: 'subjefe'}}),
     encounter(5, [2, ROSTERS.escape, 8], {attackers: 3}),
     encounter(8, [4, ROSTERS.elite, 6], {repairAt: 32, attackers: 3, horde: HORDE}),
-    encounter(9, [4, ROSTERS.elite, 6], {comets: true, attackers: 3}),
+    encounter(9, [4, ROSTERS.elite, 6], {comets: 'aimed', attackers: 3}),
     encounter(10, [5, ROSTERS.gate, 5], {repairAt: 30, attackers: 3, horde: HORDE}),
     encounter(10, [2, ROSTERS.gate, 8], {boss: {id: 'guardian-atlas', role: 'jefe'}})
   ]),

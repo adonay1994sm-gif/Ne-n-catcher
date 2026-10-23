@@ -20,6 +20,7 @@ var NeonCampaign = (() => {
   // src/game/progression/legacy-content-entry.js
   var legacy_content_entry_exports = {};
   __export(legacy_content_entry_exports, {
+    AIMED_METEOR_RULES: () => AIMED_METEOR_RULES,
     CHRONOS_CHAPTER_ROUTE_SECONDS: () => CHRONOS_CHAPTER_ROUTE_SECONDS,
     CHRONOS_INTRO_TIMELINE: () => CHRONOS_INTRO_TIMELINE,
     CHRONOS_VOYAGE_KEY: () => CHRONOS_VOYAGE_KEY,
@@ -40,6 +41,7 @@ var NeonCampaign = (() => {
     SHIP_FLEET: () => SHIP_FLEET,
     SHIP_FLEET_SAVE_KEY: () => SHIP_FLEET_SAVE_KEY,
     VOYAGES: () => VOYAGES,
+    advanceAimedMeteorRain: () => advanceAimedMeteorRain,
     advanceClassicPursuer: () => advanceClassicPursuer,
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
@@ -63,6 +65,7 @@ var NeonCampaign = (() => {
     cometShowerSnapshot: () => cometShowerSnapshot,
     completeSector: () => completeSector,
     continuePoint: () => continuePoint,
+    createAimedMeteorRain: () => createAimedMeteorRain,
     createAttackTokens: () => createAttackTokens,
     createCh01Animator: () => createCh01Animator,
     createCh02Animator: () => createCh02Animator,
@@ -3332,11 +3335,11 @@ var NeonCampaign = (() => {
       encounter11(1, [2, ROSTERS11.escape, 8], { attackers: 1 }),
       encounter11(2, [3, ROSTERS11.flank, 7], { attackers: 1 }),
       encounter11(3, [3, ROSTERS11.mines, 7], { repairAt: 30, horde: HORDE }),
-      encounter11(7, [4, ROSTERS11.shield, 6], { comets: true }),
+      encounter11(7, [4, ROSTERS11.shield, 6], { comets: "aimed" }),
       encounter11(4, [2, ROSTERS11.flank, 9], { boss: { id: "ch03", role: "subjefe" } }),
       encounter11(5, [2, ROSTERS11.escape, 8], { attackers: 3 }),
       encounter11(8, [4, ROSTERS11.elite, 6], { repairAt: 32, attackers: 3, horde: HORDE }),
-      encounter11(9, [4, ROSTERS11.elite, 6], { comets: true, attackers: 3 }),
+      encounter11(9, [4, ROSTERS11.elite, 6], { comets: "aimed", attackers: 3 }),
       encounter11(10, [5, ROSTERS11.gate, 5], { repairAt: 30, attackers: 3, horde: HORDE }),
       encounter11(10, [2, ROSTERS11.gate, 8], { boss: { id: "guardian-atlas", role: "jefe" } })
     ]),
@@ -5831,6 +5834,59 @@ var NeonCampaign = (() => {
     });
   }
 
+  // src/game/progression/aimed-meteors.js
+  var AIMED_METEOR_RULES = Object.freeze({
+    warning: 0.8,
+    speed: 470,
+    gap: 0.75,
+    jitter: 0.5,
+    first: 1,
+    count: 10,
+    radius: 22,
+    damage: 14,
+    margin: 40,
+    entryY: -40
+  });
+  function nextRandom2(state) {
+    state.rng = state.rng + 1831565813 >>> 0;
+    let value = Math.imul(state.rng ^ state.rng >>> 15, 1 | state.rng);
+    value ^= value + Math.imul(value ^ value >>> 7, 61 | value);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  }
+  function createAimedMeteorRain({ seed = 0, width, height, count = AIMED_METEOR_RULES.count }) {
+    if (![seed, width, height].every(Number.isFinite) || !Number.isInteger(count) || count < 1) throw new RangeError("Invalid aimed meteor rain");
+    return {
+      width,
+      height,
+      count,
+      clock: 0,
+      next: AIMED_METEOR_RULES.first,
+      announced: 0,
+      pending: [],
+      done: false,
+      rng: (Math.imul(Math.trunc(seed) >>> 0, 2654435769) ^ 625341585) >>> 0
+    };
+  }
+  function advanceAimedMeteorRain(state, dt, player, emit) {
+    if (state.done || !(dt > 0)) return;
+    const { warning, speed, gap, jitter, margin, entryY, damage } = AIMED_METEOR_RULES;
+    state.clock += dt;
+    while (state.announced < state.count && state.clock >= state.next) {
+      const id = `aimed-meteor:${state.announced}`;
+      const x = margin + nextRandom2(state) * (state.width - margin * 2);
+      state.pending.push({ id, at: state.next + warning, x, y: entryY, aim: { x: player.x, y: player.y } });
+      emit({ type: "warning", id, x, y: 0 });
+      state.announced++;
+      state.next += gap + nextRandom2(state) * jitter;
+    }
+    while (state.pending.length && state.clock >= state.pending[0].at) {
+      const meteor = state.pending.shift();
+      const dx = meteor.aim.x - meteor.x, dy = meteor.aim.y - meteor.y, length = Math.hypot(dx, dy) || 1;
+      emit({ type: "meteor", id: meteor.id, x: meteor.x, y: meteor.y, vx: dx / length * speed, vy: dy / length * speed, damage });
+    }
+    state.done = state.announced === state.count && state.pending.length === 0;
+  }
+
   // src/game/progression/chronos-flight.js
   var immutable13 = (object2) => Object.freeze(object2);
   var CHRONOS_FLIGHT_EVENTS = immutable13([
@@ -6070,7 +6126,7 @@ var NeonCampaign = (() => {
       recordId: "chronos-sabotage-atlas-log"
     };
   }
-  function nextRandom2(boss) {
+  function nextRandom3(boss) {
     let value = boss.seed;
     value ^= value << 13;
     value ^= value >>> 17;
@@ -6123,13 +6179,13 @@ var NeonCampaign = (() => {
     if (tacticalAttack && boss.tacticalManeuver === "flank") {
       boss.motionSide = boss.telegraph.sweepDirection;
     }
-    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom2(boss) * 0.17);
+    const flank = exposed ? space * 0.24 : space * (0.28 + nextRandom3(boss) * 0.17);
     const lead = clamp10(sample.vx * 0.24, -boss.width * 0.1, boss.width * 0.1);
     const target = exposed ? boss.x + boss.motionSide * flank : tacticalAttack && boss.tacticalManeuver === "withdraw" ? boss.width / 2 + boss.motionSide * space * 0.34 : sample.x + lead + boss.motionSide * flank;
     boss.motionX = clamp10(target, bounds.left, bounds.right);
     const verticalPhase = boss.motionDecision * 1.7 + boss.phase * 0.9;
     boss.motionY = clamp10(boss.targetY + (tacticalAttack && boss.tacticalManeuver === "withdraw" ? -16 : Math.sin(verticalPhase) * 18), bounds.top, bounds.bottom);
-    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom2(boss) * 0.5);
+    boss.nextMotionAt = boss.age + (exposed ? 1.15 : tacticalAttack ? 0.8 : 1.25 + nextRandom3(boss) * 0.5);
     boss.motionDecision++;
   }
   function moveAtlas(boss, dt) {
@@ -6165,7 +6221,7 @@ var NeonCampaign = (() => {
   }
   function scheduleFulminant(boss) {
     const [low, high] = boss.phase === 1 ? GUARDIAN_ATLAS_RULES.fulminant.everyAttacks : GUARDIAN_ATLAS_RULES.fulminant.phaseTwoEveryAttacks;
-    boss.nextFulminantAfter = low + Math.floor(nextRandom2(boss) * (high - low + 1));
+    boss.nextFulminantAfter = low + Math.floor(nextRandom3(boss) * (high - low + 1));
   }
   function beginCharge(boss, player, events, chained = false) {
     boss.attackId++;
@@ -6184,10 +6240,10 @@ var NeonCampaign = (() => {
       boss.attackTier = "superpower";
       boss.attackDecision = "reactor-recharged";
     } else if (Math.abs(sample.vx) >= 85 || Math.abs(sample.x - boss.width / 2) >= boss.width * 0.27) {
-      boss.attackTier = nextRandom2(boss) < 0.7 ? "medium" : "basic";
+      boss.attackTier = nextRandom3(boss) < 0.7 ? "medium" : "basic";
       boss.attackDecision = "intercept-flank";
     } else {
-      boss.attackTier = nextRandom2(boss) < 0.5 ? "medium" : "basic";
+      boss.attackTier = nextRandom3(boss) < 0.5 ? "medium" : "basic";
       boss.attackDecision = "pressure-observed-lane";
     }
     boss.attacksSinceSuperpower = boss.attackTier === "superpower" ? 0 : boss.attacksSinceSuperpower + 1;
@@ -6197,14 +6253,14 @@ var NeonCampaign = (() => {
     } else if (boss.phaseAttacks > 3) boss.attacksSinceFulminant++;
     if (!chained) {
       const chains = GUARDIAN_ATLAS_RULES.chains;
-      boss.chainRemaining = boss.phase === 2 ? chains.phaseTwoMinimum + (nextRandom2(boss) < chains.phaseTwoExtraChance ? 1 : 0) : boss.phaseAttacks <= 3 ? 0 : nextRandom2(boss) < chains.phaseOneChance ? 1 : 0;
+      boss.chainRemaining = boss.phase === 2 ? chains.phaseTwoMinimum + (nextRandom3(boss) < chains.phaseTwoExtraChance ? 1 : 0) : boss.phaseAttacks <= 3 ? 0 : nextRandom3(boss) < chains.phaseOneChance ? 1 : 0;
     }
     const tier = boss.attackTier;
     let pattern = tier === "fulminant" ? "cronoRupture" : tier === "superpower" ? "reactorBarrage" : tier === "medium" ? boss.phase === 1 ? "crossfire" : "rakingSalvo" : boss.phase === 1 ? "focusedSalvo" : "leadSalvo";
     if ((boss.phaseAttacks > 3 || boss.phase === 2) && tier !== "fulminant") {
       const options = tier === "basic" ? ["duelBurst"] : tier === "medium" ? Math.abs(sample.vx) >= 85 ? ["flankSalvo", "staggeredSalvo"] : ["staggeredSalvo", "flankSalvo"] : ["reactorSweep", "reactorPincer"];
       const candidates = options.filter((candidate) => candidate !== boss.previousPatterns[tier]);
-      pattern = candidates[Math.floor(nextRandom2(boss) * candidates.length)] || options[0];
+      pattern = candidates[Math.floor(nextRandom3(boss) * candidates.length)] || options[0];
     }
     boss.previousPatterns[tier] = pattern;
     const leadOffset = tier === "basic" && boss.phase === 1 ? 0 : clamp10(sample.vx * 0.28, -100, 100);
@@ -6291,7 +6347,7 @@ var NeonCampaign = (() => {
     const low = gapHalf + 12, high = boss.width - gapHalf - 12;
     let gapX = (low + high) / 2, best = -1;
     for (let attempt = 0; attempt < 6; attempt++) {
-      const candidate = low + nextRandom2(boss) * Math.max(0, high - low);
+      const candidate = low + nextRandom3(boss) * Math.max(0, high - low);
       const distance2 = Math.abs(candidate - aim.observedX);
       if (distance2 >= rule.minPlayerDistance) {
         gapX = candidate;
