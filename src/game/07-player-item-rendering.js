@@ -492,11 +492,56 @@
     return true;
   }
 
+  // Guardia de Gaia (plan F3b): hojas del baúl. Enemigos en celdas de 192 (4 por
+  // fila; el Alfa, 4 de 256); minas, bombas y disparos en la hoja 6×4 de 128.
+  const GAIA_SHEETS = {tracker: "gaiaTracker", sower: "gaiaSower", aegis: "gaiaAegis", alpha: "gaiaAlpha"};
+  const GAIA_SHOT_CELLS = {orb: 21, missile: 18};
+  function drawGaiaCell(sprite, columns, cell, size) {
+    const side = sprite.naturalWidth / columns;
+    ctx.drawImage(sprite, (cell % columns) * side, Math.floor(cell / columns) * side, side, side, -size / 2, -size / 2, size, size);
+  }
+  function drawGaiaItem(item) {
+    const tick = Math.floor(elapsed * 7 + (item.phase || 0));
+    if (item.gaiaMine || item.gaiaBomb || item.gaiaSprite) {
+      const sheet = SPRITES.hostileProjectiles2;
+      if (!spriteReady(sheet)) return false;
+      const cell = item.gaiaMine ? 12 + (item.mine.armed ? 1 + tick % 2 : 0)
+        : item.gaiaBomb ? 15 + tick % 2 : GAIA_SHOT_CELLS[item.gaiaSprite] + tick % 3;
+      // Amenaza = cálido (DESIGN §9.1).
+      ctx.shadowBlur = 12; ctx.shadowColor = "#ff5b3d";
+      if (item.gaiaSprite) ctx.rotate(Math.atan2(item.vy, item.vx) - Math.PI / 2);
+      drawGaiaCell(sheet, 6, cell, item.r * (item.gaiaSprite ? 4.6 : 4));
+      return true;
+    }
+    if (!item.gaiaEnemy) return false;
+    const {kind, pending, telegraph} = item.gaia, sprite = SPRITES[GAIA_SHEETS[kind]];
+    if (!spriteReady(sprite)) return false;
+    // Fila 1: vuelo; fila 2: aviso de ataque (brillo rojo). Alfa: abierto,
+    // compacto al cargar, dañado por debajo de la mitad.
+    const cell = kind === "alpha" ? (item.hp <= item.maxHp * .5 ? 2 : pending ? 1 : 0)
+      : pending ? 4 + Math.min(3, Math.floor(telegraph * 4)) : tick % 4;
+    ctx.shadowBlur = pending ? 18 : 0; ctx.shadowColor = "#ff3b5c";
+    drawGaiaCell(sprite, 4, cell, item.r * (kind === "alpha" ? 2.6 : 3.2));
+    return true;
+  }
+  // Escudo hexagonal de la Égida sobre el aliado que protege (fila 2 de su hoja).
+  function drawGaiaShield(item) {
+    const sprite = SPRITES.gaiaAegis;
+    if (!(item.shieldHits > 0) || !spriteReady(sprite)) return;
+    ctx.save(); ctx.translate(item.x, item.y); ctx.globalAlpha = .85;
+    drawGaiaCell(sprite, 4, item.shieldHits >= 3 ? 5 : item.shieldHits === 2 ? 6 : 7, item.r * 3.4);
+    ctx.restore();
+  }
+
   function drawMeteor(item) {
     ctx.save();
     ctx.globalAlpha = itemVisualAlpha(item);
     ctx.translate(item.x, item.y);
 
+    if (drawGaiaItem(item)) {
+      ctx.restore();
+      return;
+    }
     if (item.classicScoutProjectile) {
       ctx.rotate(Math.atan2(item.vy, item.vx) + Math.PI / 2);
       if (!drawHostileOrdnance(item, item.role === "interceptor" ? 1 : 0,

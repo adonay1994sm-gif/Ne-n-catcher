@@ -166,7 +166,7 @@ test('a sector stage spawns CRONIUM and patrols', () => {
   assert.ok(T.ev('items.filter(item=>item.classicScout).length') > 0, 'a patrol appears');
 });
 
-test('new Gaia enemies spawn as current stand-ins until they exist (F3b)', () => {
+test('stages that open with new Gaia enemies play without errors', () => {
   // Tramos 3, 4 y 7 abren con sower, aegis y alpha (ficha del sector 1).
   for (const stageNumber of [3, 4, 7]) {
     const {T} = harness();
@@ -174,7 +174,7 @@ test('new Gaia enemies spawn as current stand-ins until they exist (F3b)', () =>
     assert.equal(T.stage(), stageNumber);
     T.adv(20);
     assert.equal(T.st().state, 'playing', `stage ${stageNumber}`);
-    assert.ok(T.ev('items.filter(item=>item.classicScout).length') > 0, `stage ${stageNumber} has a patrol`);
+    assert.ok(T.ev('items.filter(item=>item.flightPatrol).length') > 0, `stage ${stageNumber} has a patrol`);
   }
 });
 
@@ -336,4 +336,72 @@ test('a removed enemy frees its token in the same frame', () => {
   T.ev("sectorAttackTokens.holders.set('ghost',{bornAt:0,grantedAt:0})");
   T.adv(1 / 60);
   assert.equal(T.ev("sectorAttackTokens.holders.has('ghost')"), false);
+});
+
+// Plan F3b, tarea 7: los enemigos de Gaia en el juego.
+test('each Gaia roster entry spawns its own enemy', () => {
+  for (const [stage, kind] of [[2, 'tracker'], [3, 'sower'], [4, 'aegis'], [7, 'alpha']]) {
+    const {T} = harness({query: '?dev=1'});
+    startAt(T, stage);
+    T.ev('DEV.invulnerable=true');
+    let seen = false;
+    for (let second = 0; second < 30 && !seen; second++) {
+      T.adv(1);
+      seen = T.ev(`items.some(item=>item.gaiaEnemy&&item.gaia.kind==='${kind}')`);
+    }
+    assert.ok(seen, `stage ${stage} brings a ${kind}`);
+  }
+});
+
+test('a shielded enemy takes shots on its shield first', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  T.ev("classicVoyageHazardTimer=999;classicPatrolTimer=999;items.length=0");
+  T.ev("window.__t=createThreat('scout',level());Object.assign(window.__t,{id:'shielded',classicScout:null,x:player.x,baseX:player.x,y:player.y-260,s:0,rot:0,rs:0,amp:0,hp:2,maxHp:2,r:34,shieldHits:3,shieldBy:'keeper'});items.push(window.__t,{id:'keeper',type:'energy',x:-500,y:-500,s:0,r:1,rot:0,rs:0,p:0,phase:0,amp:0,alpha:1})");
+  const shoot = () => { T.ev('classicWeapons.charges=Math.max(classicWeapons.charges,1);classicWeapons.cooldown=0;manualShotCooldown=0;fireManualShot()'); T.adv(.35); };
+  for (let index = 0; index < 3; index++) shoot();
+  assert.deepEqual([T.ev('window.__t.shieldHits'), T.ev('window.__t.hp')], [0, 2]);
+  shoot();
+  assert.ok(T.ev('window.__t.hp') < 2, 'the fourth shot hurts it');
+});
+
+test('the shield disappears when its aegis is gone', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  T.ev("items.push({id:'lonely',type:'scout',x:200,y:300,s:0,r:30,rot:0,rs:0,p:0,phase:0,amp:0,alpha:1,hp:2,maxHp:2,shieldHits:3,shieldBy:'gone'})");
+  T.adv(1 / 60);
+  assert.equal(T.ev("items.find(item=>item.id==='lonely').shieldHits"), 0);
+});
+
+test('mines near the ship are cleared when reviving', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  T.ev("spawnGaiaMine(player.x, player.y-100)");
+  assert.equal(T.ev('items.filter(item=>item.gaiaMine).length'), 1);
+  T.ev('hull=0'); T.finishGame('hull'); T.resumeReward();
+  assert.equal(T.ev('items.filter(item=>item.gaiaMine&&item.y>H*.38).length'), 0);
+});
+
+test('new enemies drop the scrap of their stand-in', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  for (const [kind, role] of [['tracker', 'interceptor'], ['sower', 'raider'], ['aegis', 'scout'], ['alpha', 'interceptor']]) {
+    assert.equal(T.ev(`spawnGaiaEnemy('${kind}').salvageRole`), role, kind);
+  }
+});
+
+test('the tracker mark sharpens the pursuers\' aim for 4 seconds', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  T.ev("handleGaiaEvent(spawnGaiaEnemy('tracker'),{type:'mark',seconds:4})");
+  T.adv(.1);
+  assert.equal(T.ev('player.marked'), true);
+  T.adv(4.1);
+  assert.equal(T.ev('player.marked'), false);
+});
+
+test('Gaia enemies are moved only by their own AI', () => {
+  const {T} = harness();
+  startAt(T, 3);
+  assert.equal(T.ev("spawnGaiaEnemy('alpha').classicScout"), null);
 });

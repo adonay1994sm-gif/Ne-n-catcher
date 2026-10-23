@@ -842,11 +842,71 @@
     }
   }
 
-  // Enemigos nuevos de Gaia (Rastreador, Sembrador, Égida y Alfa) sin IA propia
-  // todavía: hasta la F3b salen con el aspecto y la táctica de uno actual.
-  const CLASSIC_PATROL_STAND_INS={tracker:"interceptor",sower:"raider",aegis:"scout",alpha:"interceptor"};
+  // Enemigos de la Guardia de Gaia (plan F3b): Rastreador, Sembrador, Égida y
+  // Alfa con su IA de perfiles, minas, bombas en cruz, escudo y marca.
+  const GAIA_KINDS=new Set(["tracker","sower","aegis","alpha"]);
+  let playerMarkedUntil=-Infinity,gaiaFallbackTokens=null;
+  function spawnGaiaEnemy(kind) {
+    const ordinal=classicPatrolSequence++,stage=classicFlightView?.stageNumber||0,rules=NeonCampaign.GAIA_ENEMY_RULES[kind];
+    // El Rastreador entra por abajo, el Sembrador por un lado del carril bajo y los demás por arriba.
+    const x=kind==="sower"?(ordinal%2===0?-30:W+30):W*(ordinal%2===0?.3:.7);
+    const y=kind==="tracker"?H+30:kind==="sower"?H*.78:-70;
+    const item=createThreat("scout",level());
+    // Sin el piloto del explorador antiguo: lo mueve su propia IA.
+    Object.assign(item,{id:`gaia:${currentLevel}:${stage}:${ordinal}`,x,baseX:x,y,s:0,rot:0,rs:0,amp:0,classicScout:null,
+      flightPatrol:true,gaiaEnemy:true,damage:16,r:kind==="alpha"?58:34,hp:rules.hp,maxHp:rules.hp,salvageRole:rules.salvageRole,
+      salvageDropId:`${classicFlightView?.stageId||`${currentLevel+1}.0`}:enemy:${classicSalvageEnemySequence++}`,
+      gaia:NeonCampaign.createGaiaEnemy({kind,x,y,now:elapsed})});
+    ensureSprite(SPRITES[{tracker:"gaiaTracker",sower:"gaiaSower",aegis:"gaiaAegis",alpha:"gaiaAlpha"}[kind]]);
+    ensureSprite(SPRITES.hostileProjectiles2);
+    items.push(item);
+    return item;
+  }
+  function gaiaHazard(fields) {
+    return {type:"meteor",s:0,rot:0,rs:0,p:0,phase:Math.random()*4,amp:0,alpha:1,special:"",hp:1,maxHp:1,...fields};
+  }
+  function spawnGaiaMine(x,y) {
+    const item=gaiaHazard({id:`gaia-mine:${++classicThreatSequence}`,gaiaMine:true,x,baseX:x,y,r:16,
+      damage:NeonCampaign.GAIA_ENEMY_RULES.sower.mine.damage,mine:{x,y,age:0,armed:false}});
+    items.push(item);return item;
+  }
+  function gaiaShot(shot) {
+    return gaiaHazard({classicScoutProjectile:true,tacticsVersion:NeonCampaign.CLASSIC_PURSUIT_VERSION,gaiaSprite:shot.sprite||"orb",
+      x:shot.x,baseX:shot.x,y:shot.y,vx:shot.vx,vy:shot.vy,s:Math.hypot(shot.vx,shot.vy),r:9,life:5,damage:shot.damage});
+  }
+  function handleGaiaEvent(item,event) {
+    if(event.type==="shot"){items.push(gaiaShot(event));combatSound("enemy-phaser",event.x);}
+    if(event.type==="mark"){playerMarkedUntil=elapsed+event.seconds;}
+    if(event.type==="mine")spawnGaiaMine(event.x,event.y);
+    if(event.type==="cross-bomb")items.push(gaiaHazard({id:`gaia-bomb:${++classicThreatSequence}`,gaiaBomb:true,
+      x:event.x,baseX:event.x,y:event.y,r:14,damage:NeonCampaign.GAIA_ENEMY_RULES.sower.bomb.damage,bomb:{x:event.x,y:event.y,vx:event.vx}}));
+    if(event.type==="shield"){
+      const target=items.find(other=>other.id===event.targetId);
+      if(target){target.shieldHits=event.hits;target.shieldBy=item.id;}
+    }
+  }
+  /** Avanza un enemigo, mina o bomba de Gaia; false si desaparece. */
+  function advanceGaiaItem(item,dt) {
+    if(item.gaiaMine) {
+      const result=NeonCampaign.advanceMine(item.mine,dt,player);
+      if(result==="explode"){addExplosion(item.x,item.y,.6,.4);damageShip(item.damage,item.x,item.y);}
+      return result===null;
+    }
+    if(item.gaiaBomb) {
+      const rays=NeonCampaign.advanceCrossBomb(item.bomb,dt,{w:W,h:H});
+      item.x=item.bomb.x;
+      if(!rays)return true;
+      for(const ray of rays)items.push(gaiaShot({...ray,sprite:"orb"}));
+      return false;
+    }
+    const allies=items.filter(other=>other.gaiaEnemy||other.classicScout).map(other=>({id:other.id,x:other.x,y:other.y,hp:other.hp??1,maxHp:other.maxHp??1}));
+    const tokens=sectorAttackTokens||(gaiaFallbackTokens??=NeonCampaign.createAttackTokens({max:2}));
+    NeonCampaign.advanceGaiaEnemy(item,dt,{now:elapsed,player:{x:player.x,y:player.y,hull,reloading:Boolean(classicWeapons)&&classicWeapons.charges<1},
+      bounds:{w:W,h:H},allies,tokens},event=>handleGaiaEvent(item,event));
+    return true;
+  }
   function spawnClassicFlightPatrol(role="scout") {
-    role=CLASSIC_PATROL_STAND_INS[role]||role;
+    if(GAIA_KINDS.has(role))return spawnGaiaEnemy(role);
     const ordinal=classicPatrolSequence++;
     const stage=classicFlightView?.stageNumber||0;
     const interceptor=role==="interceptor"&&spriteReady(SPRITES.ch02);
@@ -938,6 +998,8 @@
       if(!intersects)continue;
       const impact=NeonCampaign.hitClassicProjectile(classicWeapons,shot.id,item.id);
       if(!impact.accepted)continue;
+      // El escudo de la Égida recibe el disparo antes que el casco (plan F3b).
+      if(item.shieldHits>0){item.shieldHits--;addImpactEffect(item.x,item.y,.6);combatSound("impact-metal",item.x);continue;}
       item.hp=Math.max(0,(item.hp??1)-impact.damage);
       const destroyed=item.hp<=1e-8;
       animateScoutHit(item,destroyed);
@@ -1735,6 +1797,7 @@
     if (typeof resetGameInput === "function") resetGameInput();
     runToken += 1;
     hullGrace = 0;
+    playerMarkedUntil = -Infinity;
     classicGuideSeen = null;classicCroniumWaitNotice = null;classicCroniumWaitAt = -Infinity;classicCroniumWaitShown = null;lastResumeGraceAt = -Infinity;
     cancelSupplyFailureTimer();
     startMusic();

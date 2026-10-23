@@ -239,7 +239,8 @@ export function advanceClassicPursuer(item, dt, player, spawnProjectile, gate = 
         Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62 &&
         (!gate || requestAttack(gate.tokens, {id: item.id, bornAt: enemy.bornAt}, gate.now))) {
       const sample = enemy.observation;
-      enemy.leadOffset = clamp(sample.vx * profile.leadSeconds, -110, 110);
+      // La marca del Rastreador de Gaia (plan F3b) afina el adelanto ×1,5.
+      enemy.leadOffset = clamp(sample.vx * profile.leadSeconds * (player.marked ? 1.5 : 1), -110, 110);
       enemy.observedTarget = Object.freeze({...sample});
       enemy.lockedTarget = Object.freeze({
         x: clamp(sample.x + enemy.leadOffset, 24, enemy.width - 24),

@@ -348,7 +348,11 @@
       const alive = new Set(items.map(item => item.id));
       for (const id of [...attackTokens.holders.keys(), ...attackTokens.waiting.keys()])
         if (!alive.has(id)) NeonCampaign.forgetEnemy(attackTokens, id);
+      // Un escudo de Égida sin su Égida desaparece.
+      for (const item of items) if (item.shieldHits > 0 && !alive.has(item.shieldBy)) item.shieldHits = 0;
     }
+    // Marca del Rastreador: los perseguidores apuntan mejor mientras dura.
+    if (typeof playerMarkedUntil !== "undefined") player.marked = elapsed < playerMarkedUntil;
     for (let index = items.length - 1; index >= 0; index--) {
       const item = items[index];
       // Recovering the final fragment can replace the field with the Atlas
@@ -367,6 +371,8 @@
       } else if(item.flightComet) {
         item.x+=item.vx*dt*scale;item.y+=item.vy*dt*scale;item.life-=dt*scale;
         if(item.life<=0 || item.x>W+100){items.splice(index,1);continue;}
+      } else if (item.gaiaEnemy || item.gaiaMine || item.gaiaBomb) {
+        if (!advanceGaiaItem(item, dt * scale)) { items.splice(index, 1); continue; }
       } else if (item.guardianProjectile) {
         item.previousX=item.x;item.previousY=item.y;
         item.x += item.vx * dt * scale;
@@ -386,7 +392,8 @@
       }
 
       const wave = lv.hazard === "wave" || lv.hazard === "chaos" || lv.hazard === "final";
-      if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile) {
+      if (wave && isThreat(item) && !item.showerComet && !item.classicScout?.tacticsVersion && !item.classicScoutProjectile &&
+          !item.gaiaEnemy && !item.gaiaMine && !item.gaiaBomb) {
         item.x = item.baseX + Math.sin(elapsed * (lv.hazard === "chaos" ? 3.2 : 2.15) + item.phase) * item.amp;
       }
       if (lv.hazard === "phantom" && isThreat(item) && !item.showerComet) {
@@ -422,7 +429,7 @@
         continue;
       }
 
-      if (!item.showerComet && item.y - item.r > H) {
+      if (!item.showerComet && !item.gaiaEnemy && item.y - item.r > H) {
         if (item.type === "energy") {
           combo = 1;
           comboTimer = 0;

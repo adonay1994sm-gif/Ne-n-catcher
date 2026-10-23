@@ -4924,7 +4924,7 @@ var NeonCampaign = (() => {
       }
       if (canAttack() && enemy.age >= enemy.nextFire && !lostHealth && Math.abs(item.y - enemy.holdY) <= 45 && Math.abs(item.s) <= 62 && (!gate || requestAttack(gate.tokens, { id: item.id, bornAt: enemy.bornAt }, gate.now))) {
         const sample = enemy.observation;
-        enemy.leadOffset = clamp7(sample.vx * profile2.leadSeconds, -110, 110);
+        enemy.leadOffset = clamp7(sample.vx * profile2.leadSeconds * (player.marked ? 1.5 : 1), -110, 110);
         enemy.observedTarget = Object.freeze({ ...sample });
         enemy.lockedTarget = Object.freeze({
           x: clamp7(sample.x + enemy.leadOffset, 24, enemy.width - 24),
