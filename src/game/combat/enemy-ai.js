@@ -30,9 +30,10 @@ function movement(enemy, ctx, rules) {
     }
     case 'escort': {
       const allies = ctx.allies.filter(ally => ally.id !== enemy.id);
-      if (!allies.length) return {x: enemy.x, y: enemy.y};
+      if (!allies.length) return {x: enemy.x, y: enemy.y, guardId: null};
       const weakest = allies.reduce((a, b) => (b.hp / b.maxHp < a.hp / a.maxHp ? b : a));
-      return {x: weakest.x + (enemy.x <= weakest.x ? -rules.sideOffset : rules.sideOffset), y: weakest.y + rules.depthOffset};
+      return {x: weakest.x + (enemy.x <= weakest.x ? -rules.sideOffset : rules.sideOffset), y: weakest.y + rules.depthOffset,
+        guardId: weakest.id};
     }
     case 'opportunist': return {x: enemy.x <= bounds.w / 2 ? bounds.w * .2 : bounds.w * .8, y: Math.max(120, player.y - rules.hover)};
     case 'ambusher': return enemy.y > rules.entryLine ? {x: player.x, y: player.y + rules.belowOffset} : {x: enemy.x, y: bounds.h - 100};
@@ -68,7 +69,7 @@ export function decideEnemyIntent(enemy, ctx) {
     ...(move.heading !== undefined ? {heading: move.heading} : {})};
   const ready = enemy.cooldowns.unique <= ctx.now ? 'unique' : enemy.cooldowns.basic <= ctx.now ? 'basic' : null;
   // La Escolta no dispara: su habilidad única (escudo) no gasta turno.
-  if (enemy.profile === 'escort') return {...intent, ability: ready === 'unique' ? 'unique' : null};
+  if (enemy.profile === 'escort') return {...intent, ability: ready === 'unique' ? 'unique' : null, guardId: move.guardId};
   if (!ready || !wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) {
     // Quien ya no ataca devuelve su turno para que otro pueda usarlo.
     releaseAttack(ctx.tokens, enemy.id);

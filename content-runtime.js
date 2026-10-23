@@ -28,6 +28,7 @@ var NeonCampaign = (() => {
     CLASSIC_WEAPON_RULES: () => CLASSIC_WEAPON_RULES,
     DIFFICULTY_MODES: () => DIFFICULTY_MODES,
     ENEMY_AI_PROFILES: () => ENEMY_AI_PROFILES,
+    GAIA_ENEMY_RULES: () => GAIA_ENEMY_RULES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
@@ -42,6 +43,7 @@ var NeonCampaign = (() => {
     advanceClassicScout: () => advanceClassicScout,
     advanceClassicWeapons: () => advanceClassicWeapons,
     advanceCometShower: () => advanceCometShower,
+    advanceGaiaEnemy: () => advanceGaiaEnemy,
     advanceGuardianAtlas: () => advanceGuardianAtlas,
     advanceShipBank: () => advanceShipBank,
     advanceShowerComet: () => advanceShowerComet,
@@ -71,6 +73,7 @@ var NeonCampaign = (() => {
     createCometShower: () => createCometShower,
     createCompletionJournal: () => createCompletionJournal,
     createFlightTutorial: () => createFlightTutorial,
+    createGaiaEnemy: () => createGaiaEnemy,
     createGuardianAtlas: () => createGuardianAtlas,
     createRelativeFlightInput: () => createRelativeFlightInput,
     createScrapLedger: () => createScrapLedger,
@@ -7603,9 +7606,13 @@ var NeonCampaign = (() => {
       }
       case "escort": {
         const allies = ctx.allies.filter((ally) => ally.id !== enemy.id);
-        if (!allies.length) return { x: enemy.x, y: enemy.y };
+        if (!allies.length) return { x: enemy.x, y: enemy.y, guardId: null };
         const weakest = allies.reduce((a, b) => b.hp / b.maxHp < a.hp / a.maxHp ? b : a);
-        return { x: weakest.x + (enemy.x <= weakest.x ? -rules.sideOffset : rules.sideOffset), y: weakest.y + rules.depthOffset };
+        return {
+          x: weakest.x + (enemy.x <= weakest.x ? -rules.sideOffset : rules.sideOffset),
+          y: weakest.y + rules.depthOffset,
+          guardId: weakest.id
+        };
       }
       case "opportunist":
         return { x: enemy.x <= bounds.w / 2 ? bounds.w * 0.2 : bounds.w * 0.8, y: Math.max(120, player.y - rules.hover) };
@@ -7650,7 +7657,7 @@ var NeonCampaign = (() => {
       ...move.heading !== void 0 ? { heading: move.heading } : {}
     };
     const ready = enemy.cooldowns.unique <= ctx.now ? "unique" : enemy.cooldowns.basic <= ctx.now ? "basic" : null;
-    if (enemy.profile === "escort") return { ...intent, ability: ready === "unique" ? "unique" : null };
+    if (enemy.profile === "escort") return { ...intent, ability: ready === "unique" ? "unique" : null, guardId: move.guardId };
     if (!ready || !wantsToAttack(enemy, ctx, rules) || !requestAttack(ctx.tokens, enemy, ctx.now)) {
       releaseAttack(ctx.tokens, enemy.id);
       return intent;
@@ -7661,6 +7668,127 @@ var NeonCampaign = (() => {
     const intents = /* @__PURE__ */ new Map();
     for (const enemy of [...enemies].sort((a, b) => a.bornAt - b.bornAt)) intents.set(enemy, decideEnemyIntent(enemy, ctx));
     return enemies.map((enemy) => intents.get(enemy));
+  }
+
+  // src/game/combat/gaia-enemies.js
+  var GAIA_ENEMY_RULES = Object.freeze({
+    tracker: Object.freeze({
+      profile: "ambusher",
+      hp: 2,
+      speed: 230,
+      warning: 0.4,
+      firstAttack: 1.2,
+      salvageRole: "interceptor",
+      basic: Object.freeze({ cooldown: 2.4, speed: 380, damage: 12 }),
+      unique: Object.freeze({ cooldown: 9, markSeconds: 4 })
+    }),
+    sower: Object.freeze({
+      profile: "miner",
+      hp: 3,
+      speed: 150,
+      warning: 0.3,
+      firstAttack: 1.2,
+      salvageRole: "raider",
+      basic: Object.freeze({ cooldown: 2.2 }),
+      unique: Object.freeze({ cooldown: 10, speed: 300 })
+    }),
+    aegis: Object.freeze({
+      profile: "escort",
+      hp: 3,
+      speed: 200,
+      warning: 0,
+      firstAttack: 1.5,
+      salvageRole: "scout",
+      unique: Object.freeze({ cooldown: 8, hits: 3 })
+    }),
+    alpha: Object.freeze({
+      profile: "hunter",
+      hp: 12,
+      speed: 170,
+      warning: 0.5,
+      firstAttack: 1.5,
+      clearance: 320,
+      salvageRole: "interceptor",
+      basic: Object.freeze({ cooldown: 1.6, speed: 360, spacing: 28, damage: 12 }),
+      unique: Object.freeze({ cooldown: 7, speed: 240, damage: 12 })
+    })
+  });
+  function createGaiaEnemy({ kind, x, y, now = 0 }) {
+    const rules = GAIA_ENEMY_RULES[kind];
+    if (!rules || ![x, y, now].every(Number.isFinite)) throw new RangeError("Invalid Gaia enemy spawn");
+    return {
+      kind,
+      profile: rules.profile,
+      hp: rules.hp,
+      maxHp: rules.hp,
+      bornAt: now,
+      cooldowns: { basic: now + rules.firstAttack, unique: now + rules.unique.cooldown * 0.5 },
+      telegraph: 0,
+      pending: null,
+      aim: null,
+      heading: void 0,
+      guardId: null
+    };
+  }
+  function moveToward(item, target, maxStep) {
+    const dx = target.x - item.x, dy = target.y - item.y, distance2 = Math.hypot(dx, dy);
+    if (distance2 <= maxStep || distance2 === 0) {
+      item.x = target.x;
+      item.y = target.y;
+      return;
+    }
+    item.x += dx / distance2 * maxStep;
+    item.y += dy / distance2 * maxStep;
+  }
+  function aimed(from, to, speed) {
+    const dx = to.x - from.x, dy = to.y - from.y, length = Math.hypot(dx, dy) || 1;
+    return { vx: dx / length * speed, vy: dy / length * speed };
+  }
+  function unleash(item, ability, emit) {
+    const { gaia } = item, rules = GAIA_ENEMY_RULES[gaia.kind];
+    if (gaia.kind === "tracker") {
+      if (ability === "unique") emit({ type: "mark", seconds: rules.unique.markSeconds });
+      else {
+        const from = { x: item.x, y: item.y - 30 };
+        emit({ type: "shot", ...from, ...aimed(from, gaia.aim, rules.basic.speed), damage: rules.basic.damage, sprite: "orb" });
+      }
+    }
+  }
+  function advanceGaiaEnemy(item, dt, ctx, emit) {
+    if (!(dt > 0)) return;
+    const { gaia } = item, rules = GAIA_ENEMY_RULES[gaia.kind];
+    if (gaia.pending) {
+      gaia.telegraph = Math.min(1, gaia.telegraph + dt / Math.max(rules.warning, 1e-6));
+      if (gaia.telegraph >= 1) {
+        const ability = gaia.pending;
+        unleash(item, ability, emit);
+        gaia.cooldowns[ability] = ctx.now + rules[ability].cooldown;
+        gaia.pending = null;
+        gaia.telegraph = 0;
+        gaia.aim = null;
+        releaseAttack(ctx.tokens, item.id);
+      }
+      return;
+    }
+    const view = {
+      id: item.id,
+      x: item.x,
+      y: item.y,
+      hp: item.hp,
+      maxHp: item.maxHp,
+      profile: gaia.profile,
+      cooldowns: gaia.cooldowns,
+      bornAt: gaia.bornAt,
+      ...gaia.heading !== void 0 ? { heading: gaia.heading } : {}
+    };
+    const intent = decideEnemyIntent(view, ctx);
+    if (intent.heading !== void 0) gaia.heading = intent.heading;
+    moveToward(item, { x: intent.targetX, y: intent.targetY }, rules.speed * dt);
+    if (intent.attack) {
+      gaia.pending = intent.ability;
+      gaia.aim = { x: ctx.player.x, y: ctx.player.y };
+      gaia.telegraph = 0;
+    }
   }
 
   // src/game/progression/sector-save.js

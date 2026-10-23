@@ -109,3 +109,11 @@ test('miner crosses the screen from side to side', () => {
   assert.ok(Math.max(...seen) > 620, `reaches the right edge (max ${Math.max(...seen)})`);
   assert.ok(seen.slice(30).some(x => x < 200), 'comes back to the left edge');
 });
+
+// Plan F3b, tarea 4: la Escolta dice a quién protege.
+test('the escort intent names the ally it guards', () => {
+  const weak = {id: 'weak', x: 200, y: 300, hp: 1, maxHp: 4}, strong = {id: 'strong', x: 500, y: 300, hp: 4, maxHp: 4};
+  const e = enemy('escort'), intent = decideEnemyIntent(e, ctx({allies: [e, weak, strong]}));
+  assert.equal(intent.guardId, 'weak');
+  assert.equal(decideEnemyIntent(e, ctx({allies: [e]})).guardId, null);
+});
