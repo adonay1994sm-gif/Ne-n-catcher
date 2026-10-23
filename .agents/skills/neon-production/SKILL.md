@@ -9,7 +9,7 @@ Leer `AGENTS.md`, `docs/CODEX_STATUS.md`, `docs/CODEX_NEXT_ORDERS.md` y el últi
 
 ## Ejecutar un incremento completo
 
-1. Comprobar rama, HEAD, cambios locales y remoto. Preservar avances posteriores; no descartar trabajo. Integrar sólo en `continuity-assets-audit-20261013`.
+1. Comprobar rama, HEAD, cambios locales y remoto. Preservar avances posteriores; no descartar trabajo. Integrar sólo en `main`, con PR desde la rama de trabajo.
 2. Elegir un defecto visible o audible y definir su reproducción, resultado esperado y criterio de cierre. Priorizar el nivel uno; no producir contenido masivo para compensar una integración defectuosa.
 3. Asignar agentes mediante las herramientas de colaboración disponibles. Comunicar propósito, rutas exclusivas, dependencias, entregable y pruebas. Mantener como máximo seis subagentes activos y un integrador; usar menos cuando sea suficiente. El catálogo de departamentos no equivale a procesos activos.
 4. Mantener un único escritor por archivo. Reservar fuentes compartidas, bundles, manifiestos, service worker y publicación al integrador salvo traspaso explícito. Enviar hallazgos de otras áreas a su propietario; no editar sus archivos.

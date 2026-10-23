@@ -46,9 +46,15 @@ Si algo falla por el cambio, se deshace ese commit y se anota.
 
 ## Ramas
 
-- Base de integración: `continuity-assets-audit-20261013`.
-- Rama de trabajo de publicación: `claude/preparar-publicacion-rtfl9q`.
-- **No tocar `main`**, ni el PR #3, ni hacer force push.
+- Rama principal: **`main`**. Desde el 23/10/2026 contiene todo el trabajo
+  (la V6 antigua queda en su historia). La web de prueba `neon-preview-deploy`
+  publica `main`.
+- Rama de trabajo: `claude/preparar-publicacion-rtfl9q`; se integra en `main`
+  con PR. Sin force push.
+- Las ramas antiguas (`continuity-assets-audit-20261013`, `v7-visual-upgrade`,
+  `pre-release-development`, `production-100-development`,
+  `visual-artpass-a-2026-10-13`) están retiradas; su historia sigue en los PRs
+  cerrados #1–#4 y #44–#45.
 
 ## Publicidad
 

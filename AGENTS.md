@@ -12,7 +12,7 @@ Continuar la implementación solicitada por el propietario, sin detenerla por un
 
 ## Preview Netlify publicada · 18/10/2026
 
-El proyecto aislado **neon-preview-deploy** publica la rama autorizada en `https://neon-preview-deploy.netlify.app/`. El indicador no secreto `NEON_PREVIEW_DEPLOY=1` está limitado en `netlify.toml` al bloque `context.continuity-assets-audit-20261013.environment`; no moverlo a `build.environment`. La puerta conserva validación de rama, `NETLIFY=true`, nombre exacto y host HTTPS exacto, por lo que main, PR, el sitio original y otros destinos siguen rechazados. Publicación funcional verificada en `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`, `dirty=false`, MotorV1false, Actions39140857478success. El smoke remoto canónico abre diez tramos, HUD, disparo y pausa sin errores; `preview-offline-smoke.cjs` conserva una deuda independiente porque todavía busca el selector de dos campañas retirado. Informe y evidencia en `docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md`.
+El proyecto aislado **neon-preview-deploy** publica la rama autorizada en `https://neon-preview-deploy.netlify.app/`. El indicador no secreto `NEON_PREVIEW_DEPLOY=1` está limitado en `netlify.toml` al bloque `context.main.environment` (antes `continuity-assets-audit-20261013`; cambio del propietario, 23/10/2026); no moverlo a `build.environment`. La puerta conserva validación de rama, `NETLIFY=true`, nombre exacto y host HTTPS exacto, por lo que otras ramas, PR, el sitio original y otros destinos siguen rechazados. Publicación funcional verificada en `4b4d4aa8d0fbd6628ce60e0e27e89b63b19a3c20`, `dirty=false`, MotorV1false, Actions39140857478success. El smoke remoto canónico abre diez tramos, HUD, disparo y pausa sin errores; `preview-offline-smoke.cjs` conserva una deuda independiente porque todavía busca el selector de dos campañas retirado. Informe y evidencia en `docs/production-reports/NETLIFY_ISOLATED_PREVIEW_FIX_2026-10-18.md`.
 
 ---
 
@@ -70,7 +70,7 @@ C9 vende la preparación del emisor por **24 de chatarra**, una célula de escud
 
 Introducir cruces rápidos y lluvia de cometas en **1.5 y 1.9**, con aviso ambiental de lluvia y corredor realmente transitable durante toda la trayectoria. El aviso ambiental no autoriza avisar cada disparo enemigo. Conservar las diez etapas, los **360 s**, sus offsets y checkpoints; no añadir otro reloj de ruta. El acercamiento continuo a Gaia y a los destinos posteriores conserva la dirección artística del viaje.
 
-Seguimiento único: `docs/production-tasks.json`, lote **MAIN_SALVAGE_COMBAT**. Las nuevas tareas empiezan **IN_REVIEW**, con verificación técnica, aceptación artística y prueba física separadas; no trasladar resultados anteriores al código actual. Motor V1 desactivado, rama `continuity-assets-audit-20261013`, PR #3, main, RAF único, recursos, guardados y límites de distribución permanecen protegidos. No producción, App Store, TestFlight, pagos reales ni gastos externos.
+Seguimiento único: `docs/production-tasks.json`, lote **MAIN_SALVAGE_COMBAT**. Las nuevas tareas empiezan **IN_REVIEW**, con verificación técnica, aceptación artística y prueba física separadas; no trasladar resultados anteriores al código actual. Motor V1 desactivado, rama `main`, RAF único, recursos, guardados y límites de distribución permanecen protegidos. No producción, App Store, TestFlight, pagos reales ni gastos externos.
 
 ---
 
@@ -146,7 +146,7 @@ Antes de editar: verificar árbol/HEAD/remoto, últimos `CODEX_STATUS`, `CODEX_N
 
 ## Límites y conservación
 
-- Integrar y publicar solamente en `continuity-assets-audit-20261013`. No modificar `main`, ni modificar/fusionar PR #3, ni force push, ni descartar trabajo válido.
+- Integrar y publicar solamente en `main`, con PR desde la rama de trabajo. Sin force push y sin descartar trabajo válido (orden del propietario, 23/10/2026).
 - **`USE_ENGINE_V1 = false`**. No activar/migrar/reemplazar/fusionar motores sin orden técnica del propietario. Conservar módulos del motor experimental y un único propietario de RAF en la campaña; no otro motor paralelo.
 - Preservar campañas y guardados existentes. Nueva campaña con claves/versiones propias y migraciones idempotentes con respaldo; sin equivalencias numéricas inventadas.
 - No producción, App Store, TestFlight, pagos/anuncios reales, compras, nuevas APIs facturables o secretos en repositorio/evidencias. Preview aislada solo con acceso/destino de pruebas autorizados y revisión/URL verificadas.
