@@ -6679,6 +6679,13 @@
     ui.install.classList.add("hidden");
   };
 
+  // Al girar el móvil a horizontal el aviso tapa el juego: la partida se pausa.
+  window.matchMedia?.("(orientation: landscape) and (pointer: coarse) and (max-height: 600px)")
+    ?.addEventListener?.("change", event => {
+      if (!event.matches) return;
+      resetGameInput();
+      if (state === "playing") pauseGame();
+    });
   document.addEventListener("visibilitychange", async () => {
     if (!document.hidden) {
       last = performance.now();

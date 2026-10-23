@@ -1073,3 +1073,15 @@ body.flight-mode :is(.hud small, #bannerSector, .hazard-warning small, .menu-top
   .campaign-progress-head span, .campaign-progress-head b, .sector-tab, .sector-place small, .sector-route small,
   .summary-grid span, #complete .summary-grid > div > span, #flightDestination, #flightWeaponDamage, .flight-pilot-hint, #classicC9 span,
   #classicMissile span, .ship-hangar-header small, #atlasPhase, .menu-chapter, #menu .menu-actions .secondary) { font-size: 10px; }
+
+/* En el navegador no se puede bloquear el giro: en un móvil en horizontal se
+   tapa el juego y la partida queda en pausa (propietario, 23/10/2026). */
+#rotateNotice{display:none}
+@media (orientation: landscape) and (pointer: coarse) and (max-height: 600px){
+  #rotateNotice{display:flex;position:fixed;inset:0;z-index:2147483000;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+    background:var(--ui-deep);color:var(--ui-paper);text-align:center}
+  #rotateNotice svg{color:var(--ui-cyan)}
+  #rotateNotice p{margin:0;font-size:22px;font-weight:750;letter-spacing:.04em}
+  #rotateNotice small{max-width:32ch;font-size:14px;color:var(--ui-muted)}
+}
