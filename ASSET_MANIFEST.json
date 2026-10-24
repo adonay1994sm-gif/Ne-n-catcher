@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 116,
-  "runtimeBytes": 18421220,
+  "assetCount": 118,
+  "runtimeBytes": 18500728,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1552,6 +1552,38 @@
       "origin": "arte del propietario (ChatGPT), ya en art-source/cronos-prime",
       "version": 1,
       "use": "Inicio de Chronos: haz pintado del disparo de Cronos Prime y de las descargas que le llevan la energía."
+    },
+    {
+      "id": "font-orbitron-v1",
+      "path": "assets/orbitron_wght_v1.ttf",
+      "master": "art-source/fonts/Orbitron[wght].ttf",
+      "dimensions": "",
+      "format": "ttf",
+      "size": 38576,
+      "sha256": "f42db2dd16e642258e35782916eceb1dcdbea06fb958d77ad71dc5963587e8fd",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "ACCEPTED",
+      "origin": "Google Fonts, licencia SIL Open Font License 1.1 (art-source/fonts/OFL-*.txt)",
+      "version": 1,
+      "use": "Letra de títulos, botones y cifras grandes (decisión del propietario, 24/10)."
+    },
+    {
+      "id": "font-exo2-v1",
+      "path": "assets/exo2_latin_wght_v1.woff2",
+      "master": "art-source/fonts/exo2_latin_wght.woff2",
+      "dimensions": "",
+      "format": "woff2",
+      "size": 40932,
+      "sha256": "3dad6838887f694f0dbdaf521bf6241e4b1e4dabfd859eda6af27a77e4ba871a",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "ACCEPTED",
+      "origin": "Google Fonts, licencia SIL Open Font License 1.1 (art-source/fonts/OFL-*.txt)",
+      "version": 1,
+      "use": "Letra de textos, diálogos y números pequeños (decisión del propietario, 24/10)."
     }
   ],
   "project": "NEON CRONIUM"

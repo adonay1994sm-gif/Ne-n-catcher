@@ -1,0 +1,13 @@
+{
+  "fecha": "2026-10-24",
+  "origen": "Google Fonts. Orbitron: archivo completo del repositorio google/fonts (ofl/orbitron), sin recortar porque su licencia reserva el nombre «Orbitron» para versiones modificadas. Exo 2: recorte latino (variable 400–900) que sirve fonts.gstatic.com.",
+  "licencia": "SIL Open Font License 1.1 (OFL-Orbitron.txt y OFL-Exo2.txt). Permite usarlas, incluirlas y vender el juego con ellas.",
+  "decision": "Propietario, 24/10/2026: Orbitron + Exo 2 (tarea dec-letra del tablero).",
+  "empaquetado": "scripts/build-font-assets.py",
+  "sha256": {
+    "Orbitron[wght].ttf": "f42db2dd16e642258e35782916eceb1dcdbea06fb958d77ad71dc5963587e8fd",
+    "exo2_latin_wght.woff2": "3dad6838887f694f0dbdaf521bf6241e4b1e4dabfd859eda6af27a77e4ba871a",
+    "OFL-Orbitron.txt": "ab609b0e110d622435ff337cdf233288556e011bbf9bd0550be98846c0630819",
+    "OFL-Exo2.txt": "7f95a8eeecc6904ffc81cd10cc8ebc7fcee72a67922924bf45f02dff03b88127"
+  }
+}
