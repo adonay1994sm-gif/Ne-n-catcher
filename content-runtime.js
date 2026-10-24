@@ -7283,8 +7283,8 @@ var NeonCampaign = (() => {
       y: mix2(mix2(FAR.y, HOVER.y, arrival2), EXIT.y, leaving) + hover - recoil,
       scale: mix2(mix2(FAR.scale, HOVER.scale, arrival2), EXIT.scale, leaving) * (1 + 0.08 * drain),
       alpha: elapsed < T.approach ? 0 : 1,
-      // Estela de motor al llegar y al irse.
-      trail: Math.max(1 - smooth3(elapsed, T.arrive - 0.3, T.arrive + 0.2), smooth3(elapsed, T.leave, T.leave + 0.3)) * (elapsed >= T.approach ? 1 : 0),
+      // Sin estela: llega y se va por un portal (propietario, 24/10/2026).
+      trail: 0,
       heading: elapsed < T.leave ? Math.atan2(HOVER.y - FAR.y, HOVER.x - FAR.x) : Math.atan2(EXIT.y - HOVER.y, EXIT.x - HOVER.x),
       // Onda al frenar en seco.
       brake: elapsed >= T.arrive && elapsed < T.arrive + 0.45 ? 1 - (elapsed - T.arrive) / 0.45 : 0,
@@ -7292,12 +7292,11 @@ var NeonCampaign = (() => {
       nameCard: smooth3(elapsed, T.arrive, T.arrive + 0.25) * (1 - smooth3(elapsed, T.beamStart - 0.6, T.beamStart - 0.2)),
       nameCardPunch: 1 - easeOut(elapsed, T.arrive, T.arrive + 0.3)
     };
-    const distantLight = elapsed >= T.omen && elapsed < T.approach + 0.6 ? {
-      x: FAR.x,
-      y: FAR.y,
-      alpha: smooth3(elapsed, T.omen, T.approach) * (1 - smooth3(elapsed, T.approach, T.approach + 0.6)),
-      size: 0.02 + 0.03 * smooth3(elapsed, T.omen, T.approach)
-    } : null;
+    const portal = (x, y, open) => ({ x, y, open, spin: elapsed * 0.35 });
+    const portals = [
+      portal(FAR.x, FAR.y, smooth3(elapsed, T.omen, T.approach) * (1 - smooth3(elapsed, T.approach + 0.9, T.approach + 1.5))),
+      portal(EXIT.x, EXIT.y, smooth3(elapsed, T.leave - 0.6, T.leave) * (1 - smooth3(elapsed, T.gone - 0.1, T.gone + 0.5)))
+    ].filter((item) => item.open > 0);
     const drainStreams = elapsed >= T.drain && elapsed < T.rupture ? station2.sectorLights.map((light, index) => ({
       angle: -Math.PI / 2 + (index + 0.5) * Math.PI * 2 / SECTORS2,
       alpha: smooth3(drain * SECTORS2, index - 0.3, index) * (1 - smooth3(drain * SECTORS2, index + 0.8, index + 1.4)) * (1 - smooth3(elapsed, T.beamStart, T.rupture)),
@@ -7337,7 +7336,7 @@ var NeonCampaign = (() => {
       clock: elapsed,
       camera,
       darkness,
-      distantLight,
+      portals,
       station: station2,
       prime,
       drainStreams,

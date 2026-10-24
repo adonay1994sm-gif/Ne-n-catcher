@@ -34,13 +34,20 @@ test('shot 1 keeps the station shot the owner liked: very close, then pulling ba
   assert.equal(pose(1).prime.visible, false); assert.equal(lit(pose(1)), 8);
 });
 
-test('Cronos Prime arrives from outside: a distant light, then it closes in and brakes over the tower', () => {
-  assert.equal(pose(T.omen - .1).distantLight, null);
-  assert.ok(pose(T.approach - .1).distantLight.alpha > .8, 'a violet light far above first');
+// Propietario, 24/10/2026: llega y se va por un portal dimensional, sin estela.
+test('Cronos Prime arrives through a dimensional portal, then it closes in and brakes over the tower', () => {
+  assert.deepEqual(pose(T.omen - .1).portals, []);
+  const opening = pose(T.approach - .1).portals;
+  assert.equal(opening.length, 1);
+  assert.ok(opening[0].open > .8 && Math.abs(opening[0].x - .72) < .01, 'a portal opens far above first');
+  assert.deepEqual(pose(T.arrive + .5).portals, [], 'it closes once Cronos is through');
   const far = pose(T.approach + .05).prime, near = pose(T.arrive).prime;
   assert.ok(far.visible && far.scale < .2 && far.x > .65, 'small and far at first');
   assert.ok(Math.abs(near.scale - 1) < .02 && Math.abs(near.x - .48) < .01 && Math.abs(near.y - .25) < .02);
-  assert.ok(far.trail > .9 && pose(T.arrive + .5).prime.trail === 0, 'engine trail only while moving');
+  for (let time = T.approach; time < T.gone; time += .1) assert.equal(pose(time).prime.trail, 0, 'no engine trail');
+  const exit = pose(T.leave + .3).portals;
+  assert.ok(exit.length === 1 && exit[0].open > .8 && exit[0].x > .9, 'it leaves through another portal');
+  assert.deepEqual(pose(T.gone + .6).portals, []);
   for (const frame of framesBetween(T.approach, T.drain)) assert.ok(F.idle.includes(frame), 'idle loop from the video while closing in');
   assert.ok(framesBetween(T.approach, T.drain).size >= 6, 'the idle loop is animated, not a still');
   assert.ok(pose(T.arrive + .05).prime.brake > .8, 'it brakes hard');

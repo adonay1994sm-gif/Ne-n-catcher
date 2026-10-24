@@ -477,6 +477,8 @@
     // Cronos Prime animado (40 fotogramas del vídeo) y la estación estallando.
     cronosPrimeVideo: loadSprite("assets/cronos_prime_video_atlas_v1.webp", false),
     cronosPrimeTrail: loadSprite("assets/cronos_prime_trail_v1.webp", false),
+    // Haz pintado del disparo (propietario, 24/10/2026: el de degradados se veía hecho por código).
+    cronosPrimeBeam: loadSprite("assets/cronos_prime_beam_v1.webp", false),
     chronosStationBurst: loadSprite("assets/chronos_station_burst_atlas_v1.webp", false),
     cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
@@ -2890,7 +2892,7 @@
     buildChronosStageGrid();
     // El inicio de Chronos empieza a cargar al abrir la ficha, no al despegar.
     if(pendingLevel===0)[SPRITES.chronosIntroStation,SPRITES.chronosIntroFragments,SPRITES.cronosPrimeVideo,
-      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeTrail].forEach(ensureSprite);
+      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeBeam].forEach(ensureSprite);
     overlay(ui.briefing);
   }
 
@@ -3055,7 +3057,7 @@
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
       ensureSprite(SPRITES.ch01);
       ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.cronosPrimeBeam);ensureSprite(SPRITES.chronosShockwave);
       ensureSprite(SPRITES.guardianAtlas);
     }
 
@@ -4920,18 +4922,25 @@
     ctx.save(); ctx.globalCompositeOperation = "multiply"; ctx.fillStyle = dark; ctx.fillRect(0, 0, W, H); ctx.restore();
   }
 
-  function drawCronosPrimeDistantLight(pose) {
-    // Antes de verse, Cronos Prime es una luz violeta que crece a lo lejos.
-    const light = pose.distantLight;
-    if (!light || light.alpha <= 0) return;
-    const x = light.x * W, y = light.y * H, radius = W * light.size;
-    const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 3);
-    glow.addColorStop(0, `rgba(255,255,255,${light.alpha.toFixed(3)})`);
-    glow.addColorStop(.25, `rgba(190,140,255,${(.7 * light.alpha).toFixed(3)})`); glow.addColorStop(1, "rgba(90,40,200,0)");
-    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = glow;
-    ctx.fillRect(x - radius * 3, y - radius * 3, radius * 6, radius * 6);
-    // Sin cruz de destello: su línea fina cruzaba el planeta (tablero, a06).
-    ctx.restore();
+  function drawCronosPortals(pose) {
+    // Portal dimensional por el que llega y se va Cronos Prime (propietario,
+    // 24/10/2026). Mientras llega su arte propio: la esfera de energía pintada
+    // (celda 0 de la hoja de efectos), achatada, girando y con un vacío oscuro.
+    const fx = SPRITES.cronosPrimeFx;
+    if (!pose.portals.length || !spriteReady(fx)) return;
+    for (const portal of pose.portals) {
+      const x = portal.x * W, y = portal.y * H, radius = W * .15 * portal.open;
+      ctx.save(); ctx.translate(x, y); ctx.scale(1, .62);
+      const void_ = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * .78);
+      void_.addColorStop(0, `rgba(6,2,18,${(.92 * portal.open).toFixed(3)})`); void_.addColorStop(1, "rgba(6,2,18,0)");
+      ctx.fillStyle = void_; ctx.beginPath(); ctx.arc(0, 0, radius * .78, 0, Math.PI * 2); ctx.fill();
+      ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, portal.open * 1.3);
+      ctx.rotate(portal.spin * Math.PI * 2);
+      drawAtlasCell(fx, 4, 0, -radius, -radius, radius * 2, radius * 2);
+      ctx.rotate(-portal.spin * Math.PI * 3.1); ctx.globalAlpha *= .55;
+      drawAtlasCell(fx, 4, 0, -radius * .8, -radius * .8, radius * 1.6, radius * 1.6);
+      ctx.restore();
+    }
   }
 
   function drawCronosPrime(pose) {
@@ -4939,28 +4948,6 @@
     if (!prime.visible || !spriteReady(atlas)) return;
     // El cuerpo llena ~94 % de la celda (fotogramas sacados del vídeo).
     const x = prime.x * W, y = prime.y * H, size = W * .52 * prime.scale;
-    // Estela de motor mientras viaja (al llegar y al irse).
-    if (prime.trail > 0 && spriteReady(SPRITES.cronosPrimeTrail)) {
-      // Estela pintada (baúl, encargo a06): 4 fotogramas verticales con el
-      // origen arriba en el centro; se orienta hacia detrás de la nave.
-      const trailAtlas = SPRITES.cronosPrimeTrail, back = prime.heading + Math.PI;
-      const length = size * 2.4 * prime.trail, width = length * .5;
-      const cell = trailAtlas.naturalWidth / 4, frame = settings.reduceEffects ? 0 : Math.floor(elapsed * 12) % 4;
-      ctx.save(); ctx.translate(x + Math.cos(back) * size * .18, y + Math.sin(back) * size * .18);
-      ctx.rotate(back - Math.PI / 2); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, prime.trail * 1.2);
-      ctx.drawImage(trailAtlas, frame * cell, 0, cell, trailAtlas.naturalHeight, -width / 2, 0, width, length);
-      ctx.restore();
-    } else if (prime.trail > 0) {
-      const length = size * 2.6 * prime.trail, back = prime.heading + Math.PI;
-      const tx = x + Math.cos(back) * length, ty = y + Math.sin(back) * length;
-      const trail = ctx.createLinearGradient(x, y, tx, ty);
-      trail.addColorStop(0, `rgba(215,190,255,${(.85 * prime.trail).toFixed(3)})`); trail.addColorStop(1, "rgba(120,60,255,0)");
-      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.strokeStyle = trail; ctx.lineCap = "round";
-      ctx.lineWidth = size * .22; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
-      ctx.lineWidth = size * .07; ctx.strokeStyle = `rgba(255,255,255,${(.7 * prime.trail).toFixed(3)})`;
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (tx - x) * .5, y + (ty - y) * .5); ctx.stroke();
-      ctx.restore();
-    }
     // Halo de carga detrás del cuerpo.
     if (prime.charge > 0) {
       const halo = ctx.createRadialGradient(x, y, 0, x, y, size * (.4 + .5 * prime.charge));
@@ -4988,31 +4975,24 @@
   }
 
   function drawCronosPrimeBeam(pose, targetX, targetY) {
-    // Disparo vertical del núcleo a la torre: halo, núcleo blanco y descargas.
-    const prime = pose.prime, beam = pose.beam, fx = SPRITES.cronosPrimeFx;
-    if (!prime.visible || beam.alpha <= 0) return;
+    // Disparo vertical del núcleo a la torre con el haz pintado (dos capas que
+    // se cruzan para que la espiral se mueva) y la esfera de energía al impactar.
+    const prime = pose.prime, beam = pose.beam, art = SPRITES.cronosPrimeBeam, fx = SPRITES.cronosPrimeFx;
+    if (!prime.visible || beam.alpha <= 0 || !spriteReady(art)) return;
     const fromX = prime.x * W, fromY = prime.y * H;
-    const length = Math.hypot(targetX - fromX, targetY - fromY), width = W * .16 * beam.width;
+    const length = Math.hypot(targetX - fromX, targetY - fromY), width = W * .22 * beam.width;
     ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = beam.alpha;
     ctx.translate(fromX, fromY); ctx.rotate(Math.atan2(targetY - fromY, targetX - fromX) - Math.PI / 2);
-    const halo = ctx.createLinearGradient(-width, 0, width, 0);
-    halo.addColorStop(0, "rgba(110,80,255,0)"); halo.addColorStop(.5, "rgba(170,140,255,.85)"); halo.addColorStop(1, "rgba(110,80,255,0)");
-    ctx.fillStyle = halo; ctx.fillRect(-width, 0, width * 2, length);
-    const core = ctx.createLinearGradient(-width * .14, 0, width * .14, 0);
-    core.addColorStop(0, "rgba(255,255,255,0)"); core.addColorStop(.5, "rgba(255,255,255,1)"); core.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = core; ctx.fillRect(-width * .14, 0, width * .28, length);
-    if (spriteReady(fx)) for (let index = 0; index < 3; index++) {
-      const bolt = W * .2 * beam.width;
-      ctx.save(); ctx.translate(0, length * (.25 + index * .3)); ctx.rotate(index % 2 ? .5 : -.5);
-      drawAtlasCell(fx, 4, 1 + (index + Math.floor(pose.clock * 20)) % 6, -bolt / 2, -bolt / 2, bolt, bolt);
-      ctx.restore();
-    }
+    ctx.drawImage(art, -width / 2, 0, width, length);
+    ctx.scale(-1, 1); ctx.globalAlpha = beam.alpha * (.45 + .25 * Math.sin(pose.clock * 30));
+    ctx.drawImage(art, -width * .6, 0, width * 1.2, length);
     ctx.restore();
-    const spot = W * .2 * beam.width;
-    const impact = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, spot);
-    impact.addColorStop(0, `rgba(255,255,255,${beam.alpha.toFixed(3)})`); impact.addColorStop(1, "rgba(140,150,255,0)");
-    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = impact;
-    ctx.fillRect(targetX - spot, targetY - spot, spot * 2, spot * 2); ctx.restore();
+    if (!spriteReady(fx)) return;
+    const spot = W * .3 * beam.width;
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = beam.alpha;
+    ctx.translate(targetX, targetY); ctx.rotate(pose.clock * 4);
+    drawAtlasCell(fx, 4, 0, -spot / 2, -spot / 2, spot, spot);
+    ctx.restore();
   }
 
   function drawChronosIntroStation(view, pose) {
@@ -5037,7 +5017,8 @@
         for (let index = 0; index < sectors.length; index++) {
           const from = -Math.PI / 2 + index * Math.PI * 2 / sectors.length, to = from + Math.PI * 2 / sectors.length;
           ctx.save(); wheelSpace(); ctx.rotate(-station.wheelAngle);
-          ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, unit * .62, from, to); ctx.closePath(); ctx.clip();
+          // Solo la rueda: con radio mayor, el sector apagado pintaba cuñas negras sobre el anillo y el espacio.
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, wheel / 2, from, to); ctx.closePath(); ctx.clip();
           ctx.rotate(station.wheelAngle);
           if (sectors[index] > 0) {
             ctx.globalCompositeOperation = "screen"; ctx.globalAlpha *= .4 * sectors[index];
@@ -5097,13 +5078,12 @@
         drawAtlasCell(fx, 4, 1 + (stream.cell + segment) % 6, -length * .35, -length * .6, length * .7, length * 1.2);
         ctx.restore();
       }
-      const [dx, dy] = at(stream.progress);
-      ctx.fillStyle = "#f4f0ff"; ctx.beginPath(); ctx.arc(dx, dy, 5, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
-    drawCronosPrimeDistantLight(pose);
-    drawCronosPrimeBeam(pose, x, y - unit * .3);
+    drawCronosPortals(pose);
     drawCronosPrime(pose);
+    // El haz sale del núcleo por encima del cuerpo, como en los fotogramas de disparo del vídeo.
+    drawCronosPrimeBeam(pose, x, y - unit * .3);
   }
 
   function drawChronosIntroOverlay(pose) {

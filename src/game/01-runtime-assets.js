@@ -254,6 +254,8 @@
     // Cronos Prime animado (40 fotogramas del vídeo) y la estación estallando.
     cronosPrimeVideo: loadSprite("assets/cronos_prime_video_atlas_v1.webp", false),
     cronosPrimeTrail: loadSprite("assets/cronos_prime_trail_v1.webp", false),
+    // Haz pintado del disparo (propietario, 24/10/2026: el de degradados se veía hecho por código).
+    cronosPrimeBeam: loadSprite("assets/cronos_prime_beam_v1.webp", false),
     chronosStationBurst: loadSprite("assets/chronos_station_burst_atlas_v1.webp", false),
     cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
