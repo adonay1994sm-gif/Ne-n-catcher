@@ -14,6 +14,152 @@ Versión para máquinas: https://raw.githubusercontent.com/adonay1994sm-gif/neon
 5. Respeta medidas, rejilla y fondo (transparente salvo que el prompt pida opaco): el juego recorta las celdas por tamaño exacto.
 6. Revisa esta lista cada 10 minutos. Antes de empezar un encargo, mira `catalog.json` del baúl: si ya hay un archivo con su id en `"encargo"`, no lo repitas.
 
+## Arte: pantalla de ajustes
+
+- **Id:** `art-ui-ajustes` · **Prioridad:** 1 · **Archivo:** `encargo-art-ui-ajustes-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Captura actual: docs/art/capturas-interfaz/ajustes.jpg
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña la PANTALLA DE AJUSTES. Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/ajustes.jpg .
+Textos y controles exactos: antetítulo SISTEMAS DE NAVE; título «Ajusta tu nave»; deslizadores Música (35 %), Efectos de sonido (70 %) y Sensibilidad de la nave (135 %); interruptores Disparo automático, Vibración y Reducir sacudidas y destellos, cada uno con su explicación corta; selectores Dificultad (FÁCIL / NORMAL / HARDCORE) y Calidad visual (BAJO / NORMAL / ALTO); botones REPETIR GUÍA INTERACTIVA DE VUELO y GUARDAR Y VOLVER (principal).
+Piezas que necesito además (imágenes 2 en adelante): carril del deslizador 900×40 px vacío y lleno (cian); tirador del deslizador 96×96 px; interruptor apagado y encendido 160×88 px; casilla de selector 420×110 px con su flecha.
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
+## Arte: pantalla de derrota
+
+- **Id:** `art-ui-derrota` · **Prioridad:** 1 · **Archivo:** `encargo-art-ui-derrota-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Captura actual: docs/art/capturas-interfaz/derrota.jpg
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña la PANTALLA DE DERROTA (cuando el casco llega a cero). Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/derrota.jpg . Tiene que doler un poco pero invitar a reintentar: acentos rojos y ámbar, nada de cian dominante.
+Textos y controles exactos: antetítulo EXPEDICIÓN INTERRUMPIDA; título «El casco ha cedido»; PUNTUACIÓN con la cifra grande (por ejemplo 12 480); aviso NUEVO RÉCORD; botones ▶ VER ANUNCIO Y REPARAR (anuncio), REINTENTAR SECTOR (principal) y MENÚ.
+Pieza que necesito además: un fondo de ventana con grietas y chispas rojas suaves en los bordes, 1080×1500 px, para esta pantalla.
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
+## Arte: hangar y Forja C9 (taller de Mira, con pestañas)
+
+- **Id:** `art-ui-hangar-taller` · **Prioridad:** 1 · **Archivo:** `encargo-art-ui-hangar-taller-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Capturas actuales: docs/art/capturas-interfaz/hangar.jpg y forja_c9.jpg. Va con hangar-diseno-gpt.
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña el TALLER DE MIRA, que junta el HANGAR y la FORJA C9 en una sola pantalla con pestañas (decisión del propietario). Capturas de cómo son hoy: hangar https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/hangar.jpg y Forja C9 https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/forja_c9.jpg . Fondo del taller ya entregado: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/taller-mira/taller_mira_v1.webp .
+Decidido: hay 10 naves (Astér de serie y una nueva por sector), cada una con habilidad exclusiva y habilidad última; se vuela con UNA arma, que se ve equipada con su nivel y solo se cambia aquí.
+Pestañas exactas: NAVES · ARMAS · FORJA. Arriba, cabecera con retrato de Mira, «MIRA · INGENIERÍA DE A BORDO» y la chatarra disponible. En el centro, la nave elegida grande.
+- NAVES: rejilla de 10 naves (las no conseguidas, en silueta con candado); ficha con EXCLUSIVA y ÚLTIMA; botón PILOTAR (principal).
+- ARMAS: arma equipada con su nivel (N1 a N4) y la lista de armas conseguidas; botón EQUIPAR.
+- FORJA: árbol de mejoras con las 12 insignias ya entregadas y su precio en chatarra; botón MEJORAR.
+Entrega: una MAQUETA de 1170×2532 px por pestaña (imágenes 1 a 3, con textos, solo referencia) y, aparte, las pestañas activa e inactiva sin texto (420×110 px) y la casilla de nave de la rejilla, normal, elegida y bloqueada (240×240 px). WebP con transparencia real.
+```
+
+## Arte: HUD de vuelo
+
+- **Id:** `art-ui-hud` · **Prioridad:** 1 · **Archivo:** `encargo-art-ui-hud-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Captura actual: docs/art/capturas-interfaz/hud_vuelo.jpg
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña el HUD DE VUELO (lo que se ve mientras se juega). Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/hud_vuelo.jpg . Tiene que estorbar lo mínimo: el centro de la pantalla es para la acción; todo va pegado arriba y abajo.
+Elementos exactos: barra superior con VIAJE S1, PUNTOS, CRONIUM 12/36, CASCO 100 % con su barrita y el refuerzo +30, y el botón de pausa; debajo una franja fina TRAMO 1/10 con el nombre del tramo; una placa de mensajes con retrato pequeño (ejemplo: «LIRA · CONTROL CHRONOS: Llévalo a Gaia.»); abajo, a la izquierda el aviso DESLIZA PARA MOVER y a la derecha los botones MISIL 3 (ámbar) y DISPARAR PHASER (cian).
+Piezas que necesito además: marco de la barra superior 1080×150 px; placa de mensajes 1000×130 px; botón de misil 220×150 px y botón de disparar 300×150 px, cada uno normal y pulsado; botón de pausa 110×110 px.
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
+## Arte: marco del botón principal más brillante
+
+- **Id:** `art-ui-marco-principal` · **Prioridad:** 1 · **Archivo:** `encargo-art-ui-marco-principal-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. El propietario quiere que el botón principal (JUGAR / CONTINUAR VIAJE) destaque sobre los demás.
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Necesito una variante del marco de botón ya entregado (https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/menu_marco_boton_v1.webp) para el BOTÓN PRINCIPAL, que tiene que destacar sobre el resto.
+Misma forma, misma medida (1328×200 px) y los mismos detalles en la misma posición, píxel a píxel, para que encaje en el juego.
+- Imagen 1, PRINCIPAL NORMAL: borde cian más grueso y luminoso en todo el contorno, un brillo suave hacia fuera, y el interior algo más claro con un leve degradado cian de abajo arriba.
+- Imagen 2, PRINCIPAL PULSADO: el mismo, con el interior más iluminado y el borde casi blanco.
+Sin texto, sin flecha, sin imagen dentro. Detalles solo en los 170 px de cada extremo; franja central lisa y repetible. WebP con transparencia real, bordes limpios y sin halo.
+```
+
+## Arte: marcos comunes de ventanas y botones secundarios
+
+- **Id:** `art-ui-paneles` · **Prioridad:** 1 · **Archivo:** `encargo-art-ui-paneles-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Piezas que comparten la pausa, los ajustes, la derrota, el fin de sector y la baliza.
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Necesito las PIEZAS COMUNES de todas las ventanas del juego (pausa, ajustes, derrota, fin de sector, baliza), en el mismo estilo que los botones. Todas sin texto, WebP con transparencia real, bordes limpios y sin halo.
+- Imagen 1, MARCO DE VENTANA: 1080×1500 px. Panel metálico oscuro con borde cian fino, esquinas cortadas con remaches y luces naranjas pequeñas. Interior azul noche casi opaco. Todos los detalles en los 200 px de cada esquina; los lados, lisos y repetibles (el juego lo estira a cualquier alto).
+- Imagen 2, BOTÓN SECUNDARIO: 1328×160 px, más discreto que el principal: marco grafito con borde cian apagado y sin barra cian a la izquierda. Detalles solo en los 150 px de cada extremo.
+- Imagen 3, BOTÓN SECUNDARIO PULSADO: el mismo, más iluminado.
+- Imagen 4, BOTÓN DE PELIGRO (SALIR AL MENÚ): como el secundario, con el borde rojo #ff6b8d apagado.
+- Imagen 5, BOTÓN DE ANUNCIO (VER ANUNCIO Y REPARAR): como el secundario, con el borde ámbar #ffb84d y un pequeño icono de reproducir a la izquierda.
+- Imagen 6, FICHA DE DATO: 400×220 px, casilla pequeña para PUNTOS / CASCO / COMBO, marco fino cian apagado.
+```
+
+## Arte: pantalla de pausa
+
+- **Id:** `art-ui-pausa` · **Prioridad:** 1 · **Archivo:** `encargo-art-ui-pausa-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Captura actual: docs/art/capturas-interfaz/pausa.jpg
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña la PANTALLA DE PAUSA. Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pausa.jpg . Se abre en mitad del vuelo: detrás se ve la partida congelada y oscurecida.
+Textos y controles que tiene que llevar, exactamente: antetítulo EXPEDICIÓN EN PAUSA; título «Un respiro en el viaje.»; botones CONTINUAR (principal), CONFIGURACIÓN, REINICIAR TRAMO y SALIR AL MENÚ (peligro).
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
+## Arte: ventana de la baliza de reaparición
+
+- **Id:** `art-ui-baliza` · **Prioridad:** 2 · **Archivo:** `encargo-art-ui-baliza-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Captura actual: docs/art/capturas-interfaz/baliza.jpg
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña la VENTANA DE LA BALIZA, que ofrece Mira en el tramo 6. Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/baliza.jpg . La baliza ya tiene arte en el juego (icono pequeño centrado en la captura).
+Textos y controles exactos: antetítulo C9 · MIRA; retrato pequeño de Mira; título «Baliza de reaparición»; texto «Si caes después de este punto, vuelves al tramo 6 en lugar de empezar el sector. Dura hasta completarlo.»; botones COMPRAR · 40 CHATARRA (principal) y SEGUIR SIN BALIZA.
+Pieza que necesito además: la baliza grande, 512×512 px, para el centro de la ventana.
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
+## Arte: pantalla Cómo jugar
+
+- **Id:** `art-ui-como-jugar` · **Prioridad:** 2 · **Archivo:** `encargo-art-ui-como-jugar-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Captura actual: docs/art/capturas-interfaz/como_jugar.jpg
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña la PANTALLA «APRENDE A PILOTAR», que se abre con «Cómo jugar» desde la pantalla principal. Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/como_jugar.jpg . Es una pantalla larga con desplazamiento.
+Contenido exacto: título «Aprende a pilotar»; apartados Pilotaje, Phaser, CRONIUM, Amenazas y Formación de basura espacial; bloque RECUPERACIÓN Y EQUIPO con Refuerzo de casco, Rayo tractor, Estabilizador, Sobrecarga, Drone de reparación y Phaser; botón ENTENDIDO (principal).
+Piezas que necesito además: 11 iconos de 128×128 px, uno por apartado, en una hoja de 6×2 celdas de 128 px (la última vacía).
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
+## Arte: pantalla de sector superado
+
+- **Id:** `art-ui-fin-sector` · **Prioridad:** 2 · **Archivo:** `encargo-art-ui-fin-sector-v1.png`
+- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Captura actual: docs/art/capturas-interfaz/sector_completado.jpg
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
+
+Rediseña la PANTALLA DE SECTOR SUPERADO (tras vencer al jefe). Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/sector_completado.jpg . Tiene que sentirse como una victoria.
+Textos y controles exactos: antetítulo SECTOR SUPERADO; una imagen del sector (ya existe en el juego, deja el hueco con un marco); título «Chronos → Gaia completado»; tres estrellas (llenas o vacías); fichas PUNTOS, CASCO y COMBO MÁX.; mensaje «Nuevo sector desbloqueado»; botones SIGUIENTE SECTOR (principal), REPETIR y MENÚ.
+Piezas que necesito además: estrella llena y vacía 128×128 px; marco para la imagen del sector 1000×560 px con el centro transparente.
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
 ## Arte · Nave 05 Arpón: colores nuevos
 
 - **Id:** `camp-art-nave-arpon` · **Prioridad:** 2 · **Archivo:** `encargo-camp-art-nave-arpon-v1.png`
