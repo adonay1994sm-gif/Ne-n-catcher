@@ -151,6 +151,9 @@ mensaje nuevo suyo, manda el mensaje nuevo; anótalo en «Aprendizajes».
 - Pantalla principal (24/10): los botones se abren con la historia (al
   empezar solo JUGAR y ajustes; hangar en el tramo 6; ruta y naves tras el
   jefe). No se programa hasta tener todas sus maquetas.
+- Arte con GPT (24/10): se sigue con el tablero, la lista pública de
+  encargos y el baúl. Nada de pagar la API de OpenAI ni de usar su
+  herramienta Lúmina: no volver a proponerlo.
 - Pendientes de su decisión:
   - el color de la Égida;
   - la pose del Fulminante de Atlas.
