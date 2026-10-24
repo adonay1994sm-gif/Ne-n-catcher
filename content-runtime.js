@@ -33,6 +33,7 @@ var NeonCampaign = (() => {
     GAIA_ENEMY_RULES: () => GAIA_ENEMY_RULES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     HORDE_RULES: () => HORDE_RULES,
+    MENU_UNLOCKS_KEY: () => MENU_UNLOCKS_KEY,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_CONSUMABLES: () => SCRAP_CONSUMABLES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
@@ -112,11 +113,14 @@ var NeonCampaign = (() => {
     hitCh03Satellite: () => hitCh03Satellite,
     hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
+    markMenuSeen: () => markMenuSeen,
+    menuView: () => menuView,
     moveFlightInput: () => moveFlightInput,
     normalizeChronosChapterCheckpoint: () => normalizeChronosChapterCheckpoint,
     normalizeChronosVoyageCheckpoint: () => normalizeChronosVoyageCheckpoint,
     normalizeClassicEquipment: () => normalizeClassicEquipment,
     normalizeDifficulty: () => normalizeDifficulty,
+    normalizeMenuUnlocks: () => normalizeMenuUnlocks,
     normalizeSectorSave: () => normalizeSectorSave,
     normalizeShipLoadout: () => normalizeShipLoadout,
     prepareClassicTwin: () => prepareClassicTwin,
@@ -3466,6 +3470,28 @@ var NeonCampaign = (() => {
   }
   function getVoyageStageRules(routeId, stageNumber) {
     return getVoyageFicha(routeId)?.encounters[stageNumber - 1] || null;
+  }
+
+  // src/game/progression/menu-unlocks.js
+  var MENU_UNLOCKS_KEY = "neonCronium.menu.v1";
+  var HANGAR_STAGE = 6;
+  var STAGE_COUNT = 10;
+  function normalizeMenuUnlocks(raw) {
+    const valid = Boolean(raw) && typeof raw === "object" && raw.version === 1 && typeof raw.hangar === "boolean" && raw.seen && typeof raw.seen === "object" && !Array.isArray(raw.seen);
+    return { version: 1, hangar: valid ? raw.hangar : false, seen: { hangar: valid && raw.seen.hangar === true } };
+  }
+  function menuView(sectorSave, unlocks) {
+    const run = sectorSave.run, done = sectorSave.sectors[1]?.completed === true;
+    const hangar = unlocks.hangar || done || (run?.stageNumber ?? 0) >= HANGAR_STAGE;
+    const play = run && run.stageNumber > 1 ? { label: "CONTINUAR VIAJE", detail: `SECTOR 1 \xB7 TRAMO ${run.stageNumber}/${STAGE_COUNT}${sectorSave.sectors[1]?.beacon ? " \xB7 CON BALIZA" : ""}` } : done ? { label: "REPETIR SECTOR", detail: "SECTOR 1 COMPLETADO" } : { label: "JUGAR", detail: "SECTOR 1 \xB7 CHRONOS \u2192 GAIA" };
+    return {
+      play,
+      hangar: { visible: hangar, isNew: hangar && !unlocks.seen.hangar },
+      unlocks: { version: 1, hangar, seen: { ...unlocks.seen } }
+    };
+  }
+  function markMenuSeen(unlocks, button) {
+    return { version: 1, hangar: unlocks.hangar, seen: { ...unlocks.seen, [button]: true } };
   }
 
   // src/game/progression/sector-map.js
@@ -8127,7 +8153,7 @@ var NeonCampaign = (() => {
   // src/game/progression/sector-save.js
   var SECTOR_SAVE_KEY = "neonCronium.sectors.v1";
   var SECTOR_COUNT = 10;
-  var STAGE_COUNT = 10;
+  var STAGE_COUNT2 = 10;
   var BEACON_STAGE = 6;
   var REVIVE_HULL = 25;
   var isInt = (value, low, high) => Number.isInteger(value) && value >= low && value <= high;
@@ -8146,7 +8172,7 @@ var NeonCampaign = (() => {
     let run = null;
     if (raw.run !== null) {
       const r = raw.run;
-      if (!r || typeof r !== "object" || !isInt(r.sector, 1, raw.unlocked) || !isInt(r.stageNumber, 1, STAGE_COUNT) || !Number.isFinite(r.stageHull) || r.stageHull <= 0 || r.stageHull > 100 || typeof r.reviveUsed !== "boolean") return null;
+      if (!r || typeof r !== "object" || !isInt(r.sector, 1, raw.unlocked) || !isInt(r.stageNumber, 1, STAGE_COUNT2) || !Number.isFinite(r.stageHull) || r.stageHull <= 0 || r.stageHull > 100 || typeof r.reviveUsed !== "boolean") return null;
       run = { sector: r.sector, stageNumber: r.stageNumber, stageHull: r.stageHull, reviveUsed: r.reviveUsed };
     }
     return { version: 1, unlocked: raw.unlocked, sectors, run };
@@ -8159,7 +8185,7 @@ var NeonCampaign = (() => {
   }
   function enterStage(save, stageNumber, hull) {
     if (!save.run) throw new Error("no sector run in progress");
-    if (!isInt(stageNumber, 1, STAGE_COUNT) || !Number.isFinite(hull)) throw new RangeError("invalid stage or hull");
+    if (!isInt(stageNumber, 1, STAGE_COUNT2) || !Number.isFinite(hull)) throw new RangeError("invalid stage or hull");
     const next = copy2(save);
     next.run.stageNumber = stageNumber;
     next.run.stageHull = Math.min(100, Math.max(1, hull));
