@@ -66,6 +66,14 @@ mensaje nuevo suyo, manda el mensaje nuevo; anótalo en «Aprendizajes».
   sin preguntar le costó días y enfado (24/10).
 - Si hay varias cosas abiertas, pregunta cuál va primero; si no, haz la que
   él acaba de pedir.
+- **Un paso cada vez, en orden (24/10).** Primero la interfaz: base visual,
+  pantalla principal, hangar, Forja C9, ajustes y HUD. Después el sector 1:
+  intro y tramos 1 a 10, hasta el jefe. Un paso no se abre hasta cerrar el
+  anterior; lo que surja de otro paso se apunta en él y espera.
+- **Antes de programar un paso, pregunta.** Repasa con él qué hay, qué le
+  sobra y qué le falta, y no toques código hasta tener sus respuestas.
+- **Sé sincero.** Si cree algo que no es así, o un plan suyo choca con otro,
+  díselo claro y con el motivo, aunque no sea lo que quiere oír.
 
 ## 4. Tiempo y dinero
 
@@ -89,8 +97,11 @@ mensaje nuevo suyo, manda el mensaje nuevo; anótalo en «Aprendizajes».
 ## 6. Cómo se trabaja en este proyecto
 
 - **Tablero:** https://claude.ai/artifact/MgQvtqMaPSzRLsTMJgCUMy.
+  - Está ordenado por pasos (campo `paso` de cada tarea); el paso en el que
+    se trabaja está en `tablero/estado.pasoActual`. Al cerrar un paso, se
+    cambia ahí.
   - Cada cambio se marca allí.
-  - Todo lo que se encuentra y no se termina se añade como tarea.
+  - Todo lo que se encuentra y no se termina se añade como tarea, en su paso.
   - Las decisiones se añaden con su recomendación.
 - **Arte con GPT:** él no copia prompts a mano. Cada necesidad visual va al
   tablero con su prompt (DESIGN.md §13). Después se regenera
@@ -149,6 +160,10 @@ mensaje nuevo suyo, manda el mensaje nuevo; anótalo en «Aprendizajes».
 Se añaden cada 3 días (tarea programada) y cuando él corrige algo. Va una
 línea por aprendizaje, con fecha, y lo más nuevo arriba. Si un aprendizaje
 cambia una regla de arriba, se edita la regla y aquí se deja constancia.
+
+- 24/10/2026: «el juego ha cambiado mucho». Antes de seguir, quiere un
+  repaso por partes y una cosa cada vez, dejando cada parte terminada. La
+  sección 3 recoge el orden y las reglas.
 
 - 24/10/2026: la dificultad nunca es llana. Enemigos con más vida y más daño
   tramo a tramo y sector a sector (al final del S1, 3 disparos te matan).
