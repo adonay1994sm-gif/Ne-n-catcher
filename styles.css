@@ -1259,3 +1259,8 @@ body.flight-mode #flightDock #flightDockContinue:active:not(:disabled)::before {
 #menu.menu-gpt .menu-new{display:none;position:absolute;z-index:2;top:9px;left:42px;padding:1px 6px;font:800 9px/1.4 var(--font-display);letter-spacing:.12em;color:#092028;background:#ffb84d}
 #menu.menu-gpt .menu-hangar-button.is-new .menu-new{display:block}
 #menu.menu-gpt .menu-hangar-button.is-new .menu-button-text{padding-top:14px}
+/* Revisión tras el PR #56: la regla del menú pesaba más que «reducir movimiento»
+   y que el foco de teclado de body.flight-mode (que pintaba el marco de marfil). */
+@media(prefers-reduced-motion:reduce){#menu.menu-gpt .menu-scene{animation:none}}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button):focus-visible{background:none}
+#menu.menu-gpt .menu-hangar-button:focus-visible::before{top:4px;bottom:4px;left:auto;right:52px}
