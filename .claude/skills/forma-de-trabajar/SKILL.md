@@ -103,6 +103,11 @@ mensaje nuevo suyo, manda el mensaje nuevo; anótalo en «Aprendizajes».
   - Cada cambio se marca allí.
   - Todo lo que se encuentra y no se termina se añade como tarea, en su paso.
   - Las decisiones se añaden con su recomendación.
+  - Se revisa sola tres veces al día (tarea programada «Revisión del
+    tablero», 8:39, 13:39 y 19:39 de Madrid): decisiones nuevas, entregas
+    del baúl y días que lleva quieta cada tarea. Lo atascado (3 días o más)
+    se anota en el campo `quieta` sin tocar `actualizado`, y se le avisa solo
+    si hay algo.
 - **Arte con GPT:** él no copia prompts a mano. Cada necesidad visual va al
   tablero con su prompt (DESIGN.md §13). Después se regenera
   `docs/art/ENCARGOS_GPT.md`, que GPT revisa solo cada 10 minutos.
