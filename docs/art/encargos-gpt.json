@@ -5,6 +5,14 @@
   "instrucciones": "Antes de nada lee GUIA_GPT.md (misma carpeta): explica el juego, los modelos de referencia y las reglas. Genera cada encargo por orden de prioridad (1 primero), súbelo al baúl con el nombre de \"archivo\" en la carpeta encargos/ y añádelo a catalog.json con el campo \"encargo\" igual a su id. Si un encargo pide varias imágenes, numéralas: encargo-<id>-v1-1.png, -2.png… No cambies medidas, rejilla ni el fondo que pide cada prompt. Revisa esta lista cada 10 minutos y no repitas un encargo que ya esté en catalog.json del baúl.",
   "encargos": [
     {
+      "id": "art-menu-capas",
+      "titulo": "Arte: capas limpias de la pantalla principal (fondo del hangar e imagen del botón)",
+      "prioridad": 1,
+      "archivo": "encargo-art-menu-capas-v1.png",
+      "prompt": "Partiendo de la maqueta de la pantalla principal de NEON CRONIUM que ya hicimos (hangar con la nave sobre la plataforma), necesito las capas por separado para montarla en el juego. Mismo estilo pintado, misma luz y misma paleta (azul noche, cian #a1eee8, ámbar cálido en las luces). Sin textos, sin botones, sin iconos, sin marcos de interfaz.\n\n1) FONDO DEL HANGAR — 1440×2560 px, vertical, opaco, WebP.\n- El hangar de la maqueta: compuerta abierta al espacio con la galaxia y el planeta con su estación, brazos robóticos a los lados y suelo mojado con reflejos.\n- La plataforma circular VACÍA, sin nave (el juego dibuja encima la nave que elija el jugador). Centro de la plataforma a 1/2 del ancho y al 38 % del alto.\n- Del 50 % del alto hacia abajo, el suelo se oscurece poco a poco hasta casi negro (#040c15), porque ahí van los textos y los botones.\n- Nada importante en los 140 px de arriba (ahí va el título).\n\n2) IMAGEN DEL BOTÓN «ENTRAR AL HANGAR» — 1328×280 px, WebP con transparencia real (canal alfa, no damero).\n- La nave blanca y cian aparcada en el hangar, vista de lado y en tres cuartos, ocupando el tercio derecho.\n- De derecha a izquierda se funde a transparente: el 55 % izquierdo totalmente transparente (ahí va el texto).\n- Bordes limpios, sin halo blanco.\n\n3) NAVE BLOQUEADA PARA «TUS NAVES» — 512×384 px, WebP con transparencia real.\n- Silueta oscura de una nave desconocida, con un leve contorno cian, centrada. Sirve para las naves que aún no tienes.\n\nNombres: menu_hangar_fondo_v1.webp, menu_boton_hangar_v1.webp, menu_nave_bloqueada_v1.webp.",
+      "nota": "El propietario se lo pide a GPT directamente (24/10). Se integra cuando estén todas las maquetas del menú. Originales a art-source/ui/menu-principal/."
+    },
+    {
       "id": "camp-art-portal-cronos",
       "titulo": "Arte · Portal dimensional de Cronos Prime (llegada y salida)",
       "prioridad": 1,
