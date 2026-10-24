@@ -1,0 +1,37 @@
+{
+  "fecha": "2026-10-24",
+  "origen": "GPT, a petición del propietario (encargo art-menu-capas del tablero). Las tres capas vienen del paquete NEON_CRONIUM_Capas_Hangar_v1.zip, con su informe de QA; las maquetas de botones las pasó el propietario por el chat (PNG con transparencia, guardadas en WebP sin pérdida).",
+  "archivos": [
+    {
+      "archivo": "menu_hangar_fondo_v1.webp",
+      "encargo": "art-menu-capas",
+      "nota": "1440×2560 opaco, calidad 92. Plataforma vacía; centro en x=720, y=973. Según su informe es una reconstrucción a partir de la maqueta, no una capa original separada."
+    },
+    {
+      "archivo": "menu_boton_hangar_v1.webp",
+      "encargo": "art-menu-capas",
+      "nota": "1328×280 con alfa; columnas 0–730 transparentes."
+    },
+    {
+      "archivo": "menu_nave_bloqueada_v1.webp",
+      "encargo": "art-menu-capas",
+      "nota": "512×384 con alfa."
+    },
+    {
+      "archivo": "maqueta_botones_lista_v1.webp",
+      "nota": "Maqueta: CONTINUAR VIAJE, ENTRAR AL HANGAR y RUTA a todo el ancho y engranaje. Lleva el texto pintado: solo es referencia."
+    },
+    {
+      "archivo": "maqueta_botones_rejilla_v1.webp",
+      "nota": "Maqueta: los mismos botones en rejilla de 2×2. Lleva el texto pintado: solo es referencia."
+    }
+  ],
+  "estado": "RECIBIDO; sin integrar en el juego hasta tener todas las maquetas del menú (decisión del propietario, 24/10)",
+  "sha256": {
+    "menu_hangar_fondo_v1.webp": "ebfe1cdb79902ac29c3af6ef22fa8fd634d57a5c606475a0e06a33135d25b394",
+    "menu_boton_hangar_v1.webp": "950e9a86fa9e9068c7fb59b1a2d0b1d2e03c743dab8550adaba13cae054e5454",
+    "menu_nave_bloqueada_v1.webp": "633e3c3eee5e0d093af4ed7e30b970b90d07f4a1349a35d0e7df587349af6513",
+    "maqueta_botones_lista_v1.webp": "577d5cebf5db16ca8711414a452ec45085348ea5d4a1033f42f47109cfe5c574",
+    "maqueta_botones_rejilla_v1.webp": "6da71cca583791b595c1c923a60626ca692950b0f76e3f1c4c5dd021d27a6232"
+  }
+}
