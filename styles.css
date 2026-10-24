@@ -1216,7 +1216,8 @@ body.flight-mode #flightDock #flightDockContinue:active:not(:disabled)::before {
 
 /* Orbitron solo en lo que va en mayúsculas (marca, botones y cifras): en minúsculas se lee mal.
    Los títulos de frase (h2) y los subtítulos de los botones siguen en Exo 2. */
-.menu-topline strong,.level-banner strong,.final b,.hud b,.primary,.secondary,.reward{font-family:var(--font-display)}
+.menu-topline strong,.level-banner strong,.hud b,.primary,.secondary,.reward{font-family:var(--font-display)}
+/* La puntuación final va en Exo 2: el cero de Orbitron lleva raya y, grande y solo, parece una señal de prohibido. */
 .primary small,.secondary small,.reward small{font-family:var(--font-body)}
 
 
