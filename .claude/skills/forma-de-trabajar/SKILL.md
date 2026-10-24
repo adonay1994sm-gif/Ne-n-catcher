@@ -143,6 +143,9 @@ mensaje nuevo suyo, manda el mensaje nuevo; anótalo en «Aprendizajes».
   - el hangar es una pestaña del taller de Mira.
 - La intro de Chronos usa un portal dimensional (no estela) y el haz pintado
   de Cronos Prime (24/10).
+- Pantalla principal (24/10): los botones se abren con la historia (al
+  empezar solo JUGAR y ajustes; hangar en el tramo 6; ruta y naves tras el
+  jefe). No se programa hasta tener todas sus maquetas.
 - Pendientes de su decisión:
   - el color de la Égida;
   - la pose del Fulminante de Atlas.
