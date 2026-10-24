@@ -24,14 +24,32 @@
     {
       "archivo": "maqueta_botones_rejilla_v1.webp",
       "nota": "Maqueta: los mismos botones en rejilla de 2×2. Lleva el texto pintado: solo es referencia."
+    },
+    {
+      "archivo": "menu_marco_boton_v1.webp",
+      "encargo": "art-menu-marcos",
+      "nota": "Marco de botón vacío (normal), 1328×200 con alfa. Del paquete art-menu-marcos-1.0.0 del baúl."
+    },
+    {
+      "archivo": "menu_marco_boton_pulsado_v1.webp",
+      "encargo": "art-menu-marcos",
+      "nota": "Marco de botón vacío (pulsado), 1328×200 con alfa. Del paquete art-menu-marcos-1.0.0 del baúl."
+    },
+    {
+      "archivo": "menu_marco_boton_bloqueado_v1.webp",
+      "encargo": "art-menu-marcos",
+      "nota": "Marco de botón vacío (bloqueado), 1328×200 con alfa. Del paquete art-menu-marcos-1.0.0 del baúl."
     }
   ],
-  "estado": "RECIBIDO; sin integrar en el juego hasta tener todas las maquetas del menú (decisión del propietario, 24/10)",
+  "estado": "INTEGRADO en la pantalla principal (scripts/build-menu-assets.py); aceptación artística pendiente del propietario",
   "sha256": {
     "menu_hangar_fondo_v1.webp": "ebfe1cdb79902ac29c3af6ef22fa8fd634d57a5c606475a0e06a33135d25b394",
     "menu_boton_hangar_v1.webp": "950e9a86fa9e9068c7fb59b1a2d0b1d2e03c743dab8550adaba13cae054e5454",
     "menu_nave_bloqueada_v1.webp": "633e3c3eee5e0d093af4ed7e30b970b90d07f4a1349a35d0e7df587349af6513",
     "maqueta_botones_lista_v1.webp": "577d5cebf5db16ca8711414a452ec45085348ea5d4a1033f42f47109cfe5c574",
-    "maqueta_botones_rejilla_v1.webp": "6da71cca583791b595c1c923a60626ca692950b0f76e3f1c4c5dd021d27a6232"
+    "maqueta_botones_rejilla_v1.webp": "6da71cca583791b595c1c923a60626ca692950b0f76e3f1c4c5dd021d27a6232",
+    "menu_marco_boton_v1.webp": "356f170b13489e44812424916ebb980cc6637b7c146625730807a88b4b60fc21",
+    "menu_marco_boton_pulsado_v1.webp": "24eb3fc648fe398c0fae5fa93e346c05457ceeb405b6aa10168aaff5388afd6e",
+    "menu_marco_boton_bloqueado_v1.webp": "723a4fd359af4be85d3dfefd0acee8a23f5f36e2c2eda6cc5f6ba66eb6dfe54d"
   }
 }
