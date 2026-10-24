@@ -182,6 +182,28 @@ test('stages that open with new Gaia enemies play without errors', () => {
 // Tarea 4: revivir al 25 % una vez por intento; al volver a caer, tramo 1.
 const rewardShown = w => !w.document.getElementById('reward').classList.contains('hidden');
 
+test('a new player only has JUGAR: the hangar button stays hidden', () => {
+  const {w} = harness({unlocked: '1'});
+  assert.equal(w.document.getElementById('openHangar').classList.contains('hidden'), true);
+  assert.equal(w.document.getElementById('playLabel').textContent, 'JUGAR');
+});
+
+// Revisión tras el PR #56: recorre el juego real, no solo menuView.
+test('the hangar opens at stage 6 and stays in the menu after dying', () => {
+  const {w, T} = harness();
+  T.startSector('S1');
+  T.toStage(6);
+  T.finishGame('hull');
+  T.goHome();
+  const button = w.document.getElementById('openHangar');
+  assert.equal(w.document.getElementById('playLabel').textContent, 'JUGAR');
+  assert.equal(button.classList.contains('hidden'), false);
+  assert.equal(button.classList.contains('is-new'), true);
+  button.click();
+  assert.equal(JSON.parse(w.localStorage.getItem('neonCronium.menu.v1')).seen.hangar, true);
+  assert.equal(button.classList.contains('is-new'), false);
+});
+
 test('dying in the sector saves a restart at stage 1', () => {
   const {w, T} = harness();
   startAt(T, 3);
