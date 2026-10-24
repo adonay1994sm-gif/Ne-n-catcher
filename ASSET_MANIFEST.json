@@ -1,8 +1,8 @@
 {
   "manifestVersion": 2,
   "buildVersion": "7.2.0",
-  "assetCount": 115,
-  "runtimeBytes": 18273468,
+  "assetCount": 116,
+  "runtimeBytes": 18421220,
   "audit": {
     "reviewed": 97,
     "READY": 58,
@@ -1536,6 +1536,22 @@
       "origin": "GPT image generation uploaded to the asset vault; resized to runtime size",
       "version": 1,
       "use": "Forja C9: 12 insignias del árbol en 6x2 celdas de 128 (munición, recarga, escudo, misiles, refrigeración, precisión; munición II, recarga II, refrigeración II, blindaje II, imán, sobrecarga)."
+    },
+    {
+      "id": "cronos-prime-beam-v1",
+      "path": "assets/cronos_prime_beam_v1.webp",
+      "master": "art-source/cronos-prime/cronos_prime_f1_haz_v1.webp",
+      "dimensions": "176x1226",
+      "format": "webp-alpha",
+      "size": 147752,
+      "sha256": "5c67c9ba4a3dfa5713c700f205b1fd7c3de3a9b4daf78cde1c3116949752e068",
+      "activeRuntime": true,
+      "precache": true,
+      "status": "IN_REVIEW",
+      "artisticAcceptance": "PENDING_OWNER",
+      "origin": "arte del propietario (ChatGPT), ya en art-source/cronos-prime",
+      "version": 1,
+      "use": "Inicio de Chronos: haz pintado del disparo de Cronos Prime y de las descargas que le llevan la energía."
     }
   ],
   "project": "NEON CRONIUM"

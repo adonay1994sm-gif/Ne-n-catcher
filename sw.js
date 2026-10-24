@@ -30,6 +30,7 @@ const CORE = [
   "assets/sector_beacon_atlas_v1.webp",
   "assets/workshop_mira_bg_v1.webp",
   "assets/skill_tree_icons_v1.webp",
+  "assets/cronos_prime_beam_v1.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",
