@@ -1,5 +1,13 @@
 const CACHE = "neon-cronium-pre-release-7-2-0-orbital-hud-2";
 const CORE = [
+  "assets/menu_hangar_bg_v1.webp",
+  "assets/menu_frame_v1.webp",
+  "assets/menu_frame_pressed_v1.webp",
+  "assets/menu_hangar_button_v1.webp",
+  "assets/menu_arrow_v1.webp",
+  "assets/menu_gear_v1.webp",
+  "assets/orbitron_wght_v1.ttf",
+  "assets/exo2_latin_wght_v1.woff2",
   "assets/combat_sfx_atlas_v2.m4a",
   "assets/combat_sfx_atlas_v2.json",
   "assets/cronium_energy_atlas_v2.webp",
@@ -28,6 +36,9 @@ const CORE = [
   "assets/atlas_fury_atlas_v1.webp",
   "assets/atlas_escorts_atlas_v1.webp",
   "assets/sector_beacon_atlas_v1.webp",
+  "assets/workshop_mira_bg_v1.webp",
+  "assets/skill_tree_icons_v1.webp",
+  "assets/cronos_prime_beam_v1.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",

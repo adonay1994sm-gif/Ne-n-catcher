@@ -316,7 +316,12 @@
       const grid=document.createElement('div');grid.className='c9-upgrades';
       section.append(heading,help,grid);sections[id]={section,grid};
       const link=document.createElement('button');link.type='button';link.textContent=label.slice(5);link.setAttribute('aria-controls',section.id);
-      link.onclick=()=>section.scrollIntoView?.({behavior:settings.reduceEffects?'instant':'smooth',block:'start'});
+      link.onclick=()=>{
+        for(const other of nav.querySelectorAll('button'))other.removeAttribute('aria-current');
+        link.setAttribute('aria-current','true');
+        section.scrollIntoView?.({behavior:settings.reduceEffects?'instant':'smooth',block:'start'});
+      };
+      if(id==='arsenal')link.setAttribute('aria-current','true');
       nav.append(link);oldGrid.before(section);
     }
     ui.c9Balance.closest('.cockpit-ledger').after(nav);
@@ -406,7 +411,11 @@
     if(!checkpoint)return false;
     if(isSectorRun()){
       const save=loadSectorSave();
-      return Boolean(save.run)&&saveSector(NeonCampaign.enterStage(save,checkpoint.stageNumber,hull));
+      if(!save.run)return false;
+      const next=NeonCampaign.enterStage(save,checkpoint.stageNumber,hull),saved=saveSector(next);
+      // El hangar queda abierto al pasar por el tramo 6, aunque luego mueras.
+      if(saved)rememberMenuUnlocks(NeonCampaign.menuView(next,loadMenuUnlocks()).unlocks);
+      return saved;
     }
     if(classicSideVoyage)return saveSideVoyage(checkpoint,completed);
     if(completionPersistenceBlocked&&!recoverCampaignCompletion())return false;
@@ -1221,6 +1230,18 @@
   function loadSectorSave() {
     return NeonCampaign.normalizeSectorSave(storage.getJSON(NeonCampaign.SECTOR_SAVE_KEY,null))||NeonCampaign.createSectorSave();
   }
+  function loadMenuUnlocks() {
+    return NeonCampaign.normalizeMenuUnlocks(storage.getJSON(NeonCampaign.MENU_UNLOCKS_KEY,null));
+  }
+  function rememberMenuUnlocks(unlocks) {
+    const stored=loadMenuUnlocks();
+    if(unlocks.hangar!==stored.hangar||unlocks.seen.hangar!==stored.seen.hangar)storage.setJSON(NeonCampaign.MENU_UNLOCKS_KEY,unlocks);
+  }
+  // Al abrir el hangar por primera vez desaparece el aviso NUEVO.
+  function markHangarSeen() {
+    rememberMenuUnlocks(NeonCampaign.markMenuSeen(loadMenuUnlocks(),"hangar"));
+    $("openHangar")?.classList.remove("is-new");
+  }
   function saveSector(save) {
     const saved=storage.setJSON(NeonCampaign.SECTOR_SAVE_KEY,save);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
@@ -1343,7 +1364,9 @@
   }
 
   function beginAtlasEncounter() {
-    if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || collected < level().goal || state !== "playing") return false;
+    // La ruta ya exige la cuota de su último tramo (canFinish); la del nivel
+    // antiguo (36) no vale aquí: con 33 en el sector, Atlas no llegaba nunca.
+    if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || state !== "playing") return false;
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});resetAtlasFury();
@@ -1518,8 +1541,8 @@
     const openButton = document.createElement("button");
     openButton.id = "openHangar";
     openButton.type = "button";
-    openButton.className = "secondary";
-    openButton.innerHTML = '<span class="button-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 4 7 5 8-7-2-2 3-2-3-7 2 5-8Z"/></svg></span>HANGAR';
+    openButton.className = "secondary menu-hangar-button hidden";
+    openButton.innerHTML = '<span class="menu-button-text"><span>ENTRAR AL HANGAR</span><small>PERSONALIZA · EQUIPA · MEJORA</small></span><b class="menu-new" aria-label="Nuevo">NUEVO</b>';
     menuActions.classList.add("has-hangar");
     menuActions.append(openButton);
 
@@ -1636,8 +1659,17 @@
     ui.totalStars.textContent=`${stars}/30`;
     ui.campaignPercent.textContent=`${percent}%`;
     ui.campaignFill.style.width=`${percent}%`;
-    ui.playLabel.textContent=run?"CONTINUAR":done?"REPETIR":"JUGAR";
-    ui.playSector.textContent=run?`SECTOR 1 · TRAMO ${run.stageNumber}/10${save.sectors[1]?.beacon?" · CON BALIZA":""}`:done?"SECTOR 1 COMPLETADO":"SECTOR 1 · CHRONOS → GAIA";
+    // Los botones se abren con la historia (propietario, 24/10/2026); en
+    // pruebas (?dev=1) el hangar está siempre a mano.
+    const view=NeonCampaign.menuView(save,loadMenuUnlocks());
+    rememberMenuUnlocks(view.unlocks);
+    ui.playLabel.textContent=view.play.label;
+    ui.playSector.textContent=view.play.detail;
+    const hangarButton=$("openHangar");
+    if(hangarButton){
+      hangarButton.classList.toggle("hidden",!view.hangar.visible&&!DEV);
+      hangarButton.classList.toggle("is-new",view.hangar.isNew);
+    }
     ui.campaignNodes.innerHTML=Array.from({length:10},(_,index)=>
       `<span class="${index+1<stage?"done ":""}${index+1===stage?"current":""}"></span>`).join("");
     buildLevelGrid();
@@ -1897,7 +1929,7 @@
     buildChronosStageGrid();
     // El inicio de Chronos empieza a cargar al abrir la ficha, no al despegar.
     if(pendingLevel===0)[SPRITES.chronosIntroStation,SPRITES.chronosIntroFragments,SPRITES.cronosPrimeVideo,
-      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeTrail].forEach(ensureSprite);
+      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeBeam].forEach(ensureSprite);
     overlay(ui.briefing);
   }
 
@@ -2062,7 +2094,7 @@
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
       ensureSprite(SPRITES.ch01);
       ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.cronosPrimeBeam);ensureSprite(SPRITES.chronosShockwave);
       ensureSprite(SPRITES.guardianAtlas);
     }
 
@@ -2237,7 +2269,7 @@
   function completeLevel() {
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
-    if (isAtlasMission() && collected >= level().goal) {
+    if (isAtlasMission()) {
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }

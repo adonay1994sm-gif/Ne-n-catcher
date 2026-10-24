@@ -477,6 +477,8 @@
     // Cronos Prime animado (40 fotogramas del vídeo) y la estación estallando.
     cronosPrimeVideo: loadSprite("assets/cronos_prime_video_atlas_v1.webp", false),
     cronosPrimeTrail: loadSprite("assets/cronos_prime_trail_v1.webp", false),
+    // Haz pintado del disparo (propietario, 24/10/2026: el de degradados se veía hecho por código).
+    cronosPrimeBeam: loadSprite("assets/cronos_prime_beam_v1.webp", false),
     chronosStationBurst: loadSprite("assets/chronos_station_burst_atlas_v1.webp", false),
     cronosPrimeFx: loadSprite("assets/cronos_prime_fx_atlas_v1.webp", false),
     flightSpace: loadSprite("assets/chronos_flight_space_v1.webp", false),
@@ -1304,7 +1306,12 @@
       const grid=document.createElement('div');grid.className='c9-upgrades';
       section.append(heading,help,grid);sections[id]={section,grid};
       const link=document.createElement('button');link.type='button';link.textContent=label.slice(5);link.setAttribute('aria-controls',section.id);
-      link.onclick=()=>section.scrollIntoView?.({behavior:settings.reduceEffects?'instant':'smooth',block:'start'});
+      link.onclick=()=>{
+        for(const other of nav.querySelectorAll('button'))other.removeAttribute('aria-current');
+        link.setAttribute('aria-current','true');
+        section.scrollIntoView?.({behavior:settings.reduceEffects?'instant':'smooth',block:'start'});
+      };
+      if(id==='arsenal')link.setAttribute('aria-current','true');
       nav.append(link);oldGrid.before(section);
     }
     ui.c9Balance.closest('.cockpit-ledger').after(nav);
@@ -1394,7 +1401,11 @@
     if(!checkpoint)return false;
     if(isSectorRun()){
       const save=loadSectorSave();
-      return Boolean(save.run)&&saveSector(NeonCampaign.enterStage(save,checkpoint.stageNumber,hull));
+      if(!save.run)return false;
+      const next=NeonCampaign.enterStage(save,checkpoint.stageNumber,hull),saved=saveSector(next);
+      // El hangar queda abierto al pasar por el tramo 6, aunque luego mueras.
+      if(saved)rememberMenuUnlocks(NeonCampaign.menuView(next,loadMenuUnlocks()).unlocks);
+      return saved;
     }
     if(classicSideVoyage)return saveSideVoyage(checkpoint,completed);
     if(completionPersistenceBlocked&&!recoverCampaignCompletion())return false;
@@ -2209,6 +2220,18 @@
   function loadSectorSave() {
     return NeonCampaign.normalizeSectorSave(storage.getJSON(NeonCampaign.SECTOR_SAVE_KEY,null))||NeonCampaign.createSectorSave();
   }
+  function loadMenuUnlocks() {
+    return NeonCampaign.normalizeMenuUnlocks(storage.getJSON(NeonCampaign.MENU_UNLOCKS_KEY,null));
+  }
+  function rememberMenuUnlocks(unlocks) {
+    const stored=loadMenuUnlocks();
+    if(unlocks.hangar!==stored.hangar||unlocks.seen.hangar!==stored.seen.hangar)storage.setJSON(NeonCampaign.MENU_UNLOCKS_KEY,unlocks);
+  }
+  // Al abrir el hangar por primera vez desaparece el aviso NUEVO.
+  function markHangarSeen() {
+    rememberMenuUnlocks(NeonCampaign.markMenuSeen(loadMenuUnlocks(),"hangar"));
+    $("openHangar")?.classList.remove("is-new");
+  }
   function saveSector(save) {
     const saved=storage.setJSON(NeonCampaign.SECTOR_SAVE_KEY,save);
     if(!saved)toast("No se pudo guardar este tramo. El guardado anterior sigue conservado.");
@@ -2331,7 +2354,9 @@
   }
 
   function beginAtlasEncounter() {
-    if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || collected < level().goal || state !== "playing") return false;
+    // La ruta ya exige la cuota de su último tramo (canFinish); la del nivel
+    // antiguo (36) no vale aquí: con 33 en el sector, Atlas no llegaba nunca.
+    if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || state !== "playing") return false;
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});resetAtlasFury();
@@ -2506,8 +2531,8 @@
     const openButton = document.createElement("button");
     openButton.id = "openHangar";
     openButton.type = "button";
-    openButton.className = "secondary";
-    openButton.innerHTML = '<span class="button-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 4 7 5 8-7-2-2 3-2-3-7 2 5-8Z"/></svg></span>HANGAR';
+    openButton.className = "secondary menu-hangar-button hidden";
+    openButton.innerHTML = '<span class="menu-button-text"><span>ENTRAR AL HANGAR</span><small>PERSONALIZA · EQUIPA · MEJORA</small></span><b class="menu-new" aria-label="Nuevo">NUEVO</b>';
     menuActions.classList.add("has-hangar");
     menuActions.append(openButton);
 
@@ -2624,8 +2649,17 @@
     ui.totalStars.textContent=`${stars}/30`;
     ui.campaignPercent.textContent=`${percent}%`;
     ui.campaignFill.style.width=`${percent}%`;
-    ui.playLabel.textContent=run?"CONTINUAR":done?"REPETIR":"JUGAR";
-    ui.playSector.textContent=run?`SECTOR 1 · TRAMO ${run.stageNumber}/10${save.sectors[1]?.beacon?" · CON BALIZA":""}`:done?"SECTOR 1 COMPLETADO":"SECTOR 1 · CHRONOS → GAIA";
+    // Los botones se abren con la historia (propietario, 24/10/2026); en
+    // pruebas (?dev=1) el hangar está siempre a mano.
+    const view=NeonCampaign.menuView(save,loadMenuUnlocks());
+    rememberMenuUnlocks(view.unlocks);
+    ui.playLabel.textContent=view.play.label;
+    ui.playSector.textContent=view.play.detail;
+    const hangarButton=$("openHangar");
+    if(hangarButton){
+      hangarButton.classList.toggle("hidden",!view.hangar.visible&&!DEV);
+      hangarButton.classList.toggle("is-new",view.hangar.isNew);
+    }
     ui.campaignNodes.innerHTML=Array.from({length:10},(_,index)=>
       `<span class="${index+1<stage?"done ":""}${index+1===stage?"current":""}"></span>`).join("");
     buildLevelGrid();
@@ -2885,7 +2919,7 @@
     buildChronosStageGrid();
     // El inicio de Chronos empieza a cargar al abrir la ficha, no al despegar.
     if(pendingLevel===0)[SPRITES.chronosIntroStation,SPRITES.chronosIntroFragments,SPRITES.cronosPrimeVideo,
-      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeTrail].forEach(ensureSprite);
+      SPRITES.chronosStationBurst,SPRITES.cronosPrimeFx,SPRITES.cronosPrimeBeam].forEach(ensureSprite);
     overlay(ui.briefing);
   }
 
@@ -3050,7 +3084,7 @@
       ensureSprite(SPRITES.flightKit);ensureSprite(SPRITES.flightSpace);
       ensureSprite(SPRITES.ch01);
       ensureSprite(SPRITES.chronosDestruction);ensureSprite(SPRITES.chronosShockwave);
-      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.chronosShockwave);
+      ensureSprite(SPRITES.chronosIntroStation);ensureSprite(SPRITES.chronosIntroFragments);ensureSprite(SPRITES.cronosPrimeVideo);ensureSprite(SPRITES.chronosStationBurst);ensureSprite(SPRITES.cronosPrimeFx);ensureSprite(SPRITES.cronosPrimeBeam);ensureSprite(SPRITES.chronosShockwave);
       ensureSprite(SPRITES.guardianAtlas);
     }
 
@@ -3225,7 +3259,7 @@
   function completeLevel() {
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
-    if (isAtlasMission() && collected >= level().goal) {
+    if (isAtlasMission()) {
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }
@@ -4624,7 +4658,8 @@
     }
 
     if(classicFlightView)clearCometCorridor();
-    if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
+    // En los viajes con ficha (el sector) la ruta ya exige la cuota de su último tramo.
+    if(classicFlightView?.canFinish && (classicSideVoyage||collected>=level().goal))completeLevel();
     checkSupplyFailure();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
@@ -4645,7 +4680,7 @@
     if(cue&&time<cue.at+cue.duration) {
       const alpha=Math.min(1,(time-cue.at)/.25,(cue.at+cue.duration-time)/.25);
       ctx.globalAlpha=Math.max(0,alpha);ctx.textAlign="center";ctx.textBaseline="alphabetic";
-      ctx.font="700 24px 'Trebuchet MS', sans-serif";
+      ctx.font="700 24px 'Exo 2', sans-serif";
       const words=cue.text.split(" "),lines=[""];
       for(const word of words) {
         const next=lines[lines.length-1]?`${lines[lines.length-1]} ${word}`:word;
@@ -4656,9 +4691,9 @@
       const top=H*.70-30,bottom=H*.70+34+(lines.length-1)*30+14;
       ctx.fillStyle="#061521e8";ctx.fillRect(W*.05,top,W*.90,bottom-top);
       ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=6;
-      ctx.font="800 20px 'Trebuchet MS', sans-serif";ctx.fillStyle="#a1eee8";
+      ctx.font="800 20px 'Exo 2', sans-serif";ctx.fillStyle="#a1eee8";
       ctx.fillText(cue.speaker,W/2,H*.70);
-      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2f0e6";
+      ctx.font="700 24px 'Exo 2', sans-serif";ctx.fillStyle="#f2f0e6";
       lines.forEach((line,index)=>ctx.fillText(line,W/2,H*.70+34+index*30));
     }
     ctx.restore();
@@ -4915,18 +4950,25 @@
     ctx.save(); ctx.globalCompositeOperation = "multiply"; ctx.fillStyle = dark; ctx.fillRect(0, 0, W, H); ctx.restore();
   }
 
-  function drawCronosPrimeDistantLight(pose) {
-    // Antes de verse, Cronos Prime es una luz violeta que crece a lo lejos.
-    const light = pose.distantLight;
-    if (!light || light.alpha <= 0) return;
-    const x = light.x * W, y = light.y * H, radius = W * light.size;
-    const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 3);
-    glow.addColorStop(0, `rgba(255,255,255,${light.alpha.toFixed(3)})`);
-    glow.addColorStop(.25, `rgba(190,140,255,${(.7 * light.alpha).toFixed(3)})`); glow.addColorStop(1, "rgba(90,40,200,0)");
-    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = glow;
-    ctx.fillRect(x - radius * 3, y - radius * 3, radius * 6, radius * 6);
-    // Sin cruz de destello: su línea fina cruzaba el planeta (tablero, a06).
-    ctx.restore();
+  function drawCronosPortals(pose) {
+    // Portal dimensional por el que llega y se va Cronos Prime (propietario,
+    // 24/10/2026). Mientras llega su arte propio: la esfera de energía pintada
+    // (celda 0 de la hoja de efectos), achatada, girando y con un vacío oscuro.
+    const fx = SPRITES.cronosPrimeFx;
+    if (!pose.portals.length || !spriteReady(fx)) return;
+    for (const portal of pose.portals) {
+      const x = portal.x * W, y = portal.y * H, radius = W * .15 * portal.open;
+      ctx.save(); ctx.translate(x, y); ctx.scale(1, .62);
+      const void_ = ctx.createRadialGradient(0, 0, 0, 0, 0, radius * .78);
+      void_.addColorStop(0, `rgba(6,2,18,${(.92 * portal.open).toFixed(3)})`); void_.addColorStop(1, "rgba(6,2,18,0)");
+      ctx.fillStyle = void_; ctx.beginPath(); ctx.arc(0, 0, radius * .78, 0, Math.PI * 2); ctx.fill();
+      ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, portal.open * 1.3);
+      ctx.rotate(portal.spin * Math.PI * 2);
+      drawAtlasCell(fx, 4, 0, -radius, -radius, radius * 2, radius * 2);
+      ctx.rotate(-portal.spin * Math.PI * 3.1); ctx.globalAlpha *= .55;
+      drawAtlasCell(fx, 4, 0, -radius * .8, -radius * .8, radius * 1.6, radius * 1.6);
+      ctx.restore();
+    }
   }
 
   function drawCronosPrime(pose) {
@@ -4934,28 +4976,6 @@
     if (!prime.visible || !spriteReady(atlas)) return;
     // El cuerpo llena ~94 % de la celda (fotogramas sacados del vídeo).
     const x = prime.x * W, y = prime.y * H, size = W * .52 * prime.scale;
-    // Estela de motor mientras viaja (al llegar y al irse).
-    if (prime.trail > 0 && spriteReady(SPRITES.cronosPrimeTrail)) {
-      // Estela pintada (baúl, encargo a06): 4 fotogramas verticales con el
-      // origen arriba en el centro; se orienta hacia detrás de la nave.
-      const trailAtlas = SPRITES.cronosPrimeTrail, back = prime.heading + Math.PI;
-      const length = size * 2.4 * prime.trail, width = length * .5;
-      const cell = trailAtlas.naturalWidth / 4, frame = settings.reduceEffects ? 0 : Math.floor(elapsed * 12) % 4;
-      ctx.save(); ctx.translate(x + Math.cos(back) * size * .18, y + Math.sin(back) * size * .18);
-      ctx.rotate(back - Math.PI / 2); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, prime.trail * 1.2);
-      ctx.drawImage(trailAtlas, frame * cell, 0, cell, trailAtlas.naturalHeight, -width / 2, 0, width, length);
-      ctx.restore();
-    } else if (prime.trail > 0) {
-      const length = size * 2.6 * prime.trail, back = prime.heading + Math.PI;
-      const tx = x + Math.cos(back) * length, ty = y + Math.sin(back) * length;
-      const trail = ctx.createLinearGradient(x, y, tx, ty);
-      trail.addColorStop(0, `rgba(215,190,255,${(.85 * prime.trail).toFixed(3)})`); trail.addColorStop(1, "rgba(120,60,255,0)");
-      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.strokeStyle = trail; ctx.lineCap = "round";
-      ctx.lineWidth = size * .22; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
-      ctx.lineWidth = size * .07; ctx.strokeStyle = `rgba(255,255,255,${(.7 * prime.trail).toFixed(3)})`;
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (tx - x) * .5, y + (ty - y) * .5); ctx.stroke();
-      ctx.restore();
-    }
     // Halo de carga detrás del cuerpo.
     if (prime.charge > 0) {
       const halo = ctx.createRadialGradient(x, y, 0, x, y, size * (.4 + .5 * prime.charge));
@@ -4983,31 +5003,24 @@
   }
 
   function drawCronosPrimeBeam(pose, targetX, targetY) {
-    // Disparo vertical del núcleo a la torre: halo, núcleo blanco y descargas.
-    const prime = pose.prime, beam = pose.beam, fx = SPRITES.cronosPrimeFx;
-    if (!prime.visible || beam.alpha <= 0) return;
+    // Disparo vertical del núcleo a la torre con el haz pintado (dos capas que
+    // se cruzan para que la espiral se mueva) y la esfera de energía al impactar.
+    const prime = pose.prime, beam = pose.beam, art = SPRITES.cronosPrimeBeam, fx = SPRITES.cronosPrimeFx;
+    if (!prime.visible || beam.alpha <= 0 || !spriteReady(art)) return;
     const fromX = prime.x * W, fromY = prime.y * H;
-    const length = Math.hypot(targetX - fromX, targetY - fromY), width = W * .16 * beam.width;
+    const length = Math.hypot(targetX - fromX, targetY - fromY), width = W * .22 * beam.width;
     ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = beam.alpha;
     ctx.translate(fromX, fromY); ctx.rotate(Math.atan2(targetY - fromY, targetX - fromX) - Math.PI / 2);
-    const halo = ctx.createLinearGradient(-width, 0, width, 0);
-    halo.addColorStop(0, "rgba(110,80,255,0)"); halo.addColorStop(.5, "rgba(170,140,255,.85)"); halo.addColorStop(1, "rgba(110,80,255,0)");
-    ctx.fillStyle = halo; ctx.fillRect(-width, 0, width * 2, length);
-    const core = ctx.createLinearGradient(-width * .14, 0, width * .14, 0);
-    core.addColorStop(0, "rgba(255,255,255,0)"); core.addColorStop(.5, "rgba(255,255,255,1)"); core.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = core; ctx.fillRect(-width * .14, 0, width * .28, length);
-    if (spriteReady(fx)) for (let index = 0; index < 3; index++) {
-      const bolt = W * .2 * beam.width;
-      ctx.save(); ctx.translate(0, length * (.25 + index * .3)); ctx.rotate(index % 2 ? .5 : -.5);
-      drawAtlasCell(fx, 4, 1 + (index + Math.floor(pose.clock * 20)) % 6, -bolt / 2, -bolt / 2, bolt, bolt);
-      ctx.restore();
-    }
+    ctx.drawImage(art, -width / 2, 0, width, length);
+    ctx.scale(-1, 1); ctx.globalAlpha = beam.alpha * (.45 + .25 * Math.sin(pose.clock * 30));
+    ctx.drawImage(art, -width * .6, 0, width * 1.2, length);
     ctx.restore();
-    const spot = W * .2 * beam.width;
-    const impact = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, spot);
-    impact.addColorStop(0, `rgba(255,255,255,${beam.alpha.toFixed(3)})`); impact.addColorStop(1, "rgba(140,150,255,0)");
-    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.fillStyle = impact;
-    ctx.fillRect(targetX - spot, targetY - spot, spot * 2, spot * 2); ctx.restore();
+    if (!spriteReady(fx)) return;
+    const spot = W * .3 * beam.width;
+    ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = beam.alpha;
+    ctx.translate(targetX, targetY); ctx.rotate(pose.clock * 4);
+    drawAtlasCell(fx, 4, 0, -spot / 2, -spot / 2, spot, spot);
+    ctx.restore();
   }
 
   function drawChronosIntroStation(view, pose) {
@@ -5032,7 +5045,8 @@
         for (let index = 0; index < sectors.length; index++) {
           const from = -Math.PI / 2 + index * Math.PI * 2 / sectors.length, to = from + Math.PI * 2 / sectors.length;
           ctx.save(); wheelSpace(); ctx.rotate(-station.wheelAngle);
-          ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, unit * .62, from, to); ctx.closePath(); ctx.clip();
+          // Solo la rueda: con radio mayor, el sector apagado pintaba cuñas negras sobre el anillo y el espacio.
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, wheel / 2, from, to); ctx.closePath(); ctx.clip();
           ctx.rotate(station.wheelAngle);
           if (sectors[index] > 0) {
             ctx.globalCompositeOperation = "screen"; ctx.globalAlpha *= .4 * sectors[index];
@@ -5092,13 +5106,12 @@
         drawAtlasCell(fx, 4, 1 + (stream.cell + segment) % 6, -length * .35, -length * .6, length * .7, length * 1.2);
         ctx.restore();
       }
-      const [dx, dy] = at(stream.progress);
-      ctx.fillStyle = "#f4f0ff"; ctx.beginPath(); ctx.arc(dx, dy, 5, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
-    drawCronosPrimeDistantLight(pose);
-    drawCronosPrimeBeam(pose, x, y - unit * .3);
+    drawCronosPortals(pose);
     drawCronosPrime(pose);
+    // El haz sale del núcleo por encima del cuerpo, como en los fotogramas de disparo del vídeo.
+    drawCronosPrimeBeam(pose, x, y - unit * .3);
   }
 
   function drawChronosIntroOverlay(pose) {
@@ -5112,11 +5125,12 @@
       // Banda oscura detrás: sin ella el rótulo se perdía sobre los anillos
       // iluminados de la estación (revisión B2, DESIGN §9.5).
       ctx.fillStyle = "rgba(6,21,33,.82)"; ctx.fillRect(-W * .6, -70, W * 1.2, 126);
-      ctx.font = "900 76px 'Trebuchet MS', sans-serif";
+      // Orbitron es más ancha: a 64 px ocupa lo mismo que la letra anterior a 76.
+      ctx.font = "900 64px Orbitron, sans-serif";
       ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
       ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
       ctx.fillStyle = "#f6f2ff"; ctx.shadowColor = "#8f6bff"; ctx.shadowBlur = 22; ctx.fillText("CRONOS PRIME", 0, 0);
-      ctx.shadowBlur = 0; ctx.fillStyle = "#c7b8ff"; ctx.font = "800 22px 'Trebuchet MS', sans-serif";
+      ctx.shadowBlur = 0; ctx.fillStyle = "#c7b8ff"; ctx.font = "800 22px Orbitron, sans-serif";
       ctx.fillText("LA IA DEL REACTOR, DESPIERTA", 0, 40);
       ctx.restore();
     }
@@ -6459,7 +6473,7 @@
       ctx.strokeStyle = "#ffffffc9"; ctx.lineWidth = 2; ctx.stroke();
       ctx.rotate(-item.rot * 0.28);
       ctx.fillStyle = "#fff";
-      ctx.font = `900 ${style.glyph.length > 1 ? 18 : 27}px Inter,sans-serif`;
+      ctx.font = `900 ${style.glyph.length > 1 ? 18 : 27}px 'Exo 2',sans-serif`;
       ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(style.glyph, 0, 1);
     }
     ctx.restore();
@@ -6715,7 +6729,7 @@
     ctx.save();
     const label = `CADENA x${combo}`;
     const y = H - 245;
-    ctx.font = "900 28px Inter,sans-serif";
+    ctx.font = "900 28px Orbitron,sans-serif";
     const width = ctx.measureText(label).width + 38;
     rounded(W / 2 - width / 2, y - 32, width, 42, 21);
     ctx.fillStyle = "rgba(7,10,22,.58)";
@@ -7277,6 +7291,7 @@
 
   console.info(`[NEON CRONIUM] build ${BUILD_VERSION}`);
   setupShipHangar();
+  $("openHangar")?.addEventListener("click", markHangarSeen);
   setupAtlasEncounter();
   updateMenu();
   hud();

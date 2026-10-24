@@ -740,3 +740,14 @@ test('a paid beacon that could not be saved is kept when the panel closes', () =
   assert.equal(devSave(w)?.sectors?.[1]?.beacon, true);
   assert.equal(T.ev('classicSalvageState.balance'), 5, 'charged once');
 });
+
+// Propietario, 24/10: «el nivel se para antes de Atlas». La cuota del tramo 10
+// (33) es menor que la del nivel antiguo (36): Atlas debe llegar igual.
+test('the sector reaches Atlas with exactly the CRONIUM of the last stage', () => {
+  const {T} = harness({query: '?dev=1'});
+  startAt(T, 10); T.ev('DEV.invulnerable=true');
+  T.ev("for(let i=0;i<40000&&!classicFlight.snapshot().canFinish;i++){collected=Math.max(collected,classicFlightView.stageGoal);classicFlightView=classicFlight.advance(.034,collected,classicFlightEvent);}");
+  assert.ok(T.ev('collected<level().goal'), 'the stage quota is below the old level quota');
+  T.adv(.5);
+  assert.equal(T.ev('Boolean(atlasBoss)'), true);
+});

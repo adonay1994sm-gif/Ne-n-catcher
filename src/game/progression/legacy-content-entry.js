@@ -9,6 +9,7 @@ export {SCRAP_ECONOMY_KEY, SCRAP_UPGRADES, SCRAP_CONSUMABLES,
 export {createVoyageHazardField, advanceVoyageHazardField} from './voyage-hazards.js';
 export {VOYAGES, PLAYABLE_VOYAGES, getVoyageFicha, getVoyageStageRules, getVoyageStageRulesFor} from './voyages/index.js';
 export {DIFFICULTY_MODES, normalizeDifficulty} from './difficulty.js';
+export {MENU_UNLOCKS_KEY, normalizeMenuUnlocks, menuView, markMenuSeen} from './menu-unlocks.js';
 export {createVoyageRoute} from './voyage-engine.js';
 export {SECTOR_MAPS, sectorMapState} from './sector-map.js';
 export {baseConversation} from '../narrative/base-dialogues.js';

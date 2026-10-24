@@ -123,6 +123,10 @@ Adaptadas de [forrestchang/andrej-karpathy-skills](https://github.com/forrestcha
 
 ## Skills y agentes del proyecto
 
+- **Antes de cualquier trabajo, carga la skill `forma-de-trabajar`**: cómo
+  piensa y qué busca el propietario, su listón de calidad y las decisiones
+  que ya tomó. Se amplía cada 3 días con lo aprendido (tarea programada) y
+  cada vez que él corrige algo.
 - Flujo para trabajo nuevo: `brainstorming` → especificación aprobada →
   `writing-plans` → `subagent-driven-development` o `executing-plans`, con
   `test-driven-development`. Detalle y fuentes en

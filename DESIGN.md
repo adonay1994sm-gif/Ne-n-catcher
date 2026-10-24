@@ -70,8 +70,10 @@ colors:
   ally-ship: "sin definir"
 
 typography:
-  family-ui: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-  family-canvas-title: "'Trebuchet MS', sans-serif"
+  # Propietario, 24/10/2026: Orbitron + Exo 2 (OFL, en assets/). Orbitron solo en mayúsculas.
+  family-ui: "'Exo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+  family-display: "Orbitron, 'Exo 2', sans-serif  # marca, botones, cifras y rótulos en mayúsculas"
+  family-canvas-title: "Orbitron, sans-serif"
   display-menu:
     fontSize: "clamp(27px, 7.3vw, 34px)"
     fontWeight: 800
@@ -123,9 +125,9 @@ typography:
     fontSize: 15px
     letterSpacing: 0.035em
   canvas-boss-title:
-    font: "900 76px 'Trebuchet MS', sans-serif"
+    font: "900 64px Orbitron, sans-serif"
   canvas-boss-subtitle:
-    font: "800 22px 'Trebuchet MS', sans-serif"
+    font: "800 22px Orbitron, sans-serif"
 
 rounded:
   ui: 8px

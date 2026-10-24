@@ -548,6 +548,7 @@
 
   console.info(`[NEON CRONIUM] build ${BUILD_VERSION}`);
   setupShipHangar();
+  $("openHangar")?.addEventListener("click", markHangarSeen);
   setupAtlasEncounter();
   updateMenu();
   hud();

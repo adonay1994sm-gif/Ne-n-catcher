@@ -149,8 +149,8 @@ export function getChronosIntroPose(elapsed, {reducedEffects = false, holdWreck 
     y: mix(mix(FAR.y, HOVER.y, arrival), EXIT.y, leaving) + hover - recoil,
     scale: mix(mix(FAR.scale, HOVER.scale, arrival), EXIT.scale, leaving) * (1 + .08 * drain),
     alpha: elapsed < T.approach ? 0 : 1,
-    // Estela de motor al llegar y al irse.
-    trail: Math.max(1 - smooth(elapsed, T.arrive - .3, T.arrive + .2), smooth(elapsed, T.leave, T.leave + .3)) * (elapsed >= T.approach ? 1 : 0),
+    // Sin estela: llega y se va por un portal (propietario, 24/10/2026).
+    trail: 0,
     heading: elapsed < T.leave ? Math.atan2(HOVER.y - FAR.y, HOVER.x - FAR.x) : Math.atan2(EXIT.y - HOVER.y, EXIT.x - HOVER.x),
     // Onda al frenar en seco.
     brake: elapsed >= T.arrive && elapsed < T.arrive + .45 ? 1 - (elapsed - T.arrive) / .45 : 0,
@@ -158,10 +158,13 @@ export function getChronosIntroPose(elapsed, {reducedEffects = false, holdWreck 
     nameCard: smooth(elapsed, T.arrive, T.arrive + .25) * (1 - smooth(elapsed, T.beamStart - .6, T.beamStart - .2)),
     nameCardPunch: 1 - easeOut(elapsed, T.arrive, T.arrive + .3)
   };
-  // Antes de verse entero, es una luz violeta que crece en lo alto.
-  const distantLight = elapsed >= T.omen && elapsed < T.approach + .6
-    ? {x: FAR.x, y: FAR.y, alpha: smooth(elapsed, T.omen, T.approach) * (1 - smooth(elapsed, T.approach, T.approach + .6)),
-      size: .02 + .03 * smooth(elapsed, T.omen, T.approach)} : null;
+  // Portal dimensional: se abre lejos, Cronos Prime sale de él y se cierra;
+  // al irse se abre otro en la salida y lo engulle. open 0–1, spin en vueltas.
+  const portal = (x, y, open) => ({x, y, open, spin: elapsed * .35});
+  const portals = [
+    portal(FAR.x, FAR.y, smooth(elapsed, T.omen, T.approach) * (1 - smooth(elapsed, T.approach + .9, T.approach + 1.5))),
+    portal(EXIT.x, EXIT.y, smooth(elapsed, T.leave - .6, T.leave) * (1 - smooth(elapsed, T.gone - .1, T.gone + .5)))
+  ].filter(item => item.open > 0);
 
   // Descargas que llevan la energía de cada sector a su núcleo.
   const drainStreams = elapsed >= T.drain && elapsed < T.rupture ? station.sectorLights.map((light, index) => ({
@@ -194,6 +197,6 @@ export function getChronosIntroPose(elapsed, {reducedEffects = false, holdWreck 
   const darkness = .35 * smooth(elapsed, T.omen, T.approach) * (1 - smooth(elapsed, T.rupture, T.rupture + .6));
 
   const phase = SHOTS[shotIndex][1];
-  return {active: true, phase, shot: shotIndex + 1, clock: elapsed, camera, darkness, distantLight,
+  return {active: true, phase, shot: shotIndex + 1, clock: elapsed, camera, darkness, portals,
     station, prime, drainStreams, beam, flash, explosion, fragments};
 }

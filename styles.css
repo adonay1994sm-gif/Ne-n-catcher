@@ -1,10 +1,15 @@
 
+/* Letras del juego (propietario, 24/10): Orbitron en títulos, botones y cifras; Exo 2 en el resto. */
+@font-face{font-family:"Orbitron";src:url("assets/orbitron_wght_v1.ttf") format("truetype");font-weight:400 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Exo 2";src:url("assets/exo2_latin_wght_v1.woff2") format("woff2");font-weight:400 900;font-style:normal;font-display:swap}
 :root{
   --bg:#03050d;--panel:rgba(12,17,36,.94);--text:#fff;--muted:#aeb5d5;
   --cyan:#55f4ff;--violet:#7958ff;--pink:#ff4cc9;--green:#76ffc2;--danger:#ff6b8d;
+  --font-display:"Orbitron","Exo 2",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-body:"Exo 2",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font-body);overscroll-behavior:none}
 button,a,input{font:inherit}
 body{background:radial-gradient(circle at 50% -10%,#18245d 0,#090d20 37%,#03050d 78%)}
 .shell,.game{width:100%;height:100dvh;min-height:100%;position:relative;overflow:hidden}
@@ -1087,3 +1092,170 @@ body.flight-mode :is(.hud small, #bannerSector, .hazard-warning small, .menu-top
 /* Baliza de reaparición (plan F3c): primera celda de la hoja de la baliza. */
 .beacon-offer-art{display:block;width:96px;height:96px;margin:8px auto 0;background:url(assets/sector_beacon_atlas_v1.webp) 0 0/400% 100% no-repeat;filter:drop-shadow(0 0 14px #67ffe555)}
 .beacon-offer .primary:disabled{opacity:.62;cursor:not-allowed}
+
+/* Forja C9 con el aspecto de la maqueta ORBIT / 01 de GPT (propietario, 24/10/2026):
+   fondo del taller de Mira, marco con esquinas de bronce que no se desplazan,
+   placas de título, pestañas segmentadas, tarjetas de componente e insignias del árbol. */
+body.flight-mode #flightDock {
+  background: linear-gradient(180deg, rgba(4,12,21,.28) 0%, rgba(4,12,21,.62) 34%, rgba(4,12,21,.94) 66%), url('assets/workshop_mira_bg_v1.webp') center top / cover no-repeat, #040c15;
+}
+body.flight-mode #flightDock .flight-dock {
+  --forge-bronze: #c99d5e; --forge-steel: #3b6273; --forge-glow: #5cf5ff;
+  padding: 26px 20px 0; border: 1px solid var(--forge-steel); border-radius: 0;
+  box-shadow: 0 0 0 4px #0b1924, 0 0 0 5px #2a4655, 0 26px 70px rgba(0,0,0,.65), inset 0 0 48px rgba(92,245,255,.06);
+  background:
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) left top / 42px 4px no-repeat,
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) left top / 4px 42px no-repeat,
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) right top / 42px 4px no-repeat,
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) right top / 4px 42px no-repeat,
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) left bottom / 42px 4px no-repeat,
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) left bottom / 4px 42px no-repeat,
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) right bottom / 42px 4px no-repeat,
+    linear-gradient(var(--forge-bronze), var(--forge-bronze)) right bottom / 4px 42px no-repeat,
+    linear-gradient(var(--forge-glow), var(--forge-glow)) left 50% / 3px 34px no-repeat,
+    linear-gradient(var(--forge-glow), var(--forge-glow)) right 50% / 3px 34px no-repeat,
+    linear-gradient(180deg, rgba(10,27,39,.66) 0%, rgba(8,21,33,.9) 30%, rgba(6,16,26,.97) 60%);
+}
+/* Placa de título */
+body.flight-mode #flightDock .c9-header {
+  position: relative; justify-content: center; gap: 14px; margin: 0 0 16px; padding: 12px 16px;
+  border: 1px solid var(--forge-steel); border-bottom-color: var(--forge-bronze);
+  background: linear-gradient(180deg, #17303f, #0c1c28);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%, 0 14px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+body.flight-mode #flightDock .c9-header .chapter-face { border: 1px solid var(--forge-bronze); border-radius: 2px; }
+body.flight-mode #flightDock .c9-header small { color: var(--ui-cyan); font-weight: 800; letter-spacing: .2em; }
+body.flight-mode #flightDock .c9-header h2 { font-size: 30px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 2px 0 #02070c; }
+/* Ventana de la nave sobre el suelo del taller */
+body.flight-mode #flightDock .c9-preview {
+  grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 8px; padding: 14px 14px 12px; margin: 0 0 14px;
+  border: 1px solid var(--forge-steel);
+  background:
+    linear-gradient(var(--forge-glow), var(--forge-glow)) left 10px top 10px / 16px 2px no-repeat,
+    linear-gradient(var(--forge-glow), var(--forge-glow)) left 10px top 10px / 2px 16px no-repeat,
+    linear-gradient(var(--forge-glow), var(--forge-glow)) right 10px top 10px / 16px 2px no-repeat,
+    linear-gradient(var(--forge-glow), var(--forge-glow)) right 10px top 10px / 2px 16px no-repeat,
+    radial-gradient(ellipse at 50% 58%, rgba(92,245,255,.16), transparent 62%),
+    linear-gradient(180deg, rgba(4,12,21,.35), rgba(4,12,21,.78)),
+    url('assets/workshop_mira_bg_v1.webp') center 78% / 150% auto no-repeat, #071725;
+}
+body.flight-mode #flightDock .c9-preview #flightDockCanvas { width: min(100%, 300px); border: 0; background: transparent; }
+body.flight-mode #flightDock .c9-preview #flightDockStatus { text-align: center; color: #d6e6ec; font-size: 13px; }
+/* Chatarra: placa ámbar */
+body.flight-mode #flightDock .cockpit-ledger {
+  border: 1px solid #8a6a3c; border-radius: 0; background: linear-gradient(180deg, #2a2216, #1a150d);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+/* Pestañas segmentadas */
+body.flight-mode #flightDock .c9-navigation { gap: 0; padding: 4px; background: #08151f; border: 1px solid var(--forge-steel); }
+body.flight-mode #flightDock .c9-navigation button {
+  border: 0; border-radius: 0; background: transparent; color: #bcd3da; font-weight: 800; letter-spacing: .12em;
+}
+body.flight-mode #flightDock .c9-navigation button[aria-current="true"] {
+  background: linear-gradient(180deg, #b8f6f1, #6fe3dc); color: #06222a;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+/* Títulos de sección: placa centrada con líneas */
+body.flight-mode #flightDock .c9-section { border-top: 0; }
+body.flight-mode #flightDock .c9-section h3 {
+  display: flex; align-items: center; gap: 12px; color: var(--ui-paper); font-size: 13px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase;
+}
+body.flight-mode #flightDock .c9-section h3::before, body.flight-mode #flightDock .c9-section h3::after {
+  content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--forge-steel));
+}
+body.flight-mode #flightDock .c9-section h3::after { background: linear-gradient(90deg, var(--forge-steel), transparent); }
+body.flight-mode #flightDock .c9-section-help { text-align: center; }
+/* Tarjetas de componente */
+body.flight-mode #flightDock .c9-upgrades button,
+body.flight-mode #flightDock .flight-loadout-choices button {
+  position: relative; border: 1px solid #2c4a59; border-radius: 0;
+  background: linear-gradient(180deg, #132a38, #0b1b26);
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+body.flight-mode #flightDock .flight-loadout-choices button[aria-pressed="true"] {
+  border-color: var(--ui-cyan); background: linear-gradient(180deg, #1d4652, #10303a); box-shadow: inset 0 0 0 1px var(--ui-cyan), 0 0 18px rgba(92,245,255,.25);
+}
+body.flight-mode #flightDock .c9-upgrades button[data-node-state="available"]::after {
+  content: "+"; position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; display: grid; place-items: center;
+  border: 1px solid var(--ui-cyan); color: var(--ui-cyan); font-size: 20px; font-weight: 500; line-height: 1;
+}
+body.flight-mode #flightDock .c9-upgrades button[data-node-state="installed"] {
+  background: linear-gradient(180deg, #1d4652, #10303a); border-color: var(--ui-cyan); color: var(--ui-paper);
+}
+body.flight-mode #flightDock .c9-upgrades button[data-node-state="installed"] .c9-upgrade-copy b,
+body.flight-mode #flightDock .c9-upgrades button[data-node-state="installed"] .c9-upgrade-copy small { color: var(--ui-paper); }
+/* Insignias del árbol (hoja 6x2) */
+body.flight-mode #flightDock .c9-upgrade-art:is([data-upgrade="hull"], [data-upgrade="hull-ii"], [data-upgrade="coolant"], [data-upgrade="coolant-ii"], [data-upgrade="missiles"]),
+body.flight-mode #flightDock #flightInstallTwin .c9-upgrade-art {
+  background-image: url('assets/skill_tree_icons_v1.webp'); background-size: 600% 200%; filter: drop-shadow(0 0 6px rgba(92,245,255,.25));
+}
+body.flight-mode #flightDock #c9-systems .c9-upgrade-art[data-upgrade="hull"] { background-position: 40% 0; }
+body.flight-mode #flightDock #c9-systems .c9-upgrade-art[data-upgrade="hull-ii"] { background-position: 60% 100%; }
+body.flight-mode #flightDock #c9-systems .c9-upgrade-art[data-upgrade="coolant"] { background-position: 80% 0; }
+body.flight-mode #flightDock #c9-systems .c9-upgrade-art[data-upgrade="coolant-ii"] { background-position: 40% 100%; }
+body.flight-mode #flightDock #flightInstallTwin .c9-upgrade-art { background-position: 100% 100%; }
+body.flight-mode #flightDock #c9-supplies .c9-upgrade-art[data-upgrade="missiles"] { background-position: 60% 0; }
+/* Botones finales: aplicar en cian, como la maqueta */
+body.flight-mode #flightDock .c9-actions { background: #06101a; border-top: 1px solid var(--forge-steel); box-shadow: 0 -14px 18px rgba(6,16,26,.9); }
+body.flight-mode #flightDock #flightDockContinue {
+  min-height: 54px; border: 0; color: #06222a; font-size: 15px; font-weight: 900; letter-spacing: .16em;
+  background: linear-gradient(180deg, #c6fbf6, #5fe1d9);
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  box-shadow: 0 0 22px rgba(92,245,255,.35);
+}
+body.flight-mode #flightDock #flightDockHome {
+  border: 1px solid var(--forge-steel); background: linear-gradient(180deg, #132a38, #0b1b26); color: var(--ui-paper);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+body.flight-mode #flightDock #flightDockContinue::before {
+  background: linear-gradient(180deg, #c6fbf6, #5fe1d9); box-shadow: inset 0 1px 0 rgba(255,255,255,.65), inset 0 -3px 0 rgba(0,0,0,.22);
+}
+body.flight-mode #flightDock #flightDockContinue:active:not(:disabled)::before { background: linear-gradient(180deg, #8fe9e2, #4cc9c1); }
+
+/* Orbitron solo en lo que va en mayúsculas (marca, botones y cifras): en minúsculas se lee mal.
+   Los títulos de frase (h2) y los subtítulos de los botones siguen en Exo 2. */
+.menu-topline strong,.level-banner strong,.hud b,.primary,.secondary,.reward{font-family:var(--font-display)}
+/* La puntuación final va en Exo 2: el cero de Orbitron lleva raya y, grande y solo, parece una señal de prohibido. */
+.primary small,.secondary small,.reward small{font-family:var(--font-body)}
+
+
+/* Pantalla principal con el arte de GPT (propietario, 24/10/2026): el hangar
+   de fondo con la nave sobre la plataforma, marcos pintados que se estiran con
+   border-image y el engranaje pintado. La plataforma está al 50 % / 38 % del
+   fondo; background-position la deja en ese mismo punto de la pantalla. */
+#menu.menu-gpt{background:#040c15 url("assets/menu_hangar_bg_v1.webp") 50% 38%/cover no-repeat}
+#menu.menu-gpt::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,#040c15c7 0,#040c1500 17%,#040c1500 50%,#040c15d9 66%,#040c15 84%)}
+#menu.menu-gpt .menu-topline{border-bottom-color:#a1eee833}
+#menu.menu-gpt .menu-scene{top:38%;bottom:auto;width:min(42%,180px);height:auto;max-height:none;transform:translate(-50%,-86%);animation:menuShipHover 5s ease-in-out infinite}
+#menu.menu-gpt .menu-ship-image{display:block;height:auto;filter:drop-shadow(0 18px 18px #000a)}
+@keyframes menuShipHover{50%{transform:translate(-50%,calc(-86% - 6px))}}
+#menu.menu-gpt #quickSettings{width:52px;height:52px;padding:0;border:0;clip-path:none;background:url("assets/menu_gear_v1.webp") center/contain no-repeat;filter:drop-shadow(0 4px 8px #000b)}
+#menu.menu-gpt #quickSettings::before,#menu.menu-gpt #quickSettings svg{display:none}
+#menu.menu-gpt #quickSettings:active{transform:rotate(30deg) scale(.96)}
+/* Ajustes solo desde el engranaje: el botón del panel queda oculto. */
+#menu.menu-gpt #settings{display:none}
+#menu.menu-gpt .menu-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button){position:relative;display:flex;align-items:center;justify-content:flex-start;gap:0;width:100%;
+  min-height:68px;margin:0;padding:0 64px 0 42px;border:0;border-radius:0;clip-path:none;box-shadow:none;background:none;color:#f2f0e6;text-align:left;
+  border-image:url("assets/menu_frame_v1.webp") 40 160 fill / 16px 62px stretch}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button)::before{content:none}
+#menu.menu-gpt .hero-cta{flex-direction:column;align-items:flex-start;justify-content:center;gap:3px}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button)::after{content:"";position:absolute;right:10px;top:50%;width:46px;height:40px;border:0;
+  transform:translateY(-50%);background:url("assets/menu_arrow_v1.webp") center/contain no-repeat}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button):active:not(:disabled){transform:translateY(1px);background:none;
+  border-image-source:url("assets/menu_frame_pressed_v1.webp");filter:brightness(1.25)}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button):focus-visible{outline:2px solid #d1ffff;outline-offset:3px}
+#menu.menu-gpt .hero-cta > span{font-size:18px;font-weight:800;letter-spacing:.05em}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button) small{font-size:10px;font-weight:700;letter-spacing:.14em;color:#a1eee8;opacity:1}
+#menu.menu-gpt .menu-hangar-button{overflow:hidden}
+#menu.menu-gpt .menu-hangar-button.hidden{display:none}
+/* La nave aparcada ocupa la derecha del botón, por dentro del marco. */
+#menu.menu-gpt .menu-hangar-button::before{content:"";position:absolute;z-index:0;top:4px;bottom:4px;left:auto;right:52px;width:62%;
+  background:url("assets/menu_hangar_button_v1.webp") right center/auto 100% no-repeat;clip-path:none;box-shadow:none}
+#menu.menu-gpt .menu-button-text{position:relative;z-index:1;display:flex;flex-direction:column;gap:3px;font-size:15px;font-weight:800;letter-spacing:.05em;text-shadow:0 2px 6px #000}
+#menu.menu-gpt .menu-new{display:none;position:absolute;z-index:2;top:9px;left:42px;padding:1px 6px;font:800 9px/1.4 var(--font-display);letter-spacing:.12em;color:#092028;background:#ffb84d}
+#menu.menu-gpt .menu-hangar-button.is-new .menu-new{display:block}
+#menu.menu-gpt .menu-hangar-button.is-new .menu-button-text{padding-top:14px}

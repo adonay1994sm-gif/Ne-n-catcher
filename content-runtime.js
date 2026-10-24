@@ -33,6 +33,7 @@ var NeonCampaign = (() => {
     GAIA_ENEMY_RULES: () => GAIA_ENEMY_RULES,
     GUARDIAN_ATLAS_RULES: () => GUARDIAN_ATLAS_RULES,
     HORDE_RULES: () => HORDE_RULES,
+    MENU_UNLOCKS_KEY: () => MENU_UNLOCKS_KEY,
     PLAYABLE_VOYAGES: () => PLAYABLE_VOYAGES,
     SCRAP_CONSUMABLES: () => SCRAP_CONSUMABLES,
     SCRAP_ECONOMY_KEY: () => SCRAP_ECONOMY_KEY,
@@ -112,11 +113,14 @@ var NeonCampaign = (() => {
     hitCh03Satellite: () => hitCh03Satellite,
     hitClassicProjectile: () => hitClassicProjectile,
     hitGuardianAtlas: () => hitGuardianAtlas,
+    markMenuSeen: () => markMenuSeen,
+    menuView: () => menuView,
     moveFlightInput: () => moveFlightInput,
     normalizeChronosChapterCheckpoint: () => normalizeChronosChapterCheckpoint,
     normalizeChronosVoyageCheckpoint: () => normalizeChronosVoyageCheckpoint,
     normalizeClassicEquipment: () => normalizeClassicEquipment,
     normalizeDifficulty: () => normalizeDifficulty,
+    normalizeMenuUnlocks: () => normalizeMenuUnlocks,
     normalizeSectorSave: () => normalizeSectorSave,
     normalizeShipLoadout: () => normalizeShipLoadout,
     prepareClassicTwin: () => prepareClassicTwin,
@@ -3466,6 +3470,28 @@ var NeonCampaign = (() => {
   }
   function getVoyageStageRules(routeId, stageNumber) {
     return getVoyageFicha(routeId)?.encounters[stageNumber - 1] || null;
+  }
+
+  // src/game/progression/menu-unlocks.js
+  var MENU_UNLOCKS_KEY = "neonCronium.menu.v1";
+  var HANGAR_STAGE = 6;
+  var STAGE_COUNT = 10;
+  function normalizeMenuUnlocks(raw) {
+    const valid = Boolean(raw) && typeof raw === "object" && raw.version === 1 && typeof raw.hangar === "boolean" && raw.seen && typeof raw.seen === "object" && !Array.isArray(raw.seen);
+    return { version: 1, hangar: valid ? raw.hangar : false, seen: { hangar: valid && raw.seen.hangar === true } };
+  }
+  function menuView(sectorSave, unlocks) {
+    const run = sectorSave.run, done = sectorSave.sectors[1]?.completed === true;
+    const hangar = unlocks.hangar || done || (run?.stageNumber ?? 0) >= HANGAR_STAGE;
+    const play = run && run.stageNumber > 1 ? { label: "CONTINUAR VIAJE", detail: `SECTOR 1 \xB7 TRAMO ${run.stageNumber}/${STAGE_COUNT}${sectorSave.sectors[1]?.beacon ? " \xB7 CON BALIZA" : ""}` } : done ? { label: "REPETIR SECTOR", detail: "SECTOR 1 COMPLETADO" } : { label: "JUGAR", detail: "SECTOR 1 \xB7 CHRONOS \u2192 GAIA" };
+    return {
+      play,
+      hangar: { visible: hangar, isNew: hangar && !unlocks.seen.hangar },
+      unlocks: { version: 1, hangar, seen: { ...unlocks.seen } }
+    };
+  }
+  function markMenuSeen(unlocks, button) {
+    return { version: 1, hangar: unlocks.hangar, seen: { ...unlocks.seen, [button]: true } };
   }
 
   // src/game/progression/sector-map.js
@@ -7283,8 +7309,8 @@ var NeonCampaign = (() => {
       y: mix2(mix2(FAR.y, HOVER.y, arrival2), EXIT.y, leaving) + hover - recoil,
       scale: mix2(mix2(FAR.scale, HOVER.scale, arrival2), EXIT.scale, leaving) * (1 + 0.08 * drain),
       alpha: elapsed < T.approach ? 0 : 1,
-      // Estela de motor al llegar y al irse.
-      trail: Math.max(1 - smooth3(elapsed, T.arrive - 0.3, T.arrive + 0.2), smooth3(elapsed, T.leave, T.leave + 0.3)) * (elapsed >= T.approach ? 1 : 0),
+      // Sin estela: llega y se va por un portal (propietario, 24/10/2026).
+      trail: 0,
       heading: elapsed < T.leave ? Math.atan2(HOVER.y - FAR.y, HOVER.x - FAR.x) : Math.atan2(EXIT.y - HOVER.y, EXIT.x - HOVER.x),
       // Onda al frenar en seco.
       brake: elapsed >= T.arrive && elapsed < T.arrive + 0.45 ? 1 - (elapsed - T.arrive) / 0.45 : 0,
@@ -7292,12 +7318,11 @@ var NeonCampaign = (() => {
       nameCard: smooth3(elapsed, T.arrive, T.arrive + 0.25) * (1 - smooth3(elapsed, T.beamStart - 0.6, T.beamStart - 0.2)),
       nameCardPunch: 1 - easeOut(elapsed, T.arrive, T.arrive + 0.3)
     };
-    const distantLight = elapsed >= T.omen && elapsed < T.approach + 0.6 ? {
-      x: FAR.x,
-      y: FAR.y,
-      alpha: smooth3(elapsed, T.omen, T.approach) * (1 - smooth3(elapsed, T.approach, T.approach + 0.6)),
-      size: 0.02 + 0.03 * smooth3(elapsed, T.omen, T.approach)
-    } : null;
+    const portal = (x, y, open) => ({ x, y, open, spin: elapsed * 0.35 });
+    const portals = [
+      portal(FAR.x, FAR.y, smooth3(elapsed, T.omen, T.approach) * (1 - smooth3(elapsed, T.approach + 0.9, T.approach + 1.5))),
+      portal(EXIT.x, EXIT.y, smooth3(elapsed, T.leave - 0.6, T.leave) * (1 - smooth3(elapsed, T.gone - 0.1, T.gone + 0.5)))
+    ].filter((item) => item.open > 0);
     const drainStreams = elapsed >= T.drain && elapsed < T.rupture ? station2.sectorLights.map((light, index) => ({
       angle: -Math.PI / 2 + (index + 0.5) * Math.PI * 2 / SECTORS2,
       alpha: smooth3(drain * SECTORS2, index - 0.3, index) * (1 - smooth3(drain * SECTORS2, index + 0.8, index + 1.4)) * (1 - smooth3(elapsed, T.beamStart, T.rupture)),
@@ -7337,7 +7362,7 @@ var NeonCampaign = (() => {
       clock: elapsed,
       camera,
       darkness,
-      distantLight,
+      portals,
       station: station2,
       prime,
       drainStreams,
@@ -8128,7 +8153,7 @@ var NeonCampaign = (() => {
   // src/game/progression/sector-save.js
   var SECTOR_SAVE_KEY = "neonCronium.sectors.v1";
   var SECTOR_COUNT = 10;
-  var STAGE_COUNT = 10;
+  var STAGE_COUNT2 = 10;
   var BEACON_STAGE = 6;
   var REVIVE_HULL = 25;
   var isInt = (value, low, high) => Number.isInteger(value) && value >= low && value <= high;
@@ -8147,7 +8172,7 @@ var NeonCampaign = (() => {
     let run = null;
     if (raw.run !== null) {
       const r = raw.run;
-      if (!r || typeof r !== "object" || !isInt(r.sector, 1, raw.unlocked) || !isInt(r.stageNumber, 1, STAGE_COUNT) || !Number.isFinite(r.stageHull) || r.stageHull <= 0 || r.stageHull > 100 || typeof r.reviveUsed !== "boolean") return null;
+      if (!r || typeof r !== "object" || !isInt(r.sector, 1, raw.unlocked) || !isInt(r.stageNumber, 1, STAGE_COUNT2) || !Number.isFinite(r.stageHull) || r.stageHull <= 0 || r.stageHull > 100 || typeof r.reviveUsed !== "boolean") return null;
       run = { sector: r.sector, stageNumber: r.stageNumber, stageHull: r.stageHull, reviveUsed: r.reviveUsed };
     }
     return { version: 1, unlocked: raw.unlocked, sectors, run };
@@ -8160,7 +8185,7 @@ var NeonCampaign = (() => {
   }
   function enterStage(save, stageNumber, hull) {
     if (!save.run) throw new Error("no sector run in progress");
-    if (!isInt(stageNumber, 1, STAGE_COUNT) || !Number.isFinite(hull)) throw new RangeError("invalid stage or hull");
+    if (!isInt(stageNumber, 1, STAGE_COUNT2) || !Number.isFinite(hull)) throw new RangeError("invalid stage or hull");
     const next = copy2(save);
     next.run.stageNumber = stageNumber;
     next.run.stageHull = Math.min(100, Math.max(1, hull));

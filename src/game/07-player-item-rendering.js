@@ -763,7 +763,7 @@
       ctx.strokeStyle = "#ffffffc9"; ctx.lineWidth = 2; ctx.stroke();
       ctx.rotate(-item.rot * 0.28);
       ctx.fillStyle = "#fff";
-      ctx.font = `900 ${style.glyph.length > 1 ? 18 : 27}px Inter,sans-serif`;
+      ctx.font = `900 ${style.glyph.length > 1 ? 18 : 27}px 'Exo 2',sans-serif`;
       ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(style.glyph, 0, 1);
     }
     ctx.restore();
@@ -1019,7 +1019,7 @@
     ctx.save();
     const label = `CADENA x${combo}`;
     const y = H - 245;
-    ctx.font = "900 28px Inter,sans-serif";
+    ctx.font = "900 28px Orbitron,sans-serif";
     const width = ctx.measureText(label).width + 38;
     rounded(W / 2 - width / 2, y - 32, width, 42, 21);
     ctx.fillStyle = "rgba(7,10,22,.58)";
