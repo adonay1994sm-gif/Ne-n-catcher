@@ -116,6 +116,21 @@ Piezas que necesito además: estrella llena y vacía 128×128 px; marco para la 
 Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
 ```
 
+## Arte: hangar para elegir nave
+
+- **Id:** `art-ui-hangar-taller` · **Prioridad:** 2 · **Archivo:** `encargo-art-ui-hangar-taller-v1.png`
+- **Para qué:** Rehecho el 24/10: el propietario separa el hangar de C9. El hangar es solo para elegir nave entre las 10 (y ver la colección); mejoras, armas y reparación van a C9 (concepto aparcado en docs/design/C9_CONCEPTO.md y tarea c9-nave-concepto).
+
+```text
+Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos. Formato vertical de móvil.
+
+Rediseña el HANGAR, la pantalla donde el jugador ELIGE NAVE entre partidas (solo eso: las mejoras y las armas van en otra pantalla). Captura de cómo es hoy: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/hangar.jpg . Fondo: el mismo hangar de la pantalla principal (https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/menu_hangar_fondo_v1.webp), con la nave elegida grande sobre la plataforma.
+Hay 10 naves: 01 Astér (exploradora, de serie), 02 Bastión, 03 Vértice, 04 Mantarraya, 05 Arpón, 06 Orión, 07 Quimera, 08 Nómada, 09 Eclipse y 10 Titán; se consigue una nueva por sector. Cada una tiene una habilidad EXCLUSIVA (con su recarga) y una ÚLTIMA.
+Textos y controles exactos: título HANGAR y antetítulo ELIGE TU NAVE; nombre de la nave elegida y su papel (por ejemplo «ASTÉR · EXPLORADORA»); rejilla de 10 casillas en 5×2 con el número y la miniatura de cada nave (las no conseguidas, en silueta con candado); ficha con «EXCLUSIVA · SALTO DE FASE · recarga 8 s» y su texto, y «ÚLTIMA · LLUVIA DE ESTRELLAS» y su texto; botones VOLVER y PILOTAR ASTÉR (principal).
+Piezas que necesito además: casilla de nave normal, elegida y bloqueada, 240×240 px; placa de la ficha de habilidades 1000×360 px. La silueta de nave bloqueada ya existe: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/menu_nave_bloqueada_v1.webp .
+Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
+```
+
 ## Arte: HUD de vuelo
 
 - **Id:** `art-ui-hud` · **Prioridad:** 2 · **Archivo:** `encargo-art-ui-hud-v1.png`
