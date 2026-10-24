@@ -551,7 +551,11 @@
     } else if(state!=="menu")return false;
     flightDockReturn=from; updateClassicDock(); overlay(ui.flightDock);
     $("flightDockContinue").focus({preventScroll:true});
-    ui.flightDock.querySelector(".flight-dock").scrollTop=0;return true;
+    ui.flightDock.querySelector(".flight-dock").scrollTop=0;
+    // Se abre arriba, en ARSENAL: la pestaña marcada tiene que ser esa (revisión tras el PR #56).
+    for(const tab of ui.flightDock.querySelectorAll(".c9-navigation button"))
+      tab.getAttribute("aria-controls")==="c9-arsenal"?tab.setAttribute("aria-current","true"):tab.removeAttribute("aria-current");
+    return true;
   }
 
   function closeClassicDock() {
