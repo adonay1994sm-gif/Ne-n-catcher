@@ -116,23 +116,6 @@ Piezas que necesito además: estrella llena y vacía 128×128 px; marco para la 
 Entrega: Imagen 1, MAQUETA de la pantalla completa a 1170×2532 px con todos los textos de arriba (solo es referencia: el juego escribe los textos). Imágenes 2 en adelante, las PIEZAS sin texto que se indican, WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo. Los botones y ventanas usan los marcos comunes de los encargos art-ui-marco-principal y art-ui-paneles: no los vuelvas a dibujar distintos.
 ```
 
-## Arte: hangar y Forja C9 (taller de Mira, con pestañas)
-
-- **Id:** `art-ui-hangar-taller` · **Prioridad:** 2 · **Archivo:** `encargo-art-ui-hangar-taller-v1.png`
-- **Para qué:** Pedido del propietario, 24/10: mandar a GPT capturas de todas las interfaces para dejarlas listas. Capturas actuales: docs/art/capturas-interfaz/hangar.jpg y forja_c9.jpg. Va con hangar-diseno-gpt.
-
-```text
-Antes de empezar lee https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/GUIA_GPT.md. Referencia de estilo obligatoria: la pantalla principal ya aprobada por el propietario https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/pantalla_principal.jpg y la maqueta de botones https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/menu-principal/maqueta_botones_lista_v1.webp (marco metálico oscuro, borde cian #a1eee8, luces naranjas en las esquinas, barra cian vertical a la izquierda, interior azul noche #040c15). Letra: Orbitron en mayúsculas para títulos, botones y cifras; Exo 2 para textos y diálogos. Formato vertical de móvil.
-
-Rediseña el TALLER DE MIRA, que junta el HANGAR y la FORJA C9 en una sola pantalla con pestañas (decisión del propietario). Capturas de cómo son hoy: hangar https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/hangar.jpg y Forja C9 https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/docs/art/capturas-interfaz/forja_c9.jpg . Fondo del taller ya entregado: https://raw.githubusercontent.com/adonay1994sm-gif/neon-cronium/claude/preparar-publicacion-rtfl9q/art-source/ui/taller-mira/taller_mira_v1.webp .
-Decidido: hay 10 naves (Astér de serie y una nueva por sector), cada una con habilidad exclusiva y habilidad última; se vuela con UNA arma, que se ve equipada con su nivel y solo se cambia aquí.
-Pestañas exactas: NAVES · ARMAS · FORJA. Arriba, cabecera con retrato de Mira, «MIRA · INGENIERÍA DE A BORDO» y la chatarra disponible. En el centro, la nave elegida grande.
-- NAVES: rejilla de 10 naves (las no conseguidas, en silueta con candado); ficha con EXCLUSIVA y ÚLTIMA; botón PILOTAR (principal).
-- ARMAS: arma equipada con su nivel (N1 a N4) y la lista de armas conseguidas; botón EQUIPAR.
-- FORJA: árbol de mejoras con las 12 insignias ya entregadas y su precio en chatarra; botón MEJORAR.
-Entrega: una MAQUETA de 1170×2532 px por pestaña (imágenes 1 a 3, con textos, solo referencia) y, aparte, las pestañas activa e inactiva sin texto (420×110 px) y la casilla de nave de la rejilla, normal, elegida y bloqueada (240×240 px). WebP con transparencia real.
-```
-
 ## Arte: HUD de vuelo
 
 - **Id:** `art-ui-hud` · **Prioridad:** 2 · **Archivo:** `encargo-art-ui-hud-v1.png`
