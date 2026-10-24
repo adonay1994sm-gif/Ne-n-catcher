@@ -150,6 +150,14 @@ Se añaden cada 3 días (tarea programada) y cuando él corrige algo. Va una
 línea por aprendizaje, con fecha, y lo más nuevo arriba. Si un aprendizaje
 cambia una regla de arriba, se edita la regla y aquí se deja constancia.
 
+- 24/10/2026: la dificultad nunca es llana. Enemigos con más vida y más daño
+  tramo a tramo y sector a sector (al final del S1, 3 disparos te matan).
+  Las armas se consiguen con la historia y se suben de nivel. Se vuela con
+  una sola y se cambia en el hangar, que se abre en el tramo 6 y tras el jefe.
+  Los jefes llevan una barra de vida que estrese. Los enemigos especiales se
+  van descubriendo poco a poco.
+- 24/10/2026: juega de verdad. Si el sector se atasca (Atlas no llegaba),
+  simula la partida entera de principio a fin antes de darla por buena.
 - 24/10/2026: si señala que algo «se ve negro» o «hecho por comandos», busca
   primero el arte pintado que ya existe y no se usa.
 - 24/10/2026: «Esto es una mierda, GPT te pasó algo fantástico». Cuando haya
