@@ -7,7 +7,7 @@
     if(cue&&time<cue.at+cue.duration) {
       const alpha=Math.min(1,(time-cue.at)/.25,(cue.at+cue.duration-time)/.25);
       ctx.globalAlpha=Math.max(0,alpha);ctx.textAlign="center";ctx.textBaseline="alphabetic";
-      ctx.font="700 24px 'Trebuchet MS', sans-serif";
+      ctx.font="700 24px 'Exo 2', sans-serif";
       const words=cue.text.split(" "),lines=[""];
       for(const word of words) {
         const next=lines[lines.length-1]?`${lines[lines.length-1]} ${word}`:word;
@@ -18,9 +18,9 @@
       const top=H*.70-30,bottom=H*.70+34+(lines.length-1)*30+14;
       ctx.fillStyle="#061521e8";ctx.fillRect(W*.05,top,W*.90,bottom-top);
       ctx.shadowColor="rgba(0,0,0,.9)";ctx.shadowBlur=6;
-      ctx.font="800 20px 'Trebuchet MS', sans-serif";ctx.fillStyle="#a1eee8";
+      ctx.font="800 20px 'Exo 2', sans-serif";ctx.fillStyle="#a1eee8";
       ctx.fillText(cue.speaker,W/2,H*.70);
-      ctx.font="700 24px 'Trebuchet MS', sans-serif";ctx.fillStyle="#f2f0e6";
+      ctx.font="700 24px 'Exo 2', sans-serif";ctx.fillStyle="#f2f0e6";
       lines.forEach((line,index)=>ctx.fillText(line,W/2,H*.70+34+index*30));
     }
     ctx.restore();
@@ -452,11 +452,12 @@
       // Banda oscura detrás: sin ella el rótulo se perdía sobre los anillos
       // iluminados de la estación (revisión B2, DESIGN §9.5).
       ctx.fillStyle = "rgba(6,21,33,.82)"; ctx.fillRect(-W * .6, -70, W * 1.2, 126);
-      ctx.font = "900 76px 'Trebuchet MS', sans-serif";
+      // Orbitron es más ancha: a 64 px ocupa lo mismo que la letra anterior a 76.
+      ctx.font = "900 64px Orbitron, sans-serif";
       ctx.fillStyle = "rgba(255,40,110,.7)"; ctx.fillText("CRONOS PRIME", -4, 0);
       ctx.fillStyle = "rgba(70,200,255,.7)"; ctx.fillText("CRONOS PRIME", 4, 0);
       ctx.fillStyle = "#f6f2ff"; ctx.shadowColor = "#8f6bff"; ctx.shadowBlur = 22; ctx.fillText("CRONOS PRIME", 0, 0);
-      ctx.shadowBlur = 0; ctx.fillStyle = "#c7b8ff"; ctx.font = "800 22px 'Trebuchet MS', sans-serif";
+      ctx.shadowBlur = 0; ctx.fillStyle = "#c7b8ff"; ctx.font = "800 22px Orbitron, sans-serif";
       ctx.fillText("LA IA DEL REACTOR, DESPIERTA", 0, 40);
       ctx.restore();
     }
