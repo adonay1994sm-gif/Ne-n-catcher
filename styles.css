@@ -1218,3 +1218,43 @@ body.flight-mode #flightDock #flightDockContinue:active:not(:disabled)::before {
    Los títulos de frase (h2) y los subtítulos de los botones siguen en Exo 2. */
 .menu-topline strong,.level-banner strong,.final b,.hud b,.primary,.secondary,.reward{font-family:var(--font-display)}
 .primary small,.secondary small,.reward small{font-family:var(--font-body)}
+
+
+/* Pantalla principal con el arte de GPT (propietario, 24/10/2026): el hangar
+   de fondo con la nave sobre la plataforma, marcos pintados que se estiran con
+   border-image y el engranaje pintado. La plataforma está al 50 % / 38 % del
+   fondo; background-position la deja en ese mismo punto de la pantalla. */
+#menu.menu-gpt{background:#040c15 url("assets/menu_hangar_bg_v1.webp") 50% 38%/cover no-repeat}
+#menu.menu-gpt::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,#040c15c7 0,#040c1500 17%,#040c1500 50%,#040c15d9 66%,#040c15 84%)}
+#menu.menu-gpt .menu-topline{border-bottom-color:#a1eee833}
+#menu.menu-gpt .menu-scene{top:38%;bottom:auto;width:min(42%,180px);height:auto;max-height:none;transform:translate(-50%,-86%);animation:menuShipHover 5s ease-in-out infinite}
+#menu.menu-gpt .menu-ship-image{display:block;height:auto;filter:drop-shadow(0 18px 18px #000a)}
+@keyframes menuShipHover{50%{transform:translate(-50%,calc(-86% - 6px))}}
+#menu.menu-gpt #quickSettings{width:52px;height:52px;padding:0;border:0;clip-path:none;background:url("assets/menu_gear_v1.webp") center/contain no-repeat;filter:drop-shadow(0 4px 8px #000b)}
+#menu.menu-gpt #quickSettings::before,#menu.menu-gpt #quickSettings svg{display:none}
+#menu.menu-gpt #quickSettings:active{transform:rotate(30deg) scale(.96)}
+/* Ajustes solo desde el engranaje: el botón del panel queda oculto. */
+#menu.menu-gpt #settings{display:none}
+#menu.menu-gpt .menu-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button){position:relative;display:flex;align-items:center;justify-content:flex-start;gap:0;width:100%;
+  min-height:68px;margin:0;padding:0 64px 0 42px;border:0;border-radius:0;clip-path:none;box-shadow:none;background:none;color:#f2f0e6;text-align:left;
+  border-image:url("assets/menu_frame_v1.webp") 40 160 fill / 16px 62px stretch}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button)::before{content:none}
+#menu.menu-gpt .hero-cta{flex-direction:column;align-items:flex-start;justify-content:center;gap:3px}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button)::after{content:"";position:absolute;right:10px;top:50%;width:46px;height:40px;border:0;
+  transform:translateY(-50%);background:url("assets/menu_arrow_v1.webp") center/contain no-repeat}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button):active:not(:disabled){transform:translateY(1px);background:none;
+  border-image-source:url("assets/menu_frame_pressed_v1.webp");filter:brightness(1.25)}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button):focus-visible{outline:2px solid #d1ffff;outline-offset:3px}
+#menu.menu-gpt .hero-cta > span{font-size:18px;font-weight:800;letter-spacing:.05em}
+#menu.menu-gpt :is(.hero-cta,.menu-hangar-button) small{font-size:10px;font-weight:700;letter-spacing:.14em;color:#a1eee8;opacity:1}
+#menu.menu-gpt .menu-hangar-button{overflow:hidden}
+#menu.menu-gpt .menu-hangar-button.hidden{display:none}
+/* La nave aparcada ocupa la derecha del botón, por dentro del marco. */
+#menu.menu-gpt .menu-hangar-button::before{content:"";position:absolute;z-index:0;top:4px;bottom:4px;left:auto;right:52px;width:62%;
+  background:url("assets/menu_hangar_button_v1.webp") right center/auto 100% no-repeat;clip-path:none;box-shadow:none}
+#menu.menu-gpt .menu-button-text{position:relative;z-index:1;display:flex;flex-direction:column;gap:3px;font-size:15px;font-weight:800;letter-spacing:.05em;text-shadow:0 2px 6px #000}
+#menu.menu-gpt .menu-new{display:none;position:absolute;z-index:2;top:9px;left:42px;padding:1px 6px;font:800 9px/1.4 var(--font-display);letter-spacing:.12em;color:#092028;background:#ffb84d}
+#menu.menu-gpt .menu-hangar-button.is-new .menu-new{display:block}
+#menu.menu-gpt .menu-hangar-button.is-new .menu-button-text{padding-top:14px}
