@@ -1,0 +1,23 @@
+{
+  "fecha": "2026-10-24",
+  "origen": "Generación con GPT que el propietario subió al baúl de assets (neon-cronium-video-referencia.chictide18.chatgpt.site). Iconos: PNG pasado a WebP sin pérdida e idéntico píxel a píxel. Fondo opaco: WebP calidad 92 (DESIGN.md §13).",
+  "empaquetado": "scripts/build-taller-assets.py",
+  "archivos": [
+    {
+      "archivo": "taller_mira_v1.webp",
+      "encargo": "camp-art-taller-mira",
+      "paquete": "camp-art-taller-mira-1.0.0",
+      "nota": "Escalado Lanczos de un maestro de 941×1672 (según su ficha)."
+    },
+    {
+      "archivo": "arbol_iconos_v1.webp",
+      "encargo": "camp-art-arbol-iconos",
+      "paquete": "camp-art-arbol-iconos-1.0.0"
+    }
+  ],
+  "estado": "EN_REVISION; aceptación artística pendiente del propietario",
+  "sha256": {
+    "taller_mira_v1.webp": "85e48f3332f09a2da58ffd4a1a353f0dee8c726516f29596ddd76a1834a80f3b",
+    "arbol_iconos_v1.webp": "d1e4a61c8f4d3e5cafce4527fd3692c0949f57347341063a88676edb98ee0f9b"
+  }
+}

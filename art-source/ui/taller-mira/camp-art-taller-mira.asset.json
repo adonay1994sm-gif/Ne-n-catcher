@@ -1,0 +1,66 @@
+{
+  "asset": {
+    "id": "camp-art-taller-mira",
+    "identity_notes": "Escalado Lanczos del maestro nativo 941×1672. No se atribuye detalle nativo a 1440×2560.",
+    "kind": "environment",
+    "project": "NEON CRONIUM",
+    "provenance": "new_design",
+    "reference_files": [
+      "reference.png",
+      "metadata.json"
+    ],
+    "version": "1.0.0"
+  },
+  "canvas": {
+    "height": 2560,
+    "mode": "RGB",
+    "padding_px": 0,
+    "pivot": {
+      "x": 720.0,
+      "y": 1280.0
+    },
+    "transparency": "opaque",
+    "width": 1440
+  },
+  "clips": [],
+  "delivery_profile": "delivery",
+  "frames": [
+    {
+      "file": "frames/f000.png",
+      "id": "f000"
+    }
+  ],
+  "integration": {
+    "engine": "",
+    "evidence": [],
+    "status": "not_requested"
+  },
+  "previews": [],
+  "publication": {
+    "status": "pending",
+    "urls": []
+  },
+  "review": {
+    "loop": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "not_applicable"
+    },
+    "motion": {
+      "evidence": [],
+      "reviewer": "",
+      "status": "not_applicable"
+    },
+    "visual": {
+      "evidence": [
+        "evidence/final.jpg",
+        "evidence/observations.json",
+        "metadata.json"
+      ],
+      "reviewer": "assistant (native image output and view_image)",
+      "status": "passed"
+    }
+  },
+  "schema_version": "2.0",
+  "sheet": null
+}

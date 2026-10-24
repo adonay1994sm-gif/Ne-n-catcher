@@ -28,6 +28,8 @@ const CORE = [
   "assets/atlas_fury_atlas_v1.webp",
   "assets/atlas_escorts_atlas_v1.webp",
   "assets/sector_beacon_atlas_v1.webp",
+  "assets/workshop_mira_bg_v1.webp",
+  "assets/skill_tree_icons_v1.webp",
   "./",
   "index.html",
   "styles.css?v=7.2.0",
