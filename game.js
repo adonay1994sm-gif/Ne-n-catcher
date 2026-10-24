@@ -2338,7 +2338,9 @@
   }
 
   function beginAtlasEncounter() {
-    if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || collected < level().goal || state !== "playing") return false;
+    // La ruta ya exige la cuota de su último tramo (canFinish); la del nivel
+    // antiguo (36) no vale aquí: con 33 en el sector, Atlas no llegaba nunca.
+    if (!isAtlasMission() || atlasBoss || !classicFlightView?.canFinish || state !== "playing") return false;
     if (typeof resetGameInput === "function") resetGameInput();
     cancelSupplyFailureTimer();
     atlasBoss = NeonCampaign.createGuardianAtlas({width: W, height: H, playerY: player.y});resetAtlasFury();
@@ -3232,7 +3234,7 @@
   function completeLevel() {
     if (state !== "playing") return;
     if(classicFlight && !classicFlight.snapshot().canFinish)return;
-    if (isAtlasMission() && collected >= level().goal) {
+    if (isAtlasMission()) {
       if (!atlasBoss) { beginAtlasEncounter(); return; }
       if (!atlasBoss.resolved) return;
     }
@@ -4631,7 +4633,8 @@
     }
 
     if(classicFlightView)clearCometCorridor();
-    if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
+    // En los viajes con ficha (el sector) la ruta ya exige la cuota de su último tramo.
+    if(classicFlightView?.canFinish && (classicSideVoyage||collected>=level().goal))completeLevel();
     checkSupplyFailure();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(

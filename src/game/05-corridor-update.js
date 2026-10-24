@@ -448,7 +448,8 @@
     }
 
     if(classicFlightView)clearCometCorridor();
-    if(classicFlightView?.canFinish && collected>=level().goal)completeLevel();
+    // En los viajes con ficha (el sector) la ruta ya exige la cuota de su último tramo.
+    if(classicFlightView?.canFinish && (classicSideVoyage||collected>=level().goal))completeLevel();
     checkSupplyFailure();
     if (hull < 67 && settings.effects && Math.random() < dt * (hull < 34 ? 7 : 2.4)) {
       burst(
