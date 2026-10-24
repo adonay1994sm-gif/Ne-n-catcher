@@ -1,10 +1,15 @@
 
+/* Letras del juego (propietario, 24/10): Orbitron en títulos, botones y cifras; Exo 2 en el resto. */
+@font-face{font-family:"Orbitron";src:url("assets/orbitron_wght_v1.ttf") format("truetype");font-weight:400 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Exo 2";src:url("assets/exo2_latin_wght_v1.woff2") format("woff2");font-weight:400 900;font-style:normal;font-display:swap}
 :root{
   --bg:#03050d;--panel:rgba(12,17,36,.94);--text:#fff;--muted:#aeb5d5;
   --cyan:#55f4ff;--violet:#7958ff;--pink:#ff4cc9;--green:#76ffc2;--danger:#ff6b8d;
+  --font-display:"Orbitron","Exo 2",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-body:"Exo 2",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font-body);overscroll-behavior:none}
 button,a,input{font:inherit}
 body{background:radial-gradient(circle at 50% -10%,#18245d 0,#090d20 37%,#03050d 78%)}
 .shell,.game{width:100%;height:100dvh;min-height:100%;position:relative;overflow:hidden}
@@ -1208,3 +1213,8 @@ body.flight-mode #flightDock #flightDockContinue::before {
   background: linear-gradient(180deg, #c6fbf6, #5fe1d9); box-shadow: inset 0 1px 0 rgba(255,255,255,.65), inset 0 -3px 0 rgba(0,0,0,.22);
 }
 body.flight-mode #flightDock #flightDockContinue:active:not(:disabled)::before { background: linear-gradient(180deg, #8fe9e2, #4cc9c1); }
+
+/* Orbitron solo en lo que va en mayúsculas (marca, botones y cifras): en minúsculas se lee mal.
+   Los títulos de frase (h2) y los subtítulos de los botones siguen en Exo 2. */
+.menu-topline strong,.level-banner strong,.final b,.hud b,.primary,.secondary,.reward{font-family:var(--font-display)}
+.primary small,.secondary small,.reward small{font-family:var(--font-body)}
