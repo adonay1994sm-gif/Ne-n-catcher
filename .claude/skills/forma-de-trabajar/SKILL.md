@@ -164,6 +164,10 @@ Se añaden cada 3 días (tarea programada) y cuando él corrige algo. Va una
 línea por aprendizaje, con fecha, y lo más nuevo arriba. Si un aprendizaje
 cambia una regla de arriba, se edita la regla y aquí se deja constancia.
 
+- 24/10/2026: cuando propone algo que no es del paso actual (C9 como nave
+  taller), quiere pensarlo y dejarlo escrito para tenerlo claro, pero
+  aparcado: ni código ni encargos a GPT hasta que llegue su paso. Se guarda en
+  un documento de concepto (docs/design/C9_CONCEPTO.md) y en el tablero.
 - 24/10/2026: «el juego ha cambiado mucho». Antes de seguir, quiere un
   repaso por partes y una cosa cada vez, dejando cada parte terminada. La
   sección 3 recoge el orden y las reglas.
