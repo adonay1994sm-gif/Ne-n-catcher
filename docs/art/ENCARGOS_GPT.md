@@ -14,29 +14,22 @@ Versión para máquinas: https://raw.githubusercontent.com/adonay1994sm-gif/neon
 5. Respeta medidas, rejilla y fondo (transparente salvo que el prompt pida opaco): el juego recorta las celdas por tamaño exacto.
 6. Revisa esta lista cada 10 minutos. Antes de empezar un encargo, mira `catalog.json` del baúl: si ya hay un archivo con su id en `"encargo"`, no lo repitas.
 
-## Arte: capas limpias de la pantalla principal (fondo del hangar e imagen del botón)
+## Arte: marcos de botón vacíos de la pantalla principal (normal, pulsado y bloqueado)
 
-- **Id:** `art-menu-capas` · **Prioridad:** 1 · **Archivo:** `encargo-art-menu-capas-v1.png`
-- **Para qué:** El propietario se lo pide a GPT directamente (24/10). Se integra cuando estén todas las maquetas del menú. Originales a art-source/ui/menu-principal/.
+- **Id:** `art-menu-marcos` · **Prioridad:** 1 · **Archivo:** `encargo-art-menu-marcos-v1.png`
+- **Para qué:** Las maquetas de botones traen el texto pintado y no se pueden usar tal cual: el juego tiene que escribir JUGAR o CONTINUAR VIAJE, el tramo en el que vas, etc. El engranaje, el icono de la ruta y la casilla de la flecha se recortan de la maqueta (tienen transparencia). El propietario se lo pide a GPT.
 
 ```text
-Partiendo de la maqueta de la pantalla principal de NEON CRONIUM que ya hicimos (hangar con la nave sobre la plataforma), necesito las capas por separado para montarla en el juego. Mismo estilo pintado, misma luz y misma paleta (azul noche, cian #a1eee8, ámbar cálido en las luces). Sin textos, sin botones, sin iconos, sin marcos de interfaz.
+Partiendo de las maquetas de botones de NEON CRONIUM que ya hicimos (marco metálico oscuro, borde cian, luces naranjas en las esquinas y barra cian vertical a la izquierda), necesito los marcos VACÍOS para que el juego escriba los textos. Mismo estilo, misma luz y misma paleta. WebP con transparencia real (canal alfa, no damero), bordes limpios y sin halo.
 
-1) FONDO DEL HANGAR — 1440×2560 px, vertical, opaco, WebP.
-- El hangar de la maqueta: compuerta abierta al espacio con la galaxia y el planeta con su estación, brazos robóticos a los lados y suelo mojado con reflejos.
-- La plataforma circular VACÍA, sin nave (el juego dibuja encima la nave que elija el jugador). Centro de la plataforma a 1/2 del ancho y al 38 % del alto.
-- Del 50 % del alto hacia abajo, el suelo se oscurece poco a poco hasta casi negro (#040c15), porque ahí van los textos y los botones.
-- Nada importante en los 140 px de arriba (ahí va el título).
+1) MARCO NORMAL: 1328×200 px. Sin texto, sin imagen dentro, sin flecha y sin casilla de flecha. Interior azul noche con la textura sutil de la maqueta.
+- Tiene que poder estirarse a lo ancho: todos los detalles (esquinas, luces, barra cian) en los 170 px de cada extremo; la franja central, lisa y repetible, sin detalles únicos.
 
-2) IMAGEN DEL BOTÓN «ENTRAR AL HANGAR» — 1328×280 px, WebP con transparencia real (canal alfa, no damero).
-- La nave blanca y cian aparcada en el hangar, vista de lado y en tres cuartos, ocupando el tercio derecho.
-- De derecha a izquierda se funde a transparente: el 55 % izquierdo totalmente transparente (ahí va el texto).
-- Bordes limpios, sin halo blanco.
+2) MARCO PULSADO: el mismo, pixel a pixel en la misma posición, con el borde cian más brillante y el interior algo más claro.
 
-3) NAVE BLOQUEADA PARA «TUS NAVES» — 512×384 px, WebP con transparencia real.
-- Silueta oscura de una nave desconocida, con un leve contorno cian, centrada. Sirve para las naves que aún no tienes.
+3) MARCO BLOQUEADO: el mismo, apagado: sin brillo cian, luces de las esquinas apagadas, metal gris azulado.
 
-Nombres: menu_hangar_fondo_v1.webp, menu_boton_hangar_v1.webp, menu_nave_bloqueada_v1.webp.
+Nombres: menu_marco_boton_v1.webp, menu_marco_boton_pulsado_v1.webp, menu_marco_boton_bloqueado_v1.webp.
 ```
 
 ## Arte · Portal dimensional de Cronos Prime (llegada y salida)
