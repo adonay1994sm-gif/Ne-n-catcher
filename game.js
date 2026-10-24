@@ -1304,7 +1304,12 @@
       const grid=document.createElement('div');grid.className='c9-upgrades';
       section.append(heading,help,grid);sections[id]={section,grid};
       const link=document.createElement('button');link.type='button';link.textContent=label.slice(5);link.setAttribute('aria-controls',section.id);
-      link.onclick=()=>section.scrollIntoView?.({behavior:settings.reduceEffects?'instant':'smooth',block:'start'});
+      link.onclick=()=>{
+        for(const other of nav.querySelectorAll('button'))other.removeAttribute('aria-current');
+        link.setAttribute('aria-current','true');
+        section.scrollIntoView?.({behavior:settings.reduceEffects?'instant':'smooth',block:'start'});
+      };
+      if(id==='arsenal')link.setAttribute('aria-current','true');
       nav.append(link);oldGrid.before(section);
     }
     ui.c9Balance.closest('.cockpit-ledger').after(nav);
